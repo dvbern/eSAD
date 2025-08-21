@@ -1,0 +1,28 @@
+<svui-form-control-top [minHeight]="false">
+  <span class="form-label">
+    {{ label() }}
+
+    @if (required()) {
+      <svui-required/>
+    }
+  </span>
+</svui-form-control-top>
+
+<!-- upload button || viewer || spinner -->
+<div class="svui_form-upload__content">
+  @if (uploadWorking()) {
+    <svui-spinner [working]="uploadWorking()" [context]="'inline'"/>
+  } @else if (fileName()) {
+    <svui-like-a-table>
+      {{ fileName() }}
+      
+      <ng-content select="[svuiIconOnlyButton]" [ngProjectAs]="'[svuiIconOnlyButton]'"/>
+    </svui-like-a-table>
+  } @else {
+    <ng-content select="svui-file-upload-button"/>
+  }
+</div>
+
+<svui-form-control-bottom [minHeight]="false"
+                          [validateWhen]="showRequiredErrorMessage()"
+                          [errors]="{ required: true }"/>

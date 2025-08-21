@@ -1,0 +1,25 @@
+// CSS Variables Handling
+// Helper-Mixins und Funktionen, da alles immer #{string} sein muss.
+
+// prefix: see styles-helper.ts
+$prefix: svui-;
+
+@function -variable-with-name($name, $local-prefix: null) {
+  $-full-prefix: --#{$prefix};
+  @if ($local-prefix) {
+    $local-prefix: #{$local-prefix}-;
+  }
+  @return #{$-full-prefix}#{$local-prefix}#{$name};
+}
+
+@function get($property) {
+  $css-variable: -variable-with-name($property);
+
+  @return var($css-variable);
+}
+
+// $local-prefix is only for better readability, you can just as well use only $name & $value
+@mixin set-local($name, $value, $local-prefix: null) {
+  $css-variable: -variable-with-name($name, $local-prefix);
+  #{$css-variable}: #{$value};
+}

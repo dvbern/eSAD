@@ -1,0 +1,40 @@
+:host {
+
+  $screen-breakpoint: 1000px;
+
+  .smallscreen-hide {
+    @media screen and (max-width: $screen-breakpoint) {
+      display: none;
+    }
+  }
+
+  .bigscreen-hide {
+    @media screen and (min-width: $screen-breakpoint) {
+      display: none;
+    }
+  }
+}
+
+.offcanvas-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.offcanvas-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .offcanvas-nav {
+    flex-direction: column;
+    align-items: start;
+  }
+}
+
+.offcanvas-bottom-section {
+  margin-top: auto; // push to bottom
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+

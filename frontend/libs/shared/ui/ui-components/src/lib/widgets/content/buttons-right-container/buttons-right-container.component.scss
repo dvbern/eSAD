@@ -1,0 +1,23 @@
+@use '../../../../styles/core/layout';
+@use '../../../../styles/core/spacing';
+
+:host {
+  display: block;
+
+  // hide this element if empty
+  &:has(.svui_buttons-right__text:only-child:empty) {
+    display: none;
+  }
+}
+
+.svui_buttons-right {
+  @include layout.flex($align-items: center, $column-gap: spacing.$gutter-width);
+
+  &__text {
+    flex-grow: 1;
+  }
+
+  ::ng-deep > button {
+    align-self: start;
+  }
+}

@@ -1,0 +1,45 @@
+<div class="svui_table-wrapper">
+
+  <!-- TABLE INSIDE SCROLL WRAPPER -->
+  <div class="svui_table-wrapper__scroll">
+    <ng-content select="[svuiTable]"/>
+  </div>
+
+  <div class="svui_table-wrapper__footer">
+    <!-- LOADING -->
+    <svui-spinner [working]="loading()" [context]="'table'" class="svui_table-wrapper__spinner"/>
+
+    <!-- "MORE" (optional. pagination or scroll) -->
+    @if (pagination()) {
+      @if (tableConfig()?.pageOrScrollOrNothing === 'scroll') {
+        <svui-virtual-scroll-trigger
+          [totalRows]="totalRows()"
+          [pagination]="pagination()!"
+          [lastLoadedPage]="lastLoadedPage()"
+          (pageChanged)="onVirtualScroll($event)"
+          [loadedRowCount]="loadedRowCount()"
+          [loading]="loading()"
+        />
+      }
+      @if (tableConfig()?.pageOrScrollOrNothing === 'paginate') {
+        <svui-pagination
+          [totalRows]="totalRows()"
+          [pagination]="pagination()"
+          (pageChanged)="onPageChange($event)"
+          class="svui_table-wrapper__pagination"
+        />
+      }
+    }
+
+    <!-- DOWNLOAD -->
+    @if (downloadPossible()) {
+      <button svuiIconOnlyButton="primary"
+              type="button"
+              [tooltip]="'global.tooltip.icon.herunterladen' | transloco"
+              [icon]="'herunterladen'"
+              (click)="onDownloadClicked()"
+              class="svui_table-wrapper__download">
+      </button>
+    }
+  </div>
+</div>

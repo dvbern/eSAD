@@ -1,0 +1,24 @@
+@if (lastImpfung()?.timestampLastManualChange) {
+  <svui-list [heading]="'kind.dossier.impfungen' | transloco" [loading]="dossierStore.loader.isLoading()">
+    <svui-page-header-buttons listAddbutton>
+      <button svuiButton="primary"
+              type="button"
+              [routerLink]="
+             '/' + Path.ANLASS
+            + '/' + lastImpfung()?.anlassId
+            + '/' + Path.ANLASS_UNTERSUCHUNG
+            + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG
+            + '/' + lastImpfung()?.einladungId
+            + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_IMPFUNGEN"
+              [queryParams]="{'einladungIds': lastImpfung()?.einladungId}"
+      >{{ 'kind.dossier.impfungenOffnen' | transloco }}
+      </button>
+    </svui-page-header-buttons>
+    <div class="py-3 px-3">
+      <b>{{ 'kind.dossier.impfungenOffnenInfo' | transloco }}</b>
+      <p>{{ formatDateStr(lastImpfung()?.timestampLastManualChange) }}</p>
+    </div>
+  </svui-list>
+}
+
+

@@ -1,0 +1,12 @@
+<svui-form-control [label]="label()"
+                   [viewValue]="model">
+  <input
+    svuiTypeahead
+    [(ngModel)]="model"
+    [filterFn]="getResultsForTerm$"
+    [formatter]="formatter"
+    [openOnFocus]="openOnFocus()"
+    noResultsMessage="Kein Resultat gefunden"
+  />
+</svui-form-control>
+<pre>Model: {{ model | json }}</pre>

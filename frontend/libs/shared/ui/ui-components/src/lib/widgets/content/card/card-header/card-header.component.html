@@ -1,0 +1,17 @@
+<div class="svui_card__header-icon">
+  <ng-content select="[cardIcon]"/>
+</div>
+
+<div class="svui_card__header-heading">
+  <h2 svuiHeading="card">
+    {{ heading() }}
+    <svui-spinner [working]="loading()" [context]="'inline'"/>
+  </h2>
+</div>
+
+<ng-content/>
+
+<div class="svui_card__header-menu">
+  <ng-content select="svui-collapsible-menu"/>
+</div>
+

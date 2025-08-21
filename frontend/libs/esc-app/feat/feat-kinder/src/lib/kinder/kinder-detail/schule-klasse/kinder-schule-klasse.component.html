@@ -1,0 +1,58 @@
+<form svuiFormLayout [formGroup]="form.group" (ngSubmit)="submitIfValid()" [mode]="dossierStore.detailMode()">
+
+  <h2 svuiHeading="formSection">{{ 'kind.schule' | transloco }}</h2>
+
+  <!-- SCHULE -->
+  <svui-form-control [label]="'kind.schule' | transloco"
+                     [viewValue]="form.group.getRawValue().schule?.bezeichnung"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.schule"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [compareWith]="compareSchule"
+    >
+      @for (each of schuleOptions(); track each) {
+        <ng-option [value]="each" [disabled]="each.aktivStatus === 'INAKTIV'">
+          {{ each.bezeichnung }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- KLASSE -->
+  <svui-form-control [label]="'kind.klasse' | transloco"
+                     [viewValue]="form.group.getRawValue().klasse?.bezeichnung"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.klasse"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [compareWith]="compareKlasse"
+    >
+      @for (each of klasseOptions(); track each) {
+        <ng-option [value]="each">
+          {{ each.bezeichnung }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+
+  <!--messages for whole form -->
+  <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="dossierStore.detailMode()"
+    [isCreate]="false"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="canEdit()"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP]"
+    [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"/>
+</form>

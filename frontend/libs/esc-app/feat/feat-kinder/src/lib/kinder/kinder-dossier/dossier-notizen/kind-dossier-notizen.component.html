@@ -1,0 +1,42 @@
+<!-- Notizen -->
+<svui-list [heading]="'kind.dossier.notizen' | transloco"
+           [loading]="notizenStore.loader.isLoading()">
+
+  @if (!notizenStore.notizenSortedAndSliced().length) {
+    <svui-empty-list-message [message]="'kind.dossier.notizen.list.empty' | transloco"/>
+  }
+  @if (canEditNotizen()) {
+    <svui-page-header-add-button listAddbutton
+                                 [addRouterLink]="Path.NOTIZEN + '/' + Path.CREATE"/>
+  }
+
+  @for (item of notizenStore.notizenSortedAndSliced(); track item.id; let index = $index) {
+    <svui-fancy-list-item
+      [mainText]="item.data.titel"
+      [date]="fromISODateTimeString(item.entityInfo.timestampErstellt)"
+      [linkText]="'global.oeffnen' | transloco"
+      [routerlinkDestination]="Path.NOTIZEN + '/' + item.id"
+      [gray]="false"
+    >
+      <ng-content subBadges>
+        @for (label of item.data.labels; track label.id) {
+          <svui-badge> {{ label.data.name | translatedStringPipe }}</svui-badge>
+        }
+      </ng-content>
+    </svui-fancy-list-item>
+  }
+
+  @if (notizenStore.entities().length > 0) {
+    <ng-container footer>
+      <span>{{
+          'kind.dossier.notizen.list.items' | transloco: {
+            actual: notizenStore.notizenSortedAndSliced().length,
+            all: notizenStore.entities().length
+          }
+        }}</span>
+      <a class="nav-link"
+         [routerLink]="Path.NOTIZEN + '/' + Path.ALL"
+         aria-current="page">{{ 'kind.dossier.notizen.liste' | transloco }}</a>
+    </ng-container>
+  }
+</svui-list>

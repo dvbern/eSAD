@@ -1,0 +1,41 @@
+<div class="svui_single-control">
+
+  <!--top box-->
+  <svui-form-control-top [minHeight]="isEditMode() && topLabelVisibility() ==='visible'"
+                         [iconTopRight]="iconTopRight()">
+    @if (controlType !== 'checkbox') {
+      <svui-form-control-top-label [required]="required && isEditMode()"
+                                   [controlId]="id"
+                                   [visibility]="topLabelVisibility()"
+      >
+        {{ label() }}
+      </svui-form-control-top-label>
+    }
+  </svui-form-control-top>
+
+  <!--spinner-->
+  <svui-form-working-icon [working]="directiveOnContentWorking()"/>
+
+  <!--input|content-->
+  @if (controlType === 'checkbox') {
+    <svui-single-checkbox-wrapper [label]="label()">
+      <ng-container *ngTemplateOutlet="plainContent"/>
+    </svui-single-checkbox-wrapper>
+  } @else {
+    @if (isEditMode()) {
+      <ng-container *ngTemplateOutlet="plainContent"/>
+    } @else {
+      <svui-view-value [viewValue]="viewValue()"/>
+    }
+  }
+
+  <!--bottom box-->
+  <svui-form-control-bottom [minHeight]="isEditMode()" [validateWhen]="control?.touched" [errors]="control?.errors">
+    <ng-content select="[control-message]"/>
+  </svui-form-control-bottom>
+</div>
+
+<!--ng-content-->
+<ng-template #plainContent>
+  <ng-content/>
+</ng-template>

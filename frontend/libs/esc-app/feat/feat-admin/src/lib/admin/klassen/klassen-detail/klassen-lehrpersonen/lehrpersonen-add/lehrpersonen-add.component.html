@@ -1,0 +1,30 @@
+<feat-dialogs-modal [modalTitle]="'lehrpersonen.list.add-existing-lehrperson.title' | transloco">
+  <form [formGroup]="form.group"
+        svuiFormLayout
+        (ngSubmit)="addLehrperson()"
+        [mode]="DetailMode.EDIT"
+  >
+    <svui-form-control [label]="'lehrpersonen.list.add-existing-lehrperson.lehrperson' | transloco"
+                       [viewValue]="''">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.lehrperson"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      >
+        @for (lehrperson of lehrpersonen(); track lehrperson.id) {
+          <ng-option [value]="lehrperson">
+            {{ lehrperson.fullName }}
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+    <!-- BUTTONS -->
+    <svui-save-cancel-buttons
+      [saving]="false"
+      [canEdit]="true"
+      (cancelClicked)="cancel()"
+    />
+  </form>
+</feat-dialogs-modal>

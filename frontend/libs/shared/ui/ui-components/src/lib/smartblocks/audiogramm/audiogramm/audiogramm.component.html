@@ -1,0 +1,75 @@
+<div class="column-container">
+
+  <table class="audio-table">
+    <thead>
+    <tr>
+      <th></th>
+
+      @for (column of this.columns(); track column; let index = $index) {
+        <th
+          [style]="'grid-column: ' + ((index * (frequenzen().length + 1)) + 2) + ' / ' + (((index + 1) * (frequenzen().length + 1)) + 1)">
+          {{ column.label |transloco }}
+        </th>
+
+
+        <td *ngIf="index < 1"></td>
+      }
+
+    </tr>
+    </thead>
+
+    <tbody>
+
+      @for (db of values(); track db; let dbIndex = $index) {
+        <tr [class.border-bottom]="dbIndex === 1">
+          <th>{{ db }} dB</th>
+
+
+          @for (column of this.columns(); track column; let index = $index) {
+            @for (freq of frequenzen(); track freq) {
+
+              <td class="p-0" *ngIf="getControl(column.group, freq) as control">
+
+                <label class="checkbox-label-around"
+                       [for]="'audio' + column.label + freq + db">
+                  <input class="form-check-input"
+                         type="radio"
+                         [id]="'audio' + column.label + freq + db"
+                         [name]="'audio' + column.label + freq"
+                         [formControl]="control"
+                         [value]="db"
+                  />
+                </label>
+              </td>
+            }
+            <td *ngIf="index < 1"></td>
+          }
+
+        </tr>
+
+
+      }
+    </tbody>
+
+    <tfoot>
+    <tr>
+      <th></th>
+
+      @for (column of this.columns(); track column; let index = $index) {
+        @for (freq of frequenzen(); track freq) {
+          <th> {{ freq }} <br/>Hz</th>
+        }
+
+        <td *ngIf="index < 1"></td>
+      }
+    </tr>
+    </tfoot>
+
+  </table>
+
+
+</div>
+
+
+
+

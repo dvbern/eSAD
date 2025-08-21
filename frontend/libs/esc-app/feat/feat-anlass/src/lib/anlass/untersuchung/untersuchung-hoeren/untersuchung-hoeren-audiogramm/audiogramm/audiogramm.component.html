@@ -1,0 +1,94 @@
+<div class="column-container">
+
+	<table class="audio-table">
+
+		<thead>
+		<tr>
+			<!-- Titel rechts -->
+			<th scope="col"
+				[style]="'grid-column: ' + 2 + ' / ' + ((1 * (frequenzenValues().length + 1)) + 1)"
+				[style.grid-column]="2">
+				{{ 'audiogramm.seite.rechts' |transloco }}
+			</th>
+			<!-- Titel links -->
+			<th scope="col"
+				[style]="'grid-column: ' + ((1 * (frequenzenValues().length + 1)) + 2) + ' / ' + ((2 * (frequenzenValues().length + 1)) + 1)"
+				[style.grid-column]="10">
+				{{ 'audiogramm.seite.links' |transloco }}
+			</th>
+		</tr>
+		</thead>
+
+		<tbody>
+			@for (db of dezibelValues; track db; let dbIndex = $index) {
+				<tr [class.border-bottom]="dbIndex === 1">
+
+					<!-- Dezibel -->
+					<th scope="col">{{ ('Dezibel.' + db) | transloco }}</th>
+
+					<!-- Rechts -->
+					@for (freq of frequenzenValues(); track freq; let freqIndex = $index) {
+						@let control = getControl(this.form().group.controls.rechts, freq);
+						@if (control) {
+							<td class="p-0"
+								[style.grid-column]="getFrequenzGridPosition(freqIndex, 'rechts')">
+								<label class="checkbox-label-around"
+									   [for]="'audio' + 'audiogramm.seite.rechts' + freq + db">&nbsp;
+									<input class="form-check-input"
+										   type="radio"
+										   [id]="'audio' + 'audiogramm.seite.rechts' + freq + db"
+										   [name]="'audio' + 'audiogramm.seite.rechts' + freq"
+										   [formControl]="control"
+										   [value]="db"/>
+								</label>
+							</td>
+						}
+					}
+					<td></td>
+
+					<!-- Links -->
+					@for (freq of frequenzenValues(); track freq; let freqIndex = $index) {
+						@let control = getControl(this.form().group.controls.links, freq);
+						@if (control) {
+							<td class="p-0"
+								[style.grid-column]="getFrequenzGridPosition(freqIndex, 'links')">
+								<label class="checkbox-label-around"
+									   [for]="'audio' + 'audiogramm.seite.links' + freq + db">&nbsp;
+									<input class="form-check-input"
+										   type="radio"
+										   [id]="'audio' + 'audiogramm.seite.links' + freq + db"
+										   [name]="'audio' + 'audiogramm.seite.links' + freq"
+										   [formControl]="control"
+										   [value]="db"/>
+								</label>
+							</td>
+						}
+					}
+				</tr>
+			}
+		</tbody>
+
+		<tfoot>
+		<tr>
+			<!-- Hz-Labels Rechts -->
+			<th scope="col"></th>
+			@for (freq of frequenzenValues(); track freq; let freqIndex = $index) {
+				<th scope="col"
+					[style.grid-column]="getFrequenzGridPosition(freqIndex, 'rechts')">
+					{{ audiogrammKeyToFrequenz(freq) }} <br/>Hz
+				</th>
+			}
+			<!-- Hz-Labels Links -->
+			<th scope="col"></th>
+			@for (freq of frequenzenValues(); track freq; let freqIndex = $index) {
+				<th scope="col"
+					[style.grid-column]="getFrequenzGridPosition(freqIndex, 'links')">
+					{{ audiogrammKeyToFrequenz(freq) }} <br/>Hz
+				</th>
+			}
+		</tr>
+		</tfoot>
+
+	</table>
+
+</div>

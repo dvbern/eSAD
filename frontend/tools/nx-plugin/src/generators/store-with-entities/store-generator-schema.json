@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "store-generator",
+  "cli": "nx",
+  "title": "DV Bern Store Generator",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the feature",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What is the name of the feature without any type suffixes? Example: 'stammdaten'",
+      "pattern": "^[a-zA-Z][a-zA-Z-0-9_-]*$"
+    },
+    "providedIn": {
+      "type": "string",
+      "description": "The value of the 'providedIn' property in the @Injectable decorator",
+      "default": "null",
+      "enum": [
+        "null",
+        "root",
+        "platform",
+        "any",
+        "type"
+      ]
+    },
+    "attachToRoute": {
+      "type": "boolean",
+      "description": "Should this store be initialized in a route?",
+      "default": false
+    },
+    "directory": {
+      "type": "string",
+      "description": "The directory where the store will be generated into.",
+      "default": "."
+    },
+    "overwriteStrategy": {
+      "type": "string",
+      "oneOf": [
+        {
+          "enum": [
+            "overwrite",
+            "keepExisting",
+            "throwIfExisting"
+          ]
+        }
+      ],
+      "description": "How to behave if the file already exists: overwrite|keepExisting|throwIfExisting",
+      "default": "throwIfExisting"
+    }
+  },
+  "required": [
+    "name",
+    "providedIn"
+  ]
+}

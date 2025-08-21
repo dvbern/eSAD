@@ -1,0 +1,117 @@
+<feat-page [heading]="'impfstoff.list.page.title' | transloco"
+           [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN}">
+  <svui-page-header-buttons
+    [showFilterPopup]="false"/>
+
+
+  @if (this.canEditImpfstoff()) {
+    <svui-page-header-add-button [addRouterLink]="Path.CREATE"/>
+  }
+
+  <svui-page-header-list-summary
+    [items]="summaryItems()"/>
+
+  <svui-card [innerSpacing]="'topBottom'">
+    <table
+      svuiTable
+      [loading]="impfstoffeChargenStore.loader.isLoading()"
+      [totalRows]="itemTable.filteredListSize()"
+      (pageChanged)="itemTable.onPageChanged($event)"
+      [pagination]="itemTable.pagination()"
+    >
+      <!-- col widths -->
+      <colgroup>
+        <col svuiColWidth [colWidth]="'text-medium'">
+        <col svuiColWidth [colWidth]="'text-medium'">
+        <col svuiColWidth [colWidth]="'text-medium'">
+        <col svuiColWidth [colWidth]="'options'">
+      </colgroup>
+      <thead>
+      <!-- Headers for sorting -->
+      <tr>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.name')"
+          (sort)="itemTable.onColSort($event, 'data.name')"
+        >
+          {{ 'impfstoff.bezeichnung' | transloco }}
+        </th>
+        <th scope="col">
+          {{ 'impfstoff.indikationen' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.impfstoffAktivStatus')"
+          (sort)="itemTable.onColSort($event, 'data.impfstoffAktivStatus')">
+          {{ 'impfstoff.aktiv' | transloco }}
+        </th>
+        <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
+      </tr>
+      <!-- Headers for filtering-->
+      <tr>
+        <!-- Filter for bezeichnung -->
+        <th scope="col">
+          <svui-table-filter
+            [columnHeader]="('impfstoff.bezeichnung' | transloco)"
+          >
+            <input svuiTextInput [formControl]="tableFilterForm.group.controls.name"/>
+          </svui-table-filter>
+        </th>
+        <th scope="col"></th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'schule.schuleAktivStatus' | transloco">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.impfstoffAktivStatus"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+              [multiple]="false"
+            >
+              @for (status of impfstoffAktivStati; track status) {
+                <ng-option [value]="status">
+                  {{ 'EntityAktivStatus.' + status | transloco }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (item of itemTable.displayedList(); track item.id) {
+          <tr>
+            <td>
+              <svui-table-link
+                type="text"
+                [myRouterLink]="[item.id]">
+                {{ item.data.name }}
+              </svui-table-link>
+            </td>
+            <td>{{ translateKrankheiten(item.data.krankheiten) }}</td>
+            <td>{{ 'EntityAktivStatus.' + item.data.impfstoffAktivStatus | transloco }}</td>
+            <td>
+              <svui-collapsible-menu
+                [loading]="impfstoffeChargenStore.deleteLoader.isLoading()"
+                label="{{ 'global.actionmenu.tooltip' | transloco }}">
+                @if (canEditImpfstoff()) {
+                  <button ngbDropdownItem (click)="changeImpfstoffAktivStatus(item)">
+                    {{ 'global.' + determineTextBasedOnStatus(item.data.impfstoffAktivStatus) | transloco }}
+                  </button>
+                  <button ngbDropdownItem (click)="removeItem(item)">
+                    {{ 'global.remove' | transloco }}
+                  </button>
+                }
+              </svui-collapsible-menu>
+            </td>
+          </tr>
+        } @empty {
+          <tr svui-empty-table-message [message]="'impfstoff.list.empty' | transloco"></tr>
+        }
+      </tbody>
+    </table>
+  </svui-card>
+</feat-page>

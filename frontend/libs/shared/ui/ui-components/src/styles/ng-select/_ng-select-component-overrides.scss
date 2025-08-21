@@ -1,0 +1,354 @@
+@use '../core/base';
+@use '../core/border';
+@use '../core/color/color-set-primary';
+@use '../core/color/color-set-form';
+@use '../core/font';
+@use '../core/radius';
+@use '../core/size';
+@use '../core/spacing';
+
+
+$selected-badge-padding-x: spacing.$badge-inner-x;
+$selected-badge-gap-x-to-text: 0px;
+$selected-badge-padding-y: spacing.$badge-inner-y;
+
+
+$focus-box-shadow: 0 0 0 var(--svui-focus-ring-width) var(--svui-focus-ring-color);
+$focus-invalid-box-shadow: 0 0 0 var(--svui-focus-ring-width) rgba(var(--svui-danger-rgb), var(--svui-focus-ring-opacity));
+
+
+.ng-select.form-control {
+
+  padding: 0; // override form-control default
+
+
+  > .ng-select-container {
+    border: none; // use the one from form-control
+    box-shadow: none; // var(--svui-box-shadow-inset);
+    gap: spacing.$base;
+  }
+
+  // focus box shadow
+  .ng-input input:focus {
+    box-shadow: $focus-box-shadow;
+  }
+
+
+  // placeholder
+  > .ng-select-container .ng-value-container {
+    .ng-placeholder {
+      padding: 0;
+      margin: 0;
+      position: relative !important;
+      top: unset;
+      white-space: nowrap;
+    }
+
+    .ng-input {
+      top: unset;
+    }
+  }
+
+  &.ng-select-multiple {
+    > .ng-select-container {
+
+      // badge container
+      .ng-value-container {
+
+        padding: spacing.$text-input-inner spacing.$text-input-inner;
+        row-gap: spacing.$base;
+
+        // selected badge in multiselect
+        .ng-value {
+          border: none;
+          height: size.$badge-height;
+          border-radius: radius.$badge;
+          background-color: color-set-primary.$color;
+          color: color-set-primary.$color-contrast;
+          font-size: font.value('badge', size);
+          margin-bottom: 0;
+
+          display: flex;
+          align-items: center;
+
+          .ng-value-label {
+            padding: $selected-badge-padding-y $selected-badge-padding-x $selected-badge-padding-y $selected-badge-gap-x-to-text;
+          }
+          &.ng-value-disabled {
+            // disabled badge -> no x
+            .ng-value-label {
+              padding-left: $selected-badge-padding-x;
+            }
+          }
+        }
+
+        // empty space after the badges
+        .ng-input {
+          padding: 0;
+        }
+
+        // badge delete button
+        .ng-value-icon.left {
+          border-right: none;
+          border-top-left-radius: radius.$badge;
+          border-bottom-left-radius: radius.$badge;
+          vertical-align: middle;
+
+          display: flex;
+          align-items: center;
+
+          visibility: hidden;
+
+          &::before {
+            $select-badge-clear-size: 12px;
+            $select-badge-clear-bg-size: 16px;
+            content: '';
+            //noinspection CssUnknownTarget
+            background-image: url('/icons/ngselect/heroXMarkSolid_white.svg');
+            width: $select-badge-clear-size;
+            height: $select-badge-clear-size;
+            background-size: $select-badge-clear-bg-size $select-badge-clear-bg-size;
+            background-position: center;
+            display: inline-block;
+
+            visibility: visible;
+            opacity: 0.8;
+          }
+
+          padding: 0 0 0 $selected-badge-padding-x;
+
+          &:hover {
+            background-color: transparent;
+            transform: scale(1.2);
+          }
+        }
+      }
+    }
+
+
+    // optional in multiselect: choose if you want the selected values (badges) to wrap or be overflow hidden
+    &.badges-nowrap {
+
+      > .ng-select-container {
+
+        // badge container
+        .ng-value-container {
+          // nowrap
+          flex-wrap: nowrap !important;
+          overflow: hidden;
+          flex-shrink: 1;
+
+        }
+      }
+    }
+  }
+
+
+  // input field when the dropdown is open: do not set border radius to 0
+  &.ng-select-opened.ng-select-bottom > .ng-select-container {
+    border-bottom-right-radius: radius.$base;
+    border-bottom-left-radius: radius.$base;
+  }
+
+  // clear button
+  .ng-clear-wrapper {
+
+    $select-value-clear-width: 12px;
+    $select-value-clear-bg-size: 16px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: $select-value-clear-width;
+
+    .ng-clear {
+      visibility: hidden;
+      font-size: unset;
+
+      &::before {
+        position: absolute;
+        visibility: visible;
+
+        content: '';
+        //noinspection CssUnknownTarget
+        background-image: url('/icons/ngselect/heroXMarkSolid_blue.svg');
+        width: $select-value-clear-width;
+        height: 100%;
+        background-size: $select-value-clear-bg-size $select-value-clear-bg-size;
+        background-position: center;
+        background-repeat: no-repeat;
+        display: inline-block;
+      }
+    }
+
+    &:hover {
+      .ng-clear {
+        // color: color-set-form.$text;
+        transform: scale(1.2);
+      }
+    }
+
+    &:focus {
+      box-shadow: $focus-box-shadow; //
+    }
+  }
+
+  // focused copied from .form-control:focus because the focus is in the dropdown-panel, not the ng-select.form-control
+  &.ng-select-focused:not(.is-invalid) {
+    color: var(--svui-body-color);
+    background-color: #ffffff;
+    border-color: #9399a6;
+    outline: 0;
+    box-shadow: $focus-box-shadow;
+  }
+
+  // focused copied from .form-control because the focus is in the dropdown-panel, not the ng-select.form-control
+  &.ng-select-focused.is-invalid {
+    border-color: var(--svui-form-invalid-border-color);
+    box-shadow: $focus-invalid-box-shadow;
+  }
+
+  &.ng-select-focused:not(.ng-select-opened) > .ng-select-container {
+    box-shadow: none; // to remove the default inset shadow
+  }
+
+
+  // arrow
+  .ng-arrow-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .ng-arrow {
+      visibility: hidden;
+      border: none;
+      display: flex;
+      align-items: center;
+      width: unset;
+      height: unset;
+
+      &::before {
+        visibility: visible;
+
+        $select-arrow-down-bg-size: 20px;
+        $select-arrow-down-size: 16px;
+
+        content: '';
+        //noinspection CssUnknownTarget
+        background-image: url('/icons/ngselect/heroChevronDownSolid.svg');
+        width: $select-arrow-down-size;
+        height: $select-arrow-down-size;
+        background-size: $select-arrow-down-bg-size $select-arrow-down-bg-size;
+        background-position: center;
+      }
+    }
+  }
+
+  &.ng-select-opened {
+    .ng-arrow-wrapper .ng-arrow {
+      &::before {
+        rotate: -180deg;
+      }
+    }
+  }
+
+
+  // disabled
+  &.ng-select-disabled {
+
+    // input
+    & > .ng-select-container {
+
+      background: color-set-form.$background-disabled;
+      color: color-set-form.$text-disabled;
+
+      .ng-value-container {
+
+
+        // placeholder
+        .ng-placeholder {
+          display: none;
+        }
+      }
+    }
+
+    // disabled badge
+    &.ng-select-multiple > .ng-select-container .ng-value-container .ng-value {
+      background-color: color-set-form.$text-inactive;
+
+      .ng-value-label {
+        padding-left: $selected-badge-padding-x; // (no delete icon)
+      }
+    }
+
+  }
+
+
+}
+
+
+// dropdown
+.ng-dropdown-panel {
+
+  min-width: 15rem !important;
+  z-index: 9999 !important;
+
+  .ng-dropdown-panel-items {
+
+    // option
+    .ng-option {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: border.$default;
+      padding: spacing.$card-inner;
+      transition: all .4s;
+
+      // selected
+      &.ng-option-selected,
+      &.ng-option-selected.ng-option-marked {
+
+        display: flex;
+
+        &:after {
+          // checkmark icon svg from Figma
+          //noinspection CssUnknownTarget
+          content: url('/icons/ngselect/heroCheckSolid.svg');
+          width: 20px;
+          height: 20px;
+          display: inline-block;
+          color: color-set-primary.$color;
+        }
+
+        .ng-option-label {
+          font-weight: unset;
+        }
+      }
+
+      // hover (selected and unselected)
+      &.ng-option-marked,
+      &.ng-option-selected.ng-option-marked {
+        background-color: color-set-form.$marked-option-bg;
+      }
+
+
+      // disabled: Achtung: auch "loading", "not found", "bitte mehr als 2 Buchstaben" werden als disabled option angezeigt (beim Typeahead)
+      &.ng-option-disabled {
+        color: color-set-form.$text-disabled;
+
+        // wrap, sonst kann man nicht lesen, dass man mehr als 2 Buchstaben eingeben soll
+        white-space: wrap;
+
+        // kein pointer
+        cursor: inherit;
+      }
+    }
+  }
+
+  overflow: hidden; // because of border radius
+  border-radius: radius.$base;
+  border: none;
+  box-shadow: border.$box-shadow;
+
+}

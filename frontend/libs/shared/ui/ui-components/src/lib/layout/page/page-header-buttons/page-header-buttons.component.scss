@@ -1,0 +1,7 @@
+@use '../../../../styles/core/spacing';
+
+:host {
+  display: flex;
+  gap: spacing.$summary-gap-x;
+  align-items: center;
+}

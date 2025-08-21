@@ -1,0 +1,27 @@
+@if (anlassConfig()?.showTabHoeren) {
+  <div>
+    @if (canEdit()) {
+      <svui-card-in-card class="mb-3">
+        <div style="display: flex; justify-content: end;">
+          <button
+            class="nav-link"
+            (click)="loadDefaults()">
+            <svui-icon [useCase]="'edit'"></svui-icon>
+            {{ 'untersuchung.tab.sehen.defaultwerte' | transloco }}
+          </button>
+        </div>
+      </svui-card-in-card>
+    }
+
+    @if (anlassConfig()?.showTabHoerenAudiogramm) {
+      <svui-card-in-card class="mb-3">
+        <feat-untersuchung-hoeren-audiogramm/>
+      </svui-card-in-card>
+    }
+    @if (anlassConfig()?.showTabHoerenOtoskopie) {
+      <svui-card-in-card class="mb-3">
+        <feat-untersuchung-hoeren-otoskopie/>
+      </svui-card-in-card>
+    }
+  </div>
+}

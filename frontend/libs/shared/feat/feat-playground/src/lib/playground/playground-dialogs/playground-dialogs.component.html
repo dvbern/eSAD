@@ -1,0 +1,33 @@
+<svui-card-collapsible heading="Collapsible Card" initialState="open">
+  Content
+  <hr/>
+  mehr content
+</svui-card-collapsible>
+
+<svui-card>
+  <h2 svuiHeading="card">Dialogs</h2>
+
+  <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+
+    <button svuiButton="primary" type="button" (click)="showConfirm()">Confirm</button>
+
+    <button svuiButton="primary" type="button" (click)="showEditDialog()">Edit</button>
+    <button svuiButton="tertiary" type="button" (click)="resetForm()">reset</button>
+  </div>
+</svui-card>
+
+
+<ng-template #editFormTemplate>
+
+  <form svuiFormLayout [formGroup]="editForm.group" [mode]="DetailMode.EDIT">
+    <svui-form-control label="Text" tooltip="Hallo Tooltip"
+                       [viewValue]="editForm.controlAt('text1').value">
+      <input svuiTextInput value="text" [formControl]="editForm.controlAt('text1')"/>
+    </svui-form-control>
+    <svui-form-control label="Text2" tooltip="Hallo Tooltip2"
+                       [viewValue]="editForm.controlAt('text2').value">
+      <input svuiTextInput value="text" [formControl]="editForm.controlAt('text2')"/>
+    </svui-form-control>
+  </form>
+
+</ng-template>

@@ -1,0 +1,20 @@
+// Default Color Set
+
+@use './definition/color-definition';
+
+$purple: color-definition.$alternative-lila;
+$blue: color-definition.$blue-200;
+$orange: color-definition.$alternative-orange;
+$lightgreen: color-definition.$alternative-limegreen;
+$green: color-definition.$alternative-green;
+$red: color-definition.$red-300;
+$transparent: transparent;
+
+$purple-text: color-definition.$text-on-dark;
+$blue-text: color-definition.$text-on-dark;
+$orange-text: color-definition.$text-on-bright;
+$lightgreen-text: color-definition.$text-on-bright;
+$green-text: color-definition.$text-on-dark;
+$red-text: color-definition.$text-on-dark;
+$transparent-text: color-definition.$text-transparent;
+

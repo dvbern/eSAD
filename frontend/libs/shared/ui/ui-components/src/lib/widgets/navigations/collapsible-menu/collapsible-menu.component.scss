@@ -1,0 +1,61 @@
+@use '../../../../styles/core/size';
+@use '../../../../styles/core/font';
+@use '../../../../styles/core/color/color-set-navigation-dropdown';
+
+$-weight-bold: font.value('S4', weight);
+
+:host {
+  display: inline-block;
+
+  ::ng-deep {
+
+    .dropdown-toggle {
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+    }
+
+    // ICON dropdown
+    .dropdown-toggle.svui_icon-button {
+
+
+      &::after {
+        display: none; // remove bootstrap triangle
+
+      }
+
+    }
+
+    // Text dropdown
+    .dropdown-toggle.nav-link {
+
+      font-weight: $-weight-bold;
+      color: color-set-navigation-dropdown.$text;
+
+      &::after {
+        border: none; // replace bootstrap triangle
+
+        content: "";
+        color: var(--svui-nav-link-color);
+        background-image: url(/icons/ng-bootstrap-dropdown/heroChevronDownSolid_blue.svg);
+        width: 16px;
+        height: 16px;
+        margin-left: 8px;
+        background-size: 20px 20px;
+        background-position: center;
+        background-repeat: no-repeat;
+
+      }
+    }
+
+    &.show {
+      .dropdown-toggle::after {
+        rotate: 180deg;
+      }
+
+    }
+
+  }
+}

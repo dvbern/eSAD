@@ -1,0 +1,143 @@
+<!--
+  ~ Copyright (C) 2025 DV Bern AG, Switzerland
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+@let pageTitle = this.aerzteStore.selectedIsNew() ? 'aerzte.detail.page.title.create' : 'aerzte.detail.page.title';
+<feat-page [heading]="pageTitle | transloco : {
+        name: aerzteStore.selectedEntity()?.data?.name,
+        vorname:  aerzteStore.selectedEntity()?.data?.vorname,
+      }"
+		   [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN + '/' + Path.AERZTE}"
+>
+	<svui-card>
+		@if (aerzteStore.loader.isLoading()) {
+			<div>{{ 'global.loading' | transloco }}</div>
+		} @else {
+			<form svuiFormLayout
+				  [mode]="aerzteStore.detailMode()"
+				  [formGroup]="form.group"
+				  (ngSubmit)="submitIfValid()">
+
+				<!-- ANREDE -->
+				<svui-form-control [label]="'arzt.anrede' | transloco"
+								   [viewValue]="form.group.value.anrede">
+					<input svuiTextInput [formControl]="form.group.controls.anrede"/>
+				</svui-form-control>
+
+				<!-- NAME -->
+				<svui-form-control [label]="'arzt.name' | transloco"
+								   [viewValue]="form.group.value.name">
+					<input svuiTextInput [formControl]="form.group.controls.name"/>
+				</svui-form-control>
+
+				<!-- VORNAME -->
+				<svui-form-control [label]="'arzt.vorname' | transloco"
+								   [viewValue]="form.group.value.vorname">
+					<input svuiTextInput [formControl]="form.group.controls.vorname"/>
+				</svui-form-control>
+
+				<!-- FACHRICHTUNG -->
+				<svui-form-control label="{{ 'arzt.fachrichtung' | transloco }}"
+								   [viewValue]="form.group.controls.fachrichtung.value ? (('Fachrichtung.' + form.group.controls.fachrichtung.value) | transloco) : null">
+					<ng-select
+							svuiNgSelect
+							bindLabel='dummy'
+							appendTo="body"
+							[formControl]="form.group.controls.fachrichtung"
+							[placeholder]="'global.select.bitte-auswaehlen' | transloco"
+					>
+						@for (fachrichtung of fachrichtungen; track fachrichtung) {
+							<ng-option [value]="fachrichtung">
+								{{ 'Fachrichtung.' + fachrichtung | transloco }}
+							</ng-option>
+						}
+					</ng-select>
+				</svui-form-control>
+
+				<!-- ORGANISATION -->
+				<svui-form-control label="{{ 'arzt.organisation' | transloco }}"
+								   [viewValue]="form.group.controls.organisation.value ? (('Organisation.' + form.group.controls.organisation.value) | transloco) : null">
+					<ng-select
+							svuiNgSelect
+							bindLabel='dummy'
+							appendTo="body"
+							[formControl]="form.group.controls.organisation"
+							[placeholder]="'global.select.bitte-auswaehlen' | transloco"
+					>
+						@for (organisation of organsisationen; track organisation) {
+							<ng-option [value]="organisation">
+								{{ 'Organisation.' + organisation | transloco }}
+							</ng-option>
+						}
+					</ng-select>
+				</svui-form-control>
+
+				<!-- HPVTEILNAHME -->
+				<svui-form-control label="{{ 'arzt.hpvTeilnahme' | transloco }}"
+								   [viewValue]="form.group.controls.hpvTeilnahme.value ? (('HpvTeilnahme.' + form.group.controls.hpvTeilnahme.value) | transloco) : null">
+					<ng-select
+							svuiNgSelect
+							bindLabel='dummy'
+							appendTo="body"
+							[formControl]="form.group.controls.hpvTeilnahme"
+							[placeholder]="'global.select.bitte-auswaehlen' | transloco"
+					>
+						@for (hpvTeilnahme of hpvTeilnahmen; track hpvTeilnahme) {
+							<ng-option [value]="hpvTeilnahme">
+								{{ 'HpvTeilnahme.' + hpvTeilnahme | transloco }}
+							</ng-option>
+						}
+					</ng-select>
+				</svui-form-control>
+
+				<!-- TELEFON -->
+				<svui-form-control [label]="'arzt.telefon' | transloco"
+								   [viewValue]="form.group.value.telefon">
+					<input svuiTextInput [formControl]="form.group.controls.telefon"/>
+				</svui-form-control>
+
+				<!-- EMAIL -->
+				<svui-form-control [label]="'arzt.email' | transloco"
+								   [viewValue]="form.group.value.email">
+					<input svuiTextInput [formControl]="form.group.controls.email"/>
+				</svui-form-control>
+
+				<!-- BEMERKUNGEN -->
+				<svui-form-control [label]="'arzt.bemerkungen' | transloco"
+								   [viewValue]="form.group.value.bemerkungen">
+					<textarea svuiTextarea [formControl]="form.group.controls.bemerkungen"></textarea>
+				</svui-form-control>
+
+				<!-- ADRESSE -->
+				<h2 svuiHeading="formSection">{{ 'adresse.title' | transloco }}</h2>
+				<feat-adresse svuiFormFullWidth
+							  [form]="form.adresseForm"
+							  [mode]="aerzteStore.detailMode()"
+							  [isEscadaObject]="false"/>
+
+				<!-- BUTTONS -->
+				<svui-form-buttons
+						[mode]="aerzteStore.detailMode()"
+						[isCreate]="aerzteStore.selectedIsNew()"
+						[saving]="aerzteStore.saveLoader.isLoading()"
+						[canEdit]="canEditList()"
+						routeToEdit="../edit"
+						[routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+						[routeOnCancelCreate]="[Path.RELATIVE_ONE_UP]"/>
+			</form>
+		}
+	</svui-card>
+</feat-page>

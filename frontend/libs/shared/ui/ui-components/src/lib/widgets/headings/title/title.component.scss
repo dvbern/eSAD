@@ -1,0 +1,26 @@
+// FIXME(zusa) replace this component with heading directive
+
+:host {
+  display: block;
+
+  > * {
+    display: flex;
+    align-content: center;
+  }
+
+  ::ng-deep {
+    svui-icon-with-tooltip {
+      margin-left: 0.5rem;
+    }
+  }
+}
+
+.svui_heading {
+  &--form {
+    margin-bottom: 0;
+  }
+
+  &__spinner {
+    margin-left: 1rem;
+  }
+}

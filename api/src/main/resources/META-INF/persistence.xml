@@ -1,0 +1,21 @@
+<persistence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="https://jakarta.ee/xml/ns/persistence"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+             version="3.0">
+
+  <persistence-unit name="LiquibasePU" transaction-type="RESOURCE_LOCAL">
+
+    <description>Only used for liquibase:diff</description>
+
+    <properties>
+      <property name="hibernate.search.enabled" value="false"/>
+      <property name="hibernate.physical_naming_strategy"
+                value="ch.dvbern.dvbstarter.infrastructure.liquibase.LiquibaseQuarkusCompatiblePhysicalNamingStrategy"/>
+
+      <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+      <property name="jakarta.persistence.schema-generation.database.action" value="none"/>
+      <property name="jakarta.persistence.validation.mode" value="NONE"/>
+    </properties>
+
+  </persistence-unit>
+</persistence>

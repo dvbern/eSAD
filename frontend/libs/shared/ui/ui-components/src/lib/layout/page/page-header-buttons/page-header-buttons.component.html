@@ -1,0 +1,24 @@
+<!-- additional content -->
+<ng-content/>
+
+<!-- reset filter -->
+@if (activeFilterCount()) {
+  <button svuiButton="tertiary"
+          type="button"
+          (click)="resetFilter.emit()"
+  >
+    <span>{{ 'global.reset-filter' | transloco }} ({{ activeFilterCount() }})</span>
+  </button>
+}
+
+<!-- filter popup -->
+@if (showFilterPopup()) {
+  <button svuiIconOnlyButton="primary"
+          type="button"
+          [tooltip]="'global.tooltip.open-filter-popup' | transloco"
+          [icon]="'filter'"
+          [badgeContent]="activeErweiterteFilterCount()"
+          (click)="filter.emit()">
+
+  </button>
+}

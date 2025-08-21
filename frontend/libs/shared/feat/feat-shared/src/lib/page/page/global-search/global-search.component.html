@@ -1,0 +1,9 @@
+<!-- SUCHE -->
+<feat-kind-search
+  styleVariant="rounded"
+  style="display: block; min-width: 250px"
+  [clearable]="false"
+  (selected)="navigateToKind($event)"
+  [myFormControl]="form.controls.globalSearch"
+  [placeholder]="'shared.header.globalsearch.placeholder' | transloco"
+/>

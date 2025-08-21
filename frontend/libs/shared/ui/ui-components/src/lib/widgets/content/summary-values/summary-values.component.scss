@@ -1,0 +1,16 @@
+@use '../../../../styles/core/color/color-set-default' as color;
+@use '../../../../styles/core/font';
+@use '../../../../styles/core/spacing';
+
+
+:host {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto 1fr;
+  gap: spacing.$base spacing.$double;
+  grid-auto-flow: row;
+}
+
+svui-icon {
+  color: color.$text-secondary;;
+}

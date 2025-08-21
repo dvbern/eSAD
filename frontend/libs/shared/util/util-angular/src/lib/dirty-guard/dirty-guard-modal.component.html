@@ -1,0 +1,21 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h2 class="modal-title">{{ 'global.unconfirmed.changes.question' | transloco }}</h2>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.close(false)"></button>
+  </div>
+  <div class="modal-body">
+    <p>{{ 'global.unconfirmed.changes.consquence' | transloco }}</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button"
+            class="btn btn-secondary"
+            data-testid="back"
+            (click)="activeModal.close(false)">{{ 'global.unconfirmed.changes.stay' | transloco }}
+    </button>
+    <button type="button"
+            class="btn btn-primary"
+            data-testid="continue"
+            (click)="activeModal.close(true)">{{ 'global.unconfirmed.changes.leave' | transloco }}
+    </button>
+  </div>
+</div>

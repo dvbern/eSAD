@@ -1,0 +1,280 @@
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabUntersuchung) {
+
+  @if (this.anlassStore.canUserEditAnlassInCurrentState() && !!this.store.defaultArztInitial()) {
+    <svui-card-in-card>
+      <div style="display: flex; justify-content: end;">
+        <button
+          class="nav-link"
+          (click)="loadDefault()">
+          <svui-icon [useCase]="'edit'"></svui-icon>
+          {{ 'untersuchung.tab.sehen.defaultwerte' | transloco }}
+        </button>
+      </div>
+    </svui-card-in-card>
+  }
+
+  <form svuiFormLayout
+        [formType]="'kacheln'"
+        [mode]="'edit'"
+        [formGroup]="form.group"
+        (ngSubmit)="submitIfValid()">
+
+    <!-- Bewegungsapparat-->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.untersuchungBewegungsapparat !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.bewegungsapparat' | transloco">
+        @for (bewegungsapparat of getBewegungsapparatArray().controls; track $index) {
+          <svui-kachel-control [label]="'Bewegungsapparat.' + bewegungsapparat.controls.resultat.value | transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="bewegungsapparat"
+                   [formControl]="bewegungsapparat.controls.isChecked"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+      @if (form.isBewegungsapparatAnderesChecked()) {
+        <svui-form-control
+          [label]="'untersuchung.tab.arzt.bewegungsapparat.andere' | transloco"
+          [viewValue]="''">
+          <textarea svuiTextarea [formControl]="form.group.controls.bewegungsapparatBemerkung"></textarea>
+        </svui-form-control>
+      }
+    }
+
+    <!-- Einbeinstand -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.untersuchungEinbeinstand !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.einbeinstand' | transloco">
+        @for (each of einbeinstandItems; track each) {
+          <svui-kachel-control [label]="'Einbeinstand.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="einbeinstand"
+                   [formControl]="form.group.controls.einbeinstand"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+      @if (form.isEinbeinstandAnderesChecked()) {
+        <svui-form-control
+          [label]="'untersuchung.tab.arzt.einbeinstand.bemerkung' | transloco"
+          [viewValue]="''">
+          <textarea svuiTextarea [formControl]="form.group.controls.einbeinstandBemerkung"></textarea>
+        </svui-form-control>
+      }
+    }
+
+    <!-- Einbeinhuepfen-->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.untersuchungEinbeinhuepfen !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.einbeinhuepfen' | transloco">
+        @for (each of einbeinstandItems; track each) {
+          <svui-kachel-control [label]="'Einbeinhuepfen.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="einbeinhuepfen"
+                   [formControl]="form.group.controls.einbeinhuepfen"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+      @if (form.isEinbeinhuepfenAnderesChecked()) {
+        <svui-form-control
+          [label]="'untersuchung.tab.arzt.einbeinhuepfen.bemerkung' | transloco"
+          [viewValue]="''">
+          <textarea svuiTextarea [formControl]="form.group.controls.einbeinhuepfenBemerkung"></textarea>
+        </svui-form-control>
+      }
+    }
+
+    <!-- Fingeropposition -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.untersuchungFingeropposition !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.fingeropposition' | transloco">
+        @for (fingeropposition of getFingeroppositionArray().controls; track $index) {
+          <svui-kachel-control [label]="'Fingeropposition.' + fingeropposition.controls.resultat.value | transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="fingeropposition"
+                   [formControl]="fingeropposition.controls.isChecked"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+      @if (form.isFingeroppositionAnderesChecked()) {
+        <svui-form-control
+          [label]="'untersuchung.tab.arzt.fingeropposition.andere' | transloco"
+          [viewValue]="''">
+          <textarea svuiTextarea [formControl]="form.group.controls.fingeroppositionBemerkung"></textarea>
+        </svui-form-control>
+      }
+    }
+
+    <!--    Motorik-->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.untersuchungMotorik !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.motorik' | transloco">
+        @for (each of motorikItems; track each) {
+          <svui-kachel-control [label]="'Motorik.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="motorik"
+                   [formControl]="form.group.controls.motorik"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!--   Sprachfaehigkeit-->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.untersuchungSprache !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.sprache' | transloco">
+        @for (sprachfaehigkeit of getSprachfaehigkeitArray().controls; track $index) {
+          <svui-kachel-control [label]="'Sprachfaehigkeit.' + sprachfaehigkeit.controls.resultat.value | transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="sprachfaehigkeit"
+                   [formControl]="sprachfaehigkeit.controls.isChecked"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+      @if (form.isSprachfaehigkeitAnderesOrArtikulationsfehlerChecked()) {
+        <svui-form-control
+          [label]="'untersuchung.tab.arzt.sprache.andere' | transloco"
+          [viewValue]="''">
+          <textarea svuiTextarea [formControl]="form.group.controls.sprachfaehigkeitBemerkung"></textarea>
+        </svui-form-control>
+      }
+    }
+
+    <!-- Mund und Zähne -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.untersuchungMundZaehne !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.mundAndZaehne' | transloco">
+        @for (mundAndZaehne of getMundAndZaehneArray().controls; track $index) {
+          <svui-kachel-control [label]="'MundAndZaehne.' + mundAndZaehne.controls.resultat.value | transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="mundAndZaehne"
+                   [formControl]="mundAndZaehne.controls.isChecked"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+      @if (form.isMundAndZaehneAnderesChecked()) {
+        <svui-form-control
+          [label]="'untersuchung.tab.arzt.mundAndZaehne.bemerkung' | transloco"
+          [viewValue]="''">
+          <textarea svuiTextarea [formControl]="form.group.controls.mundAndZaehneBemerkung"></textarea>
+        </svui-form-control>
+      }
+    }
+
+    <!--    Haut-->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.untersuchungHaut !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.haut' | transloco">
+        @for (each of hautItems; track each) {
+          <svui-kachel-control [label]="'Haut.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="haut"
+                   [formControl]="form.group.controls.haut"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+      @if (form.isHautAnderesChecked()) {
+        <svui-form-control
+          [label]="'untersuchung.tab.arzt.haut.bemerkung' | transloco"
+          [viewValue]="''">
+          <textarea svuiTextarea [formControl]="form.group.controls.hautBemerkung"></textarea>
+        </svui-form-control>
+      }
+    }
+
+    <!-- Herzauskultation-->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.untersuchungHerz !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.herz' | transloco">
+        @for (each of herzauskultationItems; track each) {
+          <svui-kachel-control [label]="'Herzauskultation.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="herz"
+                   [formControl]="form.group.controls.herzauskultation"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+      @if (form.isHerzauskultationAnderesChecked()) {
+        <svui-form-control
+          [label]="'untersuchung.tab.arzt.herz.bemerkung' | transloco"
+          [viewValue]="''">
+          <textarea svuiTextarea [formControl]="form.group.controls.herzauskultationBemerkung"></textarea>
+        </svui-form-control>
+      }
+    }
+
+
+    <!-- Blutdruck-->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.untersuchungBlutdruck !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.blutdruck' | transloco">
+        @for (each of blutdruckItems; track each) {
+          <svui-kachel-control [label]="'Blutdruck.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="blutdruck"
+                   [formControl]="form.group.controls.blutdruck"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+        <div class="linksrechts_wrapper">
+          <svui-form-control
+            class="linksrechts"
+            [label]="'untersuchung.tab.arzt.blutdruck.systolisch' | transloco"
+            [viewValue]="''">
+            <input svuiTextInput="number" [formControl]="form.group.controls.blutdruckSystolisch"/>
+            <span class="fs-6"
+                  control-message>{{ 'untersuchung.tab.arzt.blutdruck.blutdruck.einheit' | transloco }}</span>
+          </svui-form-control>
+          <svui-form-control
+            class="linksrechts"
+            [label]="'untersuchung.tab.arzt.blutdruck.diastolisch' | transloco"
+            [viewValue]="''">
+            <input svuiTextInput="number" [formControl]="form.group.controls.blutdruckDiastolisch"/>
+            <span class="fs-6"
+                  control-message>{{ 'untersuchung.tab.arzt.blutdruck.blutdruck.einheit' | transloco }}</span>
+          </svui-form-control>
+        </div>
+      </svui-kachel-form-section>
+    }
+
+    <!--    Verhalten-->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.untersuchungVerhalten !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.verhalten' | transloco">
+        @for (each of verhaltenItems; track each) {
+          <svui-kachel-control [label]="'Verhalten.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="verhalten"
+                   [formControl]="form.group.controls.verhalten"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+
+    <!-- Bemerkung -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.untersuchungBemerkungen !== RequirementSetting.NOT_VISIBLE) {
+      <svui-title [context]="'formSection'"
+                  class="mb-3">{{ 'untersuchung.tab.arzt.bemerkung' | transloco }}
+      </svui-title>
+      <svui-form-control
+        [label]="'untersuchung.tab.arzt.bemerkung' | transloco"
+        [topLabelVisibility]="'hidden'"
+        [viewValue]="form.group.controls.bemerkungen.value">
+        <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="150"></textarea>
+      </svui-form-control>
+    }
+
+    <!-- Save / Cancel Buttons -->
+    @if (canEdit()) {
+      <svui-save-cancel-buttons
+        [saving]="false"
+        [canEdit]="true"
+        (cancelClicked)="abbrechen()"/>
+    }
+  </form>
+}

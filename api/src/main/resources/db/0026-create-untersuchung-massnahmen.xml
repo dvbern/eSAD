@@ -1,0 +1,180 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="1745416472910-1">
+    <createTable tableName="untersuchungmassnahmen">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungmassnahmenPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="anderes" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="anderesbemerkung" type="VARCHAR(255)"/>
+      <column name="bemerkungen" type="VARCHAR(255)"/>
+      <column name="beratungmpa" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bereitsbehandeltanderes" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bereitsbehandeltanderesbemerkung" type="VARCHAR(255)"/>
+      <column name="bereitsbehandeltgroessegewicht" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bereitsbehandelthoeren" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bereitsbehandeltmotorik" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bereitsbehandeltsehen" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bereitsbehandeltsprache" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="informationeltern" type="VARCHAR(30)"/>
+      <column name="keinemassnahmen" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="nachkontrolleanderes" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="nachkontrollegroessegewicht" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="nachkontrollehoeren" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="nachkontrollemotorik" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="nachkontrollesehen" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="nachkontrollesprache" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ueberweisungaugenarzt" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ueberweisunghausarzt" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1745416472910-2">
+    <createTable tableName="untersuchungmassnahmen_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="anderes" type="BOOLEAN"/>
+      <column name="anderesbemerkung" type="VARCHAR(255)"/>
+      <column name="bemerkungen" type="VARCHAR(255)"/>
+      <column name="beratungmpa" type="BOOLEAN"/>
+      <column name="bereitsbehandeltanderes" type="BOOLEAN"/>
+      <column name="bereitsbehandeltanderesbemerkung" type="VARCHAR(255)"/>
+      <column name="bereitsbehandeltgroessegewicht" type="BOOLEAN"/>
+      <column name="bereitsbehandelthoeren" type="BOOLEAN"/>
+      <column name="bereitsbehandeltmotorik" type="BOOLEAN"/>
+      <column name="bereitsbehandeltsehen" type="BOOLEAN"/>
+      <column name="bereitsbehandeltsprache" type="BOOLEAN"/>
+      <column name="informationeltern" type="VARCHAR(30)"/>
+      <column name="keinemassnahmen" type="BOOLEAN"/>
+      <column name="ueberweisungaugenarzt" type="BOOLEAN"/>
+      <column name="ueberweisunghausarzt" type="BOOLEAN"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1745416472910-3">
+    <createTable tableName="untersuchungmassnahmen_infomaterial">
+      <column name="untersuchungmassnahmen_id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungmassnahmen_infomaterialPK"/>
+      </column>
+      <column name="informaterial_id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungmassnahmen_infomaterialPK"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1745416472910-4">
+    <createTable tableName="untersuchungmassnahmen_infomaterial_aud">
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungmassnahmen_infomaterial_audPK"/>
+      </column>
+      <column name="untersuchungmassnahmen_id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungmassnahmen_infomaterial_audPK"/>
+      </column>
+      <column name="informaterial_id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungmassnahmen_infomaterial_audPK"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1745416472910-5">
+    <addColumn tableName="untersuchung">
+      <column name="untersuchungmassnahmen_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1745416472910-6">
+    <addColumn tableName="untersuchung_aud">
+      <column name="untersuchungmassnahmen_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1745416472910-7">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungmassnahmen_audPK" tableName="untersuchungmassnahmen_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1745416472910-8">
+    <addUniqueConstraint columnNames="untersuchungmassnahmen_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGMASSNAHMEN_ID_COL" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1745416472910-9">
+    <createIndex indexName="ix_untersuchung_untersuchungmassnahmen" tableName="untersuchung">
+      <column name="untersuchungmassnahmen_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1745416472910-10">
+    <createIndex indexName="ix_untersuchungmassnahmen_infomaterial_infomaterial" tableName="untersuchungmassnahmen_infomaterial">
+      <column name="informaterial_id"/>
+      <column name="untersuchungmassnahmen_id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1745416472910-11">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungmassnahmen_aud" constraintName="FK3h7dht15harh0ksj5h129e401" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1745416472910-12">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungmassnahmen_infomaterial_aud" constraintName="FK6ivgwje1by0h81o16h81d8rh2" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1745416472910-13">
+    <addForeignKeyConstraint baseColumnNames="untersuchungmassnahmen_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchungmassnahmen" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungmassnahmen" validate="true"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1745416472910-14">
+    <addForeignKeyConstraint baseColumnNames="informaterial_id" baseTableName="untersuchungmassnahmen_infomaterial" constraintName="fk_untersuchungmassnahmen_infomaterial_infomaterial" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="infomaterial" validate="true"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1745416472910-15">
+    <addForeignKeyConstraint baseColumnNames="untersuchungmassnahmen_id" baseTableName="untersuchungmassnahmen_infomaterial" constraintName="fk_untersuchungmassnahmen_infomaterial_untersuchungmassnahmen" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungmassnahmen" validate="true"/>
+  </changeSet>
+</databaseChangeLog>

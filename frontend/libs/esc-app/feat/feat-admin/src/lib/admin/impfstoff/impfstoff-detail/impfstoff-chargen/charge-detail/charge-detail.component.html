@@ -1,0 +1,38 @@
+<form [formGroup]="form.group" (ngSubmit)="submitIfValid()" svuiFormLayout [mode]="'edit'">
+
+  <!--Name-->
+  <svui-form-control [label]="'charge.name' | transloco" [viewValue]="form.group.controls.name.value">
+    <input svuiTextInput [formControl]="form.group.controls.name"/>
+  </svui-form-control>
+
+  <!--Aktiv-->
+  <svui-form-group [label]="'charge.aktiv.label' | transloco"
+                   direction="horizontal"
+                   [viewValue]="''">
+    <svui-single-radio-wrapper [label]="'global.ja' | transloco">
+      <input svuiRadio
+             type="radio"
+             name="aktiv"
+             [formControl]="form.group.controls.aktiv"
+             [value]="true"/>
+    </svui-single-radio-wrapper>
+    <svui-single-radio-wrapper [label]="'global.nein' | transloco">
+      <input svuiRadio
+             type="radio"
+             name="aktiv"
+             [formControl]="form.group.controls.aktiv"
+             [value]="false"/>
+    </svui-single-radio-wrapper>
+  </svui-form-group>
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="store.detailMode()"
+    [isCreate]="store.selectedIsNew()"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="true"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+    [routeOnCancelCreate]="[Path.RELATIVE_ONE_UP, 'all']"
+  />
+</form>

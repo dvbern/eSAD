@@ -1,0 +1,18 @@
+@use '../../../../../../../../shared/ui/ui-components/src/styles/core/color/color-set-default' as color;
+@use '../../../../../../../../shared/ui/ui-components/src/styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.triage-bemerkung-container {
+  padding-bottom: spacing.$gutter-width;
+
+  label {
+    margin-top: spacing.$base;
+  }
+
+  textarea {
+    margin-top: spacing.$half;
+  }
+}

@@ -1,0 +1,36 @@
+@use '../../../../styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.svui_table-wrapper {
+  // TODO scroll
+  //overflow-x: hidden;
+
+  &__scroll {
+    padding-bottom: spacing.$base;
+    overflow-x: auto; // horizontal scrolling
+    // attention: if dropdowns inside this wrapper are cut off, they need to be attached to body or another outside element
+  }
+
+  &__footer {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas: 'spinner pagination download';
+  }
+
+  &__spinner {
+    grid-area: spinner;
+  }
+
+  &__pagination {
+    grid-area: pagination;
+  }
+
+  &__download {
+    grid-area: download;
+    justify-self: end;
+    cursor: pointer;
+  }
+}

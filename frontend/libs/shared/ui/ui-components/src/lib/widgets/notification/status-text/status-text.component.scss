@@ -1,0 +1,76 @@
+@use '../../../../styles/core/border';
+@use '../../../../styles/core/size';
+@use '../../../../styles/core/spacing';
+@use '../../../../styles/core/radius';
+@use '../../../../styles/core/color/color-set-statustext';
+
+:host {
+  display: block;
+
+  svui-status-text + & {
+    margin-top: spacing.$base;
+  }
+
+  > .statustext__wrapper {
+    width: 100%;
+    border: border.$default;
+    border-radius: radius.$base;
+    padding: 0;
+
+
+    &.danger {
+      border-color: color-set-statustext.$danger-color;
+      background-color: color-set-statustext.$danger-bg;
+      color: color-set-statustext.$danger-color;
+
+      .icon {
+        color: color-set-statustext.$danger-icon;
+      }
+
+      &.statustext__clickable:hover {
+        background-color: color-set-statustext.$danger-bg-hover;
+      }
+    }
+
+    &.success {
+      border-color: color-set-statustext.$success-color;
+      background-color: color-set-statustext.$success-bg;
+      color: color-set-statustext.$success-color;
+
+      .icon {
+        color: color-set-statustext.$success-icon;
+      }
+
+      &.statustext__clickable:hover {
+        background-color: color-set-statustext.$success-bg-hover;
+      }
+
+    }
+
+    &.info {
+      border-color: color-set-statustext.$info-color;
+      background-color: color-set-statustext.$info-bg;
+      color: color-set-statustext.$info-color;
+
+      .icon {
+        color: color-set-statustext.$info-icon;
+      }
+
+      &.statustext__clickable:hover {
+        background-color: color-set-statustext.$info-bg-hover;
+      }
+    }
+  }
+
+  .statustext__content {
+    border-radius: radius.$base;
+
+    display: flex;
+    align-items: center;
+    gap: spacing.$base;
+
+    .icon {
+      font-size: size.$icon-big;
+    }
+  }
+}

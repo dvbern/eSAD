@@ -1,0 +1,33 @@
+<div class="main">
+  <h4 class="mainText">
+
+    <svui-table-link
+      type="text"
+      [myRouterLink]="routerlinkDestination()"
+      [myRouterQueryParams]="linkQueryParams()">
+      {{ mainText() }}
+    </svui-table-link>
+  </h4>
+  <div class="mainBadges">
+    <ng-content select="[mainBadges]"/>
+  </div>
+</div>
+
+<div class="arrow">
+  <svui-table-link
+    [myRouterLink]="routerlinkDestination()"
+    [myRouterQueryParams]="linkQueryParams()"/>
+</div>
+
+<div class="date">
+  {{ date() | date: 'dd.MM.yyyy' }}
+</div>
+
+<div class="sub">
+  <div class="subText" *ngIf="subText()">
+    {{ subText() }}
+  </div>
+  <div class="subBadges" *ngIf="!subText()">
+    <ng-content select="[subBadges]"/>
+  </div>
+</div>

@@ -1,0 +1,90 @@
+{
+  "types": {
+    "build": {
+      "description": "Changes that affect the build system or external dependencies"
+    },
+    "chore": {
+      "description": "Changes to auxiliary tools, libraries, or build process"
+    },
+    "ci": {
+      "description": "Changes to CI configuration files and scripts"
+    },
+    "docs": {
+      "description": "Documentation-only changes"
+    },
+    "feat": {
+      "description": "A new feature"
+    },
+    "fix": {
+      "description": "A bug fix"
+    },
+    "perf": {
+      "description": "Changes made to improve performance"
+    },
+    "refactor": {
+      "description": "Code refactoring that neither fixes a bug nor adds a feature"
+    },
+    "revert": {
+      "description": "Reverts a previous commit"
+    },
+    "style": {
+      "description": "Code style changes that do not affect functionality"
+    },
+    "test": {
+      "description": "Adding or updating tests"
+    }
+  },
+  "commonScopes": {
+    "admin": {
+      "description": "Scope for admin"
+    },
+    "angular": {
+      "description": "Scope for angular"
+    },
+    "auth-keycloak": {
+      "description": "Scope for auth-keycloak"
+    },
+    "backend": {
+      "description": "Scope for backend"
+    },
+    "benutzer": {
+      "description": "Scope for benutzer"
+    },
+    "buttons": {
+      "description": "Scope for buttons"
+    },
+    "components": {
+      "description": "Scope for components"
+    },
+    "core": {
+      "description": "Scope for core"
+    },
+    "das-ist-ein-name": {
+      "description": "Scope for das-ist-ein-name"
+    },
+    "deployment": {
+      "description": "Scope for deployment"
+    },
+    "generators": {
+      "description": "Scope for generators"
+    },
+    "i18n": {
+      "description": "Scope for i18n"
+    },
+    "something": {
+      "description": "Scope for something"
+    },
+    "stammdaten": {
+      "description": "Scope for stammdaten"
+    },
+    "esc-app": {
+      "description": "Scope for esc-app"
+    },
+    "test": {
+      "description": "Scope for test"
+    },
+    "types": {
+      "description": "Scope for types"
+    }
+  }
+}

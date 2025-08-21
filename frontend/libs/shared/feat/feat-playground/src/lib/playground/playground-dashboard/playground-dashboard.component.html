@@ -1,0 +1,74 @@
+<svui-dashboard>
+  <svui-list termine heading="Dashboard" [loading]="true">
+
+    <button svuiIconOnlyButton="primary"
+            type="button"
+            [tooltip]="'global.tooltip.aufgabe.hinzufügen' | transloco"
+            [icon]="'neu'"
+            listAddbutton>
+    </button>
+
+    <ng-container header>
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        placeholder="Anlass">
+        <ng-option [value]="'1'">Weihnachten</ng-option>
+      </ng-select>
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        placeholder="Maria Müller">
+      </ng-select>
+    </ng-container>
+
+
+    <div svuiListItem>...</div>
+
+  </svui-list>
+
+  <svui-list aufgaben heading="Liste" [loading]="true">
+    <button svuiIconOnlyButton="primary"
+            type="button"
+            [tooltip]="'globale.tooltip.aufgabe.neu' | transloco"
+            [icon]="'neu'"
+            listAddbutton>
+    </button>
+
+    <style>
+      li {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        column-gap: 16px;
+      }
+    </style>
+    @for (entry of list; track entry) {
+      <ul>
+        <li svuiListItem>
+          <span svuiListItemTitle> {{ entry[0] }} </span>
+          <span>{{ entry[1] }} </span>
+          <span svuiListItemSecondary>{{ entry[2] }} </span>
+          <svui-badge>{{ entry[3] }}</svui-badge>
+        </li>
+      </ul>
+    }
+
+    <ng-container footer>
+      <span>1 von 22</span>
+      <span>Mehr</span>
+    </ng-container>
+  </svui-list>
+
+  <svui-card recent>
+    <h2 svuiHeading="hidden">Kürzlich</h2>
+  </svui-card>
+
+  <svui-card kinder>
+    <svui-card-header heading="Emma Siegenthaler">
+      <svui-collapsible-menu [loading]="false" label="{{ 'global.actionmenu.tooltip' | transloco }}"/>
+    </svui-card-header>
+    <div>ID-Nr. 21 / 55 / 222 / 11</div>
+  </svui-card>
+</svui-dashboard>

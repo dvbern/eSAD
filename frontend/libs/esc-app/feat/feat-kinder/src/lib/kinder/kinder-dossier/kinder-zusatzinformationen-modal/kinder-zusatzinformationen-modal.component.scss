@@ -1,0 +1,15 @@
+@use '../../../../../../../../shared/ui/ui-components/src/styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.zusatzinformationen-bemerkung-container {
+  label {
+    margin-top: spacing.$base;
+  }
+
+  textarea {
+    margin-top: spacing.$half;
+  }
+}

@@ -1,0 +1,5 @@
+<input type="file" [accept]="accepted()" class="svui_upload__input" (change)="onFileSelected($event)" #fileUpload/>
+
+<button type="button" svuiButton="secondary" (click)="fileUpload.click()">
+  {{ labelOverride().length > 0 ? labelOverride() : ('ui.file-upload-button.add.label' | transloco) }}
+</button>

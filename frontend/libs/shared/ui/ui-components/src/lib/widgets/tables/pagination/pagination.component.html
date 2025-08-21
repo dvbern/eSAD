@@ -1,0 +1,19 @@
+@if (totalRows() !== undefined && totalRows()! > pageSize()) {
+  <ngb-pagination [page]="pageNr()" [pageSize]="pageSize()" [collectionSize]="totalRows()!" (pageChange)="onPageChange($event)">
+    <ng-template ngbPaginationFirst>
+      <svui-icon [useCase]="'first'" />
+    </ng-template>
+
+    <ng-template ngbPaginationLast>
+      <svui-icon [useCase]="'last'" />
+    </ng-template>
+
+    <ng-template ngbPaginationPrevious>
+      <svui-icon [useCase]="'previous'" />
+    </ng-template>
+
+    <ng-template ngbPaginationNext>
+      <svui-icon [useCase]="'next'" />
+    </ng-template>
+  </ngb-pagination>
+}

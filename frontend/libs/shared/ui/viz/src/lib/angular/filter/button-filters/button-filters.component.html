@@ -1,0 +1,14 @@
+<!-- filters -->
+<div class="d-flex justify-content-end buttons mb-4 flex-wrap">
+  @for (dataset of datasets; track dataset) {
+    <button
+      svuiButton="primary"
+      type="button"
+      class="mt-1 mb-1"
+      (click)="chooseDataset(dataset)">
+      {{ dataset.label }}
+    </button>
+  }
+</div>
+
+

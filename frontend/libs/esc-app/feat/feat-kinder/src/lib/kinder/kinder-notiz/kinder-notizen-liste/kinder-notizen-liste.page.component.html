@@ -1,0 +1,17 @@
+<feat-page [backLink]="{label: 'global.back' | transloco, routerLink: Path.RELATIVE_TWO_UP}"
+           [heading]="'notizen.list.page.title' | transloco: {nameKind: dossierStore.nameKind()}">
+
+  @if (canEditNotiz()) {
+    <svui-page-header-add-button
+      [addRouterLink]="Path.RELATIVE_ONE_UP + '/' + Path.CREATE"/>
+  }
+
+  <feat-notiz-list
+    (goToNotiz)="goToNotiz($event)"
+    (removeNotiz)="removeNotiz($event)"
+    [deleteLoading]="kinderNotizStore.deleteLoader.isLoading()"
+    [loading]="kinderNotizStore.loader.isLoading()"
+    [notizen]="this.kinderNotizStore.entities()"
+
+  />
+</feat-page>

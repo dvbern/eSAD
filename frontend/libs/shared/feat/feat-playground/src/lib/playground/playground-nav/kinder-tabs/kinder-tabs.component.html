@@ -1,0 +1,37 @@
+<h1 style="margin-bottom: 2rem;">SU 4.PS 2025/26 Primarschule Brunnmatt 4c</h1>
+
+<ul ngbNav class="nav-tabs">
+  <!-- Kinder-Tabs -->
+  @for (tabInfo of navStore.visibleTabs(); track tabInfo.id) {
+
+    <li ngbNavItem>
+      <a ngbNavLink [routerLink]="tabInfo.id" [routerLinkActive]="'active'" aria-current="page">
+        <span>{{ tabInfo.label }}</span>
+        <button class="btn-close ms-3 fw-light" (click)="navStore.closeTab(tabInfo.id)">&nbsp;</button>
+      </a>
+    </li>
+  }
+
+  <!-- Abstand -->
+  <li style="flex-grow: 1"></li>
+
+  <!-- Add Button -->
+  @if (navStore.invisibleTabs()?.length) {
+    <svui-collapsible-menu
+      [loading]="false"
+      [label]="'ui.kinder.tabs.add' | transloco"
+      [menuStyle]="'LINK'">
+      @for (tabInfo of navStore.invisibleTabs(); track tabInfo.id) {
+        <button
+          ngbDropdownItem
+          (click)="navStore.addTab(tabInfo)">
+          {{ tabInfo.label }}
+        </button>
+      }
+    </svui-collapsible-menu>
+  }
+</ul>
+
+
+<router-outlet></router-outlet>
+

@@ -1,0 +1,5 @@
+@if (working()) {
+  <svui-spinner class="svui_working svui_working--spinner" [working]="working()" [context]="'inline'" />
+} @else if (icon()) {
+  <svui-icon class="svui_working svui_working--icon" [useCase]="icon()!" />
+}

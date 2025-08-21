@@ -1,0 +1,9 @@
+:host {
+  display: block;
+}
+
+.svui_alert {
+  &:not(.show) {
+    display: none;
+  }
+}

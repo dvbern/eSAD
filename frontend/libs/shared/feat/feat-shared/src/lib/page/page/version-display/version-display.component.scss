@@ -1,0 +1,19 @@
+.version-container {
+  max-width: 250px;
+}
+
+.version-layout {
+  display: flex;
+}
+
+.version-label {
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  margin-right: 0.5rem;
+  color: #6c757d; // text-muted equivalent
+}
+
+.version-value {
+  font-size: 0.75rem;
+  color: #6c757d; // text-muted equivalent
+}

@@ -1,0 +1,91 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="dvbern (generated)" id="1749739761680-1">
+    <createTable tableName="anlassaktivitaethistory">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="anlassaktivitaethistoryPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="anlass_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1749739761680-2">
+    <createTable tableName="kindaktivitaethistory">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="kindaktivitaethistoryPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="kind_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1749739761680-3">
+    <createIndex indexName="ix_anlassaktivitaethistory_anlass" tableName="anlassaktivitaethistory">
+      <column name="anlass_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1749739761680-4">
+    <createIndex indexName="ix_anlassaktivitaethistory_usererstellt_timestamperstellt" tableName="anlassaktivitaethistory">
+      <column name="usererstellt"/>
+      <column name="timestamperstellt"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1749739761680-5">
+    <createIndex indexName="ix_kindaktivitaethistory_kind" tableName="kindaktivitaethistory">
+      <column name="kind_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1749739761680-6">
+    <createIndex indexName="ix_kindaktivitaethistory_usererstellt_timestamperstellt" tableName="kindaktivitaethistory">
+      <column name="usererstellt"/>
+      <column name="timestamperstellt"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1749739761680-7">
+    <addForeignKeyConstraint baseColumnNames="anlass_id" baseTableName="anlassaktivitaethistory" constraintName="fk_anlassaktivitaethistory_anlass" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="anlass" validate="true"/>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1749739761680-8">
+    <addForeignKeyConstraint baseColumnNames="kind_id" baseTableName="kindaktivitaethistory" constraintName="fk_kindaktivitaethistory_kind" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="kind" validate="true"/>
+  </changeSet>
+</databaseChangeLog>

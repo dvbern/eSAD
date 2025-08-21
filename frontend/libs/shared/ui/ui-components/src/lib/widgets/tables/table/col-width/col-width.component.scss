@@ -1,0 +1,47 @@
+
+:host {
+
+
+  // fixed widths:
+  &.width-checkbox {
+    width: 3rem;
+    min-width: 3rem; // necessary because checkbox is too small
+  }
+
+  &.width-options {
+    width: 4rem;
+  }
+
+  &.width-date {
+    width: 6rem;
+  }
+
+  &.width-timeVonBis {
+    width: 6rem;
+    min-width: 6rem; // necessary because text can wrap
+  }
+
+
+  // growing widths: no width -> available space is distributed evenly
+  &.width-text-small {
+    min-width: 6rem;
+  }
+
+  &.width-text-medium {
+    min-width: 10rem;
+  }
+
+  &.width-text-large {
+    min-width: 15rem;
+  }
+
+  &.width-select-small {
+    min-width: 6rem;
+  }
+
+  &.width-select-medium {
+    min-width: 10rem;
+  }
+
+
+}

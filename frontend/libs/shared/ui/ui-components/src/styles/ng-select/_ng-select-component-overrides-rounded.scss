@@ -1,0 +1,84 @@
+@use '../core/base';
+@use '../core/border';
+@use '../core/color/color-set-primary';
+@use '../core/color/color-set-form';
+@use '../core/font';
+@use '../core/radius';
+@use '../core/size';
+@use '../core/spacing';
+
+
+// ROUNDED STYLE OVERRIDES
+.ng-select.roundedVariant {
+
+  $padding-left: 18px;
+
+  .searchinput {
+
+    border: none;
+    border-radius: 24px;
+    height: 48px;
+    padding-left: $padding-left;
+    box-shadow: border.$box-shadow-header;
+  }
+
+
+  &.ng-select-single .ng-select-container .ng-value-container .ng-input {
+    left: $padding-left;
+  }
+
+  & {
+    background: none;
+
+
+    border: none;
+    border-radius: 24px;
+
+
+    > .ng-select-container {
+      height: 48px;
+      border-radius: 24px;
+      padding-left: 18px;
+
+      box-shadow: border.$box-shadow-header;
+
+    }
+  }
+
+  &.form-control.ng-select-opened.ng-select-bottom > .ng-select-container {
+    border-bottom-right-radius: 24px;
+    border-bottom-left-radius: 24px;
+  }
+
+  &.form-control .ng-arrow-wrapper {
+
+    width: unset;
+    padding-right: 10px;
+
+    .ng-arrow::before {
+
+
+      $select-arrow-down-bg-size: 32px;
+      $select-arrow-down-size: 36px;
+
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.0688 10.7659C15.0596 13.139 13.139 15.0596 10.7659 15.0688C9.62097 15.0965 8.52217 14.6533 7.71884 13.8407C6.88782 13.0374 6.42613 11.9201 6.45384 10.7659C6.43537 9.62097 6.89705 8.51294 7.71884 7.71884C8.51293 6.89705 9.62097 6.43537 10.7659 6.45384C11.9201 6.42614 13.0374 6.88782 13.8407 7.71884C14.6625 8.51294 15.1242 9.62097 15.1057 10.7659H15.0688ZM19.9903 18.7623C19.9996 18.4391 19.8611 18.1251 19.6302 17.8943L16.3338 14.5979C17.1187 13.4806 17.5434 12.1325 17.5342 10.7659C17.5342 9.86104 17.3587 8.96538 16.9986 8.13436C16.3246 6.5 15.0319 5.2073 13.3975 4.53324C11.717 3.82225 9.81488 3.82225 8.13436 4.53324C6.5 5.2073 5.2073 6.5 4.53324 8.13436C3.82225 9.81488 3.82225 11.717 4.53324 13.3975C5.2073 15.0319 6.5 16.3246 8.13436 16.9986C8.96538 17.3587 9.86104 17.5342 10.7659 17.5342C12.1325 17.5434 13.4714 17.1279 14.5979 16.3431L17.8943 19.6302C18.1159 19.8703 18.4298 20.0088 18.7623 19.9996C19.4363 19.9903 19.9811 19.4455 19.9903 18.7623Z' fill='%2326334d'/%3E%3C/svg%3E");
+
+      width: $select-arrow-down-size;
+      height: $select-arrow-down-size;
+      background-size: $select-arrow-down-bg-size $select-arrow-down-bg-size;
+    }
+  }
+
+  &.ng-select-opened {
+    .ng-arrow-wrapper .ng-arrow {
+      top: unset;
+
+      &::before {
+        rotate: none;
+      }
+    }
+  }
+
+
+}
+

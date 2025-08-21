@@ -1,0 +1,76 @@
+@if (store) {
+
+   <h6>TableModel</h6>
+   <pre>tableConfig: {{itemTable?.tableConfig | json}}</pre>
+   <pre>paginationConfig: {{itemTable?.pagination() | json}}</pre>
+   <pre>filteredListSize: {{itemTable?.filteredListSize() | json}}</pre>
+
+
+  <form [formGroup]="form">
+    <svui-card [innerSpacing]="'topBottom'">
+      @if (itemTable) {
+        @if (tableFilterForm) {
+          <table
+            svuiTable
+            [tableConfig]="itemTable.tableConfig"
+            [loading]="store.loader.isLoading()"
+            [totalRows]="itemTable!.filteredListSize()"
+            (pageChanged)="itemTable!.onPageChanged($event)"
+            [pagination]="itemTable!.pagination()"
+            [loadedRowCount]="store.items().length"
+          >
+            <thead>
+            <!-- SORTABLE HEADER -->
+            <tr>
+              <th
+                scope="col"
+                svuiSortable
+                [sortState]="itemTable!.findColSortDTO('name')"
+                (sort)="itemTable!.onColSort($event, 'name')"
+              >
+                Name
+              </th>
+              <th
+                scope="col"
+                svuiSortable
+                [sortState]="itemTable!.findColSortDTO('vorname')"
+                (sort)="itemTable!.onColSort($event, 'vorname')"
+              >
+                Vorname
+              </th>
+              <th></th>
+            </tr>
+            <!-- FILTERS -->
+            <tr>
+              <th scope="col">
+                <svui-table-filter [columnHeader]="'Nachname'">
+                  <input svuiTextInput value="Suchen" [formControl]="tableFilterForm.group.controls.name"/>
+                </svui-table-filter>
+              </th>
+              <th scope="col">
+                <svui-table-filter [columnHeader]="'Vorname'">
+                  <input svuiTextInput value="Suchen" [formControl]="tableFilterForm.group.controls.vorname"/>
+                </svui-table-filter>
+              </th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- BODY -->
+              @for (item of itemTable!.displayedList(); track item.name) {
+                <tr>
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.vorname }}</td>
+                  <td></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      }
+    </svui-card>
+
+
+  </form>
+
+}

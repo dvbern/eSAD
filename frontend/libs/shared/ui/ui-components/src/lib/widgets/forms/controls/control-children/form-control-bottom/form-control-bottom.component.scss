@@ -1,0 +1,9 @@
+@use '../../../../../../styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.svui_bottom--fix {
+  min-height: spacing.$form-control-message-container;
+}

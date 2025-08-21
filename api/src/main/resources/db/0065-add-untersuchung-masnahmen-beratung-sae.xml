@@ -1,0 +1,42 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="anst (generated)" id="1750775878207-1">
+    <addColumn tableName="untersuchungmassnahmen">
+      <column name="beratungschulaerztin" type="BOOLEAN">
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="anst (generated)" id="1750775878207-2">
+    <addColumn tableName="untersuchungmassnahmen_aud">
+      <column name="beratungschulaerztin" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="anst (generated)" id="1750775878207-3">
+    <addColumn tableName="anlassconfig" >
+      <column name="showmassnahmenberatungschulaerztin" type="BOOLEAN">
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="anst (generated)" id="1750775878207-4">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="showmassnahmenberatungschulaerztin" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet id="1750775878207-5" author="anst">
+    <sql>
+      UPDATE untersuchungmassnahmen SET beratungschulaerztin = false WHERE beratungschulaerztin IS NULL;
+
+      UPDATE anlassconfig SET showmassnahmenberatungschulaerztin= false WHERE showmassnahmenberatungschulaerztin IS NULL;
+
+      UPDATE anlassconfig
+      SET showmassnahmenberatungschulaerztin = true
+      WHERE anlasstyp in ('VERTRAUENSARZT', 'FREMDSPRACHEN', 'KLASSE_4', 'KLASSE_8', 'KLASSE_9') and tenant = 'BS';
+    </sql>
+  </changeSet>
+  <changeSet id="1750775878207-6" author="anst">
+    <addNotNullConstraint tableName="untersuchungmassnahmen" columnName="beratungschulaerztin"/>
+  </changeSet>
+  <changeSet id="1750775878207-7" author="anst">
+    <addNotNullConstraint tableName="anlassconfig" columnName="showmassnahmenberatungschulaerztin"/>
+  </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,13 @@
+@use '../../../../../styles/core/layout';
+@use '../../../../../styles/core/spacing';
+
+:host {
+
+  @include layout.flex(
+    $direction: row-reverse,
+    $wrap: wrap,
+    $justify-content: flex-start,
+    $row-gap: spacing.$row-gap,
+    $column-gap: spacing.$gutter-width
+  );
+}

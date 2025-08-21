@@ -1,0 +1,29 @@
+@use '../../../../../styles/core/border';
+@use '../../../../../styles/core/color/color-set-list';
+@use '../../../../../styles/core/font';
+@use '../../../../../styles/core/size';
+@use '../../../../../styles/core/spacing';
+@use '../../../../../styles/core/unit';
+
+:host {
+  display: block;
+  min-height: size.$list-item;
+  padding: spacing.$card-inner;
+  border-bottom: border.$default;
+
+  &:empty {
+    min-height: unit.px(1rem);
+    padding: 0;
+  }
+
+  // list item content directives
+  ::ng-deep .svui_list-item {
+    &__title {
+      font-weight: font.value('S4', weight);
+    }
+
+    &__secondary {
+      color: color-set-list.$text-secondary;
+    }
+  }
+}

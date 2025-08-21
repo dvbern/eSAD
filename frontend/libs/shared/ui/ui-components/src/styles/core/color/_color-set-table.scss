@@ -1,0 +1,7 @@
+// Table Color Set
+
+@use './definition/color-definition';
+
+$text: color-definition.$text;
+$background: color-definition.$background-widget;
+$border: color-definition.$border;

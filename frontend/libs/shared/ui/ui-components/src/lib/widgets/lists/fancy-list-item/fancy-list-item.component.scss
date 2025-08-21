@@ -1,0 +1,98 @@
+@use '../../../../styles/core/color/color-set-list';
+@use '../../../../styles/core/font';
+@use '../../../../styles/core/size';
+@use '../../../../styles/core/spacing';
+@use '../../../../styles/core/border';
+
+
+$fancy-list-item-date-width: 6rem;
+$fancy-list-item-arrow-width: 48px;
+$fancy-list-item-line-height: 24px;
+$fancy-list-item-padding-y: 8px;
+
+:host {
+  display: grid;
+  grid-template-columns: minmax(#{$fancy-list-item-date-width}, 0fr) minmax(0, 1fr) minmax(#{$fancy-list-item-arrow-width}, 0);
+  grid-template-areas:
+    'main main arrow'
+    'date sub arrow';
+
+  border-bottom: border.$default;
+  padding-block: $fancy-list-item-padding-y;
+
+  &.disabled {
+    background-color: color-set-list.$background-disabled;
+    color: color-set-list.$text-muted;
+
+    ::ng-deep .svui_icon-button--table-row-action {
+      color: color-set-list.$text-muted;
+    }
+
+    ::ng-deep {
+      .bg-purple,
+      .bg-blue,
+      .bg-orange,
+      .bg-red,
+      .bg-lightgreen,
+      .bg-green {
+        .badge {
+          background-color: color-set-list.$background-badge-disabled !important;
+          color: unset !important;
+        }
+      }
+    }
+  }
+
+  > .main {
+    grid-area: main;
+    margin-left: spacing.$card-inner;
+    display: flex;
+    align-items: center;
+    column-gap: spacing.$card-inner;
+    flex-wrap: nowrap;
+  }
+
+  > .arrow {
+    grid-area: arrow;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    > ::ng-deep .svui_icon-button--table-row-action {
+      height: 100%;
+    }
+  }
+
+  > .date {
+    grid-area: date;
+    margin-left: spacing.$card-inner;
+    display: flex;
+    align-items: center;
+    color: color-set-list.$text-muted;
+  }
+
+  > .sub {
+    grid-area: sub;
+    margin-left: spacing.$card-inner;
+    display: flex;
+    align-items: center;
+    line-height: $fancy-list-item-line-height;
+  }
+
+  .mainText,
+  .subText {
+    line-height: $fancy-list-item-line-height;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+
+  .mainBadges,
+  .subBadges {
+    display: flex;
+    flex-wrap: wrap;
+    overflow: hidden;
+    column-gap: spacing.$base;
+  }
+}

@@ -1,0 +1,177 @@
+<feat-page [heading]="'briefvorlagen.list.page.title' | transloco"
+           [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN}">
+  <svui-page-header-buttons [showFilterPopup]="false"/>
+
+  @if (this.canEditBriefvorlagen()) {
+    <svui-page-header-add-button [addRouterLink]="Path.CREATE"/>
+  }
+  <svui-page-header-list-summary [items]="summaryItems()"/>
+
+
+  <svui-card [innerSpacing]="'topBottom'">
+    <table
+      svuiTable
+      [loading]="store.loader.isLoading()"
+      [totalRows]="itemTable.filteredListSize()"
+      (pageChanged)="itemTable.onPageChanged($event)"
+      [pagination]="itemTable.pagination()"
+    >
+      <!-- col widths -->
+      <colgroup>
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="select-medium">
+        <col svuiColWidth colWidth="select-medium">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="options">
+      </colgroup>
+      <thead>
+      <!-- Headers for sorting -->
+      <tr>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.name')"
+          (sort)="itemTable.onColSort($event, 'data.name')"
+        >
+          {{ 'briefvorlage.name' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.type')"
+          (sort)="itemTable.onColSort($event, 'data.type')"
+        >
+          {{ 'briefvorlage.typ' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.sprache')"
+          (sort)="itemTable.onColSort($event, 'data.sprache')"
+        >
+          {{ 'briefvorlage.sprache' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('entityInfo.userErstellt')"
+          (sort)="itemTable.onColSort($event, 'entityInfo.userErstellt')"
+        >
+          {{ 'briefvorlage.erstellt-durch' | transloco }}
+        </th>
+        <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
+      </tr>
+      <!-- Headers for filtering-->
+      <tr>
+        <!-- Filter for briefvorlage name -->
+        <th scope="col">
+          <svui-table-filter
+            [columnHeader]="'briefvorlage.name' | transloco ">
+            <input svuiTextInput [formControl]="tableFilterForm.group.controls.name"/>
+          </svui-table-filter>
+        </th>
+
+        <!-- Filter for briefvorlage type -->
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'briefvorlage.typ' | transloco">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.vorlageTyp"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              @for (typ of briefvorlageOptions; track typ) {
+                <ng-option [value]="typ">
+                  {{ 'BriefvorlageTyp.' + typ | transloco }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+
+        <!-- Filter for briefvorlage sprache -->
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'briefvorlage.sprache' | transloco">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.sprache"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              @for (sprache of spracheOptions; track sprache) {
+                <ng-option [value]="sprache">
+                  {{ 'AppLanguage.' + sprache | transloco }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+
+        <!-- Filter for briefvorlage erstelltDurch -->
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'briefvorlage.erstellt-durch' | transloco">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.erstelltDurch"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+              [multiple]="true"
+              [compareWith]="compareBenutzerFn"
+            >
+              @for (benutzer of this.editBriefvorlagenBenutzerOptions(); track benutzer.id) {
+                <ng-option [value]="benutzer">
+                  {{ benutzer.fullName }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (item of itemTable.displayedList(); track item.id) {
+          <tr>
+            <td>
+              <svui-table-link
+                type="text"
+                [myRouterLink]="[item.id]">
+                {{ item.data.name }}
+              </svui-table-link>
+            </td>
+            <td>{{ 'BriefvorlageTyp.' + item.data.type | transloco }}</td>
+            <td>{{ 'AppLanguage.' + item.data.sprache | transloco }}</td>
+            <td>{{ this.benutzerOptionsStore.getOptionForBenutzer(item.entityInfo.userErstellt)?.fullName }}</td>
+            <td>
+              <svui-collapsible-menu label="{{ 'global.actionmenu.tooltip' | transloco }}"
+                                     [loading]="store.deleteLoader.isLoading()"
+              >
+                @if (this.canEditBriefvorlagen()) {
+                  <button
+                    ngbDropdownItem
+                    (click)="removeItem(item)"
+                  >
+                    {{ 'global.remove' | transloco }}
+                  </button>
+                  <button
+                    ngbDropdownItem
+                    (click)="generateTest(item)"
+                  >
+                    {{ 'briefvorlage.testbrief-generieren' | transloco }}
+                  </button>
+                }
+              </svui-collapsible-menu>
+            </td>
+          </tr>
+        } @empty {
+          @if (!store.loader.isLoading()) {
+            <tr svui-empty-table-message [message]="'briefvorlage.list.empty' | transloco"></tr>
+          }
+        }
+      </tbody>
+    </table>
+  </svui-card>
+</feat-page>

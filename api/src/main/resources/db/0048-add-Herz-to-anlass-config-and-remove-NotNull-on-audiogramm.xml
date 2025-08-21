@@ -1,0 +1,141 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hora" id="1747984769698-1">
+    <addColumn tableName="anlassconfig">
+      <column name="hoerenaudiogramm250hz" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1747984769698-2">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="hoerenaudiogramm250hz" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora" id="1747984769698-3">
+    <addColumn tableName="anlassconfig">
+      <column name="hoerenaudiogramm8000hz" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1747984769698-4">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="hoerenaudiogramm8000hz" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet id="1747989776179-1" author="hora">
+    <sql>
+		UPDATE anlassconfig
+		SET hoerenaudiogramm250hz = 'REQUIRED'
+		WHERE anlasstyp = 'KLASSE_4';
+
+		UPDATE anlassconfig
+		SET hoerenaudiogramm250hz = 'NOT_VISIBLE'
+		WHERE anlasstyp = 'KINDERGARTEN';
+
+		UPDATE anlassconfig
+		SET hoerenaudiogramm250hz = 'REQUIRED'
+		WHERE anlasstyp = 'KLASSE_9';
+
+		UPDATE anlassconfig
+		SET hoerenaudiogramm250hz = 'NOT_VISIBLE'
+		WHERE anlasstyp = 'IMPFAKTION';
+
+		UPDATE anlassconfig
+		SET hoerenaudiogramm250hz = 'REQUIRED'
+		WHERE anlasstyp = 'KLASSE_8';
+
+		UPDATE anlassconfig
+		SET hoerenaudiogramm250hz = 'REQUIRED'
+		WHERE anlasstyp = 'VERTRAUENSARZT';
+
+		UPDATE anlassconfig
+		SET hoerenaudiogramm250hz = 'NOT_VISIBLE'
+		WHERE anlasstyp = 'IMPFSPRECHSTUNDE';
+
+		UPDATE anlassconfig
+		SET hoerenaudiogramm250hz = 'NOT_VISIBLE'
+		WHERE anlasstyp = 'IMPFTERMIN';
+
+		UPDATE anlassconfig
+		SET hoerenaudiogramm250hz = 'REQUIRED'
+		WHERE anlasstyp = 'FREMDSPRACHEN';
+
+		UPDATE anlassconfig
+		SET hoerenaudiogramm8000hz = 'REQUIRED'
+		WHERE anlasstyp = 'KLASSE_4';
+
+		UPDATE anlassconfig
+		SET hoerenaudiogramm8000hz = 'NOT_VISIBLE'
+		WHERE anlasstyp = 'KINDERGARTEN';
+
+		UPDATE anlassconfig
+		SET hoerenaudiogramm8000hz = 'REQUIRED'
+		WHERE anlasstyp = 'KLASSE_9';
+
+		UPDATE anlassconfig
+		SET hoerenaudiogramm8000hz = 'NOT_VISIBLE'
+		WHERE anlasstyp = 'IMPFAKTION';
+
+		UPDATE anlassconfig
+		SET hoerenaudiogramm8000hz = 'REQUIRED'
+		WHERE anlasstyp = 'KLASSE_8';
+
+		UPDATE anlassconfig
+		SET hoerenaudiogramm8000hz = 'REQUIRED'
+		WHERE anlasstyp = 'VERTRAUENSARZT';
+
+		UPDATE anlassconfig
+		SET hoerenaudiogramm8000hz = 'NOT_VISIBLE'
+		WHERE anlasstyp = 'IMPFSPRECHSTUNDE';
+
+		UPDATE anlassconfig
+		SET hoerenaudiogramm8000hz = 'NOT_VISIBLE'
+		WHERE anlasstyp = 'IMPFTERMIN';
+
+		UPDATE anlassconfig
+		SET hoerenaudiogramm8000hz = 'REQUIRED'
+		WHERE anlasstyp = 'FREMDSPRACHEN';
+	</sql>
+  </changeSet>
+  <changeSet id="1747989776179-2" author="hora">
+    <addNotNullConstraint columnName="hoerenaudiogramm250hz"
+                          tableName="anlassconfig"/>
+  </changeSet>
+  <changeSet id="1747990305834-1" author="hora">
+    <addNotNullConstraint tableName="anlassconfig"
+                          columnName="hoerenaudiogramm8000hz"/>
+  </changeSet>
+  <changeSet id="1747987897070-1" author="hora">
+    <dropNotNullConstraint columnDataType="VARCHAR(30)"
+                           columnName="dbhz250"
+                           tableName="audiogramm"/>
+  </changeSet>
+  <changeSet id="1747988622694-1" author="hora">
+    <dropNotNullConstraint columnDataType="VARCHAR(30)"
+                           columnName="dbhz500"
+                           tableName="audiogramm"/>
+  </changeSet>
+  <changeSet id="1747988639027-1" author="hora">
+    <dropNotNullConstraint columnDataType="VARCHAR(30)"
+                           columnName="dbhz1000"
+                           tableName="audiogramm"/>
+  </changeSet>
+  <changeSet id="1747988651048-1" author="hora">
+    <dropNotNullConstraint columnDataType="VARCHAR(30)"
+                           columnName="dbhz2000"
+                           tableName="audiogramm"/>
+  </changeSet>
+  <changeSet id="1747988674476-1" author="hora">
+    <dropNotNullConstraint columnDataType="VARCHAR(30)"
+                           columnName="dbhz4000"
+                           tableName="audiogramm"/>
+  </changeSet>
+  <changeSet id="1747988683470-1" author="hora">
+    <dropNotNullConstraint columnDataType="VARCHAR(30)"
+                           columnName="dbhz6000"
+                           tableName="audiogramm"/>
+  </changeSet>
+  <changeSet id="1747988689841-1" author="hora">
+    <dropNotNullConstraint columnDataType="VARCHAR(30)"
+                           columnName="dbhz8000"
+                           tableName="audiogramm"/>
+  </changeSet>
+</databaseChangeLog>

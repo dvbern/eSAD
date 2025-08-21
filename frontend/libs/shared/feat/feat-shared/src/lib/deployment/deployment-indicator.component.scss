@@ -1,0 +1,30 @@
+:host > div {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-size: 2em;
+  z-index: 999;
+
+  div {
+    transform: rotate(337deg);
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+}
+
+.LOCAL,
+.UNIT_TEST {
+  color: #7da721;
+}
+
+.DEV,
+.REVIEW {
+  color: #66ade0;
+}
+
+.TEST,
+.IAT,
+.UAT,
+.DEMO {
+  color: #ed9031;
+}

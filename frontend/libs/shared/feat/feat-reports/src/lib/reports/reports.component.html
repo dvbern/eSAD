@@ -1,0 +1,15 @@
+<feat-page [heading]="'reports.page.title' | transloco">
+  <svui-page-header-buttons>
+    <button svuiIconOnlyButton="primary"
+            type="button"
+            [tooltip]="'reports.action.manual.deletion' | transloco"
+            [icon]="'loeschen'"
+            (click)="deleteGeneratedDocsManually()"
+    >
+    </button>
+  </svui-page-header-buttons>
+
+  <feat-document-queue/>
+  <feat-spss-form/>
+</feat-page>
+

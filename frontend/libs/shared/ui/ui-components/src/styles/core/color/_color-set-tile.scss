@@ -1,0 +1,7 @@
+// Tile Color Set
+
+@use './definition/color-definition';
+
+$background: color-definition.$background-widget;
+$border: color-definition.$border;
+$icon: color-definition.$text-secondary;

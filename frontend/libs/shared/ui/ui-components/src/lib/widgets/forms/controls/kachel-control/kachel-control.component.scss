@@ -1,0 +1,32 @@
+@use '../../../../../styles/core/color/color-set-form';
+@use '../../../../../styles/core/border';
+@use '../../../../../styles/core/radius';
+@use '../../../../../styles/core/size';
+@use '../../../../../styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.svui_kachel-control {
+  position: relative;
+  width: size.$kachel-input-width;
+  padding: spacing.$kachel-inner-y spacing.$kachel-inner-x spacing.$kachel-inner-y spacing.$kachel-inner-left;
+  border: border.$default;
+  border-radius: radius.$base;
+
+  margin-bottom: spacing.$form-control-message-container; // otherwise they do not align with text inputs (svui_bottom--fix)
+
+  &:has(::ng-deep input:checked) {
+    border-color: color-set-form.$border-active;
+    background-color: color-set-form.$background-active;
+  }
+
+  &__label {
+    cursor: pointer;
+  }
+
+  ::ng-deep > .form-check-input {
+    margin-left: - #{spacing.$check-input-positioning-kacheln};
+  }
+}

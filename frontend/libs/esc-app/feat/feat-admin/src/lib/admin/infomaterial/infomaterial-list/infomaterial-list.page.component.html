@@ -1,0 +1,165 @@
+<feat-page [heading]="'infomaterial.list.page.title' | transloco"
+           [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN}">
+  <svui-page-header-buttons [showFilterPopup]="false"/>
+
+  @if (this.canEditList()) {
+    <svui-page-header-add-button [addRouterLink]="Path.CREATE"/>
+  }
+
+  <svui-page-header-list-summary [items]="summaryItems()"/>
+
+
+  <svui-card [innerSpacing]="'topBottom'">
+    <table
+      svuiTable
+      [loading]="infomaterialStore.loader.isLoading()"
+      [totalRows]="itemTable.filteredListSize()"
+      (pageChanged)="itemTable.onPageChanged($event)"
+      [pagination]="itemTable.pagination()"
+    >
+      <!-- col widths -->
+      <colgroup>
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="select-medium">
+        <col svuiColWidth colWidth="select-small">
+        <col svuiColWidth colWidth="options">
+      </colgroup>
+      <thead>
+      <!-- Headers for sorting -->
+      <tr>
+        <th
+          *ngIf="tenantSettingsStore.supportsLanguageDe()"
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.name.de')"
+          (sort)="itemTable.onColSort($event, 'data.name.de')"
+        >
+          {{ 'infomaterial.name' | transloco }} {{ this.tenantSettingsStore.postfixDeKey() | transloco }}
+        </th>
+        <th
+          *ngIf="tenantSettingsStore.supportsLanguageFr()"
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.name.fr')"
+          (sort)="itemTable.onColSort($event, 'data.name.fr')"
+        >
+          {{ 'infomaterial.name' | transloco }} {{ this.tenantSettingsStore.postfixFrKey() | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.aktiv')"
+          (sort)="itemTable.onColSort($event, 'data.aktiv')"
+        >
+          {{ 'infomaterial.aktiv' | transloco }}
+        </th>
+        <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
+      </tr>
+      <!-- Headers for filtering-->
+      <tr>
+        <!-- Filter for infomaterial nameDe -->
+        @if (tenantSettingsStore.supportsLanguageDe()) {
+          <th scope="col">
+            <svui-table-filter
+              [columnHeader]="
+                ('infomaterial.name' | transloco) + ' ' + (this.tenantSettingsStore.postfixDeKey() | transloco)
+              "
+            >
+              <input svuiTextInput [formControl]="tableFilterForm.group.controls.nameDe"/>
+            </svui-table-filter>
+          </th>
+        }
+        <!-- Filter for infomaterial nameFr -->
+        @if (tenantSettingsStore.supportsLanguageFr()) {
+          <th scope="col">
+            <svui-table-filter
+              [columnHeader]="
+                ('infomaterial.name' | transloco) + ' ' + (this.tenantSettingsStore.postfixFrKey() | transloco)
+              "
+            >
+              <input svuiTextInput [formControl]="tableFilterForm.group.controls.nameFr"/>
+            </svui-table-filter>
+          </th>
+        }
+        <!-- Filter for aktiv/deaktiviert -->
+        <th scope="col">
+          <svui-table-filter [columnHeader]="('infomaterial.aktiv' | transloco)">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.aktiv"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              <ng-option [value]="true">
+                {{ 'infomaterial.list.aktiv' | transloco }}
+              </ng-option>
+              <ng-option [value]="false">
+                {{ 'infomaterial.list.inaktiv' | transloco }}
+              </ng-option>
+            </ng-select>
+
+          </svui-table-filter>
+        </th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+        @if (!itemTable.displayedList()?.length && !infomaterialStore.loader.isLoading()) {
+          <tr svui-empty-table-message [message]="'infomaterial.list.empty' | transloco"></tr>
+        }
+        @for (item of itemTable.displayedList(); track item.id) {
+          <tr>
+            @if (tenantSettingsStore.supportsLanguageDe()) {
+              <td>
+                <svui-table-link
+                  type="text"
+                  [myRouterLink]="[item.id]">
+                  {{ item.data.name.de }}
+                </svui-table-link>
+              </td>
+            }
+            @if (tenantSettingsStore.supportsLanguageFr()) {
+              <td>
+                <svui-table-link
+                  type="text"
+                  [myRouterLink]="[item.id]">
+                  {{ item.data.name.fr }}
+                </svui-table-link>
+              </td>
+            }
+            <td>{{
+                item.data.aktiv ?
+                  ('infomaterial.list.aktiv' | transloco) :
+                  ('infomaterial.list.inaktiv' | transloco)
+              }}
+            </td>
+            <td>
+              <svui-collapsible-menu label="{{ 'global.actionmenu.tooltip' | transloco }}"
+                                     [loading]="infomaterialStore.deleteLoader.isLoading()"
+              >
+                @if (this.canEditList()) {
+                  <button
+                    ngbDropdownItem
+                    (click)="removeItem(item)"
+                  >
+                    {{ 'global.remove' | transloco }}
+                  </button>
+                  <button
+                    ngbDropdownItem
+                    (click)="toggleStatus(item)"
+                  > {{
+                      item.data.aktiv ?
+                        ('global.deactivate' | transloco) :
+                        ('global.activate' | transloco)
+                    }}
+                  </button>
+                }
+              </svui-collapsible-menu>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </svui-card>
+</feat-page>

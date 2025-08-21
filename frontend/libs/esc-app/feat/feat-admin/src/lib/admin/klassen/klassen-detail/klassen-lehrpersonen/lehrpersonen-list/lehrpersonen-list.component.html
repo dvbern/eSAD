@@ -1,0 +1,118 @@
+<svui-buttons-right-container>
+  <h2 svuiHeading="formSection">{{ 'klasse.tab.lehrpersonen' | transloco }}</h2>
+  <svui-page-header-list-summary
+    [items]="summaryItems()"/>
+
+  @if (canEditList()) {
+    <div svuiButton>
+      <button svuiButton="tertiary"
+              type="button"
+              (click)="addLehrpersonToKlasse()">
+        {{ 'lehrpersonen.list.add-existing-lehrperson' | transloco }}
+      </button>
+      <svui-page-header-add-button [addRouterLink]="Path.RELATIVE_ONE_UP + '/' + Path.CREATE"/>
+    </div>
+  }
+</svui-buttons-right-container>
+
+
+<svui-card [innerSpacing]="'topBottom'">
+  <table
+    svuiTable
+    [loading]="store.loader.isLoading()"
+    [totalRows]="itemTable.filteredListSize()"
+    (pageChanged)="itemTable.onPageChanged($event)"
+    [pagination]="itemTable.pagination()"
+  >
+    <!-- col widths -->
+    <colgroup>
+      <col svuiColWidth colWidth="text-small">
+      <col svuiColWidth colWidth="text-medium">
+      <col svuiColWidth colWidth="text-medium">
+      <col svuiColWidth colWidth="text-medium">
+      <col svuiColWidth colWidth="text-medium">
+      <col svuiColWidth colWidth="options">
+    </colgroup>
+    <thead>
+    <!-- Headers for sorting -->
+    <tr>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.geschlecht')"
+        (sort)="itemTable.onColSort($event, 'data.geschlecht')"
+      >
+        {{ 'kontaktperson.geschlecht' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.name')"
+        (sort)="itemTable.onColSort($event, 'data.name')"
+      >
+        {{ 'kontaktperson.name' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.vorname')"
+        (sort)="itemTable.onColSort($event, 'data.vorname')"
+      >
+        {{ 'kontaktperson.vorname' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.email')"
+        (sort)="itemTable.onColSort($event, 'data.email')"
+      >
+        {{ 'kontaktperson.email' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.telefon')"
+        (sort)="itemTable.onColSort($event, 'data.telefon')"
+      >
+        {{ 'kontaktperson.telefon' | transloco }}
+      </th>
+      <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
+    </tr>
+    </thead>
+    <tbody>
+      @if (!itemTable.displayedList()?.length && !store.loader.isLoading()) {
+        <tr svui-empty-table-message [message]="'klasse.tab.lehrpersonen.list.empty' | transloco"></tr>
+      }
+      @for (item of itemTable.displayedList(); track item.id) {
+        <tr>
+          <td>{{ 'Geschlecht.' + item.data.geschlecht | transloco }}</td>
+          <td>
+            <svui-table-link
+              type="text"
+              [myRouterLink]="[Path.RELATIVE_ONE_UP, item.id]">
+              {{ item.data.name }}
+            </svui-table-link>
+          </td>
+          <td>{{ item.data.vorname }}</td>
+          <td>{{ item.data.email }}</td>
+          <td>{{ item.data.telefon }}</td>
+          <td>
+            <svui-collapsible-menu
+              [loading]="store.deleteLoader.isLoading()"
+              label="{{ 'global.actionmenu.tooltip' | transloco }}"
+            >
+              @if (canEditList()) {
+                <button ngbDropdownItem (click)="deleteLehrperson(item)">
+                  {{ 'lehrpersonen.list.actionmenu.delete' | transloco }}
+                </button>
+                <button ngbDropdownItem (click)="removeLehrpersonFromKlasse(item)">
+                  {{ 'lehrpersonen.list.actionmenu.remove-connection' | transloco }}
+                </button>
+              }
+            </svui-collapsible-menu>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</svui-card>

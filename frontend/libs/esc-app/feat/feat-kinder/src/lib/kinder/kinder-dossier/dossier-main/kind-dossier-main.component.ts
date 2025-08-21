@@ -1,0 +1,341 @@
+import {DatePipe} from '@angular/common';
+import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {RouterLink} from '@angular/router';
+import {
+  AnlassFlagsJson,
+  BenutzerOptionJson,
+  DossierSaveJson,
+  EsadIdJson,
+  Geschlecht,
+  PapierakteStatus,
+} from '@dvb/data-access-backend';
+import {randomEntityId, requireValidBackendEntityId} from '@dvb/data-access-types';
+import {
+  BenutzerOptionsStore,
+  BenutzerStore,
+  BriefvorlagenStore,
+  ConfirmService,
+  getAdresse,
+  Path,
+  TimetravelStore,
+} from '@dvb/feat-shared';
+import {
+  CardComponent,
+  CardHeaderComponent,
+  CollapsibleMenuComponent,
+  IconComponent,
+  IconUseCase,
+  NgSelectDirective,
+  StatusTextComponent,
+  TileComponent,
+  TileGridComponent,
+} from '@dvb/ui-components';
+import {AppNotificationStore} from '@dvb/util-angular';
+import {
+  fromISODateString,
+  hasAnlassEditBerechtigungForAbgeschlossen,
+  hasDownloadDossierBerechtigung,
+  hasKindEditBerechtigung,
+  isNotNullish,
+  isNullish,
+} from '@dvb/util-shared';
+import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
+import {NgbDropdownItem, NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
+import {firstValueFrom} from 'rxjs';
+import {DossierStore} from '../../dossier.store';
+import {KindAnlaesseStore} from '../dossier-anlaesse/kind-anlaesse-store.service';
+import {
+  KinderBriefgenerierenModalComponent,
+} from '../kinder-briefgenerieren-modal/kinder-briefgenerieren-modal.component';
+import {KinderBriefgenerierenJson} from '../kinder-briefgenerieren-modal/kinder-briefgenerieren.form';
+import {KinderDossierExportModalComponent} from '../kinder-dossier-export-modal/kinder-dossier-export-modal.component';
+import {KinderDossierExportFormOutputType} from '../kinder-dossier-export-modal/kinder-dossier-export.form';
+import {KinderEsadidModalComponent} from '../kinder-esadid-modal/kinder-esadid-modal.component';
+import {KinderImmunitaetModalComponent} from '../kinder-immunitaet-modal/kinder-immunitaet-modal.component';
+import {KinderImmunitaetJson} from '../kinder-immunitaet-modal/kinder-immunitaet.form';
+import {KinderNachkontrolleModalComponent} from '../kinder-nachkontrolle-modal/kinder-nachkontrolle-modal.component';
+import {
+  KinderZusatzinformationenModalComponent,
+} from '../kinder-zusatzinformationen-modal/kinder-zusatzinformationen-modal.component';
+import {KinderZusatzinformationenJson} from '../kinder-zusatzinformationen-modal/kinder-zusatzinformationen.form';
+
+@Component({
+  selector: 'feat-kind-dossier-main',
+  templateUrl: './kind-dossier-main.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CardComponent,
+    CardHeaderComponent,
+    IconComponent,
+    TileComponent,
+    TileGridComponent,
+    DatePipe,
+    TranslocoPipe,
+    FormsModule,
+    CollapsibleMenuComponent,
+    NgbDropdownItem,
+    RouterLink,
+    NgOptionComponent,
+    NgSelectComponent,
+    NgSelectDirective,
+    StatusTextComponent,
+  ],
+})
+export class KindDossierMainComponent {
+
+  readonly dossierStore = inject(DossierStore);
+  readonly benutzerOptionsStore = inject(BenutzerOptionsStore);
+  readonly benutzerStore = inject(BenutzerStore);
+  readonly confirmService = inject(ConfirmService);
+  readonly transloco = inject(TranslocoService);
+  readonly appNotificationStore = inject(AppNotificationStore);
+  readonly #ngbModal = inject(NgbModal);
+  readonly timetravelStore = inject(TimetravelStore);
+  readonly #briefvorlagenStore = inject(BriefvorlagenStore);
+  readonly kindAnlassStore = inject(KindAnlaesseStore);
+
+  dossier = computed(() => this.dossierStore.selectedDossier());
+  kind = this.dossierStore.selectedKind;
+  fullName = computed(() => this.kind()?.data?.name + ' ' + this.kind()?.data?.vorname);
+  geschlecht = computed(() => this.getUseCaseGechlecht(this.kind()?.data?.geschlecht));
+  idNr = computed(() => this.dossier()?.kind?.esadId ?? '');
+  adresse = computed(() => getAdresse(this.kind()?.data?.adresse));
+
+  zustaendigArzt = computed(() => this.dossier()?.data?.zustaendigArzt);
+  zustaendigMPA = computed(() => this.dossier()?.data?.zustaendigMPA);
+
+  canEditKind = this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung());
+  canDownloadDossierExport = this.benutzerStore.createHasRequiredRoleSig(hasDownloadDossierBerechtigung());
+
+  canEditAfterAbgeschlossen = this.benutzerStore.createHasRequiredRoleSig(hasAnlassEditBerechtigungForAbgeschlossen());
+
+  canChangeIdNr = computed(() => {
+    if (this.kindAnlassStore.isKindInAnyAbgeschlossenAnlass()) {
+      return this.canEditKind() && this.canEditAfterAbgeschlossen();
+    } else {
+      return this.canEditKind();
+    }
+  });
+
+  papierakteStatusOptions = Object.values(PapierakteStatus);
+  papierakteStatus = computed(() => this.dossier()?.data?.papierakteStatus);
+
+  protected readonly Path = Path;
+  protected readonly fromISODateString = fromISODateString;
+
+  compareBenutzerFn(item: BenutzerOptionJson, selected: BenutzerOptionJson): boolean {
+    return item.id === selected.id;
+  }
+
+  private getUseCaseGechlecht(geschlecht: Geschlecht | undefined): IconUseCase {
+    if (isNullish(geschlecht)) {
+      return 'divers';
+    }
+
+    switch (geschlecht) {
+      case 'MAENNLICH':
+        return 'male';
+      case 'WEIBLICH':
+        return 'female';
+      case 'DIVERS':
+        return 'divers';
+      case 'UNBEKANNT':
+        return 'placeholder_seethrough';
+    }
+  }
+
+  protected generateIdForKind(): void {
+    const kind = this.kind();
+    if (isNotNullish(this.dossierStore.selectedDossier) && isNotNullish(kind)) {
+      // Generate ID for Kind if the Schule is Present
+      if (isNotNullish(kind.data.schule)) {
+        const name = this.kind()?.data?.name + ' ' + this.kind()?.data?.vorname;
+        this.confirmService.confirm({
+          question: this.transloco.translate('kind.dossier.id.generieren.question', {fullname: name}),
+          consequence: this.transloco.translate('kind.dossier.id.generieren.consequence'),
+          decision: this.transloco.translate('kind.dossier.id.generieren.decision'),
+        }).subscribe(() => {
+          this.dossierStore.generateEsadIdForKind(kind.id);
+        });
+
+      } else {
+        // If there is no Schule, the ID will be generated with 000 as Schulhausnummer
+        this.confirmService.confirm({
+          question: this.transloco.translate('kind.dossier.id.generieren.keine.schule.question'),
+          consequence: this.transloco.translate('kind.dossier.id.generieren.keine.schule.consequence'),
+          decision: this.transloco.translate('kind.dossier.id.generieren.keine.schule.decision'),
+        }).subscribe(() => {
+          this.dossierStore.generateEsadIdForKind(kind.id);
+        });
+      }
+    } else {
+      this.appNotificationStore.addNotification({
+        alertType: 'warning',
+        id: 'noSchulhausNummerForSchule' + randomEntityId(),
+        summary: this.transloco.translate('ui.validation-error.kindOrDossierMissingWhenTryingToGenerateId'),
+        autohide: true,
+      });
+    }
+  }
+
+  async setIdForKind(): Promise<void> {
+    const kind = this.kind();
+    if (isNotNullish(kind) && this.canEditKind()) {
+      const ngbModalRef = this.#ngbModal.open(KinderEsadidModalComponent, {size: 'lg'});
+      const result: EsadIdJson | undefined = await firstValueFrom(ngbModalRef.closed,
+        {defaultValue: undefined});
+      if (result) {
+        this.dossierStore.setEsadIdForKind({
+          kindId: kind.id,
+          esadId: result,
+        });
+      }
+    }
+  }
+
+  onArztChange(arzt: BenutzerOptionJson): void {
+    const dossier = this.dossier()?.data;
+    if (isNotNullish(arzt) && isNotNullish(dossier)) {
+      const payload: DossierSaveJson = {...dossier, zustaendigArzt: arzt};
+      this.dossierStore.updateDossier({
+        dossier: payload,
+        onSuccess: () => console.log('Updated Kind, set Zuständig Arzt -> ', arzt.fullName),
+      });
+    }
+  }
+
+  onMPAChange(mpa: BenutzerOptionJson): void {
+    const dossier = this.dossier()?.data;
+    if (isNotNullish(mpa) && isNotNullish(dossier)) {
+      const payload: DossierSaveJson = {...dossier, zustaendigMPA: mpa};
+      this.dossierStore.updateDossier({
+        dossier: payload,
+        onSuccess: () => console.log('Updated Kind, set Zuständig MPA -> ', mpa.fullName),
+      });
+    }
+  }
+
+  async editZusatzinformationen(): Promise<void> {
+    const dossier = this.dossier();
+    if (dossier && this.canEditKind()) {
+      const ngbModalRef = this.#ngbModal.open(KinderZusatzinformationenModalComponent, {size: 'lg'});
+      ngbModalRef.componentInstance.dossierData.set(dossier.data);
+      const result: KinderZusatzinformationenJson | undefined = await firstValueFrom(ngbModalRef.closed,
+        {defaultValue: undefined});
+      if (result) {
+        const requestObject: DossierSaveJson = {
+          ...dossier.data,
+          kinderschutzfall: result.kinderschutzfall,
+          keineAuskunftAnDrittpersonen: result.keineAuskunftAnDrittpersonen,
+          sansPapier: result.sansPapier,
+          andereZusatzinformation: result.andereZusatzinformation,
+          andereZusatzInformationText: result.andereZusatzInformationText,
+        };
+
+        this.dossierStore.updateDossier({
+          dossier: requestObject,
+          onSuccess: () => this.appNotificationStore.addSuccessNotification(this.transloco.translate(
+            'kind.dossier.zusatzinformationen.sucess')),
+        });
+      }
+    }
+  }
+
+  async editImmunisierungen(): Promise<void> {
+    const dossier = this.dossier();
+    if (dossier && this.canEditKind()) {
+      const ngbModalRef = this.#ngbModal.open(KinderImmunitaetModalComponent, {size: 'lg'});
+      ngbModalRef.componentInstance.dossierData.set(dossier.data);
+      const result: KinderImmunitaetJson | undefined = await firstValueFrom(ngbModalRef.closed,
+        {defaultValue: undefined});
+      if (result) {
+        const requestObject: DossierSaveJson = {
+          ...dossier.data,
+          immunitaetMasern: result.immunitaetMasern,
+          immunitaetVarizellen: result.immunitaetVarizellen,
+        };
+
+        this.dossierStore.updateDossier({
+          dossier: requestObject,
+          onSuccess: () => this.appNotificationStore.addSuccessNotification(this.transloco.translate(
+            'kind.dossier.immunisierung.sucess')),
+        });
+      }
+    }
+  }
+
+  async editNachkontrolle(): Promise<void> {
+    const dossier = this.dossier();
+    if (dossier && this.canEditKind()) {
+      const ngbModalRef = this.#ngbModal.open(KinderNachkontrolleModalComponent, {size: 'lg'});
+      ngbModalRef.componentInstance.dossierData.set(dossier.data);
+      const result: AnlassFlagsJson | undefined =
+        await firstValueFrom(ngbModalRef.closed, {defaultValue: undefined});
+      if (result) {
+        const requestObject: DossierSaveJson = {
+          ...dossier.data,
+          nachkontrolle: {
+            ...dossier.data.nachkontrolle,
+            data: {anlassFlags: result},
+          },
+        };
+        this.dossierStore.updateDossier({
+          dossier: requestObject,
+          onSuccess: () => this.appNotificationStore.addSuccessNotification(this.transloco.translate(
+            'kind.dossier.nachkontrolle.success')),
+        });
+      }
+    }
+  }
+
+  async briefGenerieren(): Promise<void> {
+    const kind = this.kind();
+    if (isNotNullish(kind)) {
+      const ngbModalRef = this.#ngbModal.open(KinderBriefgenerierenModalComponent, {size: 'lg'});
+      ngbModalRef.componentInstance.kindData.set(kind);
+      ngbModalRef.componentInstance.anlassList.set(this.kindAnlassStore.entities());
+      const result: KinderBriefgenerierenJson | undefined = await firstValueFrom(ngbModalRef.closed,
+        {defaultValue: undefined});
+      if (result) {
+        this.#briefvorlagenStore.downloadBrief({
+          briefvorlageId: requireValidBackendEntityId(result.vorlage?.id),
+          kindId: kind.id,
+          einladungId: result.einladung?.id,
+          arztId: result.arztId,
+          onSuccess: () =>
+            this.appNotificationStore.addSuccessNotification(this.transloco.translate(
+              'kind.dossier.briefgenerieren.success')),
+        });
+      }
+    }
+  }
+
+  onPapierakteStatusChanged(papierakteStatus: PapierakteStatus): void {
+    const dossier = this.dossier()?.data;
+    if (isNotNullish(dossier)) {
+      const payload: DossierSaveJson = {...dossier, papierakteStatus};
+      this.dossierStore.updateDossier({
+        dossier: payload,
+        onSuccess: () => this.appNotificationStore.addSuccessNotification(this.transloco.translate(
+          'global.data.saved')),
+      });
+    }
+  }
+
+  async exportDossier(): Promise<void> {
+    const dossier = this.dossier();
+    if (dossier) {
+      const ngbModalRef = this.#ngbModal.open(KinderDossierExportModalComponent, {size: 'lg'});
+      const result: KinderDossierExportFormOutputType | undefined =
+        await firstValueFrom(ngbModalRef.closed, {defaultValue: undefined});
+      if (result) {
+        this.dossierStore.downloadKinderdossierReport({
+          kindId: dossier.kind.id,
+          variation: result.kinderdossierPrintVariant,
+        });
+      }
+    }
+  }
+}

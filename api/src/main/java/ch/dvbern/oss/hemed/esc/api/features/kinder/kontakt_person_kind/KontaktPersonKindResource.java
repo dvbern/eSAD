@@ -1,0 +1,132 @@
+package ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind;
+
+import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
+import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
+import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
+import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.json.KontaktPersonKindJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.json.KontaktPersonKindListJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.json.KontaktPersonKindOptionListJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.json.KontaktPersonKindSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import io.smallrye.common.constraint.NotNull;
+import io.smallrye.faulttolerance.api.RateLimit;
+import io.vertx.core.http.HttpServerResponse;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response.Status;
+import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.eclipse.microprofile.metrics.MetricUnits;
+import org.eclipse.microprofile.metrics.annotation.Timed;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+@Path("/kinder/{kindID}/kontaktpersonen")
+@JaxResource
+@RequiredArgsConstructor
+@Tag(name = Tags.TAG_KONTAKTPERSON_KIND)
+@RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+@RateLimit(RateLimitConst.DEFAULT_LIMIT)
+@Timed(name = "KontaktPersonKindResourceMS", unit = MetricUnits.MILLISECONDS)
+public class KontaktPersonKindResource {
+
+    private final KontaktPersonKindMapper kontaktPersonKindMapper;
+
+    @Context
+    private HttpServerResponse respone;
+
+    @GET
+    @NonNull
+    @RolesAllowed(BerechtigungName.LISTEN_LESEN)
+    public KontaktPersonKindListJson findAktivByKind(
+        @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID
+    ) {
+        return new KontaktPersonKindListJson(kontaktPersonKindMapper.findAktivByKind(kindID));
+    }
+
+    @GET
+    @Path("/options")
+    @RateLimit(RateLimitConst.DEFAULT_LIMIT)
+    @RolesAllowed({ BerechtigungName.LISTEN_SCHREIBEN, BerechtigungName.LISTEN_LESEN })
+    public KontaktPersonKindOptionListJson findAllOptionsActive(
+        @NotNull @NonNull @PathParam("kindID") ID<Kind> kindId,
+        @NotNull @QueryParam("excludeKind") boolean excludeKind
+    ) {
+        ID<Kind> kindToExclude = excludeKind ? kindId : null;
+        return new KontaktPersonKindOptionListJson(kontaktPersonKindMapper.findAllOptionsByKind(kindToExclude));
+    }
+
+    @GET
+    @Path("/{kontaktPersonKindID}")
+    @RateLimit(RateLimitConst.DEFAULT_LIMIT)
+    @RolesAllowed(BerechtigungName.LISTEN_LESEN)
+    @NonNull
+    public KontaktPersonKindJson getKontaktPersonKind(
+        @NonNull @NotNull @PathParam("kindID") ID<Kind> kindID,
+        @NonNull @NotNull @PathParam("kontaktPersonKindID") ID<KontaktPersonKind> kontaktPersonKindID
+    ) {
+        return kontaktPersonKindMapper.getById(kontaktPersonKindID);
+    }
+
+    @POST
+    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @NonNull
+    public KontaktPersonKindJson createKontaktPersonKind(
+        @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID,
+        @NotNull @NonNull @Valid KontaktPersonKindSaveJson kontaktPersonKindSaveJson
+    ) {
+        respone.setStatusCode(Status.CREATED.getStatusCode());
+        return kontaktPersonKindMapper.create(kindID, kontaktPersonKindSaveJson);
+    }
+
+    @PUT
+    @Path("/{kontaktPersonKindID}")
+    @NonNull
+    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    public KontaktPersonKindJson updateKontaktPersonKind(
+        @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID,
+        @NotNull @NonNull @PathParam("kontaktPersonKindID") ID<KontaktPersonKind> kontaktPersonKindID,
+        @NotNull @NonNull @Valid KontaktPersonKindSaveJson kontaktPersonKindSaveJson
+    ) {
+        return kontaktPersonKindMapper.update(kontaktPersonKindID, kontaktPersonKindSaveJson);
+    }
+
+    @DELETE
+    @Path("/{kontaktPersonKindID}")
+    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    public void deleteKontaktPersonKind(
+        @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID,
+        @NotNull @NonNull @PathParam("kontaktPersonKindID") ID<KontaktPersonKind> kontaktPersonKindID
+    ) {
+        kontaktPersonKindMapper.delete(kontaktPersonKindID);
+    }
+
+    @PUT
+    @Path("/schule/{kontaktPersonKindID}")
+    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    public KontaktPersonKindJson addKontaktPersonKindToKind(
+        @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID,
+        @NotNull @NonNull @PathParam("kontaktPersonKindID") ID<KontaktPersonKind> kontaktPersonKindID
+    ) {
+        return kontaktPersonKindMapper.addToKind(kindID, kontaktPersonKindID);
+    }
+
+    @DELETE
+    @Path("/schule/{kontaktPersonKindID}")
+    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    public void removeKontaktPersonKindFromKind(
+        @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID,
+        @NotNull @NonNull @PathParam("kontaktPersonKindID") ID<KontaktPersonKind> kontaktPersonKindID
+    ) {
+        kontaktPersonKindMapper.removeFromKind(kindID, kontaktPersonKindID);
+    }
+}

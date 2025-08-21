@@ -1,0 +1,7308 @@
+---
+openapi: 3.0.3
+info:
+  title: fixme-starter
+  version: '1.0'
+servers:
+  - url: /rest
+tags:
+  - name: administrations
+  - name: arbeitnehmer
+  - name: benutzer
+  - name: confirmation
+  - name: einstellungen
+  - name: familienzulagen
+  - name: log
+  - name: lohnmeldung
+  - name: mitglied
+  - name: mitgliedUpload
+  - name: mitteilung
+  - name: pendenz
+  - name: pendenzmitarbeiteranmeldung
+  - name: pendenzmitteilung
+  - name: print
+  - name: stammdaten
+  - name: stammdatenverwaltung
+  - name: test
+  - name: unauthenticated
+  - name: wartungsfenster
+paths:
+  /api/v1/administrations/benutzerId/{benutzerId}:
+    get:
+      tags:
+        - administrations
+      summary: Make KC User from Benutzer
+      operationId: convertToKC
+      parameters:
+        - name: benutzerId
+          in: path
+          required: true
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          description: OK
+  /api/v1/administrations/convertAllToKCTestMode:
+    get:
+      tags:
+        - administrations
+      summary: 'Make all KC User from Benutzer, just while testmode'
+      operationId: convertAllToKCTestMode
+      responses:
+        '200':
+          description: OK
+  /api/v1/administrations/importAllToKC:
+    get:
+      tags:
+        - administrations
+      summary: import all KC User from Benutzer
+      operationId: importAllToKC
+      responses:
+        '200':
+          description: OK
+  /api/v1/administrations/twoFactorWay/{twoFactorWay}:
+    put:
+      tags:
+        - administrations
+      summary: Set 2Factor authentication method
+      operationId: setTwoFactorMethod
+      parameters:
+        - name: twoFactorWay
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/applicationproperty/{name}:
+    get:
+      tags:
+        - unauthenticated
+      summary: Find a property by its unique name (called key)
+      operationId: getApplicationProperty
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: getApplicationProperty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationProperty'
+  /api/v1/auth/refreshXSRFToken:
+    get:
+      responses:
+        '200':
+          description: OK
+  /api/v1/benutzer:
+    post:
+      tags:
+        - unauthenticated
+      operationId: createBenutzerWithCaptchaCheck
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBenutzerWithCaptchaCheckDto'
+      responses:
+        default:
+          description: Erstellt einen neuen Benutzer mit Captcha-Prüfung.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Benutzer'
+  /api/v1/benutzer/activate:
+    post:
+      tags:
+        - unauthenticated
+      operationId: activateKonto
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordDto'
+      responses:
+        '200':
+          description: OK
+  /api/v1/benutzer/resetpw:
+    post:
+      tags:
+        - unauthenticated
+      operationId: resetPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordDto'
+      responses:
+        '200':
+          description: OK
+      deprecated: true
+  /api/v1/benutzer/resetpwlink/{benutzerId}:
+    post:
+      tags:
+        - unauthenticated
+      operationId: requestPasswordResetLink
+      parameters:
+        - name: benutzerId
+          in: path
+          required: true
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          description: OK
+  /api/v1/getMitgliedMitHistoryInfo:
+    get:
+      tags:
+        - mitglied
+      summary:
+        "Gibt das Mitglied mit der übergebenen Id zurück. Zudem wird geprü\
+        ft, ob die Abrechnungsnummer des Mitglieds mutiert wurde und somit nicht mehr\
+        \ aktuell ist. Das zurückgegebene Objekt enthält immer auch die aktuelle Abrechnungnummer.\
+        \ Wenn die Abrechnungsnummer nicht mutiert wurde, ist die aktuelle Abrechnungsnummer\
+        \ identisch mit der Abrechnungsnummer des Mitglieds."
+      operationId: getMitgliedMitHistoryInfo
+      parameters:
+        - name: mitgliedId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MitgliedMitHistoryInfo'
+  /api/v1/mitgliedLightResultDto:
+    get:
+      tags:
+        - unauthenticated
+      summary:
+        "Sucht das Mitglied mit der übergebenen Abrechnungsnummer. Die Suche\
+        \ erfolgt immer direkt in Nil, egal ob das Mitglied in ePortal bereits vorhanden\
+        \ ist oder nicht. Das Mitglied wird im ePortal neu erstellt, wenn es noch\
+        \ nicht vorhanden ist. Ansonsten wird es aktualisiert. Die Methode gibt einen\
+        \ leichten Wrapper zurück, der die Existenz des Mitglieds bestätigt oder nicht\
+        \ und, wenn das Mitglied existiert noch seine Art."
+      operationId: searchMitgliedLightResultDto
+      parameters:
+        - name: abrechnungsnummer
+          in: query
+          schema:
+            type: string
+      responses:
+        default:
+          description: searchMitgliedLightResultDto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchMitgliedResultDto'
+  /api/v1/protected/arbeitnehmer/abmelden/{mitgliedId}:
+    post:
+      tags:
+        - arbeitnehmer
+      operationId: arbeitnehmerAbmelden
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Arbeitsverhaeltnis'
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/arbeitnehmer/anmelden/{mitgliedId}:
+    post:
+      tags:
+        - arbeitnehmer
+      operationId: arbeitnehmerAnmelden
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Arbeitsverhaeltnis'
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/arbeitnehmer/ausweisduplikat/{mitgliedId}:
+    post:
+      tags:
+        - arbeitnehmer
+      operationId: bestelleAusweisduplikat
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Arbeitsverhaeltnis'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AusweisduplikatBestellenResultDto'
+  /api/v1/protected/arbeitnehmer/liste/{mitgliedId}:
+    post:
+      tags:
+        - arbeitnehmer
+      operationId: getAktiveArbeitnehmer
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EportalDate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArbeitsverhaeltnisListeWrapper'
+  /api/v1/protected/arbeitnehmer/mutieren/{mitgliedId}:
+    post:
+      tags:
+        - arbeitnehmer
+      operationId: arbeitnehmerMutieren
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Arbeitsverhaeltnis'
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/arbeitnehmer/suchen/person/famzAnmeldung:
+    post:
+      tags:
+        - arbeitnehmer
+      description:
+        "Sucht die Person mit der übergebenen AHV-Nummer in Nil (unabhaengig\
+        \ von aktuellen Arbeitsverhältnissen). Die zurückgegebene Person enthält nur\
+        \ folgende Datenfelder: Sprache, Name, Vorname, VNR, Geburtsdatum und Geschlecht.\
+        \ Für die anderen Datenfelder werden Defaultwerte gesetzt, auch wenn diese\
+        \ im NIL vorhanden sind. (Datenschutz!)"
+      operationId: suchePersonFamZAnmeldung
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Sozialversicherungsnummer'
+      responses:
+        default:
+          description: suchePersonFamZAnmeldung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NatPerson'
+  /api/v1/protected/arbeitnehmer/suchen/person{mitgliedId}:
+    post:
+      tags:
+        - arbeitnehmer
+      operationId: personSuchen
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Sozialversicherungsnummer'
+      responses:
+        default:
+          description: personSuchen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NatPerson'
+  /api/v1/protected/arbeitnehmer/suchen/{mitgliedId}:
+    post:
+      tags:
+        - arbeitnehmer
+      operationId: arbeitnehmerSuchen
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Arbeitsverhaeltnis'
+      responses:
+        default:
+          description: arbeitnehmerSuchen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Arbeitsverhaeltnis'
+  /api/v1/protected/arbeitnehmer/{mitgliedId}:
+    get:
+      tags:
+        - arbeitnehmer
+      operationId: getArbeitnehmende
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArbeitsverhaeltnisListeWrapper'
+  /api/v1/protected/benutzer/ablehnen/{uuid}:
+    put:
+      tags:
+        - benutzer
+      operationId: benutzerAblehnen
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: benutzerAblehnen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Berechtigung'
+  /api/v1/protected/benutzer/benutzerId/{benutzerId}:
+    get:
+      tags:
+        - benutzer
+      operationId: getBenutzer
+      parameters:
+        - name: benutzerId
+          in: path
+          required: true
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Benutzer'
+  /api/v1/protected/benutzer/berechtigung:
+    put:
+      tags:
+        - benutzer
+      operationId: updateBerechtigung
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BerechtigungUpdateDto'
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+        - benutzer
+      operationId: createBerechtigung
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Berechtigung'
+      responses:
+        default:
+          description: createBerechtigung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Berechtigung'
+  /api/v1/protected/benutzer/berechtigung/{uuid}:
+    get:
+      tags:
+        - benutzer
+      operationId: getSubmitgliedBerechtigung
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitgliedBerechtigung'
+  /api/v1/protected/benutzer/berechtigungAntrag:
+    post:
+      tags:
+        - benutzer
+      description: Erstellt eine Berechtigung zu einem bereits vorhandenen Benutzer.
+      operationId: createBerechtigungAntrag
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BerechtigungenAntragDto'
+      responses:
+        default:
+          description: erstellte Berechtigung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Berechtigung'
+  /api/v1/protected/benutzer/berechtigungId/{uuid}:
+    get:
+      tags:
+        - benutzer
+      operationId: getBerechtigung
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Berechtigung'
+  /api/v1/protected/benutzer/berechtigungen/{benutzerId}:
+    get:
+      tags:
+        - benutzer
+      operationId: getActiveBerechtigungen
+      parameters:
+        - name: benutzerId
+          in: path
+          required: true
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Berechtigung'
+  /api/v1/protected/benutzer/berechtigungenlegitimiert/{benutzerId}:
+    get:
+      tags:
+        - benutzer
+      operationId: getActiveAndLegitimatedBerechtigungen
+      parameters:
+        - name: benutzerId
+          in: path
+          required: true
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Berechtigung'
+  /api/v1/protected/benutzer/checkUpdateRolleMoeglich:
+    post:
+      tags:
+        - benutzer
+      description: 'Überprüft, ob die Rolle der Berechtigung geändert werden kann.'
+      operationId: checkUpdateRolleMoeglich
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BerechtigungUpdateDto'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateRolleCheckResultDto'
+  /api/v1/protected/benutzer/entsperren/{uuid}:
+    put:
+      tags:
+        - benutzer
+      description:
+        Entsperrt die Berechtigung mit der übergebenen uuid und gibt die
+        entsperrte Berechtigung zurück.
+      operationId: benutzerEntsperren
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: benutzerEntsperren
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Berechtigung'
+  /api/v1/protected/benutzer/filter:
+    post:
+      tags:
+        - benutzer
+      operationId: getBerechtigungenListFiltered
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BenutzerFilterModel'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Berechtigung'
+  /api/v1/protected/benutzer/legitimieren/{uuid}:
+    put:
+      tags:
+        - benutzer
+      operationId: benutzerLegitimieren
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: benutzerLegitimieren
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Berechtigung'
+    post:
+      tags:
+        - benutzer
+      operationId: sendBenutzerLegitimierenMail
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/benutzer/mail/{abrechnungsnummer}/{mail}:
+    get:
+      tags:
+        - benutzer
+      operationId: getSubmitgliedBerechtigungByMail
+      parameters:
+        - name: abrechnungsnummer
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mail
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitgliedBerechtigung'
+  /api/v1/protected/benutzer/merge/{benutzerIdHauptaccount}/{benutzerIdZweitaccount}:
+    post:
+      tags:
+        - benutzer
+      summary:
+        Merged zwei BenutzerKontos inkl. Berechtigungen und Logeintraege. Der
+        zweite Benutzer wird geloescht.
+      operationId: mergeTreuhaenderAccounts
+      parameters:
+        - name: benutzerIdHauptaccount
+          in: path
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - name: benutzerIdZweitaccount
+          in: path
+          required: true
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/benutzer/property/famzvisible:
+    get:
+      tags:
+        - benutzer
+      operationId: isFamilienzulagenVisible
+      responses:
+        default:
+          description: isFamilienzulagenVisible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationProperty'
+  /api/v1/protected/benutzer/reaktivieren/{uuid}:
+    put:
+      tags:
+        - benutzer
+      operationId: benutzerReaktivieren
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: benutzerReaktivieren
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Berechtigung'
+  /api/v1/protected/benutzer/saveSubmitglied/{mitgliedId}:
+    put:
+      tags:
+        - benutzer
+      operationId: saveSubmitglied
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitgliedBerechtigung'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitgliedBerechtigung'
+  /api/v1/protected/benutzer/sperren/{uuid}:
+    put:
+      tags:
+        - benutzer
+      description:
+        Sperrt die Berechtigung mit der übergebenen uuid und gibt die gesperrte
+        Berechtigung zurück.
+      operationId: benutzerSperren
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: benutzerSperren
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Berechtigung'
+  /api/v1/protected/benutzer/sperrenall/{benutzerId}:
+    put:
+      tags:
+        - benutzer
+      operationId: benutzerSperrenAll
+      parameters:
+        - name: benutzerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/benutzer/submitglieder/{abrechnungsnummer}:
+    get:
+      tags:
+        - benutzer
+      operationId: getSubmitglieder
+      parameters:
+        - name: abrechnungsnummer
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubmitgliedBerechtigung'
+  /api/v1/protected/benutzer/updateBenutzer:
+    put:
+      tags:
+        - benutzer
+      operationId: updateBenutzer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Benutzer'
+      responses:
+        default:
+          description: updateBenutzer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Benutzer'
+  /api/v1/protected/benutzer/updateMailAdresseBenutzer:
+    put:
+      tags:
+        - benutzer
+      description:
+        "Aktualisiert die E-Mail-Adresse des übergebenen Benutzers in ePortal,\
+        \ NIL und Keycloak."
+      operationId: updateMailAdresseBenutzer
+      parameters:
+        - name: newMailAdresse
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Benutzer'
+      responses:
+        default:
+          description: updateMailAdresseBenutzer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Benutzer'
+  /api/v1/protected/benutzer/vollmacht/{uuid}:
+    put:
+      tags:
+        - benutzer
+      operationId: benutzerVollmachtAnfordern
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: benutzerVollmachtAnfordern
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Berechtigung'
+  /api/v1/protected/benutzer/zweitregistrierung:
+    post:
+      tags:
+        - benutzer
+      operationId: sendZweitAnmeldungMail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Berechtigung'
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/confirmation/overview/{abrechnungsnummer}:
+    get:
+      tags:
+        - confirmation
+      operationId: getDistributorMeldungen
+      parameters:
+        - name: abrechnungsnummer
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DistributorMeldungDto'
+  /api/v1/protected/familienzulagen/bezueger/{mitgliedId}/{dataId}/{uploadId}:
+    delete:
+      tags:
+        - familienzulagen
+      operationId: deleteUpload
+      parameters:
+        - name: dataId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: uploadId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /api/v1/protected/familienzulagen/familienzulagen/beleg_upload:
+    post:
+      tags:
+        - familienzulagen
+      operationId: upload
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                famzDataId:
+                  type: string
+                bezeichnung:
+                  type: string
+                fileName:
+                  type: string
+                referenceId:
+                  type: string
+                belegUploadTyp:
+                  $ref: '#/components/schemas/BelegUploadTyp'
+                fileContent:
+                  type: string
+            encoding:
+              belegUploadTyp:
+                contentType: text/plain
+              fileName:
+                contentType: text/plain
+              bezeichnung:
+                contentType: text/plain
+              id:
+                contentType: text/plain
+              famzDataId:
+                contentType: text/plain
+              referenceId:
+                contentType: text/plain
+              fileContent:
+                contentType: text/plain
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/familienzulagen/famzdaten/bezueger/{mitgliedId}/{famZGeschaeftsfall}:
+    post:
+      tags:
+        - familienzulagen
+      summary:
+        Liest die FamZDaten eines schon bestehenden Bezuegers aus NIL und initialisiert
+        das zurückgegebene FamZDaten-Objekt mit dem übergebenen FamZGeschaeftsfall.
+      operationId: getBezuegerDatenNILForGeschaeftsfall
+      parameters:
+        - name: famZGeschaeftsfall
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/FamZGeschaeftsfall'
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Sozialversicherungsnummer'
+      responses:
+        default:
+          description: getBezuegerDatenNILForGeschaeftsfall
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamZDaten'
+  /api/v1/protected/familienzulagen/famzdaten/{mitgliedId}:
+    post:
+      tags:
+        - familienzulagen
+      operationId: getBezuegerDatenNIL
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Sozialversicherungsnummer'
+      responses:
+        default:
+          description: getBenutzerDatenNIL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamZDaten'
+  /api/v1/protected/familienzulagen/isKindMutierenMoeglichBeiAusbildungAbgeschlossen/{mitgliedId}/{famZDatenId}:
+    get:
+      tags:
+        - familienzulagen
+      operationId: isKindMutierenMoeglichBeiAusbildungAbgeschlossen
+      parameters:
+        - name: famZDatenId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AktionMoeglichResultDto'
+  /api/v1/protected/familienzulagen/listBezuegerAnsprueche:
+    post:
+      tags:
+        - familienzulagen
+      description:
+        Liefert eine CSV-Liste mit den Angaben zu den FAK Bezügern des
+        übergebenen Arbeitgebers für den übergebenen Zeitraum.
+      operationId: listBezuegerAnsprueche
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BezuegerAnspruchRequestDto'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+  /api/v1/protected/familienzulagen/liste/bezueger/{mitgliedId}:
+    post:
+      tags:
+        - familienzulagen
+      operationId: listBezueger
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BezuegerListeWrapper'
+  /api/v1/protected/familienzulagen/liste/verfaelle/isShow/{mitgliedId}/{bezuegerSozialVnr}/{kindSozialVnr}:
+    post:
+      tags:
+        - familienzulagen
+      operationId: setZulagenverfallIsShowFalse
+      parameters:
+        - name: bezuegerSozialVnr
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: kindSozialVnr
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EportalDate'
+      responses:
+        '201':
+          description: Created
+  /api/v1/protected/familienzulagen/liste/verfaelle/nil/{mitgliedId}:
+    post:
+      tags:
+        - familienzulagen
+      operationId: listKinderZulagenVerfaelleFuerMitglied
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /api/v1/protected/familienzulagen/liste/verfaelle/remove:
+    post:
+      tags:
+        - familienzulagen
+      operationId: removeOldLocalKinderZulagenVerfaelle
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                format: int32
+                type: integer
+  /api/v1/protected/familienzulagen/liste/verfaelle/{bezuegerSVnr}/{kindSVnr}:
+    get:
+      tags:
+        - familienzulagen
+      operationId: getKindFromZulagenVerfall
+      parameters:
+        - name: bezuegerSVnr
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: kindSVnr
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Kind'
+  /api/v1/protected/familienzulagen/liste/verfaelle/{mitgliedId}:
+    post:
+      tags:
+        - familienzulagen
+      operationId: getLocalKindZulagenVerfaelleForMitglied
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/KindZulagenVerfall'
+  /api/v1/protected/familienzulagen/local/arbeitsverhaeltnis/{mitgliedId}/{dataId}:
+    post:
+      tags:
+        - familienzulagen
+      operationId: createOrUpdateArbeitsverhaeltnis
+      parameters:
+        - name: dataId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FamZArbeitsverhaeltnis'
+      responses:
+        default:
+          description: createOrUpdateArbeitsverhealtnis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamZDaten'
+  /api/v1/protected/familienzulagen/local/bezueger/anspruchsausweis/{mitgliedId}/{vnr}:
+    get:
+      tags:
+        - familienzulagen
+      operationId: getAnspruchsausweis
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: vnr
+          in: path
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+  /api/v1/protected/familienzulagen/local/bezueger/belege/{mitgliedId}/{dataId}:
+    get:
+      tags:
+        - familienzulagen
+      operationId: getBelege
+      parameters:
+        - name: dataId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BelegUpload'
+  /api/v1/protected/familienzulagen/local/bezueger/beleginhalt/{mitgliedId}/{belegUploadId}:
+    get:
+      tags:
+        - familienzulagen
+      operationId: getBelegInhalt
+      parameters:
+        - name: belegUploadId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+  /api/v1/protected/familienzulagen/local/bezueger/{mitgliedId}/{dataId}:
+    delete:
+      tags:
+        - familienzulagen
+      operationId: removeBezueger
+      parameters:
+        - name: dataId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /api/v1/protected/familienzulagen/local/elternteil/{mitgliedId}/{dataId}:
+    post:
+      tags:
+        - familienzulagen
+      operationId: createOrUpdateElternteil
+      parameters:
+        - name: dataId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Elternteil'
+      responses:
+        default:
+          description: createOrUpdateElternteil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamZDaten'
+  /api/v1/protected/familienzulagen/local/famzdaten/{mitgliedId}:
+    post:
+      tags:
+        - familienzulagen
+      operationId: createOrUpdate
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FamZDaten'
+      responses:
+        default:
+          description: createOrUpdate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamZDaten'
+  /api/v1/protected/familienzulagen/local/famzdaten/{mitgliedId}/{dataId}:
+    get:
+      tags:
+        - familienzulagen
+      operationId: getLocalFamZData
+      parameters:
+        - name: dataId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: getLocalFamZDaten
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamZDaten'
+  /api/v1/protected/familienzulagen/local/kind/{mitgliedId}/{dataId}:
+    post:
+      tags:
+        - familienzulagen
+      operationId: createOrUpdateKind
+      parameters:
+        - name: dataId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Kind'
+      responses:
+        default:
+          description: createOrUpdateKind
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamZDaten'
+  /api/v1/protected/familienzulagen/local/kind/{mitgliedId}/{dataId}/{kindId}:
+    delete:
+      tags:
+        - familienzulagen
+      operationId: removeKind
+      parameters:
+        - name: dataId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: kindId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: removeKind
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamZDaten'
+  /api/v1/protected/familienzulagen/local/liste/{mitgliedId}/{geschaeftsfall}:
+    get:
+      tags:
+        - familienzulagen
+      operationId: listLocalBezueger
+      parameters:
+        - name: geschaeftsfall
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FamZDaten'
+  /api/v1/protected/familienzulagen/local/removeBezuegerKindMutieren/{mitgliedId}/{dataId}:
+    delete:
+      tags:
+        - familienzulagen
+      description:
+        "Löscht die FamZDaten des in Mutation befindlichen Kindes. Wenn\
+        \ das Kind kein weiteres Mal in Mutation ist, wird ein evtl. vorhandener unsichtbarer\
+        \ Eintrag in der Kinderzulagen-Verfall-Tabelle (Zulagenbewilligung prüfen)\
+        \ wieder sichtbar geschaltet."
+      operationId: removeBezuegerKindMutieren
+      parameters:
+        - name: dataId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /api/v1/protected/familienzulagen/submitAnmeldung/{mitgliedId}/{dataId}:
+    post:
+      tags:
+        - familienzulagen
+      operationId: submitAnmeldung
+      parameters:
+        - name: dataId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/log/delete:
+    post:
+      tags:
+        - log
+      operationId: deleteLogEintraege
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/LogEintrag'
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/log/get:
+    post:
+      tags:
+        - log
+      operationId: getLogEintraegeForCurrentBenutzer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventLogFilterModel'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LogEintrag'
+  /api/v1/protected/lohnmeldung/akontolohnsummemeldung/{mitgliedId}:
+    get:
+      tags:
+        - lohnmeldung
+      operationId: getAkontoLohnsummeMeldung
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AkontoLohnsumme'
+    put:
+      tags:
+        - lohnmeldung
+      operationId: updateAkontoLohnsummeMeldung
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AkontoLohnsumme'
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+        - lohnmeldung
+      operationId: submitAkontoLohnsummeMeldung
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/lohnmeldung/elmresubmission/{mitgliedId}:
+    get:
+      tags:
+        - lohnmeldung
+      operationId: getYearsELMFilesCanBeReSubmittedFor
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  format: int32
+                  type: integer
+  /api/v1/protected/lohnmeldung/fileupload/{mitgliedId}/{meldungId}/{filename}:
+    post:
+      tags:
+        - lohnmeldung
+      operationId: uploadFile
+      parameters:
+        - name: filename
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: meldungId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/lohnmeldung/getBeginnErsteEigeneUnterstellung:
+    get:
+      tags:
+        - lohnmeldung
+      operationId: getBeginnErsteEigeneUnterstellung
+      parameters:
+        - name: mitgliedId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatumDto'
+  /api/v1/protected/lohnmeldung/getDokumentKontoauszug:
+    get:
+      tags:
+        - lohnmeldung
+      operationId: getDokumentKontoauszug
+      parameters:
+        - name: beitragsjahr
+          in: query
+          schema:
+            format: int32
+            type: integer
+        - name: mitgliedId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+  /api/v1/protected/lohnmeldung/getLohnmeldungDto:
+    get:
+      tags:
+        - lohnmeldung
+      summary: Gibt die Lohnmeldung und ergänzende Daten zurück.
+      operationId: getLohnmeldungDto
+      parameters:
+        - name: mitgliedId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LohnmeldungDto'
+  /api/v1/protected/lohnmeldung/getNachmeldungDto:
+    get:
+      tags:
+        - lohnmeldung
+      summary: Gibt die Nachmeldung und ergänzende Daten zurück.
+      operationId: getNachmeldungDto
+      parameters:
+        - name: abrechnungsjahr
+          in: query
+          schema:
+            format: int32
+            type: integer
+        - name: mitgliedId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NachmeldungDto'
+  /api/v1/protected/lohnmeldung/lohnmeldung/{mitgliedId}:
+    get:
+      tags:
+        - lohnmeldung
+      operationId: getLohnmeldung
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: getLohnmeldung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lohnmeldung'
+    put:
+      tags:
+        - lohnmeldung
+      operationId: updateLohnmeldung
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Lohnmeldung'
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/lohnmeldung/lohnmeldungitem/create/{mitgliedId}:
+    put:
+      tags:
+        - lohnmeldung
+      operationId: createLohnmeldungItem
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NatPerson'
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/lohnmeldung/lohnmeldungitem/delete/{mitgliedId}/{lohnmeldungItemId}:
+    delete:
+      tags:
+        - lohnmeldung
+      operationId: deleteLohnmeldungItem
+      parameters:
+        - name: lohnmeldungItemId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /api/v1/protected/lohnmeldung/lohnmeldungitems/{mitgliedId}:
+    get:
+      tags:
+        - lohnmeldung
+      operationId: getLohnmeldungItems
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LohnmeldungItem'
+    put:
+      tags:
+        - lohnmeldung
+      operationId: updateLohnmeldungItems
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/LohnmeldungItem'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LohnmeldungItem'
+  /api/v1/protected/lohnmeldung/nachmeldung/possible/{mitgliedId}/{abrechnungsjahr}:
+    get:
+      tags:
+        - lohnmeldung
+      operationId: kannRektifikatErfasstWerden
+      parameters:
+        - name: abrechnungsjahr
+          in: path
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: kannRektifikatErfasstWerden
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /api/v1/protected/lohnmeldung/nachmeldung/{mitgliedId}:
+    put:
+      tags:
+        - lohnmeldung
+      operationId: updateNachmeldung
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Nachmeldung'
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/lohnmeldung/nachmeldung/{mitgliedId}/{abrechnungsjahr}:
+    get:
+      tags:
+        - lohnmeldung
+      operationId: getNachmeldung
+      parameters:
+        - name: abrechnungsjahr
+          in: path
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: getNachmeldung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nachmeldung'
+  /api/v1/protected/lohnmeldung/nachmeldungitem/delete/{nachmeldungItemId}:
+    delete:
+      tags:
+        - lohnmeldung
+      operationId: deleteNachmeldungItem
+      parameters:
+        - name: nachmeldungItemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /api/v1/protected/lohnmeldung/nachmeldungitems/create/{mitgliedId}/{abrechnungsjahr}:
+    put:
+      tags:
+        - lohnmeldung
+      operationId: createNachmeldungItem
+      parameters:
+        - name: abrechnungsjahr
+          in: path
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NatPerson'
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/lohnmeldung/nachmeldungitems/{mitgliedId}/{nachmeldungId}:
+    get:
+      tags:
+        - lohnmeldung
+      operationId: getNachmeldungItems
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: nachmeldungId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NachmeldungItem'
+    put:
+      tags:
+        - lohnmeldung
+      operationId: updateNachmeldungItems
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: nachmeldungId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/NachmeldungItem'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NachmeldungItem'
+  /api/v1/protected/lohnmeldung/prepaddelmsub/{mitgliedId}:
+    post:
+      tags:
+        - lohnmeldung
+      operationId: prepareForAdditionalELMSubmission
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              format: int32
+              type: integer
+      responses:
+        '201':
+          description: Created
+  /api/v1/protected/lohnmeldung/saveLohnmeldungRentnerFreibetragItemList:
+    put:
+      tags:
+        - lohnmeldung
+      summary:
+        Aktualisiert die Angabe zum Rentner-Freibetrag für die übergebenen
+        Rentner-Freibetrag-Einträge der referenzierten Lohnmeldung.
+      operationId: saveLohnmeldungRentnerFreibetragItemList
+      parameters:
+        - name: mitgliedId
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RentnerFreibetragSpeichernDto'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RentnerFreibetragDto'
+  /api/v1/protected/lohnmeldung/saveNachmeldungRentnerFreibetragItemList:
+    put:
+      tags:
+        - lohnmeldung
+      summary:
+        Aktualisiert die Angabe zum Rentner-Freibetrag für die übergebenen
+        Rentner-Freibetrag-Einträge der referenzierten Nachmeldung.
+      operationId: saveNachmeldungRentnerFreibetragItemList
+      parameters:
+        - name: mitgliedId
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RentnerFreibetragSpeichernDto'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RentnerFreibetragDto'
+  /api/v1/protected/lohnmeldung/submit/{mitgliedId}/{lohnmeldungId}:
+    put:
+      tags:
+        - lohnmeldung
+      operationId: submitLohnmeldung
+      parameters:
+        - name: lohnmeldungId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/LohnmeldungTyp'
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/lohnmeldung/submitadressmutation/{mitgliedId}:
+    post:
+      tags:
+        - lohnmeldung
+      description:
+        "Legt eine neue AdressMutation an (bzw. aktualisiert eine bestehende),\
+        \ wenn sich die Adresse des Arbeitnehmers geändert hat. Die AdressMutation\
+        \ wird hier nicht an NIL gesendet."
+      operationId: submitAdressmutation
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Arbeitsverhaeltnis'
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/lohnmeldung/submitnachmeldung/{mitgliedId}/{nachmeldungId}:
+    put:
+      tags:
+        - lohnmeldung
+      operationId: submitNachmeldung
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: nachmeldungId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/LohnmeldungTyp'
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/lohnmeldung/submitnachmeldungsuccessful/{mitgliedId}/{nachmeldungId}:
+    put:
+      tags:
+        - lohnmeldung
+      operationId: onNachmeldungSubmitSuccessful
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: nachmeldungId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/lohnmeldung/submitsuccessful/{mitgliedId}:
+    put:
+      tags:
+        - lohnmeldung
+      operationId: onSubmitSuccessful
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/lohnmeldung/unterstellungen/abrechnungsjahr/{mitgliedId}:
+    put:
+      tags:
+        - lohnmeldung
+      operationId: getOrImportUnterstellungsInfo
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              format: int32
+              type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnterstellungsInfo'
+  /api/v1/protected/lohnmeldung/unterstellungen/stichtag/{mitgliedId}:
+    put:
+      tags:
+        - lohnmeldung
+      operationId: getUnterstellungsInfo
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EportalDate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnterstellungsInfo'
+  /api/v1/protected/lohnmeldung/validate/lohnmeldung/{mitgliedId}/{filename}:
+    post:
+      tags:
+        - lohnmeldung
+      operationId: validateLohnmeldungFile
+      parameters:
+        - name: filename
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Lohnmeldung'
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/lohnmeldung/validate/nachmeldung/{mitgliedId}/{filename}:
+    post:
+      tags:
+        - lohnmeldung
+      operationId: validateNachmeldungFile
+      parameters:
+        - name: filename
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Nachmeldung'
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/mitglied/basedata/mitglied/{mitgliedId}:
+    put:
+      tags:
+        - mitglied
+      description:
+        "Liest die benötigten Daten für das übergebene Mitglied aus Nil\
+        \ ein, d.h. Lohnlisten, Unterstellungen, Tarife, etc. Das transiente Flag\
+        \ Mitglied.updated ist im zurückgegebenen Mitglied aktualisiert."
+      operationId: importBaseDataForMitgliedFromNil
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: forceReimport
+          in: query
+          schema:
+            type: boolean
+      responses:
+        default:
+          description: importBaseDataForMitgliedFromNil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mitglied'
+  /api/v1/protected/mitglied/basedata/{benutzerId}:
+    put:
+      tags:
+        - mitglied
+      description:
+        "Liest alle benötigten Daten für den übergebenen Benutzer aus Nil\
+        \ ein, d.h. Lohnlisten, Unterstellungen, Tarife, etc. Dieser Import erfolgt\
+        \ aber nur, wenn die Anzahl der vorhandenen Berechtigungen nicht EPORTAL_MAX_MITGLIED_REFRESH_IN_ONE_SHOT\
+        \ übersteigt. Ob der Import erfolgte, kann aus Berechtigung.mitglied.updated\
+        \ entnommen werden. Die Methode gibt alle Berechtigungen des Benutzers zurü\
+        ck, welche zum aktuellen Zeitpunkt noch gültig sind und für die eine Legitimierung\
+        \ erteilt wurde."
+      operationId: importBaseDataFromNil
+      parameters:
+        - name: benutzerId
+          in: path
+          required: true
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BerechtigungDto'
+  /api/v1/protected/mitglied/einstellungen/{mitgliedId}:
+    get:
+      tags:
+        - einstellungen
+      operationId: getEinstellungen
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: getEinstellungen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MitglEinstellungen'
+    put:
+      tags:
+        - einstellungen
+      operationId: setEinstellungen
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MitglEinstellungen'
+      responses:
+        '204':
+          description: No Content
+  /api/v1/protected/mitglied/history/create/{mitgliedId}/{abrechnungsnummerNeu}:
+    put:
+      tags:
+        - mitglied
+      operationId: mutiereAbrechnungsnummer
+      parameters:
+        - name: abrechnungsnummerNeu
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              format: int32
+              type: integer
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/mitglied/history/get/{mitgliedId}:
+    get:
+      tags:
+        - mitglied
+      operationId: getLatestMitgliedHistory
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: getLatestMitgliedHistory
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MitgliedHistory'
+  /api/v1/protected/mitglied/logintestkc:
+    post:
+      tags:
+        - mitglied
+      operationId: checkLoginForKCLogin
+      responses:
+        default:
+          description: checkLoginForKCLogin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BerechtigungDto'
+  /api/v1/protected/mitgliedUpload/fileUpload:
+    post:
+      tags:
+        - mitgliedUpload
+      operationId: fileUpload
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - mitgliedId
+                - fileContent
+              type: object
+              properties:
+                mitgliedId:
+                  type: string
+                  nullable: false
+                bezeichnung:
+                  type: string
+                fileName:
+                  type: string
+                referenceId:
+                  type: string
+                gueltigAb:
+                  type: string
+                mitgliedUploadTyp:
+                  $ref: '#/components/schemas/MitgliedUploadTyp'
+                fileContent:
+                  type: string
+                  nullable: false
+            encoding:
+              fileName:
+                contentType: text/plain
+              mitgliedUploadTyp:
+                contentType: text/plain
+              mitgliedId:
+                contentType: text/plain
+              bezeichnung:
+                contentType: text/plain
+              gueltigAb:
+                contentType: text/plain
+              referenceId:
+                contentType: text/plain
+              fileContent:
+                contentType: text/plain
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/mitgliedUpload/getMitgliedUploadDto:
+    get:
+      tags:
+        - mitgliedUpload
+      operationId: getMitgliedUploadTyp
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MitgliedUploadTyp'
+  /api/v1/protected/mitteilung/send/{mitgliedId}:
+    put:
+      tags:
+        - mitteilung
+      operationId: sendMitteilung
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Mitteilung'
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/mitteilung/{mitgliedId}/konversation:
+    get:
+      tags:
+        - mitteilung
+      operationId: getKonversationen
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Konversation'
+    post:
+      tags:
+        - mitteilung
+      operationId: createKonversation
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KonversationCreate'
+      responses:
+        '201':
+          description: Konversation created
+  /api/v1/protected/mitteilung/{mitgliedId}/konversation/{konversationId}:
+    get:
+      tags:
+        - mitteilung
+      operationId: getKonversation
+      parameters:
+        - name: konversationId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Konversation'
+    post:
+      tags:
+        - mitteilung
+      operationId: sendMitteilungInKonversation
+      parameters:
+        - name: konversationId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KonversationMitteilungCreate'
+      responses:
+        '201':
+          description: Mitteilung sent
+  /api/v1/protected/mitteilung/{mitgliedId}/konversation/{konversationId}/mitteilung/{mitteilungId}:
+    put:
+      tags:
+        - mitteilung
+      operationId: updateMitteilungInKonversation
+      parameters:
+        - name: konversationId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mitteilungId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KonversationMitteilungUpdate'
+      responses:
+        '202':
+          description: Mitteilung updated
+  /api/v1/protected/pendenz/elmresubmission/{mitgliedId}:
+    get:
+      tags:
+        - pendenz
+      operationId: getYearOfNewestELMSubmission
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: getYearOfNewestELMSubmission
+          content:
+            application/json:
+              schema:
+                format: int32
+                type: integer
+  /api/v1/protected/pendenz/find/{mitgliedId}:
+    get:
+      tags:
+        - pendenz
+      operationId: getPendenzenForMitglied
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pendenz'
+  /api/v1/protected/pendenz/findinbearbeitung/{mitgliedId}/{typ}/{sozialversicherungsnummer}:
+    get:
+      tags:
+        - pendenz
+      operationId: hasPendenzInBearbeitungen
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: sozialversicherungsnummer
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: typ
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: hasPendenzInBearbeitungen
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /api/v1/protected/pendenz/findopen/{mitgliedId}/{typ}:
+    get:
+      tags:
+        - pendenz
+      operationId: hasOpenPendenz
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: typ
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: hasOpenPendenz
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /api/v1/protected/pendenz/import:
+    put:
+      tags:
+        - pendenz
+      operationId: importPendenzenFromLogEintrag
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/pendenz/{mitgliedId}/{pendenzId}:
+    post:
+      tags:
+        - pendenz
+      operationId: closePendenzManually
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: pendenzId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/pendenzmitarbeiteranmeldung/find/{mitgliedId}:
+    get:
+      tags:
+        - pendenzmitarbeiteranmeldung
+      operationId: getPendenzenMitarbeiteranmeldungOpen
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PendenzMitarbeiteranmeldung'
+    post:
+      tags:
+        - pendenzmitarbeiteranmeldung
+      operationId: getPendenzMitarbeitermeldungArchiviert
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PendenzenFilterModel'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PendenzMitarbeiteranmeldung'
+  /api/v1/protected/pendenzmitteilung/find/{mitgliedId}:
+    get:
+      tags:
+        - pendenzmitteilung
+      operationId: getPendenzenMitteilungOpen
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PendenzMitteilung'
+    post:
+      tags:
+        - pendenzmitteilung
+      operationId: getPendenzMitteilungArchiviert
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PendenzMitteilung'
+  /api/v1/protected/pendenzmitteilung/{mitgliedId}/archive/{pendenzId}:
+    post:
+      tags:
+        - pendenzmitteilung
+      operationId: pendenzMitteilungArchivieren
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: pendenzId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/print/famzanmeldung/{famzDataId}:
+    get:
+      tags:
+        - print
+      operationId: printFamzAnmeldungBezueger
+      parameters:
+        - name: famzDataId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: locale
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+  /api/v1/protected/print/famzanmeldungarbeitgeber{famzDataId}:
+    get:
+      tags:
+        - print
+      operationId: printFamzAnmeldungArbeitgeber
+      parameters:
+        - name: famzDataId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: locale
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+  /api/v1/protected/print/famzmutation/{famzDataId}:
+    get:
+      tags:
+        - print
+      operationId: printFamzMutation
+      parameters:
+        - name: famzDataId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: locale
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+  /api/v1/protected/print/lohnliste/{mitgliedId}:
+    get:
+      tags:
+        - print
+      operationId: printLohnliste
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: locale
+          in: query
+          schema:
+            type: string
+        - name: meldungId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+  /api/v1/protected/print/rekap/{mitgliedId}:
+    get:
+      tags:
+        - print
+      operationId: printRekap
+      parameters:
+        - name: mitgliedId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: locale
+          in: query
+          schema:
+            type: string
+        - name: meldungId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+  /api/v1/protected/print/versicherungsnachweise/{pendenzID}:
+    get:
+      tags:
+        - print
+      operationId: getDokument
+      parameters:
+        - name: pendenzID
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+  /api/v1/protected/stammdaten/applicationproperty/{name}:
+    post:
+      tags:
+        - stammdaten
+      operationId: setApplicationProperty
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/stammdaten/exportBerechtigungen:
+    post:
+      tags:
+        - stammdaten
+      operationId: exportActiveBerechtigungenToNIL
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/stammdaten/gettarife/{jahr}:
+    get:
+      tags:
+        - stammdaten
+      operationId: getTarife
+      parameters:
+        - name: jahr
+          in: path
+          required: true
+          schema:
+            format: int32
+            type: integer
+      responses:
+        default:
+          description: getTarife
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tarife'
+  /api/v1/protected/stammdaten/import:
+    post:
+      tags:
+        - stammdaten
+      operationId: importStammdaten
+      parameters:
+        - name: stammdatenTyp
+          in: query
+          schema:
+            $ref: '#/components/schemas/StammdatenTyp'
+      responses:
+        '200':
+          description: OK
+  /api/v1/protected/stammdaten/importtarife/{jahr}:
+    post:
+      tags:
+        - stammdaten
+      operationId: importTarife
+      parameters:
+        - name: jahr
+          in: path
+          required: true
+          schema:
+            format: int32
+            type: integer
+      responses:
+        default:
+          description: importTarife
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tarife'
+  /api/v1/protected/stammdaten/isdebug:
+    get:
+      tags:
+        - stammdaten
+      operationId: isDebugMode
+      responses:
+        default:
+          description: isDebugMode
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /api/v1/protected/stammdaten/setNewsVerwaltungInfoTexte:
+    post:
+      tags:
+        - stammdaten
+      summary:
+        Speichert die übergebenen Infotexte der Newsverwaltung. Evtl. vorhandene
+        JavaScript-Script-Tags werden aus den Infotexten entfernt.
+      operationId: setNewsVerwaltungInfoTexte
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewsVerwaltungDto'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsVerwaltungDto'
+  /api/v1/protected/stammdatenverwaltung/getAktuelleAdressen:
+    get:
+      tags:
+        - stammdatenverwaltung
+      summary:
+        "Gibt die Daten zu der aktuell gültigen Geschäfts-, Privat-, Rechtssitz-\
+        \ und Vertreteradresse zurück."
+      operationId: getAktuelleAdressen
+      parameters:
+        - name: mitgliedId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StammdatenAdressenDto'
+  /api/v1/protected/stammdatenverwaltung/getAktuelleKontoangaben:
+    get:
+      tags:
+        - stammdatenverwaltung
+      summary:
+        "Gibt die aktuellen Kontoangaben zum übergebenen Mitglied zurück. Wenn\
+        \ keine Kontoangaben vorhanden sind, wird null zurückgegeben."
+      operationId: getAktuelleKontoangaben
+      parameters:
+        - name: mitgliedId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KontoangabenDto'
+  /api/v1/protected/stammdatenverwaltung/getAktuelleUnterstellungsdaten:
+    get:
+      tags:
+        - stammdatenverwaltung
+      summary:
+        "Gibt die aktuellen Unterstellungsdaten zum übergebenen Mitglied zurü\
+        ck. Wenn keine Unterstellungsdaten vorhanden sind, wird ein Objekt mit null\
+        \ Werte zurückgegeben."
+      operationId: getAktuelleUnterstellungsdaten
+      parameters:
+        - name: mitgliedId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnterstellungsdatenDto'
+  /api/v1/protected/stammdatenverwaltung/getAktuelleVersicherungen:
+    get:
+      tags:
+        - stammdatenverwaltung
+      summary: Gibt die Daten zu der aktuell gültigen UVG- und BVG-Versicherung zurück.
+      operationId: getAktuelleVersicherungen
+      parameters:
+        - name: mitgliedId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UvgBvgDto'
+  /api/v1/protected/stammdatenverwaltung/getBeginnErsteEigeneAhvUnterstellung:
+    get:
+      tags:
+        - stammdatenverwaltung
+      operationId: getBeginnErsteEigeneAhvUnterstellung
+      parameters:
+        - name: mitgliedId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatumDto'
+  /api/v1/protected/stammdatenverwaltung/getDokumentAnschlussbestaetigung:
+    get:
+      tags:
+        - stammdatenverwaltung
+      operationId: getDokumentAnschlussbestaetigung
+      parameters:
+        - name: mitgliedId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+  /api/v1/protected/stammdatenverwaltung/getDokumentBezahlungSozialversicherungsbeitraegeBestaetigung:
+    get:
+      tags:
+        - stammdatenverwaltung
+      operationId: getDokumentBezahlungSozialversicherungsbeitraegeBestaetigung
+      parameters:
+        - name: mitgliedId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+  /api/v1/protected/stammdatenverwaltung/getHistorieBvgVersicherungen:
+    get:
+      tags:
+        - stammdatenverwaltung
+      summary:
+        Gibt die nach gültig von absteigend sortierte Historien-Liste der BVG-Versicherungen
+        zurück.
+      operationId: getHistorieBvgVersicherungen
+      parameters:
+        - name: mitgliedId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VersichererDto'
+  /api/v1/protected/stammdatenverwaltung/getHistorieUvgVersicherungen:
+    get:
+      tags:
+        - stammdatenverwaltung
+      summary:
+        Gibt die nach gültig von absteigend sortierte Historien-Liste der UVG-Versicherungen
+        zurück.
+      operationId: getHistorieUvgVersicherungen
+      parameters:
+        - name: mitgliedId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VersichererDto'
+  /api/v1/protected/stammdatenverwaltung/mitgliedAbmelden:
+    post:
+      tags:
+        - stammdatenverwaltung
+      operationId: mitgliedAbmelden
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MitgliedAbmeldenDto'
+      responses:
+        '201':
+          description: Created
+  /api/v1/protected/stammdatenverwaltung/mutiereAdresse:
+    post:
+      tags:
+        - stammdatenverwaltung
+      summary:
+        Zum Erfassen einer neuen oder Mutieren einer bestehenden Adresse eines
+        Mitglieds.
+      operationId: mutiereAdresse
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdresseMutierenDto'
+      responses:
+        '201':
+          description: Created
+  /api/v1/protected/stammdatenverwaltung/mutiereIban:
+    post:
+      tags:
+        - stammdatenverwaltung
+      operationId: mutiereIban
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IbanMutierenDto'
+      responses:
+        '201':
+          description: Created
+  /api/v1/protected/stammdatenverwaltung/mutiereSprache:
+    post:
+      tags:
+        - stammdatenverwaltung
+      operationId: mutiereSprache
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpracheMutierenDto'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mitglied'
+  /api/v1/protected/stammdatenverwaltung/setAdresseAlsZustelladresse:
+    post:
+      tags:
+        - stammdatenverwaltung
+      summary:
+        "Setzt den übergebenen Adresstyp (Geschäfts-, Privat-, Rechtssitz-\
+        \ oder Vertreteradresse) als neue Zustelladresse."
+      operationId: setAdresseAlsZustelladresse
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ZustelladresseMutierenDto'
+      responses:
+        '201':
+          description: Created
+  /api/v1/protected/stammdatenverwaltung/versicherungAbmelden:
+    post:
+      tags:
+        - stammdatenverwaltung
+      summary:
+        Mit dieser Funktion wird das Ende eines UVG/BVG-Versicherungsverhältnisses
+        gemeldet.
+      operationId: versicherungAbmelden
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersichererAbmeldenDto'
+      responses:
+        '201':
+          description: Created
+  /api/v1/protected/wartungsfenster/future:
+    get:
+      tags:
+        - wartungsfenster
+      operationId: getFutureWartungsfenster
+      responses:
+        default:
+          description: getFutureWartungsfenster
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wartungsfenster'
+    put:
+      tags:
+        - wartungsfenster
+      operationId: createFutureWartungsfenster
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Wartungsfenster'
+      responses:
+        default:
+          description: getFutureWartungsfenster
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wartungsfenster'
+  /api/v1/protected/wartungsfenster/{id}:
+    delete:
+      tags:
+        - wartungsfenster
+      operationId: deleteWartungsfenster
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/public/backgroundcolor:
+    get:
+      tags:
+        - unauthenticated
+      operationId: getBackgroundColor
+      responses:
+        default:
+          description: getBackgroundColor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationProperty'
+  /api/v1/public/captcha:
+    get:
+      tags:
+        - unauthenticated
+      summary: Captcha image
+      operationId: getCaptchaImage
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+  /api/v1/public/confirmation:
+    put:
+      tags:
+        - confirmation
+      operationId: submitDistributormeldung
+      parameters:
+        - name: loginKey
+          in: query
+          schema:
+            type: string
+        - name: loginPassword
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DistributorMeldung'
+      responses:
+        '204':
+          description: No Content
+  /api/v1/public/confirmation/delete:
+    put:
+      tags:
+        - confirmation
+      operationId: deleteDistributormeldung
+      parameters:
+        - name: loginKey
+          in: query
+          schema:
+            type: string
+        - name: loginPassword
+          in: query
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /api/v1/public/confirmation/distributormeldung/{loginKey}/{loginPassword}:
+    get:
+      tags:
+        - confirmation
+      operationId: getDistributorMeldungByKey
+      parameters:
+        - name: loginKey
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: loginPassword
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DistributorMeldungDto'
+  /api/v1/public/confirmation/otheropen:
+    get:
+      tags:
+        - confirmation
+      operationId: hasOtherOpenDistributormeldungen
+      parameters:
+        - name: loginKey
+          in: query
+          schema:
+            type: string
+        - name: loginPassword
+          in: query
+          schema:
+            type: string
+      responses:
+        default:
+          description: hasOtherOpenDistributormeldungen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DistributorMeldung'
+  /api/v1/public/devmode:
+    get:
+      tags:
+        - unauthenticated
+      summary: Are we in development mode?
+      operationId: isDevMode
+      responses:
+        default:
+          description: isDevMode
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /api/v1/public/getNewsVerwaltungInfoTexte:
+    get:
+      tags:
+        - unauthenticated
+      summary: 'Gibt die Infotexte (De, Fr, It) für die Newsverwaltung zurück.'
+      operationId: getNewsVerwaltungInfoTexte
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsVerwaltungDto'
+  /api/v1/public/isStammdatenverwaltungActive:
+    get:
+      tags:
+        - unauthenticated
+      summary: "Gibt an, ob der Reiter (Anwendungsfall) 'Stammdaten' sichtbar ist."
+      operationId: isStammdatenverwaltungActive
+      responses:
+        default:
+          description: isStammdatenverwaltungActive
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /api/v1/public/kasse:
+    get:
+      tags:
+        - unauthenticated
+      summary: Which AK are we serving?
+      operationId: getAusgleichkasse
+      responses:
+        default:
+          description: getAusgleichskasse
+          content:
+            text/plain:
+              schema:
+                type: string
+  /api/v1/public/keycloakconfig:
+    get:
+      tags:
+        - unauthenticated
+      summary: Load keycloak / oidc configuration for Webclient
+      operationId: loadKeycloakConfig
+      responses:
+        '200':
+          description: OK
+  /api/v1/public/mitglied/versicherer/bvg/{abrechnungsnummer}:
+    get:
+      tags:
+        - mitglied
+      operationId: getAktuellerBvgVersicherer
+      parameters:
+        - name: abrechnungsnummer
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: loginKey
+          in: query
+          schema:
+            type: string
+        - name: loginPassword
+          in: query
+          schema:
+            type: string
+      responses:
+        default:
+          description: getAktuellerBvgVersicherer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Versicherer'
+  /api/v1/public/mitglied/versicherer/uvg/{abrechnungsnummer}:
+    get:
+      tags:
+        - mitglied
+      operationId: getAktuellerUVGVersicherer
+      parameters:
+        - name: abrechnungsnummer
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: loginKey
+          in: query
+          schema:
+            type: string
+        - name: loginPassword
+          in: query
+          schema:
+            type: string
+      responses:
+        default:
+          description: getAktuellerUVGVersicherer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Versicherer'
+  /api/v1/public/plzs/{land}/{plz}:
+    get:
+      tags:
+        - unauthenticated
+      operationId: getMatchingPLZVerzOrte
+      parameters:
+        - name: land
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Land'
+        - name: plz
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlzVerzeichnis'
+  /api/v1/public/print/endreceiver/rekap/{key}:
+    get:
+      tags:
+        - print
+      operationId: printRekapDistributormeldung
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: abrechnungsnummer
+          in: query
+          schema:
+            type: string
+        - name: locale
+          in: query
+          schema:
+            type: string
+        - name: password
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+  /api/v1/public/saveRentnerFreibetragItemList:
+    put:
+      tags:
+        - confirmation
+      operationId: saveRentnerFreibetragItemList
+      parameters:
+        - name: loginKey
+          in: query
+          schema:
+            type: string
+        - name: loginPassword
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RentnerFreibetragSpeichernDto'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RentnerFreibetragDto'
+  /api/v1/public/stammdaten/versicherer:
+    post:
+      tags:
+        - stammdaten
+      operationId: searchVersicherer
+      parameters:
+        - name: suchbegriff
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/VersichererTyp'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Versicherer'
+  /api/v1/searchMitglied:
+    get:
+      tags:
+        - mitglied
+      summary:
+        "Sucht das Mitglied mit der übergebenen Abrechnungsnummer. Die Suche\
+        \ erfolgt immer direkt in Nil, egal ob das Mitglied in ePortal bereits vorhanden\
+        \ ist oder nicht. Das Mitglied wird im ePortal neu erstellt, wenn es noch\
+        \ nicht vorhanden ist. Ansonsten wird es aktualisiert."
+      operationId: searchMitglied
+      parameters:
+        - name: abrechnungsnummer
+          in: query
+          schema:
+            type: string
+      responses:
+        default:
+          description: searchMitglied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mitglied'
+  /api/v1/searchMitgliedInNilMitHistoryInfo:
+    get:
+      tags:
+        - mitglied
+      summary:
+        "Sucht das Mitglied mit der übergebenen Abrechnungsnummer. Die Suche\
+        \ erfolgt immer direkt in Nil, egal ob das Mitglied in ePortal bereits vorhanden\
+        \ ist oder nicht. Das Mitglied wird im ePortal neu erstellt, wenn es noch\
+        \ nicht vorhanden ist. Ansonsten wird es aktualisiert. Zudem wird geprüft,\
+        \ ob die übergebene Abrechnungsnummer mutiert wurde und somit nicht mehr aktuell\
+        \ ist. Das zurückgegebene Objekt enthält immer auch die aktuelle Abrechnungnummer.\
+        \ Wenn die Abrechnungsnummer nicht mutiert wurde, ist die aktuelle Abrechnungsnummer\
+        \ identisch mit der übergebenen."
+      operationId: searchMitgliedInNilMitHistoryInfo
+      parameters:
+        - name: abrechnungsnummer
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MitgliedMitHistoryInfo'
+  /api/v1/test:
+    get:
+      tags:
+        - test
+      operationId: getTest
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /api/v1/test/private:
+    get:
+      tags:
+        - test
+      operationId: getTestPrivate
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    Abmeldungsgrund:
+      enum:
+        - CODE_GEMAESS_BEMERKUNGSFELD
+        - CODE_KASSENWECHSEL_VAK
+        - CODE_BETRIEBSAUFGABE
+        - CODE_BETRIEBSUEBERGABE
+        - CODE_KONKURS
+        - CODE_UMWANDLUNG
+        - CODE_VERSTORBEN
+        - CODE_ALTERSRENTNER
+        - CODE_WEGZUG
+        - CODE_WIEDER_ARBEITNEHMER
+        - CODE_AUS_SHAB_GELOESCHT
+        - CODE_SITZVERLEGUNG
+        - CODE_AUFLOESUNG_AV
+        - CODE_AUFGABE_TAETIGKEIT
+        - CODE_BEITRAGSPFLICHT_BEI_EHEPARTNER
+        - CODE_ERLASSFALL
+        - CODE_UNBEKANNT_VERZOGEN
+        - CODE_AUSSCHLUSS_FREIWILLIG
+        - CODE_WEGZUG_AUS_CH
+        - CODE_FAKTURA_NICHT_BEZAHLT
+        - CODE_LOHNBESCHEINIGUNG_NICHT_EINGEREICHT
+        - CODE_LOHNSUMME_ZU_HOCH
+        - CODE_UMQUALIFIZIERUNG_VON_SE_IN_USE
+        - CODE_AG_OHNE_BESCHAEFTIGTE
+        - CODE_AG_AENDERUNG_FIRMENBEZEICHNUNG
+        - CODE_STUDENT_IN_ANDEREM_KANTON
+        - CODE_STUDIUM_IM_KANTON_BEENDET
+        - CODE_ANNULLIERT
+      type: string
+    AdressTyp:
+      enum:
+        - UNBEKANNT
+        - PRIVAT
+        - PRIVAT_VAK
+        - GESCHAEFT
+        - GESCHAEFT_VAK
+        - BGSA_AN
+        - STUDENT
+        - KORRESPONDENZ
+        - FAK_KORRESPONDENZ
+        - PRIVAT_ADRESSE_RENTNER
+        - ZUSATZ_ADRESSE_1_VERTRETER
+        - ZUSATZ_ADRESSE_2_EHEMANN
+        - ZUSATZ_ADRESSE_3_BANK
+        - ZUSATZ_ADRESSE_4_RECHTSSITZ
+        - ZUSATZ_ADRESSE_5
+        - EO_ENTSCHEID
+        - WOHNSITZ_VAK
+        - RECHTSSITZ_VAK
+        - KANTONALE_BESCHWERDESTELLE
+        - KANTONALE_IVSTELLE
+        - INKASSO_MITTEILUNG
+        - HAUPT_ADRESSE_SE
+        - BETREIBUNGSADRESSE_CH
+        - ZUSTELL_ADRESSE_LEISTUNGEN
+        - DRITTADRESSE_LEISTUNGEN
+        - WOHNADRESSE_LEISTUNGEN
+        - STRASSENADRESSE_LEISTUNGEN
+        - POSTFACHADRESSE_LEISTUNGEN
+        - ADDITIONAL_UID_ADRESSE
+        - POSTBOX_UID_ADRESSE
+        - POSTFACHADRESSE_NIL
+        - FILIAL
+        - FILIALSITZ
+        - LIEGENSCHAFTSADRESSE
+        - ZUSATZADRESSE
+        - AUFENTHALTSADRESSE
+      type: string
+    AdresseDto:
+      required:
+        - adressname1
+        - plz
+        - land
+      type: object
+      properties:
+        anrede:
+          $ref: '#/components/schemas/Anrede'
+        adressname1:
+          type: string
+          nullable: false
+        adressname2:
+          type: string
+        adresseGueltigAb:
+          format: date
+          type: string
+        ort:
+          type: string
+        plz:
+          type: string
+          nullable: false
+        kantonkuerzel:
+          $ref: '#/components/schemas/KantonCode'
+        land:
+          allOf:
+            - $ref: '#/components/schemas/Land'
+            - nullable: false
+        plzZusatz:
+          type: string
+        isPostfach:
+          type: boolean
+        postfachNr:
+          format: int32
+          type: integer
+        strasse:
+          type: string
+          deprecated: true
+        strasseOhneNummer:
+          type: string
+        hausnummer:
+          type: string
+        zusatz1:
+          type: string
+        zusatz2:
+          type: string
+        adressTyp:
+          $ref: '#/components/schemas/AdressTyp'
+        istZustelladresse:
+          type: boolean
+    AdresseKorrigiertDto:
+      description:
+        "Dto enthält eine Adresse und die Information, ob es sich um eine\
+        \ mutierte Adresse handelt, bei der die Mutation noch offen ist."
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        changed:
+          type: boolean
+        anrede:
+          $ref: '#/components/schemas/Anrede'
+        adressname1:
+          maxLength: 255
+          minLength: 0
+          type: string
+        adressname2:
+          maxLength: 255
+          minLength: 0
+          type: string
+        adresseGueltigAb:
+          format: date
+          type: string
+        kantonkuerzel:
+          $ref: '#/components/schemas/KantonCode'
+        land:
+          $ref: '#/components/schemas/Land'
+        ort:
+          maxLength: 255
+          minLength: 0
+          type: string
+        plz:
+          maxLength: 15
+          minLength: 0
+          type: string
+        plzZusatz:
+          type: string
+        isPostfach:
+          type: boolean
+        postfachNr:
+          format: int32
+          type: integer
+        strasse:
+          maxLength: 255
+          minLength: 0
+          type: string
+          deprecated: true
+        strasseOhneNummer:
+          maxLength: 255
+          minLength: 0
+          type: string
+        hausnummer:
+          maxLength: 255
+          minLength: 0
+          type: string
+        zusatz1:
+          maxLength: 255
+          minLength: 0
+          type: string
+        zusatz2:
+          maxLength: 255
+          minLength: 0
+          type: string
+        version:
+          format: int64
+          type: integer
+          xml:
+            attribute: true
+        mutationPendent:
+          type: boolean
+          xml:
+            attribute: true
+    AdresseMutierenDto:
+      description:
+        "Enthält Daten für eine Adressmutation einer Adresse (Geschäfts-,\
+        \ Privat- oder Rechtssitzadresse) des Mitglieds."
+      required:
+        - mitgliedId
+        - adresse
+      type: object
+      properties:
+        mitgliedId:
+          type: string
+          nullable: false
+        adresse:
+          allOf:
+            - $ref: '#/components/schemas/AdresseDto'
+            - nullable: false
+    AdresseNotNullable:
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        changed:
+          type: boolean
+        anrede:
+          $ref: '#/components/schemas/Anrede'
+        adressname1:
+          maxLength: 255
+          minLength: 0
+          type: string
+        adressname2:
+          maxLength: 255
+          minLength: 0
+          type: string
+        kantonkuerzel:
+          $ref: '#/components/schemas/KantonCode'
+        plzZusatz:
+          type: string
+        isPostfach:
+          type: boolean
+        postfachNr:
+          format: int32
+          type: integer
+        strasse:
+          maxLength: 255
+          minLength: 0
+          type: string
+          deprecated: true
+        hausnummer:
+          maxLength: 255
+          minLength: 0
+          type: string
+        zusatz1:
+          maxLength: 255
+          minLength: 0
+          type: string
+        zusatz2:
+          maxLength: 255
+          minLength: 0
+          type: string
+        version:
+          format: int64
+          type: integer
+          xml:
+            attribute: true
+        strasseOhneNummer:
+          maxLength: 255
+          minLength: 0
+          type: string
+        adresseGueltigAb:
+          format: date
+          type: string
+        land:
+          $ref: '#/components/schemas/Land'
+        ort:
+          maxLength: 255
+          minLength: 0
+          type: string
+        plz:
+          maxLength: 15
+          minLength: 0
+          type: string
+    AdresseNullable:
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        changed:
+          type: boolean
+        anrede:
+          $ref: '#/components/schemas/Anrede'
+        adressname1:
+          maxLength: 255
+          minLength: 0
+          type: string
+        adressname2:
+          maxLength: 255
+          minLength: 0
+          type: string
+        adresseGueltigAb:
+          format: date
+          type: string
+        kantonkuerzel:
+          $ref: '#/components/schemas/KantonCode'
+        land:
+          $ref: '#/components/schemas/Land'
+        ort:
+          maxLength: 255
+          minLength: 0
+          type: string
+        plz:
+          maxLength: 15
+          minLength: 0
+          type: string
+        plzZusatz:
+          type: string
+        isPostfach:
+          type: boolean
+        postfachNr:
+          format: int32
+          type: integer
+        strasse:
+          maxLength: 255
+          minLength: 0
+          type: string
+          deprecated: true
+        strasseOhneNummer:
+          maxLength: 255
+          minLength: 0
+          type: string
+        hausnummer:
+          maxLength: 255
+          minLength: 0
+          type: string
+        zusatz1:
+          maxLength: 255
+          minLength: 0
+          type: string
+        zusatz2:
+          maxLength: 255
+          minLength: 0
+          type: string
+        version:
+          format: int64
+          type: integer
+          xml:
+            attribute: true
+    AkontoLohnsumme:
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        mitglied:
+          $ref: '#/components/schemas/Mitglied'
+        voraussichtlicheAhvLohn:
+          maximum: 9999999999999.99
+          minimum: 0
+          type: number
+        voraussichtlicheAlv2Lohn:
+          maximum: 9999999999999.99
+          minimum: 0
+          type: number
+        voraussichtlicheAlvLohn:
+          maximum: 9999999999999.99
+          minimum: 0
+          type: number
+        voraussichtlicheFakLohn:
+          maximum: 9999999999999.99
+          minimum: 0
+          type: number
+        voraussichtlicheKinderzulagen:
+          maximum: 9999999999999.99
+          minimum: 0
+          type: number
+        bemerkungen:
+          maxLength: 255
+          minLength: 1
+          type: string
+    AktionMoeglichResultDto:
+      description: 'Enthält das Prüfergebnis, ob die Aktion durchgeführt werden kann.'
+      required:
+        - aktionMoeglich
+      type: object
+      properties:
+        aktionMoeglich:
+          type: boolean
+          nullable: false
+    Anrede:
+      enum:
+        - FRAU
+        - HERR
+      type: string
+    ApplicationProperty:
+      required:
+        - name
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        name:
+          maxLength: 255
+          type: string
+          nullable: false
+        value:
+          maxLength: 8000
+          type: string
+    Arbeitsverhaeltnis:
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        datumEintritt:
+          format: date
+          type: string
+        natPerson:
+          $ref: '#/components/schemas/NatPerson'
+        mitglied:
+          $ref: '#/components/schemas/Mitglied'
+        duplikatAusweisVerlangt:
+          type: boolean
+        datumAustritt:
+          format: date
+          type: string
+        anspruchsausweisErstellen:
+          type: boolean
+    ArbeitsverhaeltnisListeWrapper:
+      type: object
+      properties:
+        arbeitsverhaeltnisList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Arbeitsverhaeltnis'
+        noimport:
+          type: boolean
+    AusweisduplikatBestellenResult:
+      enum:
+        - OK
+        - OFFENE_PENDENZ_AN_AUSWEISDUPLIKAT_VORHANDEN
+      type: string
+    AusweisduplikatBestellenResultDto:
+      type: object
+      properties:
+        ausweisduplikatBestellenResult:
+          $ref: '#/components/schemas/AusweisduplikatBestellenResult'
+    Beleg:
+      type: object
+      properties:
+        perPost:
+          type: boolean
+        sendTyp:
+          $ref: '#/components/schemas/BelegSendTyp'
+        dokumentOid:
+          maxLength: 36
+          minLength: 36
+          type: string
+        formular:
+          $ref: '#/components/schemas/UploadFile'
+        uploads:
+          type: array
+          items:
+            $ref: '#/components/schemas/BelegUpload'
+        pendenzId:
+          type: string
+    BelegSendTyp:
+      enum:
+        - UPLOAD
+        - POST
+      type: string
+    BelegUpload:
+      required:
+        - bezeichnung
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        version:
+          format: int64
+          type: integer
+        timestampErstellt:
+          format: date
+          type: string
+        content:
+          $ref: '#/components/schemas/FileContent'
+        fileName:
+          type: string
+        bezeichnung:
+          type: string
+          nullable: false
+        referenceId:
+          type: string
+        belegUploadTyp:
+          $ref: '#/components/schemas/BelegUploadTyp'
+    BelegUploadTyp:
+      enum:
+        - BELEG_UPLOAD
+        - SORGERECHT_BESTAETIGUNG_GEMEINSAME_ELTERLICHE_SORGE
+        - SORGERECHT_BESTAETIGUNG_GEMEINSAME_ELTERLICHE_SORGE_TEMP_REF_ID
+        - ANDERWEITIGER_BEZUG_BESTAETIGUNG_BEZOGENE_LEISTUNGEN
+      type: string
+    Benutzer:
+      required:
+        - sprache
+        - adresse
+        - telefon1
+        - mail
+        - name
+        - vorname
+        - geschlecht
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        type:
+          type: string
+        benutzerId:
+          format: int32
+          type: integer
+        sprache:
+          allOf:
+            - $ref: '#/components/schemas/Sprache'
+            - nullable: false
+        adresse:
+          allOf:
+            - $ref: '#/components/schemas/AdresseNotNullable'
+            - nullable: false
+        telefon1:
+          allOf:
+            - $ref: '#/components/schemas/Telefon'
+            - nullable: false
+        telefon2:
+          $ref: '#/components/schemas/Telefon'
+        fax:
+          maxLength: 20
+          minLength: 1
+          type: string
+        mail:
+          maxLength: 255
+          minLength: 5
+          type: string
+          nullable: false
+        kontoInformation:
+          $ref: '#/components/schemas/KontoInformation'
+        kcImportDate:
+          format: date
+          type: string
+        name:
+          maxLength: 255
+          minLength: 1
+          type: string
+          nullable: false
+        vorname:
+          maxLength: 255
+          minLength: 1
+          type: string
+          nullable: false
+        geschlecht:
+          allOf:
+            - $ref: '#/components/schemas/Geschlecht'
+            - nullable: false
+        kcImported:
+          type: boolean
+    BenutzerFilterModel:
+      type: object
+      properties:
+        abrechnungsnummer:
+          format: int32
+          type: integer
+        mitglied:
+          type: string
+        datumVon:
+          format: date
+          type: string
+        datumBis:
+          format: date
+          type: string
+        benutzerId:
+          format: int32
+          type: integer
+        name:
+          type: string
+        vorname:
+          type: string
+        status:
+          $ref: '#/components/schemas/BenutzerStatus'
+        rolle:
+          $ref: '#/components/schemas/Rolle'
+        isGesperrt:
+          type: boolean
+        email:
+          type: string
+        gesperrt:
+          type: boolean
+    BenutzerStatus:
+      enum:
+        - ANTRAG
+        - ABGELEHNT
+        - VOLLMACHT_ANGEFORDERT
+        - LEGITIMIERT
+      type: string
+    Berechtigung:
+      required:
+        - rolle
+        - datumVon
+        - datumBis
+        - registrierung
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        mitglied:
+          $ref: '#/components/schemas/Mitglied'
+        benutzer:
+          $ref: '#/components/schemas/Benutzer'
+        rolle:
+          allOf:
+            - $ref: '#/components/schemas/Rolle'
+            - nullable: false
+        datumVon:
+          format: date
+          type: string
+          nullable: false
+        datumBis:
+          format: date
+          type: string
+          nullable: false
+        registrierung:
+          allOf:
+            - $ref: '#/components/schemas/Registrierung'
+            - nullable: false
+    BerechtigungDto:
+      description: DTO um SubmitgliedBerechtigung und Berechtigung zusammenzufassen
+      required:
+        - rolle
+        - datumVon
+        - datumBis
+        - registrierung
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        mitglied:
+          $ref: '#/components/schemas/Mitglied'
+        benutzer:
+          $ref: '#/components/schemas/Benutzer'
+        rolle:
+          allOf:
+            - $ref: '#/components/schemas/Rolle'
+            - nullable: false
+        datumVon:
+          format: date
+          type: string
+          nullable: false
+        datumBis:
+          format: date
+          type: string
+          nullable: false
+        registrierung:
+          allOf:
+            - $ref: '#/components/schemas/Registrierung'
+            - nullable: false
+        submitgliedRolle:
+          $ref: '#/components/schemas/SubmitgliedRolle'
+    BerechtigungUpdateDto:
+      type: object
+      properties:
+        id:
+          type: string
+        rolle:
+          $ref: '#/components/schemas/Rolle'
+        bemerkung:
+          type: string
+    BerechtigungenAntragDto:
+      description:
+        "Enthält die Daten, um für einen Benutzer eine neue Berechtigung\
+        \ (= Zuständigkeit für ein Mitglied) zu beantragen."
+      type: object
+      properties:
+        abrechnungsNrMitglied:
+          type: string
+          xml:
+            attribute: true
+        firma:
+          type: string
+          xml:
+            attribute: true
+        firmaZusatz:
+          type: string
+          xml:
+            attribute: true
+    BezuegerAnspruchRequestDto:
+      required:
+        - mitgliedId
+        - datumVon
+        - datumBis
+      type: object
+      properties:
+        mitgliedId:
+          type: string
+          nullable: false
+        datumVon:
+          format: date
+          type: string
+          nullable: false
+        datumBis:
+          format: date
+          type: string
+          nullable: false
+        language:
+          type: string
+    BezuegerDto:
+      type: object
+      properties:
+        name:
+          type: string
+        vorname:
+          type: string
+        geburtsdatum:
+          format: date
+          type: string
+        avGueltigAb:
+          format: date
+          type: string
+        avGueltigBis:
+          format: date
+          type: string
+        sozialversicherungsnummer:
+          $ref: '#/components/schemas/Sozialversicherungsnummer'
+    BezuegerListeWrapper:
+      type: object
+      properties:
+        bezuegerList:
+          type: array
+          items:
+            $ref: '#/components/schemas/BezuegerDto'
+        noimport:
+          type: boolean
+    CreateBenutzerWithCaptchaCheckDto:
+      type: object
+      properties:
+        berechtigung:
+          $ref: '#/components/schemas/Berechtigung'
+        abrechnungsnummer:
+          type: string
+    DatumDto:
+      type: object
+      properties:
+        datum:
+          format: date
+          type: string
+    DistributorDomain:
+      enum:
+        - AHV
+        - FAK
+        - UVG
+        - UVGZ
+        - KTG
+        - BVG
+        - Tax
+        - Statistic
+        - TaxAtSource
+      type: string
+    DistributorMeldung:
+      required:
+        - jahr
+        - datumVon
+        - datumBis
+        - status
+        - loginKey
+        - passwordToken
+        - abrechnungsnummer
+        - transmissionDate
+        - declarationID
+        - domainIdentification
+        - meldungType
+        - sprache
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        jahr:
+          format: int32
+          type: integer
+          nullable: false
+        datumVon:
+          format: date
+          type: string
+          nullable: false
+        datumBis:
+          format: date
+          type: string
+          nullable: false
+        status:
+          allOf:
+            - $ref: '#/components/schemas/LohnmeldungStatus'
+            - nullable: false
+        typ:
+          $ref: '#/components/schemas/LohnmeldungTyp'
+        bemerkungen:
+          maxLength: 4000
+          minLength: 1
+          type: string
+        gemeldeteLohnsumme:
+          type: number
+        totalAlv:
+          type: number
+        totalAlv2:
+          type: number
+        totalFak:
+          type: number
+        totalKiz:
+          type: number
+        totalQst:
+          type: number
+        filename:
+          maxLength: 255
+          minLength: 1
+          type: string
+        versichererUVG:
+          $ref: '#/components/schemas/Versicherer'
+        versichererBVG:
+          $ref: '#/components/schemas/Versicherer'
+        versichererUvgIdElm:
+          type: string
+        versichererBvgIdElm:
+          type: string
+        result:
+          $ref: '#/components/schemas/DistributorMeldungResult'
+        loginKey:
+          type: string
+          nullable: false
+        passwordToken:
+          type: string
+          nullable: false
+        abrechnungsnummer:
+          type: string
+          nullable: false
+        transmissionDate:
+          format: date
+          type: string
+          nullable: false
+        declarationID:
+          type: string
+          nullable: false
+        domainIdentification:
+          allOf:
+            - $ref: '#/components/schemas/DistributorDomain'
+            - nullable: false
+        meldungType:
+          allOf:
+            - $ref: '#/components/schemas/DistributorMeldungTyp'
+            - nullable: false
+        testCase:
+          type: boolean
+        sprache:
+          allOf:
+            - $ref: '#/components/schemas/Sprache'
+            - nullable: false
+        expiryDate:
+          format: date
+          type: string
+    DistributorMeldungDto:
+      description:
+        "Enthält die DistributorMeldung, den für das Meldejahr der DistributorMeldung\
+        \ zugehörigen Tarif und Infos zum Rentner-Freibetrag."
+      required:
+        - distributorMeldung
+        - tarife
+        - rentnerFreibetragDto
+      type: object
+      properties:
+        distributorMeldung:
+          allOf:
+            - $ref: '#/components/schemas/DistributorMeldung'
+            - nullable: false
+        tarife:
+          allOf:
+            - $ref: '#/components/schemas/Tarife'
+            - nullable: false
+        rentnerFreibetragDto:
+          allOf:
+            - $ref: '#/components/schemas/RentnerFreibetragDto'
+            - nullable: false
+    DistributorMeldungResult:
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        pendenzId:
+          type: string
+        errorStructure:
+          maxLength: 8000
+          type: string
+        processedPersons:
+          type: string
+    DistributorMeldungTyp:
+      enum:
+        - GESAMTMELDUNG
+        - EMAMELDUNG
+      type: string
+    Elternteil:
+      required:
+        - status
+        - zivilstand
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        name:
+          maxLength: 255
+          minLength: 1
+          type: string
+        vorname:
+          maxLength: 255
+          minLength: 1
+          type: string
+        ungenauesGeburtsdatum:
+          type: boolean
+        status:
+          allOf:
+            - $ref: '#/components/schemas/NatPersonStatus'
+            - nullable: false
+        geburtsdatum:
+          format: date
+          type: string
+        zivilstand:
+          allOf:
+            - $ref: '#/components/schemas/Zivilstand'
+            - nullable: false
+        nationalitaet:
+          $ref: '#/components/schemas/Land'
+        sprache:
+          $ref: '#/components/schemas/Sprache'
+        zivilstandGueltigAb:
+          format: date
+          type: string
+        todesDatum:
+          format: date
+          type: string
+        sozialversicherungsnummer:
+          $ref: '#/components/schemas/Sozialversicherungsnummer'
+        version:
+          format: int64
+          type: integer
+          xml:
+            attribute: true
+        bemerkung:
+          maxLength: 255
+          minLength: 1
+          type: string
+        erwerbstaetig:
+          type: boolean
+        beruf:
+          maxLength: 255
+          minLength: 1
+          type: string
+        monatlicheArbeitszeit:
+          format: int32
+          type: integer
+        einkommenHoeher:
+          type: boolean
+        arbeitgeberName:
+          maxLength: 255
+          minLength: 1
+          type: string
+        arbeitgeberOrt:
+          maxLength: 255
+          minLength: 1
+          type: string
+        adresse:
+          $ref: '#/components/schemas/AdresseNullable'
+        elternteilUnbekanntVerstorben:
+          type: boolean
+        begruendung:
+          maxLength: 8000
+          minLength: 1
+          type: string
+        geschlecht:
+          $ref: '#/components/schemas/Geschlecht'
+    EportalDate:
+      type: object
+      properties:
+        date:
+          format: date
+          type: string
+    EventLogFilterModel:
+      type: object
+      properties:
+        benutzerId:
+          format: int32
+          type: integer
+        abrechnungsnummer:
+          format: int32
+          type: integer
+        level:
+          $ref: '#/components/schemas/LogEintragLevel'
+        aktion:
+          $ref: '#/components/schemas/LogEintragKategorie'
+        vnr:
+          type: string
+        datumVon:
+          format: date
+          type: string
+        datumBis:
+          format: date
+          type: string
+    ExterneAuszahlung:
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        version:
+          format: int64
+          type: integer
+        timestampErstellt:
+          format: date
+          type: string
+        erstbezuegerKantonCode:
+          $ref: '#/components/schemas/KantonCode'
+        erstbezuegerLand:
+          $ref: '#/components/schemas/Land'
+        externAusbezahlterBetragProMonat:
+          maximum: 9999999999999.99
+          minimum: 0
+          type: number
+        bezuegerName:
+          maxLength: 255
+          minLength: 1
+          type: string
+        arbeitgeberOderArbeitslosenkasse:
+          maxLength: 255
+          minLength: 1
+          type: string
+        startDatum:
+          format: date
+          type: string
+        stopDatum:
+          format: date
+          type: string
+    FakKinderArt:
+      enum:
+        - NORMALES_KIND
+        - ERWERBSUNFAEHIG
+        - IN_AUSBILDUNG
+        - VORGEZOGENE_AUSBILDUNG
+        - NUR_STAFFELUNG
+      type: string
+    FakZulagenArt:
+      enum:
+        - GRUNDZULAGE
+        - DIFFERENZZULAGE_INTERKANTONAL
+        - DIFFERENZZULAGE_INTERNATIONAL
+      type: string
+    FamZArbeitsverhaeltnis:
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        version:
+          format: int64
+          type: integer
+        timestampErstellt:
+          format: date
+          type: string
+        arbeitgeber:
+          $ref: '#/components/schemas/Mitglied'
+        kantonkuerzel:
+          $ref: '#/components/schemas/KantonCode'
+        angestelltSeit:
+          format: date
+          type: string
+        austrittsdatum:
+          format: date
+          type: string
+        direktauszahlungAnBezueger:
+          type: boolean
+        spezArbeitsverhaeltnis:
+          maxLength: 255
+          minLength: 1
+          type: string
+        lohnInCHF:
+          type: number
+        monatlicheArbeitszeit:
+          format: int32
+          type: integer
+        dauerhaftArbeit:
+          type: boolean
+        bemerkungen:
+          maxLength: 8000
+          minLength: 1
+          type: string
+        austrittsdatumGesetztUser:
+          type: boolean
+        wiedereintrittsdatum:
+          format: date
+          type: string
+        austrittsdatumNachWiedereintritt:
+          format: date
+          type: string
+    FamZBezueger:
+      required:
+        - status
+        - zivilstand
+        - adresse
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        geschlecht:
+          $ref: '#/components/schemas/Geschlecht'
+        ungenauesGeburtsdatum:
+          type: boolean
+        status:
+          allOf:
+            - $ref: '#/components/schemas/NatPersonStatus'
+            - nullable: false
+        geburtsdatum:
+          format: date
+          type: string
+        zivilstand:
+          allOf:
+            - $ref: '#/components/schemas/Zivilstand'
+            - nullable: false
+        nationalitaet:
+          $ref: '#/components/schemas/Land'
+        zivilstandGueltigAb:
+          format: date
+          type: string
+        todesDatum:
+          format: date
+          type: string
+        sozialversicherungsnummer:
+          $ref: '#/components/schemas/Sozialversicherungsnummer'
+        version:
+          format: int64
+          type: integer
+          xml:
+            attribute: true
+        type:
+          type: string
+        bemerkung:
+          maxLength: 8000
+          minLength: 1
+          type: string
+        unterbruchVon:
+          format: date
+          type: string
+        unterbruchBis:
+          format: date
+          type: string
+        arbeitsverhaeltnis:
+          $ref: '#/components/schemas/FamZArbeitsverhaeltnis'
+        letzterArbeitgeber:
+          maxLength: 255
+          minLength: 1
+          type: string
+        letzterArbeitgeberAustritt:
+          format: date
+          type: string
+        mehrereArbeitgeber:
+          type: boolean
+        arbeitgeberMitGroessterAuszahlug:
+          type: boolean
+        telefon1:
+          $ref: '#/components/schemas/Telefon'
+        telefonMobile:
+          $ref: '#/components/schemas/Telefon'
+        email:
+          type: string
+        anspruchsausweisErstellen:
+          type: boolean
+        adresse:
+          allOf:
+            - $ref: '#/components/schemas/AdresseNotNullable'
+            - nullable: false
+        sprache:
+          $ref: '#/components/schemas/Sprache'
+        name:
+          maxLength: 255
+          minLength: 1
+          type: string
+        vorname:
+          maxLength: 255
+          minLength: 1
+          type: string
+    FamZDaten:
+      required:
+        - famZMeldungStatus
+        - famZGeschaeftsfall
+        - meldungsGrund
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        version:
+          format: int64
+          type: integer
+        timestampErstellt:
+          format: date
+          type: string
+        kinder:
+          type: array
+          items:
+            $ref: '#/components/schemas/Kind'
+        bezueger:
+          $ref: '#/components/schemas/FamZBezueger'
+        elternteil:
+          $ref: '#/components/schemas/Elternteil'
+        beleg:
+          $ref: '#/components/schemas/Beleg'
+        famZMeldungStatus:
+          allOf:
+            - $ref: '#/components/schemas/FamZMeldungStatus'
+            - nullable: false
+        famZGeschaeftsfall:
+          allOf:
+            - $ref: '#/components/schemas/FamZGeschaeftsfall'
+            - nullable: false
+        bezugBeantragtBis:
+          format: date
+          type: string
+        bezugBeantragtVon:
+          format: date
+          type: string
+        meldungsGrund:
+          allOf:
+            - $ref: '#/components/schemas/MeldungsGrund'
+            - nullable: false
+        erfassendesMitglied:
+          $ref: '#/components/schemas/Mitglied'
+    FamZGeschaeftsfall:
+      enum:
+        - ANMELDUNG
+        - MUTATION
+        - ANMELDUNG_KIND
+        - MUTATION_KIND
+      type: string
+    FamZMeldungStatus:
+      enum:
+        - UNKNOWN
+        - ANMELDUNG_DATENEINGABE_ANTRAGSTELLER
+        - ANMELDUNG_DATENEINGABE_ELTERNTEIL
+        - ANMELDUNG_DATENEINGABE_KINDER
+        - ANMELDUNG_DATENEINGABE_ZULAGEN
+        - ANMELDUNG_DATENEINGABE_ARBEITGEBERDATEN
+        - MUTATION_SELECTION
+        - MUTATION_ANGABEN
+        - ANMELDUNG_KIND
+        - ANMELDUNG_BELEG_UPLOAD
+        - ANMELDUNG_ABSCHLUSS
+        - ANMELDUNG_VERSENDET
+      type: string
+    FileContent:
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        content:
+          format: binary
+          maxLength: 15728640
+          type: string
+          writeOnly: true
+    Geschlecht:
+      enum:
+        - MAENNLICH
+        - WEIBLICH
+      type: string
+    HaushaltKindArt:
+      enum:
+        - LEIBL_KIND
+        - PFLEGEKIND
+        - ADOPTIVKIND
+        - STIEFKIND
+        - GESCHWISTER
+        - KIND_BEI_GROSSELTERN
+        - KIND_LEBT_BEI_ANDEREM_ELTERNTEIL
+        - KIND_LEBT_BEI_ANDERER_PERSON
+        - ENKELKIND_LEBT_BEI_ANDERER_PERSON
+        - GESCHWISTER_LEBT_BEI_ANDERER_PERSON
+      type: string
+    IbanMutierenDto:
+      required:
+        - mitgliedId
+        - iban
+      type: object
+      properties:
+        mitgliedId:
+          type: string
+          nullable: false
+        iban:
+          type: string
+          nullable: false
+        adresseEndbeguenstigter:
+          $ref: '#/components/schemas/AdresseDto'
+    KantonCode:
+      enum:
+        - ZH
+        - BE
+        - LU
+        - UR
+        - SZ
+        - OW
+        - NW
+        - GL
+        - ZG
+        - FR
+        - SO
+        - BS
+        - BL
+        - SH
+        - AR
+        - AI
+        - SG
+        - GR
+        - AG
+        - TG
+        - TI
+        - VD
+        - VS
+        - NE
+        - GE
+        - JU
+        - UNBEKANNT
+      type: string
+    Kind:
+      required:
+        - status
+        - zivilstand
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        name:
+          maxLength: 255
+          minLength: 1
+          type: string
+        geschlecht:
+          $ref: '#/components/schemas/Geschlecht'
+        vorname:
+          maxLength: 255
+          minLength: 1
+          type: string
+        ungenauesGeburtsdatum:
+          type: boolean
+        status:
+          allOf:
+            - $ref: '#/components/schemas/NatPersonStatus'
+            - nullable: false
+        geburtsdatum:
+          format: date
+          type: string
+        zivilstand:
+          allOf:
+            - $ref: '#/components/schemas/Zivilstand'
+            - nullable: false
+        nationalitaet:
+          $ref: '#/components/schemas/Land'
+        sprache:
+          $ref: '#/components/schemas/Sprache'
+        zivilstandGueltigAb:
+          format: date
+          type: string
+        todesDatum:
+          format: date
+          type: string
+        sozialversicherungsnummer:
+          $ref: '#/components/schemas/Sozialversicherungsnummer'
+        version:
+          format: int64
+          type: integer
+          xml:
+            attribute: true
+        adoptionsDatum:
+          format: date
+          type: string
+        aufenthaltsStaat:
+          $ref: '#/components/schemas/Land'
+        bemerkung:
+          maxLength: 255
+          minLength: 1
+          type: string
+        bemerkungNichtLeiblich:
+          maxLength: 255
+          minLength: 1
+          type: string
+        bemerkungWohnhaft:
+          maxLength: 255
+          minLength: 1
+          type: string
+        verhaeltnisBezuegerKind:
+          $ref: '#/components/schemas/VerhaeltnisZuKind'
+        haushaltKindArt:
+          $ref: '#/components/schemas/HaushaltKindArt'
+        leiblichesKind:
+          type: boolean
+        kindanspruch:
+          $ref: '#/components/schemas/Kindanspruch'
+        sorgerechtGemeinsam:
+          type: boolean
+        sorgerecht:
+          maxLength: 255
+          minLength: 1
+          type: string
+        kindAusNil:
+          type: boolean
+        kindInMutation:
+          type: boolean
+        wohnhaftKind:
+          $ref: '#/components/schemas/WohnhaftKind'
+        adresse:
+          $ref: '#/components/schemas/AdresseNullable'
+        ausbildungVon:
+          format: date
+          type: string
+        ausbildungBis:
+          format: date
+          type: string
+        unterbruchVon:
+          format: date
+          type: string
+        unterbruchBis:
+          format: date
+          type: string
+        unterbruchGrund:
+          maxLength: 255
+          minLength: 1
+          type: string
+        abbruchAm:
+          format: date
+          type: string
+        wegzugAm:
+          format: date
+          type: string
+        wegzugNach:
+          maxLength: 255
+          minLength: 1
+          type: string
+        erwerbsunfaehigPer:
+          format: date
+          type: string
+        ahvEinkommensgrenzeUeberschritten:
+          type: boolean
+        tempReferenceId:
+          type: string
+    KindZulagenVerfall:
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        version:
+          format: int64
+          type: integer
+        timestampErstellt:
+          format: date
+          type: string
+        bezuegerSozialVnr:
+          $ref: '#/components/schemas/Sozialversicherungsnummer'
+        bezuegerName:
+          type: string
+        bezuegerVorname:
+          type: string
+        kindSozialVnr:
+          $ref: '#/components/schemas/Sozialversicherungsnummer'
+        kindName:
+          type: string
+        kindVorname:
+          type: string
+        verfallsdatum:
+          format: date
+          type: string
+        isShow:
+          type: boolean
+        mitgliedId:
+          type: string
+        abgeschlossenMeldungsGrund:
+          $ref: '#/components/schemas/MeldungsGrund'
+        show:
+          type: boolean
+    Kindanspruch:
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        version:
+          format: int64
+          type: integer
+        timestampErstellt:
+          format: date
+          type: string
+        betragProMonat:
+          type: number
+        bezugBis:
+          format: date
+          type: string
+        bezugVon:
+          format: date
+          type: string
+        erhaeltDirektzahlungen:
+          type: boolean
+        fakKinderArt:
+          $ref: '#/components/schemas/FakKinderArt'
+        teilanspruchInProzent:
+          type: number
+        zulagenArt:
+          $ref: '#/components/schemas/FakZulagenArt'
+        externeAuszahlung:
+          $ref: '#/components/schemas/ExterneAuszahlung'
+    KontoInformation:
+      type: object
+      properties:
+        aktiviert:
+          type: boolean
+    KontoangabenDto:
+      required:
+        - iban
+      type: object
+      properties:
+        iban:
+          type: string
+          nullable: false
+        nameBank:
+          type: string
+        nameEndbeguenstigter:
+          type: string
+        mutationOffen:
+          type: boolean
+    Konversation:
+      required:
+        - konversationId
+        - bereich
+        - mitteilungen
+      type: object
+      properties:
+        konversationId:
+          type: string
+          nullable: false
+        bereich:
+          allOf:
+            - $ref: '#/components/schemas/MitteilungBereich'
+            - nullable: false
+        mitteilungen:
+          type: array
+          items:
+            $ref: '#/components/schemas/KonversationMitteilung'
+          nullable: false
+    KonversationCreate:
+      required:
+        - mitteilungsText
+        - bereich
+      type: object
+      properties:
+        mitteilungsText:
+          maxLength: 3000
+          minLength: 1
+          type: string
+          nullable: false
+        bereich:
+          allOf:
+            - $ref: '#/components/schemas/MitteilungBereich'
+            - nullable: false
+    KonversationMitteilung:
+      required:
+        - id
+        - erstelltAm
+        - source
+        - mitteilungsText
+      type: object
+      properties:
+        id:
+          type: string
+        erstelltAm:
+          format: date
+          type: string
+        source:
+          $ref: '#/components/schemas/MitteilungSource'
+        mitteilungsText:
+          type: string
+        eportalBenutzerId:
+          type: string
+        vonVorname:
+          type: string
+        vonNachname:
+          type: string
+        gelesenAm:
+          format: date
+          type: string
+    KonversationMitteilungCreate:
+      required:
+        - mitteilungsText
+      type: object
+      properties:
+        mitteilungsText:
+          maxLength: 3000
+          minLength: 1
+          type: string
+          nullable: false
+    KonversationMitteilungUpdate:
+      required:
+        - gelesenAm
+      type: object
+      properties:
+        gelesenAm:
+          format: date
+          type: string
+          nullable: false
+    Land:
+      enum:
+        - CH
+        - AL
+        - AD
+        - BE
+        - BG
+        - DK
+        - DE
+        - DE_OLD
+        - FI
+        - FR
+        - GR
+        - GB
+        - IE
+        - IS
+        - IT
+        - JU_OLD
+        - LI
+        - LU
+        - MT
+        - MC
+        - NL
+        - 'NO'
+        - AT
+        - PL
+        - PT
+        - RO
+        - SM
+        - SE
+        - RU_OLD
+        - ES
+        - CZ_OLD
+        - TR
+        - HU
+        - VA
+        - CY
+        - SK
+        - CZ
+        - RS
+        - JU
+        - HR
+        - SI
+        - BA
+        - ME
+        - MK
+        - XZ
+        - EE
+        - LV
+        - LT
+        - MD
+        - RU
+        - UA
+        - BY
+        - GF
+        - ET
+        - DJ
+        - DZ
+        - AO
+        - BW
+        - BI
+        - BJ
+        - CI
+        - GA
+        - GM
+        - GH
+        - GW
+        - GN
+        - CM
+        - CV
+        - KE
+        - KM
+        - CG
+        - CD
+        - LS
+        - LR
+        - LY
+        - MG
+        - MW
+        - ML
+        - MA
+        - MR
+        - MU
+        - MZ
+        - NE
+        - NG
+        - BF
+        - ZW
+        - RW
+        - ZM
+        - ST
+        - SN
+        - SC
+        - SL
+        - SO
+        - ZA
+        - SD
+        - NA
+        - SZ
+        - TZ
+        - TG
+        - TD
+        - TN
+        - UG
+        - EG
+        - CF
+        - ER
+        - EH
+        - AR
+        - BS
+        - BB
+        - BO
+        - BR
+        - CL
+        - CR
+        - DO
+        - EC
+        - SV
+        - GT
+        - GY
+        - HT
+        - BZ
+        - HN
+        - JM
+        - CA
+        - CO
+        - CU
+        - MX
+        - NI
+        - PA
+        - PY
+        - PE
+        - SR
+        - TT
+        - UY
+        - VE
+        - US
+        - DN
+        - GD
+        - AG
+        - LC
+        - VC
+        - KN
+        - AF
+        - BH
+        - BT
+        - BN
+        - MM
+        - LK
+        - TW
+        - CN
+        - IN
+        - ID
+        - IQ
+        - IR
+        - IL
+        - JP
+        - YE
+        - JO
+        - KH
+        - QA
+        - KW
+        - LA
+        - LB
+        - MY
+        - MV
+        - OM
+        - MN
+        - NP
+        - KP
+        - VN_OLD2
+        - AE
+        - PK
+        - PH
+        - SA
+        - IN_OLD
+        - SG
+        - YE_OLD
+        - KR
+        - VN_OLD
+        - SY
+        - TH
+        - VN
+        - BD
+        - TL
+        - PS
+        - AM
+        - AZ
+        - GE
+        - KZ
+        - KG
+        - TJ
+        - TM
+        - UZ
+        - AU
+        - FJ
+        - NR
+        - VU
+        - NZ
+        - PG
+        - TO
+        - WS
+        - SB
+        - TV
+        - KI
+        - MH
+        - FM
+        - PW
+        - NICHTANERKANNT
+        - STAATENLOS
+        - UNBEKANNT
+      type: string
+    LogEintrag:
+      required:
+        - benutzerId
+        - aktion
+        - level
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        benutzerId:
+          format: int32
+          type: integer
+          nullable: false
+        abrechnungsnummer:
+          maxLength: 255
+          minLength: 1
+          type: string
+        vnr:
+          maxLength: 255
+          minLength: 1
+          type: string
+        aktion:
+          allOf:
+            - $ref: '#/components/schemas/LogEintragKategorie'
+            - nullable: false
+        zusatzinfoTechnisch:
+          maxLength: 1000
+          minLength: 1
+          type: string
+        zusatzinfoFachlich:
+          maxLength: 255
+          minLength: 1
+          type: string
+        pendenzIdNil:
+          maxLength: 255
+          minLength: 1
+          type: string
+        level:
+          allOf:
+            - $ref: '#/components/schemas/LogEintragLevel'
+            - nullable: false
+    LogEintragKategorie:
+      enum:
+        - AN_ANMELDEN
+        - AN_ANMELDEN_FAILURE
+        - AN_MUTIEREN
+        - AN_MUTIEREN_FAILURE
+        - AN_AUSWEISDUPLIKAT
+        - AN_AUSWEISDUPLIKAT_FAILURE
+        - AN_ABMELDEN
+        - AN_ABMELDEN_FAILURE
+        - AN_ADRESSMUTATION
+        - AN_ADRESSMUTATION_FAILURE
+        - DISTRIBUTORMELDUNG_SUBMIT
+        - DISTRIBUTORMELDUNG_SUBMIT_FAILURE
+        - DISTRIBUTORMELDUNG_EMA_SUBMIT
+        - DISTRIBUTORMELDUNG_EMA_SUBMIT_FAILURE
+        - LOHNMELDUNG_SUBMIT
+        - LOHNMELDUNG_SUBMIT_FAILURE
+        - NACHMELDUNG_SUBMIT
+        - NACHMELDUNG_SUBMIT_FAILURE
+        - STAMMDATEN_IMPORT_LOHNLISTEN
+        - STAMMDATEN_IMPORT_LOHNLISTEN_FAILURE
+        - STAMMDATEN_IMPORT_LOHNLISTE_DUPLICATE_ARBEITNEHMER
+        - STAMMDATEN_IMPORT_LOHNLISTEN_NOIMPORT
+        - STAMMDATEN_IMPORT_VERSICHERER
+        - STAMMDATEN_IMPORT_VERSICHERER_FAILURE
+        - STAMMDATEN_IMPORT_ZWEIGSTELLEN
+        - STAMMDATEN_IMPORT_ZWEIGSTELLEN_FAILURE
+        - STAMMDATEN_IMPORT_PLVERZEICHNIS
+        - STAMMDATEN_IMPORT_PLZVERZEICHNIS_FAILURE
+        - ELM_GENERATION_FAILURE
+        - ELM_PARSE_FAILURE
+        - ELM_STORE_FAILURE
+        - ELM_READ_FAILURE
+        - ELM_DELETE_FAILURE
+        - CSV_PARSE_FAILURE
+        - NIL_UNAVAILABLE
+        - BENUTZER_WRONG_STATUS
+        - BENUTZER_TO_NIL_ALL
+        - BENUTZER_TO_NIL_ADD
+        - BENUTZER_TO_NIL_ADD_FAILURE
+        - BENUTZER_TO_NIL_REMOVE
+        - BENUTZER_TO_NIL_REMOVE_FAILURE
+        - BENUTZER_TO_NIL_CHANGE
+        - BENUTZER_TO_NIL_CHANGE_FAILURE
+        - BENUTZER_TO_KC_CHANGE_FAILURE
+        - TREUHAENDER_ACCOUNT_MERGED
+        - MUTATION_ABRECHNUNGSNUMMER
+        - LOHNSUMMEN_MUTATION
+        - MITTEILUNG
+        - REKTIFIKAT_POSSIBLE_CHECK_FAILURE
+        - SEND_FAK_FAILURE
+        - BEZUEGER_SUBMIT
+        - BELEG_UPLOAD_FAILURE
+        - BENUTZER_LEGITIMIERUNG_KC_FAILURE
+        - BERECHTIGUNG_ROLLE_CHANGED
+        - VERSICHERUNG_MUTATION
+        - VERSICHERUNG_MUTATION_FAILURE
+        - MGL_ADRESSE_MUTATION
+        - MGL_ADRESSE_MUTATION_FAILURE
+        - MGL_IBAN_MUTATION
+        - MGL_IBAN_MUTATION_FAILURE
+        - MGL_ABMELDEN
+        - MGL_ABMELDEN_FAILURE
+      type: string
+    LogEintragLevel:
+      enum:
+        - INFO
+        - WARN
+        - ERROR
+      type: string
+    Lohnmeldung:
+      required:
+        - jahr
+        - datumVon
+        - datumBis
+        - status
+        - hasLohnmeldungEinfordernPendenz
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        jahr:
+          format: int32
+          type: integer
+          nullable: false
+        datumVon:
+          format: date
+          type: string
+          nullable: false
+        datumBis:
+          format: date
+          type: string
+          nullable: false
+        status:
+          allOf:
+            - $ref: '#/components/schemas/LohnmeldungStatus'
+            - nullable: false
+        typ:
+          $ref: '#/components/schemas/LohnmeldungTyp'
+        bemerkungen:
+          maxLength: 4000
+          minLength: 1
+          type: string
+        gemeldeteLohnsumme:
+          type: number
+        totalAlv:
+          type: number
+        totalAlv2:
+          type: number
+        totalFak:
+          type: number
+        totalKiz:
+          type: number
+        totalQst:
+          type: number
+        filename:
+          maxLength: 255
+          minLength: 1
+          type: string
+        versichererUVG:
+          $ref: '#/components/schemas/Versicherer'
+        versichererBVG:
+          $ref: '#/components/schemas/Versicherer'
+        versichererUvgIdElm:
+          type: string
+        versichererBvgIdElm:
+          type: string
+        lohnmeldungsItemsChanged:
+          type: boolean
+        lastSubmittedJahr:
+          format: int32
+          type: integer
+        lastSubmittedType:
+          $ref: '#/components/schemas/LohnmeldungTyp'
+        noimport:
+          type: boolean
+        lohnmeldungItemImportStatus:
+          $ref: '#/components/schemas/LohnmeldungItemImportStatus'
+        hasLohnmeldungEinfordernPendenz:
+          type: boolean
+          nullable: false
+    LohnmeldungDto:
+      required:
+        - meldung
+        - rentnerFreibetragDto
+      type: object
+      properties:
+        meldung:
+          allOf:
+            - $ref: '#/components/schemas/Lohnmeldung'
+            - nullable: false
+        rentnerFreibetragDto:
+          allOf:
+            - $ref: '#/components/schemas/RentnerFreibetragDto'
+            - nullable: false
+    LohnmeldungItem:
+      required:
+        - arbeitsverhaeltnis
+        - periodeVon
+        - periodeBis
+        - lohnmeldung
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        arbeitsverhaeltnis:
+          allOf:
+            - $ref: '#/components/schemas/Arbeitsverhaeltnis'
+            - nullable: false
+        periodeVon:
+          format: date
+          type: string
+          nullable: false
+        periodeBis:
+          format: date
+          type: string
+          nullable: false
+        betragAHV:
+          maximum: 2147483647
+          minimum: -2147483648
+          type: number
+        betragALV:
+          maximum: 2147483647
+          minimum: -2147483648
+          type: number
+        betragFAK:
+          maximum: 2147483647
+          minimum: -2147483648
+          type: number
+        betragKIZ:
+          maximum: 2147483647
+          minimum: -2147483648
+          type: number
+        betragALZ:
+          maximum: 2147483647
+          minimum: -2147483648
+          type: number
+        betragQST:
+          maximum: 2147483647
+          minimum: -2147483648
+          type: number
+        verzichtRentnerFreibetrag:
+          type: boolean
+        lohnmeldung:
+          allOf:
+            - $ref: '#/components/schemas/Lohnmeldung'
+            - nullable: false
+        meldung:
+          $ref: '#/components/schemas/Lohnmeldung'
+    LohnmeldungItemImportStatus:
+      enum:
+        - IMPORTED
+        - NOT_IMPORTED
+      type: string
+    LohnmeldungStatus:
+      enum:
+        - NEU
+        - IN_ARBEIT
+        - ABGESCHLOSSEN_DATEI
+        - ABGESCHLOSSEN_ONLINE
+        - ABGESCHLOSSEN_NIL_CLOSED
+        - ABGESCHLOSSEN_DISTRIBUTOR
+        - GELOESCHT
+        - EXPIRED
+      type: string
+    LohnmeldungTyp:
+      enum:
+        - FILE
+        - DISTRIBUTOR
+        - ONLINE
+        - CSV
+      type: string
+    MeldungsGrund:
+      enum:
+        - UNBEKANNT
+        - NEUANMELDUNG
+        - ABGANG_TOD
+        - ABGANG_UNFALL
+        - ABGANG_KRANKHEIT
+        - ABGANG_KRANKHEIT_UNFALL
+        - ABGANG_UNTERSCHR_MINDESTEINKOMMEN
+        - ABGANG_AUSTRITT_AUS_FIRMA
+        - ABGANG_AENDERUNG_SORGERECHT
+        - UNTERBRUCH_UNBEZAHLTER_URLAUB_MEHR_3_MONATE
+        - MUTATION_WIEDEREINTRITT_IN_FIRMA
+        - MUTATION_ALLGEMEIN
+        - NEUANMELDUNG_KIND
+        - MUTATION_KIND_GRUND_IN_AUSBILDUNG
+        - MUTATION_KIND_GRUND_ERWERBSUNFAEHIG
+        - MUTATION_KIND_GRUND_WEGZUG_AUS_DER_SCHWEIZ
+        - MUTATION_KIND_GRUND_UNTERBRUCH_AUSBILDUNG
+        - MUTATION_KIND_GRUND_ABBRUCH_AUSBILDUNG
+        - MUTATION_KIND_GRUND_TOD
+        - MUTATION_KIND_GRUND_ABSCHLUSS_AUSBILDUNG
+      type: string
+    MitglEinstellungen:
+      type: object
+      properties:
+        zustellungFamzDokumenteElektronisch:
+          type: boolean
+    Mitglied:
+      required:
+        - sprache
+        - abrechnungsnummer
+        - zweigstelle
+        - hasHistory
+        - art
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        name:
+          maxLength: 255
+          minLength: 1
+          type: string
+        updated:
+          $ref: '#/components/schemas/UpdatedFromNil'
+        sprache:
+          allOf:
+            - $ref: '#/components/schemas/Sprache'
+            - nullable: false
+        abrechnungsnummer:
+          maxLength: 10
+          minLength: 1
+          type: string
+          nullable: false
+        adresse:
+          $ref: '#/components/schemas/AdresseNullable'
+        zweigstelle:
+          allOf:
+            - $ref: '#/components/schemas/Zweigstelle'
+            - nullable: false
+        lohnmeldung:
+          $ref: '#/components/schemas/Lohnmeldung'
+        hasHistory:
+          type: boolean
+          nullable: false
+        abrechnungsjahr:
+          format: int32
+          type: integer
+        uid:
+          type: string
+        art:
+          allOf:
+            - $ref: '#/components/schemas/MitgliedArt'
+            - nullable: false
+    MitgliedAbmeldenDto:
+      required:
+        - mitgliedId
+        - austrittsdatum
+        - abmeldungsgrund
+      type: object
+      properties:
+        mitgliedId:
+          type: string
+          nullable: false
+        austrittsdatum:
+          format: date
+          type: string
+          nullable: false
+        abmeldungsgrund:
+          allOf:
+            - $ref: '#/components/schemas/Abmeldungsgrund'
+            - nullable: false
+        adresse:
+          $ref: '#/components/schemas/AdresseDto'
+        personalBeschaeftigt:
+          type: boolean
+    MitgliedArt:
+      enum:
+        - BGSA
+        - AG
+      type: string
+    MitgliedHistory:
+      required:
+        - jahrGueltigAb
+        - jahrGueltigBis
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        mitgliedVorher:
+          $ref: '#/components/schemas/Mitglied'
+        mitgliedImZeitraum:
+          $ref: '#/components/schemas/Mitglied'
+        mitgliedAktuell:
+          $ref: '#/components/schemas/Mitglied'
+        jahrGueltigAb:
+          format: int32
+          type: integer
+          nullable: false
+        jahrGueltigBis:
+          format: int32
+          type: integer
+          nullable: false
+    MitgliedMitHistoryInfo:
+      description:
+        "Enthält ein Mitglied und die Information, ob die Abrechnungsnummer\
+        \ des Mitglieds mutiert wurde und damit nicht mehr aktuell ist. Das Objekt\
+        \ enthält auch immer die aktuelle Abrechnungsnummer. Wenn die Abrechnungsnummer\
+        \ nicht mutiert wurde, ist die aktuelle Abrechnungsnummer identisch mit der\
+        \ Abrechnungsnummer des enthaltenen Mitglieds."
+      type: object
+      properties:
+        mitglied:
+          $ref: '#/components/schemas/Mitglied'
+        aktuellesMitglied:
+          type: boolean
+        abrechnungsnummerAktuellesMitglied:
+          type: string
+    MitgliedUploadDto:
+      description:
+        "Enthält die Daten, um ein PDF (oder auch andere Dateitypen) mit\
+        \ Bezug zu einem Mitglied hochzuladen."
+      required:
+        - mitgliedId
+        - mitgliedUploadTyp
+        - fileContent
+      type: object
+      properties:
+        mitgliedId:
+          type: string
+          nullable: false
+        bezeichnung:
+          type: string
+        fileName:
+          type: string
+        referenceId:
+          type: string
+        gueltigAb:
+          type: string
+        mitgliedUploadTyp:
+          allOf:
+            - $ref: '#/components/schemas/MitgliedUploadTyp'
+            - nullable: false
+        fileContent:
+          type: string
+          nullable: false
+    MitgliedUploadTyp:
+      enum:
+        - UVG_UPLOAD
+        - BVG_UPLOAD
+      type: string
+    Mitteilung:
+      required:
+        - mitteilungTyp
+        - bemerkungen
+      type: object
+      properties:
+        mitteilungTyp:
+          allOf:
+            - $ref: '#/components/schemas/MitteilungTyp'
+            - nullable: false
+        bemerkungen:
+          maxLength: 1000
+          minLength: 1
+          type: string
+          nullable: false
+    MitteilungBereich:
+      enum:
+        - BEITRAGSFESTSETZUNG
+        - BEITRAGSINKASSO
+        - BETREUUNGSENTSCHAEDIGUNG
+        - ENTSCHAEDIGUNG_ANDERER_ELTERNTEIL
+        - EO_ENTSCHAEDIGUNG
+        - FAMILIENZULAGEN
+        - MUTTERSCHAFTENTSCHAEDIGUNG
+        - TECHNISCHE_FRAGEN
+        - ANDERE_THEMEN
+      type: string
+    MitteilungSource:
+      enum:
+        - NIL
+        - EPORTAL
+      type: string
+    MitteilungTyp:
+      enum:
+        - FREITEXTMELDUNG
+        - ADRESSAENDERUNG
+        - ZAHLUNGSVERBINDUNG
+      type: string
+    Nachmeldung:
+      required:
+        - jahr
+        - datumVon
+        - datumBis
+        - status
+        - mitglied
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        jahr:
+          format: int32
+          type: integer
+          nullable: false
+        datumVon:
+          format: date
+          type: string
+          nullable: false
+        datumBis:
+          format: date
+          type: string
+          nullable: false
+        status:
+          allOf:
+            - $ref: '#/components/schemas/LohnmeldungStatus'
+            - nullable: false
+        typ:
+          $ref: '#/components/schemas/LohnmeldungTyp'
+        bemerkungen:
+          maxLength: 4000
+          minLength: 1
+          type: string
+        gemeldeteLohnsumme:
+          type: number
+        totalAlv:
+          type: number
+        totalAlv2:
+          type: number
+        totalFak:
+          type: number
+        totalKiz:
+          type: number
+        totalQst:
+          type: number
+        filename:
+          maxLength: 255
+          minLength: 1
+          type: string
+        mitglied:
+          allOf:
+            - $ref: '#/components/schemas/Mitglied'
+            - nullable: false
+    NachmeldungDto:
+      required:
+        - meldung
+        - rentnerFreibetragDto
+      type: object
+      properties:
+        meldung:
+          allOf:
+            - $ref: '#/components/schemas/Nachmeldung'
+            - nullable: false
+        rentnerFreibetragDto:
+          allOf:
+            - $ref: '#/components/schemas/RentnerFreibetragDto'
+            - nullable: false
+    NachmeldungItem:
+      required:
+        - arbeitsverhaeltnis
+        - periodeVon
+        - periodeBis
+        - nachmeldung
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        arbeitsverhaeltnis:
+          allOf:
+            - $ref: '#/components/schemas/Arbeitsverhaeltnis'
+            - nullable: false
+        periodeVon:
+          format: date
+          type: string
+          nullable: false
+        periodeBis:
+          format: date
+          type: string
+          nullable: false
+        betragAHV:
+          maximum: 2147483647
+          minimum: -2147483648
+          type: number
+        betragALV:
+          maximum: 2147483647
+          minimum: -2147483648
+          type: number
+        betragFAK:
+          maximum: 2147483647
+          minimum: -2147483648
+          type: number
+        betragKIZ:
+          maximum: 2147483647
+          minimum: -2147483648
+          type: number
+        betragALZ:
+          maximum: 2147483647
+          minimum: -2147483648
+          type: number
+        betragQST:
+          maximum: 2147483647
+          minimum: -2147483648
+          type: number
+        verzichtRentnerFreibetrag:
+          type: boolean
+        nachmeldung:
+          allOf:
+            - $ref: '#/components/schemas/Nachmeldung'
+            - nullable: false
+        meldung:
+          $ref: '#/components/schemas/Nachmeldung'
+    NatPerson:
+      required:
+        - status
+        - zivilstand
+        - name
+        - vorname
+        - geschlecht
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        ungenauesGeburtsdatum:
+          type: boolean
+        status:
+          allOf:
+            - $ref: '#/components/schemas/NatPersonStatus'
+            - nullable: false
+        geburtsdatum:
+          format: date
+          type: string
+        zivilstand:
+          allOf:
+            - $ref: '#/components/schemas/Zivilstand'
+            - nullable: false
+        nationalitaet:
+          $ref: '#/components/schemas/Land'
+        zivilstandGueltigAb:
+          format: date
+          type: string
+        todesDatum:
+          format: date
+          type: string
+        sozialversicherungsnummer:
+          $ref: '#/components/schemas/Sozialversicherungsnummer'
+        adresse:
+          $ref: '#/components/schemas/AdresseNullable'
+        adresseKorrigiert:
+          $ref: '#/components/schemas/AdresseKorrigiertDto'
+        name:
+          maxLength: 255
+          minLength: 1
+          type: string
+          nullable: false
+        vorname:
+          maxLength: 255
+          minLength: 1
+          type: string
+          nullable: false
+        geschlecht:
+          allOf:
+            - $ref: '#/components/schemas/Geschlecht'
+            - nullable: false
+        sprache:
+          $ref: '#/components/schemas/Sprache'
+    NatPersonStatus:
+      enum:
+        - IMPORTIERT_NIL
+        - IMPORTIERT_NIL_ID_CHANGED
+        - NEU_ERFASST
+      type: string
+    NewsVerwaltungDto:
+      description: Enthält die Infotexte der Newsverwaltung.
+      type: object
+      properties:
+        infoTextDe:
+          type: string
+          xml:
+            attribute: true
+        infoTextFr:
+          type: string
+          xml:
+            attribute: true
+        infoTextIt:
+          type: string
+          xml:
+            attribute: true
+    PasswordDto:
+      description: Enthält das Passwort.
+      type: object
+      properties:
+        newPassword:
+          type: string
+          xml:
+            attribute: true
+        token:
+          type: string
+          xml:
+            attribute: true
+    Pendenz:
+      required:
+        - typ
+        - status
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        pendenzIdNil:
+          maxLength: 36
+          minLength: 36
+          type: string
+        benutzer:
+          $ref: '#/components/schemas/Benutzer'
+        mitglied:
+          $ref: '#/components/schemas/Mitglied'
+        typ:
+          allOf:
+            - $ref: '#/components/schemas/PendenzTyp'
+            - nullable: false
+        natPerson:
+          $ref: '#/components/schemas/NatPerson'
+        info:
+          maxLength: 1000
+          minLength: 1
+          type: string
+        status:
+          allOf:
+            - $ref: '#/components/schemas/PendenzStatus'
+            - nullable: false
+    PendenzMitarbeiteranmeldung:
+      required:
+        - typ
+        - status
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        pendenzIdNil:
+          maxLength: 36
+          minLength: 36
+          type: string
+        benutzer:
+          $ref: '#/components/schemas/Benutzer'
+        mitglied:
+          $ref: '#/components/schemas/Mitglied'
+        typ:
+          allOf:
+            - $ref: '#/components/schemas/PendenzTyp'
+            - nullable: false
+        natPerson:
+          $ref: '#/components/schemas/NatPerson'
+        info:
+          maxLength: 1000
+          minLength: 1
+          type: string
+        status:
+          allOf:
+            - $ref: '#/components/schemas/PendenzStatus'
+            - nullable: false
+        dokumentId:
+          type: string
+        alreadyPrinted:
+          type: boolean
+    PendenzMitteilung:
+      required:
+        - typ
+        - status
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        pendenzIdNil:
+          maxLength: 36
+          minLength: 36
+          type: string
+        benutzer:
+          $ref: '#/components/schemas/Benutzer'
+        mitglied:
+          $ref: '#/components/schemas/Mitglied'
+        typ:
+          allOf:
+            - $ref: '#/components/schemas/PendenzTyp'
+            - nullable: false
+        natPerson:
+          $ref: '#/components/schemas/NatPerson'
+        info:
+          maxLength: 1000
+          minLength: 1
+          type: string
+        status:
+          allOf:
+            - $ref: '#/components/schemas/PendenzStatus'
+            - nullable: false
+        archiviert:
+          type: boolean
+        antwort:
+          maxLength: 8000
+          type: string
+        frage:
+          type: string
+    PendenzStatus:
+      enum:
+        - NEU
+        - IN_BEARBEITUNG
+        - ABGESCHLOSSEN
+        - UNBEKANNT
+      type: string
+    PendenzTyp:
+      enum:
+        - AN_ANMELDEN
+        - AN_MUTIEREN
+        - AN_AUSWEISDUPLIKAT
+        - AN_ABMELDEN
+        - AN_ADRESSMUTATION
+        - LOHNMELDUNG_SUBMIT
+        - NACHMELDUNG_SUBMIT
+        - LOHNSUMME_MELDEN
+        - DISTRIBUTORMELDUNG_SUBMIT
+        - MITTEILUNG
+        - BEZUEGER_SUBMIT
+        - VERSICHERUNG_MUTATION
+        - MGL_ADRESSE_MUTATION
+        - MGL_IBAN_MUTATION
+        - MGL_ABMELDEN
+      type: string
+    PendenzenFilterModel:
+      type: object
+      properties:
+        alreadyPrinted:
+          type: boolean
+        pendenzTyp:
+          $ref: '#/components/schemas/PendenzTyp'
+        dateFrom:
+          format: date
+          type: string
+    PlzVerzeichnis:
+      required:
+        - land
+        - ort
+        - plz
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        kantonkuerzel:
+          $ref: '#/components/schemas/KantonCode'
+        land:
+          allOf:
+            - $ref: '#/components/schemas/Land'
+            - nullable: false
+        ort:
+          type: string
+          nullable: false
+        plz:
+          type: string
+          nullable: false
+        plzZusatz:
+          type: string
+    Registrierung:
+      required:
+        - status
+      type: object
+      properties:
+        status:
+          allOf:
+            - $ref: '#/components/schemas/BenutzerStatus'
+            - nullable: false
+        captcha:
+          type: string
+        abrechnungsnummer:
+          type: string
+        firmaBezeichnung1:
+          maxLength: 255
+          minLength: 1
+          type: string
+        firmaBezeichnung2:
+          maxLength: 255
+          minLength: 1
+          type: string
+        gesperrt:
+          type: boolean
+        datumAntrag:
+          format: date
+          type: string
+        benutzerLegitimiert:
+          $ref: '#/components/schemas/Benutzer'
+        datumLegitimiert:
+          format: date
+          type: string
+        benutzerVollmachtAngefordert:
+          $ref: '#/components/schemas/Benutzer'
+        datumVollmachtAngefordert:
+          format: date
+          type: string
+        benutzerAbgelehnt:
+          $ref: '#/components/schemas/Benutzer'
+        datumAbgelehnt:
+          format: date
+          type: string
+        benutzerGesperrt:
+          $ref: '#/components/schemas/Benutzer'
+        datumGesperrt:
+          format: date
+          type: string
+        bemerkungen:
+          maxLength: 255
+          type: string
+    RentnerFreibetragDto:
+      description:
+        "Falls der Verzicht Rentner-Freibetrag bei einer ELM-Lohnmeldung\
+        \ manuell erfasst werden muss, ist rentnerFreibetragErfassenList gefüllt.\
+        \ Wenn für eine Person unterschiedliche Angaben zum Verzicht des Rentner-Freibetrags\
+        \ gemacht wurden, ist hasUnterschiedlicheAngabenVerzichtRentnerFreibetrag\
+        \ true"
+      required:
+        - rentnerFreibetragErfassenList
+        - hasUnterschiedlicheAngabenVerzichtRentnerFreibetrag
+      type: object
+      properties:
+        rentnerFreibetragErfassenList:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentnerFreibetragErfassenDto'
+          nullable: false
+        hasUnterschiedlicheAngabenVerzichtRentnerFreibetrag:
+          type: boolean
+          nullable: false
+    RentnerFreibetragErfassenDto:
+      required:
+        - id
+        - name
+        - vorname
+        - geburtsdatum
+        - geschlecht
+        - periodeVon
+        - periodeBis
+      type: object
+      properties:
+        id:
+          type: string
+          nullable: false
+        vnr:
+          format: int64
+          type: integer
+        name:
+          type: string
+          nullable: false
+        vorname:
+          type: string
+          nullable: false
+        geburtsdatum:
+          format: date
+          type: string
+          nullable: false
+        geschlecht:
+          allOf:
+            - $ref: '#/components/schemas/Geschlecht'
+            - nullable: false
+        periodeVon:
+          format: date
+          type: string
+          nullable: false
+        periodeBis:
+          format: date
+          type: string
+          nullable: false
+        verzichtRentnerFreibetrag:
+          type: boolean
+    RentnerFreibetragItemSpeichernDto:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: string
+          nullable: false
+        verzichtRentnerFreibetrag:
+          type: boolean
+    RentnerFreibetragSpeichernDto:
+      required:
+        - meldungId
+        - rentnerFreibetragItemSpeichernDtoList
+      type: object
+      properties:
+        meldungId:
+          type: string
+          nullable: false
+        rentnerFreibetragItemSpeichernDtoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentnerFreibetragItemSpeichernDto'
+          nullable: false
+    Rolle:
+      enum:
+        - ADMINISTRATOR
+        - SUPPORTER
+        - MITGLIED_ADMIN
+        - SUBMITGLIED
+        - DISTRIBUTOR
+      type: string
+    SearchMitgliedResultDto:
+      type: object
+      properties:
+        art:
+          $ref: '#/components/schemas/MitgliedArt'
+        existiertInEportal:
+          type: boolean
+    Sozialversicherungsnummer:
+      required:
+        - ahvNummer
+      type: object
+      properties:
+        ahvNummer:
+          format: int64
+          type: integer
+          nullable: false
+    Sprache:
+      enum:
+        - DEUTSCH
+        - FRANZOESISCH
+        - ITALIENISCH
+      type: string
+    SpracheMutierenDto:
+      required:
+        - mitgliedId
+        - sprache
+      type: object
+      properties:
+        mitgliedId:
+          type: string
+          nullable: false
+        sprache:
+          allOf:
+            - $ref: '#/components/schemas/Sprache'
+            - nullable: false
+    StammdatenAdresseAnzeigenDto:
+      description:
+        "Enthält Daten zu einer Adresse und die Information, ob noch eine\
+        \ Adressmutation offen ist. Wenn noch eine Mutation offen ist, enthält alteAdresseByOffenerMutation\
+        \ die alte (also noch aktive) Adresse, wenn bereits eine Adresse vorhanden\
+        \ war."
+      required:
+        - adresse
+      type: object
+      properties:
+        adresse:
+          allOf:
+            - $ref: '#/components/schemas/AdresseDto'
+            - nullable: false
+        alteAdresseByOffenerMutation:
+          $ref: '#/components/schemas/AdresseDto'
+        mutationOffen:
+          type: boolean
+    StammdatenAdressenDto:
+      description: 'Enthält Daten zur Geschäfts-, Privat-, Rechtssitz- und Vertreteradresse.'
+      type: object
+      properties:
+        geschaeftsAdresse:
+          $ref: '#/components/schemas/StammdatenAdresseAnzeigenDto'
+        privatAdresse:
+          $ref: '#/components/schemas/StammdatenAdresseAnzeigenDto'
+        rechtssitzAdresse:
+          $ref: '#/components/schemas/StammdatenAdresseAnzeigenDto'
+        vertreterAdresse:
+          $ref: '#/components/schemas/StammdatenAdresseAnzeigenDto'
+        mehrereZustelladressenVorhanden:
+          type: boolean
+    StammdatenTyp:
+      enum:
+        - VERSICHERER
+        - ZWEIGSTELLEN
+        - PLZ_VERZEICHNIS
+        - ALL
+      type: string
+    SubmitgliedBerechtigung:
+      required:
+        - rolle
+        - datumVon
+        - datumBis
+        - registrierung
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        mitglied:
+          $ref: '#/components/schemas/Mitglied'
+        benutzer:
+          $ref: '#/components/schemas/Benutzer'
+        rolle:
+          allOf:
+            - $ref: '#/components/schemas/Rolle'
+            - nullable: false
+        datumVon:
+          format: date
+          type: string
+          nullable: false
+        datumBis:
+          format: date
+          type: string
+          nullable: false
+        registrierung:
+          allOf:
+            - $ref: '#/components/schemas/Registrierung'
+            - nullable: false
+        submitgliedRolle:
+          $ref: '#/components/schemas/SubmitgliedRolle'
+    SubmitgliedRolle:
+      enum:
+        - LOHNMELDUNG
+        - MITARBEITERABMELDUNG
+        - LOHNMELDUNG_MITARBEITERABMELDUNG
+      type: string
+    Tarife:
+      required:
+        - abrechnungsjahr
+        - maxAlvProMonat
+        - maxAlvAlv2ProMonat
+        - alv2Aktiv
+        - maxBgsaLohnMitarbeiter
+        - maxBgsaLohnGesamt
+        - startJahrAhv21Reform
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        abrechnungsjahr:
+          format: int32
+          type: integer
+          nullable: false
+        maxAlvProMonat:
+          minimum: 0
+          type: number
+          nullable: false
+        maxAlvAlv2ProMonat:
+          minimum: 0
+          type: number
+          nullable: false
+        alv2Aktiv:
+          type: boolean
+          nullable: false
+        maxBgsaLohnMitarbeiter:
+          minimum: 0
+          type: number
+          nullable: false
+        maxBgsaLohnGesamt:
+          minimum: 0
+          type: number
+          nullable: false
+        startJahrAhv21Reform:
+          format: int32
+          type: integer
+          nullable: false
+    Telefon:
+      required:
+        - telefonTyp
+        - telefonNummer
+      type: object
+      properties:
+        telefonTyp:
+          allOf:
+            - $ref: '#/components/schemas/TelefonTyp'
+            - nullable: false
+        telefonNummer:
+          maxLength: 20
+          minLength: 1
+          type: string
+          nullable: false
+    TelefonTyp:
+      enum:
+        - PRIVAT
+        - GESCHAEFTLICH
+        - MOBIL
+      type: string
+    UnterstellungDto:
+      type: object
+      properties:
+        datumVon:
+          format: date
+          type: string
+        datumBis:
+          format: date
+          type: string
+        kasse:
+          type: string
+        eigeneKasse:
+          type: boolean
+    UnterstellungsInfo:
+      description: Enthält die Informationen zur Unterstellung
+      type: object
+      properties:
+        ahv:
+          type: boolean
+          xml:
+            attribute: true
+        fak:
+          type: boolean
+          xml:
+            attribute: true
+        flg:
+          type: boolean
+          xml:
+            attribute: true
+        andereKasse:
+          type: string
+          xml:
+            attribute: true
+        nurAHV:
+          type: boolean
+          xml:
+            attribute: true
+        nurFAK:
+          type: boolean
+          xml:
+            attribute: true
+        keinMitglied:
+          type: boolean
+          xml:
+            attribute: true
+        vollmitglied:
+          type: boolean
+          xml:
+            attribute: true
+    UnterstellungsdatenDto:
+      type: object
+      properties:
+        unterstellungDtoAHV:
+          $ref: '#/components/schemas/UnterstellungDto'
+        unterstellungDtoFAK:
+          $ref: '#/components/schemas/UnterstellungDto'
+        unterstellungDtoFLG:
+          $ref: '#/components/schemas/UnterstellungDto'
+        unterstellungDtoQUST:
+          $ref: '#/components/schemas/UnterstellungDto'
+        mutationOffen:
+          type: boolean
+    UpdateRolleCheckResult:
+      enum:
+        - OK
+        - ROLLE_KANN_NICHT_ZU_SUBMITGLIED_GEAENDERT_WERDEN
+        - ROLLE_SUBMITGLIED_KANN_NICHT_ZU_ADMINISTRATOR_SUPPORTER_GEAENDERT_WERDEN
+        - ROLLE_ADMINISTRATOR_SUPPORTER_KANN_NICHT_AUF_MITGLIED_GEAENDERT_WERDEN
+        - BENUTZER_BESITZT_BEREITS_MEHR_ALS_EINE_BERECHTIGUNG
+      type: string
+    UpdateRolleCheckResultDto:
+      description:
+        "Enthält das Prüfergebnis, ob die Rolle einer Berechtigung geä\
+        ndert werden kann."
+      required:
+        - updateRolleCheckResult
+      type: object
+      properties:
+        updateRolleCheckResult:
+          allOf:
+            - $ref: '#/components/schemas/UpdateRolleCheckResult'
+            - nullable: false
+    UpdatedFromNil:
+      enum:
+        - UPDATE_AND_IMPORT_DONE
+        - NOT_YET_UPDATED
+      type: string
+    UploadFile:
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        version:
+          format: int64
+          type: integer
+        timestampErstellt:
+          format: date
+          type: string
+        content:
+          $ref: '#/components/schemas/FileContent'
+        fileName:
+          type: string
+    UvgBvgDto:
+      description: Enthält Daten zur UVG- und BVG-Versicherung.
+      type: object
+      properties:
+        currentUvg:
+          $ref: '#/components/schemas/VersichererDto'
+        currentBvg:
+          $ref: '#/components/schemas/VersichererDto'
+    VerhaeltnisZuKind:
+      enum:
+        - MUTTER
+        - STIEFMUTTER
+        - PFLEGEMUTTER
+        - SCHWESTER
+        - GROSSMUTTER
+        - VATER
+        - STIEFVATER
+        - PFLEGEVATER
+        - BRUDER
+        - GROSSVATER
+      type: string
+    Versicherer:
+      required:
+        - versichererTyp
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        name:
+          maxLength: 255
+          minLength: 1
+          type: string
+        versichererTyp:
+          allOf:
+            - $ref: '#/components/schemas/VersichererTyp'
+            - nullable: false
+        aktiv:
+          type: boolean
+        unternehmensId:
+          format: int32
+          type: integer
+        unternehmensIdFormatiert:
+          type: string
+    VersichererAbmeldenDto:
+      description:
+        "Enthält die Daten, um das Ende eines UVG/BVG-Versicherungsverhä\
+        ltnisses zu melden."
+      required:
+        - mitgliedId
+        - versichererId
+        - gueltigBis
+        - versichererTyp
+      type: object
+      properties:
+        mitgliedId:
+          type: string
+          nullable: false
+        versichererId:
+          type: string
+          nullable: false
+        gueltigBis:
+          format: date
+          type: string
+          nullable: false
+        versichererTyp:
+          allOf:
+            - $ref: '#/components/schemas/VersichererTyp'
+            - nullable: false
+    VersichererDto:
+      description: Enthält Daten zu einer Versicherung.
+      required:
+        - id
+        - versichererTyp
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+          nullable: false
+        versichererTyp:
+          allOf:
+            - $ref: '#/components/schemas/VersichererTyp'
+            - nullable: false
+        name:
+          type: string
+          nullable: false
+        unternehmensIdFormatiert:
+          type: string
+        mutationOffen:
+          type: boolean
+        gueltigVon:
+          format: date
+          type: string
+        gueltigBis:
+          format: date
+          type: string
+    VersichererTyp:
+      enum:
+        - UVG
+        - BVG
+      type: string
+    Wartungsfenster:
+      required:
+        - messageDE
+        - messageFR
+        - messageIT
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        datumVon:
+          format: date
+          type: string
+        datumBis:
+          format: date
+          type: string
+        startDate:
+          format: int64
+          type: integer
+        startTime:
+          format: int64
+          type: integer
+        endDate:
+          format: int64
+          type: integer
+        endTime:
+          format: int64
+          type: integer
+        messageDE:
+          type: string
+          nullable: false
+        messageFR:
+          type: string
+          nullable: false
+        messageIT:
+          type: string
+          nullable: false
+        messageEN:
+          type: string
+    WohnhaftKind:
+      enum:
+        - KINDSVATER
+        - KINDSMUTTER
+        - BEIDE_ELTERNTEILE_ODER_EIGENER_HAUSHALT
+        - ANDERWEITIG
+      type: string
+    Zivilstand:
+      enum:
+        - UNBEKANNT
+        - LEDIG
+        - VERHEIRATET
+        - VERWITWET
+        - GESCHIEDEN
+        - GETRENNT
+        - EINGETRAGENE_PARTNERSCHAFT
+        - EINGETRAGENE_PARTNERSCHAFT_GESCHIEDEN
+        - EINGETRAGENE_PARTNERSCHAFT_VERWITWET
+        - EINGETRAGENE_PARTNERSCHAFT_GETRENNT
+      type: string
+    ZustelladresseMutierenDto:
+      required:
+        - mitgliedId
+        - adressTyp
+      type: object
+      properties:
+        mitgliedId:
+          type: string
+          nullable: false
+        adressTyp:
+          allOf:
+            - $ref: '#/components/schemas/AdressTyp'
+            - nullable: false
+    Zweigstelle:
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        timestampErstellt:
+          format: date
+          type: string
+        version:
+          format: int64
+          type: integer
+        name:
+          maxLength: 255
+          minLength: 1
+          type: string
+        adresse:
+          $ref: '#/components/schemas/AdresseNullable'
+        aktiv:
+          type: boolean

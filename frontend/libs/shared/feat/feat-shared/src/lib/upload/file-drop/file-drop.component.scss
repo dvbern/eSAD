@@ -1,0 +1,76 @@
+:host {
+  display: block;
+
+  h4.disabled {
+    color:grey;
+  }
+  .icon-wrapper {
+    margin: 10px 0;
+    padding: 4px 10px;
+    font-size: 18px;
+    cursor: pointer;
+    --bs-btn-border-radius: 0;
+    line-height: var(--bs-body-line-height);
+  }
+
+  button.text-button {
+    --bs-btn-border-radius: 0;
+
+    &.ng-invalid {
+      &:focus {
+        border-color: #EA161F;
+        box-shadow: 0 0 0 0.25rem rgba(234, 22, 31, 0.25);
+      }
+    }
+
+    &:disabled ~ span {
+      color: grey;
+    }
+  }
+
+  ::ng-deep {
+    .filedrop {
+      .ngx-file-drop__content {
+        height: 100px;
+        color: #000;
+      }
+    }
+  }
+}
+
+.file_drop{
+
+  &__zone{
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+  }
+  &__text{
+    font-size: var(--svui-body-font-size);
+    color: var(--svui-body-color);
+
+  }
+
+   &__link {
+     background: none;
+     border: none;
+     padding: 0;
+     text-decoration: underline;
+     cursor: pointer;
+     font-family: inherit;
+   }
+
+  &__upload_list{
+    margin-top: 40px;
+
+    &_filename{
+      text-overflow: ellipsis;
+
+    }
+
+  }
+
+}
+

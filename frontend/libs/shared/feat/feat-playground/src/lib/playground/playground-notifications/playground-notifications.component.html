@@ -1,0 +1,27 @@
+<svui-card>
+  <h2 svuiHeading="card">Notifications</h2>
+
+  <h3 style="margin-top: 1rem;">Simulated</h3>
+
+  <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+
+    <button svuiButton="primary" type="button" (click)="simulateBackendFailure()">failure</button>
+    <button svuiButton="primary" type="button" (click)="simulateLongBackendFailure()">failure (big)</button>
+    <button svuiButton="primary" type="button" (click)="simulateBackendValidation()">validation</button>
+    <button svuiButton="primary" type="button" (click)="simulateSuccess()">success</button>
+    <button svuiButton="primary" type="button" (click)="simulateLongSuccess()">success (big)</button>
+
+    <button svuiButton="primary" type="button" (click)="simulateHttpError()">Http Error</button>
+
+  </div>
+
+  <h3 style="margin-top: 1rem;">Backend</h3>
+
+  <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+
+    <button svuiButton="primary" type="button" (click)="triggerBackendFailure()">Failure</button>
+    <button svuiButton="primary" type="button" (click)="triggerBackendValidation()">Validation</button>
+    <button svuiButton="primary" type="button" (click)="triggerBackendRuntimeException()">Runtime Exception</button>
+
+  </div>
+</svui-card>

@@ -1,0 +1,35 @@
+@use '../../../../../styles/core/color/color-set-form';
+@use '../../../../../styles/core/border';
+@use '../../../../../styles/core/radius';
+@use '../../../../../styles/core/size';
+@use '../../../../../styles/core/spacing';
+
+:host {
+  display: block;
+
+  svui-standalone-control + & {
+    margin-top: spacing.$row-gap;
+  }
+}
+
+.svui_standalone-control {
+  &--check {
+    position: relative;
+    padding: spacing.$standalone-control-inner-y spacing.$standalone-control-inner-x spacing.$standalone-control-inner-y spacing.$standalone-control-inner-left;
+    border: border.$default;
+    border-radius: radius.$base;
+
+    &:has(::ng-deep input:checked) {
+      border-color: color-set-form.$border-active;
+      background-color: color-set-form.$background-active;
+    }
+
+    ::ng-deep > .form-check-input {
+      margin-left: - #{spacing.$check-input-positioning-kacheln};
+    }
+  }
+
+  &--check &__label {
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,80 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="anst (generated)" id="1749122676159-1">
+    <createTable tableName="arzt">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="arztPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="adressezusatz" type="VARCHAR(255)"/>
+      <column name="land" type="VARCHAR(30)"/>
+      <column name="ort" type="VARCHAR(255)"/>
+      <column name="plz" type="VARCHAR(255)"/>
+      <column name="strasseundnr" type="VARCHAR(255)"/>
+      <column name="anrede" type="VARCHAR(255)"/>
+      <column name="bemerkungen" type="VARCHAR(255)"/>
+      <column name="email" type="VARCHAR(255)"/>
+      <column name="fachrichtung" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="hpvteilnahme" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="organisation" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="telefon" type="VARCHAR(255)"/>
+      <column name="vorname" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="anst (generated)" id="1749122676159-2">
+    <createTable tableName="arzt_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="anrede" type="VARCHAR(255)"/>
+      <column name="bemerkungen" type="VARCHAR(255)"/>
+      <column name="email" type="VARCHAR(255)"/>
+      <column name="fachrichtung" type="VARCHAR(30)"/>
+      <column name="hpvteilnahme" type="VARCHAR(30)"/>
+      <column name="name" type="VARCHAR(255)"/>
+      <column name="organisation" type="VARCHAR(30)"/>
+      <column name="telefon" type="VARCHAR(255)"/>
+      <column name="vorname" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="anst (generated)" id="1749122676159-3">
+    <addPrimaryKey columnNames="rev, id" constraintName="arzt_audPK" tableName="arzt_aud"/>
+  </changeSet>
+  <changeSet author="anst (generated)" id="1749122676159-4">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="arzt_aud" constraintName="FK7pl41b7use07vnbjg0gub5d8k" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+</databaseChangeLog>

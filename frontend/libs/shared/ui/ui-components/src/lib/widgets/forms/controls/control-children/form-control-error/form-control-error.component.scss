@@ -1,0 +1,9 @@
+@use '../../../../../../styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.svui_form-control-error {
+  padding-top: spacing.$between-form-control-and-message;
+}

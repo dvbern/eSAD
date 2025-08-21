@@ -1,0 +1,10 @@
+@use '../../../../styles/core/size';
+@use '../../../../styles/core/spacing';
+
+:host {
+  display: inline-flex;
+
+  &:empty {
+    display: none;
+  }
+}

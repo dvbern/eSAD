@@ -1,0 +1,24 @@
+@use '../../../../../styles/core/color/color-set-default' as color;
+
+:host {
+  display: block;
+}
+
+.svui_single-control {
+  // disabled
+  &:has(::ng-deep .svui_input:disabled),
+  &:has(::ng-deep .ng-select-disabled) {
+    // todo
+  }
+
+  overflow-wrap: break-word;
+}
+
+.svui_form_control__header {
+  display: flex;
+  justify-content: space-between;
+
+  &__info {
+    color: color.$text-disabled;
+  }
+}

@@ -1,0 +1,130 @@
+package ch.dvbern.oss.hemed.esc.api.testutil.builder;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.function.Consumer;
+
+import ch.dvbern.dvbstarter.shared.clock.AppClock;
+import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopieJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopieMapper;
+import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
+import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungHoerenOtoskopieJsonSpecMapper;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungHoerenOtoskopieJsonSpec;
+import org.assertj.core.util.CanIgnoreReturnValue;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+public class UntersuchungHoerenOtoskopieBuilder {
+
+    private UntersuchungHoerenOtoskopie hoerenOtoskopie;
+    private final FixedClockProvider clockProvider = FixedClockProvider.now();
+    private final AppClock appClock = new AppClock(clockProvider);
+
+    private UntersuchungHoerenOtoskopieBuilder() {
+        this.hoerenOtoskopie = defaultUntersuchungHoerenOtoskopie(appClock.offsetDateTime().now().toLocalDate());
+        TestUtil.setEntityInfo(hoerenOtoskopie);
+    }
+
+    @NonNull
+    public static UntersuchungHoerenOtoskopie defaultUntersuchungHoerenOtoskopie(@NonNull LocalDate now) {
+        return UntersuchungHoerenOtoskopie.forUntersuchung(UntersuchungBuilder.defaultUntersuchung(now));
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungHoerenOtoskopieBuilder forUntersuchungHoerenOtoskopie(
+        @NonNull UntersuchungHoerenOtoskopie existing) {
+        this.hoerenOtoskopie = existing;
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungHoerenOtoskopieBuilder forUntersuchung(@NonNull Untersuchung untersuchung) {
+        this.hoerenOtoskopie.setUntersuchung(untersuchung);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungHoerenOtoskopieBuilder withOtoskopieRechts(@Nullable List<OtoskopieResultat> resultatList) {
+        this.hoerenOtoskopie.setOtoskopieRechts(resultatList);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungHoerenOtoskopieBuilder withOtoskopieRechtsResultatAndere(
+        @Nullable String otoskopieRechtsResultatAndere) {
+        this.hoerenOtoskopie.setOtoskopieRechtsResultatAndere(otoskopieRechtsResultatAndere);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungHoerenOtoskopieBuilder withOtoskopieLinksResultatAndere(
+        @Nullable String otoskopieLinksResultatAndere) {
+        this.hoerenOtoskopie.setOtoskopieLinksResultatAndere(otoskopieLinksResultatAndere);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungHoerenOtoskopieBuilder withOtoskopieRechts(
+        @Nullable List<OtoskopieResultat> resultatList,
+        @Nullable String bemerkung) {
+        this.hoerenOtoskopie.setOtoskopieRechts(resultatList);
+        this.hoerenOtoskopie.setOtoskopieRechtsResultatAndere(bemerkung);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungHoerenOtoskopieBuilder withOtoskopieLinks(@Nullable List<OtoskopieResultat> resultatList) {
+        this.hoerenOtoskopie.setOtoskopieLinks(resultatList);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungHoerenOtoskopieBuilder withOtoskopieLinks(
+        @Nullable List<OtoskopieResultat> resultatList,
+        @Nullable String bemerkung) {
+        this.hoerenOtoskopie.setOtoskopieLinks(resultatList);
+        this.hoerenOtoskopie.setOtoskopieLinksResultatAndere(bemerkung);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungHoerenOtoskopieBuilder withBemerkung(@Nullable String bemerkung) {
+        this.hoerenOtoskopie.setBemerkungen(bemerkung);
+        return this;
+    }
+
+    @NonNull
+    public static UntersuchungHoerenOtoskopie create(@NonNull Consumer<UntersuchungHoerenOtoskopieBuilder> block) {
+        UntersuchungHoerenOtoskopieBuilder builder = new UntersuchungHoerenOtoskopieBuilder();
+        block.accept(builder);
+        return builder.hoerenOtoskopie;
+    }
+
+    @NonNull
+    public static UntersuchungHoerenOtoskopieJson createJax(
+        @NonNull Consumer<UntersuchungHoerenOtoskopieBuilder> block) {
+        UntersuchungHoerenOtoskopie entity = create(block);
+        return UntersuchungHoerenOtoskopieMapper.toJson(entity);
+    }
+
+    @NonNull
+    public static UntersuchungHoerenOtoskopieJsonSpec createJaxSpec(
+        @NonNull Consumer<UntersuchungHoerenOtoskopieBuilder> block) {
+        UntersuchungHoerenOtoskopieJson json = createJax(block);
+        return UntersuchungHoerenOtoskopieJsonSpecMapper.INSTANCE.
+            untersuchungHoerenOtoskopieJsonToUntersuchungHoerenOtoskopieJsonSpec(json);
+    }
+}

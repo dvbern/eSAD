@@ -1,0 +1,7 @@
+@use '../../../../styles/core/layout';
+
+:host {
+  @include layout.flex($justify-content: center, $align-items: center);
+
+
+}

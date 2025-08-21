@@ -1,0 +1,20 @@
+{
+  "admin.import.plz": "Importer PLZ",
+  "admin.import.plz.status.success": "Importation terminée",
+  "admin.list.item.systemadmin": "System Admin",
+  "global.hello-world": "Bonjour le Monde",
+  "global.ja": "Oui",
+  "global.loading": "Chargement...",
+  "global.nein": "Non",
+  "global.select.bitte-auswaehlen": "Veuillez sélectionner",
+  "stammdaten.form.geburtsDatum": "Date de naissance",
+  "stammdaten.form.geschlecht": "Sexe",
+  "stammdaten.form.name": "Nom de famille",
+  "stammdaten.form.speichern": "Enregistrer les données de base",
+  "stammdaten.form.vorname": "Prénom",
+  "stammdaten.title": "Données de base",
+  "ui.button.submit.label": "Enregistrer",
+  "ui.file-upload-button.add.label": "Télécharger un fichier",
+  "ui.form.input-required.label": "Veuillez saisir une valeur",
+  "ui.table-filter.label": "Filtrer {{columnHeader}}"
+}

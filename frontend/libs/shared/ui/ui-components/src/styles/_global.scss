@@ -1,0 +1,62 @@
+// Global
+
+@use './core/color/color-set-default' as color;
+@use './core/color/color-set-statustext';
+@use './core/css-var';
+@use './core/size';
+@use './core/spacing';
+
+:root {
+  @include css-var.set-local(icon-size, 1em);
+}
+
+html {
+  font-size: 100%;
+}
+
+ul {
+  margin-bottom: 0;
+}
+
+// spacing inbetween content blocks
+:is(p, ul) {
+  & + & {
+    margin-top: spacing.$between-paragraphs;
+  }
+
+  // no spacing on last element in card | section
+  .svui_card > &,
+  .svui_section-container > & {
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+:is(svui-card, svui-card-collapsible) {
+  & + & {
+    margin-top: spacing.$layout-outer;
+  }
+}
+
+// text styles
+.svui_text {
+  &--error {
+    color: color-set-statustext.$danger-color;
+  }
+}
+
+// headings
+.svui_heading {
+  &--form {
+    color: color.$text-secondary;
+  }
+}
+
+// subBadges container
+.subBadges {
+  display: flex;
+  flex-wrap: wrap;
+  overflow: hidden;
+  column-gap: spacing.$base;
+}

@@ -1,0 +1,30 @@
+// Statustext Color Set
+
+@use './definition/color-definition';
+
+$danger-bg: color-definition.$red-100;
+$danger-bg-hover: rgba(color-definition.$red-200, .3);
+$danger-color: color-definition.$red-300;
+$danger-icon: color-definition.$red-300;
+
+$success-bg: transparent;
+$success-bg-hover: rgba(color-definition.$green-200, .2);
+$success-color: color-definition.$black;
+$success-icon: color-definition.$green-300;
+
+$info-bg: transparent;
+$info-bg-hover: rgba(color-definition.$grey-200, .2);
+$info-color: color-definition.$black;
+$info-icon: color-definition.$black;
+
+
+// TODO fix diese Farben aus ePo mit Esc-Farben.
+// Status Color Set for Error, Warning, Info, Success
+$success: #80DE7E;
+$info: #00a3ff;
+$warning: #ffc700;
+$error: #f44649;
+$success-background: #bfffbf;
+$info-background: #bfe8ff;
+$warning-background: #fff1bf;
+$error-background: #ffbfbf;

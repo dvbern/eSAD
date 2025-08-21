@@ -1,0 +1,187 @@
+<form svuiFormLayout [formGroup]="form.group" [mode]="DetailMode.EDIT" (ngSubmit)="save()">
+  @if (anlassStore.selectedEntity()?.anlassConfig?.showDatenPersonendaten) {
+    <h2 svuiHeading="formSection">{{ 'untersuchung.tab.daten.personen.titel' | transloco }}</h2>
+
+    <svui-form-control [label]="'untersuchung.tab.daten.personen.name' | transloco"
+                       [viewValue]="form.group.controls.name.value">
+      <input svuiTextInput [formControl]="form.group.controls.name">
+    </svui-form-control>
+
+    <svui-form-control [label]="'untersuchung.tab.daten.personen.vorname' | transloco"
+                       [viewValue]="form.group.controls.vorname.value">
+      <input svuiTextInput [formControl]="form.group.controls.vorname">
+    </svui-form-control>
+
+    <svui-form-control [label]="'untersuchung.tab.daten.personen.idNr' | transloco"
+                       [viewValue]="form.group.controls.esadId.value">
+      <input svuiTextInput [formControl]="form.group.controls.esadId">
+    </svui-form-control>
+
+    <svui-form-group [label]="'untersuchung.tab.daten.personen.geschlecht' | transloco"
+                     [direction]="'horizontal'"
+                     [viewValue]="'Geschlecht.' + (form.group.controls.geschlecht.value ?? Geschlecht.UNBEKANNT) | transloco">
+      @for (geschlecht of geschlechtOptions; track geschlecht) {
+        <svui-single-radio-wrapper [label]="'Geschlecht.' + geschlecht | transloco">
+          <input svuiRadio
+                 type="radio"
+                 name="geschlecht"
+                 [formControl]="form.group.controls.geschlecht"
+                 [value]="geschlecht"/>
+        </svui-single-radio-wrapper>
+      }
+    </svui-form-group>
+
+    <svui-form-control [label]="'untersuchung.tab.daten.personen.geburtsdatum' | transloco"
+                       [viewValue]="form.group.value.geburtsdatum | date: 'dd.MM.yyyy'">
+      <input svuiTextInput="date" [formControl]="form.group.controls.geburtsdatum"/>
+    </svui-form-control>
+
+    <svui-form-control [label]="'untersuchung.tab.daten.personen.alter' | transloco"
+                       [viewValue]="form.group.value.alterDuodezimal">
+      <input svuiTextInput [formControl]="form.group.controls.alterDuodezimal"/>
+    </svui-form-control>
+
+    <svui-form-control [label]="'kind.nationalitaet' | transloco"
+                       [viewValue]="form.group.value.nationalitaet ?
+                     (('Land.' + form.group.value.nationalitaet | transloco) + ' (' +
+                     ('LandCode.' + form.group.value.landCode | transloco) + ')') : undefined">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.nationalitaet"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+
+      >
+        @for (land of nationalitaeten; track land) {
+          <ng-option [value]="land">
+            {{ 'Land.' + land | transloco }}
+          </ng-option>
+        }
+      </ng-select>
+
+    </svui-form-control>
+  }
+
+  <!--UNTERSUCHUNG-->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.datenUntersuchung) {
+
+    <h2 svuiHeading="formSection">{{ 'untersuchung.tab.daten.untersuchung.titel' | transloco }}</h2>
+    <svui-form-control [label]="'untersuchung.tab.daten.untersuchung.datum' | transloco"
+                       [viewValue]="form.group.value.anlassDatum | date: 'dd.MM.yyyy'">
+      <input svuiTextInput="date" [formControl]="form.group.controls.anlassDatum"/>
+    </svui-form-control>
+
+    <svui-form-control [label]="'untersuchung.tab.daten.untersuchung.arzt' | transloco"
+                       [viewValue]="form.group.value.arzt?.fullName">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.arzt"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        [compareWith]="compareFn"
+      >
+        @for (each of benutzerOptionsStore.arztOptionsIncluding(form.group.value.arzt); track each) {
+          <ng-option [value]="each" [disabled]="!each.aktiv">
+            {{ each.fullName }}
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+
+    <svui-form-control [label]="'untersuchung.tab.daten.untersuchung.mpa' | transloco"
+                       [viewValue]="form.group.value.mpa?.fullName">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.mpa"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        [compareWith]="compareFn"
+      >
+        @for (each of benutzerOptionsStore.mpaOptionsIncluding(form.group.value.mpa); track each) {
+          <ng-option [value]="each" [disabled]="!each.aktiv">
+            {{ each.fullName }}
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+
+    <svui-form-group [label]="'untersuchung.tab.daten.untersuchung.status' | transloco"
+                     direction="horizontal"
+                     [viewValue]="">
+      <svui-single-checkbox-wrapper [label]="'untersuchung.tab.daten.untersuchung.nachkontrolle' | transloco">
+        <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.nachkontrolle"/>
+      </svui-single-checkbox-wrapper>
+      <svui-single-checkbox-wrapper [label]="'untersuchung.tab.daten.untersuchung.nachzügler' | transloco">
+        <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.nachzuegler"/>
+      </svui-single-checkbox-wrapper>
+      <svui-single-checkbox-wrapper [label]="'untersuchung.tab.daten.untersuchung.neueintritt' | transloco">
+        <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.neueintritt"/>
+      </svui-single-checkbox-wrapper>
+    </svui-form-group>
+  }
+
+  <!--SCHULE-->
+
+  @if (anlassStore.selectedEntity()?.anlassConfig?.showDatenSchule) {
+    <h2 svuiHeading="formSection">{{ 'untersuchung.tab.daten.schule.titel' | transloco }}</h2>
+
+    <svui-form-control [label]="'untersuchung.tab.daten.schule.schule' | transloco"
+                       [viewValue]="form.group.value.schulhaus">
+      <input svuiTextInput [formControl]="form.group.controls.schulhaus">
+    </svui-form-control>
+
+    <svui-form-control [label]="'untersuchung.tab.daten.schule.quartier' | transloco"
+                       [viewValue]="form.group.value.quartier">
+      <input svuiTextInput [formControl]="form.group.controls.quartier">
+    </svui-form-control>
+
+    <svui-form-control [label]="'untersuchung.tab.daten.schule.schulkreis' | transloco"
+                       [viewValue]="form.group.value.schulkreis">
+      <input svuiTextInput [formControl]="form.group.controls.schulkreis">
+    </svui-form-control>
+
+    <svui-form-control [label]="'untersuchung.tab.daten.schule.schulhaus' | transloco"
+                       [viewValue]="form.group.value.schulhausnummer">
+      <input svuiTextInput [formControl]="form.group.controls.schulhausnummer">
+    </svui-form-control>
+
+
+    <svui-form-control [label]="'klasse.klassenstufe' | transloco"
+                       [viewValue]="form.group.value.klassenstufe ? ('Klassenstufe.' + form.group.value.klassenstufe | transloco) : '' ">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.klassenstufe"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+
+      >
+        @for (klassenstufe of klassenstufe; track klassenstufe) {
+          <ng-option [value]="klassenstufe">
+            {{ 'Klassenstufe.' + klassenstufe | transloco }}
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+
+    <svui-form-control [label]="'untersuchung.tab.daten.schule.klassenbezeichnung' | transloco"
+                       [viewValue]="form.group.value.klasse">
+      <input svuiTextInput [formControl]="form.group.controls.klasse">
+    </svui-form-control>
+
+    <svui-form-control [label]="'untersuchung.tab.daten.schule.klassentyp' | transloco"
+                       [viewValue]="form.group.value.klassentyp">
+      <input svuiTextInput [formControl]="form.group.controls.klassentyp">
+    </svui-form-control>
+
+  }
+
+  @if (this.canEdit()) {
+    <svui-save-cancel-buttons [saving]="datenStore.saveLoader.isLoading()"
+                              (cancelClicked)="abbrechen()"
+                              [canEdit]="true"/>
+  }
+</form>

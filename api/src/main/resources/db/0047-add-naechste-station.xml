@@ -1,0 +1,23 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="hefr (generated)" id="1747810838919-1">
+        <addColumn tableName="einladung">
+            <column name="naechstestation" type="VARCHAR(30)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747810838919-2">
+        <addColumn tableName="einladung_aud">
+            <column name="naechstestation" type="VARCHAR(30)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747810838919-3">
+        <addColumn tableName="einladung">
+            <column name="naechstestationseit" type="TIMESTAMP(6) WITHOUT TIME ZONE"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747810838919-4">
+        <addColumn tableName="einladung_aud">
+            <column name="naechstestationseit" type="TIMESTAMP(6) WITHOUT TIME ZONE"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

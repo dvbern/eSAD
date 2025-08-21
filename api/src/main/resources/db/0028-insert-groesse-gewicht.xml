@@ -1,0 +1,154 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hefr (generated)" id="1745421750949-1">
+    <createTable tableName="untersuchunggroessegewicht">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchunggroessegewichtPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="alter" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bemerkungen" type="VARCHAR(255)"/>
+      <column name="bmi" type="numeric(38, 2)"/>
+      <column name="bmiperzentile" type="VARCHAR(30)"/>
+      <column name="gewicht" type="INTEGER"/>
+      <column name="gewichtperzentile" type="VARCHAR(30)"/>
+      <column name="groesse" type="INTEGER"/>
+      <column name="groesseperzentile" type="VARCHAR(30)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1745421750949-2">
+    <createTable tableName="untersuchunggroessegewicht_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="alter" type="INTEGER"/>
+      <column name="bemerkungen" type="VARCHAR(255)"/>
+      <column name="bmi" type="numeric(38, 2)"/>
+      <column name="bmiperzentile" type="VARCHAR(30)"/>
+      <column name="gewicht" type="INTEGER"/>
+      <column name="gewichtperzentile" type="VARCHAR(30)"/>
+      <column name="groesse" type="INTEGER"/>
+      <column name="groesseperzentile" type="VARCHAR(30)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1745421750949-3">
+    <addColumn tableName="anlassconfig">
+      <column name="groessegewichtbmiperzentile" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1745421750949-4">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="groessegewichtbmiperzentile" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1745421750949-3a">
+    <sql>
+      update anlassconfig set groessegewichtbmiperzentile = groessegewichtperzentile where groessegewichtbmiperzentile is null;
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1745421750949-3b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="groessegewichtbmiperzentile"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1745421750949-5">
+    <addColumn tableName="anlassconfig">
+      <column name="groessegewichtgewichtperzentile" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1745421750949-6">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="groessegewichtgewichtperzentile" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1745421750949-5a">
+    <sql>
+      update anlassconfig set groessegewichtgewichtperzentile = groessegewichtperzentile where groessegewichtgewichtperzentile is null;
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1745421750949-5b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="groessegewichtgewichtperzentile"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1745421750949-7">
+    <addColumn tableName="anlassconfig">
+      <column name="groessegewichtgroesseperzentile" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1745421750949-8">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="groessegewichtgroesseperzentile" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1745421750949-7a">
+    <sql>
+      update anlassconfig set groessegewichtgroesseperzentile = groessegewichtperzentile where groessegewichtgroesseperzentile is null;
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1745421750949-7b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="groessegewichtgroesseperzentile"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1745421750949-9">
+    <addColumn tableName="untersuchung">
+      <column name="untersuchunggroessegewicht_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1745421750949-10">
+    <addColumn tableName="untersuchung_aud">
+      <column name="untersuchunggroessegewicht_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1745421750949-11">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchunggroessegewicht_audPK" tableName="untersuchunggroessegewicht_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1745421750949-12">
+    <addUniqueConstraint columnNames="untersuchunggroessegewicht_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGGROESSEGEWICHT_ID_COL" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1745421750949-13">
+    <createIndex indexName="ix_untersuchung_untersuchunggroessegewicht" tableName="untersuchung">
+      <column name="untersuchunggroessegewicht_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1745421750949-14">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchunggroessegewicht_aud" constraintName="FKmko9ar81nt0ymehxihpi887k" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1745421750949-15">
+    <addForeignKeyConstraint baseColumnNames="untersuchunggroessegewicht_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchunggroessegewicht" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchunggroessegewicht" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1745421750949-16">
+    <dropColumn columnName="groessegewichtperzentile" tableName="anlassconfig"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1745421750949-17">
+    <dropColumn columnName="groessegewichtperzentile" tableName="anlassconfig_aud"/>
+  </changeSet>
+  <changeSet author="hefr" id="1745421750949-18">
+    <sql>
+      update anlassconfig set groessegewichtbemerkungen = 'OPTIONAL' where anlasstyp not in ('IMPFAKTION', 'IMPFSPRECHSTUNDE', 'IMPFTERMIN');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

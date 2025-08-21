@@ -1,0 +1,31 @@
+All properties
+Allgemein
+FIELD_allgemein.aktuellesDatum: 20.05.2025
+FIELD_allgemein.benutzerTitel: Dipl. Ing.
+FIELD_allgemein.benutzer: Sarah Support
+FIELD_allgemein.benutzerEmail: support@mailbucket.dvbern.ch
+FIELD_allgemein.benutzerTelefon: +41 61 123 45 67
+FIELD_allgemein.benutzerFunktion: Support
+
+Kind
+FIELD_kind.vorname:  Nina
+FIELD_kind.nachname: Notter
+FIELD_kind.geburtsdatum: 15.03.2015
+FIELD_kind.adresse: Bahnhofstrasse 10
+c/o Muster
+3000 Bern
+FIELD_kind.zustaendigArzt: Schularzt Julien
+FIELD_kind.schulhaus: Dreirosen
+FIELD_kind.klasseStufe: Primar 4
+FIELD_kind.klasseBezeichnung: Klasse 4a
+FIELD_kind.nachkontrollen: des Gehörs, anderes, der Grösse und des Gewichts, der Motorik, der Augen, der Sprache
+
+Arzt
+
+FIELD_externerArzt.anrede: Dr. Med.
+FIELD_externerArzt.name: Arzt Armin
+FIELD_externerArzt.adresse: Bahnhofstrasse 10
+c/o Muster
+3000 Bern
+FIELD_externerArzt.telefon: +41 79 123 45 67
+FIELD_externerArzt.email: elementaire@efdb.ch

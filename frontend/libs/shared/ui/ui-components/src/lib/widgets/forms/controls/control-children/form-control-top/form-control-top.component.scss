@@ -1,0 +1,21 @@
+@use '../../../../../../styles/core/color/color-set-form';
+@use '../../../../../../styles/core/font';
+@use '../../../../../../styles/core/layout';
+@use '../../../../../../styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.svui_form-control-top {
+  @include layout.flex($wrap: wrap, $justify-content: space-between);
+
+  &--fix {
+    min-height: spacing.$form-control-label-container;
+  }
+
+  &__right__imported {
+    font-size: font.value('P2', size);
+    color: color-set-form.$text-disabled
+  }
+}

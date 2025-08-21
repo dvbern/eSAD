@@ -1,0 +1,36 @@
+{
+  "name": "system",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/esc-app/feat/feat-system/src",
+  "prefix": "feat",
+  "projectType": "library",
+  "tags": ["type:feat", "scope:esc-app"],
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:ng-packagr-lite",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "libs/esc-app/feat/feat-system/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/esc-app/feat/feat-system/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/esc-app/feat/feat-system/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/esc-app/feat/feat-system/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

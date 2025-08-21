@@ -1,0 +1,10 @@
+@use '../../../../styles/core/layout';
+@use '../../../../styles/core/spacing';
+
+:host {
+  @include layout.flex($align-items: center, $column-gap: spacing.$gutter-width-inline-elements);
+
+  ::ng-deep > .svui_heading {
+    flex-grow: 1;
+  }
+}

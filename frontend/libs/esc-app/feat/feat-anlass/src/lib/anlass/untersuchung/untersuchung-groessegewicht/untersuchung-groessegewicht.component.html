@@ -1,0 +1,152 @@
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabGroesseGewicht) {
+
+  <svui-card-in-card class="mb-5">
+    <div class="d-flex" style="width: 100%; align-items: center;">
+      <b>{{
+          'untersuchung.tab.groessegewicht.alter' | transloco
+        }}: {{ alterDuodezimal() }} </b>
+    </div>
+  </svui-card-in-card>
+
+  <form svuiFormLayout
+        [formType]="'kacheln'"
+        [mode]="'edit'"
+        [formGroup]="form.group"
+        (ngSubmit)="submitIfValid()">
+
+    <!-- Groesse -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.groesseGewichtGroesse !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.groessegewicht.groesse' | transloco">
+        <svui-form-control
+          class="textcontrol"
+          [label]="'untersuchung.tab.groessegewicht.groesse' | transloco"
+          [topLabelVisibility]="'hidden'"
+          [viewValue]="''">
+          <input [svuiTextInput]="'number'" [formControl]="form.group.controls.groesse"/>
+          <span class="fs-6" control-message>{{ 'untersuchung.tab.groessegewicht.groesse.einheit' | transloco }}</span>
+        </svui-form-control>
+        @if (anlassStore.selectedEntity()?.anlassConfig?.groesseGewichtGroessePerzentile
+        !== RequirementSetting.NOT_VISIBLE) {
+          @for (each of perzentileGroesse; track each) {
+            <svui-kachel-control [label]="'PerzentileGroesse.' + each | transloco ">
+              <input svuiRadio
+                     type="radio"
+                     name="groessePerzentile"
+                     [formControl]="form.group.controls.groessePerzentile"
+                     [value]="each"
+              />
+            </svui-kachel-control>
+          }
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- Gewicht -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.groesseGewichtGewicht !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.groessegewicht.gewicht' | transloco">
+        <svui-form-control
+          class="textcontrol"
+          [label]="'untersuchung.tab.groessegewicht.gewicht' | transloco"
+          [topLabelVisibility]="'hidden'"
+          [viewValue]="''">
+          <input [svuiTextInput]="'number'" [formControl]="form.group.controls.gewicht"/>
+          <span class="fs-6" control-message>{{ 'untersuchung.tab.groessegewicht.gewicht.einheit' | transloco }}</span>
+        </svui-form-control>
+        @if (anlassStore.selectedEntity()?.anlassConfig?.groesseGewichtGewichtPerzentile
+        !== RequirementSetting.NOT_VISIBLE) {
+          @for (each of perzentileGewicht; track each) {
+            <svui-kachel-control [label]="'PerzentileGewicht.' + each | transloco ">
+              <input
+                svuiRadio
+                type="radio"
+                name="gewichtPerzentile"
+                [formControl]="form.group.controls.gewichtPerzentile"
+                [value]="each"
+              />
+            </svui-kachel-control>
+          }
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- BMI -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.groesseGewichtBmi !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.groessegewicht.bmi' | transloco">
+        <svui-form-control
+          class="textcontrol"
+          [label]="'untersuchung.tab.groessegewicht.bmi' | transloco"
+          [topLabelVisibility]="'hidden'"
+          [viewValue]="''">
+          <input svuiTextInput [formControl]="form.group.controls.bmi"/>
+          <span class="fs-6" control-message>{{ 'untersuchung.tab.groessegewicht.bmi.einheit' | transloco }}</span>
+        </svui-form-control>
+        @if (anlassStore.selectedEntity()?.anlassConfig?.groesseGewichtBmiPerzentile
+        !== RequirementSetting.NOT_VISIBLE) {
+          @for (each of perzentileBmi; track each) {
+            <svui-kachel-control [label]="'PerzentileBmi.' + each | transloco ">
+              <input
+                svuiRadio
+                type="radio"
+                name="bmiPerzentile"
+                [formControl]="form.group.controls.bmiPerzentile"
+                [value]="each"
+              />
+            </svui-kachel-control>
+          }
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- Perzentil-Diagramme (all 6 because sometimes we need to show all)-->
+
+    <!-- Maennlich -->
+    @if (showDiagarammMale() && (showDiagrammGroesse() || showDiagrammGewicht() || showDiagrammBmi())) {
+      <div class="mt-5 percentile-charts">
+        @if (showDiagarammMale() && showDiagrammGroesse()) {
+          <svui-percentilechart [dataset]="form.chartGroesseMale"/>
+        }
+        @if (showDiagarammMale() && showDiagrammGewicht()) {
+          <svui-percentilechart [dataset]="form.chartGewichtMale"/>
+        }
+        @if (showDiagarammMale() && showDiagrammBmi()) {
+          <svui-percentilechart [dataset]="form.chartBmiMale"/>
+        }
+      </div>
+    }
+    <!-- Weiblich -->
+    @if (showDiagarammFemale() && (showDiagrammGroesse() || showDiagrammGewicht() || showDiagrammBmi())) {
+      <div class="mt-5 percentile-charts">
+        @if (showDiagarammFemale() && showDiagrammGroesse()) {
+          <svui-percentilechart [dataset]="form.chartGroesseFemale"/>
+        }
+        @if (showDiagarammFemale() && showDiagrammGewicht()) {
+          <svui-percentilechart [dataset]="form.chartGewichtFemale"/>
+        }
+        @if (showDiagarammFemale() && showDiagrammBmi()) {
+          <svui-percentilechart [dataset]="form.chartBmiFemale"/>
+        }
+      </div>
+    }
+    <!-- Bemerkung -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.groesseGewichtBemerkungen !== RequirementSetting.NOT_VISIBLE) {
+      <svui-title [context]="'formSection'"
+                  class="mb-3 mt-5">{{ 'untersuchung.tab.groessegewicht.bemerkung' | transloco }}
+      </svui-title>
+      <svui-form-control
+        [label]="'untersuchung.tab.groessegewicht.bemerkung' | transloco"
+        [topLabelVisibility]="'hidden'"
+        [viewValue]="form.group.controls.bemerkungen.value">
+        <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
+      </svui-form-control>
+    }
+
+    <!-- Save / Cancel Buttons -->
+    @if (canEdit()) {
+      <svui-save-cancel-buttons
+        [saving]="false"
+        [canEdit]="true"
+        (cancelClicked)="abbrechen()"/>
+    }
+  </form>
+
+}

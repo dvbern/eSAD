@@ -1,0 +1,208 @@
+package ch.dvbern.oss.hemed.esc.api.shared.aufgabe;
+
+import ch.dvbern.dvbstarter.infrastructure.fileio.FileDownloadUtil;
+import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
+import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
+import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst;
+import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.AufgabeJson;
+import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.AufgabeListJson;
+import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.AufgabeSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.NumOfOffeneFaelligeAufgabeJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.UploadItemSchema;
+import io.smallrye.common.annotation.Blocking;
+import io.smallrye.faulttolerance.api.RateLimit;
+import io.smallrye.mutiny.Multi;
+import io.vertx.core.http.HttpServerResponse;
+import io.vertx.mutiny.core.buffer.Buffer;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.eclipse.microprofile.metrics.MetricUnits;
+import org.eclipse.microprofile.metrics.annotation.Timed;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
+
+@Path("/aufgaben")
+@JaxResource
+@RequiredArgsConstructor
+@Tag(name = OpenApiConst.Tags.TAG_AUFGABE)
+@RolesAllowed(BerechtigungName.AUFGABEN_LESEN)
+@RateLimit(RateLimitConst.DEFAULT_LIMIT)
+@Timed(name = "AufgabeResourceMS", unit = MetricUnits.MILLISECONDS)
+public class AufgabeResource {
+
+    private final AufgabeMapper aufgabeMapper;
+    private final AufgabeService aufgabeService;
+    private final FileStoreService fileStoreService;
+
+    @Context
+    private HttpServerResponse response;
+
+    @GET
+    @RateLimit(RateLimitConst.DEFAULT_LIMIT)
+    @RolesAllowed(BerechtigungName.AUFGABEN_LESEN)
+    public AufgabeListJson findAllAufgaben() {
+        return this.aufgabeMapper.findAll();
+    }
+
+    @GET
+    @Path("/kind/{kindId}")
+    @NonNull
+    @RateLimit(RateLimitConst.DEFAULT_LIMIT)
+    @RolesAllowed(BerechtigungName.AUFGABEN_LESEN)
+    public AufgabeListJson findAllForKind(
+        @PathParam("kindId") @NotNull @NonNull ID<Kind> kindId
+    ) {
+        return this.aufgabeMapper.findAllForKind(kindId);
+    }
+
+    @POST
+    @NonNull
+    @RolesAllowed(BerechtigungName.AUFGABEN_SCHREIBEN)
+    public AufgabeJson createAufgabe(
+        @NotNull @NonNull @Valid AufgabeSaveJson aufgabeJson
+    ) {
+        response.setStatusCode(Status.CREATED.getStatusCode());
+        return aufgabeMapper.create(aufgabeJson);
+    }
+
+    @PUT
+    @Path("/{aufgabeId}")
+    @NonNull
+    @RolesAllowed(BerechtigungName.AUFGABEN_SCHREIBEN)
+    public AufgabeJson updateAufgabe(
+        @NotNull @NonNull @PathParam("aufgabeId") ID<Aufgabe> aufgabeID,
+        @NotNull @NonNull @Valid AufgabeSaveJson aufgabeJson
+    ) {
+        return aufgabeMapper.update(aufgabeID, aufgabeJson);
+    }
+
+    @GET
+    @Path("/offenefaellige/self")
+    @RateLimit(RateLimitConst.DEFAULT_LIMIT)
+    @RolesAllowed(BerechtigungName.AUFGABEN_LESEN)
+    public NumOfOffeneFaelligeAufgabeJson getNumOfFaelligeAufgabenForCurrentUser() {
+        return new NumOfOffeneFaelligeAufgabeJson(this.aufgabeMapper.getNumOfFaelligeAufgabenForCurrentUser());
+    }
+
+    @GET
+    @Path("/offenefaellige")
+    @RateLimit(RateLimitConst.DEFAULT_LIMIT)
+    @RolesAllowed(BerechtigungName.AUFGABEN_LESEN)
+    public NumOfOffeneFaelligeAufgabeJson getNumOfFaelligeAufgaben() {
+        return new NumOfOffeneFaelligeAufgabeJson(this.aufgabeMapper.getNumOfOffeneFaelligeAufgaben());
+    }
+
+    @DELETE
+    @Path("/{aufgabeId}")
+    @RolesAllowed(BerechtigungName.AUFGABEN_SCHREIBEN)
+    public void removeAufgabe(@NotNull @NonNull @PathParam("aufgabeId") ID<Aufgabe> aufgabeId) {
+        aufgabeMapper.remove(aufgabeId);
+    }
+
+    @POST
+    @RolesAllowed(BerechtigungName.AUFGABEN_SCHREIBEN)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Path("/{aufgabeId}/file")
+    public AufgabeJson addAufgabeFile(
+        @PathParam("aufgabeId") @NotNull @NonNull ID<Aufgabe> aufgabeID,
+        @FormParam(value = "file") @Schema(implementation = UploadItemSchema.class) FileUpload file
+    ) {
+        return aufgabeMapper.addUploadedFile(aufgabeID, file);
+    }
+
+    @DELETE
+    @RolesAllowed(BerechtigungName.AUFGABEN_SCHREIBEN)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Path("/{aufgabeId}/file/{fileId}")
+    public AufgabeJson removeAufgabeFile(
+        @PathParam("aufgabeId") @NotNull @NonNull ID<Aufgabe> aufgabeId,
+        @NotNull @NonNull @PathParam("fileId") ID<FileData> fileId
+    ) {
+        return aufgabeMapper.removeUploadedFile(aufgabeId, fileId);
+    }
+
+    /**
+     * use a specific endpoint for downloads in order to make sure that we can check the Berechtigung
+     */
+    @GET
+    @Consumes(MediaType.WILDCARD)
+    @APIResponse(content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM,
+        schema = @Schema(type = SchemaType.STRING, format = "binary")), description = "OK", responseCode = "200")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Path("/{aufgabeId}/file/{fileId}")
+    @RolesAllowed(BerechtigungName.AUFGABEN_LESEN)
+    @NonNull
+    @Blocking
+    public Multi<Buffer> downloadAufgabeFile(
+        @PathParam("aufgabeId") @NotNull @NonNull ID<Aufgabe> aufgabeId,
+        @NotNull @NonNull @PathParam("fileId") ID<FileData> fileId
+    ) {
+        FileInfoS3 fileInfoS3 = aufgabeService.findUploadedFileInfoS3(aufgabeId, fileId);
+        return FileDownloadUtil.getBufferRestMultiWithInfo(fileInfoS3, fileStoreService);
+    }
+
+    /**
+     * since we have trouble settings for content disposition we currently use a sync endpoint
+     */
+    @GET
+    @Consumes(MediaType.WILDCARD)
+    @APIResponse(content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM,
+        schema = @Schema(type = SchemaType.STRING, format = "binary")), description = "OK", responseCode = "200")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Path("/{aufgabeId}/file/{fileId}/sync")
+    @RolesAllowed(BerechtigungName.AUFGABEN_LESEN)
+    @NonNull
+    @Blocking
+    public Response downloadAufgabeFileSync(
+        @PathParam("aufgabeId") @NotNull @NonNull ID<Aufgabe> aufgabeId,
+        @NotNull @NonNull @PathParam("fileId") ID<FileData> fileId
+    ) {
+        FileInfoS3 fileInfo = aufgabeService.findUploadedFileInfoS3(aufgabeId, fileId);
+        var content = fileStoreService.getFileBytesSync(fileInfo.getFileIdInBucket());
+        return FileDownloadUtil.buildFileResponse("attachment", content, fileInfo);
+    }
+
+    @GET
+    @Path("/{aufgabeId}")
+    @RateLimit(RateLimitConst.DEFAULT_LIMIT)
+    @RolesAllowed(BerechtigungName.AUFGABEN_LESEN)
+    public AufgabeJson getAufgabe(
+        @NotNull @NonNull @PathParam("aufgabeId") ID<Aufgabe> aufgabeId
+    ) {
+        return aufgabeMapper.getById(aufgabeId);
+    }
+
+    @GET
+    @Path("/self")
+    @RateLimit(RateLimitConst.DEFAULT_LIMIT)
+    @RolesAllowed(BerechtigungName.AUFGABEN_LESEN)
+    public AufgabeListJson findAllNichtAbgeschlosseneAufgabenForCurrent() {
+        return this.aufgabeMapper.findAllNichtAbgeschlosseneAufgabenForCurrent();
+    }
+}

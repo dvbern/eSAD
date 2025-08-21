@@ -1,0 +1,21 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  
+  <changeSet author="homa" id="1746017337-1">
+    <sql>
+-- fix testdata
+    update schule set schulhausnummer ='742' where id = '11111111-1111-1111-1111-111111111013';
+--  run changess
+    alter table if exists Schule alter column schulhausnummer set data type varchar(3);
+    create index ix_aufgabe_filedata_filedata on Aufgabe_Filedata (filedata_id);
+    create index ix_aufgabe_label_aufgabe on Aufgabe_Label (aufgabe_id, label_id);
+    create index ix_kind_kontaktpersonkind_kontaktpersonkind on Kind_KontaktPersonKind (kontaktpersonkind_id, kind_id);
+    create index ix_klasse_lehrperson_lehrperson on Klasse_Lehrperson (lehrperson_id, klasse_id);
+    create index ix_notiz_filedata_filedata on Notiz_Filedata (filedata_id);
+    create index ix_notiz_label_notiz on Notiz_Label (notiz_id, label_id);
+    create index ix_schule_kontaktpersonschule_kontaktpersonschule on Schule_KontaktPersonSchule (kontaktpersonschule_id, schule_id);
+    create index ix_untersuchungmassnahmen_infomaterial_untersuchungmassnahmen on UntersuchungMassnahmen_Infomaterial (untersuchungmassnahmen_id, informaterial_id);
+    </sql>
+
+  </changeSet>
+</databaseChangeLog>

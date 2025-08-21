@@ -1,0 +1,12 @@
+<div [class.svui_bottom--fix]="minHeight()">
+
+  <!--messages-->
+  <!-- Check for invalid and touched: the invalid is shown when the user blurs the field.
+  (for the reference: dirty is when the user is changing the value, even before blur, but we want to wait until blur)
+  https://angular.dev/guide/forms/form-validation#validating-input-in-template-driven-forms -->
+  @if (doValidation() && errors()) {
+    <svui-form-control-error [errors]="errors()"/>
+  }
+
+  <ng-content/>
+</div>

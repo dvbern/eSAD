@@ -1,0 +1,74 @@
+<feat-dialogs-modal [modalTitle]="'kind.dossier.briefgenerieren.modal.titel' | transloco">
+
+  <form svuiFormLayout [mode]="'edit'" [formGroup]="form.group" (ngSubmit)="submit()">
+    <svui-form-control [label]="'kind.dossier.briefgenerieren.modal.vorlage' | transloco"
+                       [viewValue]="''"
+                       [size]="'full'">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.vorlage"
+        [clearable]="false"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      >
+        @for (briefvorlage of this.briefvorlagenStore.entities(); track briefvorlage) {
+          <ng-option [value]="briefvorlage">
+            {{ briefvorlage.data.name }}
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+    @if (form.group.controls.vorlage.value?.data?.type === BriefvorlageType.ANLASS) {
+      <svui-form-control [label]="'kind.dossier.briefgenerieren.modal.anlass' | transloco"
+                         [viewValue]="''"
+                         [size]="'full'">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.einladung"
+          [clearable]="false"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+
+        >
+          @for (anlass of this.anlassList(); track anlass.id) {
+            <ng-option [value]="anlass">
+              {{ anlass.titel }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+    }
+    <!--Arzt-->
+    <svui-form-control [label]="'kind.dossier.briefgenerieren.modal.arzt' | transloco"
+                       [viewValue]="''"
+                       [size]="'full'">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.arztId"
+        [clearable]="true"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      >
+        @for (item of aerzteStore.entities(); track item.id; ) {
+          <ng-option [value]="item.id" >
+            <span class="w-100 d-flex justify-content-between">
+              <span>{{ item.data.name + ' ' + (item.data.vorname ?? '') }}</span>
+            </span>
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+
+    <!-- BUTTONS -->
+    <svui-save-cancel-buttons
+      [primaryButtonText]="'kind.dossier.briefgenerieren.dialog.save'"
+      [saving]="false"
+      [canEdit]="true"
+      (cancelClicked)="abbrechen()"/>
+
+  </form>
+</feat-dialogs-modal>
+

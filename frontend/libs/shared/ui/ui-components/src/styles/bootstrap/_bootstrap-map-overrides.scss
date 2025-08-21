@@ -1,0 +1,7 @@
+// Bootstrap map overrides
+
+@use 'sass:map';
+
+// remove state "valid" from bootstrap $form-validation-states
+// noinspection SassScssResolvedByNameOnly works in files which use @import instead of @use
+$form-validation-states: map.remove($form-validation-states, 'valid');

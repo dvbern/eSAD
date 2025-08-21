@@ -1,0 +1,25 @@
+:host {
+
+  $screen-breakpoint: 1000px;
+
+  .smallscreen-hide {
+    @media screen and (max-width: $screen-breakpoint) {
+      display: none;
+    }
+  }
+
+  .bigscreen-hide {
+    @media screen and (min-width: $screen-breakpoint) {
+      display: none;
+    }
+  }
+}
+
+
+.offcanvas-content {
+  .offcanvas-nav {
+    flex-direction: column;
+    align-items: start;
+
+  }
+}

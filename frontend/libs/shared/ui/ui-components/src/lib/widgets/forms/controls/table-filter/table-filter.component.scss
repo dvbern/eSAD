@@ -1,0 +1,10 @@
+:host {
+  display: block;
+
+  ::ng-deep {
+    input[type="date"] {
+      // make the date filter as small as possible
+      width: 6rem;
+    }
+  }
+}

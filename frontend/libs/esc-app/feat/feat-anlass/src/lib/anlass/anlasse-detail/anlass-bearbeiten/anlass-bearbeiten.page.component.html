@@ -1,0 +1,23 @@
+<feat-page [heading]="pageTitle()"
+           [backLink]="{label: 'global.back' | transloco, routerLink: backlink()}">
+
+  <svui-page-header-buttons>
+    @if (!this.store.selectedIsNew()) {
+      <button svuiButton="secondary"
+              type="button"
+              [icon]="'next'"
+              (click)="gotoPlanung()">{{ 'anlass.list.link.planung' | transloco }}
+      </button>
+    }
+  </svui-page-header-buttons>
+
+  <svui-card class="mb-3">
+    <feat-anlass-bearbeiten-anlassdaten-daten/>
+  </svui-card>
+
+  @if (!store.selectedIsNew()) {
+    <feat-anlass-detail-anlassdaten-kinder/>
+  }
+
+
+</feat-page>

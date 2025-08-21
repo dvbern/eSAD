@@ -1,0 +1,9 @@
+<svui-card [innerSpacing]="innerSpacing()">
+  <svui-card-header [heading]="heading()" (click)="collapse.toggle()" class="svui_collapsible__header">
+    <svui-icon [useCase]="isCollapsed ? 'zugeklappt': 'aufgeklappt'"/>
+  </svui-card-header>
+
+  <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsed">
+    <ng-content/>
+  </div>
+</svui-card>

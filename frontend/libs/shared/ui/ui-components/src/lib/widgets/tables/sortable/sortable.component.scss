@@ -1,0 +1,9 @@
+@use '../../../../styles/core/layout';
+@use '../../../../styles/core/spacing';
+
+.svui_sortable-header {
+  $-spacing-before-sort-indicator: spacing.$half;
+
+  @include layout.flex($align-items: center, $column-gap: $-spacing-before-sort-indicator);
+  cursor: pointer;
+}

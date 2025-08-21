@@ -1,0 +1,30 @@
+<feat-page [heading]="pageTitle() | transloco"
+           [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN + '/' + Path.INFOMATERIAL}">
+  <svui-card>
+    @if (store.loader.isLoading()) {
+      <div>{{ 'global.loading' | transloco }}</div>
+    } @else {
+      <div>
+        <form svuiFormLayout [mode]="store.detailMode()" [formGroup]="form.group" (ngSubmit)="submitIfValid()">
+          <!-- Name -->
+          <feat-translated-string-edit
+            svuiChildFormLayout
+            [translatedStringGroup]="form.group.controls.name"/>
+
+          <!--messages for whole form -->
+          <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+          <!-- BUTTONS -->
+          <svui-form-buttons
+            [mode]="store.detailMode()"
+            [isCreate]="store.selectedIsNew()"
+            [saving]="store.saveLoader.isLoading()"
+            [canEdit]="false"
+            routeToEdit="../edit"
+            [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+            [routeOnCancelCreate]="[Path.RELATIVE_ONE_UP]"/>
+        </form>
+      </div>
+    }
+  </svui-card>
+</feat-page>

@@ -1,0 +1,31 @@
+<feat-dialogs-modal [modalTitle]="'kind.kontaktperson.list.add-existing-contact.title' | transloco">
+  <form [formGroup]="form.group"
+        svuiFormLayout
+        (ngSubmit)="addContact()"
+        [mode]="DetailMode.EDIT"
+  >
+    <svui-form-control [label]="'kind.kontaktperson.list.add-existing-contact.kontaktperson' | transloco"
+                       [viewValue]="''">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.kontaktPerson"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      >
+        @for (kontaktPerson of kontaktPersonen(); track kontaktPerson.id) {
+          <ng-option [value]="kontaktPerson">
+            {{ kontaktPerson.fullName }}
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+
+    <!-- BUTTONS -->
+    <svui-save-cancel-buttons
+      [saving]="false"
+      [canEdit]="true"
+      (cancelClicked)="cancel()"
+    />
+  </form>
+</feat-dialogs-modal>

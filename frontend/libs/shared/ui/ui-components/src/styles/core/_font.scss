@@ -1,0 +1,118 @@
+// Font
+
+@use 'sass:map';
+@use './base';
+@use './unit';
+
+// family
+$family: "Roboto Condensed", Arial, sans-serif;
+
+// PRIVATE font definitions:
+// ----------------------------------------------------------------------
+
+// size
+$-size-base: unit.rem(base.$font-size); // 16px
+$-size-smaller-1: unit.rem(15px);
+$-size-smaller-2: unit.rem(13.6px);
+$-size-smaller-3: unit.rem(12px);
+$-size-smaller-4: unit.rem(10px);
+$-size-larger-1: unit.rem(18px);
+$-size-larger-2: unit.rem(20px);
+$-size-larger-3: unit.rem(24px);
+$-size-larger-4: unit.rem(32px);
+
+// FIXME(zusa) zurückmelden zu shiying s1-5 fehlen z.t., siehe Report-Einstellungen, TableHeadings
+
+// height
+$-line-height-default: 1.5;
+$-line-height-small: 1;
+
+// weight
+$-weight-regular: 400;
+$-weight-bold: 700;
+
+
+// PUBLIC font map helper functions:
+// ----------------------------------------------------------------------
+
+// get font value by $name and $property
+@function value($set-name, $property) {
+  @return map.get($-font-sets, $set-name, $property);
+}
+
+// get text box height of font set
+@function box-height-px($set-name) {
+  $size: map.get($-font-sets, $set-name, size);
+  $line-height: map.get($-font-sets, $set-name, height);
+
+  @return unit.px($size * $line-height);
+}
+
+// PRIVATE map with font sets:
+// ----------------------------------------------------------------------
+// Elements should use the default font sets p1-s3.
+// Only if their typography differs - and this shouldn't happen too often - do they get their own set.
+$-font-sets: (
+  'P1': (
+    // p1 == base font
+    size: $-size-base,
+    weight: $-weight-regular,
+    height: $-line-height-default,
+  ),
+  'P2': (
+    size: $-size-smaller-3,
+    weight: $-weight-regular,
+    height: $-line-height-default,
+  ),
+  'H1': (
+    size: $-size-larger-4,
+    weight: $-weight-bold,
+    height: $-line-height-default,
+  ),
+  'S1': (
+    size: $-size-larger-3,
+    weight: $-weight-bold,
+    height: $-line-height-default,
+  ),
+  'S2': (
+    size: $-size-larger-2,
+    weight: $-weight-bold,
+    height: $-line-height-default,
+  ),
+  'S3': (
+    size: $-size-larger-1,
+    weight: $-weight-bold,
+    height: $-line-height-default,
+  ),
+  'S4': (
+    size: $-size-base,
+    weight: $-weight-bold,
+    height: $-line-height-default,
+  ),
+  'S5': (
+    // table headings
+    size: $-size-smaller-1,
+    weight: $-weight-bold,
+    height: $-line-height-default,
+  ),
+  'badge': (
+    size: $-size-smaller-3,
+    weight: $-weight-regular,
+    height: $-line-height-small,
+  ),
+  'message': (
+    size: $-size-smaller-3,
+    weight: $-weight-regular,
+    height: $-line-height-default,
+  ),
+  'table': (
+    size: $-size-smaller-1,
+    weight: $-weight-regular,
+    height: $-line-height-default,
+  ),
+  'toast': (
+    size: $-size-smaller-1,
+    weight: $-weight-regular,
+    height: $-line-height-default,
+  ),
+);

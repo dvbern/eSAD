@@ -1,0 +1,191 @@
+<svui-page-layout [backLink]="backLink()" [heading]="heading()">
+  <ng-container class="svui-page-header-content-left">
+
+    <!-- MAIN NAV -->
+    <div class="smallscreen-hide">
+      <ul class="nav">
+        <ng-container *ngTemplateOutlet="navcontent"/>
+      </ul>
+    </div>
+
+  </ng-container>
+
+  <div class="svui-page-header-content-right">
+
+    <div class="d-flex justify-content-center align-items-center gap-3">
+
+      <!-- TIMETRAVEL -->
+      <feat-page-timetravel-status/>
+
+      <!-- SUCHE -->
+      <feat-page-global-search/>
+
+      <!-- AUFGABEN -->
+      <button svuiIconOnlyButton="secondary"
+              type="button"
+              [icon]="'aufgaben'"
+              [tooltip]="'global.tooltip.aufgaben' | transloco"
+              [badgeContent]="aufgabenStore.numOfOffeneFaelligeAufgaben()"
+              [routerLink]="'/' + Path.AUFGABEN">
+      </button>
+
+      <!-- BENUTZER -->
+      @if (benutzerStore.isLoggedIn()) {
+        <svui-collapsible-menu
+          class="smallscreen-hide"
+          [menuStyle]="'LINK'"
+          [loading]="false"
+          [label]="benutzerStore.requireBenutzer().fullName">
+          <button ngbDropdownItem (click)="logout()">{{ 'shared.header.menu.logout' | transloco }}</button>
+
+          <!-- FachRolle(n) Section -->
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item-text py-2" style="max-width: 340px">
+            <feat-page-fach-rollen-list [rollen]="benutzerStore.requireBenutzer().fachRollen"/>
+          </div>
+
+          <!-- Version Section -->
+          <div class="dropdown-item-text">
+            <feat-page-version-display [version]="deploymentStore.version()"/>
+          </div>
+
+        </svui-collapsible-menu>
+      }
+
+      <!-- BURGER TOGGLE BUTTON -->
+      <button svuiIconOnlyButton="secondary"
+              class="bigscreen-hide flex-shrink-0"
+              type="button"
+              [tooltip]="'global.tooltip.icon.menu' | transloco"
+              [icon]="'menu'"
+              (click)="open(offcanvasNav)">
+      </button>
+    </div>
+  </div>
+
+  <ng-content select="svui-page-header-list-summary" ngProjectAs="svui-page-header-list-summary"/>
+
+  <ng-content select="svui-page-header-entity-info" ngProjectAs="svui-page-header-list-summary"/>
+
+  <ng-content select="svui-page-header-buttons" ngProjectAs="svui-page-header-buttons"/>
+
+  <ng-content select="svui-page-header-add-button" ngProjectAs="svui-page-header-add-button"/>
+
+  <!-- MAIN CONTENT -->
+  <ng-content/>
+</svui-page-layout>
+
+
+<!-- BURGER MENU -->
+<ng-template #offcanvasNav let-offcanvas>
+  <div class="offcanvas-header">
+    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="offcanvas-content">
+
+      <ul class="nav offcanvas-nav">
+
+        <!-- MAIN NAV -->
+        <li class="nav-item">
+          <h3>{{ 'shared.header.menu.menu' | transloco }}</h3>
+        </li>
+        <ng-container *ngTemplateOutlet="navcontent"/>
+
+        <!--BENUTZER -->
+        @if (benutzerStore.isLoggedIn()) {
+
+          <li class="nav-item mt-5">
+            <h3>{{ benutzerStore.requireBenutzer().fullName }}</h3>
+          </li>
+
+          <li class="nav-item">
+            <button ngbDropdownItem
+                    class="nav-link"
+                    (click)="logout()"> {{ 'shared.header.menu.logout' | transloco }}
+            </button>
+          </li>
+
+          <!-- Navigation items remain here -->
+        }
+
+      </ul>
+
+      <!-- Bottom section with FachRollenList and VersionDisplay -->
+      <div class="offcanvas-bottom-section">
+        <!-- FachRolle(n) in mobile menu -->
+        <div class="nav-item">
+          <div class="nav-link">
+            <feat-page-fach-rollen-list [rollen]="benutzerStore.requireBenutzer().fachRollen"/>
+          </div>
+        </div>
+
+        <!-- Version in mobile menu -->
+        <div class="nav-item">
+          <div class="nav-link">
+            <feat-page-version-display [version]="deploymentStore.version()"/>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</ng-template>
+
+
+<!-- MAIN NAV CONTENT -->
+<ng-template #navcontent>
+  <div class="nav-item">
+    <a class="nav-link"
+       [routerLink]="'/dashboard'"
+       [routerLinkActive]="'active'"
+       aria-current="page">{{ 'shared.header.menu.dashboard' | transloco }}</a>
+  </div>
+  @if (canViewAnlass()) {
+    <div class="nav-item">
+      <a class="nav-link" [routerLink]="'/anlass'" [routerLinkActive]="'active'" aria-current="page"
+      >{{ 'shared.header.menu.anlass' | transloco }}</a
+      >
+    </div>
+  }
+  @if (canViewKind()) {
+    <div class="nav-item">
+      <a class="nav-link"
+         [routerLink]="'/kinder'"
+         [routerLinkActive]="'active'"
+         aria-current="page">{{ 'shared.header.menu.kinder' | transloco }}</a>
+    </div>
+  }
+  @if (canViewReport()) {
+    <div class="nav-item">
+      <a class="nav-link"
+         [routerLink]="'/report'"
+         [routerLinkActive]="'active'"
+         aria-current="page">{{ 'shared.header.menu.report' | transloco }}</a>
+    </div>
+  }
+  @if (canViewAdminPage()) {
+    <div class="nav-item">
+      <a class="nav-link"
+         [routerLink]="'/admin'"
+         [routerLinkActive]="'active'"
+         aria-current="page">{{ 'shared.header.menu.admin' | transloco }}</a>
+    </div>
+  }
+  @if (canViewSystemPage()) {
+    <div class="nav-item">
+      <a class="nav-link"
+         [routerLink]="'/system'"
+         [routerLinkActive]="'active'"
+         aria-current="page">{{ 'shared.header.menu.system' | transloco }}</a>
+    </div>
+  }
+  @if (canViewPlayground()) {
+    <div class="nav-item">
+      <a class="nav-link" [routerLink]="'/playground'" [routerLinkActive]="'active'" aria-current="page"
+      >{{ 'shared.header.menu.playground' | transloco }}</a
+      >
+    </div>
+  }
+
+</ng-template>

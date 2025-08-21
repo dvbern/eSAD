@@ -1,0 +1,36 @@
+<feat-page [heading]="fullName()"
+           [backLink]="{label: 'global.back' | transloco, routerLink: Path.RELATIVE_ONE_UP}">
+  <svui-card>
+    <ul ngbNav style="margin-bottom: 2rem;">
+
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.detailIsEditMode() || kontaktPersonKindStore.detailIsEditMode()"
+                [routerLink]="Path.PERSONENDATEN"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'kind.detail.personendaten' | transloco }}
+        </button>
+      </li>
+
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.detailIsEditMode() || store.isNew() || kontaktPersonKindStore.detailIsEditMode()"
+                [routerLink]="Path.SCHULE_KLASSE"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'kind.detail.schuleKlasse' | transloco }}
+        </button>
+      </li>
+
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.detailIsEditMode() || store.isNew()"
+                [routerLink]="Path.KONTAKTPERSONEN"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'kind.detail.kontaktpersonen' | transloco }}
+        </button>
+      </li>
+
+    </ul>
+    <router-outlet></router-outlet>
+  </svui-card>
+</feat-page>

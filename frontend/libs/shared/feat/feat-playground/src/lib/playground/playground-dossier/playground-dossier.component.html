@@ -1,0 +1,230 @@
+<svui-layout-columns>
+
+  <!-- StatusText -->
+  <svui-card left [innerSpacing]="'none'">
+    <svui-card-section>
+      <svui-card-header heading="Emma Siegenthaler">
+        <svui-icon cardIcon useCase="female"/>
+
+        <svui-collapsible-menu [loading]="false" label="{{ 'global.actionmenu.tooltip' | transloco }}"/>
+      </svui-card-header>
+
+      <p>ID-Nr. 21 / 55 / 222 / 11</p>
+
+      <svui-standalone-control label="Papierakte...">
+        <input type="checkbox" svuiCheckbox/>
+      </svui-standalone-control>
+    </svui-card-section>
+
+    <svui-card-section>
+      <p>anklickbar:</p>
+      <div>
+        <svui-status-text icon="information" [statusColor]="'danger'"
+                          (clickAction)="alert('Informationen')" [hasClickOutput]="true">Mehr Informationen
+        </svui-status-text>
+        <svui-status-text icon="vaccinated" statusColor="success"
+                          (clickAction)="alert('Masern')" [hasClickOutput]="true">Masern Immunität
+        </svui-status-text>
+      </div>
+    </svui-card-section>
+
+
+    <svui-card-section>
+      <p>nicht anklickbar:</p>
+      <div>
+        <svui-status-text icon="information" statusColor="danger">Danger</svui-status-text>
+        <svui-status-text icon="vaccinated" statusColor="success">Success</svui-status-text>
+      </div>
+    </svui-card-section>
+  </svui-card>
+
+  <!-- tile grid -->
+  <svui-card left [innerSpacing]="'none'">
+    <svui-card-section>
+      <svui-card-header heading="Tile Grid:"/>
+    </svui-card-section>
+
+    <svui-tile-grid>
+      <svui-tile>
+        <svui-icon useCase="birthdate"></svui-icon>
+        <span>10 5/12</span>
+        <span>18.05.2013</span>
+      </svui-tile>
+
+      <svui-tile>
+        <svui-icon useCase="location"></svui-icon>
+        <span>Nussbaumstrasse 21, 3006 Bern</span>
+      </svui-tile>
+
+      <svui-tile>
+        <svui-icon useCase="flag"></svui-icon>
+        <span>Schweiz</span>
+        <span>Deutsch</span>
+      </svui-tile>
+
+      <svui-tile>
+        <svui-icon useCase="school"></svui-icon>
+        <span>Primarschule St. Johann</span>
+        <span>Klasse 4c</span>
+      </svui-tile>
+
+      <svui-tile>
+        <svui-icon useCase="doctor"></svui-icon>
+        <svui-standalone-control label="Schularzt/Schulärztin">
+          <input type="checkbox" svuiCheckbox/>
+        </svui-standalone-control>
+      </svui-tile>
+
+      <svui-tile>
+        <svui-icon useCase="mpa"></svui-icon>
+        <svui-standalone-control label="MPA">
+          <ng-select
+            svuiNgSelect
+            bindLabel='dummy'
+            appendTo="body"
+            [clearable]="false"
+            [ngModel]="'1'"
+            [placeholder]="'global.select.bitte-auswaehlen' | transloco">
+            <ng-option [value]="'1'">
+              Anja Gross
+            </ng-option>
+            <ng-option [value]="'1'">
+              Fabienne Meier
+            </ng-option>
+            <ng-option [value]="'2'">
+              Hans Rudolf
+            </ng-option>
+            <ng-option [value]="'3'">
+              Leila Hirsberger
+            </ng-option>
+          </ng-select>
+        </svui-standalone-control>
+      </svui-tile>
+
+    </svui-tile-grid>
+  </svui-card>
+
+
+  <!-- badges and fancy list items -->
+  <div middle style="margin-bottom: 2rem;">
+
+    <h3>Badges:</h3>
+
+    <div style="display: flex; column-gap: 0.5rem;">
+      <svui-badge color="transparent">transparent</svui-badge>
+      <svui-badge color="purple">purple</svui-badge>
+      <svui-badge color="blue">blue</svui-badge>
+      <svui-badge color="orange">orange</svui-badge>
+      <svui-badge color="lightgreen">lightgreen</svui-badge>
+      <svui-badge color="green">green</svui-badge>
+    </div>
+
+  </div>
+
+  <svui-list middle
+             heading="Fancy list items:"
+             [loading]="false">
+
+
+    @for (disabled of [false, true]; track disabled) {
+      <svui-fancy-list-item
+        [mainText]="'SU 4.PS 2024/25'"
+        [subText]="'Primarschule Brunnmatt 4c'"
+        [date]="exampleDate"
+        [linkText]="'blabla öffnen'"
+        [routerlinkDestination]="'..'"
+        [gray]="disabled"
+      >
+        <ng-content mainBadges>
+          <svui-badge color="green">Teilnahme an SU</svui-badge>
+        </ng-content>
+      </svui-fancy-list-item>
+
+
+      <svui-fancy-list-item
+        [mainText]="'Impfberatung Impfkampagne'"
+        [subText]="'Primarschule Brunnmatt 4c'"
+        [date]="exampleDate"
+        [linkText]="'blabla öffnen'"
+        [routerlinkDestination]="'..'"
+        [gray]="disabled"
+      >
+        <ng-content mainBadges>
+          <svui-badge color="blue">Eingeladen</svui-badge>
+        </ng-content>
+      </svui-fancy-list-item>
+
+      <svui-fancy-list-item
+        [mainText]="'Nachzügler Termin'"
+        [subText]="'Kindergarten Brunnmatt'"
+        [date]="exampleDate"
+        [linkText]="'blabla öffnen'"
+        [routerlinkDestination]="'..'"
+        [gray]="disabled"
+      >
+        <ng-content mainBadges>
+          <svui-badge color="orange">Abgemeldet</svui-badge>
+        </ng-content>
+      </svui-fancy-list-item>
+
+      <svui-fancy-list-item
+        [mainText]="'Schuluntersuchung Kindergarten XY'"
+        [subText]="'Kindergarten Brunnmatt'"
+        [date]="exampleDate"
+        [linkText]="'blabla öffnen'"
+        [routerlinkDestination]="'..'"
+        [gray]="disabled"
+      >
+        <ng-content mainBadges>
+          <svui-badge color="purple">Nachzügler</svui-badge>
+        </ng-content>
+      </svui-fancy-list-item>
+
+
+      <svui-fancy-list-item
+        [mainText]="'Einverständnis_Untersuchung.pdf'"
+        [date]="exampleDate"
+        [linkText]="'blabla öffnen'"
+        [routerlinkDestination]="'..'"
+        [gray]="disabled"
+      >
+        <ng-content subBadges>
+          <svui-badge>PDF</svui-badge>
+          <svui-badge>Besprechung</svui-badge>
+          <svui-badge>Notiz</svui-badge>
+        </ng-content>
+      </svui-fancy-list-item>
+
+      <svui-fancy-list-item
+        [mainText]="'Verdächtigungsfall für Kinderschutzfall aufgeklärt'"
+        [date]="exampleDate"
+        [linkText]="'blabla öffnen'"
+        [routerlinkDestination]="'..'"
+        [gray]="disabled"
+      >
+        <ng-content subBadges>
+          <svui-badge>Notiz</svui-badge>
+          <svui-badge>Kinderschutzfall</svui-badge>
+          <svui-badge>Badge 3</svui-badge>
+          <svui-badge>Badge 4</svui-badge>
+        </ng-content>
+      </svui-fancy-list-item>
+    }
+  </svui-list>
+
+  <svui-card right innerSpacing="none">
+    <svui-card-section>
+      <svui-card-header heading="Zusatzinformation"/>
+    </svui-card-section>
+
+    <svui-card-section>
+      <svui-standalone-control label="Kinderschutzfall">
+        <input type="checkbox" svuiCheckbox/>
+      </svui-standalone-control>
+
+      <svui-standalone-control label="Sans papiers">
+        <input type="checkbox" svuiCheckbox/>
+      </svui-standalone-control>
+    </svui-card-section>
+  </svui-card>
+</svui-layout-columns>

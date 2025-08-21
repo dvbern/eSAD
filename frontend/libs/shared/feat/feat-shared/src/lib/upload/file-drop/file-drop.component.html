@@ -1,0 +1,74 @@
+<div class="file_drop">
+  <ngx-file-drop dropZoneClassName="file_drop__zone"
+                 dropZoneLabel="Drop files here"
+                 (onFileDrop)="dropped($event)"
+                 accept="{{acceptedFiletypes()}}"
+                 [multiple]="multiple()"
+                 [disabled]="readonly()"
+
+  >
+    <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+      <div class="file_drop__zone d-flex flex-column align-items-center">
+        <button svuiIconOnlyButton="secondary"
+                type="button"
+                [tooltip]="'global.tooltip.icon.upload' | transloco"
+                [icon]="'upload'"
+                (click)="openFileSelector()"
+                style="margin-bottom: 10px">
+        </button>
+
+        <div class="file_drop__text">
+
+          <span>{{ 'ui.upload.action.upload.browse.file.text1' | transloco }}&nbsp;</span>
+
+          <button class="file_drop__link"
+                  type="button"
+                  (click)="openFileSelector()"
+                  (keydown.enter)="openFileSelector()"
+                  [disabled]="readonly()"
+          >
+            <b>
+              <span>{{ 'ui.upload.action.upload.browse.file.choose' | transloco }}</span>
+            </b>
+          </button>
+
+          <span>&nbsp; {{ 'ui.upload.action.upload.browse.file.text2' | transloco }}</span>
+
+        </div>
+      </div>
+    </ng-template>
+  </ngx-file-drop>
+
+  <!--   List of staged files-->
+  @if (files.length !== 0) {
+    <div class="file_drop__upload_list">
+      <table class="table">
+        <thead>
+        <tr>
+          <th>{{ 'ui.upload.staged.filenames' | transloco }}</th>
+          <th title="actions"></th>
+        </tr>
+        </thead>
+        <tbody class="upload-name-style">
+          @for (file of files; let i = $index; track file) {
+            <tr>
+              <td class="file_drop__upload_list_filename">
+                <span>{{ file.relativePath }}</span>
+              </td>
+              <td class="text-end">
+                <button svuiIconOnlyButton="primary"
+                        type="button"
+                        [tooltip]="'global.tooltip.icon.loeschen'"
+                        [icon]="'loeschen'"
+                        (click)="removeFileFromUpload(file)"
+                        style="margin-left: 10px">
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+</div>

@@ -1,0 +1,17 @@
+{
+  "name": "@dvb/feat-aufgaben",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@dvb/data-access-types": "0.0.1",
+    "@dvb/ui-components": "0.0.1",
+    "@dvb/util-shared": "0.0.1",
+    "@dvb/util-angular": "0.0.1",
+    "@angular/core": "19.2.3",
+    "@angular/router": "19.2.3",
+    "@angular/common": "19.2.3",
+    "@angular/forms": "19.2.3",
+    "@jsverse/transloco": "7.6.1",
+    "@dvb/feat-shared": "0.0.1"
+  },
+  "sideEffects": false
+}

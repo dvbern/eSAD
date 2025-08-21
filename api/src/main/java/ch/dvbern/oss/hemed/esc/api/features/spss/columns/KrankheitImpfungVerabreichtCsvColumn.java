@@ -1,0 +1,48 @@
+package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
+
+import java.util.List;
+
+import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungKrankheitImmunitaet;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.ImpfStatus;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+public class KrankheitImpfungVerabreichtCsvColumn extends AbstractCsvColumn {
+
+    private final Krankheit krankheit;
+
+    public KrankheitImpfungVerabreichtCsvColumn(
+        @NonNull CsvColumnConfig config,
+        @Nullable String overrideHeader,
+        @NonNull Krankheit krankheit
+    ) {
+        super(config, overrideHeader);
+        this.krankheit = krankheit;
+    }
+
+    @Override
+    @NonNull
+    public String extract(@NonNull Einladung einladung) {
+        List<UntersuchungImpfungKrankheitImmunitaet> krankheitImmunitaetList =
+            ExtractorForCsvUtil.untersuchungImpfungKrankheitImmunitaetList(einladung, krankheit, config);
+
+        if (krankheitImmunitaetList.isEmpty()) {
+            return "";
+        }
+
+        // If any immunitaet comes from an Impfung which has been durchgefuehrt, we can return 1
+        return krankheitImmunitaetList.stream()
+            .map(UntersuchungImpfungKrankheitImmunitaet::getImpfung)
+            .filter(impfung -> impfung.getImpfStatus() == ImpfStatus.DURCHGEFUEHRT)
+            .toList()
+            .isEmpty() ? "" : "1";
+    }
+
+    @Override
+    @NonNull
+    protected String getDefaultHeaderKey() {
+        return "CsvColumn.krankheitImpfungVerabreicht";
+    }
+}

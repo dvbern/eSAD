@@ -1,0 +1,25 @@
+@use '../../../../../styles/core/layout';
+@use '../../../../../styles/core/spacing';
+
+:host {
+  display: block;
+  margin-top: spacing.$between-sections - spacing.$form-control-message-container;
+}
+
+.svui_kacheln {
+  @include layout.flex($wrap: wrap, $gap: spacing.$row-gap spacing.$gutter-width-inline-elements);
+  margin-top: spacing.$row-gap;
+  align-items: end;
+
+
+  // make text inputs the same size as a radio/checkbox kachel
+  ::ng-deep {
+    .svui_form-layout--normal {
+      input {
+        padding: spacing.$kachel-inner-y spacing.$kachel-inner-x spacing.$kachel-inner-y spacing.$kachel-inner-x;
+
+      }
+    }
+  }
+}
+

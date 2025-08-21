@@ -1,0 +1,12 @@
+@use '../../../../styles/core/layout';
+
+:host {
+  @include layout.flex($justify-content: center, $align-items: center);
+
+  &:empty {
+    display: none;
+  }
+
+  // quick fix to center the icons vertically
+  --svui-icon-size: 14px;
+}

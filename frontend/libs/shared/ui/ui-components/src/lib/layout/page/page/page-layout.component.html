@@ -1,0 +1,19 @@
+<div class="svui_page">
+  <svui-app-header>
+    <ng-content select=".svui-page-header-content-left"/>
+
+    <ng-content select=".svui-page-header-content-right" ngProjectAs="svui-app-header-content-right"/>
+  </svui-app-header>
+
+  <div class="svui_page__main">
+    <svui-page-header [heading]="heading()" [backLink]="backLink()">
+      <ng-content select="svui-page-header-list-summary"/>
+      <ng-content select="svui-page-header-buttons"/>
+      <ng-content select="svui-page-header-add-button"/>
+    </svui-page-header>
+
+    <div class="svui_page__main__content">
+      <ng-content/>
+    </div>
+  </div>
+</div>

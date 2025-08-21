@@ -1,0 +1,9 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="dvbern" id="2025-11-27-1800">
+    <sql>
+      INSERT INTO benutzer (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, email, fachrollen, keycloakid, lastusedip, lastusedsessionid, lastusedsessiontimestamp, oidcissuer, nachname, vorname, aktiv, titel, telefon)
+      VALUES ('a0f624c9-7634-47fe-b49e-0d26e9310872', '2024-12-01 12:00:00.118393', '2024-12-01 12:00:00.202890', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'BS', 'admin.basel@example.com', 'SYSTEM_ADMIN', '88aac6e0-ad5f-4a5a-8944-219dc12fa3ec', '172.19.1.193', '0c5436bc-2bc5-4629-b7f2-7937c5c585a6', '2024-12-04 12:00:00.202171', 'https://local-esc-bs.localhost:8989/realms/bs', 'Baseleti', 'Basil', true, null, '+41 61 123 45 70');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

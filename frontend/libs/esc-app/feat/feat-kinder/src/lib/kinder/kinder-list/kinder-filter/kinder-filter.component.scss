@@ -1,0 +1,6 @@
+// because if the label has 2 lines it looks better if we align at the bottom
+form {
+  ::ng-deep div {
+    align-items: end;
+  }
+}

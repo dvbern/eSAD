@@ -1,0 +1,12 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="1749191836495-1">
+    <sql>
+      INSERT INTO label
+      (id, timestampMutiert, timestampErstellt, userMutiert, userErstellt, version, tenant,
+       namede, namefr, labelTyp, autolabel, disabled, aktiv)
+      VALUES ('4db33316-7779-4c2e-851a-139e18458e7c', current_timestamp, current_timestamp, 'liquibase', 'liquibase', 0, 'BS',
+              'Nachzügler', 'Nachzügler', 'AUFGABEN', true, true, true);
+    </sql>
+  </changeSet>
+</databaseChangeLog>

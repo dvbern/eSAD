@@ -1,0 +1,108 @@
+import {withDevtools} from '@angular-architects/ngrx-toolkit';
+import {computed, inject, Injectable} from '@angular/core';
+import {BackendEntityId} from '@dvb/data-access-types';
+import {AppErrorHandlerService, Loader, withSelectedEntity} from '@dvb/util-angular';
+import {requireValue} from '@dvb/util-shared';
+import {tapResponse} from '@ngrx/operators';
+import {patchState, signalStore, withComputed} from '@ngrx/signals';
+import {addEntity, setAllEntities, setEntity, withEntities, removeEntity} from '@ngrx/signals/entities';
+import {rxMethod} from '@ngrx/signals/rxjs-interop';
+import {exhaustMap, pipe, switchMap} from 'rxjs';
+
+
+@Injectable(<%if(providedIn !== 'null') {%>{ providedIn: <%- providedIn %> }<%}%>)
+export class <%= storeClassName %> extends signalStore(
+   {protectedState: false},
+   withDevtools('<%= nameSmall %>'),
+   withEntities<<%= nameCapitalized %>Json>(),
+   withSelectedEntity<<%= nameCapitalized %>Json>(),
+   withComputed(({entities}) => ({
+     countAll: computed(() => entities().length),
+   })),
+ ) {
+
+  readonly #myService = inject(<%= nameCapitalized %>Service);
+  readonly #appErrorHandlerService = inject(AppErrorHandlerService);
+
+  readonly loader = new Loader();
+  readonly loadEntityLoader = new Loader();
+  readonly saveLoader = new Loader();
+  readonly deleteLoader = new Loader();
+
+  loadEntities = rxMethod<void>(
+     pipe(
+       switchMap(() => this.loader.tapLoading$(
+        this.#myService.findAll<%= nameCapitalized %>$(),
+        error => this.#appErrorHandlerService.handleError(error))),
+       tapResponse({
+         next: listJson => patchState(this, setAllEntities(listJson.<%= nameSmall %>List)),
+         error: console.error,
+       }),
+     ),
+  );
+
+  loadEntity = rxMethod<BackendEntityId>(
+     pipe(
+       switchMap((entityId) => this.loadEntityLoader.tapLoading$(
+           this.#myService.get<%= nameCapitalized %>$({<%= nameSmall %>Id: entityId}),
+           error => this.#appErrorHandlerService.handleError(error),
+         ),
+       ),
+       tapResponse({
+         next: result => patchState(this, setEntity(result)),
+         error: console.error,
+       }),
+     ),
+  );
+
+  createEntity = rxMethod<{ <%= nameSmall %>: <%= nameCapitalized %>SaveJson, onSuccess: (result: <%= nameCapitalized %>Json) => void }>(
+     pipe(
+       exhaustMap(({<%= nameSmall %>, onSuccess}) => this.saveLoader.tapLoading$(
+           this.#myService.create<%= nameCapitalized %>$({<%= nameSmall %>SaveJson: <%= nameSmall %>}),
+           error => this.#appErrorHandlerService.handleError(error),
+         ).pipe(
+           tapResponse({
+             next: result => {
+               patchState(this, addEntity(result));
+               onSuccess(result);
+             },
+             error: console.error,
+           }),
+         ),
+       )),
+  );
+
+  updateEntity = rxMethod<{ <%= nameSmall %>: <%= nameCapitalized %>SaveJson, onSuccess: () => void }>(
+     pipe(
+       exhaustMap(({<%= nameSmall %>, onSuccess}) => this.saveLoader.tapLoading$(
+           this.#myService.update<%= nameCapitalized %>$({
+             <%= nameSmall %>Id: requireValue(this.selectedEntity()?.id),
+             <%= nameSmall %>SaveJson: <%= nameSmall %>,
+           }),
+           error => this.#appErrorHandlerService.handleError(error))
+         .pipe(
+           tapResponse({
+             next: result => {
+               patchState(this, setEntity(result));
+               onSuccess();
+             },
+             error: console.error,
+           }),
+         ),
+       )),
+  );
+
+  removeEntity = rxMethod<BackendEntityId>(
+       pipe(
+         exhaustMap(idToDelete => this.deleteLoader.tapLoading$(
+           this.#myService.remove<%= nameCapitalized %>$({<%= nameSmall %>Id: idToDelete}),
+           error => this.#appErrorHandlerService.handleError(error),
+         ).pipe(
+           tapResponse({
+             next: () => patchState(this, removeEntity(idToDelete)),
+             error: console.error,
+           }),
+         )),
+       ),
+  );
+}

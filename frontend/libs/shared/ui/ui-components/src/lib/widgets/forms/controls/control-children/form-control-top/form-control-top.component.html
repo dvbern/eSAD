@@ -1,0 +1,15 @@
+<div class="svui_form-control-top" [class.svui_form-control-top--fix]="minHeight()">
+  <!--top left-->
+  <ng-content/>
+
+  <!--top right-->
+  <div class="svui_form-control-top__right">
+    @let iconData = iconTopRight();
+    @if (iconData !== undefined) {
+      <div class="svui_form-control-top__right__imported">
+        <svui-icon
+          [useCase]="iconData.icon" [tooltip]="iconData.iconTooltip"/>
+      </div>
+    }
+  </div>
+</div>

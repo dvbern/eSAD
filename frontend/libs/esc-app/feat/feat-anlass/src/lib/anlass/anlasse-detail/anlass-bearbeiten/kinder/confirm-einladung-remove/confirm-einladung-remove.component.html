@@ -1,0 +1,31 @@
+<feat-dialogs-modal [modalTitle]="'anlass.kinder.remove.confirm.title' | transloco:
+      {name: einladungData()?.kind?.data?.name + ' ' + einladungData()?.kind?.data?.vorname} ">
+
+  <form [formGroup]="form.group"
+        svuiFormLayout
+        (ngSubmit)="remove()"
+        [mode]="DetailMode.EDIT"
+  >
+
+    <svui-form-control [label]="'anlass.kinder.remove.confirm.consequence' | transloco"
+                       [viewValue]="'anlass.kinder.remove.confirm.consequence' | transloco"
+                       [size]="'full'">
+    </svui-form-control>
+
+    <svui-form-control [label]="'anlass.kinder.remove.confirm.name' | transloco"
+                       [viewValue]="form.group.controls.name.value"
+                       [size]="'full'">
+      <input svuiTextInput [formControl]="form.group.controls.name"/>
+    </svui-form-control>
+
+    <!-- BUTTONS -->
+    <svui-save-cancel-buttons
+      [saving]="false"
+      [canEdit]="true"
+      (cancelClicked)="cancel()"
+      [primaryButtonText]="'anlass.kinder.remove.confirm.save'"
+    />
+
+  </form>
+
+</feat-dialogs-modal>

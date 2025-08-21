@@ -1,0 +1,52 @@
+<!-- Header -->
+<div class="d-flex" style="width: 100%; align-items: center;">
+  <b>{{
+      'untersuchung.impfungen.geburtsdatum' | transloco:
+        {geburtsdatum: einladung()?.kind?.data?.geburtsdatum | date}
+    }}</b>
+
+  <div
+    style="display:flex; column-gap: 1rem; flex-grow: 1; justify-content: end; align-items: center; margin-right: 1rem;">
+    <div class="form-check">
+      <input svuiCheckbox
+             type="checkbox"
+             id="impfausweisUnvollstaendigId"
+             [(ngModel)]="impfausweisUnvollstaendig"
+             (change)="onImpfausweisUnvollstaendigChanged()"
+             [disabled]="!hasImpfungenEditBerechtigung() || !anlassStore.canUserEditAnlassInCurrentState()"/>
+      <label for="impfausweisUnvollstaendigId"
+             class="form-check-label">{{ 'untersuchung.impfungen.impfausweisUnvollstaendig' | transloco }}</label>
+    </div>
+    <div class="form-check">
+      <input svuiCheckbox
+             type="checkbox"
+             id="impfausweisNichtVorhandenId"
+             [(ngModel)]="impfausweisNichtVorhanden"
+             (change)="onImpfausweisNichtVorhandenChanged()"
+             [disabled]="!hasImpfungenEditBerechtigung() || !anlassStore.canUserEditAnlassInCurrentState()"/>
+      <label for="impfausweisNichtVorhandenId"
+             class="form-check-label">{{ 'untersuchung.impfungen.impfausweisNichtVorhanden' | transloco }}</label>
+    </div>
+    <div class="form-check">
+      <input svuiCheckbox
+             type="checkbox"
+             id="impfausweisZweiPlusEinsSchemaId"
+             [(ngModel)]="impfausweisZweiPlusEinsSchema"
+             (change)="onImpfausweisZweiPlusEinsSchemaChanged()"
+             [disabled]="!hasImpfungenEditBerechtigung() || !anlassStore.canUserEditAnlassInCurrentState()"/>
+      <label for="impfausweisZweiPlusEinsSchemaId"
+             class="form-check-label">{{ 'untersuchung.impfungen.impfausweisZweiPlusEinsSchema' | transloco }}</label>
+    </div>
+  </div>
+
+  <button svuiIconOnlyButton="primary"
+          type="button"
+          [tooltip]="'global.tooltip.impfausweis.upload' | transloco"
+          [icon]="'impfausweis'"
+          [badgeContent]="(einladung()?.data?.impfausweis?.data?.files?.length ?? 0) ? 1 : 0"
+          [disabled]="!hasImpfungenEditBerechtigung() || !anlassStore.canUserEditAnlassInCurrentState()"
+          (click)="onGotoImpfausweisClicked()">
+  </button>
+</div>
+
+

@@ -1,0 +1,5 @@
+@for (alert of alertsAsArray(); track alert) {
+  <ngb-alert class="svui_alert" [type]="alert.type" [dismissible]="!alert.autoHide" (closed)="removeAlert.emit(alert)">
+    {{ alert.message }}
+  </ngb-alert>
+}

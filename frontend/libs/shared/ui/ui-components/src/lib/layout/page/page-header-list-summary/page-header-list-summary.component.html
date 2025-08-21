@@ -1,0 +1,7 @@
+@for (item of items(); track item.name) {
+  <span>
+    <span>{{ item.filteredCount }}&nbsp;</span>
+    <span *ngIf="item.filteredCount !== item.totalCount">({{item.totalCount}})&nbsp;</span>
+    <span>{{item.name}}</span>
+  </span>
+}

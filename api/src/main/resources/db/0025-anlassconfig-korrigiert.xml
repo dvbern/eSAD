@@ -1,0 +1,11 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="yanicdobler (generated)" id="1744746958215-3">
+    <sql>
+      update anlassconfig set sehennahvisus = 'REQUIRED' where anlasstyp = 'KINDERGARTEN';
+      update anlassconfig set seheninspektion = 'NOT_VISIBLE' where anlasstyp in ('KLASSE_4', 'KLASSE_8', 'KLASSE_9', 'FREMDSPRACHEN');
+      update anlassconfig set sehenkonvergenz = 'NOT_VISIBLE' where anlasstyp in ('KLASSE_4', 'KLASSE_8', 'KLASSE_9', 'FREMDSPRACHEN');
+      update anlassconfig set sehenbemerkungen = 'OPTIONAL' where anlasstyp not in ('IMPFAKTION', 'IMPFSPRECHSTUNDE', 'IMPFTERMIN');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

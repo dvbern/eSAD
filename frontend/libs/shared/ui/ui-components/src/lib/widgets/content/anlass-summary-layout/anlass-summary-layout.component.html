@@ -1,0 +1,10 @@
+<svui-info-item [label]="'anlass.summary.arzt' | transloco">{{ arzt() ?? '-' }}</svui-info-item>
+<svui-info-item [label]="'anlass.summary.mpa' | transloco">{{ mpa() ?? '-' }}</svui-info-item>
+<svui-info-item>
+  <svui-icon [useCase]="'kalender'"/>
+  {{ (datum() | date: 'EEEE, dd.MM.yyyy') ?? '-' }}
+</svui-info-item>
+<svui-info-item>
+  <svui-icon [useCase]="'uhrzeit'"/>
+  {{ uhrzeit() ?? '-' }}
+</svui-info-item>

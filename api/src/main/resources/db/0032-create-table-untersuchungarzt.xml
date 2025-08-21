@@ -1,0 +1,104 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="homa (generated)" id="1746048595100-4">
+    <createTable tableName="untersuchungarzt">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungarztPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+      <column name="bewegungsapparat" type="VARCHAR(255)"/>
+      <column name="blutdruck" type="VARCHAR(30)"/>
+      <column name="einbeinhuepfen" type="VARCHAR(30)"/>
+      <column name="einbeinstand" type="VARCHAR(30)"/>
+      <column name="fingeropposition" type="VARCHAR(255)"/>
+      <column name="haut" type="VARCHAR(30)"/>
+      <column name="herzauskultation" type="VARCHAR(30)"/>
+      <column name="motorik" type="VARCHAR(30)"/>
+      <column name="mundandzaehne" type="VARCHAR(255)"/>
+      <column name="sprachfaehigkeit" type="VARCHAR(255)"/>
+      <column name="verhalten" type="VARCHAR(30)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="homa (generated)" id="1746048595100-5">
+    <createTable tableName="untersuchungarzt_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+      <column name="bewegungsapparat" type="VARCHAR(255)"/>
+      <column name="blutdruck" type="VARCHAR(30)"/>
+      <column name="einbeinhuepfen" type="VARCHAR(30)"/>
+      <column name="einbeinstand" type="VARCHAR(30)"/>
+      <column name="fingeropposition" type="VARCHAR(255)"/>
+      <column name="haut" type="VARCHAR(30)"/>
+      <column name="herzauskultation" type="VARCHAR(30)"/>
+      <column name="motorik" type="VARCHAR(30)"/>
+      <column name="mundandzaehne" type="VARCHAR(255)"/>
+      <column name="sprachfaehigkeit" type="VARCHAR(255)"/>
+      <column name="verhalten" type="VARCHAR(30)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="homa (generated)" id="1746048595100-6">
+    <addColumn tableName="untersuchung">
+      <column name="untersuchungarzt_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="homa (generated)" id="1746048595100-7">
+    <addColumn tableName="untersuchung_aud">
+      <column name="untersuchungarzt_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="homa (generated)" id="1746048595100-8">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungarzt_audPK" tableName="untersuchungarzt_aud"/>
+  </changeSet>
+  <changeSet author="homa (generated)" id="1746048595100-9">
+    <addUniqueConstraint columnNames="untersuchungarzt_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGARZT_ID_COL" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="homa (generated)" id="1746048595100-10">
+    <createIndex indexName="ix_untersuchung_untersuchungarzt" tableName="untersuchung">
+      <column name="untersuchungarzt_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="homa (generated)" id="1746048595100-11">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungarzt_aud" constraintName="FKe9q390cecfkw57l7jywpff4av" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="homa (generated)" id="1746048595100-12">
+    <addForeignKeyConstraint baseColumnNames="untersuchungarzt_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchungArzt" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungarzt" validate="true"/>
+  </changeSet>
+  <changeSet author="homa (generated)" id="1746048595100-1">
+    <modifyDataType columnName="bemerkungen" newDataType="varchar(2000)" tableName="untersuchunghoeren"/>
+  </changeSet>
+  <changeSet author="homa (generated)" id="1746048595100-2">
+    <modifyDataType columnName="bemerkungen" newDataType="varchar(2000)" tableName="untersuchunghoeren_aud"/>
+  </changeSet>
+  <changeSet author="homa (generated)" id="1746048595100-3">
+    <modifyDataType columnName="schulhausnummer" newDataType="varchar(3)" tableName="schule_aud"/>
+  </changeSet>
+</databaseChangeLog>

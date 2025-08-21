@@ -1,0 +1,13 @@
+:host {
+  display: block;
+
+  .col-multiselect {
+    max-width: 20rem;
+  }
+
+  .col-date,
+  .col-text,
+  .col-multiselect {
+    min-width: 5rem;
+  }
+}

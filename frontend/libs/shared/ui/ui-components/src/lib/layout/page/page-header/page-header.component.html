@@ -1,0 +1,12 @@
+<svui-header-bar>
+  @if (backLink()) {
+    <a [routerLink]="backLink()!.routerLink" class="d-flex align-items-center">
+      <svui-icon [useCase]="'zurueck'" class="fs-1 " />
+      <span class="visually-hidden">{{ backLink()!.label }}</span>
+    </a>
+  }
+
+  <h1 svuiHeading="page">{{ heading() }} <svui-spinner [working]="loading()" [context]="'inline'" /></h1>
+
+  <ng-content />
+</svui-header-bar>

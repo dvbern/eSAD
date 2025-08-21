@@ -1,0 +1,9 @@
+<!-- FIXME: diese component ist nicht accessible !!! -->
+<!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -->
+<div class="svui_sortable-header" (click)="rotate()" tabindex="0">
+  <div>
+    <ng-content/>
+  </div>
+
+  <svui-sort-indicator [sortDirection]="direction()"/>
+</div>

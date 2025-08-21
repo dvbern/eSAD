@@ -1,0 +1,51 @@
+@use '../../../../styles/core/color/color-set-form';
+@use '../../../../styles/bootstrap/bootstrap-variable-overrides';
+
+:host {
+  display: block;
+
+  .input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background-clip: padding-box;
+    border: var(--svui-border-width) solid color-set-form.$border;
+    border-radius: var(--svui-border-radius);
+    box-shadow: inset 0 0 0 transparent;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    padding-right: 8px;
+  }
+
+  .input-with-icon:focus-within {
+    color: var(--svui-body-color);
+    border-color: color-set-form.$border;
+    outline: 0;
+    box-shadow: inset 0 0 0 transparent, bootstrap-variable-overrides.$focus-ring-box-shadow;
+  }
+  .input-with-icon ::ng-deep .input-field,
+  .input-with-icon ::ng-deep input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 8px 8px;
+    background: transparent;
+    font-size: bootstrap-variable-overrides.$font-size-base;
+    font-weight: bootstrap-variable-overrides.$font-weight-base;
+    line-height: bootstrap-variable-overrides.$line-height-base;
+    color: inherit;
+    font-family: inherit;
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  .input-with-icon ::ng-deep input:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .input-icon {
+    margin-left: 8px;
+    flex-shrink: 0;
+  }
+}

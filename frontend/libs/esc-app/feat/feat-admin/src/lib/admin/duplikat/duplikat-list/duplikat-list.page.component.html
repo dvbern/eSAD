@@ -1,0 +1,138 @@
+<feat-page [heading]="'duplikat.list.page.title' | transloco"
+           [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN}">
+
+  <svui-page-header-buttons>
+    <button svuiButton="secondary"
+            type="button"
+            [icon]="'aktualisieren'"
+            (click)="reloadDuplikate()">{{ 'duplikat.list.reload' | transloco }}
+    </button>
+  </svui-page-header-buttons>
+
+  <svui-card [innerSpacing]="'topBottom'">
+    <table
+      svuiTable
+      [loading]="duplikatStore.loader.isLoading()"
+      [totalRows]="itemTable.filteredListSize()"
+      (pageChanged)="itemTable.onPageChanged($event)"
+      [pagination]="itemTable.pagination()"
+    >
+      <!-- col widths -->
+      <colgroup>
+        <col svuiColWidth [colWidth]="'text-small'">
+        <col svuiColWidth [colWidth]="'text-large'">
+        <col svuiColWidth [colWidth]="'text-large'">
+        <col svuiColWidth [colWidth]="'text-medium'">
+        <col svuiColWidth [colWidth]="'options'">
+      </colgroup>
+      <thead>
+      <!-- Headers for sorting -->
+      <tr>
+        <th scope="col"
+            svuiSortable
+            [sortState]="itemTable.findColSortDTO('entityInfo.timestampErstellt')"
+            (sort)="itemTable.onColSort($event, 'entityInfo.timestampErstellt')">
+          {{ 'duplikat.datumErstellt' | transloco }}
+        </th>
+        <th scope="col"
+            svuiSortable
+            [sortState]="itemTable.findColSortDTO('kind1.name')"
+            (sort)="itemTable.onColSort($event, 'kind1.name')">
+          {{ 'duplikat.kind1' | transloco }}
+        </th>
+        <th scope="col"
+            svuiSortable
+            [sortState]="itemTable.findColSortDTO('kind2.name')"
+            (sort)="itemTable.onColSort($event, 'kind2.name')">
+          {{ 'duplikat.kind2' | transloco }}
+        </th>
+        <th scope="col"
+            svuiSortable
+            [sortState]="itemTable.findColSortDTO('duplikatStatus')"
+            (sort)="itemTable.onColSort($event, 'duplikatStatus')">
+          {{ 'duplikat.duplikatStatus' | transloco }}
+        </th>
+        <th scope="col">
+          {{ 'global.actionmenu.col' | transloco }}
+        </th>
+      </tr>
+      <!-- Headers for filtering-->
+      <tr>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'duplikat.duplikatStatus' | transloco">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.duplikatStatus"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              @for (status of duplikatStatusList; track status) {
+                <ng-option [value]="status">
+                  {{ 'DuplikatStatus.' + status | transloco }}
+                </ng-option>
+              }
+            </ng-select>
+
+          </svui-table-filter>
+        </th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+        @if (!itemTable.displayedList()?.length && !duplikatStore.loader.isLoading()) {
+          <tr svui-empty-table-message [message]="'duplikat.list.empty' | transloco"></tr>
+        }
+        @for (item of itemTable.displayedList(); track item.id) {
+          <tr>
+            <td>
+              {{ item.entityInfo.timestampErstellt | date: 'dd.MM.yyyy' }}
+            </td>
+            <td>
+              <a class="nav-link fw-bold" target="_blank" [href]="navigationService.getLinkToDossier(item.kind1.id)">
+                {{ getKindLabel(item.kind1) }}
+              </a>
+            </td>
+            <td>
+              <a class="nav-link fw-bold" target="_blank" [href]="navigationService.getLinkToDossier(item.kind2.id)">
+                {{ getKindLabel(item.kind2) }}
+              </a>
+            </td>
+            <td>
+              {{ 'DuplikatStatus.' + item.duplikatStatus | transloco }}
+            </td>
+            <td>
+              <svui-collapsible-menu
+                [loading]="false"
+                label="{{ 'global.actionmenu.tooltip' | transloco }}">
+
+                <!-- False positive markieren -->
+                <button
+                  ngbDropdownItem
+                  [disabled]="item.duplikatStatus !== DuplikatStatus.OFFEN"
+                  [title]="'duplikat.mark.false.positive' | transloco"
+                  (click)="markDuplikatAsFalsePositive(item)"
+                >
+                  {{ 'duplikat.mark.false.positive' | transloco }}
+                </button>
+                <!-- mergen -->
+                <button
+                  ngbDropdownItem
+                  [disabled]="item.duplikatStatus !== DuplikatStatus.OFFEN"
+                  [title]="'duplikat.merge' | transloco"
+                  (click)="openMergeDialog(item)"
+                >
+                  {{ 'duplikat.merge' | transloco }}
+                </button>
+
+              </svui-collapsible-menu>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </svui-card>
+</feat-page>

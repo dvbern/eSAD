@@ -1,0 +1,6 @@
+@use '../../../../../../../styles/core/font';
+
+:host {
+  display: block;
+  font-size: font.value('message', size);
+}

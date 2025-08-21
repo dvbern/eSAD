@@ -1,0 +1,91 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hefr (generated)" id="1746195857348-1">
+    <addColumn tableName="untersuchungmassnahmen">
+      <column name="aufgabeinformationeltern_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746195857348-2">
+    <addColumn tableName="untersuchungmassnahmen_aud">
+      <column name="aufgabeinformationeltern_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746195857348-3">
+    <addColumn tableName="untersuchungmassnahmen">
+      <column name="aufgabenachkontrolle_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746195857348-4">
+    <addColumn tableName="untersuchungmassnahmen_aud">
+      <column name="aufgabenachkontrolle_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746195857348-5">
+    <addColumn tableName="untersuchungmassnahmen">
+      <column name="aufgabeueberweisungaugenarzt_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746195857348-6">
+    <addColumn tableName="untersuchungmassnahmen_aud">
+      <column name="aufgabeueberweisungaugenarzt_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746195857348-7">
+    <addColumn tableName="untersuchungmassnahmen">
+      <column name="aufgabeueberweisunghausarzt_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746195857348-8">
+    <addColumn tableName="untersuchungmassnahmen_aud">
+      <column name="aufgabeueberweisunghausarzt_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746195857348-9">
+    <addUniqueConstraint columnNames="aufgabeinformationeltern_id" constraintName="UC_UNTERSUCHUNGMASSNAHMENAUFGABEINFORMATIONELTERN_ID_COL" tableName="untersuchungmassnahmen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746195857348-10">
+    <addUniqueConstraint columnNames="aufgabenachkontrolle_id" constraintName="UC_UNTERSUCHUNGMASSNAHMENAUFGABENACHKONTROLLE_ID_COL" tableName="untersuchungmassnahmen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746195857348-11">
+    <addUniqueConstraint columnNames="aufgabeueberweisungaugenarzt_id" constraintName="UC_UNTERSUCHUNGMASSNAHMENAUFGABEUEBERWEISUNGAUGENARZT_ID_COL" tableName="untersuchungmassnahmen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746195857348-12">
+    <addUniqueConstraint columnNames="aufgabeueberweisunghausarzt_id" constraintName="UC_UNTERSUCHUNGMASSNAHMENAUFGABEUEBERWEISUNGHAUSARZT_ID_COL" tableName="untersuchungmassnahmen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746195857348-13">
+    <addForeignKeyConstraint baseColumnNames="aufgabeinformationeltern_id" baseTableName="untersuchungmassnahmen" constraintName="fk_untersuchungmassnahmen_aufgabe_informationeltern" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="aufgabe" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746195857348-14">
+    <addForeignKeyConstraint baseColumnNames="aufgabenachkontrolle_id" baseTableName="untersuchungmassnahmen" constraintName="fk_untersuchungmassnahmen_aufgabe_nachkontrolle" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="aufgabe" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746195857348-15">
+    <addForeignKeyConstraint baseColumnNames="aufgabeueberweisungaugenarzt_id" baseTableName="untersuchungmassnahmen" constraintName="fk_untersuchungmassnahmen_aufgabe_ueberweisungaugenarzt" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="aufgabe" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746195857348-16">
+    <addForeignKeyConstraint baseColumnNames="aufgabeueberweisunghausarzt_id" baseTableName="untersuchungmassnahmen" constraintName="fk_untersuchungmassnahmen_aufgabe_ueberweisunghausarzt" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="aufgabe" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746546143797-1">
+    <createIndex indexName="ix_untersuchungmassnahmen_aufgabe_informationeltern" tableName="untersuchungmassnahmen">
+      <column name="aufgabeinformationeltern_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746546143797-2">
+    <createIndex indexName="ix_untersuchungmassnahmen_aufgabe_nachkontrolle" tableName="untersuchungmassnahmen">
+      <column name="aufgabenachkontrolle_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746546143797-3">
+    <createIndex indexName="ix_untersuchungmassnahmen_aufgabe_ueberweisungaugenarzt" tableName="untersuchungmassnahmen">
+      <column name="aufgabeueberweisungaugenarzt_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746546143797-4">
+    <createIndex indexName="ix_untersuchungmassnahmen_aufgabe_ueberweisunghausarzt" tableName="untersuchungmassnahmen">
+      <column name="aufgabeueberweisunghausarzt_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,98 @@
+// Bootstrap Component Overrides
+
+@use '../core/font';
+@use '../core/spacing';
+@use '../core/color/color-set-navigation-main';
+@use '../core/color/color-set-navigation-tabs';
+
+$-weight-bold: font.value('S4', weight);
+
+// Nav
+.nav {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  row-gap: spacing.$row-gap;
+
+  .nav-item {
+    padding-inline: 1rem;
+
+    .nav-link {
+      &.active {
+        font-weight: $-weight-bold; // bold: not on hover because that would wobble the whole nav
+        color: color-set-navigation-main.$text-active;
+        border-bottom: 2px solid color-set-navigation-main.$text-active;
+      }
+
+      &:not(.active):hover {
+        color: color-set-navigation-main.$text-active;
+        border-bottom: 2px solid color-set-navigation-main.$text-active;
+      }
+    }
+  }
+}
+
+// no tabs nav: fixing wobbling on hover
+.nav:not(.nav-tabs) {
+  .nav-item {
+    .nav-link {
+      border-bottom: 2px solid transparent;
+    }
+  }
+}
+
+// Tabs START
+.nav-tabs .nav-link { // as unspecific as possible to not override active/hover etc.
+  background-color: color-set-navigation-tabs.$background;
+  color: color-set-navigation-tabs.$text;
+  display: flex;
+  column-gap: spacing.$base;
+
+  .btn-close {
+    --svui-btn-close-color: #{color-set-navigation-tabs.$text};
+  }
+
+
+}
+
+.nav.nav-tabs .nav-item {
+  border-bottom: none;
+  padding-inline: spacing.$base;
+
+  .nav-link {
+    padding: spacing.$base spacing.$button-inner-x;
+  }
+}
+
+
+// presentational link inside nav bar:
+.nav .nav-item[role=presentation] .nav-link {
+  font-weight: $-weight-bold;
+}
+
+// strong selector needed here to override color
+.nav.nav-tabs .nav-item .nav-link {
+  &.active,
+  &:hover {
+    color: color-set-navigation-tabs.$text-active;
+    background-color: color-set-navigation-tabs.$background-active;
+
+    font-weight: font.value('P1', weight);
+
+    .btn-close {
+      --svui-btn-close-color: #{color-set-navigation-tabs.$text-active};
+      // the cross did not want to be white -> I will hardcode it here:
+      --svui-btn-close-bg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'><path d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/></svg>")
+    }
+  }
+}
+
+
+.nav.nav-tabs .nav-item .nav-link.active,
+.nav.nav-tabs .nav-item .nav-link:hover {
+  border-bottom: none;
+}
+
+// Tabs END
+

@@ -1,0 +1,154 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="homa (generated)" id="1746197603">
+    <sql>
+      UPDATE anlassconfig
+      SET untersuchungbemerkungen='OPTIONAL'
+      WHERE untersuchungbemerkungen = 'REQUIRED';
+    </sql>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-1">
+    <addColumn tableName="untersuchungarzt">
+      <column name="bewegungsapparatbemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-2">
+    <addColumn tableName="untersuchungarzt_aud">
+      <column name="bewegungsapparatbemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-3">
+    <addColumn tableName="untersuchungarzt">
+      <column name="blutdruckbemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-4">
+    <addColumn tableName="untersuchungarzt_aud">
+      <column name="blutdruckbemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-5">
+    <addColumn tableName="untersuchungarzt">
+      <column name="einbeinhuepfenbemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-6">
+    <addColumn tableName="untersuchungarzt_aud">
+      <column name="einbeinhuepfenbemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-7">
+    <addColumn tableName="untersuchungarzt">
+      <column name="einbeinstandbemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-8">
+    <addColumn tableName="untersuchungarzt_aud">
+      <column name="einbeinstandbemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-9">
+    <addColumn tableName="untersuchungarzt">
+      <column name="fingeroppositionbemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-10">
+    <addColumn tableName="untersuchungarzt_aud">
+      <column name="fingeroppositionbemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-11">
+    <addColumn tableName="untersuchungarzt">
+      <column name="hautbemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-12">
+    <addColumn tableName="untersuchungarzt_aud">
+      <column name="hautbemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-13">
+    <addColumn tableName="untersuchungarzt">
+      <column name="herzauskultationbemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-14">
+    <addColumn tableName="untersuchungarzt_aud">
+      <column name="herzauskultationbemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-15">
+    <addColumn tableName="untersuchungarzt">
+      <column name="mundandzaehnebemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-16">
+    <addColumn tableName="untersuchungarzt_aud">
+      <column name="mundandzaehnebemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-17">
+    <addColumn tableName="untersuchungarzt">
+      <column name="sprachfaehigkeitbemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1746516143054-18">
+    <addColumn tableName="untersuchungarzt_aud">
+      <column name="sprachfaehigkeitbemerkung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-1">
+    <modifyDataType columnName="befundsubemerkungen" newDataType="varchar(2000)" tableName="untersuchungtriage"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-2">
+    <modifyDataType columnName="befundsubemerkungen" newDataType="varchar(2000)" tableName="untersuchungtriage_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-3">
+    <modifyDataType columnName="bemerkungen" newDataType="varchar(2000)" tableName="untersuchunggroessegewicht"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-4">
+    <modifyDataType columnName="bemerkungen" newDataType="varchar(2000)" tableName="untersuchunggroessegewicht_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-5">
+    <modifyDataType columnName="bemerkungen" newDataType="varchar(2000)" tableName="untersuchungsehen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-6">
+    <modifyDataType columnName="bemerkungen" newDataType="varchar(2000)" tableName="untersuchungsehen_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-7">
+    <modifyDataType columnName="otoskopielinksresultatandere" newDataType="varchar(2000)" tableName="untersuchunghoeren"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-8">
+    <modifyDataType columnName="otoskopielinksresultatandere" newDataType="varchar(2000)" tableName="untersuchunghoeren_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-9">
+    <modifyDataType columnName="otoskopierechtsresultatandere" newDataType="varchar(2000)" tableName="untersuchunghoeren"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-10">
+    <modifyDataType columnName="otoskopierechtsresultatandere" newDataType="varchar(2000)" tableName="untersuchunghoeren_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-11">
+    <modifyDataType columnName="triagempabemerkungen" newDataType="varchar(2000)" tableName="untersuchungtriage"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-12">
+    <modifyDataType columnName="triagempabemerkungen" newDataType="varchar(2000)" tableName="untersuchungtriage_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-13">
+    <modifyDataType columnName="triagesubemerkungen" newDataType="varchar(2000)" tableName="untersuchungtriage"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-14">
+    <modifyDataType columnName="triagesubemerkungen" newDataType="varchar(2000)" tableName="untersuchungtriage_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-15">
+    <modifyDataType columnName="vorinformationlehrpersonbemerkungen" newDataType="varchar(2000)" tableName="untersuchungtriage"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-16">
+    <modifyDataType columnName="vorinformationlehrpersonbemerkungen" newDataType="varchar(2000)" tableName="untersuchungtriage_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-17">
+    <modifyDataType columnName="wunschschuelerbemerkungen" newDataType="varchar(2000)" tableName="untersuchungtriage"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1746795952819-18">
+    <modifyDataType columnName="wunschschuelerbemerkungen" newDataType="varchar(2000)" tableName="untersuchungtriage_aud"/>
+  </changeSet>
+</databaseChangeLog>

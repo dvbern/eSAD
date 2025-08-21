@@ -1,0 +1,18 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="1750401702447-1">
+    <sql>
+      -- Add LABELS_ADMIN_LESEN and VORLAGEN_ADMIN_LESEN to ESC-BASEL-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, benutzer_id, berechtigung)
+      VALUES ('6293eef8-916d-4f78-8a65-81b348df8cd8', '2025-02-20 12:00:00.118393', '2025-06-20 12:00:00.202890', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'BS', '11111111-1111-1111-1111-111111111112', 'LABELS_ADMIN_LESEN');
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, benutzer_id, berechtigung)
+      VALUES ('531aacb6-bacf-44c0-a0b9-e4c983dc7ed1', '2025-02-20 12:00:00.118393', '2025-06-20 12:00:00.202890', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'BS', '11111111-1111-1111-1111-111111111112', 'VORLAGEN_ADMIN_LESEN');
+
+      -- Add LABELS_ADMIN_LESEN and VORLAGEN_ADMIN_LESEN to ESC-BERN-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, benutzer_id, berechtigung)
+      VALUES ('9c1feae9-ad87-4173-a2ed-434f7f7eaf62', '2025-02-20 12:00:00.118393', '2025-06-20 12:00:00.202890', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'BE', '11111111-1111-1111-1111-111111111113', 'LABELS_ADMIN_LESEN');
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, benutzer_id, berechtigung)
+      VALUES ('d2506ea4-7e15-47e2-bf10-8aa17684ade4', '2025-02-20 12:00:00.118393', '2025-06-20 12:00:00.202890', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'BE', '11111111-1111-1111-1111-111111111113', 'VORLAGEN_ADMIN_LESEN');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

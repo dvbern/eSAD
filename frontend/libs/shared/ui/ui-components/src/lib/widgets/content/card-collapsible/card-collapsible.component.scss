@@ -1,0 +1,9 @@
+:host {
+  display: block;
+}
+
+.svui_collapsible {
+  &__header {
+    cursor: pointer;
+  }
+}

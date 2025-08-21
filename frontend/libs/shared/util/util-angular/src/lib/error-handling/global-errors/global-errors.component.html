@@ -1,0 +1,14 @@
+@if (service.errors()) {
+  <div style="background-color: red;">
+    <section>
+      <title>Global Errors</title>
+      @for (e of service.errors(); track e) {
+        @if (isError(e)) {
+          <div>{{ e.message }}</div>
+        } @else {
+          <div>{{ e | json }}</div>
+        }
+      }
+    </section>
+  </div>
+}

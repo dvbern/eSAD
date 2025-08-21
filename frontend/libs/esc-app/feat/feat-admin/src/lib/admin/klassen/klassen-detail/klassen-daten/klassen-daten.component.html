@@ -1,0 +1,108 @@
+<form svuiFormLayout
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="store.detailMode()">
+
+  <h2 svuiHeading="formSection">{{ 'klassen.detail.daten' | transloco }}</h2>
+  <!--  Schule Selection-->
+  <svui-form-control [label]="'klasse.schule' | transloco"
+                     [viewValue]="form.group.getRawValue().schule?.bezeichnung"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.schule"
+      [searchable]="true"
+      [compareWith]="compareFn"
+    >
+      @for (item of schuleOptions(); track item.id; let index = $index) {
+        <ng-option [value]="item">
+            <span class="w-100 d-flex justify-content-between">
+              <span>{{ item.bezeichnung }}</span>
+            </span>
+        </ng-option>
+      }
+    </ng-select>
+
+  </svui-form-control>
+
+  <!--  Klassenbezeichnung-->
+  <svui-form-control [label]="'klasse.bezeichnung' | transloco"
+                     [viewValue]="form.group.getRawValue().bezeichnung"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <input svuiTextInput
+           [formControl]="form.controlAt('bezeichnung')"
+    />
+  </svui-form-control>
+
+  <!--  Klassenstufe -->
+  <svui-form-control [label]="'klasse.klassenstufe' | transloco"
+                     [viewValue]="'Klassenstufe.' + form.group.value.klassenstufe | transloco"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.controlAt('klassenstufe')"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+
+    >
+      @for (stufe of klassenstufen; track stufe) {
+        <ng-option [value]="stufe">
+          {{ 'Klassenstufe.' + stufe | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!--  Klassentyp -->
+  <svui-form-control [label]="'klasse.klasseSchulart' | transloco"
+                     [viewValue]="form.group.getRawValue().klasseSchulart"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <input svuiTextInput
+           [formControl]="form.controlAt('klasseSchulart')"
+    />
+  </svui-form-control>
+
+  <!-- KlasseAktivStatus -->
+  <svui-form-control [label]="'klasse.klasseAktivStatus' | transloco"
+                     [viewValue]="'EntityAktivStatus.' + form.group.value.klasseAktivStatus | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.controlAt('klasseAktivStatus')"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+    >
+      @for (status of klasseAktivStati; track status) {
+        <ng-option [value]="status">
+          {{ 'EntityAktivStatus.' + status | transloco }}
+        </ng-option>
+
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!--Letzter Escada Import-->
+  @if (isEscadaObject()) {
+    <div>
+      <p>{{ 'global.escada.import.latest' | transloco: {date: getDateLatestImportIfEscadaObject() | date} }}</p>
+    </div>
+  }
+
+  <!--messages for whole form -->
+  <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="store.detailMode()"
+    [isCreate]="store.selectedIsNew()"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="canEditList()"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+    [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"/>
+
+</form>

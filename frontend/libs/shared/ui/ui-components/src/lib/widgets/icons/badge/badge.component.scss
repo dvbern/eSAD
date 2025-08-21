@@ -1,0 +1,35 @@
+@use '../../../../styles/core/font';
+@use '../../../../styles/core/color/color-set-badge';
+
+:host {
+  display: inline-block;
+
+  &.bg-transparent .badge {
+    background-color: color-set-badge.$transparent;
+    color: color-set-badge.$transparent-text;
+  }
+  &.bg-purple .badge {
+    background-color: color-set-badge.$purple;
+    color: color-set-badge.$purple-text;
+  }
+  &.bg-blue .badge {
+    background-color: color-set-badge.$blue;
+    color: color-set-badge.$blue-text;
+  }
+  &.bg-orange .badge {
+    background-color: color-set-badge.$orange;
+    color: color-set-badge.$orange-text;
+  }
+  &.bg-lightgreen .badge {
+    background-color: color-set-badge.$lightgreen;
+    color: color-set-badge.$lightgreen-text;
+  }
+  &.bg-green .badge {
+    background-color: color-set-badge.$green;
+    color: color-set-badge.$green-text;
+  }
+  &.bg-red .badge {
+    background-color: color-set-badge.$red;
+    color: color-set-badge.$red-text;
+  }
+}

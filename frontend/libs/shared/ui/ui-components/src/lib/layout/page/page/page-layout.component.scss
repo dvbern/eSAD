@@ -1,0 +1,24 @@
+@use '../../../../styles/core/color/color-set-default' as color;
+@use '../../../../styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.svui_page {
+  background-color: color.$background;
+
+  display: flex;
+  flex-direction: column;
+  justify-items: start;
+  min-height: 100vh;
+
+  &__main {
+    flex-grow: 1;
+
+    padding: spacing.$layout-outer;
+    display: flex;
+    row-gap: spacing.$layout-outer;
+    flex-direction: column;
+  }
+}

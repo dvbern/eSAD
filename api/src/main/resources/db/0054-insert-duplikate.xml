@@ -1,0 +1,89 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="hefr (generated)" id="1749120599564-1">
+        <createTable tableName="duplikat">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="duplikatPK"/>
+            </column>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usererstellt" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usermutiert" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tenant" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="duplikatstatus" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="idkind1" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="idkind2" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="kind1_id" type="UUID"/>
+            <column name="kind2_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1749120599564-2">
+        <createTable tableName="duplikat_aud">
+            <column name="id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="usererstellt" type="VARCHAR(255)"/>
+            <column name="usermutiert" type="VARCHAR(255)"/>
+            <column name="duplikatstatus" type="VARCHAR(30)"/>
+            <column name="idkind1" type="UUID"/>
+            <column name="idkind2" type="UUID"/>
+            <column name="kind1_id" type="UUID"/>
+            <column name="kind2_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1749120599564-3">
+        <addPrimaryKey columnNames="rev, id" constraintName="duplikat_audPK" tableName="duplikat_aud"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1749120599564-4">
+        <createIndex indexName="ix_duplikat_kind_kind1" tableName="duplikat">
+            <column name="kind1_id"/>
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1749120599564-5">
+        <createIndex indexName="ix_duplikat_kind_kind2" tableName="duplikat">
+            <column name="kind2_id"/>
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1749120599564-6">
+        <addForeignKeyConstraint baseColumnNames="rev" baseTableName="duplikat_aud" constraintName="FKoljl7dg4dyxpip0bnauc74u0r" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1749120599564-7">
+        <addForeignKeyConstraint baseColumnNames="kind1_id" baseTableName="duplikat" constraintName="fk_duplikat_kind_kind1" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="kind" validate="true"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1749120599564-8">
+        <addForeignKeyConstraint baseColumnNames="kind2_id" baseTableName="duplikat" constraintName="fk_duplikat_kind_kind2" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="kind" validate="true"/>
+    </changeSet>
+    <changeSet author="dvbern" id="1749120599564-9">
+      <sql>
+        INSERT INTO schedulerconfig (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, batchsize, disabled, schedulertyp)
+        VALUES ('11111111-6666-1111-1111-111111111105', '2025-05-19 18:35:17.642000', '2025-05-19 18:35:17.642000', 'liquibase', 'liquibase', 0, 'BS', 100, false, 'RELOAD_DUPLIKATE');
+      </sql>
+    </changeSet>
+</databaseChangeLog>

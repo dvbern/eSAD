@@ -1,0 +1,27 @@
+@use '../../../../../../styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.svui_check {
+  &--view-mode {
+    padding-left: 0;
+
+    ::ng-deep > .svui_input {
+      visibility: hidden;
+    }
+  }
+
+  &__view-mode__label::after {
+    content: ': ';
+  }
+
+  &:has(::ng-deep .svui_input:checked) &__view-mode--false {
+    display: none;
+  }
+
+  &:has(::ng-deep .svui_input:not(:checked)) &__view-mode--true {
+    display: none;
+  }
+}

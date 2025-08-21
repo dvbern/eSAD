@@ -1,0 +1,10 @@
+@use '../../../../../styles/core/border';
+@use '../../../../../styles/core/size';
+
+:host {
+  display: block;
+}
+
+.svui_form-upload__content {
+  min-height: size.$table-row-height + border.$width-default;
+}

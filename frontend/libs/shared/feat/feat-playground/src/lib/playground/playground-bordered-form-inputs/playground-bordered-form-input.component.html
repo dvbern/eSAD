@@ -1,0 +1,63 @@
+<svui-card>
+  <h2 svuiHeading="card">Formular mit Kachel-Radios/-Checkboxes</h2>
+
+  <input svuiCheckbox
+         type="checkbox" id="disabledcheck"
+         style="margin: 14px 8px 0 0;"
+         [checked]="form.group.disabled"
+         (click)="form.group.disabled ? form.group.enable() : form.group.disable()"/>
+  <label for="disabledcheck">disabled</label>
+
+  <button type="submit" svuiButton="primary" (click)="submit()" [disabled]="form.group.disabled">Submit</button>
+  <button type="reset" svuiButton="secondary" (click)="reset()" [disabled]="form.group.disabled">Reset</button>
+  <button type="button" svuiButton="secondary" (click)="fillRandom()">fillRandom</button>
+
+  <form svuiFormLayout formType="kacheln" [mode]="mode" [formGroup]="form.group">
+    <svui-kachel-form-section heading="Brille">
+      <svui-kachel-control label="keine">
+        <input type="checkbox" svuiCheckbox [formControl]="form.controlAt('checkbox')"/>
+      </svui-kachel-control>
+
+      <svui-kachel-control label="mit">
+        <input type="checkbox" svuiCheckbox [formControl]="form.controlAt('checkbox')"/>
+      </svui-kachel-control>
+
+      <svui-kachel-control label="vergessen">
+        <input type="checkbox" svuiCheckbox [formControl]="form.controlAt('checkbox')"/>
+      </svui-kachel-control>
+    </svui-kachel-form-section>
+
+    <svui-kachel-form-section heading="Farbsehen">
+      @for (each of selectItems; track each) {
+        <svui-kachel-control [label]="each.label">
+          <input svuiRadio
+                 type="radio"
+                 name="radios"
+                 [formControl]="form.controlAt('radios')"
+                 [value]="each.value"/>
+        </svui-kachel-control>
+      }
+    </svui-kachel-form-section>
+
+    <svui-kachel-form-section heading="Linsen">
+      @for (each of selectItems; track each) {
+        <svui-kachel-control [label]="each.label">
+          <input svuiRadio
+                 type="radio"
+                 name="radios"
+                 [formControl]="form.controlAt('radios')"
+                 [value]="each.value"/>
+        </svui-kachel-control>
+      }
+    </svui-kachel-form-section>
+
+    <svui-form-buttons
+      [mode]="mode"
+      [isCreate]="true"
+      [saving]="false"
+      [canEdit]="true"
+      routeToEdit="../edit"
+      [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+      [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"/>
+  </form>
+</svui-card>

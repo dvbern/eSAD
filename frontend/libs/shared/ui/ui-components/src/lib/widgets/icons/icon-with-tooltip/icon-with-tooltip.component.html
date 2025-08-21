@@ -1,0 +1,10 @@
+<svui-icon [useCase]="iconUseCase()"
+           [ngbTooltip]="tooltipContent"
+           placement="bottom-left bottom-right auto"
+           triggers="hover"
+           [style]="{'color': getIconColor()}"
+/>
+
+<ng-template #tooltipContent>
+  <ng-content/>
+</ng-template>

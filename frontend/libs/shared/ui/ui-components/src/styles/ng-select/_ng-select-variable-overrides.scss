@@ -1,0 +1,49 @@
+@use '../core/base';
+@use '../core/border';
+@use '../core/color/color-set-default';
+@use '../core/color/color-set-form';
+@use '../core/color/color-set-navigation-dropdown';
+@use '../core/css-var';
+@use '../core/font';
+@use '../core/opacity';
+@use '../core/radius';
+@use '../core/size';
+@use '../core/spacing';
+@use '../core/unit';
+@use '../core/zindex';
+@use 'sass:color';
+
+
+// input border after selected an option
+$ng-select-highlight: color-set-form.$border;
+
+$ng-select-primary-text: color-set-form.$text;
+$ng-select-disabled-text: color-set-form.$text-disabled;
+$ng-select-border: color-set-form.$border;
+$ng-select-border-radius: radius.$base;
+$ng-select-bg: color-set-form.$background;
+
+// selected badge & selected option
+$ng-select-selected: #fff;
+$ng-select-selected-text: color-set-form.$text;
+
+// dropdown hover
+$ng-select-marked: color-set-navigation-dropdown.$background;
+$ng-select-marked-text: $ng-select-primary-text;
+
+$ng-select-box-shadow: var(--svui-box-shadow-inset);
+$ng-select-placeholder: color-set-form.$placeholder;
+$ng-select-height: base.$input-height;
+$ng-select-value-padding-left: spacing.$text-input-inner;
+$ng-select-value-font-size: font.value('P1', size);
+$ng-select-value-text: $ng-select-primary-text;
+
+$ng-select-dropdown-bg: $ng-select-bg;
+$ng-select-dropdown-border: $ng-select-border;
+$ng-select-dropdown-optgroup-text: rgba(0, 0, 0, 0.54);
+$ng-select-dropdown-optgroup-marked: $ng-select-dropdown-optgroup-text;
+$ng-select-dropdown-option-bg: $ng-select-dropdown-bg;
+$ng-select-dropdown-option-text: rgba(0, 0, 0, 0.87);
+$ng-select-dropdown-option-disabled: color.scale($ng-select-primary-text, $lightness: 60%);
+
+$ng-select-input-text: $ng-select-primary-text;

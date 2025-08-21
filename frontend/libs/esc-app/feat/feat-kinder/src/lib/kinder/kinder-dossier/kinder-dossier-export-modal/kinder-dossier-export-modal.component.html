@@ -1,0 +1,28 @@
+<feat-dialogs-modal [modalTitle]="'Was soll exportiert werden?'">
+  <form [formGroup]="form.group"
+        (ngSubmit)="speichern()">
+
+    @for (variation of exportVariation; track variation) {
+      <svui-single-radio-wrapper [label]="'KinderdossierPrintVariant.' + variation | transloco">
+        <input svuiRadio
+               type="radio"
+               name="KinderdossierPrintVariant"
+               [formControl]="form.controlAt('kinderdossierPrintVariant')"
+               [value]="variation"/>
+      </svui-single-radio-wrapper>
+    }
+
+    <!-- BUTTONS -->
+    <div class="button-wrapper">
+      <button svuiButton="primary"
+              type="submit"
+              [disabled]="false"
+              [working]="false">{{ 'kind.dossier.exportieren.dialog.save' | transloco }}
+      </button>
+      <button svuiButton="secondary"
+              type="button"
+              (click)="abbrechen()">{{ 'global.cancel' | transloco }}
+      </button>
+    </div>
+  </form>
+</feat-dialogs-modal>

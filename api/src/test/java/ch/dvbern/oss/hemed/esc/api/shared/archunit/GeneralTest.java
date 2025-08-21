@@ -1,0 +1,116 @@
+package ch.dvbern.oss.hemed.esc.api.shared.archunit;
+
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileUploadWrapper;
+import java.util.Calendar;
+import java.util.Date;
+
+import ch.dvbern.dvbstarter.infrastructure.db.baserepo.BaseRepo;
+import ch.dvbern.dvbstarter.shared.i18n.datetime.DateUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntityListener;
+import ch.dvbern.oss.hemed.esc.api.shared.archunit.predicates.MethodPredicates;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.OptimisticLockingService;
+import com.tngtech.archunit.library.GeneralCodingRules;
+import jakarta.inject.Inject;
+import jakarta.persistence.TypedQuery;
+import jakarta.ws.rs.ext.Provider;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
+import org.junit.jupiter.api.Test;
+
+import static com.tngtech.archunit.base.DescribedPredicate.not;
+import static com.tngtech.archunit.base.DescribedPredicate.or;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.assignableTo;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
+import static com.tngtech.archunit.core.domain.properties.CanBeAnnotated.Predicates.annotatedWith;
+import static com.tngtech.archunit.lang.conditions.ArchPredicates.are;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noFields;
+import static com.tngtech.archunit.library.GeneralCodingRules.BE_ANNOTATED_WITH_AN_INJECTION_ANNOTATION;
+
+@DisplayNameGeneration(ReplaceUnderscores.class)
+class GeneralTest {
+
+    @Test
+    void no_standard_streams() {
+        var rule = GeneralCodingRules.NO_CLASSES_SHOULD_ACCESS_STANDARD_STREAMS;
+
+        rule.check(ArchConst.APP_CLASSES);
+    }
+
+    @Test
+    void no_generic_exceptions() {
+        var rule = GeneralCodingRules.NO_CLASSES_SHOULD_THROW_GENERIC_EXCEPTIONS;
+
+        rule.check(ArchConst.APP_CLASSES);
+    }
+
+    @Test
+    void no_field_injection() {
+        var rule = noFields()
+            .that()
+            .areDeclaredInClassesThat(
+                are(not(or(
+                    annotatedWith(Provider.class),
+                    assignableTo(AbstractEntityListener.class),
+                    assignableTo(BaseRepo.class)
+                ))))
+            .should(BE_ANNOTATED_WITH_AN_INJECTION_ANNOTATION)
+            .as("no classes should use field injection")
+            .because("field injection is considered harmful; "
+                + "use constructor injection or setter injection instead; "
+                + "see https://stackoverflow.com/q/39890849 for detailed explanations");
+
+        rule.check(ArchConst.APP_CLASSES);
+    }
+
+    @Test
+    void ensure_quarkus_doesnt_need_reflection() {
+        var rule = fields()
+            .that()
+            .areAnnotatedWith(Inject.class)
+            // .or()
+            // .areAnnotatedWith(RestClient.class)
+            .should()
+            .notBePrivate()
+            .because(
+                "otherwise quarkus must use reflection. "
+                    + "see: https://quarkus.io/guides/cdi-reference#native-executables-and-private-members"
+            );
+
+        rule.check(ArchConst.APP_CLASSES);
+    }
+
+    @Test
+    void no_usage_of_old_date_api() {
+        var rule = noClasses()
+            .that()
+            .doNotImplement(TypedQuery.class)
+            .should()
+            .dependOnClassesThat(
+                resideInAPackage("org.joda.time")
+                    .or(assignableTo(Calendar.class))
+                    .or(assignableTo(Date.class))
+            )
+            .as("Date and Joda-Time shouldn't be used")
+            .because("modern projects use java.time api, "
+                + "for conversion utility methods exist in " + DateUtil.class);
+
+        rule.check(ArchConst.APP_CLASSES);
+    }
+
+    @Test
+    void no_usage_file_api() {
+        var rule = noClasses()
+            .that()
+            .areNotAssignableTo(FileUploadWrapper.class)
+            .should()
+            .callMethodWhere(MethodPredicates.methodOfFileExceptDeleteOnExit())
+            .because("we should use java.nio.Path instead, which offers "
+                + "better performance, error handling, scalability and symlink handling.");
+
+        rule.check(ArchConst.APP_CLASSES);
+    }
+
+}

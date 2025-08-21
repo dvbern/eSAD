@@ -1,0 +1,13 @@
+<!-- Kind Namen Normalisierung -->
+
+<svui-card>
+  <h2 svuiHeading="card" class="mb-3">Normalisierung der Kind-Namen</h2>
+  <button
+    type="button"
+    svuiButton="primary"
+    (click)="normalizeKindNamen()"
+    [disabled]="systemAdminStore.loader.isLoading()"
+  >
+    {{ 'admin.kind.namen.normalisierung' | transloco }}
+  </button>
+</svui-card>

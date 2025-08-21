@@ -1,0 +1,19 @@
+:host {
+  // sorry, versteh die zahlen leider nicht ¯\_(ツ)_/¯ zusa
+  $-magic-number-left: 29px;
+  $-magic-number-height: 43px;
+
+  display: block;
+  position: relative;
+  margin-left: calc(100% - $-magic-number-left);
+  height: 0;
+
+  &:empty {
+    display: none;
+  }
+
+  // icon, tooltip, spinner
+  > ::ng-deep * {
+    line-height: $-magic-number-height;
+  }
+}

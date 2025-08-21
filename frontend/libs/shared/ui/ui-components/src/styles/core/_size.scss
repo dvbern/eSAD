@@ -1,0 +1,38 @@
+// Size
+
+@use './base';
+@use './border';
+@use './unit';
+
+// base
+$button: base.$button-height;
+$icon-default: base.$icon-size;
+$text-input-height: base.$input-height;
+$list-item: base.$list-item-inner-height;
+$table-row-content-height: base.$table-row-inner-height;
+
+// width
+$toast-width: 600px;
+$main-nav-width: 340px;
+$tooltip-max-width: $main-nav-width;
+$popup-min-width: $main-nav-width;
+$kachel-input-width: 180px;
+$table-inputs: 5rem;
+$clickable-marker-width: 7px;
+
+// size
+$icon-big: 1.4545 * $icon-default;
+$main-nav-link-icon: $icon-default;
+$loading-spinner-table: $text-input-height;
+$required-asterisk: 1.1em;
+$required-asterisk-table: .9em;
+$button-close: 0.9em;
+$check-input: 1rem;
+$tooltip-arrow: 14.142135624px; // Quadrat mit 10px Seitenlänge
+
+// height
+$table-row-height: $table-row-content-height + border.$width-default;
+$main-nav-link-height: $table-row-height;
+$badge-height: 24px;
+$portal-header-height: 144px;
+$typeahead-menu-height: 14rem;

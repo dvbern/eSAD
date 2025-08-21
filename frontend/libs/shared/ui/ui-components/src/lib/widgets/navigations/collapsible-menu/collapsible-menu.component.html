@@ -1,0 +1,33 @@
+<div ngbDropdown
+     container="body"><!-- container=body avoids being cut when we are inside an overflow:auto -->
+  @switch (menuStyle()) {
+    @case ('ICON') {
+      <button svuiIconOnlyButton="secondary"
+              ngbDropdownToggle
+              type="button"
+              [tooltip]="label()"
+              [icon]="'actionmenu'"
+              [working]="loading()"
+              [disabled]="loading()"
+              [id]="collapsibleId">
+      </button>
+    }
+    @case ('LINK') {
+      <button class="nav-link"
+              ngbDropdownToggle
+              type="button"
+              [disabled]="loading()"
+              [id]="collapsibleId">
+        {{ label() }}
+        <svui-spinner [working]="loading()"
+                      [context]="'inline'"/>
+      </button>
+    }
+  }
+
+  <div ngbDropdownMenu
+       class="svui_dropdown-menu"
+       [attr.aria-labelledby]="collapsibleId">
+    <ng-content/>
+  </div>
+</div>

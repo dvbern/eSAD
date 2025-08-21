@@ -1,0 +1,9 @@
+@if (working()) {
+  <span class="svui_spinner" [class.svui_spinner--table]="context() === 'table'">
+    <span class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </span>
+  </span>
+} @else {
+  <ng-content />
+}

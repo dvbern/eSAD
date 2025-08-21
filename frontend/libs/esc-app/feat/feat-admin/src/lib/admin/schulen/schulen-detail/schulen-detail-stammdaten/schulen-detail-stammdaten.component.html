@@ -1,0 +1,160 @@
+<form svuiFormLayout
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="store.detailMode()">
+  <h2 svuiHeading="formSection">{{ 'schule.detail.tab.stammdaten' | transloco }}</h2>
+
+  <!--  Schulhaus-->
+  <svui-form-control [label]="'schule.schulhaus' | transloco"
+                     [viewValue]="form.group.getRawValue().schulhaus"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <input svuiTextInput
+           [formControl]="form.controlAt('schulhaus')"/>
+  </svui-form-control>
+  <!-- Schulstandort-->
+  <svui-form-control [label]="'schule.schulstandort' | transloco"
+                     [viewValue]="form.group.getRawValue().schulstandort"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <input svuiTextInput
+           [formControl]="form.controlAt('schulstandort')"
+    />
+  </svui-form-control>
+  <!-- Schulkreis -->
+  <svui-form-control [label]="'schule.schulkreis' | transloco"
+                     [viewValue]="form.group.getRawValue().schulkreis"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <input svuiTextInput
+           [formControl]="form.controlAt('schulkreis')"
+    />
+  </svui-form-control>
+
+  <!--  Quartier-->
+  <svui-form-control [label]="'schule.quartier' | transloco"
+                     [viewValue]="form.group.getRawValue().quartier?.quartierName">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.quartier"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [compareWith]="compareQuartierFn"
+    >
+      @for (each of quartierStore.entities(); track each) {
+        <ng-option [value]="each">
+          {{ each.quartierName }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Schulhausnummer-->
+  <svui-form-control [label]="'schule.schulhausnummer' | transloco"
+                     [viewValue]="form.group.getRawValue().schulhausnummer">
+    <input svuiTextInput
+           [formControl]="form.controlAt('schulhausnummer')"/>
+  </svui-form-control>
+
+  <!--  Email -->
+  <svui-form-control [label]="'schule.email' | transloco"
+                     [viewValue]="form.group.getRawValue().email">
+    <input svuiTextInput
+           [formControl]="form.controlAt('email')"/>
+  </svui-form-control>
+
+  <!--   Telefon -->
+  <svui-form-control [label]="'schule.telefon' | transloco"
+                     [viewValue]="form.group.getRawValue().telefon">
+    <input svuiTextInput
+           [formControl]="form.controlAt('telefon')"/>
+  </svui-form-control>
+
+  <!--  Arzt-->
+  <svui-form-control [label]="'schule.zustaendigArzt' | transloco"
+                     [viewValue]="form.group.getRawValue().zustaendigArzt?.fullName">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.zustaendigArzt"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [compareWith]="compareBenutzerFn"
+    >
+      @for (each of benutzerOptionsStore.arztOptionsIncluding(form.group.value.zustaendigArzt); track each) {
+        <ng-option [value]="each" [disabled]="!each.aktiv">
+          {{ each.fullName }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!--  MPA -->
+  <svui-form-control [label]="'schule.zustaendigMPA' | transloco"
+                     [viewValue]="form.group.getRawValue().zustaendigMPA?.fullName">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.zustaendigMPA"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [compareWith]="compareBenutzerFn"
+    >
+      @for (each of benutzerOptionsStore.mpaOptionsIncluding(form.group.value.zustaendigMPA); track each) {
+        <ng-option [value]="each" [disabled]="!each.aktiv">
+          {{ each.fullName }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- SchuleAktivStatus -->
+  <svui-form-control [label]="'schule.schuleAktivStatus' | transloco"
+                     [viewValue]="'EntityAktivStatus.' + form.group.value.schuleAktivStatus | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.controlAt('schuleAktivStatus')"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+    >
+      @for (status of schuleAktivStati; track status) {
+        <ng-option [value]="status">
+          {{ 'EntityAktivStatus.' + status | transloco }}
+        </ng-option>
+
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!--  Bermerkung-->
+  <svui-form-control [label]="'schule.bemerkungen' | transloco"
+                     [viewValue]="form.group.getRawValue().bemerkungen">
+        <textarea svuiTextarea
+                  [formControl]="form.controlAt('bemerkungen')"
+                  [placeholder]="'schule.bemerkungen' | transloco"></textarea>
+  </svui-form-control>
+
+  <!-- ADRESSE -->
+  <h2 svuiHeading="formSection">{{ 'adresse.title' | transloco }}</h2>
+  <!--  isEscadaObject is hardcoded to false because we dont get Schule-Adresse from Escada-->
+  <feat-adresse svuiFormFullWidth [form]="form.adresseForm" [mode]="store.detailMode()" [isEscadaObject]="false"/>
+
+  <!--Letzter Escada Import-->
+  @if (isEscadaObject()) {
+    <div>
+      <p>{{ 'global.escada.import.latest' | transloco: {date: getDateLatestImportIfEscadaObject() | date} }}</p>
+    </div>
+  }
+
+  <!--messages for whole form -->
+  <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="store.detailMode()"
+    [isCreate]="store.selectedIsNew()"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="canEditList()"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+    [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"
+  />
+</form>

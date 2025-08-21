@@ -1,0 +1,7 @@
+<label class="svui_label form-label" [class.visually-hidden]="visibility() === 'hidden'" [for]="controlId()">
+  <ng-content/>
+
+  @if (required()) {
+    <svui-required/>
+  }
+</label>

@@ -1,0 +1,79 @@
+<article>
+  <h2>{{ 'stammdaten.title' | transloco }} works!</h2>
+
+  Simulates varios error conditions:
+  <ul>
+    <li>Every 3rd call produces an internal server error</li>
+    <li>Name of length 1 produces a field validation error on &quot;name&quot;</li>
+    <li>Invalid Geschlecht produces a form validation error</li>
+  </ul>
+
+  @if (store.loader.isLoading()) {
+    <section data-testid="stammdaten-loading-spinner">{{ 'global.loading' | transloco }}</section>
+  } @else {
+    @if (form.group.errors) {
+      <section style="background-color: indianred">Form errors: {{ form.group.errors | json }}</section>
+    }
+
+    <section>
+      <h2>Stammdatenformular</h2>
+      <form [formGroup]="form.group" (ngSubmit)="submit()">
+        <fieldset>
+          <legend>{{ 'stammdaten.title' | transloco }}</legend>
+          <div>
+            <label for="some-random-id-111">{{ 'stammdaten.form.name' | transloco }}</label>
+            <input name="asdfasdf" id="some-random-id-111" type="text" [formControl]="form.controlAt('name')" />
+            @let errors = form.controlAt('name').errors;
+            @if (errors) {
+              <span style="background-color: indianred">Errors: {{ errors | json }}</span>
+            }
+          </div>
+          <div>
+            <label for="some-random-id-222">{{ 'stammdaten.form.vorname' | transloco }}</label>
+            <input id="some-random-id-222" type="text" [formControl]="form.controlAt('vorname')" />
+          </div>
+          <div>
+            <label for="some-random-id-333">{{ 'stammdaten.form.geburtsDatum' | transloco }}</label>
+            <input id="some-random-id-333" type="text" [formControl]="form.controlAt('geburtsDatum')" />
+          </div>
+          <div>
+            <label for="some-random-id-444">{{ 'stammdaten.form.geschlecht' | transloco }}</label>
+            <input id="some-random-id-444" type="text" [formControl]="form.controlAt('geschlecht')" />
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>{{ 'stammdaten.form.speichern' | transloco }}</legend>
+          <div>
+            <button type="submit" [disabled]="store.saveLoader.isLoading()">
+              {{ 'stammdaten.form.speichern' | transloco }}
+            </button>
+          </div>
+        </fieldset>
+      </form>
+    </section>
+
+    <section>
+      <h2>Button-Demo</h2>
+      <button (click)="demo()">Demo</button>
+    </section>
+
+    <section>
+      <h1>Debug</h1>
+      <section>
+        Validation statusChanges: <code>{{ form.group.statusChanges | async }}</code>
+      </section>
+      <section>
+        Dirty: <code>{{ isDirty() }}</code>
+      </section>
+      <section>
+        Saving in progress: <code>{{ store.saveLoader.isLoading() }}</code>
+      </section>
+      <section>
+        Form value:
+        <code>
+          <pre>{{ form.group.getRawValue() | json }}</pre>
+        </code>
+      </section>
+    </section>
+  }
+</article>

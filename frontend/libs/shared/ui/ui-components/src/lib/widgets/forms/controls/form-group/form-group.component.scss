@@ -1,0 +1,23 @@
+@use '../../../../../styles/core/layout';
+@use '../../../../../styles/core/font';
+@use '../../../../../styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.svui_multi-control {
+  &__content {
+    margin-bottom: -#{spacing.$check-input-bottom};
+
+    &--horizontal {
+      @include layout.flex($wrap: wrap, $column-gap: spacing.$gutter-width);
+    }
+  }
+
+  // in form type upload-config
+  :host-context(.svui_form--upload-config) &__top-label {
+    font-size: font.value('S3', size);
+    font-weight: font.value('S3', weight);
+  }
+}

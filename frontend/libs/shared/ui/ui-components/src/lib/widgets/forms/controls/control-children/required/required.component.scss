@@ -1,0 +1,11 @@
+@use 'sass:math';
+@use '../../../../../../styles/core/size';
+
+:host {
+  $-asterisk-font-size: size.$required-asterisk;
+
+  display: inline;
+  font-size: $-asterisk-font-size;
+  line-height: math.div(1em, $-asterisk-font-size);
+  vertical-align: middle;
+}

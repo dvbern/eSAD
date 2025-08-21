@@ -1,0 +1,25 @@
+@if (hasMorePages()) {
+
+  <!-- TRIGGER MORE -->
+  @if (!lastLoadedPageWasEmpty() && !loading()) {
+
+    <!-- auto trigger on scroll or appear -->
+    <svui-virtual-scroll-auto-trigger (trigger)="trigger()"/>
+
+    <!-- fallback (if auto trigger fails): button (ohne loading-Anzeige, weil die tabelle schon einen spinner hat) -->
+    <button type="button"
+            svuiButton="primary"
+            (click)="onVirtualScrollButton()">
+      {{ 'ui.table.mehr' | transloco }}
+    </button>
+
+  }
+
+  <!-- has more pages but can not load more -> stop and show error -->
+  @if (lastLoadedPageWasEmpty()) {
+    <svui-icon-with-tooltip [iconColor]="'danger'" [iconUseCase]="'warning'">
+      {{ 'ui.list.error.missing' | transloco }}
+    </svui-icon-with-tooltip>
+  }
+
+}

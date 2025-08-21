@@ -1,0 +1,78 @@
+<h2 svuiHeading="formSection">{{ pageTitle() | transloco }}</h2>
+<div>
+  <form svuiFormLayout
+        [formGroup]="form.group"
+        (ngSubmit)="submitIfValid()"
+        [mode]="store.detailMode()">
+
+    <!-- Anrede/ Geschlecht -->
+    <svui-form-group [label]="'kontaktperson.geschlecht' | transloco"
+                     [direction]="'horizontal'"
+                     [viewValue]="form.group.getRawValue().geschlecht ? ('Geschlecht.' + form.group.getRawValue().geschlecht | transloco) : null "
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+      @for (geschlecht of geschlechtOptions; track geschlecht) {
+        <svui-single-radio-wrapper [label]="'Geschlecht.' + geschlecht | transloco">
+          <input svuiRadio
+                 type="radio"
+                 name="geschlecht"
+                 [formControl]="form.controlAt('geschlecht')"
+                 [value]="geschlecht"
+          />
+        </svui-single-radio-wrapper>
+      }
+    </svui-form-group>
+
+    <!-- Name -->
+    <svui-form-control [label]="'kontaktperson.name' | transloco"
+                       [viewValue]="form.group.getRawValue().name"
+                       [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+      <input svuiTextInput
+             [formControl]="form.controlAt('name')"
+      />
+    </svui-form-control>
+
+    <!-- Vorname -->
+    <svui-form-control [label]="'kontaktperson.vorname' | transloco"
+                       [viewValue]="form.group.getRawValue().vorname"
+                       [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+      <input svuiTextInput
+             [formControl]="form.controlAt('vorname')"
+      />
+    </svui-form-control>
+
+    <!-- Email -->
+    <svui-form-control [label]="'kontaktperson.email' | transloco"
+                       [viewValue]="form.group.getRawValue().email">
+      <input svuiTextInput
+             [formControl]="form.controlAt('email')"/>
+    </svui-form-control>
+
+    <!-- Telefon -->
+    <svui-form-control [label]="'kontaktperson.telefon' | transloco"
+                       [viewValue]="form.group.getRawValue().telefon">
+      <input svuiTextInput
+             [formControl]="form.controlAt('telefon')"/>
+    </svui-form-control>
+
+    <!--Letzter Escada Import-->
+    @if (isEscadaObject()) {
+      <div>
+        <p>{{ 'global.escada.import.latest' | transloco: {date: getDateLatestImportIfEscadaObject() | date} }}</p>
+      </div>
+    }
+
+    <!--messages for whole form -->
+    <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+    <!-- BUTTONS -->
+    <svui-form-buttons
+      [mode]="store.detailMode()"
+      [isCreate]="store.selectedIsNew()"
+      [saving]="store.saveLoader.isLoading()"
+      [canEdit]="true"
+      routeToEdit="../edit"
+      [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+      [routeOnCancelCreate]="[Path.RELATIVE_ONE_UP, 'all']"
+    />
+  </form>
+</div>

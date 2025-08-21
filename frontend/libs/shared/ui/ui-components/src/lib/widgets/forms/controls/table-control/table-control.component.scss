@@ -1,0 +1,39 @@
+@use '../../../../../styles/core/size';
+@use '../../../../../styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.svui_table-control {
+  position: relative;
+
+  &__required-marker {
+    $asterisk-spacing: spacing.$half;
+
+    position: absolute;
+    inset: $asterisk-spacing $asterisk-spacing auto auto;
+    z-index: 1;
+    font-size: size.$required-asterisk-table;
+    line-height: 1;
+  }
+
+  &__required-marker + ::ng-deep .ng-select .ng-arrow-wrapper {
+    margin-right: 10px;
+  }
+
+  &__message-tooltip {
+    ::ng-deep .svui_input.is-invalid:hover ~ &,
+    ::ng-deep .svui_input.is-invalid:focus ~ & {
+      display: block;
+    }
+  }
+
+  ::ng-deep {
+    .was-validated .form-control:invalid, .form-control.is-invalid {
+      // do not show the warn icon because the input field can be too narrow
+      background-image: none;
+      padding-right: 8px;
+    }
+  }
+}

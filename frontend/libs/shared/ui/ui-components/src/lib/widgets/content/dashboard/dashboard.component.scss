@@ -1,0 +1,32 @@
+@use '../../../../styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.svui_dashboard {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto 1fr;
+  gap: spacing.$layout-outer spacing.$gutter-width;
+  grid-auto-flow: row;
+  grid-template-areas:
+    'termine termine aufgaben'
+    'recent  kinder  aufgaben';
+
+  &__termine {
+    grid-area: termine;
+  }
+
+  &__aufgaben {
+    grid-area: aufgaben;
+  }
+
+  &__recent {
+    grid-area: recent;
+  }
+
+  &__kinder {
+    grid-area: kinder;
+  }
+}

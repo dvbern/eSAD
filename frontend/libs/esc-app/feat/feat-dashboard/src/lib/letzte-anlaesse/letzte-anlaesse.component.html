@@ -1,0 +1,21 @@
+<svui-list [heading]="'dashboard.letzte.anlaesse.titel' | transloco" [loading]="false">
+
+  <table svuiTable [loading]="dashboardStore.letzteAktivitaetHistoryLoader.isLoading()" aria-hidden="true">
+    <tbody>
+      @for (entry of anlassList(); track entry) {
+        <tr>
+          <td>
+            <svui-table-link type="text"
+                             [myRouterLink]="['/', Path.ANLASS, entry.anlass.id, Path.ANLASS_PLANUNG]">
+              {{ anlassTitle(entry.anlass.data) }}
+            </svui-table-link>
+          </td>
+          <td>{{ getVisitDatum(entry.entityInfo.timestampErstellt) }}</td>
+        </tr>
+      } @empty {
+        <tr svui-empty-table-message [message]="'anlass.list.empty'| transloco"></tr>
+      }
+    </tbody>
+  </table>
+
+</svui-list>

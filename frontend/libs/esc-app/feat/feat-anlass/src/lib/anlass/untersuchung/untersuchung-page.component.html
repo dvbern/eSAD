@@ -1,0 +1,240 @@
+<feat-page [heading]="pageTitle()"
+           [backLink]="{label: 'global.back' | transloco, routerLink: Path.RELATIVE_ONE_UP + '/' + Path.ANLASS_PLANUNG}">
+
+  <!-- Kinder-Tabs -->
+  <ul ngbNav class="nav-tabs" [activeId]="untersuchungStore.currentTabId()" (navChange)="preventNav($event)">
+    @for (tabInfo of untersuchungStore.tabList(); track tabInfo.einladungID) {
+      <li [ngbNavItem]="tabInfo.einladungID">
+        <a ngbNavLink
+           [routerLink]="Path.ANLASS_UNTERSUCHUNG_EINLADUNG + '/' + tabInfo.einladungID"
+           [routerLinkActive]="isEinladungActive(tabInfo.einladungID) ? 'active': ''"
+           [queryParamsHandling]="'preserve'"
+           aria-current="page">
+          <span>{{ tabInfo.label }}</span>
+          <button class="btn-close ms-3 fw-light" (click)="closeTab(tabInfo.einladungID, $event)">&nbsp;</button>
+        </a>
+      </li>
+    }
+
+    <!-- Abstand -->
+    <li style="flex-grow: 1;"></li>
+
+    <!-- Add Button -->
+    <svui-collapsible-menu
+      [loading]="false"
+      [label]="'ui.kinder.tabs.add' | transloco"
+      [menuStyle]="'LINK'">
+      @for (tab of untersuchungStore.hiddenTabs(); track tab.einladungID) {
+        <button
+          ngbDropdownItem
+          (click)="addTab(tab.einladungID)">
+          {{ tab.label }}
+        </button>
+      }
+      @if (untersuchungStore.hiddenTabs().length === 0) {
+        <button
+          ngbDropdownItem>
+          {{ 'ui.kinder.tabs.add.allAdded' | transloco }}
+        </button>
+      }
+    </svui-collapsible-menu>
+
+  </ul>
+
+
+  <svui-card>
+    <!-- Untersuchung Tabs -->
+    <ul ngbNav style="margin-bottom: 1rem">
+      <!-- Daten -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showTabDaten && canViewUntersuchungKindDaten()) {
+        <li ngbNavItem class="row">
+          <a class="nav-link"
+             [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_DATEN"
+             [routerLinkActive]="'active'"
+             [queryParamsHandling]="'preserve'"
+             aria-current="page">
+            {{ 'untersuchung.tab.daten' | transloco }}
+            @if (untersuchungStore.tabsSaved()?.datenTabSaved) {
+              <svui-icon-with-tooltip [iconColor]="'success'" [iconUseCase]="'check-circle'">
+                {{ 'untersuchung.tab.completed' | transloco }}
+              </svui-icon-with-tooltip>
+            }
+          </a>
+        </li>
+      }
+      <!-- Impfungen -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showTabImpfungen && canViewUntersuchungImpfung()) {
+        <li ngbNavItem>
+          <a class="nav-link"
+             [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_IMPFUNGEN"
+             [routerLinkActive]="'active'"
+             [queryParamsHandling]="'preserve'"
+             aria-current="page">
+            {{ 'untersuchung.tab.impfungen' | transloco }}
+            @if (untersuchungStore.tabsSaved()?.impfungenTabSaved) {
+              <svui-icon-with-tooltip [iconColor]="'success'" [iconUseCase]="'check-circle'">
+                {{ 'untersuchung.tab.completed' | transloco }}
+              </svui-icon-with-tooltip>
+            }
+          </a>
+        </li>
+      }
+      <!-- Sehen -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showTabSehen && canViewUntersuchungSehen()) {
+        <li ngbNavItem>
+          <a class="nav-link"
+             [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_SEHEN"
+             [routerLinkActive]="'active'"
+             [queryParamsHandling]="'preserve'"
+             aria-current="page">
+            @if (untersuchungStore.currentEinladung()?.nachkontrolle?.data?.anlassFlags?.nachkontrolleSehen) {
+              <svui-icon-with-tooltip [iconColor]="'danger'" [iconUseCase]="'flag'">
+                {{ 'Nachkontrolle.NachkontrolleSehen' | transloco }}
+              </svui-icon-with-tooltip>
+            }
+            {{ 'untersuchung.tab.sehen' | transloco }}
+            @if (untersuchungStore.tabsSaved()?.sehenTabSaved) {
+              <svui-icon-with-tooltip [iconColor]="'success'" [iconUseCase]="'check-circle'">
+                {{ 'untersuchung.tab.completed' | transloco }}
+              </svui-icon-with-tooltip>
+            }
+          </a>
+        </li>
+      }
+      <!-- Hören -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showTabHoeren && canViewUntersuchungHoeren()) {
+        <li ngbNavItem>
+          <a class="nav-link"
+             [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_HOEREN"
+             [routerLinkActive]="'active'"
+             [queryParamsHandling]="'preserve'"
+             aria-current="page">
+            @if (untersuchungStore.currentEinladung()?.nachkontrolle?.data?.anlassFlags?.nachkontrolleHoeren) {
+              <svui-icon-with-tooltip [iconColor]="'danger'" [iconUseCase]="'flag'">
+                {{ 'Nachkontrolle.NachkontrolleHoeren' | transloco }}
+              </svui-icon-with-tooltip>
+            }
+            {{ 'untersuchung.tab.hoeren' | transloco }}
+            @if (isHoerenTabSaved()) {
+              <svui-icon-with-tooltip [iconColor]="'success'" [iconUseCase]="'check-circle'">
+                {{ 'untersuchung.tab.completed' | transloco }}
+              </svui-icon-with-tooltip>
+            }
+          </a>
+        </li>
+      }
+      <!-- Groesse & Gewicht -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showTabGroesseGewicht && canViewUntersuchungGroesseGewicht()) {
+        <li ngbNavItem>
+          <a class="nav-link"
+             [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_GROESSEGEWICHT"
+             [routerLinkActive]="'active'"
+             [queryParamsHandling]="'preserve'"
+             aria-current="page">
+            @if (untersuchungStore.currentEinladung()?.nachkontrolle?.data?.anlassFlags?.nachkontrolleGroesseGewicht) {
+              <svui-icon-with-tooltip [iconColor]="'danger'" [iconUseCase]="'flag'">
+                {{ 'Nachkontrolle.NachkontrolleGroesseGewicht' | transloco }}
+              </svui-icon-with-tooltip>
+            }
+            {{ 'untersuchung.tab.groessegewicht' | transloco }}
+            @if (untersuchungStore.tabsSaved()?.groesseGewichtTabSaved) {
+              <svui-icon-with-tooltip [iconColor]="'success'" [iconUseCase]="'check-circle'">
+                {{ 'untersuchung.tab.completed' | transloco }}
+              </svui-icon-with-tooltip>
+            }
+          </a>
+        </li>
+      }
+      <!-- Triage -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showTabTriage && canViewUntersuchungTriage()) {
+        <li ngbNavItem>
+          <a class="nav-link"
+             [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_TRIAGE"
+             [routerLinkActive]="'active'"
+             [queryParamsHandling]="'preserve'"
+             aria-current="page">
+            {{ 'untersuchung.tab.triage' | transloco }}
+            @if (untersuchungStore.tabsSaved()?.triageTabSaved) {
+              <svui-icon-with-tooltip [iconColor]="'success'" [iconUseCase]="'check-circle'">
+                {{ 'untersuchung.tab.completed' | transloco }}
+              </svui-icon-with-tooltip>
+            }
+          </a>
+        </li>
+      }
+      <!-- Aertzliche Untersuchung -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showTabUntersuchung && canViewUntersuchungAertzlicheUntersuchung()) {
+        <li ngbNavItem>
+          <a class="nav-link"
+             [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_ARZT"
+             [routerLinkActive]="'active'"
+             [queryParamsHandling]="'preserve'"
+             aria-current="page">
+            @if (untersuchungStore.currentEinladung()?.nachkontrolle?.data?.anlassFlags?.nachkontrolleSprache
+            || untersuchungStore.currentEinladung()?.nachkontrolle?.data?.anlassFlags?.nachkontrolleMotorik
+            || untersuchungStore.currentEinladung()?.nachkontrolle?.data?.anlassFlags?.nachkontrolleAnderes) {
+              <svui-icon-with-tooltip [iconColor]="'danger'" [iconUseCase]="'flag'">
+                <div>
+                  @if (untersuchungStore.currentEinladung()?.nachkontrolle?.data?.anlassFlags?.nachkontrolleSprache) {
+                    {{ 'Nachkontrolle.NachkontrolleSprache' | transloco }} <br/>
+                  }
+                  @if (untersuchungStore.currentEinladung()?.nachkontrolle?.data?.anlassFlags?.nachkontrolleMotorik) {
+                    {{ 'Nachkontrolle.NachkontrolleMotorik' | transloco }} <br/>
+                  }
+                  @if (untersuchungStore.currentEinladung()?.nachkontrolle?.data?.anlassFlags?.nachkontrolleAnderes) {
+                    {{ 'Nachkontrolle.NachkontrolleAnderes' | transloco }}
+                  }
+                </div>
+              </svui-icon-with-tooltip>
+            }
+            {{ 'untersuchung.tab.arzt' | transloco }}
+            @if (untersuchungStore.tabsSaved()?.aerzlicheUnteruchungTabSaved) {
+              <svui-icon-with-tooltip [iconColor]="'success'" [iconUseCase]="'check-circle'">
+                {{ 'untersuchung.tab.completed' | transloco }}
+              </svui-icon-with-tooltip>
+            }
+          </a>
+        </li>
+      }
+      <!-- Massnahmen -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showTabMassnahmen && canViewUntersuchungMassnahmen()) {
+        <li ngbNavItem>
+          <a class="nav-link"
+             [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_MASSNAHMEN"
+             [queryParamsHandling]="'preserve'"
+             [routerLinkActive]="'active'"
+             aria-current="page">
+            {{ 'untersuchung.tab.massnahmen' | transloco }}
+            @if (untersuchungStore.tabsSaved()?.massnahmenTabSaved) {
+              <svui-icon-with-tooltip [iconColor]="'success'" [iconUseCase]="'check-circle'">
+                {{ 'untersuchung.tab.completed' | transloco }}
+              </svui-icon-with-tooltip>
+            }
+          </a>
+
+        </li>
+      }
+      <!-- Abstand -->
+      <li style="flex-grow: 1;"></li>
+      <!-- Dossier Button -->
+      <li ngbNavItem role="presentation">
+        <a class="nav-link" target="_blank" [routerLink]="'/kinder/' + untersuchungStore.currentTab()?.kindID">
+          <svui-icon [useCase]="'link'"></svui-icon>
+          {{ 'untersuchung.tab.dossierlink' | transloco }}
+        </a>
+      </li>
+      <!-- Abschliessen Button -->
+      <li>
+        @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+          <button svuiButton="primary" type="button" (click)="untersuchungAbschliessen()">
+            {{ 'untersuchung.tab.abschliessen' | transloco }}
+          </button>
+        }
+      </li>
+    </ul>
+
+    <router-outlet></router-outlet>
+
+  </svui-card>
+
+</feat-page>

@@ -1,0 +1,139 @@
+<feat-dialogs-modal [modalTitle]="getTitle()">
+
+  <form [formGroup]="form.group"
+        svuiFormLayout
+        (ngSubmit)="speichern()"
+        [mode]="DetailMode.EDIT"
+  >
+
+
+    <!-- Impfstoff -->
+    @if (isInputModeOneOf('create', 'edit')) {
+      <svui-form-control [label]="'impfungintern.impfstoff' | transloco"
+                         [viewValue]="form.group.value.impfstoff?.data?.name"
+                         [size]="'double'">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.impfstoff"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          [searchable]="true"
+          [compareWith]="compareFnImpfstoff"
+        >
+          @for (item of impfstoffOptions(); track item.id) {
+            <ng-option [value]="item">
+              <span>{{ item.data.name }} ({{ impfstoffeChargenStore.getKrankheitenTranslatedList(item.data.krankheiten) }})</span>
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+    }
+
+    <!-- Charge -->
+    @if (isInputModeOneOf('create', 'edit', 'verabreicht')) {
+      <svui-form-control [label]="'impfungintern.charge' | transloco"
+                         [viewValue]="form.group.value.charge?.data?.name">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.charge"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          [searchable]="true"
+          [compareWith]="compareFnCharge"
+        >
+          @for (item of form.chargeOptions(); track item.id) {
+            <ng-option [value]="item">
+              <span>{{ item.data.name }}</span>
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+    }
+
+    <!-- Datum -->
+    @if (isInputModeOneOf('create', 'edit')) {
+      <svui-form-control [label]="'impfungintern.datumImpfung' | transloco"
+                         [viewValue]="form.group.value.datumImpfung | date: 'dd.MM.yyyy'">
+        <input svuiTextInput="date" [formControl]="form.controlAt('datumImpfung')"/>
+      </svui-form-control>
+    }
+
+    <!-- User Verabreicht -->
+    @if (isInputModeOneOf('edit')) {
+      <svui-form-control [label]="'impfungintern.userDurchgefuehrt' | transloco"
+                         [viewValue]="form.group.value.userDurchgefuehrt?.fullName">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.userDurchgefuehrt"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          [searchable]="true"
+          [compareWith]="compareFnBenutzer"
+        >
+          @for (item of benutzerOptions; track item.id) {
+            <ng-option [value]="item">
+              <span>{{ item.fullName }}</span>
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+    }
+
+    <!-- Impfung verabreicht? -->
+    @if (isInputModeOneOf('edit')) {
+      <svui-form-group [label]="'impfungintern.impfStatus' | transloco"
+                       [direction]="'horizontal'"
+                       [viewValue]="form.group.value.impfStatus ? ('ImpfStatus.' + form.group.value.impfStatus | transloco) : undefined ">
+        @for (impfStatus of impfStatusOptions; track impfStatus) {
+          <svui-single-radio-wrapper [label]="'ImpfStatus.' + impfStatus | transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="impfStatus"
+                   [formControl]="form.controlAt('impfStatus')"
+                   [value]="impfStatus"/>
+          </svui-single-radio-wrapper>
+        }
+      </svui-form-group>
+    }
+
+    <!-- Grund Nicht-Verabreichung -->
+    @if (isInputModeOneOf('edit', 'nicht-verabreicht')) {
+      <svui-form-control [label]="'impfungintern.grundNichtDurchfuehrung' | transloco"
+                         [viewValue]="form.group.value.grundNichtDurchfuehrung"
+                         [size]="'double'">
+          <textarea svuiTextarea
+                    [formControl]="form.group.controls.grundNichtDurchfuehrung"></textarea>
+      </svui-form-control>
+    }
+
+    <!-- Immunitaet pro Krankheit -->
+    @if (isInputModeOneOf('edit', 'verabreicht')) {
+      @if (getImmunitaetKrankheitFormArray().controls.length > 0) {
+        <svui-form-group [label]="'impfungintern.immunitaet.frage' | transloco"
+                         direction="horizontal"
+                         [viewValue]=""
+                         [size]="'full'">
+          @for (item of getImmunitaetKrankheitFormArray().controls; track item; let i = $index) {
+            <svui-single-checkbox-wrapper [label]="'Krankheit.' + getImmunitaetKrankheitFormControl(i, 'krankheit').value | transloco">
+              <input type="checkbox" svuiCheckbox
+                     *ngIf="getImmunitaetKrankheitFormControl(i, 'immunitaetGenuegend') as control"
+                     [formControl]="control"/>
+            </svui-single-checkbox-wrapper>
+          }
+        </svui-form-group>
+      }
+    }
+
+    <!-- BUTTONS -->
+    <svui-save-cancel-buttons
+      [saving]="false"
+      [canEdit]="true"
+      (cancelClicked)="abbrechen()"
+    />
+
+  </form>
+
+</feat-dialogs-modal>

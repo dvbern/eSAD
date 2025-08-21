@@ -1,0 +1,86 @@
+<feat-page [heading]="pageTitle() | transloco"
+           [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN + '/' + Path.BRIEFVORLAGEN}">
+
+  <svui-dashboard>
+    <svui-card termine>
+      @if (store.loader.isLoading()) {
+        <div>{{ 'global.loading' | transloco }}</div>
+      } @else {
+        <div>
+          <form svuiFormLayout [mode]="store.detailMode()" [formGroup]="form.group" (ngSubmit)="submitIfValid()">
+            <!-- Name -->
+            <svui-form-control [label]="'briefvorlage.name' | transloco"
+                               [viewValue]="form.group.value.name">
+              <input svuiTextInput [formControl]="form.controlAt('name')"/>
+            </svui-form-control>
+
+            <!-- Brief Vorlage Type -->
+            <svui-form-control
+              label="{{ 'briefvorlage.form.typ' | transloco }}"
+              [viewValue]="form.group.controls.type.value ? ('BriefvorlageTyp.' + form.group.value.type | transloco) : null">
+              <ng-select
+                svuiNgSelect
+                bindLabel='dummy'
+                appendTo="body"
+                [formControl]="form.group.controls.type"
+                [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+              >
+                @for (typ of briefvorlageTypen; track typ) {
+                  <ng-option [value]="typ">
+                    {{ 'BriefvorlageTyp.' + typ | transloco }}
+                  </ng-option>
+                }
+              </ng-select>
+            </svui-form-control>
+
+            <!-- sprache -->
+            <svui-form-control
+              label="{{ 'briefvorlage.form.sprache' | transloco }}"
+              [viewValue]="form.group.controls.sprache.value ? ('AppLanguage.' + form.group.value.sprache | transloco) : null">
+              <ng-select
+                svuiNgSelect
+                bindLabel='dummy'
+                appendTo="body"
+                [formControl]="form.group.controls.sprache"
+                [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+              >
+                @for (sprache of tenantSettingsStore.supportedLanguages(); track sprache) {
+                  <ng-option [value]="sprache">
+                    {{ 'AppLanguage.' + sprache | transloco }}
+                  </ng-option>
+                }
+              </ng-select>
+            </svui-form-control>
+
+            <!-- Fileupload -->
+            <feat-file-drop
+              (filesToUpload)="onFilesSelected($event)"
+              [acceptedFiletypes]="this.acceptedFiletypes()"
+              [multiple]="false"
+            />
+
+            <!--messages for whole form -->
+            <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+            <!-- BUTTONS -->
+            <svui-save-cancel-buttons
+              (cancelClicked)="onCancelClicked()"
+              [saving]="store.saveLoader.isLoading()"
+              [canEdit]="canEditList()"/>
+          </form>
+        </div>
+      }
+    </svui-card>
+
+    <svui-card aufgaben>
+      <h3 svuiHeading="card" class="mb-3">{{ 'global.uploaded.files' | transloco }}</h3>
+      <feat-upload-table [uploadTable]="uploadTable"
+                         (fileView)="downloadBriefvorlageFile()"
+                         (fileDirectDownload)="downloadBriefvorlageFile()"
+                         [config]="{ showRemoveAction: false }"
+
+      >
+      </feat-upload-table>
+    </svui-card>
+  </svui-dashboard>
+</feat-page>

@@ -1,0 +1,117 @@
+<table
+  svuiTable
+  [loading]="isLoading()"
+  [totalRows]="itemTable.filteredListSize()"
+  (pageChanged)="itemTable.onPageChanged($event)"
+  [pagination]="itemTable.pagination()"
+>
+  <thead>
+  <!-- Headers for sorting -->
+  <tr>
+    <th
+      scope="col"
+      svuiSortable
+      [sortState]="itemTable.findColSortDTO('data.fachrichtung')"
+      (sort)="itemTable.onColSort($event, 'data.fachrichtung')"
+    >{{ 'arzt.fachrichtung' | transloco }}
+    </th>
+    <th
+      scope="col"
+      svuiSortable
+      [sortState]="itemTable.findColSortDTO('data.name')"
+      (sort)="itemTable.onColSort($event, 'data.name')"
+    >{{ 'arzt.name' | transloco }}
+    </th>
+    <th
+      scope="col"
+      svuiSortable
+      [sortState]="itemTable.findColSortDTO('data.vorname')"
+      (sort)="itemTable.onColSort($event, 'data.vorname')"
+    >{{ 'arzt.vorname' | transloco }}
+    </th>
+    <th
+      scope="col"
+      svuiSortable
+      [sortState]="itemTable.findColSortDTO('data.hpvTeilnahme')"
+      (sort)="itemTable.onColSort($event, 'data.hpvTeilnahme')"
+    >{{ 'arzt.hpvTeilnahme' | transloco }}
+    </th>
+    <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
+  </tr>
+  <!-- Headers for filtering-->
+  <tr>
+    <th scope="col">
+      <svui-table-filter [columnHeader]="'arzt.fachrichtung' | transloco">
+        <ng-select svuiNgSelect
+                   bindLabel="dummy"
+                   appendTo="body"
+                   [multiple]="true"
+                   [formControl]="tableFilterForm.group.controls.fachrichtung">
+
+          @for (fachrichtung of fachrichtungen; track fachrichtung) {
+            <ng-option [value]="fachrichtung">
+              {{ 'Fachrichtung.' + fachrichtung | transloco }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-table-filter>
+    </th>
+    <th scope="col">
+      <svui-table-filter [columnHeader]="'arzt.name' | transloco">
+        <input svuiTextInput [formControl]="tableFilterForm.group.controls.name"/>
+      </svui-table-filter>
+    </th>
+    <th scope="col">
+      <svui-table-filter [columnHeader]="'arzt.vorname' | transloco">
+        <input svuiTextInput [formControl]="tableFilterForm.group.controls.vorname"/>
+      </svui-table-filter>
+    </th>
+    <th scope="col">
+      <svui-table-filter [columnHeader]="'arzt.hpvTeilnahme' | transloco">
+        <ng-select svuiNgSelect
+                   bindLabel="dummy"
+                   appendTo="body"
+                   [formControl]="tableFilterForm.group.controls.hpvTeilnahme">
+
+          @for (hpvTeilname of hpvTeilnamen; track hpvTeilname) {
+            <ng-option [value]="hpvTeilname">
+              {{ 'HpvTeilnahme.' + hpvTeilname | transloco }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-table-filter>
+    </th>
+    <th scope="col"></th>
+  </tr>
+  </thead>
+  <tbody>
+    @for (item of itemTable.displayedList(); track item.id) {
+      <tr>
+        <td>{{ 'Fachrichtung.' + item.data.fachrichtung | transloco }}</td>
+        <td>
+          <svui-table-link
+            type="text"
+            [myRouterLink]="[item.id]">
+            {{ item.data.name }}
+          </svui-table-link>
+        </td>
+        <td>{{ item.data.vorname }}</td>
+        <td>{{ 'HpvTeilnahme.' + item.data.hpvTeilnahme | transloco }}</td>
+        <td>
+          <svui-collapsible-menu
+            [loading]="isDeleteLoading()"
+            label="{{ 'global.actionmenu.tooltip' | transloco }}">
+            @if (canEditList()) {
+              <button ngbDropdownItem (click)="removeArzt.emit(item)">
+                {{ 'global.remove' | transloco }}
+              </button>
+            }
+          </svui-collapsible-menu>
+        </td>
+      </tr>
+
+    } @empty {
+      <tr svui-empty-table-message [message]="'aerzte.list.empty' | transloco"></tr>
+    }
+  </tbody>
+</table>

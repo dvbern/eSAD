@@ -1,0 +1,5 @@
+@{{httpMethod}}{{#subresourceOperation}}
+  @Path("{{{path}}}"){{/subresourceOperation}}{{#hasConsumes}}
+  @Consumes({ {{#consumes}}"{{{mediaType}}}"{{^-last}}, {{/-last}}{{/consumes}} }){{/hasConsumes}}{{#hasProduces}}
+  @Produces({ {{#produces}}"{{{mediaType}}}"{{^-last}}, {{/-last}}{{/produces}} }){{/hasProduces}}
+{{#vendorExtensions.x-quarkus-response-type}}{{{vendorExtensions.x-quarkus-response-type}}}{{/vendorExtensions.x-quarkus-response-type}}{{^vendorExtensions.x-quarkus-response-type}}Response{{/vendorExtensions.x-quarkus-response-type}} {{nickname}}({{#allParams}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>bodyParams}}{{>formParams}}{{^-last}},{{/-last}}{{/allParams}});

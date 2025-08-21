@@ -1,0 +1,17 @@
+<div class="svui_form"
+     [class.svui_form--kacheln]="formType() === 'kacheln'"
+     [class.svui_form--upload-config]="formType() === 'uploadConfig'"
+     [class.viewmode]="mode() === 'view'"
+>
+  <ng-content/>
+
+  <!-- FORM ERROR MESSAGE -->
+  <div class="svui_form__message">
+    <ng-content select="svui-form-error-message"/>
+  </div>
+
+  <!-- FORM BUTTONS -->
+  <div class="svui_form__buttons">
+    <ng-content select="svui-form-buttons,svui-save-cancel-buttons,[customFormButtons]"/>
+  </div>
+</div>

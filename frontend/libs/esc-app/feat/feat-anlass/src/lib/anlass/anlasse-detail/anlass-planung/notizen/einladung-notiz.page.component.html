@@ -1,0 +1,17 @@
+<feat-page [heading]="pageTitle() | transloco"
+           [backLink]="{label: 'global.back' | transloco, routerLink: Path.RELATIVE_FOUR_UP + '/' + Path.ANLASS_PLANUNG}">
+
+  <feat-notizen
+    [kindId]="this.kindId()"
+    [initialNotiz]="defaultNotizSig()"
+    [existingNotiz]="currentNotiz()"
+    [notizenFiles]="notizenFiles() ?? []"
+    [loader]="anlassKinderStore.saveLoader"
+    (saveNotiz)="onSaveNotiz($event)"
+    (removeNotizFile)="onRemoveNotizFile($event)"
+  />
+
+</feat-page>
+
+
+

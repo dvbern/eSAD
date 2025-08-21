@@ -1,0 +1,7 @@
+<div class="svui_toast-outlet">
+  @for (toast of toasts(); track toast) {
+    <ngb-alert class="svui_toast" [type]="toast.alertType" [dismissible]="true" (closed)="removeToast.emit(toast)">
+      {{ toast.summary }}
+    </ngb-alert>
+  }
+</div>

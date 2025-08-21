@@ -1,0 +1,87 @@
+package ch.dvbern.oss.hemed.esc.api.shared.archunit;
+
+import java.lang.reflect.Parameter;
+import java.util.Objects;
+
+import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
+import com.querydsl.core.types.Path;
+import com.tngtech.archunit.core.domain.JavaClass.Predicates;
+import com.tngtech.archunit.core.domain.JavaMethod;
+import com.tngtech.archunit.lang.ArchCondition;
+import com.tngtech.archunit.lang.ArchRule;
+import com.tngtech.archunit.lang.ConditionEvents;
+import com.tngtech.archunit.lang.SimpleConditionEvent;
+import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
+import lombok.Generated;
+import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
+import org.junit.jupiter.api.Test;
+
+@Slf4j
+@DisplayNameGeneration(ReplaceUnderscores.class)
+class IdClassTest {
+
+    @Test
+    void use_only_ID_class_as_id_parameter() {
+        ArchRule rule = ArchRuleDefinition.methods()
+            .should(haveOnlyIdParamsWithTypeID())
+            .because("All Id-Parameters of Services must be of Type ID");
+        rule.allowEmptyShould(true).check(ArchConst.APP_CLASSES);
+    }
+
+    @Test
+    void use_only_ID_class_as_id_fields() {
+        var rule = ArchRuleDefinition.fields()
+            .that()
+            .haveName("id")
+            .or()
+            .haveNameEndingWith("Id")
+            .and().areNotAnnotatedWith(IgnoreForIdClassTest.class)
+            .and().doNotHaveRawType(Predicates.assignableTo(Path.class))
+            .should()
+            .haveRawType(ID.class.getName())
+            .because("All Id-Fields of must be of Type ID to prevent mixing up IDs of different entities. " +
+                "If this is a false positive, please annotate the field with @IgnoreForIdClassTest");
+        rule.check(ArchConst.APP_CLASSES);
+    }
+
+    @NonNull
+    private ArchCondition<JavaMethod> haveOnlyIdParamsWithTypeID() {
+        return new ArchCondition<JavaMethod>("have only id params with type ch.dvbern.dvbstarter.shared.types.id.ID") {
+            @Override
+            public void check(JavaMethod method, ConditionEvents events) {
+                final Parameter[] parameters = method.reflect().getParameters();
+                for (Parameter parameter : parameters) {
+                    boolean isIdParam = parameter.getName().equals("id") || parameter.getName().endsWith("Id");
+
+                    // compare by name due to some weird ClassLoader problem on Quarkus continuous testing
+                    // caused by the `method.reflect()` above.
+                    // Unfortunately this reflect() is needed sind ArchUnit JavaParameter
+                    // does not provide the Parameter-Name yet :( (2024-11-04)
+                    boolean isIdClass = Objects.equals(
+                        parameter.getType().getName(),
+                        ID.class.getName()
+                    );
+
+                    if (isIdParam && !isIdClass) {
+                        if (parameter.isAnnotationPresent(IgnoreForIdClassTest.class)) {
+                            continue;
+                        }
+                        if (method.isAnnotatedWith(Generated.class)) {
+                            continue;
+                        }
+                        events.add(SimpleConditionEvent.violated(
+                            method,
+                            "Id-Parameter " + (parameter.getName()) + " of method " +
+                                method.getFullName() + " is not of type ch.dvbern.dvbstarter.shared.types.id.ID. "
+                                + "If this is a false positive, please annotate the parameter with "
+                                + "@IgnoreForIdClassTest"));
+                    }
+                }
+            }
+        };
+    }
+}

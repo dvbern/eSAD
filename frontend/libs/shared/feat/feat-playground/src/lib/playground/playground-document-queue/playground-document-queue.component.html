@@ -1,0 +1,27 @@
+<svui-card>
+  <div>
+    <p>Es gibt 2 Dateien: Playground und Playground-Error, beide brauchen 10 Sekunden zum generieren. Es wird bis zu 3
+      mal
+      probiert, ein Dokument zu generieren im Fehlerfall.</p>
+  </div>
+  <div style="display: flex;">
+
+    <ng-select
+      svuiNgSelect
+      bindLabel="dummy"
+      appendTo="body"
+      [formControl]="formControl"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+    >
+      @for (type of documentQueueTypes; track type) {
+        <ng-option [value]="type">
+          {{ 'DocumentQueueType.' + type | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+    <button svuiButton="primary" type="button" (click)="documentGeneriere()">Dokument anfordern</button>
+  </div>
+  <feat-document-queue/>
+  <button svuiButton="secondary" type="button" (click)="reload()">Liste neu laden</button>
+  <button svuiButton="secondary" type="button" (click)="triggerBatchJob()">Batch Job Triggern</button>
+</svui-card>

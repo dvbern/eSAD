@@ -1,0 +1,18 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="1750774076343-1">
+    <sql>
+      -- Add AERZTE_LESEN and AERZTE_SCHREIBEN to ESC-BASEL-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, benutzer_id, berechtigung)
+      VALUES ('d6200b58-9e05-4225-b059-b4d00c79733e', '2025-02-24 12:00:00.118393', '2025-06-24 12:00:00.202890', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'BS', '11111111-1111-1111-1111-111111111112', 'AERZTE_LESEN');
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, benutzer_id, berechtigung)
+      VALUES ('47fb4b35-efd6-4132-90c7-90898364bb62', '2025-02-24 12:00:00.118393', '2025-06-24 12:00:00.202890', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'BS', '11111111-1111-1111-1111-111111111112', 'AERZTE_SCHREIBEN');
+
+      -- Add AERZTE_LESEN and AERZTE_SCHREIBEN to ESC-BERN-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, benutzer_id, berechtigung)
+      VALUES ('940acf12-6e86-4ec8-9103-f47b03d7bde1', '2025-02-24 12:00:00.118393', '2025-06-24 12:00:00.202890', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'BE', '11111111-1111-1111-1111-111111111113', 'AERZTE_LESEN');
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, benutzer_id, berechtigung)
+      VALUES ('7d7e6c49-86ed-4a90-b0bc-c67547592b97', '2025-02-24 12:00:00.118393', '2025-06-24 12:00:00.202890', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'BE', '11111111-1111-1111-1111-111111111113', 'AERZTE_SCHREIBEN');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,17 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h2 class="modal-title" *ngIf="config.question">{{ config.question }}</h2>
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismiss.emit()"></button>
+  </div>
+  <div class="modal-body" *ngIf="config.consequence">
+    {{ config.consequence }}
+  </div>
+  <div class="modal-footer">
+    <!-- cancel tut dasselbe wie esc, ein Klick ausserhalb oder der close-Button -->
+    <!-- FIXME ngbAutofocus fokussiert zwar, aber nicht sichtbar -->
+    <button type="button" svuiButton="secondary" (click)="dismiss.emit()" ngbAutofocus>{{ buttonCancelText }}</button>
+
+    <!-- confirm ist gefaehrlich, deshalb muss man ja confirmen, deshalb ist er rot und soll keinen Fokus haben -->
+    <button type="button" svuiButton="primary" (click)="confirm.emit()">{{ buttonConfirmText }}</button>
+  </div>
+</div>

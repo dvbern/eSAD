@@ -1,0 +1,16 @@
+<!-- PLZ IMPORT -->
+
+<svui-card>
+  <h2 svuiHeading="card" class="mb-3">PLZ Import</h2>
+  <button
+    type="button"
+    svuiButton="primary"
+    (click)="importPlzData()"
+    [disabled]="systemAdminStore.loader.isLoading()"
+  >
+    {{ 'admin.import.plz' | transloco }}
+  </button>
+
+</svui-card>
+
+

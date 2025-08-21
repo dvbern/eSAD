@@ -1,0 +1,53 @@
+<feat-page [heading]="pageTitle()"
+           [backLink]="{label: 'global.back' | transloco, routerLink: Path.RELATIVE_TWO_UP}">
+
+  <svui-page-header-buttons>
+    <!-- Status -->
+    <ng-select
+      [clearable]="false"
+      appendTo="body"
+      svuiNgSelect
+      bindLabel='dummy'
+      [disabled]="!store.canUserEditAnlassInCurrentState()"
+      [ngModel]="anlassStatus()"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      (change)="onStatusChange($event)"
+    >
+      @for (status of anlassStatusList; track status) {
+        <ng-option [value]="status">
+          {{ 'AnlassStatus.' + status | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+
+<!--    Anlass Export-->
+    @if (canDownloadExport()) {
+    <button svuiButton="secondary"
+            type="button"
+            [icon]="'herunterladen'"
+            (click)="downloadPrint()">{{ 'anlass.list.drucken' | transloco }}
+    </button>
+    }
+
+    <!-- Bearbeitung -->
+    <button [disabled]="!store.canUserEditAnlassInCurrentState()"
+            svuiButton="secondary"
+            type="button"
+            [icon]="'previous'"
+            (click)="gotoBearbeitung()">{{ 'anlass.list.link.bearbetung' | transloco }}
+    </button>
+  </svui-page-header-buttons>
+
+
+  <feat-anlass-planung-anlassdaten-daten/>
+
+
+  <feat-anlass-planung-einladungen-liste/>
+
+  @if (anzahlAusgewaehlteKinder() > 0) {
+    <button svuiButton="primary" type="button" (click)="gotoUntersuchung()" class="mt-3">
+      {{ 'anlass.kinder.untersuchung.anzahl' | transloco: {anzahl: anzahlAusgewaehlteKinder()} }}
+    </button>
+  }
+
+</feat-page>

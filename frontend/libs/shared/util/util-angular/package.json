@@ -1,0 +1,21 @@
+{
+  "name": "@dvb/util-angular",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@dvb/util-shared": "0.0.1",
+    "@dvb/data-access-backend": "0.0.1",
+    "@dvb/data-access-types": "0.0.1",
+    "@angular/core": "19.2.3",
+    "@angular/router": "19.2.3",
+    "@angular/common": "19.2.3",
+    "rxjs": "~7.8.0",
+    "@sentry/angular": "^9.9.0",
+    "@angular/forms": "19.2.3",
+    "date-fns": "^4.1.0",
+    "@ngrx/signals": "^19.0.1",
+    "immer": "^10.1.1",
+    "@ng-bootstrap/ng-bootstrap": "18.0.0",
+    "@jsverse/transloco": "^7.5.0"
+  },
+  "sideEffects": false
+}

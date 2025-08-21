@@ -1,0 +1,299 @@
+All properties
+Allgemein
+FIELD_allgemein.aktuellesDatum: 20.05.2025
+FIELD_allgemein.benutzerTitel: Dipl. Ing.
+FIELD_allgemein.benutzer: Sarah Support
+FIELD_allgemein.benutzerEmail: support@mailbucket.dvbern.ch
+FIELD_allgemein.benutzerTelefon: +41 61 123 45 67
+FIELD_allgemein.benutzerFunktion: Support
+
+Kind
+FIELD_kind.vorname:  Nina
+FIELD_kind.nachname: Notter
+FIELD_kind.geburtsdatum: 15.03.2015
+FIELD_kind.adresse: Bahnhofstrasse 10
+c/o Muster
+3000 Bern
+FIELD_kind.zustaendigArzt: Schularzt Julien
+FIELD_kind.schulhaus: Dreirosen
+FIELD_kind.klasseStufe: Primar 4
+FIELD_kind.klasseBezeichnung: Klasse 4a
+FIELD_kind.nachkontrollen: des Gehörs, anderes, der Grösse und des Gewichts, der Motorik, der Augen, der Sprache
+FIELD_kind.kontaktpersonName: Kontaktperson
+FIELD_kind.kontaktpersonVorname: Karin
+
+Anlass Metadaten
+FIELD_anlass.meta.datum: 14.02.2024
+FIELD_anlass.meta.zeit: 10:14
+FIELD_anlass.meta.mpa: Monika Mate
+FIELD_anlass.meta.arzt: Julien Schularzt
+
+
+DIPHTERIE
+FIELD_anlass.krankheit.DIPHTERIE_anzahlImpfungen : 3
+FIELD_anlass.krankheit.DIPHTERIE.datumLetzteImpfung : 05/2025
+FIELD_anlass.krankheit.DIPHTERIE.Impfempfehlung : Nein
+
+
+
+POLIO
+FIELD_anlass.krankheit.POLIO.anzahlImpfungen : 3
+FIELD_anlass.krankheit.POLIO.datumLetzteImpfung : 05/2025
+FIELD_anlass.krankheit.POLIO.Impfempfehlung : Nein
+
+TETANUS
+FIELD_anlass.krankheit.TETANUS.anzahlImpfungen : 3
+FIELD_anlass.krankheit.TETANUS.datumLetzteImpfung : 05/2025
+FIELD_anlass.krankheit.TETANUS.Impfempfehlung : Nein
+
+PERTUSSIS
+FIELD_anlass.krankheit.PERTUSSIS.anzahlImpfungen : 3
+FIELD_anlass.krankheit.PERTUSSIS.datumLetzteImpfung : 05/2025
+FIELD_anlass.krankheit.PERTUSSIS.Impfempfehlung : Nein
+
+  HEPATITIS_B
+FIELD_anlasskrankheit.HEPATITIS_B.anzahlImpfungen : 3
+FIELD_anlass.krankheit.HEPATITIS_B.datumLetzteImpfung : 05/2025
+FIELD_anlass.krankheit.HEPATITIS_B.Impfempfehlung : Nein
+
+VARIZELLEN
+FIELD_anlass.krankheit.VARIZELLEN.anzahlImpfungen : 3
+FIELD_anlass.krankheit.VARIZELLEN.datumLetzteImpfung : 05/2025
+FIELD_anlass.krankheit.VARIZELLEN.Impfempfehlung : Nein
+MASERN
+FIELD_anlass.krankheit.MASERN.anzahlImpfungen : 3
+FIELD_anlass.krankheit.MASERN.datumLetzteImpfung : 05/2025
+FIELD_anlass.krankheit.MASERN.Impfempfehlung : Nein
+
+MUMPS
+FIELD_anlass.krankheit.MUMPS.anzahlImpfungen : 3
+FIELD_anlass.krankheit.MUMPS.datumLetzteImpfung : 05/2025
+FIELD_anlass.krankheit.MUMPS.Impfempfehlung : Nein
+
+ROETELN
+FIELD_anlass.krankheit.ROETELN.anzahlImpfungen : 3
+FIELD_anlass.krankheit.ROETELN.datumLetzteImpfung : 05/2025
+FIELD_anlass.krankheit.ROETELN.Impfempfehlung : Nein
+
+HPV
+FIELD_anlass.krankheit.HPV.anzahlImpfungen : 3
+FIELD_anlass.krankheit.HPV.datumLetzteImpfung : 05/2025
+FIELD_anlass.krankheit.HPV.Impfempfehlung : Nein
+
+MENINGOKOKKEN_A_C_W_Y
+FIELD_anlass.krankheit.MENINGOKOKKEN_A_C_W_Y.anzahlImpfungen : 3
+FIELD_anlass.krankheit.MENINGOKOKKEN_A_C_W_Y.datumLetzteImpfung : 05/2025
+FIELD_anlass.krankheit.MENINGOKOKKEN_A_C_W_Y.Impfempfehlung : Nein
+
+MENINGOKOKKEN_B
+FIELD_anlass.krankheit.MENINGOKOKKEN_B.anzahlImpfungen : 3
+FIELD_anlass.krankheit.MENINGOKOKKEN_B.datumLetzteImpfung : 05/2025
+FIELD_anlass.krankheit.MENINGOKOKKEN_B.Impfempfehlung : Nein
+
+FIELD_anlass.impfung.impfungList : 20.04.2025 VARIVAX (Varizellen)
+13.03.2025 Boostrix (Diphtherie, Tetanus, Pertussis)
+13.03.2025 VARIVAX (Varizellen)
+
+SEHEN
+FIELD_anlass.sehen.elternBrilleLinsen: mit Sehhilfe
+FIELD_anlass.sehen.arztBrilleLinsen: cc
+FIELD_anlass.sehen.elternStereotest: normal
+FIELD_anlass.sehen.arztStereotest: positiv
+FIELD_anlass.sehen.farbsehen: normal
+FIELD_anlass.sehen.tafel: E-Tafel
+FIELD_anlass.sehen.fernvisus: normal/links reduziert
+FIELD_anlass.sehen.fernvisusSehschaerfeRechts: 100
+FIELD_anlass.sehen.fernvisusSehschaerfeLinks: 200
+FIELD_anlass.sehen.nahvisus: normal/rechts reduziert
+FIELD_anlass.sehen.nahvisusSehschaerfeRechts: 300
+FIELD_anlass.sehen.nahvisusSehschaerfeLinks: 400
+FIELD_anlass.sehen.strabismus: Eso, Hyper
+FIELD_anlass.sehen.strabismusAuspraegung: Intermittierend
+FIELD_anlass.sehen.strabismusAuftreten: Rechts
+FIELD_anlass.sehen.inspektion: auffällig
+FIELD_anlass.sehen.konvergenz: nicht geprüft worden
+FIELD_anlass.sehen.beurteilung: siehe Begleitbrief
+FIELD_anlass.sehen.motilitaet: unauffällig
+
+HOEREN AUDIOGRAMM
+FIELD_anlass.hoeren.audiogramm.beurteilungErkaeltung: Solch eine Hörminderung ist im Kindesalter meist vorübergehend, z.B. bei oder nach zurückliegender Erkältung. Um jedoch sicher zu sein, dass Ihr Kind gut hört, empfehle ich Ihnen, in 6 bis 8 Wochen noch einmal eine Kontrolle bei Ihrem Kinderarzt/ Ihrer Kinderärztin durchführen zu lassen.
+FIELD_anlass.hoeren.audiogramm.beurteilungHoerhilfe: mit Hörhilfe
+FIELD_anlass.hoeren.audiogramm.zusammenfassungOhren: siehe Begleitbrief
+FIELD_anlass.hoeren.audiogramm.beurteilungAudiogramm: beidseitig vermindert, unaufällig
+
+AUDIOGRAMM RECHTS
+	Rechts
+	250 Hz
+	500 Hz
+	1000 Hz
+	2000 Hz
+	4000 Hz
+	6000 Hz
+	8000 Hz
+
+	10 dB
+	
+	
+	X
+	
+	
+	
+	
+
+	20 dB
+	X
+	
+	
+	
+	
+	
+	
+
+	30 dB
+	
+	
+	
+	
+	
+	
+	X
+
+	40 dB
+	
+	X
+	
+	
+	
+	
+	
+
+	50 dB
+	
+	
+	
+	X
+	
+	
+	
+
+	60 dB
+	
+	
+	
+	
+	
+	X
+	
+
+	> 60 dB
+	
+	
+	
+	
+	X
+	
+	
+
+
+
+AUDIOGRAMM LINKS
+	Links
+	250 Hz
+	500 Hz
+	1000 Hz
+	2000 Hz
+	4000 Hz
+	6000 Hz
+	8000 Hz
+
+	10 dB
+	
+	
+	X
+	X
+	
+	
+	
+
+	20 dB
+	
+	
+	
+	
+	
+	X
+	X
+
+	30 dB
+	X
+	
+	
+	
+	
+	
+	
+
+	40 dB
+	
+	
+	
+	
+	
+	
+	
+
+	50 dB
+	
+	
+	
+	
+	
+	
+	
+
+	60 dB
+	
+	X
+	
+	
+	
+	
+	
+
+	> 60 dB
+	
+	
+	
+	
+	X
+	
+	
+
+
+
+
+HOEREN OTOSKOPIE
+
+FIELD_anlass.hoeren.otoskopie.otoskopieRechts: hat keine Auffälligkeiten gezeigt, hat ein Seromukotympanon gezeigt.
+FIELD_anlass.hoeren.otoskopie.otoskopieLinks: hat ergeben, dass das Trommelfell aufgrund von Ohrenschmalz nicht einsehbar war., hat ergeben, dass es Abweichungen gibt
+FIELD_anlass.hoeren.otoskopie.zusammenfassungOhren: siehe Begleitbrief
+
+
+GROESSE GEWICHT
+
+FIELD_anlass.groesseGewicht.groesseWert: 150 cm
+FIELD_anlass.groesseGewicht.groesseBeurteilung: altersentsprechend
+FIELD_anlass.groesseGewicht.gewichtWert: 70 kg
+FIELD_anlass.groesseGewicht.gewichtBeurteilung: starkes Übergewicht
+FIELD_anlass.groesseGewicht.bmiWert: 31.1
+FIELD_anlass.groesseGewicht.bmiBeurteilung: >95%ile
+
+Arzt
+
+FIELD_externerArzt.anrede: Dr. Med.
+FIELD_externerArzt.name: Arzt Armin
+FIELD_externerArzt.adresse: Bahnhofstrasse 10
+c/o Muster
+3000 Bern
+FIELD_externerArzt.telefon: +41 79 123 45 67
+FIELD_externerArzt.email: elementaire@efdb.ch

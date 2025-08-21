@@ -1,0 +1,190 @@
+<form svuiFormLayout
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="dossierStore.detailMode()">
+
+  <!-- PERSONENDATEN -->
+  <h2 svuiHeading="formSection">{{ 'kind.detail.personendaten' | transloco }}</h2>
+
+  <!-- Sozialversicherungsnummer -->
+  <svui-form-control [label]="'kind.sozialversicherungsNummer' | transloco"
+                     [viewValue]="form.group.getRawValue().sozialversicherungsNummer"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <input svuiTextInput
+           [formControl]="form.controlAt('sozialversicherungsNummer')"
+
+           placeholder="756.XXXX.XXXX.XX"/>
+  </svui-form-control>
+
+  <!-- Name -->
+  <svui-form-control [label]="'kind.name' | transloco"
+                     [viewValue]="form.group.getRawValue().name"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <input svuiTextInput
+           [formControl]="form.controlAt('name')"
+    />
+  </svui-form-control>
+
+  <!-- Vorname -->
+  <svui-form-control [label]="'kind.vorname' | transloco"
+                     [viewValue]="form.group.getRawValue().vorname"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <input svuiTextInput
+           [formControl]="form.controlAt('vorname')"
+    />
+  </svui-form-control>
+
+  <!-- Geschlecht -->
+  <svui-form-group [label]="'kind.geschlecht' | transloco"
+                   [direction]="'horizontal'"
+                   [viewValue]="form.group.getRawValue().geschlecht ? ('Geschlecht.' + form.group.getRawValue().geschlecht | transloco) : undefined "
+                   [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    @for (geschlecht of geschlechtOptions; track geschlecht) {
+      <svui-single-radio-wrapper [label]="'Geschlecht.' + geschlecht | transloco">
+        <input svuiRadio
+               type="radio"
+               name="geschlecht"
+               [formControl]="form.controlAt('geschlecht')"
+               [value]="geschlecht"
+        />
+      </svui-single-radio-wrapper>
+    }
+  </svui-form-group>
+
+  <!-- Geburtsdatum -->
+  <svui-form-control [label]="'kind.geburtsdatum' | transloco"
+                     [viewValue]="form.group.getRawValue().geburtsdatum | date: 'dd.MM.yyyy'"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <input svuiTextInput="date"
+           [formControl]="form.controlAt('geburtsdatum')"
+    />
+  </svui-form-control>
+
+  <!-- Nationalitaet -->
+  <svui-form-control [label]="'kind.nationalitaet' | transloco"
+                     [viewValue]="form.group.getRawValue().nationalitaet ?
+                     (('Land.' + form.group.getRawValue().nationalitaet | transloco) + ' (' + ('LandCode.' + this.dossierStore.selectedKind()?.landCode | transloco) + ')') : undefined"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.controlAt('nationalitaet')"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+
+    >
+      @for (land of nationalitaeten; track land) {
+        <ng-option [value]="land">
+          {{ 'Land.' + land | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Erstsprache -->
+  <svui-form-control [label]="'kind.erstsprache' | transloco"
+                     [viewValue]="form.group.getRawValue().erstsprache"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <input svuiTextInput
+           [formControl]="form.controlAt('erstsprache')"
+    />
+  </svui-form-control>
+
+  <!-- Email -->
+  <svui-form-control [label]="'kind.email' | transloco"
+                     [viewValue]="form.group.getRawValue().email"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <input svuiTextInput="email"
+           [formControl]="form.controlAt('email')"
+    />
+  </svui-form-control>
+
+  <!-- Telefon -->
+  <svui-form-control [label]="'kind.telefon' | transloco"
+                     [viewValue]="form.group.getRawValue().telefon"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <input svuiTextInput
+           [formControl]="form.controlAt('telefon')"
+    />
+  </svui-form-control>
+
+  <!-- Wohntyp -->
+  <svui-form-control [label]="'kind.wohntyp' | transloco"
+                     [viewValue]="form.group.getRawValue().wohntyp"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <input svuiTextInput
+           [formControl]="form.controlAt('wohntyp')"
+    />
+  </svui-form-control>
+
+  <!-- KindAktivStatus -->
+  <svui-form-control [label]="'kind.kindAktivStatus' | transloco"
+                     [viewValue]="'EntityAktivStatus.' + form.group.value.kindAktivStatus | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.controlAt('kindAktivStatus')"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+    >
+      @for (status of kindAktivStati; track status) {
+        <ng-option [value]="status">
+          {{ 'EntityAktivStatus.' + status | transloco }}
+        </ng-option>
+
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- ADRESSE -->
+  <h2 svuiHeading="formSection">{{ 'adresse.title' | transloco }}</h2>
+  <feat-adresse svuiFormFullWidth
+                [form]="form.adresseForm"
+                [mode]="dossierStore.detailMode()"
+                [isEscadaObject]="isEscadaObject()"/>
+
+  <!--Letzter Escada Import-->
+  @if (isEscadaObject()) {
+    <div>
+      <p>{{ 'global.escada.import.latest' | transloco: {date: getDateLatestImportIfEscadaObject() | date} }}</p>
+    </div>
+  }
+
+  <!--messages for whole form -->
+  <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+
+  <!-- Kind Duplikate -->
+  @if (kindTriedToSave()) {
+    <div class="svui_form__message" svuiFormFullWidth>
+      <ngb-alert type="warning" [dismissible]="false">
+        <p> {{ 'kind.detail.duplikat.warnung.title' | transloco }} </p>
+        <ul>
+          @for (kindId of kindIdsOfDuplicates(); track $index) {
+            <li><a href="{{navigationService.getLinkToDossier(kindId)}}" target="_blank">
+              {{ 'kind.detail.duplikat.warnung.entry' | transloco: {index: $index + 1} }}
+            </a></li>
+          }
+        </ul>
+        <p>
+          <input svuiCheckbox
+                 type="checkbox"
+                 [(ngModel)]="markDuplicatesAsFalsePositives"
+                 [ngModelOptions]="{standalone: true}"/>
+          {{ 'kind.detail.duplikat.warnung.consequence' | transloco }}
+        </p>
+      </ngb-alert>
+    </div>
+  }
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="dossierStore.detailMode()"
+    [isCreate]="isNew"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="canEditKind()"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+    [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"/>
+
+</form>

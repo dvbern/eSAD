@@ -1,0 +1,141 @@
+<h3>Heading 1</h3>
+<h1 style="display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 2rem;">
+  <span>Text</span>
+  @for (useCase of useCases; track useCase) {
+    <svui-icon [useCase]="useCase"></svui-icon>
+  }
+</h1>
+
+<h3>Different Color</h3>
+<h1 style="display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 2rem; color: #83b380">
+  <span>Text</span>
+  @for (useCase of useCases; track useCase) {
+    <svui-icon [useCase]="useCase"></svui-icon>
+  }
+</h1>
+
+<h3>Paragraph</h3>
+<p style="display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 2rem;">
+  <span>Text</span>
+  @for (useCase of useCases; track useCase) {
+    <svui-icon [useCase]="useCase"></svui-icon>
+  }
+</p>
+
+<h3>IconOnly Buttons</h3>
+<button svuiIconOnlyButton="primary"
+        type="button"
+        style="margin-bottom: 1rem;"
+        [tooltip]="'global.tooltip.icon.neu' | transloco"
+        [icon]="'neu'"
+        [working]="true">
+</button>
+<div style="display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 2rem;">
+  <span>Text</span>
+  @for (useCase of useCases; track useCase) {
+    <button svuiIconOnlyButton="primary"
+            type="button"
+            [tooltip]="'global.tooltip.icon.' + useCase | transloco"
+            [icon]="useCase">
+    </button>
+  }
+</div>
+
+<h3>File Upload Buttons</h3>
+<div style="display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 2rem;">
+  <button svuiIconOnlyButton="primary"
+          type="button"
+          [tooltip]="'global.tooltip.upload' | transloco"
+          [icon]="'upload'">
+  </button>
+  <button svuiIconOnlyButton="success"
+          type="button"
+          [tooltip]="'global.tooltip.ckeck' | transloco"
+          [icon]="'check'">
+  </button>
+</div>
+<h3>Badge Icon Buttons</h3>
+<div style="display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 2rem;">
+  <button svuiIconOnlyButton="primary"
+          type="button"
+          [tooltip]="'global.tooltip.icon.filter' | transloco"
+          [icon]="'filter'">
+  </button>
+  <button svuiIconOnlyButton="primary"
+          type="button"
+          [tooltip]="'global.tooltip.icon.filter' | transloco"
+          [icon]="'filter'"
+          [badgeContent]="2">
+  </button>
+</div>
+
+
+<h3>Text Buttons</h3>
+<div style="display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 2rem;">
+  <button svuiButton="primary" type="button" [icon]="'neu'" [working]="true">working</button>
+  <button svuiButton="primary" type="button">text only</button>
+</div>
+<div style="display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 2rem;">
+  <span>Text</span>
+  @for (useCase of useCases; track useCase) {
+    <button svuiButton="primary" type="button" [icon]="useCase">{{ useCase }}</button>
+  }
+</div>
+
+
+<hr class="my-4"/>
+<h2>Buttons</h2>
+
+<h4>Text</h4>
+<div class="d-flex gap-2">
+  <button type="button" svuiButton="primary">primary</button>
+  <button type="button" svuiButton="secondary">secondary</button>
+  <button type="button" svuiButton="tertiary">tertiary</button>
+  <button type="button" svuiButton="success">success</button>
+  <button type="button" svuiButton="outline-primary">outline-primary</button>
+</div>
+
+<h4>Icon</h4>
+<div class="d-flex gap-2">
+  <button svuiIconOnlyButton="primary"
+          type="button"
+          [tooltip]="'global.tooltip.hinzufuegen' | transloco"
+          [icon]="'hinzufuegen'">
+  </button>
+  <button svuiIconOnlyButton="secondary"
+          type="button"
+          [tooltip]="'global.tooltip.hinzufuegen' | transloco"
+          [icon]="'hinzufuegen'">
+  </button>
+  <button svuiIconOnlyButton="success"
+          type="button"
+          [tooltip]="'global.tooltip.check' | transloco"
+          [icon]="'check'">
+  </button>
+</div>
+
+<h4>Icon with Badge</h4>
+<div class="d-flex gap-2">
+  <button svuiIconOnlyButton="secondary"
+          type="button"
+          [tooltip]="'global.tooltip.aufgaben' | transloco"
+          [icon]="'aufgaben'"
+          [badgeContent]="3">
+  </button>
+  <button svuiIconOnlyButton="secondary"
+          type="button"
+          [tooltip]="'global.tooltip.filter' | transloco"
+          [icon]="'filter'"
+          [badgeContent]="3">
+  </button>
+</div>
+
+<h4>Bootstrap</h4>
+<div>
+  <div class="d-flex gap-2">
+    <h6 svuiHeading="list">Bootstrap Buttons</h6>
+    @for (b of buttons; track b) {
+      <button type="button" class="btn-{{ b }} btn">btn-{{ b }}</button>
+    }
+  </div>
+</div>

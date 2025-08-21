@@ -1,0 +1,26 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="1746517575130-1">
+    <modifyDataType columnName="anderesbemerkung" newDataType="varchar(2000)" tableName="untersuchungmassnahmen"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1746517575130-2">
+    <modifyDataType columnName="anderesbemerkung" newDataType="varchar(2000)" tableName="untersuchungmassnahmen_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1746517575130-3">
+    <modifyDataType columnName="bemerkungen" newDataType="varchar(2000)" tableName="untersuchungmassnahmen"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1746517575130-4">
+    <modifyDataType columnName="bemerkungen" newDataType="varchar(2000)" tableName="untersuchungmassnahmen_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1746517575130-5">
+    <modifyDataType columnName="bereitsbehandeltanderesbemerkung" newDataType="varchar(2000)" tableName="untersuchungmassnahmen"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1746517575130-6">
+    <modifyDataType columnName="bereitsbehandeltanderesbemerkung" newDataType="varchar(2000)" tableName="untersuchungmassnahmen_aud"/>
+  </changeSet>
+  <changeSet author="hefr" id="1746517575130-7">
+    <sql>
+      update anlassconfig set sehenmassnahmen = 'NOT_VISIBLE' where anlasstyp not in ('KINDERGARTEN', 'VERTRAUENSARZT');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

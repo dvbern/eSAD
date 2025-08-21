@@ -1,0 +1,15 @@
+<feat-page heading="" [backLink]="undefined">
+  <svui-dashboard>
+
+    <feat-anlass-termine termine/>
+
+    <feat-aufgaben-sidebar aufgaben
+                           [aufgabenList]="dashboardStore.aufgabenList()"
+                           [loading]="dashboardStore.loader.isLoading()"
+                           [routingPrefix]="'/' + Path.AUFGABEN"/>
+
+	  <feat-dashboard-letze-anlaesse recent/>
+
+	  <feat-dashboard-letze-kinder kinder/>
+  </svui-dashboard>
+</feat-page>

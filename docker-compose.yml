@@ -1,0 +1,37 @@
+services:
+  esc-keycloak:
+    image: docker-registry.dvbern.ch/quay/keycloak/keycloak:26.1.2
+    ports:
+      - "8989:8443"
+    volumes:
+      # - /Users/dvbern/IdeaProjects/esc/esc/api/src/main/resources:/opt/keycloak/data/import
+      - "./developer-local-settings/config/keycloakrealm/:/opt/keycloak/data/import"
+      - "./developer-local-settings/config/certs/:/opt/certs/"
+    env_file:
+      - ./api/.env
+    command: >
+      start-dev --import-realm
+
+
+  esc-oauthProxy:
+    image: docker-registry.dvbern.ch/quay/oauth2-proxy/oauth2-proxy:v7.7.1
+    #  entrypoint: "sh"
+    command: --config /oauth2-proxy.cfg
+    volumes:
+      - "./developer-local-settings/config/oauthproxy/oauth2-proxy.cfg:/oauth2-proxy.cfg"
+      - "./developer-local-settings/config/certs/:/var/run/secrets/serving-cert"
+    ports:
+      - "4443:443"
+    restart: unless-stopped
+    extra_hosts:
+      - "local-esc-bs.localhost:host-gateway"
+    env_file:
+      - ./api/.env
+    depends_on:
+      - esc-keycloak
+      #    condition: service_healthy
+## For debugging
+#  esc-debug-image:
+#    image: docker-registry.dvbern.ch/devops/docker/tools/openshift-workspace:latest
+#    extra_hosts:
+#      - "local-esc-bs.localhost:host-gateway"

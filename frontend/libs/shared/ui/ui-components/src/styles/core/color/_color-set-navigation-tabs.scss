@@ -1,0 +1,9 @@
+// Tabs Navigation Color Set
+
+@use './definition/color-definition';
+@use './color-set-primary';
+
+$background: color-definition.$grey-200;
+$text: color-definition.$grey-500;
+$background-active: color-set-primary.$color;
+$text-active: color-set-primary.$color-contrast;

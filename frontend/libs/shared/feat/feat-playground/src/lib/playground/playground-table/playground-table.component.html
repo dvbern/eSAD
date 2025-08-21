@@ -1,0 +1,521 @@
+<form [formGroup]="form">
+
+  <!-- NORMALE TABELLE -->
+  <h3 class="mt-4">Normale Tabelle</h3>
+  <svui-card [innerSpacing]="'topBottom'">
+    <table
+      svuiTable
+      [loading]="true"
+      [totalRows]="itemTable.filteredListSize()"
+      (pageChanged)="itemTable.onPageChanged($event)"
+      [pagination]="itemTable.pagination()"
+    >
+      <!-- col widths -->
+      <colgroup>
+        <col svuiColWidth colWidth="checkbox">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="select-medium">
+        <col svuiColWidth colWidth="options">
+        <col svuiColWidth colWidth="options">
+        <col svuiColWidth colWidth="options">
+      </colgroup>
+      <thead>
+      <!-- SORTABLE HEADER -->
+      <tr>
+        <th scope="col"></th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('name')"
+          (sort)="itemTable.onColSort($event, 'name')"
+        >
+          Name
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('adresse.strasse')"
+          (sort)="itemTable.onColSort($event, 'adresse.strasse')"
+        >
+          Strasse
+        </th>
+        <th scope="col">Schulstufe</th>
+        <th scope="col">Impfausweis</th>
+        <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
+        <th scope="col"></th>
+      </tr>
+      <!-- FILTERS -->
+      <tr>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'$auswählen'">
+            <input type="checkbox" svuiCheckbox/>
+          </svui-table-filter>
+        </th>
+
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'Schule'">
+            <input svuiTextInput value="Suchen" [formControl]="tableFilterForm.group.controls.strasse"/>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'Strasse'">
+            <input svuiTextInput value="Suchen" [formControl]="tableFilterForm.group.controls.strasse"/>
+          </svui-table-filter>
+        </th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+      <!-- BODY -->
+        @for (item of itemTable.displayedList(); track item) {
+          <tr>
+            <td>
+              <svui-table-control [columnHeader]="'Auswählen'" [rowHeader]="item.name ?? ''">
+                <input type="checkbox" svuiCheckbox/>
+              </svui-table-control>
+            </td>
+            <td>
+              <svui-table-link
+                type="text"
+                [myRouterLink]="[Path.RELATIVE_ONE_UP, Path.TYPORGRAPHY]">
+                {{ item.name }}
+              </svui-table-link>
+            </td>
+            <td>
+              {{ item.adresse?.strasse }}
+            </td>
+            <td>
+              <svui-table-control [columnHeader]="'Schulstufe'" [rowHeader]="item.name ?? ''">
+                <ng-select
+                  svuiNgSelect
+                  bindLabel='dummy'
+                  appendTo="body"
+                  formControlName="test"
+                  [placeholder]="'global.select.bitte-auswaehlen' | transloco">
+                  <ng-option value="1">Eins</ng-option>
+                  <ng-option value="2">Zwei</ng-option>
+
+                </ng-select>
+              </svui-table-control>
+            </td>
+
+            <td>
+
+              @if (item.fileUploaded) {
+                <button svuiIconOnlyButton="success"
+                        type="button"
+                        [tooltip]="'global.tooltip.file.uploaded' | transloco"
+                        [icon]="'check'">
+                </button>
+              } @else {
+                <button svuiIconOnlyButton="primary"
+                        type="button"
+                        [tooltip]="'global.tooltip.icon.herunterladen' | transloco"
+                        [icon]="'herunterladen'"
+                        (click)="doClickFile(item)">
+                </button>
+              }
+            </td>
+            <td>
+              <svui-collapsible-menu
+                [loading]="false" label="{{ 'global.actionmenu.tooltip' | transloco }}">
+                <button ngbDropdownItem (click)="alert('hallo')">Hallo Alert</button>
+                <a ngbDropdownItem routerLink="/admin">Admin Routerlink</a>
+                <button ngbDropdownItem (click)="doClick(item)">FIXME: button content</button>
+              </svui-collapsible-menu>
+            </td>
+            <td>
+              <svui-table-link
+                type="icon"
+                [myRouterLink]="[Path.RELATIVE_ONE_UP, Path.TYPORGRAPHY]"/>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </svui-card>
+
+
+  <!-- LEER -->
+  <h3 class="mt-4">Leere Liste</h3>
+  <svui-card [innerSpacing]="'topBottom'">
+    <table
+      svuiTable
+      [loading]="false">
+      <!-- col widths -->
+      <colgroup>
+        <col svuiColWidth colWidth="checkbox">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="select-medium">
+        <col svuiColWidth colWidth="options">
+        <col svuiColWidth colWidth="options">
+      </colgroup>
+      <thead>
+      <!-- SORTABLE HEADER -->
+      <tr>
+        <th scope="col"></th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('name')"
+          (sort)="itemTable.onColSort($event, 'name')"
+        >
+          Name
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('adresse.strasse')"
+          (sort)="itemTable.onColSort($event, 'adresse.strasse')"
+        >
+          Strasse
+        </th>
+        <th scope="col">Schulstufe</th>
+        <th scope="col">Impfausweis</th>
+        <th scope="col">Aktionen</th>
+      </tr>
+      <!-- FILTERS -->
+      <tr>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'$auswählen'">
+            <input type="checkbox" svuiCheckbox/>
+          </svui-table-filter>
+        </th>
+
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'Schule'">
+            <input svuiTextInput value="Suchen" [formControl]="tableFilterForm.group.controls.strasse"/>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'Strasse'">
+            <input svuiTextInput value="Suchen" [formControl]="tableFilterForm.group.controls.strasse"/>
+          </svui-table-filter>
+        </th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr svui-empty-table-message [message]="'Leere Liste'"></tr>
+      </tbody>
+    </table>
+  </svui-card>
+
+
+  <!-- SCHMALE TABELLE -->
+  <h3 class="mt-4">Inhalt schmaler als der Platz</h3>
+  <svui-card [innerSpacing]="'topBottom'">
+    <table
+      svuiTable
+      [loading]="true"
+      [totalRows]="itemTable.filteredListSize()"
+      (pageChanged)="itemTable.onPageChanged($event)"
+      [pagination]="itemTable.pagination()"
+    >
+      <!-- col widths -->
+      <colgroup>
+        <col svuiColWidth colWidth="checkbox">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="options">
+      </colgroup>
+      <thead>
+      <!-- SORTABLE HEADER -->
+      <tr>
+        <th scope="col"></th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('name')"
+          (sort)="itemTable.onColSort($event, 'name')"
+        >
+          Name
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('name')"
+          (sort)="itemTable.onColSort($event, 'name')"
+        >
+          Vorname
+        </th>
+        <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
+      </tr>
+      <!-- FILTERS -->
+      <tr>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'$auswählen'">
+            <input type="checkbox" svuiCheckbox/>
+          </svui-table-filter>
+        </th>
+
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'Schule'">
+            <input svuiTextInput value="Suchen" [formControl]="tableFilterForm.group.controls.strasse"/>
+          </svui-table-filter>
+        </th>
+
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'Schule'">
+            <input svuiTextInput value="Suchen" [formControl]="tableFilterForm.group.controls.strasse"/>
+          </svui-table-filter>
+        </th>
+
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+      <!-- BODY -->
+        @for (item of itemTable.displayedList(); track item) {
+          <tr>
+            <td>
+              <svui-table-control [columnHeader]="'Auswählen'" [rowHeader]="item.name ?? ''">
+                <input type="checkbox" svuiCheckbox/>
+              </svui-table-control>
+            </td>
+            <td>
+              <svui-table-link
+                type="text"
+                [myRouterLink]="[Path.RELATIVE_ONE_UP, Path.TYPORGRAPHY]">
+                {{ item.name }}
+              </svui-table-link>
+            </td>
+            <td>
+              {{ item.name }}
+            </td>
+            <td>
+              <svui-collapsible-menu
+                [loading]="false" label="{{ 'global.actionmenu.tooltip' | transloco }}">
+                <button ngbDropdownItem (click)="alert('hallo')">Hallo Alert</button>
+                <a ngbDropdownItem routerLink="/admin">Admin Routerlink</a>
+                <button ngbDropdownItem (click)="doClick(item)">FIXME: button content</button>
+              </svui-collapsible-menu>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </svui-card>
+
+
+  <!-- BREITE TABELLE -->
+  <h3 class="mt-4">Inhalt breiter als der Platz</h3>
+  <svui-card [innerSpacing]="'topBottom'">
+    <table
+      svuiTable
+      [loading]="true"
+      [totalRows]="itemTable.filteredListSize()"
+      (pageChanged)="itemTable.onPageChanged($event)"
+      [pagination]="itemTable.pagination()"
+    >
+      <!-- col widths -->
+      <colgroup>
+        <col svuiColWidth colWidth="checkbox">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="select-medium">
+        <col svuiColWidth colWidth="options">
+        <col svuiColWidth colWidth="options">
+        <col svuiColWidth colWidth="options">
+      </colgroup>
+      <thead>
+      <!-- SORTABLE HEADER -->
+      <tr>
+        <th scope="col"></th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('name')"
+          (sort)="itemTable.onColSort($event, 'name')"
+        >
+          Name
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('name')"
+          (sort)="itemTable.onColSort($event, 'name')"
+        >
+          Name
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('name')"
+          (sort)="itemTable.onColSort($event, 'name')"
+        >
+          Name
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('name')"
+          (sort)="itemTable.onColSort($event, 'name')"
+        >
+          Name
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('name')"
+          (sort)="itemTable.onColSort($event, 'name')"
+        >
+          Name
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('adresse.strasse')"
+          (sort)="itemTable.onColSort($event, 'adresse.strasse')"
+        >
+          Strasse
+        </th>
+        <th scope="col">Schulstufe</th>
+        <th scope="col">Impfausweis</th>
+        <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
+        <th scope="col"></th>
+      </tr>
+      <!-- FILTERS -->
+      <tr>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'$auswählen'">
+            <input type="checkbox" svuiCheckbox/>
+          </svui-table-filter>
+        </th>
+
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'Schule'">
+            <input svuiTextInput value="Suchen" [formControl]="tableFilterForm.group.controls.strasse"/>
+          </svui-table-filter>
+        </th>
+
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'Schule'">
+            <input svuiTextInput value="Suchen" [formControl]="tableFilterForm.group.controls.strasse"/>
+          </svui-table-filter>
+        </th>
+
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'Schule'">
+            <input svuiTextInput value="Suchen" [formControl]="tableFilterForm.group.controls.strasse"/>
+          </svui-table-filter>
+        </th>
+
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'Schule'">
+            <input svuiTextInput value="Suchen" [formControl]="tableFilterForm.group.controls.strasse"/>
+          </svui-table-filter>
+        </th>
+
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'Schule'">
+            <input svuiTextInput value="Suchen" [formControl]="tableFilterForm.group.controls.strasse"/>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'Strasse'">
+            <input svuiTextInput value="Suchen" [formControl]="tableFilterForm.group.controls.strasse"/>
+          </svui-table-filter>
+        </th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+      <!-- BODY -->
+        @for (item of itemTable.displayedList(); track item) {
+          <tr>
+            <td>
+              <svui-table-control [columnHeader]="'Auswählen'" [rowHeader]="item.name ?? ''">
+                <input type="checkbox" svuiCheckbox/>
+              </svui-table-control>
+            </td>
+            <td>
+              <svui-table-link
+                type="text"
+                [myRouterLink]="[Path.RELATIVE_ONE_UP, Path.TYPORGRAPHY]">
+                {{ item.name }}
+              </svui-table-link>
+            </td>
+            <td>
+              {{ item.name }}
+            </td>
+            <td>
+              {{ item.name }}{{ item.name }}
+              & {{ item.name }}{{ item.name }}{{ item.name }}{{ item.name }}{{ item.name }}{{ item.name }}{{ item.name }}{{ item.name }}{{ item.name }}
+            </td>
+            <td>
+              {{ item.name }}
+            </td>
+            <td>
+              {{ item.name }}
+            </td>
+            <td>
+              {{ item.adresse?.strasse }}
+            </td>
+            <td>
+              <svui-table-control [columnHeader]="'Schulstufe'" [rowHeader]="item.name ?? ''">
+                <ng-select
+                  svuiNgSelect
+                  bindLabel='dummy'
+                  appendTo="body"
+                  formControlName="test"
+                  [placeholder]="'global.select.bitte-auswaehlen' | transloco">
+                  <ng-option value="1">Eins</ng-option>
+                  <ng-option value="2">Zwei</ng-option>
+
+                </ng-select>
+              </svui-table-control>
+            </td>
+
+            <td>
+
+              @if (item.fileUploaded) {
+                <button svuiIconOnlyButton="success"
+                        type="button"
+                        [tooltip]="'global.tooltip.file.uploaded' | transloco"
+                        [icon]="'check'">
+                </button>
+              } @else {
+                <button svuiIconOnlyButton="primary"
+                        type="button"
+                        [tooltip]="'global.tooltip.icon.herunterladen' | transloco "
+                        [icon]="'herunterladen'"
+                        (click)="doClickFile(item)">
+                </button>
+              }
+            </td>
+            <td>
+              <svui-collapsible-menu
+                [loading]="false" label="{{ 'global.actionmenu.tooltip' | transloco }}">
+                <button ngbDropdownItem (click)="alert('hallo')">Hallo Alert</button>
+                <a ngbDropdownItem routerLink="/admin">Admin Routerlink</a>
+                <button ngbDropdownItem (click)="doClick(item)">FIXME: button content</button>
+              </svui-collapsible-menu>
+            </td>
+            <td>
+              <svui-table-link
+                type="icon"
+                [myRouterLink]="[Path.RELATIVE_ONE_UP, Path.TYPORGRAPHY]"/>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </svui-card>
+
+
+</form>

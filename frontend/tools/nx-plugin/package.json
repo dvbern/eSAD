@@ -1,0 +1,15 @@
+{
+  "name": "@dvb/nx-plugin",
+  "version": "0.0.1",
+  "dependencies": {
+    "tslib": "^2.3.0",
+    "@nx/angular": "20.6.3",
+    "@nx/devkit": "20.6.3",
+    "prompts": "2.4.2"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts",
+  "private": true,
+  "generators": "./generators.json"
+}

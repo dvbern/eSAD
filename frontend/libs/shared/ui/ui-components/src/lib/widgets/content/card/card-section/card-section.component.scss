@@ -1,0 +1,11 @@
+@use '../../../../../styles/core/border';
+@use '../../../../../styles/core/spacing';
+
+:host {
+  display: block;
+  padding: spacing.$card-inner;
+
+  svui-card-section + & {
+    border-top: border.$default;
+  }
+}

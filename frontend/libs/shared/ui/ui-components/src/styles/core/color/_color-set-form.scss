@@ -1,0 +1,14 @@
+// Form Color Set
+
+@use './definition/color-definition';
+
+$text: color-definition.$text;
+$text-disabled: color-definition.$text-disabled;
+$text-inactive: color-definition.$text-inactive;
+$background: color-definition.$background-widget;
+$background-active: color-definition.$background-active;
+$background-disabled: color-definition.$background-disabled;
+$border: color-definition.$border-widget;
+$border-active: color-definition.$border-active;
+$marked-option-bg: color-definition.$background-dropdown;
+$placeholder: $text-inactive;

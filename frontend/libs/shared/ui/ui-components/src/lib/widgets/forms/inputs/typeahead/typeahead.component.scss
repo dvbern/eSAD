@@ -1,0 +1,8 @@
+@use '../../../../../styles/core/size';
+
+:host {
+  & ::ng-deep ~ .dropdown-menu {
+    max-height: size.$typeahead-menu-height;
+    overflow-y: scroll;
+  }
+}

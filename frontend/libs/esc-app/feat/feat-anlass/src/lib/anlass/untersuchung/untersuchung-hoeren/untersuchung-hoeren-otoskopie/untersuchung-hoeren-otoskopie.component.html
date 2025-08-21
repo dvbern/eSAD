@@ -1,0 +1,69 @@
+<form svuiFormLayout
+	  [formType]="'kacheln'"
+	  [mode]="'edit'"
+	  [formGroup]="form.group"
+	  (ngSubmit)="submitIfValid()">
+
+	<!-- Otoskopie -->
+	@if (anlassStore.selectedEntity()?.anlassConfig?.hoerenOtoskopie !== RequirementSetting.NOT_VISIBLE) {
+		<!-- Otoskopie Rechts -->
+		<svui-kachel-form-section [heading]=" 'untersuchung.tab.hoeren.otoskopie.rechts' | transloco">
+			@for (angaben of getOtoskopieRechtsArray().controls; track $index) {
+				<svui-kachel-control [label]="'OtoskopieResultat.' + angaben.controls.resultat.value | transloco">
+					<input svuiCheckbox
+						   type="checkbox"
+						   name="angaben"
+						   [formControl]="angaben.controls.isChecked"/>
+				</svui-kachel-control>
+			}
+		</svui-kachel-form-section>
+		@if (form.isHoerenOtroskopieRechtsResultatAndereChecked()) {
+			<svui-form-control
+					class="linksrechts"
+					[label]="'untersuchung.tab.hoeren.otoskopie.andere' | transloco"
+					[viewValue]="''">
+				<textarea svuiTextarea [formControl]="form.group.controls.otoskopieRechtsResultatAndere"></textarea>
+			</svui-form-control>
+		}
+
+		<!-- Otoskopie Links -->
+		<svui-kachel-form-section [heading]=" 'untersuchung.tab.hoeren.otoskopie.links' | transloco">
+			@for (angaben of getOtoskopieLinksArray().controls; track $index) {
+				<svui-kachel-control [label]="'OtoskopieResultat.' + angaben.controls.resultat.value | transloco">
+					<input svuiCheckbox
+						   type="checkbox"
+						   name="angaben"
+						   [formControl]="angaben.controls.isChecked"/>
+				</svui-kachel-control>
+			}
+		</svui-kachel-form-section>
+		@if (form.isHoerenOtroskopieLinksResultatAndereChecked()) {
+			<svui-form-control
+					[label]="'untersuchung.tab.hoeren.otoskopie.andere' | transloco"
+					[viewValue]="''">
+				<textarea svuiTextarea [formControl]="form.group.controls.otoskopieLinksResultatAndere"></textarea>
+			</svui-form-control>
+		}
+	}
+
+	<!-- Bemerkung -->
+	@if (anlassStore.selectedEntity()?.anlassConfig?.hoerenOtoskopieBemerkungen !== RequirementSetting.NOT_VISIBLE) {
+		<svui-title [context]="'formSection'"
+					class="mb-3">{{ 'untersuchung.tab.sehen.bemerkung' | transloco }}
+		</svui-title>
+		<svui-form-control
+				[label]="'untersuchung.tab.sehen.bemerkung' | transloco"
+				[topLabelVisibility]="'hidden'"
+				[viewValue]="form.group.controls.bemerkungen.value">
+			<textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
+		</svui-form-control>
+	}
+
+	<!-- Save / Cancel Buttons -->
+	@if (canEdit()) {
+		<svui-save-cancel-buttons
+				[saving]="false"
+				[canEdit]="true"
+				(cancelClicked)="abbrechen()"/>
+	}
+</form>

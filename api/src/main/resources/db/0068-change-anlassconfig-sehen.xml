@@ -1,0 +1,10 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="1751289232875-1">
+    <sql>
+      UPDATE anlassconfig
+      SET sehenstereotest = 'NOT_VISIBLE'
+      where anlasstyp = 'KLASSE_4' OR anlasstyp = 'KLASSE_8' OR anlasstyp = 'KLASSE_9';
+    </sql>
+  </changeSet>
+</databaseChangeLog>

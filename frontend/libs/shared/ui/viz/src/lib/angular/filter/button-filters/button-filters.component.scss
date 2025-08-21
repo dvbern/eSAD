@@ -1,0 +1,13 @@
+:host {
+	.buttons {
+
+		button {
+			margin-right: 1rem;
+		}
+
+		button:last-child {
+			margin-right: 0;
+		}
+
+	}
+}

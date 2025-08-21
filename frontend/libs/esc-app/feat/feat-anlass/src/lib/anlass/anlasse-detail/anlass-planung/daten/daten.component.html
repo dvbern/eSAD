@@ -1,0 +1,66 @@
+<div class="d-flex gap-3 justify-content-evenly flex-column flex-lg-row">
+  <svui-card class="flex-grow-1">
+    <!-- SUMMARY Anlass -->
+    <svui-card-header [heading]="'anlass.summary.daten' | transloco"/>
+    <div class=" d-flex gap-3 flex-column">
+      <svui-anlass-summary-layout [arzt]="store.selectedEntity()?.data?.arzt?.fullName"
+                                  [mpa]="store.selectedEntity()?.data?.mpa?.fullName"
+                                  [uhrzeitVon]="store.selectedEntity()?.data?.zeitVon"
+                                  [uhrzeitBis]="store.selectedEntity()?.data?.zeitBis"
+                                  [datum]="fromISODateString(store.selectedEntity()?.data?.datum)"/>
+    </div>
+
+    <!-- SUMMARY Sprachen -->
+    @if (anlassKinderStore.getSprachenMap().size) {
+      <svui-card-header [heading]="'Sprachen'"/>
+      <div class=" d-flex gap-3 flex-column">
+        <svui-summary-values [map]="anlassKinderStore.getSprachenMap()"/>
+      </div>
+    }
+  </svui-card>
+
+  <!-- Schulinformationen-->
+  @if (store.schulInformationen().length > 0) {
+    <svui-card class="mt-0 flex-grow-1">
+      <p class="mb-0">{{ 'anlass.summary.schulinformationen' | transloco }}</p>
+      <ul class="mt-0">
+        @for (schulInfo of store.schulInformationen(); track schulInfo) {
+          <li>
+            <div class="fw-bold">
+              <span>{{ schulInfo.schuleOptionJson.bezeichnung + ' (' }}</span>
+              @for (klasseLehrpersonen of schulInfo.klasseLehrpersonenOptions; track klasseLehrpersonen) {
+                <span>{{ klasseLehrpersonen.klasseOptionJson.bezeichnung }}</span>
+                @if (klasseLehrpersonen
+                !== schulInfo.klasseLehrpersonenOptions[schulInfo.klasseLehrpersonenOptions.length - 1]) {
+                  <span>, </span>
+                }
+              }
+              <span>)</span>
+            </div>
+            @if (!store.isAbgeschlossen()) {
+              <svui-info-item [label]="'anlass.summary.lehrpersonen' | transloco">
+                @for (klasseLehrpersonen of schulInfo.klasseLehrpersonenOptions; track klasseLehrpersonen) {
+                  @for (lehrperson of klasseLehrpersonen.lehrpersonOptions; track lehrperson) {
+                    <span>{{ lehrperson.fullName }}</span>
+                    @if (klasseLehrpersonen
+                    !== schulInfo.klasseLehrpersonenOptions[schulInfo.klasseLehrpersonenOptions.length - 1] ||
+                    lehrperson !== klasseLehrpersonen.lehrpersonOptions[klasseLehrpersonen.lehrpersonOptions.length
+                    - 1]) {
+                      <span>, </span>
+                    }
+                  }
+                }
+              </svui-info-item>
+            }
+          </li>
+        }
+      </ul>
+    </svui-card>
+  }
+</div>
+
+<!-- INFOTEXTE -->
+<svui-card class="mt-3">
+  <svui-card-header [heading]="'anlass.summary.informationen' | transloco"/>
+  <feat-anlass-bemerkungen/>
+</svui-card>

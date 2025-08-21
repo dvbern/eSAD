@@ -1,0 +1,58 @@
+<div svuiFormLayout [mode]="mode()">
+  <!-- Land -->
+  @if (form().withLand) {
+    <svui-form-control [label]="'adresse.land' | transloco"
+                       [viewValue]="form().group.getRawValue().land ? (('Land.' + form().group.getRawValue().land | transloco)) : undefined"
+                       [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+      <ng-select
+        svuiNgSelect
+        bindLabel="dummy"
+        appendTo="body"
+        [formControl]="form().group.controls.land"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      >
+        @for (land of nationalitaeten; track land) {
+          <ng-option [value]="land">
+            {{ 'Land.' + land | transloco }}
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+  }
+
+  <!-- Strasse & Nr -->
+  <svui-form-control [label]="'adresse.strasseUndNr' | transloco"
+                     [viewValue]="form().group.getRawValue().strasseUndNr"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <input svuiTextInput
+           [formControl]="form().group.controls.strasseUndNr"
+    />
+  </svui-form-control>
+
+  <!-- Adresszusatz -->
+  <svui-form-control [label]="'adresse.adresseZusatz' | transloco"
+                     [viewValue]="form().group.getRawValue().adresseZusatz"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <input svuiTextInput
+           [formControl]="form().group.controls.adresseZusatz"
+    />
+  </svui-form-control>
+
+  <!-- Plz -->
+  <svui-form-control [label]="'adresse.plz' | transloco" size="half"
+                     [viewValue]="form().group.getRawValue().plz"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <input svuiTextInput
+           [formControl]="form().group.controls.plz"
+    />
+  </svui-form-control>
+
+  <!-- Ort -->
+  <svui-form-control [label]="'adresse.ort' | transloco" size="half"
+                     [viewValue]="form().group.getRawValue().ort"
+                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+    <input svuiTextInput
+           [formControl]="form().group.controls.ort"
+    />
+  </svui-form-control>
+</div>

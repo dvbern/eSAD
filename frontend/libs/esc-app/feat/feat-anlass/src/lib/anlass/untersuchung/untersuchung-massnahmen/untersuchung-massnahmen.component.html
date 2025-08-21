@@ -1,0 +1,278 @@
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabMassnahmen) {
+
+  <form svuiFormLayout
+        [formType]="'kacheln'"
+        [mode]="'edit'"
+        [formGroup]="form.group"
+        (ngSubmit)="submitIfValid()">
+
+    <svui-card-in-card class="mb-3">
+      <feat-untersuchung-pathologische-befunde/>
+    </svui-card-in-card>
+
+    <svui-card-in-card class="mb-3">
+      <!-- Massnahmen -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenKeine
+      || anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenBeratungMpa
+      || anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenAnderes) {
+        <svui-kachel-form-section [heading]=" 'untersuchung.tab.massnahmen.massnahmen' | transloco">
+
+          @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenKeine) {
+            <svui-kachel-control [label]="'untersuchung.tab.massnahmen.keine.massnahmen' |transloco">
+              <input svuiCheckbox
+                     type="checkbox"
+                     name="keineMassnahmen"
+                     [formControl]="form.group.controls.keineMassnahmen"
+              />
+            </svui-kachel-control>
+          }
+
+          @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenBeratungMpa) {
+            <svui-kachel-control [label]="'untersuchung.tab.massnahmen.beratung.mpa' |transloco">
+              <input svuiCheckbox
+                     type="checkbox"
+                     name="keineMassnahmen"
+                     [formControl]="form.group.controls.beratungMPA"
+              />
+            </svui-kachel-control>
+          }
+
+          @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenBeratungSchulAerztin) {
+            <svui-kachel-control [label]="'untersuchung.tab.massnahmen.beratung.schulaerztin' |transloco">
+              <input svuiCheckbox
+                     type="checkbox"
+                     name="keineMassnahmen"
+                     [formControl]="form.group.controls.beratungSchulAerztin"
+              />
+            </svui-kachel-control>
+          }
+
+          @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenAnderes) {
+            <svui-kachel-control [label]="'untersuchung.tab.massnahmen.anderes' |transloco">
+              <input svuiCheckbox
+                     type="checkbox"
+                     name="keineMassnahmen"
+                     [formControl]="form.group.controls.anderes"
+              />
+            </svui-kachel-control>
+          }
+        </svui-kachel-form-section>
+
+        @if (form.group.controls.anderes.value) {
+          <svui-form-control [label]="'untersuchung.tab.massnahmen.anderes.bemerkung' | transloco"
+                             [viewValue]="form.group.value.anderesBemerkung">
+        <textarea svuiTextarea
+                  [formControl]="form.group.controls.anderesBemerkung"></textarea>
+          </svui-form-control>
+        }
+      }
+
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenBereitsBehandelt) {
+        <svui-kachel-form-section [heading]=" 'untersuchung.tab.massnahmen.bereits.behandelt' | transloco">
+
+          <svui-kachel-control [label]="'untersuchung.tab.sehen.massnahmen.bereits.behandelt.sehen' |transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="bereitsBehandelt"
+                   [formControl]="form.group.controls.bereitsBehandeltSehen"
+            />
+          </svui-kachel-control>
+
+          <svui-kachel-control [label]="'untersuchung.tab.sehen.massnahmen.bereits.behandelt.hoeren' |transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="bereitsBehandelt"
+                   [formControl]="form.group.controls.bereitsBehandeltHoeren"
+            />
+          </svui-kachel-control>
+
+          <svui-kachel-control [label]="'untersuchung.tab.sehen.massnahmen.bereits.behandelt.groesse.gewicht' |transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="bereitsBehandelt"
+                   [formControl]="form.group.controls.bereitsBehandeltGroesseGewicht"
+            />
+          </svui-kachel-control>
+
+          <svui-kachel-control [label]="'untersuchung.tab.sehen.massnahmen.bereits.behandelt.sprache' |transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="bereitsBehandelt"
+                   [formControl]="form.group.controls.bereitsBehandeltSprache"
+            />
+          </svui-kachel-control>
+
+          <svui-kachel-control [label]="'untersuchung.tab.sehen.massnahmen.bereits.behandelt.motorik' |transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="bereitsBehandelt"
+                   [formControl]="form.group.controls.bereitsBehandeltMotorik"
+            />
+          </svui-kachel-control>
+
+
+          <svui-kachel-control [label]="'untersuchung.tab.sehen.massnahmen.bereits.behandelt.anderes' |transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="bereitsBehandelt"
+                   [formControl]="form.group.controls.bereitsBehandeltAnderes"
+            />
+          </svui-kachel-control>
+        </svui-kachel-form-section>
+
+
+        @if (form.group.controls.bereitsBehandeltAnderes.value) {
+          <svui-form-control [label]="'untersuchung.tab.sehen.massnahmen.bereits.behandelt.anderes.bemerkung' | transloco"
+                             [viewValue]="form.group.value.bereitsBehandeltAnderesBemerkung">
+        <textarea svuiTextarea
+                  [formControl]="form.group.controls.bereitsBehandeltAnderesBemerkung"></textarea>
+          </svui-form-control>
+        }
+      }
+
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenInfoEltern) {
+        <svui-title class="mb-3"
+                    [context]="'formSection'">{{ 'untersuchung.tab.massnahmen.information.eltern' |transloco }}
+        </svui-title>
+
+        <svui-form-control [label]="'untersuchung.tab.massnahmen.information.eltern' | transloco"
+                           [topLabelVisibility]="'hidden'"
+                           [viewValue]="form.group.value.informationEltern"
+                           [size]="'half'">
+          <ng-select
+            svuiNgSelect
+            bindLabel='dummy'
+            appendTo="body"
+            [formControl]="form.group.controls.informationEltern"
+            [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          >
+            @for (each of informationEltern; track each) {
+              <ng-option [value]="each">
+                {{ 'InformationEltern.' + each | transloco }}
+              </ng-option>
+            }
+          </ng-select>
+        </svui-form-control>
+      }
+
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenInfomaterial) {
+        <svui-title class="mb-3"
+                    [context]="'formSection'">{{ 'untersuchung.tab.massnahmen.infomaterial' |transloco }}
+        </svui-title>
+
+        <svui-form-control [label]="'untersuchung.tab.massnahmen.infomaterial' | transloco"
+                           [topLabelVisibility]="'hidden'"
+                           [viewValue]="form.group.value.informationEltern">
+          <ng-select
+            svuiNgSelect
+            bindLabel='dummy'
+            appendTo="body"
+            [formControl]="form.group.controls.abgegebenesInfomaterial"
+            [allowBadgesToWrap]="true"
+            [compareWith]="compareInfomaterial"
+            [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            [multiple]="true"
+          >
+            @for (each of infomaterialOptions; track each.id) {
+              <ng-option [value]="each" [disabled]="!each.data.aktiv">
+                {{ each.data.name | translatedStringPipe }}
+                @if (!each.data.aktiv) {
+                  {{ 'gloabl.suffixInaktiv' | transloco }}
+                }
+              </ng-option>
+            }
+          </ng-select>
+        </svui-form-control>
+      }
+
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenUeberweisungHausarzt
+      || anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenUeberweisungAugenarzt) {
+        <svui-title class="mb-3"
+                    [context]="'formSection'">{{ 'untersuchung.tab.sehen.massnahmen.ueberweisungen' |transloco }}
+        </svui-title>
+      }
+
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenUeberweisungHausarzt) {
+        <svui-standalone-control [label]="'untersuchung.tab.massnahmen.ueberweisung.hausarzt' | transloco">
+          <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.ueberweisungHausarzt ">
+        </svui-standalone-control>
+      }
+
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenUeberweisungAugenarzt) {
+        <svui-standalone-control [label]="'untersuchung.tab.massnahmen.ueberweisung.augenarzt' | transloco">
+          <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.ueberweisungAugenarzt ">
+        </svui-standalone-control>
+      }
+
+
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenNachkontrolleSaed) {
+        <svui-kachel-form-section class="mt-3" [heading]=" 'untersuchung.tab.massnahmen.nachkontrollen' | transloco">
+
+          <svui-kachel-control [label]="'untersuchung.tab.sehen.massnahmen.nachkontrolle.sehen' |transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="nachkontrolleSehen"
+                   [formControl]="form.group.controls.nachkontrolleSehen"
+            />
+          </svui-kachel-control>
+          <svui-kachel-control [label]="'untersuchung.tab.sehen.massnahmen.nachkontrolle.hoeren' |transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="nachkontrolleHoeren"
+                   [formControl]="form.group.controls.nachkontrolleHoeren"
+            />
+          </svui-kachel-control>
+          <svui-kachel-control [label]="'untersuchung.tab.sehen.massnahmen.nachkontrolle.groesse.gewicht' |transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="nachkontrolleGroesseGewicht"
+                   [formControl]="form.group.controls.nachkontrolleGroesseGewicht"
+            />
+          </svui-kachel-control>
+          <svui-kachel-control [label]="'untersuchung.tab.sehen.massnahmen.nachkontrolle.sprache' |transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="nachkontrolleSprache"
+                   [formControl]="form.group.controls.nachkontrolleSprache"
+            />
+          </svui-kachel-control>
+          <svui-kachel-control [label]="'untersuchung.tab.sehen.massnahmen.nachkontrolle.motorik' |transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="nachkontrolleMotorik"
+                   [formControl]="form.group.controls.nachkontrolleMotorik"
+            />
+          </svui-kachel-control>
+          <svui-kachel-control [label]="'untersuchung.tab.sehen.massnahmen.nachkontrolle.anderes' |transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="nachkontrolleAnderes"
+                   [formControl]="form.group.controls.nachkontrolleAnderes"
+            />
+          </svui-kachel-control>
+        </svui-kachel-form-section>
+      }
+
+      <svui-title class="mb-3"
+                  [context]="'formSection'">{{ 'untersuchung.tab.massnahmen.bemerkung' |transloco }}
+      </svui-title>
+
+      <svui-form-control [label]="'untersuchung.tab.massnahmen.bemerkung' | transloco"
+                         [viewValue]="form.group.value.bemerkungen"
+                         [topLabelVisibility]="'hidden'">
+        <textarea svuiTextarea
+                  [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
+      </svui-form-control>
+
+      <!-- Save / Cancel Buttons -->
+      @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+        <svui-save-cancel-buttons
+          [saving]="false"
+          [canEdit]="true"
+          (cancelClicked)="abbrechen()"/>
+      }
+    </svui-card-in-card>
+
+  </form>
+
+}

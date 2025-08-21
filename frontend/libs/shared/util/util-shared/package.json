@@ -1,0 +1,10 @@
+{
+  "name": "@dvb/util-shared",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@dvb/data-access-types": "0.0.1",
+    "@dvb/data-access-backend": "0.0.1",
+    "date-fns": "^4.1.0"
+  },
+  "sideEffects": false
+}

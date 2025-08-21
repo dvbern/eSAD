@@ -1,0 +1,50 @@
+@switch (context()) {
+  @case ('page') {
+    <h1>
+      <ng-container *ngTemplateOutlet="titleText"/>
+    </h1>
+  }
+  @case ('card') {
+    <h2>
+      <ng-container *ngTemplateOutlet="titleText"/>
+    </h2>
+  }
+  @case ('section') {
+    <h3>
+      <ng-container *ngTemplateOutlet="titleText"/>
+    </h3>
+  }
+  @case ('formSection') {
+    <h3 class="svui_heading--form">
+      <ng-container *ngTemplateOutlet="titleText"/>
+    </h3>
+  }
+  @case ('paragraph') {
+    <h4>
+      <ng-container *ngTemplateOutlet="titleText"/>
+    </h4>
+  }
+  @default {
+    (TitleComponent: switch case not implemented for case: {{ context() }})
+    <ng-container *ngTemplateOutlet="titleText"/>
+  }
+}
+
+<ng-template #titleText>
+  @if (showBackLink()) {
+    <!-- routerLink and queryParamsHandling: otherwise the browser does not recognize it as clickable (a11y) -->
+    <a
+      (click)="location.back()"
+      routerLink=""
+      queryParamsHandling="preserve"
+      [title]="'shared.navigation.back.title' | transloco"
+      style="margin-right: 1rem; display: inline-block"
+    >
+    <svui-icon [useCase]="'zurueck'"/>
+    </a>
+  }
+
+  <ng-content/>
+
+  <svui-spinner [working]="working()" class="svui_heading__spinner" [context]="'inline'"/>
+</ng-template>

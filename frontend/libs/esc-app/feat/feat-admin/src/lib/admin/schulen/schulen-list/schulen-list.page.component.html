@@ -1,0 +1,21 @@
+<feat-page [heading]="'schule.list.page.title' | transloco"
+           [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN}">
+  <svui-page-header-buttons
+    [showFilterPopup]="false"
+    [activeFilterCount]="itemTable.numberOfFilters()"
+    (resetFilter)="itemTable.resetFilters(); tableFilterForm.reset()"/>
+
+  @if(canEditList()){
+    <svui-page-header-add-button
+      [addRouterLink]="Path.CREATE"/>
+  }
+
+  <svui-page-header-list-summary
+    [items]="summaryItems()"/>
+
+  <feat-schulen-list
+    [itemTable]="itemTable"
+    [tableFilterForm]="tableFilterForm"
+    [loading]="schulenStore.loader.isLoading()"
+  ></feat-schulen-list>
+</feat-page >

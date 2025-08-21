@@ -1,0 +1,68 @@
+<svui-list [heading]="'anlass.list.page.title' | transloco" [loading]="false">
+
+  @if (canCreateAnlass()) {
+    <svui-page-header-add-button listAddbutton
+                                 [addRouterLink]="'/' + Path.ANLASS + '/' + Path.CREATE"/>
+  }
+  <ng-container header>
+    <ng-select
+      svuiNgSelect
+      appendTo='body'
+      bindLabel='dummy'
+      [clearable]=false
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      (change)="onUserChange($event)"
+      [ngModel]="selectedAccount"
+    >
+      @for (item of allUsers(); track item.id) {
+        <ng-option [value]="item.id">
+          {{ item.fullName }}
+        </ng-option>
+      }
+    </ng-select>
+  </ng-container>
+  <style>
+    table > tbody > tr > td {
+      font-size: 1.125rem;
+    }
+  </style>
+  <table svuiTable [loading]="dashboardStore.loader.isLoading()" aria-hidden="true">
+    <tbody>
+      @for (entry of anlassList(); track entry) {
+        <tr>
+          <td>
+            <svui-table-link type="text"
+                             [myRouterLink]="['/', Path.ANLASS, entry.id, Path.ANLASS_PLANUNG]">
+              <b>{{ entry.fullTitle }}</b>
+            </svui-table-link>
+          </td>
+          <td>{{ 'AnlassStatus.' + entry.data.anlassStatus | transloco }}</td>
+          <td>{{ entry.data.datum | date: 'dd.MM.yyyy' }}</td>
+          <td>
+            @if (entry.data.zeitVon && entry.data.zeitBis) {
+              {{ entry.data.zeitVon | date: 'HH:mm' }} - {{ entry.data.zeitBis | date: 'HH:mm' }}
+              {{ 'anlass.uhr' | transloco }}
+            } @else {
+              {{ 'anlass.kinder.zeitVonzeitBis.empty' | transloco }}
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr svui-empty-table-message [message]="'anlass.list.empty'| transloco"></tr>
+      }
+    </tbody>
+  </table>
+
+  <ng-container footer>
+    <span>{{
+        'global.list.pagination' | transloco: {
+          nrOnPage: anlassList().length,
+          total: this.dashboardStore.totalRecords()
+        }
+      }}</span>
+    <a class="nav-link"
+       [routerLink]="['/', Path.ANLASS]"
+       aria-current="page">{{ 'kind.dossier.aufgaben.liste' | transloco }}</a>
+  </ng-container>
+</svui-list>
+

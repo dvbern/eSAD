@@ -1,0 +1,32 @@
+@switch (type()) {
+  @case ('icon') {
+
+    <a
+      svuiLikeAButton="tertiary"
+      [icon]="'tabelleneintrag'"
+
+      [routerLink]="myRouterLink()"
+      [queryParams]="myRouterQueryParams()"
+      [target]="myTarget()"
+
+      [class.disabled]="disabled()"
+
+      ngbTooltip="{{ 'global.oeffnen' | transloco }}"
+    >
+      <span class="hidden">"{{ 'global.oeffnen' | transloco }}"</span>
+    </a>
+
+  }
+  @case ('text') {
+    <a
+      class="fw-bold"
+      [routerLink]="myRouterLink()"
+      [queryParams]="myRouterQueryParams()"
+      [target]="myTarget()"
+      [class.disabled]="disabled()"
+    >
+      <ng-content/>
+    </a>
+  }
+
+}

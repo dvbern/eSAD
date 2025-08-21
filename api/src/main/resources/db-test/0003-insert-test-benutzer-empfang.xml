@@ -1,0 +1,9 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="dvbern" id="2025-11-27-1800">
+    <sql>
+      INSERT INTO benutzer (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, email, fachrollen, keycloakid, lastusedip, lastusedsessionid, lastusedsessiontimestamp, oidcissuer, nachname, vorname, aktiv, titel, telefon)
+      VALUES ('79a077d6-e62f-4717-a65e-a2a876e7fc5b', '2025-03-18 09:46:42.178875', '2025-03-18 09:46:42.271767', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'BS', 'empfang@mailbucket.dvbern.ch', 'EMPFANG', '9c98887a-2c19-4c07-8d50-3ab3f08e4a48', '172.19.1.193', 'a3eab01d-3f36-48a6-bd9f-a06a76916b3f', '2025-03-18 09:46:42.270799', 'https://local-esc-bs.localhost:8989/realms/bs', 'Empfang', 'Esther', true, null, '+41 61 123 45 69');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

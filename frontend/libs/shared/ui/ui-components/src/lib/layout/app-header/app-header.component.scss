@@ -1,0 +1,22 @@
+@use '../../../styles/core/border';
+@use '../../../styles/core/size';
+@use '../../../styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.svui_app-header {
+  padding: spacing.$layout-outer;
+  box-shadow: border.$box-shadow;
+
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  column-gap: spacing.$gutter-width;
+
+  .svui_app-header__nav,
+  ::ng-deep > .nav {
+    flex-grow: 1;
+  }
+}

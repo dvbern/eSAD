@@ -1,0 +1,26 @@
+{
+  "name": "@dvb/feat-playground",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "19.2.3",
+    "@angular/core": "19.2.3",
+    "@dvb/ui-components": "0.0.1",
+    "@angular/forms": "19.2.3",
+    "@angular/router": "19.2.3",
+    "@jsverse/transloco": "^7.5.0",
+    "rxjs": "~7.8.0",
+    "@dvb/data-access-types": "0.0.1",
+    "@dvb/util-angular": "0.0.1",
+    "@dvb/util-shared": "0.0.1",
+    "@dvb/feat-stammdaten": "0.0.1",
+    "@ng-select/ng-select": "^14.2.4",
+    "@ng-bootstrap/ng-bootstrap": "18.0.0",
+    "@ngrx/signals": "^19.0.1",
+    "@dvb/data-access-backend": "0.0.1",
+    "@ngrx/operators": "^19.0.1",
+    "@dvb/viz": "0.0.1",
+    "@angular-architects/ngrx-toolkit": "^19.1.0",
+    "@dvb/feat-shared": "0.0.1"
+  },
+  "sideEffects": false
+}

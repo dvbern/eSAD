@@ -1,0 +1,13 @@
+@use '../../../../styles/core/color/color-set-default';
+@use '../../../../styles/core/spacing';
+
+:host {
+  display: flex;
+  gap: spacing.$summary-gap-x;
+
+  color: color-set-default.$text-secondary;
+
+  .page-header-entity-info--block-data {
+    color: color-set-default.$text;
+  }
+}

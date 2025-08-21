@@ -1,0 +1,51 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hora" id="1750064037560-1">
+    <addColumn tableName="klasse">
+      <column name="klasseaktivstatus" type="VARCHAR(30)">
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora" id="1750064037560-2">
+    <addColumn tableName="klasse_aud">
+      <column name="klasseaktivstatus" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora" id="1750064037560-3">
+    <addColumn tableName="schule">
+      <column name="schuleaktivstatus" type="VARCHAR(30)">
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora" id="1750064037560-4">
+    <addColumn tableName="schule_aud">
+      <column name="schuleaktivstatus" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora" id="1750064037560-5">
+    <sql>
+      UPDATE schule
+      SET schuleaktivstatus = 'INAKTIV'
+      WHERE aktivinexternalsystem = false;
+      UPDATE schule
+      SET schuleaktivstatus = 'AKTIV'
+      WHERE aktivinexternalsystem = true OR aktivinexternalsystem IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="hora" id="1750064037560-6">
+    <sql>
+      UPDATE klasse
+      SET klasseaktivstatus = 'INAKTIV'
+      WHERE aktivinexternalsystem = false;
+      UPDATE klasse
+      SET klasseaktivstatus = 'AKTIV'
+      WHERE aktivinexternalsystem = true OR aktivinexternalsystem IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="hora" id="1750064037560-7">
+    <addNotNullConstraint tableName="schule" columnName="schuleaktivstatus"/>
+  </changeSet>
+  <changeSet author="hora" id="1750064037560-8">
+    <addNotNullConstraint tableName="klasse" columnName="klasseaktivstatus"/>
+  </changeSet>
+</databaseChangeLog>

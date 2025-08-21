@@ -1,0 +1,18 @@
+@use '../../../../styles/core/spacing';
+@use '../../../../styles/core/size';
+
+:host {
+  // no :host display style on component with attribute selector
+}
+
+.svui_button {
+  &__wrapper {
+    display: flex;
+    align-items: center;
+  }
+
+  &__icon {
+    margin-right: spacing.$base;
+    font-size: size.$icon-default;
+  }
+}

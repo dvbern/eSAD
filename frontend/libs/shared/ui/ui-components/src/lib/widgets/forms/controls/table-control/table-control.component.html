@@ -1,0 +1,17 @@
+<div class="svui_table-control">
+  <label [for]="id" class="visually-hidden">
+    {{ rowHeader() + ' ' + columnHeader() }}
+  </label>
+
+  @if (required) {
+    <svui-required class="svui_table-control__required-marker"/>
+  }
+
+  <ng-content/>
+
+  @if (control && control.touched && control.errors) {
+    <div class="svui_table-control__message-tooltip invalid-tooltip">
+      {{ control.errors | controlMessagePipe }}
+    </div>
+  }
+</div>

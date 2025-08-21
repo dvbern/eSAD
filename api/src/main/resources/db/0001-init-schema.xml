@@ -1,0 +1,3792 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hefr (generated)" id="1743095713686-1">
+    <createSequence incrementBy="50" sequenceName="revinfo_seq" startValue="1"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-2">
+    <createTable tableName="anlass">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="anlassPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="anlassart" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="anlassstatus" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="arztinfo" type="VARCHAR(255)"/>
+      <column name="datum" type="date">
+        <constraints nullable="false"/>
+      </column>
+      <column name="mpainfo" type="VARCHAR(255)"/>
+      <column name="schuljahr" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="titel" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="weiterepersoninfo" type="VARCHAR(255)"/>
+      <column name="bis" type="TIMESTAMP(6) WITHOUT TIME ZONE"/>
+      <column name="von" type="TIMESTAMP(6) WITHOUT TIME ZONE"/>
+      <column name="anlassconfig_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="arzt_id" type="UUID"/>
+      <column name="mpa_id" type="UUID"/>
+      <column name="weitereperson_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-3">
+    <createTable tableName="anlass_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="anlassart" type="VARCHAR(30)"/>
+      <column name="anlassstatus" type="VARCHAR(30)"/>
+      <column name="arztinfo" type="VARCHAR(255)"/>
+      <column name="datum" type="date"/>
+      <column name="mpainfo" type="VARCHAR(255)"/>
+      <column name="schuljahr" type="INTEGER"/>
+      <column name="titel" type="VARCHAR(255)"/>
+      <column name="weiterepersoninfo" type="VARCHAR(255)"/>
+      <column name="bis" type="TIMESTAMP(6) WITHOUT TIME ZONE"/>
+      <column name="von" type="TIMESTAMP(6) WITHOUT TIME ZONE"/>
+      <column name="anlassconfig_id" type="UUID"/>
+      <column name="arzt_id" type="UUID"/>
+      <column name="mpa_id" type="UUID"/>
+      <column name="weitereperson_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-4">
+    <createTable tableName="anlassconfig">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="anlassconfigPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="anlasstyp" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="datenuntersuchung" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="groessegewichtbemerkungen" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="groessegewichtbmi" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="groessegewichtgewicht" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="groessegewichtgroesse" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="groessegewichtperzentile" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="datumbis" type="date">
+        <constraints nullable="false"/>
+      </column>
+      <column name="datumvon" type="date">
+        <constraints nullable="false"/>
+      </column>
+      <column name="hoerenaudiogramm" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="hoerenbemerkungen" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="hoerenbeurteilung" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="hoerenotoskopie" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="impfungenliste" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="impfungenmassnahmeberatungmpa" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="impfungenmassnahmeeinzelfolgetermin" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="impfungenmassnahmefolgetermin" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="impfungenmassnahmeinfoeltern" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="impfungenmassnahmeinfokinderarzt" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="impfungenmassnahmerueckfragekinderarzt" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="impfungenuebersicht" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="sehenbemerkungen" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="sehenbrillelinsen" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="sehenfarbsehen" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="sehenfernvisus" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="seheninspektion" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="sehenkonvergenz" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="sehenmassnahmen" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="sehenmotilitaet" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="sehennahvisus" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="sehenstereotest" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="sehenstrabismus" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="showdatenpersonendaten" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="showdatenschule" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="showmassnahmenanderes" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="showmassnahmenberatungmpa" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="showmassnahmenbereitsbehandelt" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="showmassnahmeninfoeltern" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="showmassnahmeninfomaterial" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="showmassnahmenkeine" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="showmassnahmennachkontrollesaed" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="showmassnahmenpathologischebefunde" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="showmassnahmenueberweisungaugenarzt" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="showmassnahmenueberweisunghausarzt" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="showtriagekindweiterleiten" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="showtriagetriage" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="untersuchungbemerkungen" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="untersuchungbewegungsapparat" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="untersuchungblutdruck" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="untersuchungeinbeinhuepfen" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="untersuchungeinbeinstand" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="untersuchungfingeropposition" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="untersuchunghaut" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="untersuchungherz" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="untersuchungmotorik" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="untersuchungmundzaehne" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="untersuchungsprache" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="untersuchungverhalten" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-5">
+    <createTable tableName="anlassconfig_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="anlasstyp" type="VARCHAR(30)"/>
+      <column name="datenuntersuchung" type="VARCHAR(30)"/>
+      <column name="groessegewichtbemerkungen" type="VARCHAR(30)"/>
+      <column name="groessegewichtbmi" type="VARCHAR(30)"/>
+      <column name="groessegewichtgewicht" type="VARCHAR(30)"/>
+      <column name="groessegewichtgroesse" type="VARCHAR(30)"/>
+      <column name="groessegewichtperzentile" type="VARCHAR(30)"/>
+      <column name="datumbis" type="date"/>
+      <column name="datumvon" type="date"/>
+      <column name="hoerenaudiogramm" type="VARCHAR(30)"/>
+      <column name="hoerenbemerkungen" type="VARCHAR(30)"/>
+      <column name="hoerenbeurteilung" type="VARCHAR(30)"/>
+      <column name="hoerenotoskopie" type="VARCHAR(30)"/>
+      <column name="impfungenliste" type="VARCHAR(30)"/>
+      <column name="impfungenmassnahmeberatungmpa" type="BOOLEAN"/>
+      <column name="impfungenmassnahmeeinzelfolgetermin" type="BOOLEAN"/>
+      <column name="impfungenmassnahmefolgetermin" type="BOOLEAN"/>
+      <column name="impfungenmassnahmeinfoeltern" type="BOOLEAN"/>
+      <column name="impfungenmassnahmeinfokinderarzt" type="BOOLEAN"/>
+      <column name="impfungenmassnahmerueckfragekinderarzt" type="BOOLEAN"/>
+      <column name="impfungenuebersicht" type="VARCHAR(30)"/>
+      <column name="sehenbemerkungen" type="VARCHAR(30)"/>
+      <column name="sehenbrillelinsen" type="VARCHAR(30)"/>
+      <column name="sehenfarbsehen" type="VARCHAR(30)"/>
+      <column name="sehenfernvisus" type="VARCHAR(30)"/>
+      <column name="seheninspektion" type="VARCHAR(30)"/>
+      <column name="sehenkonvergenz" type="VARCHAR(30)"/>
+      <column name="sehenmassnahmen" type="VARCHAR(30)"/>
+      <column name="sehenmotilitaet" type="VARCHAR(30)"/>
+      <column name="sehennahvisus" type="VARCHAR(30)"/>
+      <column name="sehenstereotest" type="VARCHAR(30)"/>
+      <column name="sehenstrabismus" type="VARCHAR(30)"/>
+      <column name="showdatenpersonendaten" type="BOOLEAN"/>
+      <column name="showdatenschule" type="BOOLEAN"/>
+      <column name="showmassnahmenanderes" type="BOOLEAN"/>
+      <column name="showmassnahmenberatungmpa" type="BOOLEAN"/>
+      <column name="showmassnahmenbereitsbehandelt" type="BOOLEAN"/>
+      <column name="showmassnahmeninfoeltern" type="BOOLEAN"/>
+      <column name="showmassnahmeninfomaterial" type="BOOLEAN"/>
+      <column name="showmassnahmenkeine" type="BOOLEAN"/>
+      <column name="showmassnahmennachkontrollesaed" type="BOOLEAN"/>
+      <column name="showmassnahmenpathologischebefunde" type="BOOLEAN"/>
+      <column name="showmassnahmenueberweisungaugenarzt" type="BOOLEAN"/>
+      <column name="showmassnahmenueberweisunghausarzt" type="BOOLEAN"/>
+      <column name="showtriagekindweiterleiten" type="BOOLEAN"/>
+      <column name="showtriagetriage" type="BOOLEAN"/>
+      <column name="untersuchungbemerkungen" type="VARCHAR(30)"/>
+      <column name="untersuchungbewegungsapparat" type="VARCHAR(30)"/>
+      <column name="untersuchungblutdruck" type="VARCHAR(30)"/>
+      <column name="untersuchungeinbeinhuepfen" type="VARCHAR(30)"/>
+      <column name="untersuchungeinbeinstand" type="VARCHAR(30)"/>
+      <column name="untersuchungfingeropposition" type="VARCHAR(30)"/>
+      <column name="untersuchunghaut" type="VARCHAR(30)"/>
+      <column name="untersuchungherz" type="VARCHAR(30)"/>
+      <column name="untersuchungmotorik" type="VARCHAR(30)"/>
+      <column name="untersuchungmundzaehne" type="VARCHAR(30)"/>
+      <column name="untersuchungsprache" type="VARCHAR(30)"/>
+      <column name="untersuchungverhalten" type="VARCHAR(30)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-6">
+    <createTable tableName="aufgabe">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="aufgabePK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="aufgabestatus" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bemerkung" type="VARCHAR(2000)"/>
+      <column name="faelligbis" type="date">
+        <constraints nullable="false"/>
+      </column>
+      <column name="titel" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="empfaenger_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="kind_id" type="UUID"/>
+      <column name="usererfasst_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-7">
+    <createTable tableName="aufgabe_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="aufgabestatus" type="VARCHAR(30)"/>
+      <column name="bemerkung" type="VARCHAR(2000)"/>
+      <column name="faelligbis" type="date"/>
+      <column name="titel" type="VARCHAR(255)"/>
+      <column name="empfaenger_id" type="UUID"/>
+      <column name="kind_id" type="UUID"/>
+      <column name="usererfasst_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-8">
+    <createTable tableName="aufgabe_filedata">
+      <column name="aufgabe_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="filedata_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-9">
+    <createTable tableName="aufgabe_filedata_aud">
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="aufgabe_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="filedata_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-10">
+    <createTable tableName="aufgabe_label">
+      <column name="aufgabe_id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="aufgabe_labelPK"/>
+      </column>
+      <column name="label_id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="aufgabe_labelPK"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-11">
+    <createTable tableName="aufgabe_label_aud">
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="aufgabe_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="label_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-12">
+    <createTable tableName="benutzer">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="benutzerPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="aktiv" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="email" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="fachrollen" type="VARCHAR(255)"/>
+      <column name="keycloakid" type="VARCHAR(255)"/>
+      <column name="lastusedip" type="VARCHAR(255)"/>
+      <column name="lastusedsessionid" type="VARCHAR(255)"/>
+      <column name="lastusedsessiontimestamp" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="oidcissuer" type="VARCHAR(255)"/>
+      <column name="nachname" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="vorname" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-13">
+    <createTable tableName="benutzer_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="aktiv" type="BOOLEAN"/>
+      <column name="email" type="VARCHAR(255)"/>
+      <column name="fachrollen" type="VARCHAR(255)"/>
+      <column name="keycloakid" type="VARCHAR(255)"/>
+      <column name="lastusedip" type="VARCHAR(255)"/>
+      <column name="lastusedsessionid" type="VARCHAR(255)"/>
+      <column name="lastusedsessiontimestamp" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="oidcissuer" type="VARCHAR(255)"/>
+      <column name="nachname" type="VARCHAR(255)"/>
+      <column name="vorname" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-14">
+    <createTable tableName="benutzerberechtigung">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="benutzerberechtigungPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="berechtigung" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="benutzer_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-15">
+    <createTable tableName="benutzerberechtigung_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="berechtigung" type="VARCHAR(255)"/>
+      <column name="benutzer_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-16">
+    <createTable tableName="dossier">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="dossierPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="anderezusatzinformationtext" type="VARCHAR(2000)"/>
+      <column name="anderezusatzinformation" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="immunitaetmasern" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="immunitaetvarizellen" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="keineauskunftandrittpersonen" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="kinderschutzfall" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="papieraktestatus" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="sanspapier" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="kind_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="zustaendigarzt_id" type="UUID"/>
+      <column name="zustaendigmpa_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-17">
+    <createTable tableName="dossier_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="anderezusatzinformationtext" type="VARCHAR(2000)"/>
+      <column name="anderezusatzinformation" type="BOOLEAN"/>
+      <column name="immunitaetmasern" type="BOOLEAN"/>
+      <column name="immunitaetvarizellen" type="BOOLEAN"/>
+      <column name="keineauskunftandrittpersonen" type="BOOLEAN"/>
+      <column name="kinderschutzfall" type="BOOLEAN"/>
+      <column name="papieraktestatus" type="VARCHAR(30)"/>
+      <column name="sanspapier" type="BOOLEAN"/>
+      <column name="kind_id" type="UUID"/>
+      <column name="zustaendigarzt_id" type="UUID"/>
+      <column name="zustaendigmpa_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-18">
+    <createTable tableName="edokididsequence">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="edokididsequencePK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="character" type="CHAR(1)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="eintrittsjahr" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="laufnummer" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-19">
+    <createTable tableName="einladung">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="einladungPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="artabmeldung" type="VARCHAR(30)"/>
+      <column name="bemerkungabmeldung" type="VARCHAR(255)"/>
+      <column name="einladungstatus" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="grundabmeldung" type="VARCHAR(30)"/>
+      <column name="abmeldungsnotiz_id" type="UUID"/>
+      <column name="anlass_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="dossier_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="fragebogen_id" type="UUID"/>
+      <column name="impfausweis_id" type="UUID"/>
+      <column name="untersuchung_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-20">
+    <createTable tableName="einladung_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="artabmeldung" type="VARCHAR(30)"/>
+      <column name="bemerkungabmeldung" type="VARCHAR(255)"/>
+      <column name="einladungstatus" type="VARCHAR(30)"/>
+      <column name="grundabmeldung" type="VARCHAR(30)"/>
+      <column name="abmeldungsnotiz_id" type="UUID"/>
+      <column name="anlass_id" type="UUID"/>
+      <column name="dossier_id" type="UUID"/>
+      <column name="fragebogen_id" type="UUID"/>
+      <column name="impfausweis_id" type="UUID"/>
+      <column name="untersuchung_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-21">
+    <createTable tableName="escadasyncevent">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="escadasynceventPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="filedata_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-22">
+    <createTable tableName="filedata">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="filedataPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="calculatedfilename" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="fileidinbucket" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="filename" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="filesize" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="mediatype" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="filetyp" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-23">
+    <createTable tableName="filedata_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="calculatedfilename" type="VARCHAR(255)"/>
+      <column name="filetyp" type="VARCHAR(30)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-24">
+    <createTable tableName="impfstoff">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="impfstoffPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="krankheiten" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-25">
+    <createTable tableName="impfstoff_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="krankheiten" type="VARCHAR(255)"/>
+      <column name="name" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-26">
+    <createTable tableName="impfstoffcharge">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="impfstoffchargePK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="aktiv" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="impfstoff_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-27">
+    <createTable tableName="impfstoffcharge_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="aktiv" type="BOOLEAN"/>
+      <column name="name" type="VARCHAR(255)"/>
+      <column name="impfstoff_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-28">
+    <createTable tableName="infomaterial">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="infomaterialPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="infomaterialtyp" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="namede" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="namefr" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-29">
+    <createTable tableName="infomaterial_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="infomaterialtyp" type="VARCHAR(30)"/>
+      <column name="namede" type="VARCHAR(255)"/>
+      <column name="namefr" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-30">
+    <createTable tableName="kind">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="kindPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="adressezusatz" type="VARCHAR(255)"/>
+      <column name="land" type="VARCHAR(30)"/>
+      <column name="ort" type="VARCHAR(255)"/>
+      <column name="plz" type="VARCHAR(255)"/>
+      <column name="strasseundnr" type="VARCHAR(255)"/>
+      <column name="aktiv" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="email" type="VARCHAR(255)"/>
+      <column name="erstsprache" type="VARCHAR(255)"/>
+      <column name="esadid" type="VARCHAR(30)"/>
+      <column name="externalsystemid" type="VARCHAR(36)"/>
+      <column name="geburtsdatum" type="date">
+        <constraints nullable="false"/>
+      </column>
+      <column name="geschlecht" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="nationalitaet" type="VARCHAR(30)"/>
+      <column name="sozialversicherungsnummer" type="VARCHAR(255)"/>
+      <column name="telefon" type="VARCHAR(255)"/>
+      <column name="vorname" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="wohntyp" type="VARCHAR(255)"/>
+      <column name="klasse_id" type="UUID"/>
+      <column name="schule_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-31">
+    <createTable tableName="kind_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="aktiv" type="BOOLEAN"/>
+      <column name="email" type="VARCHAR(255)"/>
+      <column name="erstsprache" type="VARCHAR(255)"/>
+      <column name="esadid" type="VARCHAR(30)"/>
+      <column name="externalsystemid" type="VARCHAR(36)"/>
+      <column name="geburtsdatum" type="date"/>
+      <column name="geschlecht" type="VARCHAR(30)"/>
+      <column name="name" type="VARCHAR(255)"/>
+      <column name="nationalitaet" type="VARCHAR(30)"/>
+      <column name="sozialversicherungsnummer" type="VARCHAR(255)"/>
+      <column name="telefon" type="VARCHAR(255)"/>
+      <column name="vorname" type="VARCHAR(255)"/>
+      <column name="wohntyp" type="VARCHAR(255)"/>
+      <column name="klasse_id" type="UUID"/>
+      <column name="schule_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-32">
+    <createTable tableName="kind_kontaktpersonkind">
+      <column name="kontaktpersonkind_id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="kind_kontaktpersonkindPK"/>
+      </column>
+      <column name="kind_id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="kind_kontaktpersonkindPK"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-33">
+    <createTable tableName="kind_kontaktpersonkind_aud">
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="kontaktpersonkind_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="kind_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-34">
+    <createTable tableName="kindexternal">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="kindexternalPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="escadaklasseid" type="VARCHAR(36)"/>
+      <column name="schueleradresse" type="VARCHAR(255)"/>
+      <column name="schueleradresse1" type="VARCHAR(255)"/>
+      <column name="schueleradresse2" type="VARCHAR(255)"/>
+      <column name="schueleremail" type="VARCHAR(255)"/>
+      <column name="schuelererstsprache" type="VARCHAR(255)"/>
+      <column name="schuelergeburtsdatum" type="VARCHAR(255)"/>
+      <column name="schuelergeschlecht" type="VARCHAR(255)"/>
+      <column name="schuelerid" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="schuelermobile" type="VARCHAR(255)"/>
+      <column name="schuelername" type="VARCHAR(255)"/>
+      <column name="schuelernationalitaet" type="VARCHAR(255)"/>
+      <column name="schuelerort" type="VARCHAR(255)"/>
+      <column name="schuelerplz" type="VARCHAR(255)"/>
+      <column name="schuelersozialversicherung" type="VARCHAR(255)"/>
+      <column name="schuelersprache" type="VARCHAR(255)"/>
+      <column name="schuelerstaatcodeiso" type="VARCHAR(255)"/>
+      <column name="schuelervorname" type="VARCHAR(255)"/>
+      <column name="schulhausid" type="VARCHAR(255)"/>
+      <column name="wohntyp" type="VARCHAR(255)"/>
+      <column name="kind_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-35">
+    <createTable tableName="kindexternal_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="escadaklasseid" type="VARCHAR(36)"/>
+      <column name="schueleradresse" type="VARCHAR(255)"/>
+      <column name="schueleradresse1" type="VARCHAR(255)"/>
+      <column name="schueleradresse2" type="VARCHAR(255)"/>
+      <column name="schueleremail" type="VARCHAR(255)"/>
+      <column name="schuelererstsprache" type="VARCHAR(255)"/>
+      <column name="schuelergeburtsdatum" type="VARCHAR(255)"/>
+      <column name="schuelergeschlecht" type="VARCHAR(255)"/>
+      <column name="schuelerid" type="VARCHAR(255)"/>
+      <column name="schuelermobile" type="VARCHAR(255)"/>
+      <column name="schuelername" type="VARCHAR(255)"/>
+      <column name="schuelernationalitaet" type="VARCHAR(255)"/>
+      <column name="schuelerort" type="VARCHAR(255)"/>
+      <column name="schuelerplz" type="VARCHAR(255)"/>
+      <column name="schuelersozialversicherung" type="VARCHAR(255)"/>
+      <column name="schuelersprache" type="VARCHAR(255)"/>
+      <column name="schuelerstaatcodeiso" type="VARCHAR(255)"/>
+      <column name="schuelervorname" type="VARCHAR(255)"/>
+      <column name="schulhausid" type="VARCHAR(255)"/>
+      <column name="wohntyp" type="VARCHAR(255)"/>
+      <column name="kind_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-36">
+    <createTable tableName="klasse">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="klassePK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="aktiv" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bezeichnung" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="externalsystemid" type="VARCHAR(36)"/>
+      <column name="klasseschulart" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="klassenstufe" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="schule_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-37">
+    <createTable tableName="klasse_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="aktiv" type="BOOLEAN"/>
+      <column name="bezeichnung" type="VARCHAR(255)"/>
+      <column name="externalsystemid" type="VARCHAR(36)"/>
+      <column name="klasseschulart" type="VARCHAR(255)"/>
+      <column name="klassenstufe" type="VARCHAR(30)"/>
+      <column name="schule_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-38">
+    <createTable tableName="klasse_lehrperson">
+      <column name="lehrperson_id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="klasse_lehrpersonPK"/>
+      </column>
+      <column name="klasse_id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="klasse_lehrpersonPK"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-39">
+    <createTable tableName="klasse_lehrperson_aud">
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lehrperson_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="klasse_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-40">
+    <createTable tableName="klasseexternal">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="klasseexternalPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="escadaschuleid" type="VARCHAR(36)"/>
+      <column name="klassebezeichnung" type="VARCHAR(255)"/>
+      <column name="klasseid" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="klasseprogrammjahr" type="VARCHAR(255)"/>
+      <column name="klasseschulart" type="VARCHAR(255)"/>
+      <column name="klassestufe" type="VARCHAR(255)"/>
+      <column name="schulkreisbezeichnung" type="VARCHAR(255)"/>
+      <column name="klasse_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-41">
+    <createTable tableName="klasseexternal_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="escadaschuleid" type="VARCHAR(36)"/>
+      <column name="klassebezeichnung" type="VARCHAR(255)"/>
+      <column name="klasseid" type="VARCHAR(255)"/>
+      <column name="klasseprogrammjahr" type="VARCHAR(255)"/>
+      <column name="klasseschulart" type="VARCHAR(255)"/>
+      <column name="klassestufe" type="VARCHAR(255)"/>
+      <column name="schulkreisbezeichnung" type="VARCHAR(255)"/>
+      <column name="klasse_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-42">
+    <createTable tableName="kontaktpersonkind">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="kontaktpersonkindPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="adressezusatz" type="VARCHAR(255)"/>
+      <column name="land" type="VARCHAR(30)"/>
+      <column name="ort" type="VARCHAR(255)"/>
+      <column name="plz" type="VARCHAR(255)"/>
+      <column name="strasseundnr" type="VARCHAR(255)"/>
+      <column name="aktiv" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="beziehung" type="VARCHAR(30)"/>
+      <column name="email" type="VARCHAR(255)"/>
+      <column name="externalsystemid" type="VARCHAR(36)"/>
+      <column name="geschlecht" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="korrespondenz" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="telefon" type="VARCHAR(255)"/>
+      <column name="vorname" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-43">
+    <createTable tableName="kontaktpersonkind_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="aktiv" type="BOOLEAN"/>
+      <column name="beziehung" type="VARCHAR(30)"/>
+      <column name="email" type="VARCHAR(255)"/>
+      <column name="externalsystemid" type="VARCHAR(36)"/>
+      <column name="geschlecht" type="VARCHAR(30)"/>
+      <column name="korrespondenz" type="BOOLEAN"/>
+      <column name="name" type="VARCHAR(255)"/>
+      <column name="telefon" type="VARCHAR(255)"/>
+      <column name="vorname" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-44">
+    <createTable tableName="kontaktpersonkindexternal">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="kontaktpersonkindexternalPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="adressierunganrede" type="VARCHAR(255)"/>
+      <column name="adressierungemail" type="VARCHAR(255)"/>
+      <column name="adressierunghausnummer" type="VARCHAR(255)"/>
+      <column name="adressierungid" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="adressierungname" type="VARCHAR(255)"/>
+      <column name="adressierungnatel" type="VARCHAR(255)"/>
+      <column name="adressierungort" type="VARCHAR(255)"/>
+      <column name="adressierungplz" type="VARCHAR(255)"/>
+      <column name="adressierungstrasse" type="VARCHAR(255)"/>
+      <column name="adressierungtelefongeschaeft" type="VARCHAR(255)"/>
+      <column name="adressierungtelefonprivat" type="VARCHAR(255)"/>
+      <column name="adressierungvorname" type="VARCHAR(255)"/>
+      <column name="schuelerids" type="VARCHAR(255)"/>
+      <column name="kontaktpersonkind_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-45">
+    <createTable tableName="kontaktpersonkindexternal_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="adressierunganrede" type="VARCHAR(255)"/>
+      <column name="adressierungemail" type="VARCHAR(255)"/>
+      <column name="adressierunghausnummer" type="VARCHAR(255)"/>
+      <column name="adressierungid" type="VARCHAR(255)"/>
+      <column name="adressierungname" type="VARCHAR(255)"/>
+      <column name="adressierungnatel" type="VARCHAR(255)"/>
+      <column name="adressierungort" type="VARCHAR(255)"/>
+      <column name="adressierungplz" type="VARCHAR(255)"/>
+      <column name="adressierungstrasse" type="VARCHAR(255)"/>
+      <column name="adressierungtelefongeschaeft" type="VARCHAR(255)"/>
+      <column name="adressierungtelefonprivat" type="VARCHAR(255)"/>
+      <column name="adressierungvorname" type="VARCHAR(255)"/>
+      <column name="schuelerids" type="VARCHAR(255)"/>
+      <column name="kontaktpersonkind_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-46">
+    <createTable tableName="kontaktpersonschule">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="kontaktpersonschulePK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="aktiv" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="email" type="VARCHAR(255)"/>
+      <column name="funktion" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="geschlecht" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="telefon" type="VARCHAR(255)"/>
+      <column name="vorname" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-47">
+    <createTable tableName="kontaktpersonschule_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="aktiv" type="BOOLEAN"/>
+      <column name="email" type="VARCHAR(255)"/>
+      <column name="funktion" type="VARCHAR(30)"/>
+      <column name="geschlecht" type="VARCHAR(30)"/>
+      <column name="name" type="VARCHAR(255)"/>
+      <column name="telefon" type="VARCHAR(255)"/>
+      <column name="vorname" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-48">
+    <createTable tableName="label">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="labelPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="autolabel" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="disabled" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="labeltyp" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="namede" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="namefr" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-49">
+    <createTable tableName="label_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="autolabel" type="BOOLEAN"/>
+      <column name="disabled" type="BOOLEAN"/>
+      <column name="labeltyp" type="VARCHAR(30)"/>
+      <column name="namede" type="VARCHAR(255)"/>
+      <column name="namefr" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-50">
+    <createTable tableName="lehrperson">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="lehrpersonPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="aktiv" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="email" type="VARCHAR(255)"/>
+      <column name="externalsystemid" type="VARCHAR(36)"/>
+      <column name="geschlecht" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="telefon" type="VARCHAR(255)"/>
+      <column name="vorname" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-51">
+    <createTable tableName="lehrperson_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="aktiv" type="BOOLEAN"/>
+      <column name="email" type="VARCHAR(255)"/>
+      <column name="externalsystemid" type="VARCHAR(36)"/>
+      <column name="geschlecht" type="VARCHAR(30)"/>
+      <column name="name" type="VARCHAR(255)"/>
+      <column name="telefon" type="VARCHAR(255)"/>
+      <column name="vorname" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-52">
+    <createTable tableName="lehrpersonexternal">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="lehrpersonexternalPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="escadaklasseids" type="VARCHAR(255)"/>
+      <column name="klasselehrpersonanrede" type="VARCHAR(255)"/>
+      <column name="klasselehrpersonid" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="klasselehrpersonname" type="VARCHAR(255)"/>
+      <column name="klasselehrpersonvorname" type="VARCHAR(255)"/>
+      <column name="lehrperson_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-53">
+    <createTable tableName="lehrpersonexternal_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="escadaklasseids" type="VARCHAR(255)"/>
+      <column name="klasselehrpersonanrede" type="VARCHAR(255)"/>
+      <column name="klasselehrpersonid" type="VARCHAR(255)"/>
+      <column name="klasselehrpersonname" type="VARCHAR(255)"/>
+      <column name="klasselehrpersonvorname" type="VARCHAR(255)"/>
+      <column name="lehrperson_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-54">
+    <createTable tableName="nachkontrolle">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="nachkontrollePK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="nachkontrolleanderes" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="nachkontrollegroessegewicht" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="nachkontrollehoeren" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="nachkontrollemotorik" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="nachkontrollesehen" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="nachkontrollesprache" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="dossier_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-55">
+    <createTable tableName="nachkontrolle_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="dossier_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-56">
+    <createTable tableName="notiz">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="notizPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+      <column name="status" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="titel" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="dossier_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="verantwortlicher_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-57">
+    <createTable tableName="notiz_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+      <column name="status" type="VARCHAR(30)"/>
+      <column name="titel" type="VARCHAR(255)"/>
+      <column name="dossier_id" type="UUID"/>
+      <column name="verantwortlicher_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-58">
+    <createTable tableName="notiz_filedata">
+      <column name="notiz_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="filedata_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-59">
+    <createTable tableName="notiz_filedata_aud">
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="notiz_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="filedata_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-60">
+    <createTable tableName="notiz_label">
+      <column name="notiz_id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="notiz_labelPK"/>
+      </column>
+      <column name="label_id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="notiz_labelPK"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-61">
+    <createTable tableName="notiz_label_aud">
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="notiz_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="label_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-62">
+    <createTable tableName="quartier">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="quartierPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="quartiername" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-63">
+    <createTable tableName="quartier_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="quartiername" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-64">
+    <createTable tableName="revinfo">
+      <column autoIncrement="true" name="rev" type="INTEGER">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="revinfoPK"/>
+      </column>
+      <column name="revtstmp" type="BIGINT"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-65">
+    <createTable tableName="schedulerconfig">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="schedulerconfigPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="batchsize" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="disabled" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="schedulertyp" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-66">
+    <createTable tableName="schedulerconfig_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="batchsize" type="INTEGER"/>
+      <column name="disabled" type="BOOLEAN"/>
+      <column name="schedulertyp" type="VARCHAR(30)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-67">
+    <createTable tableName="schule">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="schulePK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="adressezusatz" type="VARCHAR(255)"/>
+      <column name="land" type="VARCHAR(30)"/>
+      <column name="ort" type="VARCHAR(255)"/>
+      <column name="plz" type="VARCHAR(255)"/>
+      <column name="strasseundnr" type="VARCHAR(255)"/>
+      <column name="aktiv" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bemerkungen" type="VARCHAR(255)"/>
+      <column name="email" type="VARCHAR(255)"/>
+      <column name="externalsystemid" type="VARCHAR(36)"/>
+      <column name="schulhaus" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="schulhausnummer" type="VARCHAR(255)"/>
+      <column name="schulkreis" type="VARCHAR(255)"/>
+      <column name="schulstandort" type="VARCHAR(255)"/>
+      <column name="telefon" type="VARCHAR(255)"/>
+      <column name="quartier_id" type="UUID"/>
+      <column name="zustaendigarzt_id" type="UUID"/>
+      <column name="zustaendigmpa_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-68">
+    <createTable tableName="schule_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="aktiv" type="BOOLEAN"/>
+      <column name="bemerkungen" type="VARCHAR(255)"/>
+      <column name="email" type="VARCHAR(255)"/>
+      <column name="externalsystemid" type="VARCHAR(36)"/>
+      <column name="schulhaus" type="VARCHAR(255)"/>
+      <column name="schulhausnummer" type="VARCHAR(255)"/>
+      <column name="schulkreis" type="VARCHAR(255)"/>
+      <column name="schulstandort" type="VARCHAR(255)"/>
+      <column name="telefon" type="VARCHAR(255)"/>
+      <column name="quartier_id" type="UUID"/>
+      <column name="zustaendigarzt_id" type="UUID"/>
+      <column name="zustaendigmpa_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-69">
+    <createTable tableName="schule_kontaktpersonschule">
+      <column name="kontaktpersonschule_id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="schule_kontaktpersonschulePK"/>
+      </column>
+      <column name="schule_id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="schule_kontaktpersonschulePK"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-70">
+    <createTable tableName="schule_kontaktpersonschule_aud">
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="kontaktpersonschule_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="schule_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-71">
+    <createTable tableName="schuleexternal">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="schuleexternalPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="schulanlagebezeichnung" type="VARCHAR(255)"/>
+      <column name="schulanlageid" type="VARCHAR(255)"/>
+      <column name="schulhausbezeichnung" type="VARCHAR(255)"/>
+      <column name="schulhausid" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="schulkreisbezeichnung" type="VARCHAR(255)"/>
+      <column name="schule_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-72">
+    <createTable tableName="schuleexternal_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="schulanlagebezeichnung" type="VARCHAR(255)"/>
+      <column name="schulanlageid" type="VARCHAR(255)"/>
+      <column name="schulhausbezeichnung" type="VARCHAR(255)"/>
+      <column name="schulhausid" type="VARCHAR(255)"/>
+      <column name="schulkreisbezeichnung" type="VARCHAR(255)"/>
+      <column name="schule_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-73">
+    <createTable tableName="tenantsetting">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="tenantsettingPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="defaultlanguage" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="supportedlanguages" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-74">
+    <createTable tableName="tenantsetting_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="defaultlanguage" type="VARCHAR(255)"/>
+      <column name="supportedlanguages" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-75">
+    <createTable tableName="untersuchung">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="untersuchungdurchfuehrung_id" type="UUID"/>
+      <column name="untersuchungimpfungen_id" type="UUID"/>
+      <column name="untersuchungkinddaten_id" type="UUID"/>
+      <column name="untersuchungtriage_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-76">
+    <createTable tableName="untersuchung_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="untersuchungdurchfuehrung_id" type="UUID"/>
+      <column name="untersuchungimpfungen_id" type="UUID"/>
+      <column name="untersuchungkinddaten_id" type="UUID"/>
+      <column name="untersuchungtriage_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-77">
+    <createTable tableName="untersuchungdurchfuehrung">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungdurchfuehrungPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="nachkontrolle" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="nachzuegler" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="neueintritt" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="arzt_id" type="UUID"/>
+      <column name="mpa_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-78">
+    <createTable tableName="untersuchungdurchfuehrung_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="nachkontrolle" type="BOOLEAN"/>
+      <column name="nachzuegler" type="BOOLEAN"/>
+      <column name="neueintritt" type="BOOLEAN"/>
+      <column name="arzt_id" type="UUID"/>
+      <column name="mpa_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-79">
+    <createTable tableName="untersuchungimpfstatuskrankheit">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungimpfstatuskrankheitPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="anzahlimpfungen" type="INTEGER"/>
+      <column name="datumletzteimpfung" type="date"/>
+      <column name="impfempfehlung" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="impfentscheid" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="impfschutzgegeben" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="krankheit" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="untersuchungimpfungen_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-80">
+    <createTable tableName="untersuchungimpfstatuskrankheit_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="anzahlimpfungen" type="INTEGER"/>
+      <column name="datumletzteimpfung" type="date"/>
+      <column name="impfempfehlung" type="BOOLEAN"/>
+      <column name="impfentscheid" type="BOOLEAN"/>
+      <column name="impfschutzgegeben" type="BOOLEAN"/>
+      <column name="krankheit" type="VARCHAR(30)"/>
+      <column name="untersuchungimpfungen_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-81">
+    <createTable tableName="untersuchungimpfungen">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungimpfungenPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+      <column name="checkdoppelkontrolleimpfentscheiddurchgefuehrt" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="checkeinwilligungvorhanden" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="checkkontraindikationenabgeklaert" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="impfausweisnichtvorhanden" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="impfausweisunvollstaendig" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="impfausweiszweipluseinsschema" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="visum1_id" type="UUID"/>
+      <column name="visum2_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-82">
+    <createTable tableName="untersuchungimpfungen_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+      <column name="checkdoppelkontrolleimpfentscheiddurchgefuehrt" type="BOOLEAN"/>
+      <column name="checkeinwilligungvorhanden" type="BOOLEAN"/>
+      <column name="checkkontraindikationenabgeklaert" type="BOOLEAN"/>
+      <column name="impfausweisnichtvorhanden" type="BOOLEAN"/>
+      <column name="impfausweisunvollstaendig" type="BOOLEAN"/>
+      <column name="impfausweiszweipluseinsschema" type="BOOLEAN"/>
+      <column name="visum1_id" type="UUID"/>
+      <column name="visum2_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-83">
+    <createTable tableName="untersuchungimpfungintern">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungimpfunginternPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="datumimpfung" type="date"/>
+      <column name="grundnichtdurchfuehrung" type="VARCHAR(255)"/>
+      <column name="impfstatus" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="anlassimpfungerfasst_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="charge_id" type="UUID"/>
+      <column name="impfstoff_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="untersuchungimpfungen_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="userdurchgefuehrt_id" type="UUID"/>
+      <column name="usererfasst_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-84">
+    <createTable tableName="untersuchungimpfungintern_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="datumimpfung" type="date"/>
+      <column name="grundnichtdurchfuehrung" type="VARCHAR(255)"/>
+      <column name="impfstatus" type="VARCHAR(255)"/>
+      <column name="anlassimpfungerfasst_id" type="UUID"/>
+      <column name="charge_id" type="UUID"/>
+      <column name="impfstoff_id" type="UUID"/>
+      <column name="untersuchungimpfungen_id" type="UUID"/>
+      <column name="userdurchgefuehrt_id" type="UUID"/>
+      <column name="usererfasst_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-85">
+    <createTable tableName="untersuchungimpfungkrankheitimmunitaet">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungimpfungkrankheitimmunitaetPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="immunitaetgenuegend" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="krankheit" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="impfung_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-86">
+    <createTable tableName="untersuchungimpfungkrankheitimmunitaet_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="immunitaetgenuegend" type="BOOLEAN"/>
+      <column name="krankheit" type="VARCHAR(255)"/>
+      <column name="impfung_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-87">
+    <createTable tableName="untersuchungkinddaten">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungkinddatenPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="geburtsdatum" type="date">
+        <constraints nullable="false"/>
+      </column>
+      <column name="geschlecht" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="klasse" type="VARCHAR(255)"/>
+      <column name="klasseid" type="VARCHAR(36)"/>
+      <column name="klassenstufe" type="VARCHAR(30)"/>
+      <column name="klassentyp" type="VARCHAR(30)"/>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="nationalitaet" type="VARCHAR(30)"/>
+      <column name="quartier" type="VARCHAR(255)"/>
+      <column name="schulhaus" type="VARCHAR(255)"/>
+      <column name="schulhausnummer" type="VARCHAR(255)"/>
+      <column name="schulkreis" type="VARCHAR(255)"/>
+      <column name="vorname" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-88">
+    <createTable tableName="untersuchungkinddaten_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="geburtsdatum" type="date"/>
+      <column name="geschlecht" type="VARCHAR(30)"/>
+      <column name="klasse" type="VARCHAR(255)"/>
+      <column name="klasseid" type="VARCHAR(36)"/>
+      <column name="klassenstufe" type="VARCHAR(30)"/>
+      <column name="klassentyp" type="VARCHAR(30)"/>
+      <column name="name" type="VARCHAR(255)"/>
+      <column name="nationalitaet" type="VARCHAR(30)"/>
+      <column name="quartier" type="VARCHAR(255)"/>
+      <column name="schulhaus" type="VARCHAR(255)"/>
+      <column name="schulhausnummer" type="VARCHAR(255)"/>
+      <column name="schulkreis" type="VARCHAR(255)"/>
+      <column name="vorname" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-89">
+    <createTable tableName="untersuchungtriage">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungtriagePK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="befundsu" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="befundsubemerkungen" type="VARCHAR(255)"/>
+      <column name="triagempa" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="triagempabemerkungen" type="VARCHAR(255)"/>
+      <column name="triagesu" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="triagesubemerkungen" type="VARCHAR(255)"/>
+      <column name="vorinformationlehrperson" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="vorinformationlehrpersonbemerkungen" type="VARCHAR(255)"/>
+      <column name="wunschschueler" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="wunschschuelerbemerkungen" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-90">
+    <createTable tableName="untersuchungtriage_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="befundsu" type="BOOLEAN"/>
+      <column name="befundsubemerkungen" type="VARCHAR(255)"/>
+      <column name="triagempa" type="BOOLEAN"/>
+      <column name="triagempabemerkungen" type="VARCHAR(255)"/>
+      <column name="triagesu" type="BOOLEAN"/>
+      <column name="triagesubemerkungen" type="VARCHAR(255)"/>
+      <column name="vorinformationlehrperson" type="BOOLEAN"/>
+      <column name="vorinformationlehrpersonbemerkungen" type="VARCHAR(255)"/>
+      <column name="wunschschueler" type="BOOLEAN"/>
+      <column name="wunschschuelerbemerkungen" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-91">
+    <createTable tableName="visum">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="visumPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="datumvisiert" type="date"/>
+      <column name="person_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-92">
+    <createTable tableName="visum_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="datumvisiert" type="date"/>
+      <column name="person_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-93">
+    <addPrimaryKey columnNames="rev, id" constraintName="anlass_audPK" tableName="anlass_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-94">
+    <addPrimaryKey columnNames="rev, id" constraintName="anlassconfig_audPK" tableName="anlassconfig_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-95">
+    <addPrimaryKey columnNames="rev, id" constraintName="aufgabe_audPK" tableName="aufgabe_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-96">
+    <addPrimaryKey columnNames="aufgabe_id, rev, filedata_id" constraintName="aufgabe_filedata_audPK" tableName="aufgabe_filedata_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-97">
+    <addPrimaryKey columnNames="aufgabe_id, rev, label_id" constraintName="aufgabe_label_audPK" tableName="aufgabe_label_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-98">
+    <addPrimaryKey columnNames="rev, id" constraintName="benutzer_audPK" tableName="benutzer_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-99">
+    <addPrimaryKey columnNames="rev, id" constraintName="benutzerberechtigung_audPK" tableName="benutzerberechtigung_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-100">
+    <addPrimaryKey columnNames="rev, id" constraintName="dossier_audPK" tableName="dossier_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-101">
+    <addPrimaryKey columnNames="rev, id" constraintName="einladung_audPK" tableName="einladung_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-102">
+    <addPrimaryKey columnNames="rev, id" constraintName="filedata_audPK" tableName="filedata_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-103">
+    <addPrimaryKey columnNames="rev, id" constraintName="impfstoff_audPK" tableName="impfstoff_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-104">
+    <addPrimaryKey columnNames="rev, id" constraintName="impfstoffcharge_audPK" tableName="impfstoffcharge_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-105">
+    <addPrimaryKey columnNames="rev, id" constraintName="infomaterial_audPK" tableName="infomaterial_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-106">
+    <addPrimaryKey columnNames="rev, id" constraintName="kind_audPK" tableName="kind_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-107">
+    <addPrimaryKey columnNames="kontaktpersonkind_id, rev, kind_id" constraintName="kind_kontaktpersonkind_audPK" tableName="kind_kontaktpersonkind_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-108">
+    <addPrimaryKey columnNames="rev, id" constraintName="kindexternal_audPK" tableName="kindexternal_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-109">
+    <addPrimaryKey columnNames="rev, id" constraintName="klasse_audPK" tableName="klasse_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-110">
+    <addPrimaryKey columnNames="lehrperson_id, rev, klasse_id" constraintName="klasse_lehrperson_audPK" tableName="klasse_lehrperson_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-111">
+    <addPrimaryKey columnNames="rev, id" constraintName="klasseexternal_audPK" tableName="klasseexternal_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-112">
+    <addPrimaryKey columnNames="rev, id" constraintName="kontaktpersonkind_audPK" tableName="kontaktpersonkind_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-113">
+    <addPrimaryKey columnNames="rev, id" constraintName="kontaktpersonkindexternal_audPK" tableName="kontaktpersonkindexternal_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-114">
+    <addPrimaryKey columnNames="rev, id" constraintName="kontaktpersonschule_audPK" tableName="kontaktpersonschule_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-115">
+    <addPrimaryKey columnNames="rev, id" constraintName="label_audPK" tableName="label_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-116">
+    <addPrimaryKey columnNames="rev, id" constraintName="lehrperson_audPK" tableName="lehrperson_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-117">
+    <addPrimaryKey columnNames="rev, id" constraintName="lehrpersonexternal_audPK" tableName="lehrpersonexternal_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-118">
+    <addPrimaryKey columnNames="rev, id" constraintName="nachkontrolle_audPK" tableName="nachkontrolle_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-119">
+    <addPrimaryKey columnNames="rev, id" constraintName="notiz_audPK" tableName="notiz_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-120">
+    <addPrimaryKey columnNames="notiz_id, rev, filedata_id" constraintName="notiz_filedata_audPK" tableName="notiz_filedata_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-121">
+    <addPrimaryKey columnNames="notiz_id, rev, label_id" constraintName="notiz_label_audPK" tableName="notiz_label_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-122">
+    <addPrimaryKey columnNames="rev, id" constraintName="quartier_audPK" tableName="quartier_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-123">
+    <addPrimaryKey columnNames="rev, id" constraintName="schedulerconfig_audPK" tableName="schedulerconfig_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-124">
+    <addPrimaryKey columnNames="rev, id" constraintName="schule_audPK" tableName="schule_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-125">
+    <addPrimaryKey columnNames="kontaktpersonschule_id, rev, schule_id" constraintName="schule_kontaktpersonschule_audPK" tableName="schule_kontaktpersonschule_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-126">
+    <addPrimaryKey columnNames="rev, id" constraintName="schuleexternal_audPK" tableName="schuleexternal_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-127">
+    <addPrimaryKey columnNames="rev, id" constraintName="tenantsetting_audPK" tableName="tenantsetting_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-128">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchung_audPK" tableName="untersuchung_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-129">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungdurchfuehrung_audPK" tableName="untersuchungdurchfuehrung_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-130">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungimpfstatuskrankheit_audPK" tableName="untersuchungimpfstatuskrankheit_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-131">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungimpfungen_audPK" tableName="untersuchungimpfungen_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-132">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungimpfungintern_audPK" tableName="untersuchungimpfungintern_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-133">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungimpfungkrankheitimmunitaet_audPK" tableName="untersuchungimpfungkrankheitimmunitaet_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-134">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungkinddaten_audPK" tableName="untersuchungkinddaten_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-135">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungtriage_audPK" tableName="untersuchungtriage_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-136">
+    <addPrimaryKey columnNames="rev, id" constraintName="visum_audPK" tableName="visum_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-137">
+    <addUniqueConstraint columnNames="filedata_id" constraintName="UC_AUFGABE_FILEDATAFILEDATA_ID_COL" tableName="aufgabe_filedata"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-138">
+    <addUniqueConstraint columnNames="kind_id" constraintName="UC_DOSSIERKIND_ID_COL" tableName="dossier"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-139">
+    <addUniqueConstraint columnNames="abmeldungsnotiz_id" constraintName="UC_EINLADUNGABMELDUNGSNOTIZ_ID_COL" tableName="einladung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-140">
+    <addUniqueConstraint columnNames="fragebogen_id" constraintName="UC_EINLADUNGFRAGEBOGEN_ID_COL" tableName="einladung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-141">
+    <addUniqueConstraint columnNames="impfausweis_id" constraintName="UC_EINLADUNGIMPFAUSWEIS_ID_COL" tableName="einladung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-142">
+    <addUniqueConstraint columnNames="untersuchung_id" constraintName="UC_EINLADUNGUNTERSUCHUNG_ID_COL" tableName="einladung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-143">
+    <addUniqueConstraint columnNames="filedata_id" constraintName="UC_ESCADASYNCEVENTFILEDATA_ID_COL" tableName="escadasyncevent"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-144">
+    <addUniqueConstraint columnNames="kind_id" constraintName="UC_KINDEXTERNALKIND_ID_COL" tableName="kindexternal"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-145">
+    <addUniqueConstraint columnNames="klasse_id" constraintName="UC_KLASSEEXTERNALKLASSE_ID_COL" tableName="klasseexternal"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-146">
+    <addUniqueConstraint columnNames="kontaktpersonkind_id" constraintName="UC_KONTAKTPERSONKINDEXTERNALKONTAKTPERSONKIND_ID_COL" tableName="kontaktpersonkindexternal"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-147">
+    <addUniqueConstraint columnNames="lehrperson_id" constraintName="UC_LEHRPERSONEXTERNALLEHRPERSON_ID_COL" tableName="lehrpersonexternal"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-148">
+    <addUniqueConstraint columnNames="dossier_id" constraintName="UC_NACHKONTROLLEDOSSIER_ID_COL" tableName="nachkontrolle"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-149">
+    <addUniqueConstraint columnNames="filedata_id" constraintName="UC_NOTIZ_FILEDATAFILEDATA_ID_COL" tableName="notiz_filedata"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-150">
+    <addUniqueConstraint columnNames="schule_id" constraintName="UC_SCHULEEXTERNALSCHULE_ID_COL" tableName="schuleexternal"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-151">
+    <addUniqueConstraint columnNames="visum1_id" constraintName="UC_UNTERSUCHUNGIMPFUNGENVISUM1_ID_COL" tableName="untersuchungimpfungen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-152">
+    <addUniqueConstraint columnNames="visum2_id" constraintName="UC_UNTERSUCHUNGIMPFUNGENVISUM2_ID_COL" tableName="untersuchungimpfungen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-153">
+    <addUniqueConstraint columnNames="untersuchungdurchfuehrung_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGDURCHFUEHRUNG_ID_COL" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-154">
+    <addUniqueConstraint columnNames="untersuchungimpfungen_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGIMPFUNGEN_ID_COL" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-155">
+    <addUniqueConstraint columnNames="untersuchungkinddaten_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGKINDDATEN_ID_COL" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-156">
+    <addUniqueConstraint columnNames="untersuchungtriage_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGTRIAGE_ID_COL" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-157">
+    <addUniqueConstraint columnNames="email" constraintName="uc_benutzer_email" tableName="benutzer"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-158">
+    <addUniqueConstraint columnNames="keycloakid" constraintName="uc_benutzer_keycloakId" tableName="benutzer"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-159">
+    <addUniqueConstraint columnNames="benutzer_id, berechtigung" constraintName="uc_benutzerberechtigung_benutzer_berechtigung" tableName="benutzerberechtigung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-160">
+    <addUniqueConstraint columnNames="eintrittsjahr, tenant" constraintName="uc_edokididsequence_eintrittsjahr" tableName="edokididsequence"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-161">
+    <addUniqueConstraint columnNames="anlass_id, dossier_id" constraintName="uc_einladung_anlass_dossier" tableName="einladung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-162">
+    <addUniqueConstraint columnNames="name" constraintName="uc_impfstoff_name" tableName="impfstoff"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-163">
+    <addUniqueConstraint columnNames="name, impfstoff_id" constraintName="uc_impfstoffcharge_name_impfstoff_id" tableName="impfstoffcharge"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-164">
+    <addUniqueConstraint columnNames="esadid" constraintName="uc_kind_esadId" tableName="kind"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-165">
+    <addUniqueConstraint columnNames="sozialversicherungsnummer" constraintName="uc_kind_sozialversicherungsNummer" tableName="kind"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-166">
+    <addUniqueConstraint columnNames="schuelerid" constraintName="uc_kindexternal_schuelerid" tableName="kindexternal"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-167">
+    <addUniqueConstraint columnNames="klasseid" constraintName="uc_klasseexternal_klasseid" tableName="klasseexternal"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-168">
+    <addUniqueConstraint columnNames="adressierungid" constraintName="uc_kontaktpersonkindexternal_adressierungid" tableName="kontaktpersonkindexternal"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-169">
+    <addUniqueConstraint columnNames="namede, labeltyp" constraintName="uc_label_nameDe_labelTyp" tableName="label"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-170">
+    <addUniqueConstraint columnNames="namefr, labeltyp" constraintName="uc_label_nameFr_labelTyp" tableName="label"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-171">
+    <addUniqueConstraint columnNames="klasselehrpersonid" constraintName="uc_lehrpersonexternal_klasselehrpersonid" tableName="lehrpersonexternal"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-172">
+    <addUniqueConstraint columnNames="quartiername" constraintName="uc_quartier_quartiername" tableName="quartier"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-173">
+    <addUniqueConstraint columnNames="schedulertyp" constraintName="uc_schedulerconfig_schedulerTyp" tableName="schedulerconfig"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-174">
+    <addUniqueConstraint columnNames="schulhausid" constraintName="uc_schuleexternal_schulhausid" tableName="schuleexternal"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-175">
+    <addUniqueConstraint columnNames="tenant" constraintName="uc_tenantsetting_tenant" tableName="tenantsetting"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-176">
+    <addUniqueConstraint columnNames="untersuchungimpfungen_id, krankheit" constraintName="uc_untersuchungimpfstatuskrankheit_untersuchungimpfungen_krankheit" tableName="untersuchungimpfstatuskrankheit"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-177">
+    <createIndex indexName="ix_anlass_anlassconfig" tableName="anlass">
+      <column name="anlassconfig_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-178">
+    <createIndex indexName="ix_anlass_benutzer_arzt" tableName="anlass">
+      <column name="arzt_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-179">
+    <createIndex indexName="ix_anlass_benutzer_mpa" tableName="anlass">
+      <column name="mpa_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-180">
+    <createIndex indexName="ix_anlass_benutzer_weiterer" tableName="anlass">
+      <column name="weitereperson_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-181">
+    <createIndex indexName="ix_aufgabe_benutzer_empfaenger" tableName="aufgabe">
+      <column name="empfaenger_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-182">
+    <createIndex indexName="ix_aufgabe_benutzer_usererfasst" tableName="aufgabe">
+      <column name="usererfasst_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-183">
+    <createIndex indexName="ix_aufgabe_filedata_aufgabe" tableName="aufgabe_filedata">
+      <column name="aufgabe_id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-184">
+    <createIndex indexName="ix_aufgabe_kind_id" tableName="aufgabe">
+      <column name="kind_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-185">
+    <createIndex indexName="ix_aufgabe_label_label" tableName="aufgabe_label">
+      <column name="label_id"/>
+      <column name="aufgabe_id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-186">
+    <createIndex indexName="ix_aufgabe_status_benutzer_empfaenger" tableName="aufgabe">
+      <column name="aufgabestatus"/>
+      <column name="empfaenger_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-187">
+    <createIndex indexName="ix_benutzer_email" tableName="benutzer">
+      <column name="email"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-188">
+    <createIndex indexName="ix_benutzer_id" tableName="benutzer">
+      <column name="id"/>
+      <column name="version"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-189">
+    <createIndex indexName="ix_benutzer_keycloakId" tableName="benutzer">
+      <column name="keycloakid"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-190">
+    <createIndex indexName="ix_benutzerberechtigung_benutzer" tableName="benutzerberechtigung">
+      <column name="benutzer_id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-191">
+    <createIndex indexName="ix_dossier_benutzer_arzt_id" tableName="dossier">
+      <column name="zustaendigarzt_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-192">
+    <createIndex indexName="ix_dossier_benutzer_mpa_id" tableName="dossier">
+      <column name="zustaendigmpa_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-193">
+    <createIndex indexName="ix_dossier_kind_id" tableName="dossier">
+      <column name="kind_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-194">
+    <createIndex indexName="ix_einladung_anlass" tableName="einladung">
+      <column name="anlass_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-195">
+    <createIndex indexName="ix_einladung_dossier" tableName="einladung">
+      <column name="dossier_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-196">
+    <createIndex indexName="ix_einladung_notiz_abmeldung" tableName="einladung">
+      <column name="abmeldungsnotiz_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-197">
+    <createIndex indexName="ix_einladung_notiz_fragebogen" tableName="einladung">
+      <column name="fragebogen_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-198">
+    <createIndex indexName="ix_einladung_notiz_impfausweis" tableName="einladung">
+      <column name="impfausweis_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-199">
+    <createIndex indexName="ix_einladung_untersuchung" tableName="einladung">
+      <column name="untersuchung_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-200">
+    <createIndex indexName="ix_escadasyncevent_file" tableName="escadasyncevent">
+      <column name="filedata_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-201">
+    <createIndex indexName="ix_impfstoff_name" tableName="impfstoff">
+      <column name="name"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-202">
+    <createIndex indexName="ix_impfstoffcharge_impfstoff_id" tableName="impfstoffcharge">
+      <column name="impfstoff_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-203">
+    <createIndex indexName="ix_kind_esadId" tableName="kind">
+      <column name="esadid"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-204">
+    <createIndex indexName="ix_kind_geburtsdatum" tableName="kind">
+      <column name="geburtsdatum"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-205">
+    <createIndex indexName="ix_kind_klasse_id" tableName="kind">
+      <column name="klasse_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-206">
+    <createIndex indexName="ix_kind_kontaktpersonkind_kind" tableName="kind_kontaktpersonkind">
+      <column name="kind_id"/>
+      <column name="kontaktpersonkind_id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-207">
+    <createIndex indexName="ix_kind_name" tableName="kind">
+      <column name="name"/>
+      <column name="vorname"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-208">
+    <createIndex indexName="ix_kind_schule_id" tableName="kind">
+      <column name="schule_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-209">
+    <createIndex indexName="ix_kind_sozialversicherungsNummer" tableName="kind">
+      <column name="sozialversicherungsnummer"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-210">
+    <createIndex indexName="ix_kindexternal_kind" tableName="kindexternal">
+      <column name="kind_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-211">
+    <createIndex indexName="ix_kindexternal_schuelerid" tableName="kindexternal">
+      <column name="schuelerid"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-212">
+    <createIndex indexName="ix_klasse_bezeichnung" tableName="klasse">
+      <column name="bezeichnung"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-213">
+    <createIndex indexName="ix_klasse_externalsystemid" tableName="klasse">
+      <column name="externalsystemid"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-214">
+    <createIndex indexName="ix_klasse_klassenstufe" tableName="klasse">
+      <column name="klassenstufe"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-215">
+    <createIndex indexName="ix_klasse_lehrperson_klasse" tableName="klasse_lehrperson">
+      <column name="klasse_id"/>
+      <column name="lehrperson_id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-216">
+    <createIndex indexName="ix_klasse_schule" tableName="klasse">
+      <column name="schule_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-217">
+    <createIndex indexName="ix_klasseexternal_klasse" tableName="klasseexternal">
+      <column name="klasse_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-218">
+    <createIndex indexName="ix_klasseexternal_klasseid" tableName="klasseexternal">
+      <column name="klasseid"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-219">
+    <createIndex indexName="ix_kontaktpersonkindexternal_adressierungid" tableName="kontaktpersonkindexternal">
+      <column name="adressierungid"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-220">
+    <createIndex indexName="ix_kontaktpersonkindexternal_kontaktpersonkind" tableName="kontaktpersonkindexternal">
+      <column name="kontaktpersonkind_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-221">
+    <createIndex indexName="ix_label_name" tableName="label">
+      <column name="namede"/>
+      <column name="id"/>
+      <column name="namefr"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-222">
+    <createIndex indexName="ix_lehrpersonexternal_klasselehrpersonid" tableName="lehrpersonexternal">
+      <column name="klasselehrpersonid"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-223">
+    <createIndex indexName="ix_lehrpersonexternal_lehrperson" tableName="lehrpersonexternal">
+      <column name="lehrperson_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-224">
+    <createIndex indexName="ix_nachkontrolle_dossier_id" tableName="nachkontrolle">
+      <column name="dossier_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-225">
+    <createIndex indexName="ix_notiz_dossier" tableName="notiz">
+      <column name="dossier_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-226">
+    <createIndex indexName="ix_notiz_filedata_notiz" tableName="notiz_filedata">
+      <column name="notiz_id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-227">
+    <createIndex indexName="ix_notiz_label_label" tableName="notiz_label">
+      <column name="label_id"/>
+      <column name="notiz_id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-228">
+    <createIndex indexName="ix_notiz_verantwortlicher" tableName="notiz">
+      <column name="verantwortlicher_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-229">
+    <createIndex indexName="ix_schedulerconfig_schedulerTyp" tableName="schedulerconfig">
+      <column name="schedulertyp"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-230">
+    <createIndex indexName="ix_schule_benutzer_arzt_id" tableName="schule">
+      <column name="zustaendigarzt_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-231">
+    <createIndex indexName="ix_schule_benutzer_mpa_id" tableName="schule">
+      <column name="zustaendigmpa_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-232">
+    <createIndex indexName="ix_schule_kontaktpersonschule_schule" tableName="schule_kontaktpersonschule">
+      <column name="schule_id"/>
+      <column name="kontaktpersonschule_id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-233">
+    <createIndex indexName="ix_schule_quartier_id" tableName="schule">
+      <column name="quartier_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-234">
+    <createIndex indexName="ix_schule_schulhaus_id" tableName="schule">
+      <column name="schulhaus"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-235">
+    <createIndex indexName="ix_schuleexternal_schule" tableName="schuleexternal">
+      <column name="schule_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-236">
+    <createIndex indexName="ix_schuleexternal_schulhausid" tableName="schuleexternal">
+      <column name="schulhausid"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-237">
+    <createIndex indexName="ix_tenantsetting_tenant" tableName="tenantsetting">
+      <column name="tenant"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-238">
+    <createIndex indexName="ix_untersuchung_untersuchungdurchfuehrung" tableName="untersuchung">
+      <column name="untersuchungdurchfuehrung_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-239">
+    <createIndex indexName="ix_untersuchung_untersuchungimpfungen" tableName="untersuchung">
+      <column name="untersuchungimpfungen_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-240">
+    <createIndex indexName="ix_untersuchung_untersuchungkinddaten" tableName="untersuchung">
+      <column name="untersuchungkinddaten_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-241">
+    <createIndex indexName="ix_untersuchung_untersuchungtriage" tableName="untersuchung">
+      <column name="untersuchungtriage_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-242">
+    <createIndex indexName="ix_untersuchungdurchfuehrung_benutzer_arzt" tableName="untersuchungdurchfuehrung">
+      <column name="arzt_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-243">
+    <createIndex indexName="ix_untersuchungdurchfuehrung_benutzer_mpa" tableName="untersuchungdurchfuehrung">
+      <column name="mpa_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-244">
+    <createIndex indexName="ix_untersuchungimpfstatuskrankheit_untersuchungimpfungen" tableName="untersuchungimpfstatuskrankheit">
+      <column name="untersuchungimpfungen_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-245">
+    <createIndex indexName="ix_untersuchungimpfstatuskrankheit_untersuchungimpfungen_krankheit" tableName="untersuchungimpfstatuskrankheit">
+      <column name="untersuchungimpfungen_id"/>
+      <column name="krankheit"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-246">
+    <createIndex indexName="ix_untersuchungimpfungen_visum_1" tableName="untersuchungimpfungen">
+      <column name="visum1_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-247">
+    <createIndex indexName="ix_untersuchungimpfungen_visum_2" tableName="untersuchungimpfungen">
+      <column name="visum2_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-248">
+    <createIndex indexName="ix_untersuchungimpfungintern_anlass" tableName="untersuchungimpfungintern">
+      <column name="anlassimpfungerfasst_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-249">
+    <createIndex indexName="ix_untersuchungimpfungintern_benutzer_durchgefuehrt" tableName="untersuchungimpfungintern">
+      <column name="userdurchgefuehrt_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-250">
+    <createIndex indexName="ix_untersuchungimpfungintern_benutzer_erfasst" tableName="untersuchungimpfungintern">
+      <column name="usererfasst_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-251">
+    <createIndex indexName="ix_untersuchungimpfungintern_impfstoff" tableName="untersuchungimpfungintern">
+      <column name="impfstoff_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-252">
+    <createIndex indexName="ix_untersuchungimpfungintern_impfstoffcharge" tableName="untersuchungimpfungintern">
+      <column name="charge_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-253">
+    <createIndex indexName="ix_untersuchungimpfungintern_untersuchungimpfungen" tableName="untersuchungimpfungintern">
+      <column name="untersuchungimpfungen_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-254">
+    <createIndex indexName="ix_untersuchungimpfungkrankheitimmunitaet_untersuchungimpfungintern" tableName="untersuchungimpfungkrankheitimmunitaet">
+      <column name="impfung_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-255">
+    <createIndex indexName="ix_visum_benutzer" tableName="visum">
+      <column name="person_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-256">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="schuleexternal_aud" constraintName="FK299oo74cg0nloc9w6b5nifvqu" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-257">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="kind_kontaktpersonkind_aud" constraintName="FK2slbuv1wmyn1celfmfktedxn9" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-258">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungimpfungkrankheitimmunitaet_aud" constraintName="FK37dv5s7cnp9tx5jbvihrpu5fi" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-259">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="notiz_label_aud" constraintName="FK3icf4cvf0p8f2w3ru3qsxfxxa" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-260">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="infomaterial_aud" constraintName="FK42hy24fx7jtb8x81m1gmgsdc3" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-261">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="visum_aud" constraintName="FK45psllrnqbd91wu5hddfv1iu4" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-262">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="anlassconfig_aud" constraintName="FK489bdni39vpvfrrryo0hr6ho3" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-263">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="anlass_aud" constraintName="FK54lww0sv0n2wampyujqx40v5g" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-264">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungtriage_aud" constraintName="FK6kolmq59w7saqo5uyxeg8ch1k" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-265">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="schedulerconfig_aud" constraintName="FK8617lbvyc0idy7am7beokot9y" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-266">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungimpfungintern_aud" constraintName="FK8dq7pcum4bv2d9d25di165qnv" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-267">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="kind_aud" constraintName="FK8i4febfygx85q24mxbsva18ky" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-268">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungimpfungen_aud" constraintName="FK9rx1xvsx5p4vhmptip9mx8uvn" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-269">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="lehrpersonexternal_aud" constraintName="FK9vkb5lcyhprxspdi979j4nrd0" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-270">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="tenantsetting_aud" constraintName="FKbivthdnfs3fq93pssa0n54cn7" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-271">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungdurchfuehrung_aud" constraintName="FKbvk41txivgevbkoidybxvmuca" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-272">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="aufgabe_label_aud" constraintName="FKctc77fdt11dogyv8gh0sd881g" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-273">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="label_aud" constraintName="FKcvfbrs7y5fmy2xs9hvsokkik8" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-274">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="klasseexternal_aud" constraintName="FKdbk6ve3t53yloae9n51qt683m" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-275">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="kontaktpersonkindexternal_aud" constraintName="FKdmk8y1nq2lamemw2stoephae6" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-276">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="quartier_aud" constraintName="FKedmgwmhaskx8udc1o6qltxwec" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-277">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="kindexternal_aud" constraintName="FKfyv4txpvn3cs9l0w4efvi8eqy" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-278">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="filedata_aud" constraintName="FKhuocw548j6r8apgtmquj4k580" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-279">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="kontaktpersonschule_aud" constraintName="FKi8gmyibbkj5mijq5ch0ocab7w" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-280">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="lehrperson_aud" constraintName="FKior5lui2bi6m928cknx9o19h7" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-281">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="klasse_aud" constraintName="FKirwh1p71ac81oy2tqng6ifa0v" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-282">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungimpfstatuskrankheit_aud" constraintName="FKiw0ieivwb6n9ecma7s6wdc78t" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-283">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="schule_kontaktpersonschule_aud" constraintName="FKj5x127wqi06g4l28ygpoe3p05" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-284">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="nachkontrolle_aud" constraintName="FKjau63qefl0evmehgl7otjuegd" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-285">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungkinddaten_aud" constraintName="FKjic1bj5x10rihwfhuwdsgi9dh" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-286">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="impfstoff_aud" constraintName="FKk39tmjnkl5uug0ys4g64a6ugi" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-287">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="aufgabe_filedata_aud" constraintName="FKlc4swecx1rcov8rnayyea6ost" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-288">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="klasse_lehrperson_aud" constraintName="FKlgloqcso4aggkv5x62nbrgib2" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-289">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="notiz_filedata_aud" constraintName="FKlvcs8nuew82gom42ts0p1q3ff" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-290">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="benutzerberechtigung_aud" constraintName="FKm0t6tmim0ry7envly13ek9l5k" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-291">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="schule_aud" constraintName="FKm85j64vfjkkw9qxc9lucey23t" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-292">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="notiz_aud" constraintName="FKmspjvl9dgc05g8jpot368grvs" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-293">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchung_aud" constraintName="FKndqq3oghw1c208opqicgy2jj0" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-294">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="aufgabe_aud" constraintName="FKpdei5f9e71n0ru3fyg86bjr0r" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-295">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="einladung_aud" constraintName="FKpjf7984l6vpsmgyklojs3o67w" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-296">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="dossier_aud" constraintName="FKrr1jcn0gmtxqnn7la4n7j7phy" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-297">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="impfstoffcharge_aud" constraintName="FKs05v7sk5o6dr1t3hmc9ed06qp" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-298">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="benutzer_aud" constraintName="FKswc4iahf0lnluku84fvkpp5wy" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-299">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="kontaktpersonkind_aud" constraintName="FKtgip3pkskau74td2e5nwm2ajl" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-300">
+    <addForeignKeyConstraint baseColumnNames="anlassconfig_id" baseTableName="anlass" constraintName="fk_anlass_anlassconfig" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="anlassconfig" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-301">
+    <addForeignKeyConstraint baseColumnNames="arzt_id" baseTableName="anlass" constraintName="fk_anlass_benutzer_arzt" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-302">
+    <addForeignKeyConstraint baseColumnNames="mpa_id" baseTableName="anlass" constraintName="fk_anlass_benutzer_mpa" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-303">
+    <addForeignKeyConstraint baseColumnNames="weitereperson_id" baseTableName="anlass" constraintName="fk_anlass_benutzer_weiterer" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-304">
+    <addForeignKeyConstraint baseColumnNames="empfaenger_id" baseTableName="aufgabe" constraintName="fk_aufgabe_benutzer_empfaenger" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-305">
+    <addForeignKeyConstraint baseColumnNames="usererfasst_id" baseTableName="aufgabe" constraintName="fk_aufgabe_benutzer_erfasst" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-306">
+    <addForeignKeyConstraint baseColumnNames="aufgabe_id" baseTableName="aufgabe_filedata" constraintName="fk_aufgabe_filedata_aufgabe" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="aufgabe" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-307">
+    <addForeignKeyConstraint baseColumnNames="filedata_id" baseTableName="aufgabe_filedata" constraintName="fk_aufgabe_filedata_filedata" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="filedata" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-308">
+    <addForeignKeyConstraint baseColumnNames="kind_id" baseTableName="aufgabe" constraintName="fk_aufgabe_kind" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="kind" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-309">
+    <addForeignKeyConstraint baseColumnNames="aufgabe_id" baseTableName="aufgabe_label" constraintName="fk_aufgabe_label_aufgabe" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="aufgabe" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-310">
+    <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="aufgabe_label" constraintName="fk_aufgabe_label_label" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="label" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-311">
+    <addForeignKeyConstraint baseColumnNames="benutzer_id" baseTableName="benutzerberechtigung" constraintName="fk_benutzerberechtigung_benutzer" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-312">
+    <addForeignKeyConstraint baseColumnNames="zustaendigarzt_id" baseTableName="dossier" constraintName="fk_dossier_benutzer_arzt" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-313">
+    <addForeignKeyConstraint baseColumnNames="zustaendigmpa_id" baseTableName="dossier" constraintName="fk_dossier_benutzer_mpa" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-314">
+    <addForeignKeyConstraint baseColumnNames="kind_id" baseTableName="dossier" constraintName="fk_dossier_kind" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="kind" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-315">
+    <addForeignKeyConstraint baseColumnNames="anlass_id" baseTableName="einladung" constraintName="fk_einladung_anlass" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="anlass" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-316">
+    <addForeignKeyConstraint baseColumnNames="dossier_id" baseTableName="einladung" constraintName="fk_einladung_dossier" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="dossier" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-317">
+    <addForeignKeyConstraint baseColumnNames="abmeldungsnotiz_id" baseTableName="einladung" constraintName="fk_einladung_notiz_abmeldung" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="notiz" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-318">
+    <addForeignKeyConstraint baseColumnNames="fragebogen_id" baseTableName="einladung" constraintName="fk_einladung_notiz_fragebogen" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="notiz" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-319">
+    <addForeignKeyConstraint baseColumnNames="impfausweis_id" baseTableName="einladung" constraintName="fk_einladung_notiz_impfausweis" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="notiz" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-320">
+    <addForeignKeyConstraint baseColumnNames="untersuchung_id" baseTableName="einladung" constraintName="fk_einladung_untersuchung" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchung" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-321">
+    <addForeignKeyConstraint baseColumnNames="filedata_id" baseTableName="escadasyncevent" constraintName="fk_escadasyncevent_filedata" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="filedata" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-322">
+    <addForeignKeyConstraint baseColumnNames="impfstoff_id" baseTableName="impfstoffcharge" constraintName="fk_impfstoffcharge_impfstoff" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="impfstoff" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-323">
+    <addForeignKeyConstraint baseColumnNames="klasse_id" baseTableName="kind" constraintName="fk_kind_klasse" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="klasse" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-324">
+    <addForeignKeyConstraint baseColumnNames="kind_id" baseTableName="kind_kontaktpersonkind" constraintName="fk_kind_kontaktpersonkind_kind" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="kind" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-325">
+    <addForeignKeyConstraint baseColumnNames="kontaktpersonkind_id" baseTableName="kind_kontaktpersonkind" constraintName="fk_kind_kontaktpersonkind_kontaktpersonkind" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="kontaktpersonkind" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-326">
+    <addForeignKeyConstraint baseColumnNames="schule_id" baseTableName="kind" constraintName="fk_kind_schule" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="schule" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-327">
+    <addForeignKeyConstraint baseColumnNames="kind_id" baseTableName="kindexternal" constraintName="fk_kindexternal_kind" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="kind" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-328">
+    <addForeignKeyConstraint baseColumnNames="klasse_id" baseTableName="klasse_lehrperson" constraintName="fk_klasse_lehrperson_klasse" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="klasse" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-329">
+    <addForeignKeyConstraint baseColumnNames="lehrperson_id" baseTableName="klasse_lehrperson" constraintName="fk_klasse_lehrperson_lehrperson" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="lehrperson" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-330">
+    <addForeignKeyConstraint baseColumnNames="schule_id" baseTableName="klasse" constraintName="fk_klasse_schule" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="schule" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-331">
+    <addForeignKeyConstraint baseColumnNames="klasse_id" baseTableName="klasseexternal" constraintName="fk_klasseexternal_klasse" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="klasse" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-332">
+    <addForeignKeyConstraint baseColumnNames="kontaktpersonkind_id" baseTableName="kontaktpersonkindexternal" constraintName="fk_kontaktpersonkindexternal_kontaktpersonkind" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="kontaktpersonkind" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-333">
+    <addForeignKeyConstraint baseColumnNames="lehrperson_id" baseTableName="lehrpersonexternal" constraintName="fk_lehrpersonexternal_lehrperson" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="lehrperson" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-334">
+    <addForeignKeyConstraint baseColumnNames="dossier_id" baseTableName="nachkontrolle" constraintName="fk_nachkontrolle_dossier" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="dossier" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-335">
+    <addForeignKeyConstraint baseColumnNames="verantwortlicher_id" baseTableName="notiz" constraintName="fk_notiz_benutzer_verantwortlicher" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-336">
+    <addForeignKeyConstraint baseColumnNames="dossier_id" baseTableName="notiz" constraintName="fk_notiz_dossier" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="dossier" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-337">
+    <addForeignKeyConstraint baseColumnNames="filedata_id" baseTableName="notiz_filedata" constraintName="fk_notiz_filedata_filedata" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="filedata" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-338">
+    <addForeignKeyConstraint baseColumnNames="notiz_id" baseTableName="notiz_filedata" constraintName="fk_notiz_filedata_notiz" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="notiz" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-339">
+    <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="notiz_label" constraintName="fk_notiz_label_label" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="label" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-340">
+    <addForeignKeyConstraint baseColumnNames="notiz_id" baseTableName="notiz_label" constraintName="fk_notiz_label_notiz" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="notiz" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-341">
+    <addForeignKeyConstraint baseColumnNames="zustaendigarzt_id" baseTableName="schule" constraintName="fk_schule_benutzer_arzt" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-342">
+    <addForeignKeyConstraint baseColumnNames="zustaendigmpa_id" baseTableName="schule" constraintName="fk_schule_benutzer_mpa" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-343">
+    <addForeignKeyConstraint baseColumnNames="kontaktpersonschule_id" baseTableName="schule_kontaktpersonschule" constraintName="fk_schule_kontaktpersonschule_kontaktpersonschule" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="kontaktpersonschule" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-344">
+    <addForeignKeyConstraint baseColumnNames="schule_id" baseTableName="schule_kontaktpersonschule" constraintName="fk_schule_kontaktpersonschule_schule" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="schule" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-345">
+    <addForeignKeyConstraint baseColumnNames="quartier_id" baseTableName="schule" constraintName="fk_schule_quartier" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="quartier" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-346">
+    <addForeignKeyConstraint baseColumnNames="schule_id" baseTableName="schuleexternal" constraintName="fk_schuleexternal_schule" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="schule" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-347">
+    <addForeignKeyConstraint baseColumnNames="untersuchungdurchfuehrung_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchungdurchfuehrung" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungdurchfuehrung" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-348">
+    <addForeignKeyConstraint baseColumnNames="untersuchungimpfungen_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchungimpfungen" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungimpfungen" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-349">
+    <addForeignKeyConstraint baseColumnNames="untersuchungkinddaten_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchungkinddaten" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungkinddaten" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-350">
+    <addForeignKeyConstraint baseColumnNames="untersuchungtriage_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchungtriage" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungtriage" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-351">
+    <addForeignKeyConstraint baseColumnNames="arzt_id" baseTableName="untersuchungdurchfuehrung" constraintName="fk_untersuchungdurchfuehrung_benutzer_arzt" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-352">
+    <addForeignKeyConstraint baseColumnNames="mpa_id" baseTableName="untersuchungdurchfuehrung" constraintName="fk_untersuchungdurchfuehrung_benutzer_mpa" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-353">
+    <addForeignKeyConstraint baseColumnNames="untersuchungimpfungen_id" baseTableName="untersuchungimpfstatuskrankheit" constraintName="fk_untersuchungimpfstatuskrankheit_untersuchungimpfungen" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungimpfungen" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-354">
+    <addForeignKeyConstraint baseColumnNames="visum1_id" baseTableName="untersuchungimpfungen" constraintName="fk_untersuchungimpfungen_visum_1" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="visum" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-355">
+    <addForeignKeyConstraint baseColumnNames="visum2_id" baseTableName="untersuchungimpfungen" constraintName="fk_untersuchungimpfungen_visum_2" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="visum" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-356">
+    <addForeignKeyConstraint baseColumnNames="anlassimpfungerfasst_id" baseTableName="untersuchungimpfungintern" constraintName="fk_untersuchungimpfungintern_anlass" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="anlass" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-357">
+    <addForeignKeyConstraint baseColumnNames="userdurchgefuehrt_id" baseTableName="untersuchungimpfungintern" constraintName="fk_untersuchungimpfungintern_benutzer_durchgefuehrt" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-358">
+    <addForeignKeyConstraint baseColumnNames="usererfasst_id" baseTableName="untersuchungimpfungintern" constraintName="fk_untersuchungimpfungintern_benutzer_erfasst" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-359">
+    <addForeignKeyConstraint baseColumnNames="impfstoff_id" baseTableName="untersuchungimpfungintern" constraintName="fk_untersuchungimpfungintern_impfstoff" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="impfstoff" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-360">
+    <addForeignKeyConstraint baseColumnNames="charge_id" baseTableName="untersuchungimpfungintern" constraintName="fk_untersuchungimpfungintern_impfstoffcharge" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="impfstoffcharge" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-361">
+    <addForeignKeyConstraint baseColumnNames="untersuchungimpfungen_id" baseTableName="untersuchungimpfungintern" constraintName="fk_untersuchungimpfungintern_untersuchungimpfungen" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungimpfungen" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-362">
+    <addForeignKeyConstraint baseColumnNames="impfung_id" baseTableName="untersuchungimpfungkrankheitimmunitaet" constraintName="fk_untersuchungimpfungkrankheitimmunitaet_untersuchungimpfungintern" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungimpfungintern" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1743095713686-363">
+    <addForeignKeyConstraint baseColumnNames="person_id" baseTableName="visum" constraintName="fk_visum_benutzer" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+</databaseChangeLog>

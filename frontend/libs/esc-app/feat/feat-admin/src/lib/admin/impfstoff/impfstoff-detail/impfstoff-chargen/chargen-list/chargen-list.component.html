@@ -1,0 +1,104 @@
+<svui-buttons-right-container>
+  <h2 svuiHeading="formSection">{{ 'impfstoff.detail.chargen' | transloco }}</h2>
+  <svui-page-header-list-summary
+    [items]="summaryItems()"/>
+
+  @if (canEditList()) {
+    <svui-page-header-add-button [addRouterLink]="Path.RELATIVE_ONE_UP + '/' + Path.CREATE"/>
+  }
+</svui-buttons-right-container>
+
+
+<svui-card [innerSpacing]="'topBottom'">
+  <table
+    svuiTable
+    [loading]="store.loader.isLoading()"
+    [totalRows]="itemTable.filteredListSize()"
+    (pageChanged)="itemTable.onPageChanged($event)"
+    [pagination]="itemTable.pagination()"
+  >
+    <!-- col widths -->
+    <colgroup>
+      <col svuiColWidth colWidth="text-medium">
+      <col svuiColWidth colWidth="text-small">
+      <col svuiColWidth colWidth="options">
+    </colgroup>
+    <thead>
+    <!-- Headers for sorting -->
+    <tr>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.name')"
+        (sort)="itemTable.onColSort($event, 'data.name')"
+      >
+        {{ 'charge.name' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.aktiv')"
+        (sort)="itemTable.onColSort($event, 'data.aktiv')"
+      >
+        {{ 'charge.aktiv' | transloco }}
+      </th>
+      <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
+    </tr>
+    <tr>
+      <th scope="col">
+        <svui-table-filter [columnHeader]="('charge.name' | transloco)">
+          <input svuiTextInput [formControl]="tableFilterForm.group.controls.name"/>
+        </svui-table-filter>
+      </th>
+      <th scope="col">
+        <svui-table-filter [columnHeader]="('charge.aktiv' | transloco)">
+          <ng-select
+            svuiNgSelect
+            bindLabel='dummy'
+            appendTo="body"
+            [formControl]="tableFilterForm.group.controls.aktiv"
+            [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          >
+            <ng-option [value]="true">
+              {{ 'charge.list.aktiv' | transloco }}
+            </ng-option>
+            <ng-option [value]="false">
+              {{ 'charge.list.inaktiv' | transloco }}
+            </ng-option>
+          </ng-select>
+
+        </svui-table-filter>
+      </th>
+      <th scope="col"></th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (item of itemTable.displayedList(); track item.id) {
+        <tr>
+          <td>{{ item.data.name }}</td>
+          <td>{{ item.data.aktiv ? ('charge.list.aktiv' | transloco) : ('charge.list.inaktiv' | transloco) }}</td>
+          <td>
+            <svui-collapsible-menu
+              [loading]="store.deleteLoader.isLoading()"
+              label="{{ 'global.actionmenu.tooltip' | transloco }}"
+            >
+              @if (canEditList()) {
+                <button ngbDropdownItem (click)="removeCharge(item)">
+                  {{ 'global.remove' | transloco }}
+                </button>
+                <button ngbDropdownItem (click)="toggleStatus(item)"> {{
+                    item.data.aktiv ?
+                      ('global.deactivate' | transloco) :
+                      ('global.activate' | transloco)
+                  }}
+                </button>
+              }
+            </svui-collapsible-menu>
+          </td>
+        </tr>
+      } @empty {
+        <tr svui-empty-table-message [message]="'impfstoff.charge.list.empty' | transloco"></tr>
+      }
+    </tbody>
+  </table>
+</svui-card>

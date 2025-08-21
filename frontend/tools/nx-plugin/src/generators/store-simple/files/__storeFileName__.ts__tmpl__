@@ -1,0 +1,32 @@
+import {withDevtools} from '@angular-architects/ngrx-toolkit';
+import {computed, inject, Injectable} from '@angular/core';
+import {BackendEntityId} from '@dvb/data-access-types';
+import {AppErrorHandlerService, Loader, withSelectedEntity} from '@dvb/util-angular';
+import {requireValue} from '@dvb/util-shared';
+import {tapResponse} from '@ngrx/operators';
+import {patchState, signalStore, withComputed, withState} from '@ngrx/signals';
+import {rxMethod} from '@ngrx/signals/rxjs-interop';
+import {exhaustMap, pipe, switchMap} from 'rxjs';
+
+
+type <%= nameCapitalized %>State = {
+  myState: string | undefined;
+};
+
+const initialState: <%= nameCapitalized %>State = {
+  myState: undefined,
+};
+
+@Injectable(<%if(providedIn !== 'null') {%>{ providedIn: <%- providedIn %> }<%}%>)
+export class <%= storeClassName %> extends signalStore(
+   {protectedState: false},
+   withDevtools('<%= nameSmall %>'),
+   withState(initialState),
+ ) {
+
+  readonly #myService = inject(<%= nameCapitalized %>Service);
+  readonly #appErrorHandlerService = inject(AppErrorHandlerService);
+
+  readonly loader = new Loader();
+
+}

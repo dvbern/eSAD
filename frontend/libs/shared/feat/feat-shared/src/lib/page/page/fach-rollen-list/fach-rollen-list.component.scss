@@ -1,0 +1,20 @@
+.fachrolle-layout {
+  display: flex;
+}
+
+.fachrolle-label {
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  margin-right: 0.5rem;
+  color: #6c757d; // text-muted equivalent
+}
+
+.fachrolle-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem; // gap-1 equivalent
+}
+
+.fachrolle-badge {
+  font-size: 0.7rem;
+}

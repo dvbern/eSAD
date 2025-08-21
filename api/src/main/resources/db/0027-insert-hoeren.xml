@@ -1,0 +1,212 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hefr (generated)" id="1744796911630-1">
+    <createTable tableName="audiogramm">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="audiogrammPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="dbhz1000" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="dbhz2000" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="dbhz250" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="dbhz4000" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="dbhz500" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="dbhz6000" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="dbhz8000" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-2">
+    <createTable tableName="audiogramm_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="dbhz1000" type="VARCHAR(30)"/>
+      <column name="dbhz2000" type="VARCHAR(30)"/>
+      <column name="dbhz250" type="VARCHAR(30)"/>
+      <column name="dbhz4000" type="VARCHAR(30)"/>
+      <column name="dbhz500" type="VARCHAR(30)"/>
+      <column name="dbhz6000" type="VARCHAR(30)"/>
+      <column name="dbhz8000" type="VARCHAR(30)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-3">
+    <createTable tableName="untersuchunghoeren">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchunghoerenPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="audiogrammbeurteilung" type="VARCHAR(255)"/>
+      <column name="bemerkungen" type="VARCHAR(255)"/>
+      <column name="otoskopielinks" type="VARCHAR(255)"/>
+      <column name="otoskopielinksresultatandere" type="VARCHAR(255)"/>
+      <column name="otoskopierechts" type="VARCHAR(255)"/>
+      <column name="otoskopierechtsresultatandere" type="VARCHAR(255)"/>
+      <column name="zusaetzlicheangaben" type="VARCHAR(255)"/>
+      <column name="audiogrammlinks_id" type="UUID"/>
+      <column name="audiogrammrechts_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-4">
+    <createTable tableName="untersuchunghoeren_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="audiogrammbeurteilung" type="VARCHAR(255)"/>
+      <column name="bemerkungen" type="VARCHAR(255)"/>
+      <column name="otoskopielinks" type="VARCHAR(255)"/>
+      <column name="otoskopielinksresultatandere" type="VARCHAR(255)"/>
+      <column name="otoskopierechts" type="VARCHAR(255)"/>
+      <column name="otoskopierechtsresultatandere" type="VARCHAR(255)"/>
+      <column name="zusaetzlicheangaben" type="VARCHAR(255)"/>
+      <column name="audiogrammlinks_id" type="UUID"/>
+      <column name="audiogrammrechts_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-5">
+    <addColumn tableName="anlassconfig">
+      <column name="hoerenzusaetzlicheangaben" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1744796911630-5a">
+    <sql>
+      update anlassconfig set hoerenzusaetzlicheangaben = 'NOT_VISIBLE'
+      where anlasstyp in ('IMPFAKTION', 'IMPFSPRECHSTUNDE', 'IMPFTERMIN');
+
+      update anlassconfig set hoerenzusaetzlicheangaben = 'REQUIRED'
+      where anlasstyp not in ('IMPFAKTION', 'IMPFSPRECHSTUNDE', 'IMPFTERMIN');
+
+      update anlassconfig set hoerenbemerkungen = 'OPTIONAL' 
+      where anlasstyp not in ('IMPFAKTION', 'IMPFSPRECHSTUNDE', 'IMPFTERMIN');
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1744796911630-5b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="hoerenzusaetzlicheangaben"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-6">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="hoerenzusaetzlicheangaben" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-7">
+    <addColumn tableName="untersuchung">
+      <column name="untersuchunghoeren_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-8">
+    <addColumn tableName="untersuchung_aud">
+      <column name="untersuchunghoeren_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-9">
+    <addPrimaryKey columnNames="rev, id" constraintName="audiogramm_audPK" tableName="audiogramm_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-10">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchunghoeren_audPK" tableName="untersuchunghoeren_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-11">
+    <addUniqueConstraint columnNames="audiogrammlinks_id" constraintName="UC_UNTERSUCHUNGHOERENAUDIOGRAMMLINKS_ID_COL" tableName="untersuchunghoeren"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-12">
+    <addUniqueConstraint columnNames="audiogrammrechts_id" constraintName="UC_UNTERSUCHUNGHOERENAUDIOGRAMMRECHTS_ID_COL" tableName="untersuchunghoeren"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-13">
+    <addUniqueConstraint columnNames="untersuchunghoeren_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGHOEREN_ID_COL" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-14">
+    <createIndex indexName="ix_untersuchung_untersuchunghoeren" tableName="untersuchung">
+      <column name="untersuchunghoeren_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-15">
+    <createIndex indexName="ix_untersuchunghoeren_audiogrammlinks" tableName="untersuchunghoeren">
+      <column name="audiogrammlinks_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-16">
+    <createIndex indexName="ix_untersuchunghoeren_audiogrammrechts" tableName="untersuchunghoeren">
+      <column name="audiogrammrechts_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-17">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="audiogramm_aud" constraintName="FK6fv1miqt57lsl04qfij0tjl2b" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-18">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchunghoeren_aud" constraintName="FKh2h6bldl3vcfsb305jkk9cuek" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-19">
+    <addForeignKeyConstraint baseColumnNames="untersuchunghoeren_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchunghoeren" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchunghoeren" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-20">
+    <addForeignKeyConstraint baseColumnNames="audiogrammlinks_id" baseTableName="untersuchunghoeren" constraintName="fk_untersuchunghoeren_audiogramm_links" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="audiogramm" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1744796911630-21">
+    <addForeignKeyConstraint baseColumnNames="audiogrammrechts_id" baseTableName="untersuchunghoeren" constraintName="fk_untersuchunghoeren_audiogramm_rechts" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="audiogramm" validate="true"/>
+  </changeSet>
+</databaseChangeLog>

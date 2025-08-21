@@ -1,0 +1,80 @@
+<h2 svuiHeading="formSection">{{ pageTitle() | transloco }}</h2>
+<div>
+  <form svuiFormLayout
+        [formGroup]="form.group"
+        (ngSubmit)="submitIfValid()"
+        [mode]="store.detailMode()">
+
+    <!-- Anrede/ Geschlecht -->
+    <svui-form-group [label]="'kontaktperson.geschlecht' | transloco"
+                     [direction]="'horizontal'"
+                     [viewValue]="form.group.value.geschlecht ? ('Geschlecht.' + form.group.value.geschlecht | transloco) : null ">
+      @for (geschlecht of geschlechtOptions; track geschlecht) {
+        <svui-single-radio-wrapper [label]="'Geschlecht.' + geschlecht | transloco">
+          <input svuiRadio
+                 type="radio"
+                 name="geschlecht"
+                 [formControl]="form.controlAt('geschlecht')"
+                 [value]="geschlecht"/>
+        </svui-single-radio-wrapper>
+      }
+    </svui-form-group>
+
+    <!-- Name -->
+    <svui-form-control [label]="'kontaktperson.name' | transloco"
+                       [viewValue]="form.group.value.name">
+      <input svuiTextInput [formControl]="form.controlAt('name')"/>
+    </svui-form-control>
+
+    <!-- Vorname -->
+    <svui-form-control [label]="'kontaktperson.vorname' | transloco"
+                       [viewValue]="form.group.value.vorname">
+      <input svuiTextInput [formControl]="form.controlAt('vorname')"/>
+    </svui-form-control>
+
+    <!-- Email -->
+    <svui-form-control [label]="'kontaktperson.email' | transloco"
+                       [viewValue]="form.group.value.email">
+      <input svuiTextInput [formControl]="form.controlAt('email')"/>
+    </svui-form-control>
+
+    <!-- Telefon -->
+    <svui-form-control [label]="'kontaktperson.telefon' | transloco"
+                       [viewValue]="form.group.value.telefon">
+      <input svuiTextInput [formControl]="form.controlAt('telefon')"/>
+    </svui-form-control>
+
+    <!-- Funktion -->
+    <svui-form-control [label]="'kontaktperson.funktion' | transloco"
+                       [viewValue]="form.group.value.funktion ?
+                       ('KontaktPersonSchuleFunktion.' + form.group.value.funktion | transloco) : null ">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.funktion"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      >
+        @for (each of funktionOptions; track each) {
+          <ng-option [value]="each">
+            {{ 'KontaktPersonSchuleFunktion.' + each | transloco }}
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+
+    <!--messages for whole form -->
+    <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+    <!-- BUTTONS -->
+    <svui-form-buttons
+      [mode]="store.detailMode()"
+      [isCreate]="store.selectedIsNew()"
+      [saving]="store.saveLoader.isLoading()"
+      [canEdit]="true"
+      routeToEdit="../edit"
+      [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+      [routeOnCancelCreate]="[Path.RELATIVE_ONE_UP, 'all']"
+    />
+  </form>
+</div>

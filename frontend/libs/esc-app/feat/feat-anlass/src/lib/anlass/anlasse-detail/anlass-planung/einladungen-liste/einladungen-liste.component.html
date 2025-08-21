@@ -1,0 +1,419 @@
+<svui-card style="margin-top: 15px;">
+  <svui-card-header [heading]="'anlass.kinder.eingeladen' | transloco: {anzahl: itemTable.filteredListSize()}">
+    <svui-summary-values [map]="store.getTeilnehmerMap()"
+    />
+  </svui-card-header>
+
+  <table
+    svuiTable
+    [loading]="store.loader.isLoading()"
+    [totalRows]="itemTable.filteredListSize()"
+    (pageChanged)="itemTable.onPageChanged($event)"
+    [pagination]="itemTable.pagination()"
+  >
+    <!-- col widths -->
+    <colgroup>
+      <col svuiColWidth [colWidth]="'checkbox'">
+      <col svuiColWidth [colWidth]="'text-medium'">
+      <col svuiColWidth [colWidth]="'text-medium'">
+      <col svuiColWidth [colWidth]="'select-small'">
+      <col svuiColWidth [colWidth]="'date'">
+      <col svuiColWidth [colWidth]="'text-small'">
+      <col svuiColWidth [colWidth]="'text-medium'">
+      <col svuiColWidth [colWidth]="'select-medium'">
+      <col svuiColWidth [colWidth]="'select-medium'">
+      <col svuiColWidth [colWidth]="'select-medium'">
+      @if (isAnlassStatusBereit()) {
+        <col svuiColWidth [colWidth]="'select-medium'">
+        <col svuiColWidth [colWidth]="'options'">
+      }
+      <col svuiColWidth [colWidth]="'options'">
+      <col svuiColWidth [colWidth]="'options'">
+      <col svuiColWidth [colWidth]="'options'">
+    </colgroup>
+    <thead>
+    <!-- Headers for sorting -->
+    <tr>
+      <th scope="col"></th>
+      <th scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('kind.data.name')"
+          (sort)="itemTable.onColSort($event, 'kind.data.name')"
+      >{{ 'anlass.kinder.name' | transloco }}
+      </th>
+      <th scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('kind.data.vorname')"
+          (sort)="itemTable.onColSort($event, 'kind.data.vorname')"
+      >{{ 'anlass.kinder.vorname' | transloco }}
+      </th>
+      <th scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('kind.data.geschlecht')"
+          (sort)="itemTable.onColSort($event, 'kind.data.geschlecht')"
+      >{{ 'anlass.kinder.geschlecht' | transloco }}
+      </th>
+      <th scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('kind.data.geburtsdatum')"
+          (sort)="itemTable.onColSort($event, 'kind.data.geburtsdatum')"
+      >{{ 'anlass.kinder.geburtsdatum' | transloco }}
+      </th>
+      @if (!isAnlassStatusBereit()) {
+        <th scope="col"
+            svuiSortable
+            [sortState]="itemTable.findColSortDTO('kind.data.erstsprache')"
+            (sort)="itemTable.onColSort($event, 'kind.data.erstsprache')"
+        >{{ 'anlass.kinder.sprache' | transloco }}
+        </th>
+        <th scope="col"
+            svuiSortable
+            [sortState]="itemTable.findColSortDTO('kind.esadId')"
+            (sort)="itemTable.onColSort($event, 'kind.esadId')"
+        >{{ 'anlass.kinder.idNr' | transloco }}
+        </th>
+      }
+      <th scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('kind.data.klassenstufe')"
+          (sort)="itemTable.onColSort($event, 'kind.data.klassenstufe')"
+      >{{ 'anlass.kinder.klassenstufe' | transloco }}
+      </th>
+      @if (!anlassStore.isAbgeschlossen()) {
+        <th scope="col"
+            svuiSortable
+            [sortState]="itemTable.findColSortDTO('nachkontrolleString')"
+            (sort)="itemTable.onColSort($event, 'nachkontrolleString')"
+        >{{ 'anlass.kinder.nachkontrolle' | transloco }}
+        </th>
+      }
+      <th scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.einladungStatus')"
+          (sort)="itemTable.onColSort($event, 'data.einladungStatus')"
+      >{{ 'anlass.kinder.einladungStatus' | transloco }}
+      </th>
+      @if (isAnlassStatusBereit()) {
+        <th scope="col"
+            svuiSortable
+            [sortState]="itemTable.findColSortDTO('naechsteStation.naechsteStation')"
+            (sort)="itemTable.onColSort($event, 'naechsteStation.naechsteStation')"
+        >{{ 'anlass.kinder.naechstestation' | transloco }}
+        </th>
+        <th scope="col"
+            svuiSortable
+            [sortState]="itemTable.findColSortDTO('naechsteStation.naechsteStationSeit')"
+            (sort)="itemTable.onColSort($event, 'naechsteStation.naechsteStationSeit')"
+        >{{ 'anlass.kinder.naechstestationseit' | transloco }}
+        </th>
+      }
+      <th scope="col">{{ 'anlass.kinder.impfausweis' | transloco }}
+      </th>
+      <th scope="col">{{ 'anlass.kinder.fragebogen' | transloco }}
+      </th>
+      <th scope="col">{{ 'global.actionmenu.col' | transloco }}
+      </th>
+    </tr>
+    <!-- Headers for filtering-->
+    <tr>
+      <th scope="col">
+        @if (itemTable.filteredListSize() > 0) {
+
+          <svui-table-filter [columnHeader]="'global.select.bitte-auswaehlen' | transloco">
+            <input type="checkbox" svuiCheckbox
+                   [(ngModel)]="allEinladungenMarkedForUntersuchung"
+                   (change)="toggleAllMarkedForUntersuchung()"
+            />
+          </svui-table-filter>
+        }
+      </th>
+      <th scope="col">
+        <svui-table-filter [columnHeader]="'anlass.kinder.name' | transloco">
+          <input svuiTextInput [formControl]="tableFilterForm.group.controls.name"/>
+        </svui-table-filter>
+      </th>
+
+      <th scope="col">
+        <svui-table-filter [columnHeader]="'anlass.kinder.vorname' | transloco">
+          <input svuiTextInput [formControl]="tableFilterForm.group.controls.vorname"/>
+        </svui-table-filter>
+      </th>
+
+      <th scope="col">
+        <svui-table-filter [columnHeader]="'anlass.kinder.geschlecht' | transloco">
+          <ng-select
+            svuiNgSelect
+            bindLabel='dummy'
+            appendTo="body"
+            [formControl]="tableFilterForm.group.controls.geschlecht"
+            [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          >
+            @for (geschlecht of geschlechter; track geschlecht) {
+              <ng-option [value]="geschlecht">
+                {{ 'Geschlecht.' + geschlecht | transloco }}
+              </ng-option>
+            }
+          </ng-select>
+        </svui-table-filter>
+      </th>
+
+      <th scope="col">
+        <svui-table-filter [columnHeader]="'anlass.kinder.geburtsdatum' | transloco">
+          <input svuiTextInput="date" [formControl]="tableFilterForm.group.controls.geburtsdatum"/>
+        </svui-table-filter>
+      </th>
+
+      @if (!isAnlassStatusBereit()) {
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'anlass.kinder.sprache' | transloco">
+            <input svuiTextInput [formControl]="tableFilterForm.group.controls.sprache"/>
+          </svui-table-filter>
+        </th>
+
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'anlass.kinder.idNr' | transloco">
+            <input svuiTextInput [formControl]="tableFilterForm.group.controls.idNr"/>
+          </svui-table-filter>
+        </th>
+      }
+      <th scope="col">
+        <svui-table-filter [columnHeader]="'anlass.kinder.klassenstufe' | transloco">
+          <ng-select
+            svuiNgSelect
+            bindLabel='dummy'
+            appendTo="body"
+            [formControl]="tableFilterForm.group.controls.klassenStufe"
+            [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          >
+            @for (stufe of klassenStufeValues; track stufe) {
+              <ng-option [value]="stufe">
+                {{ 'Klassenstufe.' + stufe | transloco }}
+              </ng-option>
+            }
+          </ng-select>
+        </svui-table-filter>
+      </th>
+      @if (!anlassStore.isAbgeschlossen()) {
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'anlass.kinder.nachkontrolle' | transloco">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.nachkontrolle"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+              [multiple]="true"
+            >
+              @for (flag of anlassFlags; track flag) {
+                <ng-option [value]="flag">
+                  {{ 'Nachkontrolle.' + flag | transloco }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+      }
+      <th scope="col">
+        <svui-table-filter [columnHeader]="'anlass.kinder.einladungStatus' | transloco">
+          <ng-select
+            svuiNgSelect
+            bindLabel='dummy'
+            appendTo="body"
+            [formControl]="tableFilterForm.group.controls.einladungStatus"
+            [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          >
+            @for (status of einladungStatusValues; track status) {
+              <ng-option [value]="status">
+                {{ 'EinladungStatus.' + status | transloco }}
+              </ng-option>
+            }
+          </ng-select>
+        </svui-table-filter>
+      </th>
+      @if (this.isAnlassStatusBereit()) {
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'anlass.kinder.naechsteStation' | transloco">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.naechsteStation"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              @for (station of naechsteStationValues; track station) {
+                <ng-option [value]="station">
+                  {{ 'NaechsteStation.' + station | transloco }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+        <th scope="col"></th>
+      }
+      <th scope="col"></th>
+      <th scope="col"></th>
+      <th scope="col"></th>
+    </tr>
+    </thead>
+    <tbody>
+      @if (!itemTable.displayedList()?.length && !store.loader.isLoading()) {
+        <tr svui-empty-table-message [message]="'anlass.kinder.list.empty' | transloco"></tr>
+      }
+      @for (item of itemTable.displayedList(); track customTrackBy($index, item)) {
+        <tr>
+          <td>
+            <svui-table-control [columnHeader]="'Auswählen'" [rowHeader]="item.id">
+              <input type="checkbox" svuiCheckbox
+                     (click)="toggleMarkedForUntersuchung(item.id)"
+                     [checked]="isMarkedForUntersuchung(item.id)"/>
+            </svui-table-control>
+          </td>
+          <td>
+            <svui-table-link
+              type="text"
+              [myRouterLink]="[ '/' , Path.KINDER ,  item.kind.id]">
+              {{ item.kind.data.name }}
+            </svui-table-link>
+          </td>
+          <td>{{ item.kind.data.vorname }}</td>
+          <td>
+            <svui-icon [useCase]="getUseCaseGechlecht(item.kind.data.geschlecht)"></svui-icon>
+          </td>
+          <td>{{ item.kind.data.geburtsdatum | date: 'dd.MM.yyyy' }}</td>
+          @if (!isAnlassStatusBereit()) {
+            <td>{{ item.kind.data.erstsprache }}</td>
+            <td>{{ item.kind.esadId }}</td>
+          }
+          @if (!anlassStore.isAbgeschlossen()) {
+            <td>{{
+                item.kind.data.klassenstufe ?
+                  ('Klassenstufe.' + item.kind.data.klassenstufe | transloco) :
+                  ''
+              }}
+            </td>
+          } @else {
+            <td>{{
+                item.untersuchungKindDaten?.klassenstufe ?
+                  ('Klassenstufe.' + item.untersuchungKindDaten?.klassenstufe | transloco) :
+                  ''
+              }}
+            </td>
+          }
+          @if (!anlassStore.isAbgeschlossen()) {
+            <td>
+              @if (item?.nachkontrolle?.data?.anlassFlags?.nachkontrolleSehen) {
+                <svui-badge> {{ 'Nachkontrolle.NachkontrolleSehen' | transloco }}</svui-badge>
+              }
+              @if (item?.nachkontrolle?.data?.anlassFlags?.nachkontrolleHoeren) {
+                <svui-badge> {{ 'Nachkontrolle.NachkontrolleHoeren' | transloco }}</svui-badge>
+              }
+              @if (item?.nachkontrolle?.data?.anlassFlags?.nachkontrolleGroesseGewicht) {
+                <svui-badge> {{ 'Nachkontrolle.NachkontrolleGroesseGewicht' | transloco }}</svui-badge>
+              }
+              @if (item?.nachkontrolle?.data?.anlassFlags?.nachkontrolleSprache) {
+                <svui-badge> {{ 'Nachkontrolle.NachkontrolleSprache' | transloco }}</svui-badge>
+              }
+              @if (item?.nachkontrolle?.data?.anlassFlags?.nachkontrolleMotorik) {
+                <svui-badge> {{ 'Nachkontrolle.NachkontrolleMotorik' | transloco }}</svui-badge>
+              }
+              @if (item?.nachkontrolle?.data?.anlassFlags?.nachkontrolleAnderes) {
+                <svui-badge> {{ 'Nachkontrolle.NachkontrolleAnderes' | transloco }}</svui-badge>
+              }
+            </td>
+          }
+          <td>
+            <svui-table-control [columnHeader]="'Schulstufe'" [rowHeader]="item.data.einladungStatus">
+              <ng-select
+                svuiNgSelect
+                bindLabel='dummy'
+                appendTo="body"
+                [clearable]="false"
+                [ngModel]="item.data.einladungStatus"
+                (change)="einladungsstatusChanged(item, $event)"
+                [disabled]="store.loader.isLoading() || !anlassStore.canUserEditAnlassInCurrentState()"
+                [placeholder]="'global.select.bitte-auswaehlen' | transloco ">
+                @for (status of einladungStatusValues; track status) {
+                  <ng-option [value]="status">
+                    {{ 'EinladungStatus.' + status | transloco }}
+                  </ng-option>
+                }
+              </ng-select>
+            </svui-table-control>
+          </td>
+          @if (isAnlassStatusBereit()) {
+            <td>{{
+                item.naechsteStation?.naechsteStation
+                  ? ('NaechsteStation.' + item.naechsteStation?.naechsteStation | transloco)
+                  : ''
+              }}
+            </td>
+            <td>{{
+                formatTimeWithDateIfNotToday(item.naechsteStation?.naechsteStationSeit)
+              }}
+            </td>
+          }
+          <td>
+            @let hasImpfausweisFile = (item.data.impfausweis?.data?.files?.length ?? 0) > 0;
+            @if (hasImpfausweisFile) {
+              <button svuiIconOnlyButton="success"
+                      type="button"
+                      [tooltip]="'global.tooltip.impfausweis' | transloco"
+                      [icon]="'check'"
+                      [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
+                      (click)="gotoImpfausweis(item)">
+              </button>
+            } @else {
+              <button svuiIconOnlyButton="primary"
+                      type="button"
+                      [tooltip]="'global.tooltip.impfausweis.upload' | transloco"
+                      [icon]="'upload'"
+                      [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
+                      (click)="gotoImpfausweis(item)">
+              </button>
+            }
+          </td>
+          <td>
+            @let hasFragebogenFile = (item.data.fragebogen?.data?.files?.length ?? 0) > 0;
+            @if (hasFragebogenFile) {
+              <button svuiIconOnlyButton="success"
+                      type="button"
+                      [tooltip]="'global.tooltip.fragebogen' | transloco"
+                      [icon]="'check'"
+                      [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
+                      (click)="gotoFragebogen(item)">
+              </button>
+            } @else {
+              <button svuiIconOnlyButton="primary"
+                      type="button"
+                      [tooltip]="'global.tooltip.fragebogen.upload' | transloco"
+                      [icon]="'upload'"
+                      [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
+                      (click)="gotoFragebogen(item)">
+              </button>
+            }
+          </td>
+          <td>
+            <svui-collapsible-menu
+              [loading]="false"
+              label="{{ 'global.actionmenu.tooltip' | transloco }}">
+              <a ngbDropdownItem
+                 target="_blank"
+                 routerLink="{{Path.RELATIVE_THREE_UP + '/' + Path.KINDER + '/' + item.kind.id}}">
+                <svui-icon [useCase]="'link'"></svui-icon>
+                {{ 'anlass.kinder.dossier' | transloco }}
+              </a>
+              <button ngbDropdownItem
+                      [disabled]="!anlassStore.canUserEditAnlassInCurrentState()"
+                      (click)="addAbmeldungsgrund(item)">{{ 'anlass.kinder.abmeldegrund.hinterlegen' | transloco }}
+              </button>
+              @if (canDownloadDossierExport()) {
+                <button ngbDropdownItem (click)="downloadKinderdossier(item)">
+                  {{ 'anlass.kinder.schuluntersuchungsdaten.exportieren' | transloco }}
+                </button>
+              }
+            </svui-collapsible-menu>
+          </td>
+          }
+    </tbody>
+  </table>
+</svui-card>

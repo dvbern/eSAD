@@ -1,0 +1,29 @@
+{
+  "name": "@dvb/feat-shared",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "19.2.3",
+    "@angular/core": "19.2.3",
+    "@dvb/data-access-backend": "0.0.1",
+    "@dvb/data-access-types": "0.0.1",
+    "@dvb/util-angular": "0.0.1",
+    "@dvb/util-shared": "0.0.1",
+    "@ngrx/operators": "^19.0.1",
+    "@ngrx/signals": "^19.0.1",
+    "rxjs": "~7.8.0",
+    "@jsverse/transloco": "7.6.1",
+    "@angular-architects/ngrx-toolkit": "^19.1.0",
+    "@angular/forms": "19.2.3",
+    "@dvb/ui-components": "0.0.1",
+    "@ng-select/ng-select": "^14.2.4",
+    "@angular/router": "19.2.3",
+    "@ng-bootstrap/ng-bootstrap": "18.0.0",
+    "@sentry/browser": "9.9.0",
+    "@dvb/util-i18n": "0.0.1",
+    "@angular/platform-browser": "19.2.3",
+    "@ng-icons/core": "^29.5.2",
+    "@sentry/angular": "^9.9.0",
+    "ngx-file-drop": "^16.0.0"
+  },
+  "sideEffects": false
+}

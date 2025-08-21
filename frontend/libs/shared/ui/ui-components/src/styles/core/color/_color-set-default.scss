@@ -1,0 +1,11 @@
+// Default Color Set
+
+@use './definition/color-definition';
+
+$text: color-definition.$text;
+$text-secondary: color-definition.$text-secondary;
+$background: color-definition.$background;
+$border: color-definition.$border;
+
+// FIXME(zusa) zu generisch
+$text-disabled: color-definition.$grey-500;

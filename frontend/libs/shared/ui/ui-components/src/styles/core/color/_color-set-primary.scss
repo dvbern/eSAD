@@ -1,0 +1,6 @@
+// Primary Color Set
+
+@use './definition/color-definition';
+
+$color: color-definition.$blue-400-primary;
+$color-contrast: color-definition.$white;

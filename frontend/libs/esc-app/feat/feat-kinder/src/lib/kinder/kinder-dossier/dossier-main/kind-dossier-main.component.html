@@ -1,0 +1,175 @@
+<svui-card left [innerSpacing]="'none'">
+
+  <!-- Dossier -->
+  <svui-card-header [heading]="fullName()" class="p-3">
+
+    <svui-icon cardIcon [useCase]="geschlecht()"
+               [title]="('kind.geschlecht' | transloco) + ' ' + (kind() ? (('Geschlecht.' + kind()?.data?.geschlecht) | transloco) : '')"
+    />
+    <!-- Drei Punkte Menu -->
+    <svui-collapsible-menu [loading]="false" label="{{ 'global.actionmenu.tooltip' | transloco }}">
+      <a ngbDropdownItem routerLink="{{Path.PROFIL}}">{{ 'kind.dossier.link.einstellungen' | transloco }}</a>
+      @if (canEditKind()) {
+        <button ngbDropdownItem (click)="editZusatzinformationen()">
+          {{ 'kind.dossier.link.zusatzinformationen' | transloco }}
+        </button>
+        <button ngbDropdownItem (click)="editImmunisierungen()">
+          {{ 'kind.dossier.link.immunisierung' | transloco }}
+        </button>
+        <button ngbDropdownItem (click)="editNachkontrolle()">
+          {{ 'kind.dossier.link.nachkontrolle' | transloco }}
+        </button>
+        @if (canDownloadDossierExport()) {
+        <button ngbDropdownItem (click)="exportDossier()">
+          {{ 'kind.dossier.link.exportieren' | transloco }}
+        </button>
+        }
+        <button ngbDropdownItem
+                [disabled]="!canChangeIdNr()"
+                (click)="generateIdForKind()">{{ 'kind.dossier.id.generieren' | transloco }}
+        </button>
+        <button ngbDropdownItem
+                [disabled]="!canChangeIdNr()"
+                (click)="setIdForKind()">{{ 'kind.dossier.id.setzen' | transloco }}
+        </button>
+        <button ngbDropdownItem
+                (click)="briefGenerieren()">{{ 'kind.dossier.link.briefgenerieren' | transloco }}
+        </button>
+      }
+    </svui-collapsible-menu>
+  </svui-card-header>
+
+  @if (idNr()) {
+    <p class="ms-3 mb-0">
+      {{ 'kind.dossier.idNr' | transloco }} - {{ idNr() }}
+    </p>
+  }
+
+  <p class="px-3 pb-0">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [ngModel]="papierakteStatus()"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      (change)="onPapierakteStatusChanged($event)"
+      [clearable]="false"
+      [disabled]="!canEditKind()"
+    >
+      @for (each of papierakteStatusOptions; track each) {
+        <ng-option [value]="each">
+          {{ 'PapierakteStatus.' + each | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+
+    <!-- Nachkontrolle -->
+    @if (dossierStore.hasNachkontrolle()) {
+      <svui-status-text icon="flag" class="pt-3"
+                        (clickAction)="editNachkontrolle()" [hasClickOutput]="true"
+                        statusColor="info">{{ 'kind.dossier.nachkontrolle' |transloco }}
+      </svui-status-text>
+    }
+  </p>
+
+  <hr>
+
+  <div class="p-3">
+    <!-- Zusatzinformationen -->
+    @if (dossierStore.hasZusatzinformationen()) {
+      <svui-status-text icon="information" [statusColor]="'danger'"
+                        (clickAction)="editZusatzinformationen()" [hasClickOutput]="true">
+        {{ 'kind.dossier.zusatzinformationen.banner' | transloco }}
+      </svui-status-text>
+    }
+    @if (dossier()?.data?.immunitaetMasern) {
+      <svui-status-text icon="vaccinated"
+                        statusColor="success">{{ 'kind.dossier.masern.immunitaet' | transloco }}
+      </svui-status-text>
+    }
+    @if (dossier()?.data?.immunitaetVarizellen) {
+      <svui-status-text icon="vaccinated"
+                        statusColor="success">{{ 'kind.dossier.varizellen.immunitaet' |transloco }}
+      </svui-status-text>
+    }
+  </div>
+
+  <hr>
+
+  <svui-tile-grid>
+    <!-- Geburtsdatum -->
+    <svui-tile>
+      <svui-icon [useCase]="'birthdate'"></svui-icon>
+      <span class="fw-bold">{{ kind()?.data?.geburtsdatum | date: 'dd.MM.yyyy' }}</span>
+      <span>{{ kind()?.data?.alter }}</span>
+    </svui-tile>
+
+    <!-- Adresse -->
+    <svui-tile>
+      <svui-icon [useCase]="'location'"></svui-icon>
+      <span>{{ adresse() }}</span>
+    </svui-tile>
+
+    <!-- Nationalitaet/ Sprache -->
+    <svui-tile>
+      <svui-icon [useCase]="'flag'"></svui-icon>
+      <span>{{ "Land." + kind()?.data?.nationalitaet | transloco }}</span>
+      <span>{{ kind()?.data?.erstsprache }}</span>
+    </svui-tile>
+
+    <!-- Schule/ Klasse -->
+    <svui-tile>
+      <svui-icon [useCase]="'school'"></svui-icon>
+      <span>{{ kind()?.data?.schule?.bezeichnung }}</span>
+      <span>{{ kind()?.data?.klasse?.bezeichnung }}</span>
+    </svui-tile>
+
+    <!-- Schularzt/ Schulaerztin -->
+    <svui-tile>
+      <svui-icon [useCase]="'doctor'"></svui-icon>
+      <span>{{ 'kind.dossier.schularzt' | transloco }}</span>
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [ngModel]="zustaendigArzt()?.fullName"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        [compareWith]="compareBenutzerFn"
+        (change)="onArztChange($event)"
+        [clearable]="false"
+        [disabled]="!canEditKind()"
+      >
+        @for (each of benutzerOptionsStore.arztOptionsIncluding(zustaendigArzt()); track each; ) {
+          <ng-option [value]="each" [disabled]="!each.aktiv">
+            {{ each.fullName }}
+          </ng-option>
+        }
+      </ng-select>
+    </svui-tile>
+
+    <!-- MPA -->
+    <svui-tile>
+      <svui-icon [useCase]="'mpa'"></svui-icon>
+      <span>{{ 'kind.dossier.mpa' | transloco }}</span>
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [ngModel]="zustaendigMPA()?.fullName"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        [compareWith]="compareBenutzerFn"
+        (change)="onMPAChange($event)"
+        [clearable]="false"
+        [disabled]="!canEditKind()"
+      >
+        @for (each of benutzerOptionsStore.mpaOptionsIncluding(zustaendigMPA()); track each; ) {
+          <ng-option [value]="each" [disabled]="!each.aktiv">
+            {{ each.fullName }}
+          </ng-option>
+        }
+      </ng-select>
+    </svui-tile>
+
+  </svui-tile-grid>
+
+</svui-card>

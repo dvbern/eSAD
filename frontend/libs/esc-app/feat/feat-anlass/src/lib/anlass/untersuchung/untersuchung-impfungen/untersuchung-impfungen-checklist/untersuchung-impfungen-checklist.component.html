@@ -1,0 +1,33 @@
+<form svuiFormLayout
+      [formType]="'kacheln'"
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="DetailMode.EDIT"
+>
+
+  <h2 svuiHeading="formSection" class="mb-3">{{ 'untersuchung.impfungen.checklist.title' | transloco }}</h2>
+
+  @for (pair of checklistPair; track pair) {
+    @if (pair.isVisible) {
+      <svui-standalone-control [label]="pair.label | transloco">
+        <input type="checkbox" svuiCheckbox [formControl]="form.controlAt(pair.nameCheckbox)">
+      </svui-standalone-control>
+    }
+  }
+
+  @if (anlassStore.selectedEntity()?.anlassConfig?.untersuchungImpfungBemerkungen !== RequirementSetting.NOT_VISIBLE) {
+    <svui-standalone-control [label]="'untersuchung.impfungen.checklist.bemerkung' | transloco">
+      <textarea svuiTextarea [formControl]="form.controlAt('bemerkungen')"></textarea>
+    </svui-standalone-control>
+  }
+
+  <!-- BUTTONS -->
+  @if (canEdit()) {
+    <svui-save-cancel-buttons
+      [saving]="false"
+      [canEdit]="true"
+      (cancelClicked)="abbrechen()"
+    />
+  }
+
+</form>

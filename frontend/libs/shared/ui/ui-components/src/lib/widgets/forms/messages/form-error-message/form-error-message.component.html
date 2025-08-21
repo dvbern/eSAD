@@ -1,0 +1,6 @@
+<!-- FORM ERRORS -->
+@if (errors()) {
+  <ngb-alert type="danger" [dismissible]="false">
+    {{ errors() | controlMessagePipe }}
+  </ngb-alert>
+}

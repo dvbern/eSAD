@@ -1,0 +1,32 @@
+<!-- TIMETRAVEL -->
+@if (isTimetravelEnabled() && hasTimetravelRights()) {
+  <svui-card>
+    <h2 svuiHeading="card" class="mb-3">Time Travel</h2>
+
+    <form
+      [formGroup]="timetravelForm.group"
+      (ngSubmit)="submitTimetravelIfValid()"
+      class="d-flex w-100 justify-content-start align-items-end gap-4">
+
+      <!-- Datum -->
+      <svui-standalone-control label="Datum">
+        <input svuiTextInput="date" [formControl]="timetravelForm.controlAt('date')"/>
+      </svui-standalone-control>
+
+
+      <!-- BUTTONS -->
+      <button svuiButton="primary"
+              type="submit"
+              [working]="timetravelStore.updateLoader.isLoading()">{{ 'global.save' | transloco }}
+      </button>
+      <button svuiButton="outline-primary"
+              type="button"
+              [working]="timetravelStore.resetLoader.isLoading()"
+              (click)="resetTimetravel()">Zurücksetzen
+      </button>
+
+    </form>
+  </svui-card>
+}
+
+

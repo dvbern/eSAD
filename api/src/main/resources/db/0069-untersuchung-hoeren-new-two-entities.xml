@@ -1,0 +1,310 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hora (generated)" id="1751265471071-35">
+    <dropForeignKeyConstraint baseTableName="untersuchunghoeren_aud" constraintName="FKh2h6bldl3vcfsb305jkk9cuek"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-38">
+    <dropForeignKeyConstraint baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchunghoeren"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-39">
+    <dropForeignKeyConstraint baseTableName="untersuchunghoeren" constraintName="fk_untersuchunghoeren_audiogramm_links"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-40">
+    <dropForeignKeyConstraint baseTableName="untersuchunghoeren" constraintName="fk_untersuchunghoeren_audiogramm_rechts"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-5">
+    <createTable tableName="untersuchunghoerenaudiogramm">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchunghoerenaudiogrammPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="audiogrammbeurteilung" type="VARCHAR(255)"/>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+      <column name="zusaetzlicheangaben" type="VARCHAR(255)"/>
+      <column name="audiogrammlinks_id" type="UUID"/>
+      <column name="audiogrammrechts_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-6">
+    <createTable tableName="untersuchunghoerenaudiogramm_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="audiogrammbeurteilung" type="VARCHAR(255)"/>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+      <column name="zusaetzlicheangaben" type="VARCHAR(255)"/>
+      <column name="audiogrammlinks_id" type="UUID"/>
+      <column name="audiogrammrechts_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet id="1751267711490-1" author="hora">
+    <sql>
+      INSERT INTO untersuchunghoerenaudiogramm (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version,
+                                                tenant, audiogrammbeurteilung, bemerkungen, zusaetzlicheangaben,
+                                                audiogrammlinks_id, audiogrammrechts_id)
+      SELECT uuid_generate_v4(),
+             public.untersuchunghoeren.timestamperstellt,
+             public.untersuchunghoeren.timestampmutiert,
+             public.untersuchunghoeren.usererstellt,
+             public.untersuchunghoeren.usermutiert,
+             public.untersuchunghoeren.version,
+             public.untersuchunghoeren.tenant,
+             public.untersuchunghoeren.audiogrammbeurteilung,
+             public.untersuchunghoeren.bemerkungen,
+             public.untersuchunghoeren.zusaetzlicheangaben,
+             public.untersuchunghoeren.audiogrammlinks_id,
+             public.untersuchunghoeren.audiogrammrechts_id
+      FROM untersuchunghoeren;
+    </sql>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-7">
+    <createTable tableName="untersuchunghoerenotoskopie">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchunghoerenotoskopiePK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+      <column name="otoskopielinks" type="VARCHAR(255)"/>
+      <column name="otoskopielinksresultatandere" type="VARCHAR(2000)"/>
+      <column name="otoskopierechts" type="VARCHAR(255)"/>
+      <column name="otoskopierechtsresultatandere" type="VARCHAR(2000)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-8">
+    <createTable tableName="untersuchunghoerenotoskopie_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+      <column name="otoskopielinks" type="VARCHAR(255)"/>
+      <column name="otoskopielinksresultatandere" type="VARCHAR(2000)"/>
+      <column name="otoskopierechts" type="VARCHAR(255)"/>
+      <column name="otoskopierechtsresultatandere" type="VARCHAR(2000)"/>
+    </createTable>
+  </changeSet>
+  <changeSet id="1751267711490-2" author="hora">
+    <sql>
+      INSERT INTO untersuchunghoerenotoskopie (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version,
+                                               tenant, bemerkungen, otoskopielinks, otoskopielinksresultatandere,
+                                               otoskopierechts, otoskopierechtsresultatandere)
+      SELECT uuid_generate_v4(),
+             public.untersuchunghoeren.timestamperstellt,
+             public.untersuchunghoeren.timestampmutiert,
+             public.untersuchunghoeren.usererstellt,
+             public.untersuchunghoeren.usermutiert,
+             public.untersuchunghoeren.version,
+             public.untersuchunghoeren.tenant,
+             public.untersuchunghoeren.bemerkungen,
+             public.untersuchunghoeren.otoskopielinks,
+             public.untersuchunghoeren.otoskopielinksresultatandere,
+             public.untersuchunghoeren.otoskopierechts,
+             public.untersuchunghoeren.otoskopierechtsresultatandere
+      FROM untersuchunghoeren;
+    </sql>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-9">
+    <addColumn tableName="anlassconfig">
+      <column name="hoerenaudiogrammbemerkungen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-10">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="hoerenaudiogrammbemerkungen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-11">
+    <addColumn tableName="anlassconfig">
+      <column name="hoerenotoskopiebemerkungen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-12">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="hoerenotoskopiebemerkungen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet id="1751268084955-1" author="hora">
+    <sql>
+      UPDATE anlassconfig
+      SET hoerenaudiogrammbemerkungen = hoerenbemerkungen
+      WHERE hoerenaudiogrammbemerkungen IS NULL;
+      UPDATE anlassconfig
+      SET hoerenotoskopiebemerkungen = hoerenbemerkungen
+      WHERE hoerenotoskopiebemerkungen IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet id="1751268084955-2" author="hora">
+    <addNotNullConstraint tableName="anlassconfig" columnName="hoerenaudiogrammbemerkungen"/>
+  </changeSet>
+  <changeSet id="1751268084955-3" author="hora">
+    <addNotNullConstraint tableName="anlassconfig" columnName="hoerenotoskopiebemerkungen"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-13">
+    <addColumn tableName="untersuchung">
+      <column name="untersuchunghoerenaudiogramm_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-14">
+    <addColumn tableName="untersuchung_aud">
+      <column name="untersuchunghoerenaudiogramm_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-15">
+    <addColumn tableName="untersuchung">
+      <column name="untersuchunghoerenotoskopie_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-16">
+    <addColumn tableName="untersuchung_aud">
+      <column name="untersuchunghoerenotoskopie_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-17">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchunghoerenaudiogramm_audPK" tableName="untersuchunghoerenaudiogramm_aud"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-18">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchunghoerenotoskopie_audPK" tableName="untersuchunghoerenotoskopie_aud"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-19">
+    <addUniqueConstraint columnNames="audiogrammlinks_id" constraintName="UC_UNTERSUCHUNGHOERENAUDIOGRAMMAUDIOGRAMMLINKS_ID_COL" tableName="untersuchunghoerenaudiogramm"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-20">
+    <addUniqueConstraint columnNames="audiogrammrechts_id" constraintName="UC_UNTERSUCHUNGHOERENAUDIOGRAMMAUDIOGRAMMRECHTS_ID_COL" tableName="untersuchunghoerenaudiogramm"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-21">
+    <addUniqueConstraint columnNames="untersuchunghoerenaudiogramm_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGHOERENAUDIOGRAMM_ID_COL" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-22">
+    <addUniqueConstraint columnNames="untersuchunghoerenotoskopie_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGHOERENOTOSKOPIE_ID_COL" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-24">
+    <createIndex indexName="ix_untersuchung_untersuchunghoerenaudiogramm" tableName="untersuchung">
+      <column name="untersuchunghoerenaudiogramm_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-25">
+    <createIndex indexName="ix_untersuchung_untersuchunghoerenotoskopie" tableName="untersuchung">
+      <column name="untersuchunghoerenotoskopie_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-26">
+    <createIndex indexName="ix_untersuchunghoerenaudiogramm_audiogrammlinks" tableName="untersuchunghoerenaudiogramm">
+      <column name="audiogrammlinks_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-27">
+    <createIndex indexName="ix_untersuchunghoerenaudiogramm_audiogrammrechts" tableName="untersuchunghoerenaudiogramm">
+      <column name="audiogrammrechts_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-28">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchunghoerenotoskopie_aud" constraintName="FKdjobkfdgxhvdib09wk3phfpmo" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-29">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchunghoerenaudiogramm_aud" constraintName="FKj9n3l7wjyd0k37sc43ebh7bhg" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-30">
+    <addForeignKeyConstraint baseColumnNames="untersuchunghoerenaudiogramm_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchunghoerenaudiogramm" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchunghoerenaudiogramm" validate="true"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-31">
+    <addForeignKeyConstraint baseColumnNames="untersuchunghoerenotoskopie_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchunghoerenotoskopie" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchunghoerenotoskopie" validate="true"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-32">
+    <addForeignKeyConstraint baseColumnNames="audiogrammlinks_id" baseTableName="untersuchunghoerenaudiogramm" constraintName="fk_untersuchunghoeren_audiogramm_links" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="audiogramm" validate="true"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-33">
+    <addForeignKeyConstraint baseColumnNames="audiogrammrechts_id" baseTableName="untersuchunghoerenaudiogramm" constraintName="fk_untersuchunghoeren_audiogramm_rechts" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="audiogramm" validate="true"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-41">
+    <dropUniqueConstraint constraintName="uc_untersuchunghoerenaudiogrammlinks_id_col" tableName="untersuchunghoeren"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-42">
+    <dropUniqueConstraint constraintName="uc_untersuchunghoerenaudiogrammrechts_id_col" tableName="untersuchunghoeren"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-43">
+    <dropUniqueConstraint constraintName="uc_untersuchunguntersuchunghoeren_id_col" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-50">
+    <dropTable tableName="untersuchunghoeren"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-51">
+    <dropTable tableName="untersuchunghoeren_aud"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-53">
+    <dropColumn columnName="hoerenbemerkungen" tableName="anlassconfig"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-54">
+    <dropColumn columnName="hoerenbemerkungen" tableName="anlassconfig_aud"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-55">
+    <dropColumn columnName="untersuchunghoeren_id" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1751265471071-56">
+    <dropColumn columnName="untersuchunghoeren_id" tableName="untersuchung_aud"/>
+  </changeSet>
+  <changeSet author="hora" id="1751447018568-1">
+    <renameColumn tableName="anlassconfig" oldColumnName="hoerenbeurteilung" newColumnName="hoerenaudiogrammbeurteilung"/>
+  </changeSet>
+  <changeSet author="hora" id="1751447018568-2">
+    <renameColumn tableName="anlassconfig_aud" oldColumnName="hoerenbeurteilung" newColumnName="hoerenaudiogrammbeurteilung"/>
+  </changeSet>
+  <changeSet author="hora" id="1751447018568-3">
+    <renameColumn tableName="anlassconfig" oldColumnName="hoerenzusaetzlicheangaben" newColumnName="hoerenaudiogrammzusaetzlicheangaben"/>
+  </changeSet>
+  <changeSet author="hora" id="1751447018568-4">
+    <renameColumn tableName="anlassconfig_aud" oldColumnName="hoerenzusaetzlicheangaben" newColumnName="hoerenaudiogrammzusaetzlicheangaben"/>
+  </changeSet>
+</databaseChangeLog>

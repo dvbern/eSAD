@@ -1,0 +1,33 @@
+@use '../../../../styles/core/border';
+@use '../../../../styles/core/color/color-set-widget';
+@use '../../../../styles/core/radius';
+@use '../../../../styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.svui_card {
+  $-spacing: spacing.$card-inner;
+
+  border-radius: radius.$base;
+  background-color: color-set-widget.$background;
+  box-shadow: border.$box-shadow;
+
+  &--spacing-all {
+    padding: $-spacing;
+  }
+
+  &--spacing-y {
+    padding-block: $-spacing;
+  }
+
+  & ::ng-deep > &__content--full-width {
+    margin-inline: -#{$-spacing};
+  }
+
+  > ::ng-deep hr {
+    margin: 0;
+    color: color-set-widget.$border;
+  }
+}

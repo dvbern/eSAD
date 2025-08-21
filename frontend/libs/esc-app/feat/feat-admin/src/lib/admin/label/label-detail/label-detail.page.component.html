@@ -1,0 +1,51 @@
+<feat-page [heading]="pageTitle() | transloco"
+           [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN + '/' + Path.LABEL}">
+  <svui-card>
+    @if (store.loader.isLoading()) {
+      <div>{{ 'global.loading' | transloco }}</div>
+    } @else {
+      <div>
+        <form svuiFormLayout [mode]="store.detailMode()" [formGroup]="form.group" (ngSubmit)="submitIfValid()">
+          <!-- Name -->
+          <feat-translated-string-edit
+            svuiChildFormLayout
+            [translatedStringGroup]="form.group.controls.name"/>
+
+          <!-- Typ -->
+          <svui-form-control label="{{ 'label.typ' | transloco }}"
+                             [viewValue]="form.group.controls.labelTyp.value ? (('LabelTyp.' + form.group.controls.labelTyp.value) | transloco) : null">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="form.group.controls.labelTyp"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              @for (typ of labelTypen; track typ) {
+                <ng-option [value]="typ">
+                  {{ 'LabelTyp.' + typ | transloco }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-form-control>
+
+          <!--messages for whole form -->
+          <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+          <!-- BUTTONS -->
+          <svui-form-buttons
+            [mode]="store.detailMode()"
+            [isCreate]="store.selectedIsNew()"
+            [saving]="store.saveLoader.isLoading()"
+            [canEdit]="canEditLabel()"
+            routeToEdit="../edit"
+            [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+            [routeOnCancelCreate]="[Path.RELATIVE_ONE_UP]"
+          />
+
+        </form>
+
+      </div>
+    }
+  </svui-card>
+</feat-page>

@@ -1,0 +1,147 @@
+<feat-page [heading]="'benutzer.list.page.title' | transloco"
+           [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN}">
+  <svui-page-header-buttons
+    [showFilterPopup]="false"
+    [activeFilterCount]="itemTable.numberOfFilters()"
+    (resetFilter)="itemTable.resetFilters(); tableFilterForm.reset()"/>
+
+  <svui-page-header-list-summary
+    [items]="summaryItems()"/>
+
+
+  <svui-card [innerSpacing]="'topBottom'">
+    <table
+      svuiTable
+      [loading]="benutzerListStore.loader.isLoading()"
+      [totalRows]="itemTable.filteredListSize()"
+      (pageChanged)="itemTable.onPageChanged($event)"
+      [pagination]="itemTable.pagination()"
+    >
+      <!-- col widths -->
+      <colgroup>
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="select-medium">
+        <col svuiColWidth colWidth="select-small">
+        <col svuiColWidth colWidth="options">
+      </colgroup>
+      <thead>
+      <!-- Headers for sorting -->
+      <tr>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.fullName')"
+          (sort)="itemTable.onColSort($event, 'data.fullName')"
+        >
+          {{ 'benutzer.fullName' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.email')"
+          (sort)="itemTable.onColSort($event, 'data.email')"
+        >
+          {{ 'benutzer.email' | transloco }}
+        </th>
+        <th>{{ 'benutzer.rollen' | transloco }}</th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.aktiv')"
+          (sort)="itemTable.onColSort($event, 'data.aktiv')"
+        >
+          {{ 'benutzer.aktiv' | transloco }}
+        </th>
+        <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
+
+
+      </tr>
+      <!-- Headers for filtering-->
+      <tr>
+        <!-- Filter for fullName -->
+        <th scope="col">
+          <svui-table-filter [columnHeader]="('benutzer.fullName' | transloco)">
+            <input svuiTextInput [formControl]="tableFilterForm.group.controls.fullName"/>
+          </svui-table-filter>
+        </th>
+
+        <!-- Filter for email -->
+        <th scope="col">
+          <svui-table-filter [columnHeader]="('benutzer.email' | transloco)">
+            <input svuiTextInput [formControl]="tableFilterForm.group.controls.email"/>
+          </svui-table-filter>
+        </th>
+
+        <!-- Filter for Rollen -->
+        <th scope="col">
+          <svui-table-filter [columnHeader]="('benutzer.rollen' | transloco)">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.rolle"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              @for (rolle of rollen; track rolle) {
+                <ng-option [value]="rolle">
+                  {{ 'benutzer.list.fachRolle.' + rolle | transloco }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+
+        <!-- Filter for aktiv/deaktiviert -->
+        <th scope="col">
+          <svui-table-filter [columnHeader]="('benutzer.aktiv' | transloco)">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.aktiv"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              <ng-option [value]="true">
+                {{ 'benutzer.list.aktiv' | transloco }}
+              </ng-option>
+              <ng-option [value]="false">
+                {{ 'benutzer.list.inaktiv' | transloco }}
+              </ng-option>
+            </ng-select>
+
+          </svui-table-filter>
+        </th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+        @if (!itemTable.displayedList()?.length && !benutzerListStore.loader.isLoading()) {
+          <tr svui-empty-table-message [message]="'benutzer.list.empty' | transloco"></tr>
+        }
+        @for (item of itemTable.displayedList(); track item.id) {
+          <tr>
+            <td>{{ item.data.fullName }}</td>
+            <td>{{ item.data.email }}</td>
+            <td>{{ printFachRollen(item.data.fachRollen) }}</td>
+            <td>{{ item.data.aktiv ? ('benutzer.list.aktiv' | transloco) : ('benutzer.list.inaktiv' | transloco) }}</td>
+            <td>
+              <svui-collapsible-menu
+                [loading]="benutzerListStore.loaderSave.isLoading()"
+                label="{{ 'global.actionmenu.tooltip' | transloco }}">
+                @if (canEditActive()) {
+                  <button
+                    ngbDropdownItem
+                    (click)="toggleActive(item)"
+                  >
+                    {{ isUserActive(item) ? ('global.deactivate' | transloco) : ('global.activate' | transloco) }}
+                  </button>
+                }
+              </svui-collapsible-menu>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </svui-card>
+</feat-page>

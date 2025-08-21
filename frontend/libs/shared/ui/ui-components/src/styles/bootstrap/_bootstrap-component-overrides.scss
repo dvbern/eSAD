@@ -1,0 +1,14 @@
+// Bootstrap Component Overrides
+
+@use '../core/border';
+@use '../core/spacing';
+
+@forward './bootstrap-component-overrides_nav';
+@forward './bootstrap-component-overrides_button';
+
+// TableControl Error Tooltip
+.invalid-tooltip {
+  inset: auto 0 100% auto;
+  margin-block: 0 spacing.$between-form-control-and-message;
+  min-width: max-content;
+}

@@ -1,0 +1,15 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet id="1734527885259-1" author="gema">
+    <sql>
+      ALTER TABLE IF EXISTS UntersuchungSehen ALTER COLUMN fernvisusLinks SET DATA TYPE numeric (38,2);
+      ALTER TABLE IF EXISTS UntersuchungSehen ALTER COLUMN fernvisusRechts SET DATA TYPE numeric (38,2);
+      ALTER TABLE IF EXISTS UntersuchungSehen ALTER COLUMN nahvisusLinks SET DATA TYPE numeric (38,2);
+      ALTER TABLE IF EXISTS UntersuchungSehen ALTER COLUMN nahvisusRechts SET DATA TYPE numeric (38,2);
+      ALTER TABLE IF EXISTS UntersuchungSehen_AUD ALTER COLUMN fernvisusLinks SET DATA TYPE numeric (38,2);
+      ALTER TABLE IF EXISTS UntersuchungSehen_AUD ALTER COLUMN fernvisusRechts SET DATA TYPE numeric (38,2);
+      ALTER TABLE IF EXISTS UntersuchungSehen_AUD ALTER COLUMN nahvisusLinks SET DATA TYPE numeric (38,2);
+      ALTER TABLE IF EXISTS UntersuchungSehen_AUD ALTER COLUMN nahvisusRechts SET DATA TYPE numeric (38,2);
+    </sql>
+  </changeSet>
+</databaseChangeLog>

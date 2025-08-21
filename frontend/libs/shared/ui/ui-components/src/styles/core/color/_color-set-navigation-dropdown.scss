@@ -1,0 +1,6 @@
+// Dropdown (e.g. Action Menu) Color Set
+
+@use './definition/color-definition';
+
+$background: color-definition.$background-dropdown;
+$text: color-definition.$blue-300;

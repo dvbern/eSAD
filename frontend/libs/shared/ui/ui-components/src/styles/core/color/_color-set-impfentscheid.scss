@@ -1,0 +1,17 @@
+// Tabs Navigation Color Set
+
+@use './definition/color-definition';
+
+$row-border: color-definition.$blue-300;
+$th: color-definition.$blue-300;
+
+$genuegend: color-definition.$green-200;
+$bg-genuegend: #f3fbf3;
+
+$impfempfehlung: color-definition.$yellow-200;
+$bg-impfempfehlung: #faf3e8;
+
+$impfentscheid: color-definition.$blue-200;
+$bg-impfentscheid: #eef5fc;
+
+$checkbox: color-definition.$blue-400-primary;

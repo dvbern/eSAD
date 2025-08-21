@@ -1,0 +1,2 @@
+This is  a samplefile for testing
+It has an empty line at the end

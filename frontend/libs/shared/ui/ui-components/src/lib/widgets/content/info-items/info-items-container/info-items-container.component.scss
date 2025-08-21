@@ -1,0 +1,7 @@
+@use '../../../../../styles/core/font';
+
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 30px;
+}

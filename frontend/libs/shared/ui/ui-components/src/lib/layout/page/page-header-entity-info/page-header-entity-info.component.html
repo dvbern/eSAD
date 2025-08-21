@@ -1,0 +1,10 @@
+@if (entityInfo()) {
+    <span class="page-header-entity-info--block">
+     <span>{{ 'ui.page.header.entity.info.modified' | transloco }}&nbsp;</span>
+     <span class="page-header-entity-info--block-data">{{ entityInfo()?.timestampMutiert | date: 'dd.MM.yyyy' }}&nbsp;</span>
+    </span>
+    <span class="page-header-entity-info--block">
+     <span>{{ 'ui.page.header.entity.info.created' | transloco }}&nbsp;</span>
+     <span class="page-header-entity-info--block-data">{{ entityInfo()?.timestampErstellt | date: 'dd.MM.yyyy' }}&nbsp;</span>
+  </span>
+}

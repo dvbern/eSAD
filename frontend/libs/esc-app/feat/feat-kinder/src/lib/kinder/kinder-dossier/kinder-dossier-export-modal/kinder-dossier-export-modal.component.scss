@@ -1,0 +1,16 @@
+@use '../../../../../../../../shared/ui/ui-components/src/styles/core/layout';
+@use '../../../../../../../../shared/ui/ui-components/src/styles/core/spacing';
+
+:host {
+  display: block;
+
+  .button-wrapper {
+    @include layout.flex(
+      $direction: row-reverse,
+      $wrap: wrap,
+      $justify-content: flex-start,
+      $row-gap: spacing.$row-gap,
+      $column-gap: spacing.$gutter-width
+    );
+  }
+}

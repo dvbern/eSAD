@@ -1,0 +1,104 @@
+<form svuiFormLayout
+      [formType]="'kacheln'"
+      [mode]="'edit'"
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()">
+
+
+  <svui-buttons-right-container class="mb-3">
+    <h2 svuiHeading="formSection">{{ 'untersuchung.impfungen.massnahmen.title' | transloco }}</h2>
+
+    <!-- Einzel-Folgetermin erstellen -->
+    @if (canEdit() && anlassStore.selectedEntity()?.anlassConfig?.impfungenMassnahmeEinzelFolgetermin) {
+      <button svuiButton="secondary" type="button" (click)="einzelFolgeterminErstellen()">
+        {{ 'untersuchung.tab.impfungen.massnahmen.einzelFolgeterminErstellen' | transloco }}
+      </button>
+    }
+  </svui-buttons-right-container>
+
+
+  <!-- Keine Massnahmen -->
+  <svui-standalone-control [label]="'untersuchung.tab.impfungen.massnahmen.keineMassnahmen' | transloco">
+    <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.keineMassnahmen">
+  </svui-standalone-control>
+
+  <!-- Vormerken fuer Gruppen-Folgetermin -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.impfungenMassnahmeFolgetermin) {
+    <svui-standalone-control [label]="'untersuchung.tab.impfungen.massnahmen.vormerkenFuerGruppenFolgetermin' | transloco">
+      <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.vormerkenFuerGruppenFolgetermin">
+    </svui-standalone-control>
+  }
+
+  <!-- Impfberatung MPA durchgefuhert -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.impfungenMassnahmeBeratungMPA) {
+    <svui-standalone-control [label]="'untersuchung.tab.impfungen.massnahmen.impfberatungMpaDurchgefuehrt' | transloco">
+      <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.impfberatungMpaDurchgefuehrt">
+    </svui-standalone-control>
+    <!-- Impfberatung Bemerkungen -->
+    @if (form.group.controls.impfberatungMpaDurchgefuehrt.value) {
+      <div class="mt-3">
+        <textarea svuiTextarea
+                  [formControl]="form.group.controls.impfberatungMpaDurchgefuehrtBemerkungen">
+        </textarea>
+      </div>
+    }
+  }
+
+  <!-- Informationen abgegeben -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.impfungenMassnahmeInformationenAbgegeben) {
+    <svui-standalone-control class="mt-3"
+                             [label]="'untersuchung.tab.impfungen.massnahmen.informationenAbgegeben' | transloco">
+      <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.informationenAbgegeben">
+    </svui-standalone-control>
+  }
+
+  <!-- Information Eltern -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.impfungenMassnahmeInfoEltern) {
+    <svui-form-control [label]="'untersuchung.tab.impfungen.massnahmen.informationEltern' | transloco"
+                       [viewValue]="form.group.value.informationEltern"
+                       class="mt-3">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.informationEltern"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      >
+        @for (each of informationEltern; track each) {
+          <ng-option [value]="each">
+            {{ 'InformationEltern.' + each | transloco }}
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+  }
+
+  <!-- Rueckfrage Hausarzt -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.impfungenMassnahmeRueckfrageKinderarzt) {
+    <svui-standalone-control [label]="'untersuchung.tab.impfungen.massnahmen.rueckfrageHausarzt' | transloco">
+      <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.rueckfrageHausarzt">
+    </svui-standalone-control>
+  }
+
+  <!-- Information Hausarzt -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.impfungenMassnahmeInfoKinderarzt) {
+    <svui-standalone-control [label]="'untersuchung.tab.impfungen.massnahmen.informationHausarzt' | transloco">
+      <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.informationHausarzt">
+    </svui-standalone-control>
+  }
+
+  <!-- Bemerkungen -->
+  <svui-form-control class="mt-3"
+                     [label]="'untersuchung.tab.impfungen.massnahmen.bemerkungen' | transloco"
+                     [viewValue]="form.group.controls.bemerkungen.value">
+    <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
+  </svui-form-control>
+
+  <!-- Save / Cancel Buttons -->
+  @if (canEdit()) {
+    <svui-save-cancel-buttons
+      [saving]="impfungenStore.saveMassnahmenLoader.isLoading()"
+      [canEdit]="true"
+      (cancelClicked)="abbrechen()"/>
+  }
+</form>

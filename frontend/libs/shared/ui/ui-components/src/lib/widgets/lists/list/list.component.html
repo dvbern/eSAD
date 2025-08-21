@@ -1,0 +1,29 @@
+<svui-card [innerSpacing]="'none'">
+
+  <!-- header -->
+  <svui-header-bar class="svui_list__header">
+    <h3 svuiHeading="list">{{ heading() }}</h3>
+
+    <div class="header-addons">
+      <ng-content select="[header]"/>
+    </div>
+    <ng-content select="[listAddbutton]"/>
+  </svui-header-bar>
+
+  <!-- eg fancy list items or empty message -->
+  @if (!loading()) {
+    <ng-content/>
+  }
+
+  <!-- simple list items -->
+  <ul class="svui_list__ul">
+    <ng-content select="[svuiListItem]"/>
+
+    <svui-spinner [working]="loading()" context="table"/>
+  </ul>
+
+  <!-- footer -->
+  <div class="svui_list__footer">
+    <ng-content select="[footer]"/>
+  </div>
+</svui-card>

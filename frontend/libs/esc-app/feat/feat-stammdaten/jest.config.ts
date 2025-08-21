@@ -1,0 +1,23 @@
+export default {
+  displayName: 'stammdaten',
+  preset: '../../../../jest.preset.js',
+  setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
+  coverageDirectory: '../../../../coverage/libs/esc-app/feat/feat-stammdaten',
+  transform: {
+    '^.+\\.(ts|mjs|js|html)$': [
+      'jest-preset-angular',
+      {
+        tsconfig: '<rootDir>/tsconfig.spec.json',
+        stringifyContentPathRegex: '\\.(html|svg)$',
+        isolatedModules: true
+      },
+    ],
+  },
+  transformIgnorePatterns: ['node_modules/(?!@angular|@ngrx|@jsverse|(?!.*\\\\.mjs$))'],
+  // transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$)'],
+  snapshotSerializers: [
+    'jest-preset-angular/build/serializers/no-ng-attributes',
+    'jest-preset-angular/build/serializers/ng-snapshot',
+    'jest-preset-angular/build/serializers/html-comment',
+  ],
+};

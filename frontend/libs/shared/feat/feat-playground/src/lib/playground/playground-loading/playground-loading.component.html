@@ -1,0 +1,177 @@
+<div style="display: flex; flex-direction: row; justify-content: end; margin-bottom: 1rem;">
+  <input type="checkbox" svuiCheckbox [(ngModel)]="loading" id="check">
+  <label for="check" style="margin-left: .5rem;">Laden</label>
+</div>
+
+
+<div style="margin-top: 3rem;">
+  <svui-page-header heading="Meine Detailseite" [loading]="loading()"></svui-page-header>
+
+
+  <p style="margin-top: 3rem;">Tabelle, leer:</p>
+
+  <svui-card [innerSpacing]="'topBottom'">
+    <table svuiTable [loading]="loading()">
+      <thead>
+      <tr>
+        <th>Abracadabra</th>
+        <th>Bebebebe</th>
+        <th>Cecece</th>
+      </tr>
+      </thead>
+    </table>
+  </svui-card>
+
+  <p style="margin-top: 3rem;">Tabelle mit Inhalt:</p>
+  <svui-card [innerSpacing]="'topBottom'">
+    <table svuiTable
+           [loading]="loading()"
+           [totalRows]="33"
+           [pagination]="{ pageSize: 7, pageNr: 2 }">
+      <thead>
+      <tr>
+        <th>Abracadabra</th>
+        <th>Bebebebe</th>
+        <th>Cecece</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (entry of list; track entry) {
+          <tr>
+            <td>asdhaisudasd</td>
+            <td>asdhaisudasd</td>
+            <td>asdhaisudasd</td>
+            <td>
+              <svui-collapsible-menu
+                [menuStyle]="'ICON'"
+                [loading]="loading()"
+                label="Actions">
+                <button ngbDropdownItem (click)="loading.set(true)">Tu etwas</button>
+                <button ngbDropdownItem (click)="loading.set(true)">Tu mehr</button>
+              </svui-collapsible-menu>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </svui-card>
+</div>
+
+
+<svui-dashboard style="margin-top: 3rem;">
+  <div termine>
+    <p>Action-Menu (Link):</p>
+    <svui-collapsible-menu
+      [menuStyle]="'LINK'"
+      [loading]="loading()"
+      label="Weiteres Kind hinzufügen">
+      <button ngbDropdownItem (click)="loading.set(true)">Tu etwas</button>
+      <button ngbDropdownItem (click)="loading.set(true)">Tu mehr</button>
+    </svui-collapsible-menu>
+  </div>
+
+  <div aufgaben>
+    <p style="margin-top: 3rem;">Buttons:</p>
+    <svui-card>
+      <button svuiButton="primary" type="button" [working]="loading()" style="margin-right: 1rem;">Speichern</button>
+      <button svuiButton="secondary" type="button" [working]="loading()" style="margin-right: 1rem;">Speichern</button>
+      <button svuiButton="tertiary" type="button" [working]="loading()" style="margin-right: 1rem;">Speichern</button>
+    </svui-card>
+  </div>
+
+
+  <div recent>
+    <p>Card:</p>
+    <svui-card>
+      <svui-card-header heading="Emma Siegenthaler" [loading]="loading()"/>
+
+      <div>ID-Nr. 21 / 55 / 222 / 11</div>
+    </svui-card>
+  </div>
+
+
+  <div kinder>
+    <p>Action-Menu (Icon):</p>
+    <svui-card>
+      <svui-card-header heading="Emma Siegenthaler">
+        <svui-collapsible-menu
+          [menuStyle]="'ICON'"
+          [loading]="loading()"
+          label="Actions">
+          <button ngbDropdownItem (click)="loading.set(true)">Tu etwas</button>
+          <button ngbDropdownItem (click)="loading.set(true)">Tu mehr</button>
+        </svui-collapsible-menu>
+      </svui-card-header>
+      <div>ID-Nr. 21 / 55 / 222 / 11</div>
+    </svui-card>
+
+  </div>
+</svui-dashboard>
+
+<svui-dashboard style="margin-top: 3rem;">
+
+  <div termine>
+
+    <p style="margin-top: 3rem;">Liste mit Inhalt:</p>
+    <svui-list heading="Liste" [loading]="loading()">
+      <button svuiIconOnlyButton="primary"
+              type="button"
+              [tooltip]="'global.tooltip.aufgabe.add' | transloco"
+              [icon]="'neu'"
+              listAddbutton>
+      </button>
+
+      <style>
+        li {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          column-gap: 16px;
+        }
+      </style>
+      @for (entry of list; track entry) {
+        <ul>
+          <li svuiListItem>
+            <span svuiListItemTitle> {{ entry[0] }} </span>
+            <span>{{ entry[1] }} </span>
+            <span svuiListItemSecondary>{{ entry[2] }} </span>
+            <svui-badge>{{ entry[3] }}</svui-badge>
+          </li>
+        </ul>
+      }
+
+      <ng-container footer>
+        <span>1 von 22</span>
+        <span>Mehr</span>
+      </ng-container>
+    </svui-list>
+
+  </div>
+
+  <div aufgaben>
+
+    <p style="margin-top: 3rem;">Liste, leer:</p>
+    <svui-list heading="Liste" [loading]="loading()">
+      <button svuiIconOnlyButton="primary"
+              type="button"
+              [tooltip]="'global.tooltip.aufgabe.add' | transloco"
+              [icon]="'neu'"
+              listAddbutton>
+
+      </button>
+
+      <ng-container footer>
+        <span>1 von 22</span>
+        <span>Mehr</span>
+      </ng-container>
+    </svui-list>
+  </div>
+
+  <div kinder></div>
+  <div recent></div>
+</svui-dashboard>
+
+
+
+
+

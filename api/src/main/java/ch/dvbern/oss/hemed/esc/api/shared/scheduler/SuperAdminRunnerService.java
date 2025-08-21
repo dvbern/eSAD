@@ -1,0 +1,221 @@
+/*
+ *
+ * Copyright (C) 2024 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package ch.dvbern.oss.hemed.esc.api.shared.scheduler;
+
+import java.util.List;
+
+import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
+import ch.dvbern.dvbstarter.shared.clock.AppClock;
+import ch.dvbern.dvbstarter.shared.runas.RunAs;
+import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
+import ch.dvbern.oss.hemed.esc.api.features.kinddeactivation.KindDeactivationService;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.duplikate.Duplikat;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.duplikate.DuplikatService;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.duplikate.DuplikatStatus;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueueRunnerService;
+import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.Validate;
+
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class SuperAdminRunnerService {
+
+    private final SchedulerConfigService schedulerConfigService;
+    private final ConfigService configService;
+    private final BenutzerService benutzerService;
+    private final AppClock appClock;
+    private final DocumentQueueRunnerService documentQueueRunnerService;
+    private final KindDeactivationService kindDeactivationService;
+    private final KindService kindService;
+    private final DuplikatService duplikatService;
+
+    @RunAs(username = "bs-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
+    public void runBenutzerInaktivierenJob(boolean forcerun) {
+        final SchedulerConfig config = schedulerConfigService.getSchedulerConfig(SchedulerTyp.BENUTZER_INAKVIEREN);
+        if (!config.isDisabled() || forcerun) {
+            int minutesInactive = configService.getInactivateBenutzerAfterMinutesUnused();
+            List<ID<Benutzer>> benutzerToDeactivate =
+                this.benutzerService.getBenutzerToDeactivate(
+                    minutesInactive,
+                    config.getBatchsize());
+
+            SchedulerProcessingResult
+                result = new SchedulerProcessingResult(config.getBatchsize(), 0, benutzerToDeactivate.size());
+            if (!benutzerToDeactivate.isEmpty()) {
+                LOG.info(
+                    "ESC-DEACTIVATE-USERS: Found {} Benutzer that did not login since {}. ",
+                    benutzerToDeactivate.size(),
+                    appClock.localDateTime().now().minusMinutes(minutesInactive));
+                long anzahlDeaktiviert = benutzerService.deactivateListOfBenutzer(benutzerToDeactivate);
+                result.setSuccessCounter(anzahlDeaktiviert);
+            }
+            LOG.info(result.getResultString("ESC-DEACTIVATE-USERS"));
+        } else {
+            LOG.debug("ESC-DEACTIVATE-USERS: Scheduler is disabled.");
+        }
+    }
+
+    @RunAs(username = "bs-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void runDocumentQueueJob(boolean forcerun) {
+        final SchedulerConfig config = schedulerConfigService.getSchedulerConfig(SchedulerTyp.DOCUMENT_QUEUE);
+        if (!config.isDisabled() || forcerun) {
+            SchedulerProcessingResult result = documentQueueRunnerService.performDocumentGeneration(config);
+            if (result.getTotalCounter() != 0) {
+                LOG.info(result.getResultString("ESC-DOCUMENT-QUEUE"));
+            }
+        } else {
+            LOG.debug("ESC-DOCUMENT-QUEUE: Scheduler is disabled.");
+        }
+    }
+
+    @RunAs(username = "bs-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void runDocumentQueueCleanupJob(boolean forcerun) {
+        final SchedulerConfig config = schedulerConfigService.getSchedulerConfig(SchedulerTyp.DOCUMENT_QUEUE_CLEAN_UP);
+        if (!config.isDisabled() || forcerun) {
+            SchedulerProcessingResult result = documentQueueRunnerService.performDocumentQueueCleanup(config);
+            LOG.info(result.getResultString("ESC-DOCUMENT-QUEUE-CLEAN-UP"));
+        } else {
+            LOG.debug("ESC-DOCUMENT-QUEUE-CLEAN-UP: Scheduler Clean up is disabled.");
+        }
+    }
+
+    @RunAs(username = "bs-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void runKinderInaktivierenJob(boolean forcerun) {
+        final SchedulerConfig config = schedulerConfigService.getSchedulerConfig(SchedulerTyp.KINDER_INAKTIVIEREN);
+        LOG.info("ESC-DEACTIVATE-KINDER: Start");
+        if (!config.isDisabled() || forcerun) {
+            int monthsUnused = configService.getInactivateKinderAfterInactiveMoths();
+            int manualKinderInactivationAge = configService.getGetInactiveKinderManualKinderInactivationAge();
+
+            List<ID<Kind>> kinderToDeactivate = this.kindDeactivationService.findKinderToDeactivate(
+                monthsUnused,
+                manualKinderInactivationAge,
+                config.getBatchsize()
+            );
+            SchedulerProcessingResult
+                result = new SchedulerProcessingResult(config.getBatchsize(), 0, kinderToDeactivate.size());
+            if (!kinderToDeactivate.isEmpty()) {
+                LOG.info(
+                    "ESC-DEACTIVATE-KINDER: Found {} Kinder that meet conditions to set INAKTIV status",
+                    kinderToDeactivate.size());
+
+                long anzahlDeaktiviert = 0;
+                for (ID<Kind> kindID : kinderToDeactivate) {
+                    try {
+                        kindDeactivationService.setKindAktivStatusForKind(
+                            kindID,
+                            EntityAktivStatus.INAKTIV);
+                        anzahlDeaktiviert += 1;
+                    } catch (Exception e) {
+                        LOG.error(
+                            "ESC-DEACTIVATE-KINDER: Error while setting INAKTIV status for Kind with ID: {}",
+                            kindID, e);
+
+                    }
+                }
+                result.setSuccessCounter(anzahlDeaktiviert);
+            }
+            LOG.info(result.getResultString("ESC-DEACTIVATE-KINDER"));
+        } else {
+            LOG.debug("ESC-DEACTIVATE-KINDER: Scheduler is disabled.");
+        }
+    }
+
+    @Transactional(TxType.NOT_SUPPORTED)
+    @RunAs(username = "bs-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
+    public void normalizeKindNamen() {
+        List<ID<Kind>> ids = kindService.findAllIds();
+        LOG.info("ESC-NORMALIZE-KIND-NAMEN: Start normalizing {} Kinder", ids.size());
+        for (ID<Kind> id : ids) {
+            try {
+                kindService.normalizeKindName(id);
+            } catch (Exception e) {
+                LOG.info("ESC-NORMALIZE-KIND-NAMEN: Error normalizing Kind {}", id);
+            }
+
+        }
+        LOG.info("ESC-NORMALIZE-KIND-NAMEN: Finished normalizing {} Kinder", ids.size());
+    }
+
+    @Transactional(TxType.NOT_SUPPORTED)
+    @RunAs(username = "bs-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
+    public void runReloadDuplikateJob(boolean forcerun) {
+        final SchedulerConfig config = schedulerConfigService.getSchedulerConfig(SchedulerTyp.RELOAD_DUPLIKATE);
+        if (!config.isDisabled() || forcerun) {
+            // Alle bestehende Duplikate pruefen, ob sie noch aktuell sind
+            reevaluateAllExistingDuplikate();
+            // Alle Kinder auf Duplikate prüfen
+            reevaluateAllKinder();
+        } else {
+            LOG.debug("ESC-RELOAD_DUPLIKATE: Scheduler is disabled.");
+        }
+    }
+
+    private void reevaluateAllExistingDuplikate() {
+        List<Duplikat> duplikate = duplikatService.findUnmergedDuplikate();
+        LOG.info("ESC-RELOAD_DUPLIKATE: Checking {} existing Duplikate", duplikate.size());
+        int removedCounter = 0;
+        for (Duplikat duplikat : duplikate) {
+            try {
+                if (duplikat.getKind1() == null || duplikat.getKind2() == null) {
+                    Validate.isTrue(duplikat.getDuplikatStatus() != DuplikatStatus.OFFEN);
+                    continue;
+                }
+                removedCounter += duplikatService.reevaluateExistingDuplikat(duplikat);
+            } catch (Exception e) {
+                LOG.error("ESC-RELOAD_DUPLIKATE: Error while reloading duplicate with ID: {}", duplikat.getId(), e);
+            }
+        }
+        LOG.info(
+            "ESC-RELOAD_DUPLIKATE: Finished checking existing Duplikate. We removed {} Duplikat(e) ",
+            removedCounter);
+    }
+
+    private void reevaluateAllKinder() {
+        List<ID<Kind>> ids = kindService.findAllIds();
+        LOG.info("ESC-RELOAD_DUPLIKATE: Checking {} Kinder for potentially being a Duplikat", ids.size());
+        int successCounter = 0;
+        for (ID<Kind> id : ids) {
+            try {
+                successCounter += duplikatService.reevaluateKind(id);
+            } catch (Exception e) {
+                LOG.error("ESC-RELOAD_DUPLIKATE: Error while reloading duplicates for Kind with ID: {}", id, e);
+            }
+        }
+        LOG.info(
+            "ESC-RELOAD_DUPLIKATE: Finished checking for duplicates. We analyzed {} Kinder and created {} new "
+					+ "Duplikate.",
+            ids.size(), successCounter);
+    }
+}
+

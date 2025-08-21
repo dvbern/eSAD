@@ -1,0 +1,83 @@
+<feat-page heading="Admin">
+  <svui-list [loading]="false" heading="">
+    <style>
+      li {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        column-gap: 16px;
+      }
+    </style>
+
+    @if (canViewList()) {
+      <li svuiListItem>
+        <a svuiListItemTitle routerLink="{{ Path.SCHULEN }}"> {{ 'admin.list.item.schulen' | transloco }} </a>
+        <span> </span>
+        <span svuiListItemSecondary> </span>
+      </li>
+    }
+    @if (canViewList()) {
+      <li svuiListItem>
+        <a svuiListItemTitle routerLink="{{ Path.KLASSEN }}"> {{ 'admin.list.item.klassen' | transloco }} </a>
+        <span> </span>
+        <span svuiListItemSecondary> </span>
+      </li>
+    }
+    @if (canViewLabel()) {
+      <li svuiListItem>
+        <a svuiListItemTitle routerLink="{{ Path.LABEL }}"> {{ 'admin.list.item.labels' | transloco }} </a>
+        <span> </span>
+        <span svuiListItemSecondary> </span>
+      </li>
+    }
+
+    @if (canViewImpfstoffe()) {
+      <li svuiListItem>
+        <a svuiListItemTitle routerLink="{{ Path.IMPFSTOFF }}"> {{ 'admin.list.item.impfstoffe' | transloco }} </a>
+        <span> </span>
+        <span svuiListItemSecondary> </span>
+      </li>
+    }
+
+    @if (canViewList()) {
+      <li svuiListItem>
+        <a svuiListItemTitle routerLink="{{ Path.INFOMATERIAL }}"> {{ 'admin.list.item.infomaterial' | transloco }} </a>
+        <span> </span>
+        <span svuiListItemSecondary> </span>
+      </li>
+    }
+
+    @if (canViewAerzte()) {
+      <li svuiListItem>
+        <a svuiListItemTitle routerLink="{{ Path.AERZTE }}"> {{ 'admin.list.item.aerzte' | transloco }} </a>
+        <span> </span>
+        <span svuiListItemSecondary> </span>
+      </li>
+    }
+
+    @if (canViewBenutzer()) {
+      <li svuiListItem>
+        <a svuiListItemTitle routerLink="{{ Path.BENUTZER }}"> {{ 'admin.list.item.benutzer' | transloco }} </a>
+        <span> </span>
+        <span svuiListItemSecondary> </span>
+      </li>
+    }
+
+    @if (canViewBriefvorlage()) {
+      <li svuiListItem>
+        <a svuiListItemTitle
+           routerLink="{{ Path.BRIEFVORLAGEN }}"> {{ 'admin.list.item.briefvorlagen' | transloco }} </a>
+        <span> </span>
+        <span svuiListItemSecondary> </span>
+      </li>
+    }
+
+    @if (canViewDuplikate()) {
+      <li svuiListItem>
+        <a svuiListItemTitle routerLink="{{ Path.DUPLIKATE }}"> {{ 'admin.list.item.duplikat' | transloco }} </a>
+        <span> </span>
+        <span svuiListItemSecondary> </span>
+      </li>
+    }
+
+  </svui-list>
+</feat-page>

@@ -1,0 +1,448 @@
+// Bootstrap variable overrides
+//
+// HOW TO USE:
+// This file is a copy of node_modules/bootstrap/scss/_variables.scss, containing only the overridden properties and all
+// the section titles. To add new overrides, compare this file to _variables.scss where you will see all the overridable
+//  properties. For better maintainability keep the order of the entries exacly like the original!
+
+@use '../core/border';
+@use '../core/color/color-set-default';
+@use '../core/color/color-set-form';
+@use '../core/color/color-set-navigation-main';
+@use '../core/color/color-set-navigation-tabs';
+@use '../core/color/color-set-primary';
+@use '../core/color/color-set-statustext';
+@use '../core/color/color-set-table';
+@use '../core/color/color-set-widget';
+@use '../core/css-var';
+@use '../core/font';
+@use '../core/opacity';
+@use '../core/radius';
+@use '../core/size';
+@use '../core/spacing';
+@use '../core/unit';
+@use '../core/zindex';
+
+// Variables
+//
+// Variables should follow the `$component-state-property-size` formula for
+// consistent naming. Ex: $nav-link-disabled-color and $modal-content-box-shadow-xs.
+
+// Color system
+
+$grays: ();
+$colors: ();
+
+// scss-docs-start theme-color-variables
+$primary: color-set-primary.$color;
+$secondary: color-set-primary.$color-contrast;
+$success: color-set-statustext.$success;
+$info: color-set-statustext.$info;
+$warning: color-set-statustext.$warning;
+$danger: color-set-statustext.$error;
+//$light:        white;
+//$dark:         $primary;
+
+$theme-colors: (
+  'primary': $primary,
+  'secondary': $secondary,
+  'success': $success,
+  'info': $info,
+  'warning': $warning,
+  'danger': $danger,
+  //'light':      $light,
+  //'dark':       $dark
+);
+
+// scss-docs-start theme-bg-subtle-variables
+$success-bg-subtle: color-set-statustext.$success-background;
+$info-bg-subtle: color-set-statustext.$info-background;
+$warning-bg-subtle: color-set-statustext.$warning-background;
+$danger-bg-subtle: color-set-statustext.$error-background;
+
+// Options
+
+$enable-shadows: true;
+$enable-grid-classes: false;
+$enable-container-classes: false;
+$enable-rfs: false;
+
+$enable-dark-mode: false;
+
+// Prefix for :root CSS variables
+
+$prefix: css-var.$prefix;
+
+// Gradient
+
+// Spacing
+$spacers: (
+  0: 0,
+  1: spacing.$half,
+  2: spacing.$base,
+  3: 2 * spacing.$base,
+  4: 3 * spacing.$base,
+  5: 4 * spacing.$base,
+);
+
+// Position
+
+// Body
+
+$body-color: color-set-default.$text;
+$body-bg: color-set-default.$background;
+
+$body-secondary-color: $body-color;
+$body-secondary-bg: color-set-default.$background;
+
+$body-tertiary-color: $body-color;
+$body-tertiary-bg: $body-secondary-bg;
+
+$body-emphasis-color: $body-color;
+
+// Links
+
+$link-color: $primary;
+$link-decoration: none;
+$link-hover-color: $link-color;
+$link-hover-decoration: underline;
+
+// Icon links
+
+// Paragraphs
+
+$paragraph-margin-bottom: spacing.$between-paragraphs;
+
+// Grid breakpoints
+// FIXME(zusa)
+// $grid-breakpoints: (
+//   xs: 0,
+//   sm: 576px,
+//   md: 768px,
+//   lg: 992px,
+//   xl: 1200px,
+//   xxl: 1400px
+// );
+
+// Grid containers
+// FIXME(zusa)
+
+// scss-docs-start container-max-widths
+$container-max-widths: (
+  //sm: 540px,
+  //md: 720px,
+  //lg: 960px,
+  //xl: 1140px,
+  //xxl: 1320px
+);
+
+// Grid columns
+
+$grid-gutter-width: spacing.$gutter-width;
+
+// Container padding
+
+// Components
+
+// scss-docs-start border-variables
+$border-width: border.$width-default;
+$border-widths: (
+  1: border.$width-default,
+  2: border.$nav-link,
+);
+$border-color: color-set-default.$border;
+
+// scss-docs-start border-radius-variables EDOKID ok
+$border-radius: radius.$base;
+$border-radius-sm: $border-radius;
+$border-radius-lg: radius.$button;
+$border-radius-xl: radius.$badge;
+$border-radius-xxl: $border-radius-xl;
+$border-radius-pill: radius.$badge;
+
+// scss-docs-start box-shadow-variables
+$box-shadow: border.$box-shadow;
+$box-shadow-sm: $box-shadow;
+$box-shadow-md: border.$box-shadow-header;
+
+$component-active-color: color-set-primary.$color-contrast;
+$component-active-bg: color-set-primary.$color;
+
+// scss-docs-start focus-ring-variables
+// FIXME(zusa) focus ring
+$focus-ring-width: 0.25rem;
+$focus-ring-opacity: 0.25;
+$focus-ring-color: rgba($primary, $focus-ring-opacity);
+$focus-ring-blur: 0;
+$focus-ring-box-shadow: 0 0 $focus-ring-blur $focus-ring-width $focus-ring-color;
+
+// scss-docs-start caret-variables
+// FIXME(zusa) caret
+$caret-width: 0.3em;
+$caret-vertical-align: $caret-width * 0.85;
+$caret-spacing: $caret-width * 0.85;
+
+$transition-base: all 0.2s ease-in-out;
+$transition-fade: opacity 0.15s linear;
+$transition-collapse: height 0.35s ease;
+$transition-collapse-width: width 0.35s ease;
+
+// scss-docs-start aspect-ratios
+$aspect-ratios: ();
+
+// Typography
+// is EDOKID OK !
+
+$font-family-sans-serif: font.$family;
+
+$font-size-base: font.value('P1', size);
+$font-size-sm: font.value('P2', size);
+$font-size-lg: font.value('S2', size);
+
+$font-weight-base: font.value('P1', weight);
+$line-height-base: font.value('P1', height);
+
+$h1-font-size: font.value('H1', size);
+$h2-font-size: font.value('S1', size);
+$h3-font-size: font.value('S2', size);
+$h4-font-size: font.value('S3', size);
+$h5-font-size: $h4-font-size;
+$h6-font-size: $h5-font-size;
+
+// scss-docs-start font-sizes
+$font-sizes: (
+  1: $h1-font-size,
+  2: $h2-font-size,
+  3: $h3-font-size,
+  4: $h4-font-size,
+  5: font.value('P1', size),
+  6: font.value('P2', size),
+);
+
+// scss-docs-start headings-variables
+$headings-margin-bottom: spacing.$heading-bottom;
+$headings-font-weight: font.value('H1', weight);
+$headings-line-height: font.value('H1', height);
+
+// scss-docs-start display-headings
+$display-font-sizes: ();
+$small-font-size: $font-size-sm;
+
+$hr-opacity: 1;
+
+$legend-font-size: font.value('P2', size);
+
+// Tables
+
+$table-th-font-weight: font.value('S5', weight);
+
+$table-cell-padding-y: spacing.$table-cell;
+$table-cell-padding-x: spacing.$table-cell;
+
+$table-color: color-set-table.$text;
+$table-bg: color-set-table.$background;
+$table-border-color: color-set-table.$border;
+
+// scss-docs-start table-loop
+$table-variants: ();
+
+// Buttons + Forms
+
+// Buttons
+// are EDOKID ok !
+$btn-padding-y: spacing.$button-inner-y;
+$btn-padding-x: spacing.$button-inner-x;
+$btn-white-space: nowrap; // Set to `nowrap` to prevent text wrapping
+
+$btn-border-width: border.$button;
+
+$btn-font-weight: font.value('button', weight);
+$btn-box-shadow: border.$box-shadow;
+$btn-active-box-shadow: $btn-box-shadow;
+
+$btn-link-disabled-color: color-set-default.$text-disabled;
+
+$btn-border-radius: radius.$button;
+
+$btn-hover-bg-shade-amount: 50%;
+$btn-hover-bg-tint-amount: 50%;
+
+// Forms
+
+// scss-docs-start form-text-variables
+
+// scss-docs-start form-label-variables
+// are Edokid Ok
+$form-label-margin-bottom: spacing.$form-control-label-bottom;
+
+//TODO
+// scss-docs-start form-input-variables
+$input-padding-y: spacing.$text-input-inner;
+$input-padding-x: spacing.$text-input-inner;
+
+$input-bg: color-set-form.$background;
+$input-disabled-color: color-set-form.$text-disabled;
+$input-disabled-bg: color-set-form.$background-disabled;
+
+$input-border-color: color-set-form.$border;
+$input-box-shadow: inset 0 0 0 transparent; // Achtung: mit "none" gehen die focus-shadows kaputt, deshalb inset transparent
+
+$input-placeholder-color: color-set-form.$text-inactive;
+
+// scss-docs-start form-check-variables
+$form-check-input-width: size.$check-input;
+$form-check-padding-start: spacing.$check-input-label-bootstrap;
+$form-check-margin-bottom: spacing.$check-input-bottom;
+
+// scss-docs-start form-switch-variables
+
+// scss-docs-start input-group-variables
+
+// scss-docs-start form-select-variables
+$form-select-bg-size: size.$icon-default size.$icon-default; // In pixels because image dimensions
+$form-select-indicator-color: color-set-default.$text;
+$form-select-indicator: url("data:image/svg+xml, <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'><path opacity='0.9' d='M3.41 5L8 9.32659L12.59 5L14 6.33198L8 12L2 6.33198L3.41 5Z' fill='#{$form-select-indicator-color}'/></svg>");
+
+// scss-docs-start form-range-variables
+
+// scss-docs-start form-file-variables
+
+// scss-docs-start form-floating-variables
+$form-floating-label-disabled-color: color-set-default.$text-disabled;
+
+// Form validation
+
+$form-feedback-margin-top: 0;
+
+// Z-index master list
+//
+// Warning: Avoid customizing these values. They're used for a bird's eye view
+// of components dependent on the z-axis and are designed to all work together.
+
+$zindex-toast: zindex.$toast;
+
+$zindex-levels: ();
+
+// Navs
+$nav-link-color: color-set-navigation-main.$text;
+
+// scss-docs-start nav-variables
+$nav-link-padding-y: 0; // fixme(zusa) spacings
+$nav-link-padding-x: .25rem;
+$nav-link-font-size: font.value('P1', size);
+$nav-link-font-weight: font.value('P1', weight);
+$nav-link-color: color-set-navigation-main.$text;
+$nav-link-hover-color: color-set-navigation-main.$text;
+$nav-link-disabled-color: color-set-navigation-main.$text-disabled;
+
+// Navbar
+
+$nav-link-height: unit.rem(size.$main-nav-link-height);
+
+// Tabs
+
+$nav-tabs-border-width: 0;
+$nav-tabs-link-active-color: color-set-navigation-tabs.$text-active;
+$nav-tabs-link-active-bg: color-set-navigation-tabs.$background-active;
+
+// Dropdowns
+//
+// Dropdown menu container and contents.
+
+$dropdown-min-width: size.$popup-min-width;
+$dropdown-padding-y: spacing.$dropdown-menu-y;
+$dropdown-bg: color-set-default.$background;
+$dropdown-border-width: 0;
+
+$dropdown-link-color: color-set-default.$text;
+$dropdown-link-hover-bg: color-set-default.$background;
+
+$dropdown-link-active-color: color-set-default.$text;
+$dropdown-link-active-bg: color-set-default.$background;
+
+$dropdown-link-disabled-color: color-set-default.$text-disabled;
+
+$dropdown-item-padding-y: spacing.$dropdown-menu-item-y;
+$dropdown-item-padding-x: spacing.$dropdown-menu-item-x;
+
+// Pagination
+
+$pagination-padding-y: 0.2rem;
+$pagination-padding-x: 0.75rem;
+$pagination-bg: color-set-table.$background;
+$pagination-border-color: color-set-table.$border;
+
+$pagination-disabled-color: color-set-default.$text-disabled;
+$pagination-disabled-border-color: $pagination-border-color;
+
+// Placeholders
+
+// Cards
+
+// scss-docs-start card-variables
+$card-spacer-y: spacing.$card-inner;
+$card-spacer-x: spacing.$card-inner;
+$card-title-spacer-y: spacing.$between-paragraphs;
+$card-border-width: 0;
+$card-border-color: var(--#{$prefix}card-bg);
+
+// Accordion
+
+// Tooltips
+
+$tooltip-font-size: font.value('P2', size);
+$tooltip-max-width: size.$tooltip-max-width;
+$tooltip-opacity: 1;
+$tooltip-padding-y: spacing.$tooltip-inner-y;
+$tooltip-padding-x: spacing.$tooltip-inner-x;
+
+$tooltip-arrow-width: size.$tooltip-arrow;
+$tooltip-arrow-height: 0.5 * size.$tooltip-arrow;
+
+// Popovers
+
+// Toasts
+
+// Badges
+
+$badge-font-size: font.value('badge', size);
+$badge-font-weight: font.value('badge', weight);
+$badge-color: inherit;
+$badge-padding-y: spacing.$badge-inner-y;
+$badge-padding-x: spacing.$badge-inner-x;
+$badge-border-radius: radius.$badge;
+
+// Modals
+
+$modal-inner-padding: spacing.$card-inner;
+$modal-content-bg: color-set-widget.$background;
+$modal-content-border-width: 0;
+$modal-content-border-radius: $border-radius-sm;
+$modal-backdrop-opacity: opacity.$modal-backdrop;
+
+// Alerts
+
+$alert-margin-bottom: 0;
+
+// List group
+
+// Image thumbnails
+
+// Figures
+
+// Breadcrumbs
+
+// Carousel
+
+// Spinners
+
+$spinner-width: 1em;
+$spinner-border-width: border.$width-spinner;
+
+// Close
+
+$btn-close-width: size.$button-close;
+
+// Offcanvas
+
+// Code

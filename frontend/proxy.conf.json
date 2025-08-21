@@ -1,0 +1,11 @@
+{
+  "/api": {
+    "target": "https://local-esc-bs.localhost:8443",
+    "secure": false,
+    "changeOrigin": true,
+    "headers": {
+      "Connection": "keep-alive"
+    },
+    "logLevel": "debug"
+  }
+}

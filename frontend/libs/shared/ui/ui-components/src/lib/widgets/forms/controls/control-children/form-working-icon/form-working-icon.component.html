@@ -1,0 +1,7 @@
+@if (working()) {
+  <svui-spinner [working]="working()" [context]="'inline'" />
+} @else if (tooltip()) {
+  <svui-icon-with-tooltip>{{ tooltip() }}</svui-icon-with-tooltip>
+} @else {
+  <ng-content select="svui-icon, svui-icon-with-tooltip" />
+}

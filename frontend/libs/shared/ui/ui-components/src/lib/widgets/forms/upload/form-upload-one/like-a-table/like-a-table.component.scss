@@ -1,0 +1,26 @@
+@use '../../../../../../styles/core/color/color-set-table';
+@use '../../../../../../styles/core/font';
+@use '../../../../../../styles/core/layout';
+@use '../../../../../../styles/core/size';
+@use '../../../../../../styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.svui_table-lookalike {
+  display: flex;
+  border-block: 1px solid color-set-table.$border;
+
+  &__main {
+    flex-grow: 1;
+    padding-block: 0.5 * (size.$table-row-content-height - size.$button);
+    padding-inline: spacing.$table-cell;
+    @include layout.flex($align-items: center, $column-gap: spacing.$gutter-width-inline-elements);
+  }
+
+  &__buttons {
+    display: flex;
+    padding-inline: spacing.$table-cell;
+  }
+}

@@ -1,0 +1,71 @@
+<feat-dialogs-modal [modalTitle]="'anlass.kinder.abmeldegrund.modal.titel' | transloco">
+  <form [formGroup]="form.group"
+        svuiFormLayout
+        (ngSubmit)="speichern()"
+        [mode]="DetailMode.EDIT"
+  >
+    <svui-form-control [label]="'anlass.kinder.abmeldegrund.modal.name' | transloco"
+                       [viewValue]="form.group.controls.name.value"
+    >
+      <input svuiTextInput [formControl]="form.group.controls.name"/>
+    </svui-form-control>
+
+    <svui-form-control [label]="'anlass.kinder.abmeldegrund.modal.vorame' | transloco"
+                       [viewValue]="form.group.controls.vorname.value">
+      <input svuiTextInput [formControl]="form.group.controls.vorname"/>
+    </svui-form-control>
+
+    <svui-form-control [label]="'anlass.kinder.abmeldegrund.modal.grund' | transloco"
+                       [viewValue]="form.group.controls.grundAbmeldung.value"
+                       [size]="'full'">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.grundAbmeldung"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      >
+        @for (grund of abmeldungsgruende; track grund; let index = $index) {
+          <ng-option [value]="grund">
+            {{ 'GrundAbmeldung.' + grund | transloco }}
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+
+    <svui-form-control [label]="'anlass.kinder.abmeldegrund.modal.art' | transloco"
+                       [viewValue]="form.group.controls.artAbmeldung.value"
+                       [size]="'full'">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.artAbmeldung"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      >
+        @for (art of abmeldungsarten; track art; let index = $index) {
+          <ng-option [value]="art">
+            {{ 'ArtAbmeldung.' + art | transloco }}
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+
+    <svui-form-control [label]="'anlass.kinder.abmeldegrund.modal.bemerkung' | transloco"
+                       [viewValue]="form.group.controls.bemerkungAbmeldung.value"
+                       [size]="'full'">
+        <textarea svuiTextarea
+                  [formControl]="form.group.controls.bemerkungAbmeldung"
+                  [placeholder]="'schule.bemerkungen' | transloco"></textarea>
+    </svui-form-control>
+
+    <!-- BUTTONS -->
+    <svui-save-cancel-buttons
+      [saving]="false"
+      [canEdit]="true"
+      (cancelClicked)="abbrechen()"
+    />
+
+  </form>
+
+</feat-dialogs-modal>

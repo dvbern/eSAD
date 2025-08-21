@@ -1,0 +1,137 @@
+<svui-buttons-right-container class="pb-2">
+  <h2 svuiHeading="formSection">{{ 'untersuchung.impfungen.impfungenInternList.title' | transloco }}</h2>
+  @if (hasImpfungenEditBerechtigung() && this.anlassStore.canUserEditAnlassInCurrentState()) {
+    <svui-page-header-add-button (click)="createImpfung()"/>
+  }
+</svui-buttons-right-container>
+
+
+<table
+  svuiTable
+  [loading]="untersuchungImpfungenStore.loader.isLoading()"
+  [totalRows]="itemTable.filteredListSize()"
+  (pageChanged)="itemTable.onPageChanged($event)"
+  [pagination]="itemTable.pagination()">
+  <!-- col widths -->
+  <colgroup>
+    <col svuiColWidth colWidth="text-medium">
+    <col svuiColWidth colWidth="select-medium">
+    <col svuiColWidth colWidth="text-medium">
+    <col svuiColWidth colWidth="date">
+    <col svuiColWidth colWidth="text-medium">
+    <col svuiColWidth colWidth="text-medium">
+    <col svuiColWidth colWidth="text-small">
+    <col svuiColWidth colWidth="text-small">
+    <col svuiColWidth colWidth="options">
+  </colgroup>
+  <thead>
+  <!-- Headers for sorting -->
+  <tr>
+    <th scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.impfstoff.data.name')"
+        (sort)="itemTable.onColSort($event, 'data.impfstoff.data.name')"
+    >
+      {{ 'impfungintern.impfstoff' | transloco }}
+    </th>
+    <th scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.impfstoff.data.krankheiten')"
+        (sort)="itemTable.onColSort($event, 'data.impfstoff.data.krankheiten')"
+    >
+      {{ 'impfungintern.indikation' | transloco }}
+    </th>
+    <th scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.charge.data.name')"
+        (sort)="itemTable.onColSort($event, 'data.charge.data.name')"
+    >
+      {{ 'impfungintern.charge' | transloco }}
+    </th>
+    <th scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.datumImpfung')"
+        (sort)="itemTable.onColSort($event, 'data.datumImpfung')"
+    >
+      {{ 'impfungintern.datumImpfung' | transloco }}
+    </th>
+    <th scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('userErfasst.fullName')"
+        (sort)="itemTable.onColSort($event, 'userErfasst.fullName')"
+    >
+      {{ 'impfungintern.userErstellt' | transloco }}
+    </th>
+    <th scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.userDurchgefuehrt.fullName')"
+        (sort)="itemTable.onColSort($event, 'data.userDurchgefuehrt.fullName')"
+    >
+      {{ 'impfungintern.userDurchgefuehrt' | transloco }}
+    </th>
+    <th scope="col">
+      {{ 'impfungintern.immunitaet' | transloco }}
+    </th>
+    <th scope="col">
+      {{ 'impfungintern.aktion' | transloco }}
+    </th>
+    <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
+  </tr>
+  </thead>
+  <tbody>
+    @if (!itemTable.displayedList()?.length && !untersuchungImpfungenStore.loader.isLoading()) {
+      <tr svui-empty-table-message [message]="'untersuchung.impfungen.impfungenInternList.empty' | transloco"></tr>
+    }
+    @for (item of itemTable.displayedList(); track item.id) {
+      <tr>
+        <td>{{ item.data.impfstoff.data.name }}</td>
+        <td>{{ impfstoffeChargenStore.getKrankheitenTranslatedList(item.data.impfstoff.data.krankheiten) }}</td>
+        <td>{{ item.data.charge?.data?.name }}</td>
+        <td>{{ item.data.datumImpfung | date }}</td>
+        <td>{{ item.userErfasst?.fullName }}</td>
+        <td>{{ item.data.userDurchgefuehrt?.fullName }}</td>
+        <td>{{ getImmunitaeten(item) }}</td>
+        <td>
+          @if (item.data.impfStatus === 'DURCHGEFUEHRT') {
+            {{ 'ImpfStatus.DURCHGEFUEHRT' | transloco }}
+          }
+          @if (item.data.impfStatus === 'NICHT_DURCHGEFUEHRT') {
+            {{ 'ImpfStatus.NICHT_DURCHGEFUEHRT' | transloco }}: {{ item.data.grundNichtDurchfuehrung }}
+          }
+          @if (item.data.impfStatus === 'GEPLANT') {
+            @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+              <div class="d-flex gap-2">
+                <button svuiIconOnlyButton="secondary"
+                        type="button"
+                        [tooltip]="'global.tooltip.impfung.verabreicht' | transloco"
+                        (click)="impfungVerabreicht(item)"
+                        [icon]="'check'">
+                </button>
+                <button svuiIconOnlyButton="secondary"
+                        type="button"
+                        [tooltip]="'global.tooltip.impfung.nichtverabreicht' | transloco"
+                        (click)="impfungNichtVerabreicht(item)"
+                        [icon]="'close'">
+                </button>
+              </div>
+            } @else {
+              {{ 'ImpfStatus.GEPLANT' | transloco }}
+            }
+          }
+        </td>
+        <td>
+          @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+            <svui-collapsible-menu [loading]="false" label="{{ 'global.actionmenu.tooltip' | transloco }}">
+              <button ngbDropdownItem (click)="editImpfung(item)">
+                {{ 'global.edit' | transloco }}
+              </button>
+              <button ngbDropdownItem (click)="removeImpfung(item)">
+                {{ 'global.remove' | transloco }}
+              </button>
+            </svui-collapsible-menu>
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

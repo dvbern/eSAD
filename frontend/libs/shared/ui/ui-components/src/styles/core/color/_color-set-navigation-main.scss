@@ -1,0 +1,7 @@
+// Main Navigation Color Set
+
+@use './definition/color-definition';
+
+$text: color-definition.$text-secondary;
+$text-active: color-definition.$text;
+$text-disabled: color-definition.$text-disabled;

@@ -1,0 +1,39 @@
+@use '../../../../styles/core/border';
+@use '../../../../styles/core/layout';
+@use '../../../../styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.svui_list {
+  &__header {
+    padding: spacing.$card-inner;
+    border-bottom: border.$default;
+
+    .header-addons {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      gap: spacing.$base spacing.$card-inner;
+      flex-wrap: wrap;
+
+      ::ng-deep {
+        .form-control {
+          width: unset;
+        }
+      }
+    }
+
+  }
+
+  &__ul {
+    padding-left: 0;
+  }
+
+  &__footer {
+    @include layout.flex($justify-content: space-between);
+    padding: spacing.$card-inner;
+  }
+}

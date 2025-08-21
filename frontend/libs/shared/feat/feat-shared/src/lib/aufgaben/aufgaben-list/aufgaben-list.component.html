@@ -1,0 +1,222 @@
+<svui-card [innerSpacing]="'topBottom'">
+  <table
+    svuiTable
+    [loading]="store.loader.isLoading()"
+    [totalRows]="aufgabenTable.filteredListSize()"
+    (pageChanged)="aufgabenTable.onPageChanged($event)"
+    [pagination]="aufgabenTable.pagination()"
+  >
+    <!-- col widths -->
+    <colgroup>
+      <col svuiColWidth colWidth="date">
+      <col svuiColWidth colWidth="select-medium">
+      <col svuiColWidth colWidth="select-medium">
+      <col svuiColWidth colWidth="text-large">
+      <col svuiColWidth colWidth="select-medium">
+      <col svuiColWidth colWidth="select-medium">
+      <col svuiColWidth colWidth="text-medium">
+      <col svuiColWidth colWidth="options">
+    </colgroup>
+    <thead>
+    <!-- Headers for sorting -->
+    <tr>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="aufgabenTable.findColSortDTO('data.faelligBis')"
+        (sort)="aufgabenTable.onColSort($event, 'data.faelligBis')"
+      >
+        {{ 'aufgaben.list.faellig.bis' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="aufgabenTable.findColSortDTO('data.status')"
+        (sort)="aufgabenTable.onColSort($event, 'data.status')"
+      >
+        {{ 'aufgaben.list.status' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="aufgabenTable.findColSortDTO('data.labels.data.name')"
+        (sort)="aufgabenTable.onColSort($event, 'data.labels.data.name')"
+      >
+        {{ 'aufgaben.list.label' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="aufgabenTable.findColSortDTO('data.titel')"
+        (sort)="aufgabenTable.onColSort($event, 'data.titel')"
+      >
+        {{ 'aufgaben.list.titel' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="aufgabenTable.findColSortDTO('data.userErfasst.fullName')"
+        (sort)="aufgabenTable.onColSort($event, 'data.userErfasst.fullName')"
+      >
+        {{ 'aufgaben.list.ersteller' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="aufgabenTable.findColSortDTO('data.empfaenger.fullName')"
+        (sort)="aufgabenTable.onColSort($event, 'data.empfaenger.fullName')"
+      >
+        {{ 'aufgaben.list.empfaenger' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="aufgabenTable.findColSortDTO('data.kind.name')"
+        (sort)="aufgabenTable.onColSort($event, 'data.kind.name')"
+      >
+        {{ 'aufgaben.list.kind' | transloco }}
+      </th>
+      <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
+    </tr>
+    <!-- Headers for filtering -->
+    <tr>
+      <th scope="col" class="col-date">
+        <svui-table-filter [columnHeader]="'aufgaben.list.faellig.bis' | transloco">
+          <input svuiTextInput="date" [formControl]="tableFilterForm.group.controls.faelligBis"/>
+        </svui-table-filter>
+      </th>
+
+      <th scope="col" class="col-multiselect">
+        <svui-table-filter [columnHeader]="'aufgaben.list.status' | transloco">
+          <ng-select
+            svuiNgSelect
+            bindLabel='dummy'
+            appendTo="body"
+            [formControl]="tableFilterForm.group.controls.aufgabeStatus"
+            [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            [multiple]="true"
+            [allowBadgesToWrap]="true"
+          >
+            @for (status of aufgabeStatus; track status) {
+              <ng-option [value]="status">
+                {{ 'AufgabeStatus.' + status | transloco }}
+              </ng-option>
+            }
+          </ng-select>
+        </svui-table-filter>
+      </th>
+
+      <th scope="col" class="col-multiselect">
+        <svui-table-filter [columnHeader]="'aufgaben.list.label' | transloco">
+          <ng-select
+            svuiNgSelect
+            bindLabel='dummy'
+            appendTo="body"
+            [compareWith]="compareFnLabel"
+            [formControl]="tableFilterForm.group.controls.label"
+            [multiple]="true"
+            [allowBadgesToWrap]="true"
+            [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          >
+            @for (label of labelsStore.aufgabenLabelsSorted(); track label.id) {
+              <ng-option [value]="label">
+                {{ label.data.name |translatedStringPipe }}
+              </ng-option>
+            }
+          </ng-select>
+
+        </svui-table-filter>
+      </th>
+      <th scope="col" class="col-text">
+        <svui-table-filter [columnHeader]="'aufgaben.list.titel' | transloco">
+          <input svuiTextInput [formControl]="tableFilterForm.group.controls.titel"/>
+        </svui-table-filter>
+      </th>
+      <th scope="col" class="col-multiselect">
+        <svui-table-filter [columnHeader]="'aufgaben.list.ersteller' | transloco">
+          <ng-select
+            svuiNgSelect
+            bindLabel='dummy'
+            appendTo="body"
+            [formControl]="tableFilterForm.group.controls.erstelltDurch"
+            [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            [compareWith]="compareBenutzerFn"
+            [multiple]="true"
+            [allowBadgesToWrap]="true"
+          >
+            @for (each of benutzerOptionsStore.entities(); track each.id) {
+              <ng-option [value]="each">
+                {{ each.fullName }}
+              </ng-option>
+            }
+          </ng-select>
+        </svui-table-filter>
+      </th>
+      <th scope="col" class="col-multiselect">
+        <svui-table-filter [columnHeader]="'aufgaben.list.empfaenger' | transloco">
+          <ng-select
+            svuiNgSelect
+            bindLabel='dummy'
+            appendTo="body"
+            [formControl]="tableFilterForm.group.controls.empfaenger"
+            [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            [compareWith]="compareBenutzerFn"
+            [multiple]="true"
+            [allowBadgesToWrap]="true"
+          >
+            @for (each of benutzerOptionsStore.entities(); track each.id; let index = $index) {
+              <ng-option [value]="each">
+                {{ each.fullName }}
+              </ng-option>
+            }
+          </ng-select>
+        </svui-table-filter>
+      </th>
+      <th scope="col" class="col-text">
+        <svui-table-filter [columnHeader]="'aufgaben.list.kind' | transloco">
+          <input svuiTextInput [formControl]="tableFilterForm.group.controls.kind"/>
+        </svui-table-filter>
+      </th>
+      <th scope="col"></th>
+    </tr>
+    </thead>
+
+    <tbody>
+      @if (!aufgabenTable.displayedList()?.length && !store.loader.isLoading()) {
+        <tr svui-empty-table-message [message]="'aufgaben.list.empty' | transloco"></tr>
+      }
+      @for (item of aufgabenTable.displayedList(); track item.id) {
+        <tr>
+          <td>{{ item.data.faelligBis | date: 'dd.MM.yyyy' }}</td>
+          <td>{{ 'AufgabeStatus.' + item.data.status | transloco }}</td>
+          <td>
+            @for (label of item.data.labels; track label.id) {
+              <svui-badge class="me-1"> {{ label.data.name | translatedStringPipe }}</svui-badge>
+            }
+          </td>
+          <td>
+            <svui-table-link
+              type="text"
+              [myRouterLink]="[item.id]">
+              {{ item.data.titel }}
+            </svui-table-link>
+            </td>
+          <td>{{ item.data.userErfasst.fullName }}</td>
+          <td>{{ item.data.empfaenger.fullName }}</td>
+          <td>{{ item.kindFullName }}</td>
+          <td>
+            <svui-collapsible-menu
+              [loading]="store.deleteLoader.isLoading()"
+              label="{{ 'global.actionmenu.tooltip' | transloco }}"
+            >
+              <button [disabled]="!canEditAufgabe()"
+                      ngbDropdownItem
+                      (click)="checkRemoveItem(item.id)">{{ 'global.remove' | transloco }}
+              </button>
+            </svui-collapsible-menu>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</svui-card>

@@ -1,0 +1,58 @@
+
+:host {
+  display: block;
+}
+
+.svui_upload-table {
+
+  &--name-as-link {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+
+  }
+
+  &--name-as-link:hover {
+    text-decoration: underline;
+  }
+
+  &--maxlength {
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &--typ {
+    ::ng-deep .svui_upload-item--typ {
+      display: table-cell;
+    }
+  }
+
+  &--size {
+    ::ng-deep .svui_upload-item--size {
+      display: table-cell;
+    }
+  }
+
+  &--actions {
+    margin-right: 5px;
+    // make sure all the buttons remain on one line
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  &--name-first {
+    ::ng-deep .svui_upload-item--name {
+      padding-left: 16px;
+    }
+  }
+
+  &__spinner {
+    display: block;
+    width: 34px;
+    text-align: center;
+  }
+}

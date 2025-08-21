@@ -1,0 +1,56 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+	<changeSet author="homa (generated)" id="1748953486301-1">
+		<sql>
+
+      UPDATE untersuchungsehen
+      SET strabismusAuftreten = NULL
+      WHERE strabismusAuftreten = '';
+
+      UPDATE untersuchungsehen
+      SET strabismusAuftreten = split_part(strabismusAuftreten, ',', 1)
+      WHERE strabismusAuftreten IS NOT NULL;
+
+      UPDATE untersuchungsehen
+      SET strabismusAuspraegung = NULL
+      WHERE strabismusAuspraegung = '';
+
+      UPDATE untersuchungsehen
+      SET strabismusAuspraegung = split_part(strabismusAuspraegung, ',', 1)
+      WHERE strabismusAuspraegung IS NOT NULL;
+
+      UPDATE untersuchungsehen_aud
+      SET strabismusAuftreten = NULL
+      WHERE strabismusAuftreten = '';
+
+      UPDATE untersuchungsehen_aud
+      SET strabismusAuftreten = split_part(strabismusAuftreten, ',', 1)
+      WHERE strabismusAuftreten IS NOT NULL;
+
+      UPDATE untersuchungsehen_aud
+      SET strabismusAuspraegung = NULL
+      WHERE strabismusAuspraegung = '';
+
+      UPDATE untersuchungsehen_aud
+      SET strabismusAuspraegung = split_part(strabismusAuspraegung, ',', 1)
+      WHERE strabismusAuspraegung IS NOT NULL;
+
+    </sql>
+	</changeSet>
+
+  <changeSet author="dvbern (generated)" id="1749201018079-1">
+    <modifyDataType columnName="strabismusauftreten" newDataType="varchar(30)" tableName="untersuchungsehen"/>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1749201018079-2">
+    <modifyDataType columnName="strabismusauftreten" newDataType="varchar(30)" tableName="untersuchungsehen_aud"/>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1749201018079-3">
+    <modifyDataType columnName="strabismusauspraegung" newDataType="varchar(30)" tableName="untersuchungsehen"/>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1749201018079-4">
+    <modifyDataType columnName="strabismusauspraegung" newDataType="varchar(30)" tableName="untersuchungsehen_aud"/>
+  </changeSet>
+</databaseChangeLog>

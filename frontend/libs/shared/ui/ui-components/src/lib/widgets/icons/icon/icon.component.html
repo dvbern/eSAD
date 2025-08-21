@@ -1,0 +1,13 @@
+@if (svg()) {
+  <ng-icon
+    [size]="size()"
+    [svg]="svg()!"
+    [ngbTooltip]="tooltip()"
+    class="svui_icon"/>
+} @else {
+  <ng-icon
+    [size]="size()"
+    [name]="customIconFilename()!"
+    [ngbTooltip]="tooltip()"
+    class="svui_icon"/>
+}

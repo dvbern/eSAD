@@ -1,0 +1,139 @@
+<svui-card [innerSpacing]="'topBottom'" class="mb-4">
+  <table
+    svuiTable
+    [loading]="documentQueueStore.loader.isLoading()"
+    [totalRows]="itemTable.filteredListSize()"
+    (pageChanged)="itemTable.onPageChanged($event)"
+    [pagination]="itemTable.pagination()"
+  >
+    <!-- col widths -->
+    <colgroup>
+      <col svuiColWidth colWidth="text-medium">
+      <col svuiColWidth colWidth="text-medium">
+      <col svuiColWidth colWidth="text-medium">
+      <col svuiColWidth colWidth="text-medium">
+      <col svuiColWidth colWidth="text-medium">
+      <col svuiColWidth colWidth="text-medium">
+      <col svuiColWidth colWidth="text-medium">
+    </colgroup>
+
+    <thead>
+    <!-- Headers for sorting -->
+    <tr>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('type')"
+        (sort)="itemTable.onColSort($event, 'type')"
+      >
+        {{ 'document-queue.type' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('documentQueueParams.spssReportType')"
+        (sort)="itemTable.onColSort($event, 'documentQueueParams.spssReportType')"
+      >
+        {{ 'document-queue.name' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('status')"
+        (sort)="itemTable.onColSort($event, 'status')"
+      >
+        {{ 'document-queue.status' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('entityInfo.timestampErstellt')"
+        (sort)="itemTable.onColSort($event, 'entityInfo.timestampErstellt')"
+      >
+        {{ 'document-queue.timestamp-erstellt' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('timestampResult')"
+        (sort)="itemTable.onColSort($event, 'timestampResult')"
+      >
+        {{ 'document-queue.timestamp-result' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('fileName')"
+        (sort)="itemTable.onColSort($event, 'fileName')"
+      >
+        {{ 'document-queue.file-name' | transloco }}
+      </th>
+      <th scope="col"></th>
+    </tr>
+    <tr>
+      <!-- Headers for filtering-->
+      <th scope="col">
+        <svui-table-filter [columnHeader]="'document-queue.name' | transloco">
+          <input svuiTextInput [formControl]="documentQueueFilterForm.group.controls.name"/>
+        </svui-table-filter>
+      </th>
+      <th scope="col">
+        <svui-table-filter [columnHeader]="'document-queue.type' | transloco">
+          <input svuiTextInput [formControl]="documentQueueFilterForm.group.controls.type"/>
+        </svui-table-filter>
+      </th>
+      <th scope="col">
+        <svui-table-filter [columnHeader]="'document-queue.status' | transloco">
+          <input svuiTextInput [formControl]="documentQueueFilterForm.group.controls.status"/>
+        </svui-table-filter>
+      </th>
+      <th scope="col">
+        <svui-table-filter [columnHeader]="'document-queue.timestamp-erstellt' | transloco">
+          <input svuiTextInput [formControl]="documentQueueFilterForm.group.controls.timestampErstellt"/>
+        </svui-table-filter>
+      </th>
+      <th scope="col">
+        <svui-table-filter [columnHeader]="'document-queue.timestamp-result' | transloco">
+          <input svuiTextInput [formControl]="documentQueueFilterForm.group.controls.timestampResult"/>
+        </svui-table-filter>
+      </th>
+      <th scope="col">
+        <svui-table-filter [columnHeader]="'document-queue.file-name' | transloco">
+          <input svuiTextInput [formControl]="documentQueueFilterForm.group.controls.fileName"/>
+        </svui-table-filter>
+      </th>
+      <th scope="col"></th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (item of itemTable.displayedList(); track item.id) {
+        <tr>
+          <td>{{ 'DocumentQueueType.' + item.type | transloco }}</td>
+          <td>
+            @if (item.documentQueueParams && item.documentQueueParams.spssReportType) {
+              {{ 'reports.spss.' + item.documentQueueParams.spssReportType | transloco }}
+            } @else {
+              {{ 'reports.spss.unbekannt' | transloco }}
+            }
+          </td>
+          <td>{{ 'DocumentQueueStatus.' + item.status | transloco }}</td>
+          <td>{{ item.entityInfo.timestampErstellt | date: 'HH:mm dd.MM.yyyy' }}</td>
+          <td>{{ item.timestampResult | date: 'HH:mm dd.MM.yyyy' }}</td>
+          <td>{{ item.fileName }}</td>
+          <td>
+            @if (item.status === 'SUCCESS') {
+              <button svuiIconOnlyButton="tableRowAction"
+                      type="button"
+                      [tooltip]="'global.tooltip.icon.herunterladen' | transloco"
+                      [icon]="'herunterladen'"
+                      (click)="documentQueueStore.download(item.id)">
+              </button>
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr svui-empty-table-message [message]="'document-queue.list.empty' | transloco"></tr>
+      }
+    </tbody>
+  </table>
+</svui-card>

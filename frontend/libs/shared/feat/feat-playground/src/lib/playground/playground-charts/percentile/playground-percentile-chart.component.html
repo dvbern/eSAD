@@ -1,0 +1,44 @@
+
+<h2 class="mt-5">Perzentile Mädchen</h2>
+<svui-card class="flex-grow-1">
+  <div class="d-flex" style=" height: 500px">
+    <svui-percentilechart style="width: 100%" [dataset]="maedchenGroesse"/>
+    <svui-percentilechart style="width: 100%" [dataset]="maedchenGewicht"/>
+    <svui-percentilechart style="width: 100%" [dataset]="maedchenBmi"/>
+  </div>
+</svui-card>
+
+<h2 class="mt-5">Perzentile Knaben</h2>
+<svui-card class="flex-grow-1">
+  <div class="d-flex" style=" height: 500px">
+    <svui-percentilechart style="width: 100%" [dataset]="knabenGroesse"/>
+    <svui-percentilechart style="width: 100%" [dataset]="knabenGewicht"/>
+    <svui-percentilechart style="width: 100%" [dataset]="knabenBmi"/>
+  </div>
+</svui-card>
+
+<h2 class="mt-5">Perzentile Random</h2>
+<div class="d-flex flex-column">
+  <div class="d-flex flex-row" style="justify-content: end; align-items: center">
+
+    <span class="mb-4 me-3">Beispiele:</span>
+
+    <!-- FILTERS -->
+    <svui-button-filters
+      #filters
+      class="filters"
+      [datasets]="datasetCollection.datasets"
+      [initiallyActiveDatasetId]="datasetCollection.initiallySelectedDatasetId"
+      (useDataset)="filteredChart.setDataset($event)"/>
+  </div>
+
+
+  <svui-card class="flex-grow-1" style="height: 100%">
+
+    <!-- CHART -->
+    <svui-percentilechart #filteredChart
+
+                          class="flex-grow-1 mt-5" style="display: block; height: 700px"/>
+  </svui-card>
+
+</div>

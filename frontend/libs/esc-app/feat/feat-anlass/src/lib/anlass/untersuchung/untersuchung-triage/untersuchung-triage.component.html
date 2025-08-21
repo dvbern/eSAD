@@ -1,0 +1,47 @@
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabTriage) {
+  <form [formGroup]="form.group" (ngSubmit)="submitIfValid()">
+    @if (anlassStore.selectedEntity()?.anlassConfig?.showTriageTriage) {
+      <h2 svuiHeading="formSection" class="mb-4">{{ 'untersuchung.tab.triage.titel' | transloco }}</h2>
+
+      @for (pair of triagePairs; track pair) {
+        <svui-standalone-control [label]="pair.label | transloco">
+          <input type="checkbox" svuiCheckbox [formControl]="form.controlAt(pair.nameCheckbox)">
+        </svui-standalone-control>
+
+        @if (form.group.controls[pair.nameCheckbox].value) {
+          <div class="triage-bemerkung-container">
+            <label [for]="'bemerkung' + pair.nameBemerkung">{{ 'untersuchung.tab.triage.bemerkung' | transloco }}</label>
+            <textarea [id]="'bemerkung' + pair.nameBemerkung"
+                      [formControl]="form.controlAt(pair.nameBemerkung)"
+                      svuiTextarea
+            ></textarea>
+          </div>
+        }
+      }
+    }
+
+    @if (anlassStore.selectedEntity()?.anlassConfig?.showTriageKindWeiterleiten) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.triage.naechsteStation' | transloco">
+        @for (each of stationen; track each) {
+          <svui-kachel-control [label]="'NaechsteStation.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="naechsteStation"
+                   [formControl]="form.group.controls.naechsteStation"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+      <svui-save-cancel-buttons
+        class="mt-4"
+        [saving]="store.saveLoader.isLoading()"
+        [canEdit]="true"
+        (cancelClicked)="abbrechen()"/>
+    }
+
+  </form>
+}
+

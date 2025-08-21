@@ -1,0 +1,224 @@
+<feat-page [heading]="'label.list.page.title' | transloco"
+           [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN}">
+  <svui-page-header-buttons
+    [showFilterPopup]="false"/>
+
+  @if (this.canEditLabel()) {
+    <svui-page-header-add-button [addRouterLink]="Path.CREATE"/>
+  }
+  <svui-page-header-list-summary
+    [items]="summaryItems()"/>
+
+
+  <svui-card [innerSpacing]="'topBottom'">
+    <table
+      svuiTable
+      [loading]="labelsStore.loader.isLoading()"
+      [totalRows]="itemTable.filteredListSize()"
+      (pageChanged)="itemTable.onPageChanged($event)"
+      [pagination]="itemTable.pagination()"
+    >
+      <!-- col widths -->
+      <colgroup>
+        <col svuiColWidth colWidth="text-large">
+        <col svuiColWidth colWidth="select-medium">
+        <col svuiColWidth colWidth="select-small">
+        <col svuiColWidth colWidth="select-small">
+        <col svuiColWidth colWidth="options">
+      </colgroup>
+      <thead>
+      <!-- Headers for sorting -->
+      <tr>
+        @if (tenantSettingsStore.supportsLanguageDe()) {
+          <th
+            scope="col"
+            svuiSortable
+            [sortState]="itemTable.findColSortDTO('data.name.de')"
+            (sort)="itemTable.onColSort($event, 'data.name.de')"
+          >
+            {{ 'label.name' | transloco }} {{ this.tenantSettingsStore.postfixDeKey() | transloco }}
+          </th>
+        }
+        @if (tenantSettingsStore.supportsLanguageFr()) {
+          <th
+            scope="col"
+            svuiSortable
+            [sortState]="itemTable.findColSortDTO('data.name.fr')"
+            (sort)="itemTable.onColSort($event, 'data.name.fr')"
+          >
+            {{ 'label.name' | transloco }} {{ this.tenantSettingsStore.postfixFrKey() | transloco }}
+          </th>
+        }
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.labelTyp')"
+          (sort)="itemTable.onColSort($event, 'data.labelTyp')"
+        >
+          {{ 'label.typ' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.autoLabel')"
+          (sort)="itemTable.onColSort($event, 'data.autoLabel')"
+        >
+          {{ 'label.autoLabel' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.aktiv')"
+          (sort)="itemTable.onColSort($event, 'data.aktiv')"
+        >
+          {{ 'label.aktiv' | transloco }}
+        </th>
+        <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
+      </tr>
+      <!-- Headers for filtering-->
+      <tr>
+        <!-- Filter for nameDe -->
+        @if (tenantSettingsStore.supportsLanguageDe()) {
+          <th scope="col">
+            <svui-table-filter
+              [columnHeader]="('label.name' | transloco) + ' ' + (this.tenantSettingsStore.postfixDeKey() | transloco)"
+            >
+              <input svuiTextInput [formControl]="tableFilterForm.group.controls.nameDe"/>
+            </svui-table-filter>
+          </th>
+        }
+        <!-- Filter for nameFR -->
+        @if (tenantSettingsStore.supportsLanguageFr()) {
+          <th scope="col">
+            <svui-table-filter
+              [columnHeader]="('label.name' | transloco) + ' ' + (this.tenantSettingsStore.postfixFrKey() | transloco)"
+            >
+              <input svuiTextInput [formControl]="tableFilterForm.group.controls.nameFr"/>
+            </svui-table-filter>
+          </th>
+        }
+        <!-- Filter for typ -->
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'label.typ' | transloco">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.typ"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              @for (typ of labelTypen; track typ) {
+                <ng-option [value]="typ">
+                  {{ 'LabelTyp.' + typ | transloco }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="('label.autoLabel' | transloco)">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.autoLabel"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              <ng-option [value]="true">
+                {{ 'global.ja' | transloco }}
+              </ng-option>
+              <ng-option [value]="false">
+                {{ 'global.nein' | transloco }}
+              </ng-option>
+            </ng-select>
+          </svui-table-filter>
+        </th>
+        <!-- Filter for aktiv/deaktiviert -->
+        <th scope="col">
+          <svui-table-filter [columnHeader]="('label.aktiv' | transloco)">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.aktiv"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              <ng-option [value]="true">
+                {{ 'label.list.aktiv' | transloco }}
+              </ng-option>
+              <ng-option [value]="false">
+                {{ 'label.list.inaktiv' | transloco }}
+              </ng-option>
+            </ng-select>
+
+          </svui-table-filter>
+        </th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+        @if (!itemTable.displayedList()?.length && !labelsStore.loader.isLoading()) {
+          <tr svui-empty-table-message [message]="'label.list.empty' | transloco"></tr>
+        }
+        @for (item of itemTable.displayedList(); track item.id) {
+          <tr>
+            @if (tenantSettingsStore.supportsLanguageDe()) {
+              <td>
+                @if (item.data.autoLabel) {
+                  <span class="fw-bold">{{ item.data.name.de }}</span>
+                } @else {
+                  <svui-table-link
+                    type="text"
+                    [myRouterLink]="[item.id]">
+                    {{ item.data.name.de }}
+                  </svui-table-link>
+                }
+              </td>
+            }
+            @if (tenantSettingsStore.supportsLanguageFr()) {
+              <td>
+                @if (item.data.autoLabel) {
+                  <span class="fw-bold">{{ item.data.name.fr }}</span>
+                } @else {
+                  <svui-table-link
+                    type="text"
+                    [myRouterLink]="[item.id]">
+                    {{ item.data.name.fr }}
+                  </svui-table-link>
+                }
+              </td>
+            }
+            <td>{{ 'LabelTyp.' + item.data.labelTyp| transloco }}</td>
+
+            <td>{{ (item.data.autoLabel | booleanPipe) }}</td>
+            <td>{{
+                item.data.aktiv ?
+                  ('label.list.aktiv' | transloco) :
+                  ('label.list.inaktiv' | transloco)
+              }}
+            </td>
+
+            <td>
+              <svui-collapsible-menu
+                [loading]="labelsStore.deleteLoader.isLoading()"
+                label="{{ 'global.actionmenu.tooltip' | transloco }}">
+
+                @if (canEditLabel() && !item.data.autoLabel) {
+                  <button ngbDropdownItem (click)="removeItem(item)">
+                    {{ 'global.remove' | transloco }}
+                  </button>
+                  <button
+                    ngbDropdownItem
+                    (click)="toggleStatus(item)"
+                  >
+                    {{ item.data.aktiv ? ('global.deactivate' | transloco) : ('global.activate' | transloco) }}
+                  </button>
+                }
+              </svui-collapsible-menu>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </svui-card>
+</feat-page>

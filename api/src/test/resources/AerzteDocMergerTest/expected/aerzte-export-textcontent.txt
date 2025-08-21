@@ -1,0 +1,163 @@
+
+	3000 Bern
+	Adresse
+	Telefon
+	E-Mail
+	Bemerkung
+	
+
+
+	Max Muster
+
+
+	Bahnhofstrasse 10, c/o Muster, 3000 Bern
+
+	+41 79 123 45 67
+
+	arzt.default@mailbucket.dvbern.ch
+
+	
+
+	
+
+
+
+
+	80001 Kein Ort
+	Adresse
+	Telefon
+	E-Mail
+	Bemerkung
+	
+
+
+	Arzt33
+
+
+	Bahnhofstrasse 10, c/o Muster, 80001
+
+	+41 79 123 45 67
+
+	arzt.default@mailbucket.dvbern.ch
+
+	
+
+	
+
+
+
+
+	80001 Bern
+	Adresse
+	Telefon
+	E-Mail
+	Bemerkung
+	
+
+
+	Arzt2
+
+
+	Bahnhofstrasse 10, c/o Muster, 80001 Bern
+
+	+41 79 123 45 67
+
+	arzt.default@mailbucket.dvbern.ch
+
+	
+
+	
+
+
+	Arzt21
+
+
+	Bahnhofstrasse 10, c/o Muster, 80001 Bern
+
+	+41 79 123 45 67
+
+	arzt.default@mailbucket.dvbern.ch
+
+	
+
+	
+
+
+	Arzt22
+
+
+	Bahnhofstrasse 10, 80001 Bern
+
+	+41 79 123 45 67
+
+	arzt.default@mailbucket.dvbern.ch
+
+	
+
+	
+
+
+
+
+	90001 Bern
+	Adresse
+	Telefon
+	E-Mail
+	Bemerkung
+	
+
+
+	Arzt1
+
+
+	Bahnhofstrasse 10, c/o Muster, 90001 Bern
+
+	+41 79 123 45 67
+
+	arzt.default@mailbucket.dvbern.ch
+
+	Lorem ipsum
+
+	
+
+
+	Arzt3
+
+
+	Bahnhofstrasse 10, c/o Muster, 90001 Bern
+
+	+41 79 123 45 67
+
+	arzt.default@mailbucket.dvbern.ch
+
+	
+
+	
+
+
+
+
+	Keine PLZ Bern
+	Adresse
+	Telefon
+	E-Mail
+	Bemerkung
+	
+
+
+	Arzt34
+
+
+	Bahnhofstrasse 10, c/o Muster, Bern
+
+	+41 79 123 45 67
+
+	arzt.default@mailbucket.dvbern.ch
+
+	
+
+	
+
+
+
+

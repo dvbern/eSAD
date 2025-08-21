@@ -1,0 +1,20 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="dvbern (generated)" id="1742484112068-1">
+    <sql>
+      -- enable the trigram extension
+      CREATE EXTENSION IF NOT EXISTS "pg_trgm";
+
+     -- add trigram index to kind in the hope to speed up like performance for paginationsearch
+      CREATE INDEX IF NOT EXISTS ix_kind_name_gin ON kind USING gin(lower(name) gin_trgm_ops);
+      CREATE INDEX IF NOT EXISTS ix_kind_vorname_gin ON kind USING gin(lower(vorname) gin_trgm_ops);
+
+      CREATE INDEX IF NOT EXISTS ix_kind_esadid_gin ON kind USING gin(lower(esadid) gin_trgm_ops);
+
+      CREATE INDEX IF NOT EXISTS ix_schule_bezeichnung_gin ON schule USING gin(lower(schulhaus) gin_trgm_ops);
+      CREATE INDEX IF NOT EXISTS ix_klasse_bezeichnung_gin ON klasse USING gin(lower(bezeichnung) gin_trgm_ops);
+      
+    </sql>    
+    </changeSet>
+    
+</databaseChangeLog>

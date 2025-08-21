@@ -1,0 +1,28 @@
+@use '../../../../styles/core/border';
+@use '../../../../styles/core/font';
+@use '../../../../styles/core/layout';
+@use '../../../../styles/core/size';
+@use '../../../../styles/core/spacing';
+@use '../../../../styles/core/zindex';
+
+:host {
+  @include layout.flex($justify-content: center);
+}
+
+.svui_toast-outlet {
+  position: fixed;
+  top: spacing.$base;
+  z-index: zindex.$toast;
+  max-width: size.$toast-width;
+  font-size: font.value('toast', size);
+  display: grid;
+  row-gap: spacing.$base;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.svui_toast {
+  box-shadow: border.$box-shadow;
+}

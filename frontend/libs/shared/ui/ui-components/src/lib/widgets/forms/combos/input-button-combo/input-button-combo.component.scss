@@ -1,0 +1,14 @@
+:host {
+  display: block;
+}
+
+.svui_input-button-combo {
+  position: relative;
+
+  ::ng-deep > button {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    right: 0;
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "generators": {
+    "lib": {
+      "factory": "./src/generators/lib/generator",
+      "schema": "./src/generators/lib/schema.json",
+      "description": "DV Bern library generator"
+    },
+    "store-with-entities": {
+      "factory": "./src/generators/store-with-entities/store-generator",
+      "schema": "./src/generators/store-with-entities/store-generator-schema.json",
+      "description": "DV Bern SignalStore with entities generator"
+    },
+    "store-simple": {
+      "factory": "./src/generators/store-simple/store-generator",
+      "schema": "./src/generators/store-simple/store-generator-schema.json",
+      "description": "DV Bern SignalStore generator (simple)"
+    }
+  }
+}

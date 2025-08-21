@@ -1,0 +1,34 @@
+@use '../../../../../styles/core/css-var';
+@use '../../../../../styles/core/size';
+@use '../../../../../styles/core/spacing';
+
+:host {
+  display: block;
+  padding-bottom: 2px;
+  margin-left: spacing.$base;
+}
+
+.svui_sort {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1px;
+  align-items: center;
+  justify-content: center;
+
+  &__icon {
+
+    ::ng-deep {
+      ng-icon {
+        margin-top: -3px;
+      }
+    }
+
+    &--asc {
+      rotate: 180deg;
+    }
+
+    &--hidden {
+      visibility: hidden;
+    }
+  }
+}

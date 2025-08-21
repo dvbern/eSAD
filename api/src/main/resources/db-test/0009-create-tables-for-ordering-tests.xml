@@ -1,0 +1,153 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="hefr (generated)" id="1746707502305-1">
+        <createTable tableName="idmapchild">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="idmapchildPK"/>
+            </column>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usererstellt" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usermutiert" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="orderindex" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parent_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1746707502305-2">
+        <createTable tableName="idmapparent">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="idmapparentPK"/>
+            </column>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usererstellt" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usermutiert" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1746707502305-3">
+        <createTable tableName="idorderingchild">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="idorderingchildPK"/>
+            </column>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usererstellt" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usermutiert" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="orderindex" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parent_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1746707502305-4">
+        <createTable tableName="idorderingparent">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="idorderingparentPK"/>
+            </column>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usererstellt" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usermutiert" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1746707502305-5">
+        <createTable tableName="testing_idtype_a">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="testing_idtype_aPK"/>
+            </column>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usererstellt" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usermutiert" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="b_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1746707502305-6">
+        <createTable tableName="testing_idtype_b">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="testing_idtype_bPK"/>
+            </column>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usererstellt" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usermutiert" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1746707502305-7">
+        <addForeignKeyConstraint baseColumnNames="parent_id" baseTableName="idmapchild" constraintName="FK4i3q63a9vhy3610w7bhowfhek" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="idmapparent" validate="true"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1746707502305-8">
+        <addForeignKeyConstraint baseColumnNames="parent_id" baseTableName="idorderingchild" constraintName="FKsnr4b9w7hg8gdkkr8534h98sq" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="idorderingparent" validate="true"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1746707502305-9">
+        <addForeignKeyConstraint baseColumnNames="b_id" baseTableName="testing_idtype_a" constraintName="FKtgsoq2gmmpprdnwqkopkubcmd" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="testing_idtype_b" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

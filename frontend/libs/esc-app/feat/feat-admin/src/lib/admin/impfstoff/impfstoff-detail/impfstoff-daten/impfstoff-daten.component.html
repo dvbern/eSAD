@@ -1,0 +1,41 @@
+<form svuiFormLayout
+      [mode]="store.detailMode()"
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()">
+  <h2 svuiHeading="formSection">{{ 'impfstoff.detail.daten' | transloco }}</h2>
+  <!-- Bezeichnung -->
+  <svui-form-control [label]="'impfstoff.bezeichnung' | transloco" [size]="'half'"
+                     [viewValue]="form.group.value.name">
+    <input svuiTextInput [formControl]="form.group.controls.name"/>
+  </svui-form-control>
+
+  <!-- Indikationen -->
+  <svui-form-control label="{{ 'impfstoff.indikationen' | transloco }}" size="half"
+                     [viewValue]="store.getKrankheitenTranslatedList(form.group.value.krankheiten ?? [])">
+    <ng-select
+      svuiNgSelect
+      [multiple]="true"
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.krankheiten"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+    >
+      @for (typ of krankheitTypen; track typ) {
+        <ng-option [value]="typ">
+          {{ 'Krankheit.' + typ | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="store.detailMode()"
+    [isCreate]="store.selectedIsNew()"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="false"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+    [routeOnCancelCreate]="[Path.RELATIVE_ONE_UP]"
+  />
+</form>

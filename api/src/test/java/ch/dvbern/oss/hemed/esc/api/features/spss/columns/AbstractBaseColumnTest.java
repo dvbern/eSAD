@@ -1,0 +1,22 @@
+package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
+
+import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankheitService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungInternService;
+import org.mockito.Mockito;
+
+public abstract class AbstractBaseColumnTest {
+
+    final TL tlMock = Mockito.mock(TL.class);
+    final UntersuchungImpfstatusKrankheitService untersuchungImpfstatusKrankheitServiceMock =
+        Mockito.mock(UntersuchungImpfstatusKrankheitService.class);
+    final UntersuchungImpfungInternService untersuchungImpfungInternServiceMock =
+        Mockito.mock(UntersuchungImpfungInternService.class);
+
+    final CsvColumnConfig config =
+        new CsvColumnConfig(
+            tlMock,
+            untersuchungImpfstatusKrankheitServiceMock,
+            untersuchungImpfungInternServiceMock,
+            false);
+}

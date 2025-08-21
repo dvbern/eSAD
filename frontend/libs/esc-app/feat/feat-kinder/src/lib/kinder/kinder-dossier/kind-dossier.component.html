@@ -1,0 +1,20 @@
+<feat-page [heading]="''">
+  <svui-layout-columns>
+    <!-- MAIN -->
+    <feat-kind-dossier-main left/>
+
+    <!-- Anlaesse -->
+    <feat-kind-dossier-anlaesse-list middle/>
+    <feat-kind-dossier-impfungen middle/>
+
+    <!-- Notizen -->
+    <feat-kind-notizen-list right/>
+
+    <!-- Aufgaben -->
+    <feat-aufgaben-sidebar right
+                           [aufgabenList]="aufgabenStore.entities()"
+                           [loading]="aufgabenStore.loader.isLoading()"
+                           [routingPrefix]="Path.AUFGABEN"/>
+
+  </svui-layout-columns>
+</feat-page>

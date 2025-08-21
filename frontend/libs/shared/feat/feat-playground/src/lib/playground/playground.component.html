@@ -1,0 +1,65 @@
+<feat-page heading="Playground" [backLink]="undefined">
+  <ul class="nav">
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="'dashboard'" [routerLinkActive]="'active'" aria-current="page">Dashboard</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="'columns'" [routerLinkActive]="'active'" aria-current="page">
+        Column Layout und Cards
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="'typography'" [routerLinkActive]="'active'" aria-current="page">Typography</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="'table'" [routerLinkActive]="'active'" aria-current="page">Tabelle</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="'lists'" [routerLinkActive]="'active'" aria-current="page">Pagination/Scroll</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="'form'" [routerLinkActive]="'active'" aria-current="page">Form</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="'bordered'" [routerLinkActive]="'active'" aria-current="page">Kachel-Form</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="'stammdaten'" [routerLinkActive]="'active'" aria-current="page">
+        Stammdaten-Demo
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="'dialogs'" [routerLinkActive]="'active'" aria-current="page">Dialogs</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="'nav'" [routerLinkActive]="'active'" aria-current="page">Nav/Tabs</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="'loading'" [routerLinkActive]="'active'" aria-current="page">Loading</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="'dossier'" [routerLinkActive]="'active'" aria-current="page">
+        Dossier-Elemente
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="'errors'" [routerLinkActive]="'active'" aria-current="page">Errors</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="'icons'" [routerLinkActive]="'active'" aria-current="page">Icons & Buttons</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="'anlass'" [routerLinkActive]="'active'" aria-current="page">
+        Anlass-Elemente</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="'charts'" [routerLinkActive]="'active'" aria-current="page">Diagramme</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="'documentqueue'" [routerLinkActive]="'active'" aria-current="page">Async-Reports</a>
+    </li>
+  </ul>
+  <hr/>
+
+  <router-outlet></router-outlet>
+</feat-page>

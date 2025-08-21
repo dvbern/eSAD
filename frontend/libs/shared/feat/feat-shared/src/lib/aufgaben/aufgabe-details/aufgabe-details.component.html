@@ -1,0 +1,206 @@
+<svui-page-header-entity-info [entityInfo]="entityInfo()" class="mb-2"/>
+
+<svui-dashboard>
+  <div termine>
+    <svui-card>
+      <form svuiFormLayout
+            [formGroup]="form.group"
+            (ngSubmit)="submitIfValid()"
+            [mode]="DetailMode.EDIT">
+
+
+        <h2 svuiHeading="formSection">{{ 'aufgabe.details.titel' | transloco }}</h2>
+        <!--TITEL-->
+        <svui-form-control [label]="'aufgabe.titel' | transloco"
+                           [viewValue]="form.group.controls.titel.value">
+          <input svuiTextInput [formControl]="form.controlAt('titel')"/>
+        </svui-form-control>
+
+        <!--STATUS-->
+        <svui-form-control [label]="'aufgabe.status' | transloco"
+                           [viewValue]="'AufgabeStatus.' + form.group.controls.status.value">
+          <ng-select
+            appendTo="body"
+            svuiNgSelect
+            bindLabel='dummy'
+            [formControl]="form.controlAt('status')"
+            [clearable]="false"
+            [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          >
+            @for (status of aufgabeStatus; track status) {
+              <ng-option [value]="status">
+                {{ 'AufgabeStatus.' + status | transloco }}
+              </ng-option>
+            }
+          </ng-select>
+        </svui-form-control>
+        <!--FAELLIG BIS-->
+
+        <svui-form-control [label]="'aufgabe.faelligBis' |transloco"
+                           [viewValue]="form.group.controls.faelligBis.value | date: 'dd.MM.yyyy'">
+          <input svuiTextInput="date" [formControl]="form.controlAt('faelligBis')"/>
+        </svui-form-control>
+
+        <!--EMPFAENGER-->
+        <svui-form-control [label]="'aufgabe.empfaenger' | transloco"
+                           [viewValue]="form.group.controls.empfaenger.value?.fullName">
+          <ng-select
+            svuiNgSelect
+            bindLabel='dummy'
+            appendTo="body"
+            [formControl]="form.group.controls.empfaenger"
+            [clearable]="false"
+            [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            [compareWith]="compareBenutzer"
+          >
+            @for (benutzer of benutzerOptionsStore.entitiesIncluding(store.selectedEntity()?.data?.empfaenger); track benutzer.id) {
+              <ng-option [value]="benutzer" [disabled]="!benutzer.aktiv">
+                {{ benutzer.fullName }}
+              </ng-option>
+            }
+          </ng-select>
+        </svui-form-control>
+
+        <!--ERSTELLT DURCH-->
+        <svui-form-control [label]="'aufgabe.userErfasst' | transloco"
+                           [viewValue]="form.group.controls.userErfasst.value?.fullName">
+          <ng-select
+            svuiNgSelect
+            bindLabel='dummy'
+            appendTo="body"
+            [formControl]="form.group.controls.userErfasst"
+            [clearable]="false"
+            [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            [compareWith]="compareBenutzer"
+          >
+            @for (benutzer of benutzerOptionsStore.entitiesIncluding(store.selectedEntity()?.data?.userErfasst); track benutzer.id) {
+              <ng-option [value]="benutzer">
+                {{ benutzer.fullName }}
+              </ng-option>
+            }
+          </ng-select>
+        </svui-form-control>
+
+        <!--LABELS-->
+        <svui-form-control [label]="'aufgabe.label' | transloco"
+                           [viewValue]="form.group.value.labels?.join(',')"
+        >
+          <ng-select
+            svuiNgSelect
+            bindLabel='dummy'
+            appendTo="body"
+            [compareWith]="compareLabel"
+            [formControl]="form.group.controls.labels"
+            [allowBadgesToWrap]="true"
+            [multiple]="true"
+            [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          >
+            @for (label of labelsStore.aufgabenLabelsEnabledSorted(); track label.id) {
+              <ng-option [value]="label" [disabled]="label.data.disabled">
+                {{ label.data.name | translatedStringPipe }}
+              </ng-option>
+            }
+          </ng-select>
+        </svui-form-control>
+
+        <!--KIND-->
+        <svui-form-control [label]="'aufgabe.kind' | transloco"
+                           [viewValue]="form.group.controls.kind.value?.vorname + ' ' + form.group.controls.kind.value?.name"
+        >
+          <feat-kind-search
+            [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            [myFormControl]="form.group.controls.kind"/>
+          @if (form.kindChanged()?.id) {
+            <ul ngbNav class="mt-1">
+              <li ngbNavItem class="p-0">
+                <a class="nav-link fw-bold"
+                   target="_blank"
+                   [href]="navigationService.getLinkToDossier(form.kindChanged()?.id)">
+                  <svui-icon [useCase]="'link'"></svui-icon>
+                  {{ 'untersuchung.tab.dossierlink' | transloco }}
+                </a>
+              </li>
+            </ul>
+          }
+        </svui-form-control>
+
+        <!--ANLASS-->
+        <svui-form-control [label]="'aufgabe.anlass' | transloco"
+                           [viewValue]="form.group.controls.anlass.value?.titel">
+          @if (form.group.controls.anlass.value) {
+            <span>{{ form.group.controls.anlass.value.titel }}</span>
+          } @else {
+            <span>-</span>
+          }
+        </svui-form-control>
+
+        <!--DEAKTIVIERTE LABELS-->
+        @if (inaktivLabels().length !== 0) {
+          <svui-form-control [label]="'notizen.label.deaktiviert' | transloco"
+                             [viewValue]="form.group.value.labels?.join(',')"
+          >
+            <div class="subBadges">
+              @for (label of inaktivLabels(); track label.id) {
+                <svui-badge>{{ label.data.name | translatedStringPipe }}</svui-badge>
+              }
+            </div>
+          </svui-form-control>
+        }
+        <!-- LINK -->
+        <svui-form-control [label]="'aufgabe.link' | transloco"
+                           [viewValue]="form.group.controls.link.value" [size]="'double'">
+          <input svuiTextInput [formControl]="form.controlAt('link')"/>
+          @if (form.customLink()) {
+            <ul ngbNav class="mt-1">
+              <li ngbNavItem class="p-0">
+                <a class="nav-link fw-bold" target="_blank" [href]="form.customLink()">
+                  <svui-icon [useCase]="'link'"></svui-icon>
+                  {{ 'aufgabe.link.offnen' | transloco }}
+                </a>
+              </li>
+            </ul>
+          }
+        </svui-form-control>
+        <br>
+
+        <!--BEMERKUNG-->
+        <svui-form-control [label]="'aufgabe.bemerkungen' | transloco"
+                           [viewValue]="form.controlAt('bemerkungen').value"
+                           [size]="'full'"
+        >
+            <textarea svuiTextarea
+                      [formControl]="form.controlAt('bemerkungen')"></textarea>
+        </svui-form-control>
+
+        <!-- Fileupload -->
+        <feat-file-drop
+          (filesToUpload)="onFilesSelected($event)"
+          [acceptedFiletypes]="this.acceptedFiletypes()"
+        />
+
+        <!--messages for whole form -->
+        <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+        <!-- BUTTONS -->
+        <svui-save-cancel-buttons
+          [saving]="store.saveLoader.isLoading()"
+          [canEdit]="canEditAufgabe()"
+          (cancelClicked)="cancelAction.emit()"
+        />
+
+      </form>
+    </svui-card>
+  </div>
+  <div aufgaben>
+    <svui-card>
+      <h3 svuiHeading="card" class="mb-3">{{ 'global.uploaded.files' | transloco }}</h3>
+
+      <feat-upload-table [uploadTable]="uploadTable"
+                         (fileRemove)="onFileDelete($event)"
+                         (fileView)="onFileView($event)"
+                         (fileDirectDownload)="onFileDirectDownload($event)"
+      >
+      </feat-upload-table>
+    </svui-card>
+  </div>
+</svui-dashboard>

@@ -1,0 +1,43 @@
+<!-- Aufgaben -->
+<svui-list
+  [heading]="'kind.dossier.aufgaben' | transloco"
+  [loading]="loading()">
+
+  @if (!aufgabenList().length) {
+    <svui-empty-list-message [message]="'aufgaben.list.empty' | transloco"/>
+  }
+
+  @if (canEditAufgaben()) {
+    <svui-page-header-add-button listAddbutton
+                                 [addRouterLink]="routingPrefix() + '/' + Path.CREATE"/>
+  }
+
+  @for (item of aufgabenNichtAbgeschlossen(); track item.id; let index = $index) {
+    <svui-fancy-list-item
+      [mainText]="item.data.titel"
+      [date]="fromISODateString(item.data.faelligBis)"
+      [linkText]="'global.oeffnen' | transloco"
+      [routerlinkDestination]="routingPrefix() + '/' + item.id"
+      [gray]="false"
+    >
+      <ng-content subBadges>
+        @for (label of item.data.labels; track label.id) {
+          <svui-badge> {{ label.data.name | translatedStringPipe }}</svui-badge>
+        }
+      </ng-content>
+    </svui-fancy-list-item>
+  }
+
+  @if (!aufgabenNichtAbgeschlossen().length && aufgabenList().length > 0) {
+    <svui-empty-list-message [message]="'kind.dossier.aufgaben.list.no.open' | transloco"/>
+  }
+
+  @if (aufgabenList().length > 0) {
+    <ng-container footer>
+      <span>{{ aufgabenNichtAbgeschlossen().length }} von {{ aufgabenList().length }}</span>
+      <a class="nav-link"
+         [routerLink]="routingPrefix()"
+         aria-current="page">{{ 'kind.dossier.aufgaben.liste' | transloco }}</a>
+    </ng-container>
+  }
+</svui-list>

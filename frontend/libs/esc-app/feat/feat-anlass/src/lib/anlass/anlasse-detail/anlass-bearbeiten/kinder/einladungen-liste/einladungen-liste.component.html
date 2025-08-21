@@ -1,0 +1,110 @@
+<svui-card-collapsible
+  class="mb-3"
+  [heading]="'anlass.kinder.ausgewählt' | transloco: {anzahl: selectedItemTable.filteredListSize()}"
+  [initialState]="this.store.kindWasAdded() ? 'open' : 'collapsed'"
+>
+
+  <svui-card [innerSpacing]="'topBottom'">
+    <table
+      svuiTable
+      [loading]="store.loader.isLoading()"
+      [totalRows]="selectedItemTable.filteredListSize()"
+      (pageChanged)="selectedItemTable.onPageChanged($event)"
+      [pagination]="selectedItemTable.pagination()"
+    >
+      <!-- col widths -->
+      <colgroup>
+        <col svuiColWidth colWidth="checkbox">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="select-small">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="select-small">
+        <col svuiColWidth colWidth="date">
+      </colgroup>
+      <thead>
+      <!-- Headers for sorting -->
+      <tr>
+        <th scope="col"></th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="selectedItemTable.findColSortDTO('kind.data.schule.bezeichnung')"
+          (sort)="selectedItemTable.onColSort($event, 'kind.data.schule.bezeichnung')"
+        >
+          {{ 'anlass.kinder.schule' | transloco }}
+        </th>
+        <th scope="col"
+            svuiSortable
+            [sortState]="selectedItemTable.findColSortDTO('kind.data.klasse.bezeichnung')"
+            (sort)="selectedItemTable.onColSort($event, 'kind.data.klasse.bezeichnung')"
+        >{{ 'anlass.kinder.klasse' | transloco }}
+        </th>
+        <th scope="col"
+            svuiSortable
+            [sortState]="selectedItemTable.findColSortDTO('kind.data.klassenstufe')"
+            (sort)="selectedItemTable.onColSort($event, 'kind.data.klassenstufe')"
+        >{{ 'anlass.kinder.klassenstufe' | transloco }}
+        </th>
+        <th scope="col"
+            svuiSortable
+            [sortState]="selectedItemTable.findColSortDTO('kind.data.name')"
+            (sort)="selectedItemTable.onColSort($event, 'kind.data.name')"
+        >{{ 'anlass.kinder.name' | transloco }}
+        </th>
+        <th scope="col"
+            svuiSortable
+            [sortState]="selectedItemTable.findColSortDTO('kind.data.vorname')"
+            (sort)="selectedItemTable.onColSort($event, 'kind.data.vorname')"
+        >{{ 'anlass.kinder.vorname' | transloco }}
+        </th>
+        <th scope="col"
+            svuiSortable
+            [sortState]="selectedItemTable.findColSortDTO('kind.data.geschlecht')"
+            (sort)="selectedItemTable.onColSort($event, 'kind.data.geschlecht')"
+        >{{ 'anlass.kinder.geschlecht' | transloco }}
+        </th>
+        <th scope="col"
+            svuiSortable
+            [sortState]="selectedItemTable.findColSortDTO('kind.data.geburtsdatum')"
+            (sort)="selectedItemTable.onColSort($event, 'kind.data.geburtsdatum')"
+        >{{ 'anlass.kinder.geburtsdatum' | transloco }}
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+        @if (!selectedItemTable.displayedList()?.length && !store.loader.isLoading()) {
+          <tr svui-empty-table-message [message]="'anlass.kinder.ausgewaehlt.empty' | transloco"></tr>
+        }
+        @for (item of selectedItemTable.displayedList(); track item.id) {
+          <tr>
+            <td>
+              <button svuiIconOnlyButton="tableRowAction"
+                      type="button"
+                      [tooltip]="'global.tooltip.icon.loeschen' | transloco"
+                      [working]="store.deleteLoader.isLoading()"
+                      [icon]="'loeschen'"
+                      (click)="removeEinladung(item)">
+                <span class="hidden"></span>
+              </button>
+            </td>
+            <td>{{ item.kind.data.schule?.bezeichnung }}</td>
+            <td>{{ item.kind.data.klasse?.bezeichnung }}</td>
+            <td>{{
+                item.kind.data.klassenstufe ?
+                  ('Klassenstufe.' + item.kind.data.klassenstufe | transloco) :
+                  ''
+              }}
+            </td>
+            <td>{{ item.kind.data.name }}</td>
+            <td>{{ item.kind.data.vorname }}</td>
+            <td>
+              <svui-icon [useCase]="getUseCaseGechlecht(item.kind.data.geschlecht)"></svui-icon>
+            </td>
+            <td>{{ item.kind.data.geburtsdatum | date: 'dd.MM.yyyy' }}</td>
+            }
+      </tbody>
+    </table>
+  </svui-card>
+</svui-card-collapsible>

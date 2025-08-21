@@ -1,0 +1,11 @@
+<feat-page [heading]="'aufgaben.list.page.title' | transloco">
+
+	@if (canEditAufgabe()) {
+		<svui-page-header-add-button
+				[addRouterLink]="Path.CREATE"/>
+	}
+
+	<feat-shared-aufgaben-list
+    [defaultEmpfaenger]="benutzerOptionsStore.getOptionForBenutzer(benutzerStore.benutzer()?.id)"/>
+
+</feat-page>

@@ -1,0 +1,223 @@
+<feat-page [heading]="'anlass.list.page.title' | transloco">
+
+  <svui-page-header-list-summary [items]="summaryItems()"/>
+
+  <svui-page-header-buttons
+    [showFilterPopup]="false"
+    [activeFilterCount]="itemTable.numberOfFilters()"
+    (resetFilter)="itemTable.resetFilters(); tableFilterForm.reset();"
+  />
+
+
+  @if (canCreateAnlass()) {
+    <svui-page-header-add-button data-testid="button-create-anlass" [addRouterLink]="Path.CREATE"/>
+  }
+
+  <svui-card [innerSpacing]="'topBottom'">
+    <table
+      svuiTable
+      [loading]="anlassStore.loader.isLoading()"
+      [totalRows]="itemTable.filteredListSize()"
+      (pageChanged)="itemTable.onPageChanged($event)"
+      [pagination]="itemTable.pagination()"
+    >
+      <!-- col widths -->
+      <colgroup>
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="select-medium">
+        <col svuiColWidth colWidth="date">
+        <col svuiColWidth colWidth="timeVonBis">
+        <col svuiColWidth colWidth="select-medium">
+        <col svuiColWidth colWidth="select-medium">
+        <col svuiColWidth colWidth="select-medium">
+        <col svuiColWidth colWidth="options">
+      </colgroup>
+      <thead>
+      <!-- Headers for sorting -->
+      <tr>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('fullTitle')"
+          (sort)="itemTable.onColSort($event, 'fullTitle')"
+        >
+          {{ 'anlass.titel' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.anlassStatus')"
+          (sort)="itemTable.onColSort($event, 'data.anlassStatus')"
+        >
+          {{ 'anlass.anlassStatus' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.datum')"
+          (sort)="itemTable.onColSort($event, 'data.datum')"
+        >
+          {{ 'anlass.datum' | transloco }}
+        </th>
+        <th
+          scope="col"
+        >
+          {{ 'anlass.uhrzeit' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.arzt.fullName')"
+          (sort)="itemTable.onColSort($event, 'data.arzt.fullName')"
+        >
+          {{ 'anlass.arzt' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.mpa.fullName')"
+          (sort)="itemTable.onColSort($event, 'data.mpa.fullName')"
+        >
+          {{ 'anlass.mpa' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.weiterePerson.fullName')"
+          (sort)="itemTable.onColSort($event, 'data.weiterePerson.fullName')"
+        >
+          {{ 'anlass.weiterePerson' | transloco }}
+        </th>
+        <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
+      </tr>
+      <!-- Headers for filtering-->
+      <tr>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'anlass.titel' | transloco">
+            <input svuiTextInput class="w-100" [formControl]="tableFilterForm.group.controls.fullTitle"/>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'anlass.anlassStatus' | transloco">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.anlassStatus"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+              [multiple]="true"
+            >
+              @for (status of anlassStatusList; track status) {
+                <ng-option [value]="status">
+                  {{ 'AnlassStatus.' + status | transloco }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'anlass.datum' | transloco">
+            <input svuiTextInput="date" [formControl]="tableFilterForm.group.controls.datum"/>
+          </svui-table-filter>
+        </th>
+        <th scope="col"></th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'anlass.arzt' | transloco">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.arzt"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+              [compareWith]="compareBenutzerFn"
+              [multiple]="true"
+            >
+              @for (each of benutzerOptionsStore.arztOptions(); track each.id; let index = $index) {
+                <ng-option [value]="each.id">
+                  {{ each.fullName }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'anlass.mpa' | transloco">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.mpa"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+              [compareWith]="compareBenutzerFn"
+              [multiple]="true"
+            >
+              @for (each of benutzerOptionsStore.mpaOptions(); track each; let index = $index) {
+                <ng-option [value]="each.id">
+                  {{ each.fullName }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'anlass.weiterePerson' | transloco">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.weiterePerson"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+              [compareWith]="compareBenutzerFn"
+              [multiple]="true"
+            >
+              @for (each of benutzerOptionsStore.entities(); track each.id) {
+                <ng-option [value]="each.id">
+                  {{ each.fullName }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+
+      <tbody>
+        @if (!itemTable.displayedList()?.length && !anlassStore.loader.isLoading()) {
+          <tr svui-empty-table-message [message]="'anlass.list.empty' | transloco"></tr>
+        }
+        @for (item of itemTable.displayedList(); track item.id) {
+          <tr>
+            <td>
+              <svui-table-link
+                type="text"
+                [myRouterLink]="this.canViewAnlass() ? [item.id, Path.ANLASS_PLANUNG] : null">
+                {{ anlassTitle(item.data, transloco) }}
+              </svui-table-link>
+            </td>
+            <td>{{ 'AnlassStatus.' + item.data.anlassStatus | transloco }}</td>
+            <td>{{ item.data.datum | date: 'dd.MM.yyyy' }}</td>
+            <td>{{ item.data.zeitVon | date: 'HH:mm' }} - {{ item.data.zeitBis | date: 'HH:mm' }}</td>
+            <td>{{ item.data.arzt?.fullName }}</td>
+            <td>{{ item.data.mpa?.fullName }}</td>
+            <td>{{ item.data.weiterePerson?.fullName }}</td>
+            <td>
+              <svui-collapsible-menu
+                [loading]="false"
+                label="{{ 'global.actionmenu.tooltip' | transloco }}"
+              >
+                <button [disabled]="!anlassStore.canUserEditAnlassInCurrentState()"
+                        ngbDropdownItem
+                        (click)="removeItem(item)">{{ 'global.remove' | transloco }}
+                </button>
+                <a [disabled]="!anlassStore.canUserEditAnlassInCurrentState()"
+                   ngbDropdownItem
+                   routerLink="{{item.id + '/' + Path.ANLASS_BEARBEITUNG}}">{{ 'anlass.list.link.bearbetung' | transloco }}</a>
+              </svui-collapsible-menu>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </svui-card>
+</feat-page>

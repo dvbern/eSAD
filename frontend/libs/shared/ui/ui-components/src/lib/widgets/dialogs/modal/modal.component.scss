@@ -1,0 +1,10 @@
+:host {
+  display: block;
+}
+
+.modal {
+  &-header + &-body {
+    // remove double padding between header & body
+    padding-top: 0;
+  }
+}

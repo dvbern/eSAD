@@ -1,0 +1,177 @@
+<svui-card [innerSpacing]="'topBottom'">
+  @if (notizenTable !== undefined) {
+    <table
+      (pageChanged)="notizenTable.onPageChanged($event)"
+      [loading]="loading()"
+      [pagination]="notizenTable.pagination()"
+      [totalRows]="notizenTable.filteredListSize()"
+      svuiTable
+    >
+      <!-- col widths -->
+      <colgroup>
+        <col svuiColWidth colWidth="date">
+        <col svuiColWidth colWidth="text-large">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth colWidth="options">
+      </colgroup>
+
+      <thead>
+      <!-- Headers for sorting -->
+      <tr>
+        <th
+          (sort)="notizenTable.onColSort($event, 'entityInfo.timestampErstellt')"
+          [sortState]="notizenTable.findColSortDTO('entityInfo.timestampErstellt')"
+          scope="col"
+          svuiSortable
+        >
+          {{ 'notizen.list.erstelltAm' | transloco }}
+        </th>
+        <th
+          (sort)="notizenTable.onColSort($event, 'data.titel')"
+          [sortState]="notizenTable.findColSortDTO('data.titel')"
+          scope="col"
+          svuiSortable
+        >
+          {{ 'notizen.list.titel' | transloco }}
+        </th>
+        <th
+          (sort)="notizenTable.onColSort($event, 'data.labels.data.name')"
+          [sortState]="notizenTable.findColSortDTO('data.labels.data.name')"
+          scope="col"
+          svuiSortable
+        >
+          {{ 'notizen.list.label' | transloco }}
+        </th>
+        <th
+          (sort)="notizenTable.onColSort($event, 'data.status')"
+          [sortState]="notizenTable.findColSortDTO('data.status')"
+          scope="col"
+          svuiSortable
+        >
+          {{ 'notizen.list.status' | transloco }}
+        </th>
+        <th
+          (sort)="notizenTable.onColSort($event, 'data.verantwortlicher.fullName')"
+          [sortState]="notizenTable.findColSortDTO('data.verantwortlicher.fullName')"
+          scope="col"
+          svuiSortable
+        >
+          {{ 'notizen.list.verantwortlichePerson' | transloco }}
+        </th>
+        <th scope="col"></th>
+      </tr>
+      <!-- Headers for filtering -->
+      <tr>
+        <th class="col-date" scope="col">
+          <svui-table-filter [columnHeader]="'notizen.list.erstelltAm' | transloco">
+            <input [formControl]="tableFilterForm.group.controls.erstelltAm" svuiTextInput="date"/>
+          </svui-table-filter>
+        </th>
+
+        <th class="col-text" scope="col">
+          <svui-table-filter [columnHeader]="'notizen.list.titel' | transloco">
+            <input [formControl]="tableFilterForm.group.controls.titel" svuiTextInput/>
+          </svui-table-filter>
+        </th>
+
+        <th class="col-multiselect" scope="col">
+          <svui-table-filter [columnHeader]="'notizen.list.label' | transloco">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [compareWith]="compareFnLabel"
+              [formControl]="tableFilterForm.group.controls.label"
+              [multiple]="true"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              @for (label of labelStore.notizenLabelsSorted(); track label.id) {
+                <ng-option [value]="label">
+                  {{ label.data.name |translatedStringPipe }}
+                </ng-option>
+              }
+            </ng-select>
+
+          </svui-table-filter>
+        </th>
+
+        <th class="col-multiselect" scope="col">
+          <svui-table-filter [columnHeader]="'notizen.list.status' | transloco">
+            <ng-select
+              [formControl]="tableFilterForm.group.controls.status"
+              [multiple]="true"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+              appendTo="body"
+              bindLabel='dummy'
+              svuiNgSelect
+            >
+              @for (status of notizStatus; track status) {
+                <ng-option [value]="status">
+                  {{ 'NotizStatus.' + status | transloco }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+        <th class="col-multiselect" scope="col">
+          <svui-table-filter [columnHeader]="'notizen.list.verantwortlichePerson' | transloco">
+            <ng-select
+
+              [formControl]="tableFilterForm.group.controls.verantwortlichePerson"
+              [multiple]="true"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+              appendTo="body"
+              bindLabel='dummy'
+              svuiNgSelect
+            >
+              @for (each of benutzerOptionsStore.entities(); track each.id; let index = $index) {
+                <ng-option [value]="each.id">
+                  {{ each.fullName }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+
+      <tbody>
+        @for (item of notizenTable.displayedList(); track item.id) {
+          <tr>
+            <td>{{ item.entityInfo.timestampErstellt | date: 'dd.MM.yyyy' }}</td>
+            <td>
+              <button class="nav-link fw-bold"
+                      (click)="goToNotiz.emit(item.id)">
+                {{ item.data.titel }}
+              </button>
+            </td>
+            <td>
+              @for (label of item.data.labels; track label.id) {
+                <svui-badge class="me-1"> {{ label.data.name | translatedStringPipe }}</svui-badge>
+              }
+            </td>
+            <td>{{ 'NotizStatus.' + item.data.status | transloco }}</td>
+            <td>{{ item.data.verantwortlicher.fullName }}</td>
+            <td>
+              <svui-collapsible-menu
+                [loading]="deleteLoading()"
+                label="{{ 'global.actionmenu.tooltip' | transloco }}"
+              >
+                <button [disabled]="!canEditNotiz()"
+                        ngbDropdownItem
+                        (click)="checkRemoveItem(item.id)">{{ 'global.remove' | transloco }}
+                </button>
+              </svui-collapsible-menu>
+            </td>
+          </tr>
+        } @empty {
+          <tr svui-empty-table-message [message]="'notizen.list.empty' | transloco"></tr>
+        }
+
+      </tbody>
+    </table>
+  }
+</svui-card>

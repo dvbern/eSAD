@@ -1,0 +1,8 @@
+// List Color Set
+
+@use './definition/color-definition';
+
+$text-secondary: color-definition.$text-inactive;
+$text-muted: color-definition.$text-disabled;
+$background-disabled: color-definition.$background-disabled;
+$background-badge-disabled: color-definition.$blue-100;

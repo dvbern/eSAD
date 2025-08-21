@@ -1,0 +1,62 @@
+@use 'bootstrap/scss/mixins/text-truncate' as bootstrap;
+@use '../../../../styles/core/border';
+@use '../../../../styles/core/font';
+@use '../../../../styles/core/layout';
+@use '../../../../styles/core/radius';
+@use '../../../../styles/core/size';
+@use '../../../../styles/core/spacing';
+
+:host {
+  margin-bottom: 0;
+
+  table-layout: auto;
+  // auto: schaut auch auf den Inhalt, deshalb kann man z.B. Datums-spalten nicht richtig klein machen, wenn der datepicker sich vergrössert. Nicht umbrechbarer Inhalt verbreitert die Zelle.
+
+  //table-layout: fixed;
+  // fixed: der Inhalt zaehlt nicht, nur die expliziten Breiten auf den ths. Kann Inhalt stauchen, nicht umbrechbarer Inhalt ragt aus der Zelle raus.
+
+
+  ::ng-deep {
+    tbody:first-child,
+    thead:empty + tbody {
+      // table without header
+      border-top: border.$default;
+    }
+
+    th,
+    td {
+      // all cells
+      min-height: size.$table-row-height;
+      vertical-align: middle;
+      font-size: font.value('table', size);
+
+      &.svui_col--input {
+        min-width: size.$table-inputs;
+      }
+
+      &:first-child {
+        padding-left: spacing.$table-cell-left;
+      }
+      &:last-child {
+        padding-right: spacing.$table-cell-left;
+        text-align: end;
+      }
+    }
+
+    td {
+      $-width-content: 1%;
+
+      &:last-child:has(.svui_icon-button--table-row-action) {
+        width: $-width-content;
+
+        // if cell has any icon buttons, prevent wrapping
+        white-space: nowrap;
+      }
+
+      &:has(svui-icon-with-tooltip:only-child) {
+        width: $-width-content;
+        padding-inline: spacing.$base;
+      }
+    }
+  }
+}

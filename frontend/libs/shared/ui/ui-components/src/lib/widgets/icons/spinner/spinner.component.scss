@@ -1,0 +1,20 @@
+@use '../../../../styles/core/size';
+@use '../../../../styles/core/spacing';
+
+:host {
+  display: inline;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.svui_spinner {
+  font-size: inherit;
+  color: inherit;
+
+  &--table {
+    font-size: size.$loading-spinner-table;
+    margin-left: spacing.$card-inner;
+  }
+}

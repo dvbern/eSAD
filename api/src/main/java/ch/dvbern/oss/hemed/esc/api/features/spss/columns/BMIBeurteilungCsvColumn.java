@@ -1,0 +1,40 @@
+package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
+
+import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.PerzentileBmi;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+public class BMIBeurteilungCsvColumn extends AbstractCsvColumn {
+
+    public BMIBeurteilungCsvColumn(
+        @NonNull CsvColumnConfig config,
+        @Nullable String overrideHeader) {
+        super(config, overrideHeader);
+    }
+
+    @Override
+    @NonNull
+    public String extract(@NonNull Einladung einladung) {
+        return ExtractorForCsvUtil.extractUntersuchungGroesseGewicht(
+            einladung,
+            untersuchungGroesseGewicht -> {
+                if (untersuchungGroesseGewicht.getBmiPerzentile() == null) {
+                    return "";
+                }
+                return switch (untersuchungGroesseGewicht.getBmiPerzentile()) {
+                    case PerzentileBmi.NORMAL -> "1";
+                    case PerzentileBmi.PERZENTILE_TIEF -> "2";
+                    case PerzentileBmi.PERZENTILE_HOCH -> "3";
+                    case PerzentileBmi.NICHT_GEPRUEFT -> "4";
+                };
+            }
+        );
+    }
+
+    @Override
+    @NonNull
+    protected String getDefaultHeaderKey() {
+        return "CsvColumn.bmiBeurteilung";
+    }
+}

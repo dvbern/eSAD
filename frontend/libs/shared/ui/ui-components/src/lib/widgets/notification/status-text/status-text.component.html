@@ -1,0 +1,16 @@
+@if (hasClickOutput()) {
+  <button (click)="clickAction.emit()" class="statustext__wrapper statustext__clickable" [class]="statusColor()">
+    <ng-container *ngTemplateOutlet="baseContent"/>
+  </button>
+} @else {
+  <div class="statustext__wrapper" [class]="statusColor()">
+    <ng-container *ngTemplateOutlet="baseContent"/>
+  </div>
+}
+
+<ng-template #baseContent>
+  <div class="statustext__content px-3 py-2">
+    <svui-icon [useCase]="icon()" class="icon me-1"></svui-icon>
+    <ng-content/>
+  </div>
+</ng-template>

@@ -1,0 +1,12 @@
+<div class="fachrolle-container">
+  <div class="fachrolle-layout">
+    <strong class="fachrolle-label">
+      {{ 'shared.header.menu.fachrolle' | transloco }}:
+    </strong>
+    <div class="fachrolle-badges">
+      @for (rolle of rollen(); track rolle) {
+        <span class="badge bg-secondary fachrolle-badge border">{{ ('benutzer.list.fachRolle.' + rolle) | transloco }}</span>
+      }
+    </div>
+  </div>
+</div>

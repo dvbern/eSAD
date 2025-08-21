@@ -1,0 +1,122 @@
+package ch.dvbern.oss.hemed.esc.api.features.anlass;
+
+import java.io.Serial;
+
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArzt;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.hibernate.envers.Audited;
+
+@Entity
+@Table(
+    indexes = {
+        @Index(name = "ix_untersuchung_untersuchungkinddaten", columnList = "untersuchungkinddaten_id, id"),
+        @Index(name = "ix_untersuchung_untersuchungdurchfuehrung", columnList = "untersuchungdurchfuehrung_id, id"),
+        @Index(name = "ix_untersuchung_untersuchungtriage", columnList = "untersuchungtriage_id, id"),
+        @Index(name = "ix_untersuchung_untersuchungimpfungen", columnList = "untersuchungimpfungen_id, id"),
+        @Index(name = "ix_untersuchung_untersuchungsehen", columnList = "untersuchungsehen_id, id"),
+        @Index(name = "ix_untersuchung_untersuchunghoerenaudiogramm",
+            columnList = "untersuchunghoerenaudiogramm_id, id"),
+        @Index(name = "ix_untersuchung_untersuchunghoerenotoskopie", columnList = "untersuchunghoerenotoskopie_id, id"),
+        @Index(name = "ix_untersuchung_untersuchungmassnahmen", columnList = "untersuchungmassnahmen_id, id"),
+        @Index(name = "ix_untersuchung_untersuchunggroessegewicht", columnList = "untersuchunggroessegewicht_id, id"),
+        @Index(name = "ix_untersuchung_untersuchungarzt", columnList = "untersuchungarzt_id, id"),
+    }
+)
+@Audited
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class Untersuchung extends AbstractTenantEntity<Untersuchung> {
+
+    @Serial
+    private static final long serialVersionUID = 7816034792129549030L;
+
+    @NotNull
+    @NonNull
+    @OneToOne(optional = false, mappedBy = "untersuchung")
+    private Einladung einladung;
+
+    /**
+     * This stores data related to the person that is untersucht
+     */
+    @Nullable // Die Untersuchungsdaten werden beim Abschluss des Anlasses aus dem Kind einmalig abgefüllt
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungkinddaten"), nullable = true)
+    private UntersuchungKindDaten untersuchungKindDaten;
+
+    /**
+     * This stores the 'meta' data related to the untersuchung
+     */
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungdurchfuehrung"), nullable = true)
+    private UntersuchungDurchfuehrung untersuchungDurchfuehrung;
+
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungtriage"), nullable = true)
+    private UntersuchungTriage untersuchungTriage;
+
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungimpfungen"), nullable = true)
+    private UntersuchungImpfungen untersuchungImpfungen;
+
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungsehen"), nullable = true)
+    private UntersuchungSehen untersuchungSehen;
+
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchunghoerenaudiogramm"), nullable = true)
+    private UntersuchungHoerenAudiogramm untersuchungHoerenAudiogramm;
+
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchunghoerenotoskopie"), nullable = true)
+    private UntersuchungHoerenOtoskopie untersuchungHoerenOtoskopie;
+
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungmassnahmen"), nullable = true)
+    private UntersuchungMassnahmen untersuchungMassnahmen;
+
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchunggroessegewicht"), nullable = true)
+    private UntersuchungGroesseGewicht untersuchungGroesseGewicht;
+
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungarzt"), nullable = true)
+    private UntersuchungArzt untersuchungArzt;
+
+    @NonNull
+    public static Untersuchung forEinladung(@NonNull Einladung einladung) {
+        Untersuchung untersuchung = new Untersuchung();
+        untersuchung.setEinladung(einladung);
+        einladung.setUntersuchung(untersuchung);
+        return untersuchung;
+    }
+}

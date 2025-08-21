@@ -1,0 +1,139 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="hefr (generated)" id="1747928324545-1">
+        <createTable tableName="untersuchungimpfungenmassnahmen">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungimpfungenmassnahmenPK"/>
+            </column>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usererstellt" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usermutiert" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tenant" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bemerkungen" type="VARCHAR(2000)"/>
+            <column name="impfberatungmpadurchgefuehrt" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="impfberatungmpadurchgefuehrtbemerkungen" type="VARCHAR(2000)"/>
+            <column name="informationeltern" type="VARCHAR(30)"/>
+            <column name="informationhausarzt" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="keinemassnahmen" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rueckfragehausarzt" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="vormerkenfuergruppenfolgetermin" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="aufgabeinformationeltern_id" type="UUID"/>
+            <column name="aufgabeinformationhausarzt_id" type="UUID"/>
+            <column name="aufgaberueckfragehausarzt_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747928324545-2">
+        <createTable tableName="untersuchungimpfungenmassnahmen_aud">
+            <column name="id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="usererstellt" type="VARCHAR(255)"/>
+            <column name="usermutiert" type="VARCHAR(255)"/>
+            <column name="bemerkungen" type="VARCHAR(2000)"/>
+            <column name="impfberatungmpadurchgefuehrt" type="BOOLEAN"/>
+            <column name="impfberatungmpadurchgefuehrtbemerkungen" type="VARCHAR(2000)"/>
+            <column name="informationeltern" type="VARCHAR(30)"/>
+            <column name="informationhausarzt" type="BOOLEAN"/>
+            <column name="keinemassnahmen" type="BOOLEAN"/>
+            <column name="rueckfragehausarzt" type="BOOLEAN"/>
+            <column name="vormerkenfuergruppenfolgetermin" type="BOOLEAN"/>
+            <column name="aufgabeinformationeltern_id" type="UUID"/>
+            <column name="aufgabeinformationhausarzt_id" type="UUID"/>
+            <column name="aufgaberueckfragehausarzt_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747928324545-3">
+        <addColumn tableName="untersuchungimpfungen">
+            <column name="untersuchungimpfungenmassnahmen_id" type="UUID"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747928324545-4">
+        <addColumn tableName="untersuchungimpfungen_aud">
+            <column name="untersuchungimpfungenmassnahmen_id" type="UUID"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747928324545-5">
+        <addPrimaryKey columnNames="rev, id" constraintName="untersuchungimpfungenmassnahmen_audPK" tableName="untersuchungimpfungenmassnahmen_aud"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747928324545-6">
+        <addUniqueConstraint columnNames="aufgabeinformationeltern_id" constraintName="UC_UNTERSUCHUNGIMPFUNGENMASSNAHMENAUFGABEINFORMATIONELTERN_ID_C" tableName="untersuchungimpfungenmassnahmen"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747928324545-7">
+        <addUniqueConstraint columnNames="aufgabeinformationhausarzt_id" constraintName="UC_UNTERSUCHUNGIMPFUNGENMASSNAHMENAUFGABEINFORMATIONHAUSARZT_ID" tableName="untersuchungimpfungenmassnahmen"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747928324545-8">
+        <addUniqueConstraint columnNames="aufgaberueckfragehausarzt_id" constraintName="UC_UNTERSUCHUNGIMPFUNGENMASSNAHMENAUFGABERUECKFRAGEHAUSARZT_ID_" tableName="untersuchungimpfungenmassnahmen"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747928324545-9">
+        <addUniqueConstraint columnNames="untersuchungimpfungenmassnahmen_id" constraintName="UC_UNTERSUCHUNGIMPFUNGENUNTERSUCHUNGIMPFUNGENMASSNAHMEN_ID_COL" tableName="untersuchungimpfungen"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747928324545-10">
+        <createIndex indexName="ix_untersuchungimpfungen_untersuchungimpfungenmassnahmen" tableName="untersuchungimpfungen">
+            <column name="untersuchungimpfungenmassnahmen_id"/>
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747928324545-11">
+        <createIndex indexName="ix_untersuchungimpfungenmassnahmen_aufgabe_informationeltern" tableName="untersuchungimpfungenmassnahmen">
+            <column name="aufgabeinformationeltern_id"/>
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747928324545-12">
+        <createIndex indexName="ix_untersuchungimpfungenmassnahmen_aufgabe_informationhausarzt" tableName="untersuchungimpfungenmassnahmen">
+            <column name="aufgabeinformationhausarzt_id"/>
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747928324545-13">
+        <createIndex indexName="ix_untersuchungimpfungenmassnahmen_aufgabe_rueckfragehausarzt" tableName="untersuchungimpfungenmassnahmen">
+            <column name="aufgaberueckfragehausarzt_id"/>
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747928324545-14">
+        <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungimpfungenmassnahmen_aud" constraintName="FKf5yyn9qsir5dcvdss3g9d9fiv" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747928324545-15">
+        <addForeignKeyConstraint baseColumnNames="untersuchungimpfungenmassnahmen_id" baseTableName="untersuchungimpfungen" constraintName="fk_untersuchungimpfungen_untersuchungimpfungenmassnahmen" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungimpfungenmassnahmen" validate="true"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747928324545-16">
+        <addForeignKeyConstraint baseColumnNames="aufgabeinformationeltern_id" baseTableName="untersuchungimpfungenmassnahmen" constraintName="fk_untersuchungimpfungenmassnahmen_aufgabe_informationeltern" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="aufgabe" validate="true"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747928324545-17">
+        <addForeignKeyConstraint baseColumnNames="aufgabeinformationhausarzt_id" baseTableName="untersuchungimpfungenmassnahmen" constraintName="fk_untersuchungimpfungenmassnahmen_aufgabe_informationhausarzt" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="aufgabe" validate="true"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1747928324545-18">
+        <addForeignKeyConstraint baseColumnNames="aufgaberueckfragehausarzt_id" baseTableName="untersuchungimpfungenmassnahmen" constraintName="fk_untersuchungimpfungenmassnahmen_aufgabe_rueckfragehausarzt" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="aufgabe" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

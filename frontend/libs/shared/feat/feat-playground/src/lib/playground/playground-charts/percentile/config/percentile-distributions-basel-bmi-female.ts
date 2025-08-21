@@ -1,0 +1,139 @@
+import {PercentileAxisSettings, PercentileDistribution, PercentilePartialSettings} from '@dvb/viz';
+
+// TODO ESC-227 diese Werte sollten vom Backend kommen
+
+export const BaselBmiMaedchenDistribution: PercentileDistribution = {
+  gender: 'female',
+  lines: [
+    {
+      id: 'bmifemaleP3',
+      percentile: 3,
+      type: 'bottom',
+      data: [
+        {x: 2, y: 13.5},
+        {x: 4, y: 12.95},
+        {x: 6, y: 13},
+        {x: 11, y: 14},
+        {x: 16, y: 16.4},
+        {x: 18, y: 16.7},
+      ],
+    },
+    {
+      id: 'bmifemaleP10',
+      percentile: 10,
+      type: 'sub',
+      data: [
+        {x: 2, y: 14.1},
+        {x: 4, y: 13.65},
+        {x: 6, y: 13.5},
+        {x: 11, y: 14.9},
+        {x: 16, y: 17.6},
+        {x: 18, y: 17.9},
+      ],
+    },
+    {
+      id: 'bmifemaleP25',
+      percentile: 25,
+      type: 'sub',
+      data: [
+        {x: 2, y: 14.85},
+        {x: 4, y: 14.4},
+        {x: 6, y: 14.3},
+        {x: 11, y: 15.9},
+        {x: 16, y: 18.9},
+        {x: 18, y: 19.4},
+      ],
+    },
+    {
+      id: 'bmifemaleP50',
+      percentile: 50,
+      type: 'main',
+      data: [
+        {x: 2, y: 15.7},
+        {x: 4, y: 15.25},
+        {x: 6, y: 15.3},
+        {x: 11, y: 17.2},
+        {x: 16, y: 20.7},
+        {x: 18, y: 21.2},
+      ],
+    },
+    {
+      id: 'bmifemaleP75',
+      percentile: 75,
+      type: 'sub',
+      data: [
+        {x: 2, y: 16.65},
+        {x: 4, y: 16.25},
+        {x: 6, y: 16.4},
+        {x: 11, y: 18.9},
+        {x: 16, y: 22.9},
+        {x: 18, y: 23.5},
+      ],
+    },
+    {
+      id: 'bmifemaleP90',
+      percentile: 90,
+      type: 'sub',
+      data: [
+        {x: 2, y: 17.6},
+        {x: 4, y: 17.2},
+        {x: 6, y: 17.6},
+        {x: 11, y: 20.8},
+        {x: 16, y: 25.2},
+        {x: 18, y: 25.9},
+      ],
+    },
+    {
+      id: 'bmifemaleP97',
+      percentile: 97,
+      type: 'top',
+      data: [
+        {x: 2, y: 18.55},
+        {x: 3, y: 18.2},
+        {x: 6, y: 18.9},
+        {x: 11, y: 23.1},
+        {x: 16, y: 28.2},
+        {x: 18, y: 28.85},
+      ],
+    },
+    {
+      id: 'bmifemaleP995',
+      percentile: 99.5,
+      type: 'sub',
+      data: [
+        {x: 2, y: 19.8},
+        {x: 3, y: 19.5},
+        {x: 6, y: 20.8},
+        {x: 11, y: 27},
+        {x: 16, y: 32.6},
+        {x: 18, y: 33.1},
+      ],
+    },
+  ],
+};
+
+const AxisAlter: PercentileAxisSettings = {
+  title: 'Alter',
+  unit: 'Jahre',
+  unitPrefix: '',
+  unitPostfix: ' J.',
+  interval: 1,
+  min: 2,
+  max: 18,
+};
+const AxisBmi: PercentileAxisSettings = {
+  title: 'BMI',
+  unit: 'kg/m²',
+  unitPrefix: 'BMI ',
+  unitPostfix: '',
+  interval: 1,
+  min: 12,
+  max: 34,
+  valueDecimalPlaces: 1,
+};
+
+export const BaselBmiMaedchenSettings: PercentilePartialSettings = {
+  colors: {},
+  xAxis: AxisAlter,
+  yAxis: AxisBmi,
+};

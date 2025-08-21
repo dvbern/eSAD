@@ -1,0 +1,22 @@
+<div class="svui_check form-check" [class.svui_check--view-mode]="!isEditMode()">
+  <ng-content/>
+
+  @if (isEditMode()) {
+    <label [for]="id" class="form-check-label">
+      {{ label() }}
+
+      @if (required) {
+        <!--FIXME(zusa) funktioniert nicht bei single checkbox -->
+        <svui-required/>
+      }
+    </label>
+
+  } @else {
+    <span class="svui_check__view-mode form-check-label">
+      <span class="svui_check__view-mode__label">{{ label() }}</span>
+
+      <span class="svui_check__view-mode--true">{{ 'global.ja' | transloco }}</span>
+      <span class="svui_check__view-mode--false">{{ 'global.nein' | transloco }}</span>
+    </span>
+  }
+</div>

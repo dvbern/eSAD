@@ -1,0 +1,22 @@
+
+/*
+
+these styles are needed for the d3.js charts, otherwise the fonts do not work if they are not locally installed.
+
+usage:
+this.chartArea.append('defs')
+            .append('style')
+            .attr('type', 'text/css')
+            .text('@import url("viz-styles.css");')
+
+in order to be available to be included in the chart, it must be included in project.json:
+					{
+                        "input": "apps/mik/src/viz-styles.scss",
+                        "inject": false,
+                        "bundleName": "viz-styles"
+                    },
+
+ */
+
+// Typography
+@use 'styles/fonts';

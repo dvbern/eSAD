@@ -1,0 +1,47 @@
+// Bootstrap Component Overrides
+
+@use '../core/color/definition/color-definition';
+@use 'sass:color';
+
+.btn.btn-outline-primary {
+  border-width: 1px;
+}
+
+.btn.btn-primary:hover {
+  background-color: color-definition.$primary-button-hover;
+  color: color-definition.$text;
+}
+.btn.btn-primary:active {
+  background-color: color.scale(color-definition.$primary-button-hover, $lightness: -20%);
+}
+
+.btn.btn-secondary:hover {
+  background-color: color-definition.$secondary-button-hover;
+}
+.btn.btn-secondary:active {
+  background-color: color.scale(color-definition.$secondary-button-hover, $lightness: -20%);
+}
+
+.btn.btn-outline-primary:hover,
+.btn.btn-outline-primary:active {
+  background-color: color-definition.$primary-button-hover;
+  border-color: color-definition.$primary-button-hover;
+  color: color-definition.$text;
+}
+
+.btn.btn-outline-primary:active {
+  background-color: color.scale(color-definition.$primary-button-hover, $lightness: -20%);
+  border-color: color.scale(color-definition.$primary-button-hover, $lightness: -20%);
+}
+
+.btn.btn-success,
+.btn.btn-success:active,
+.btn.btn-success:hover {
+  color: color-definition.$grey-100;
+}
+
+.btn.btn-danger,
+.btn.btn-danger:active,
+.btn.btn-danger:hover {
+  color: color-definition.$grey-100;
+}

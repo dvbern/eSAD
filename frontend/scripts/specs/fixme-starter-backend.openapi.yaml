@@ -1,0 +1,233 @@
+---
+openapi: 3.0.3
+info:
+  title: myproject-mymodule API
+  version: 1.0.0-SNAPSHOT
+servers:
+  - url: https://local-esc-bs.localhost:8443
+    description: Auto generated value
+tags:
+  - name: Client-Config
+  - name: Example-Food
+  - name: Example-Logging
+paths:
+  /api/benutzer/example:
+    post:
+      tags:
+        - Example-Food
+      operationId: BenutzerExampleResource_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestingParamsJson"
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      security:
+        - Keycloak: [ ]
+  /api/benutzer/example/error:
+    get:
+      tags:
+        - Example-Food
+      operationId: BenutzerExampleResource_error
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TestingResponseJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      security:
+        - Keycloak: [ ]
+  /api/example:
+    post:
+      tags:
+        - Example-Food
+      operationId: ExampleResource_createExample
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateExampleJson"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExampleJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      security:
+        - Keycloak: [ ]
+  /api/example/logging:
+    get:
+      tags:
+        - Example-Logging
+      operationId: ExampleLoggingResource_log
+      parameters:
+        - name: message
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+  /api/pub/client-config/deployment:
+    get:
+      tags:
+        - Client-Config
+      operationId: ClientConfigResource_deployment
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientDeploymentConfigJson"
+components:
+  schemas:
+    ClientAuthConfigJson:
+      required:
+        - clientId
+        - realm
+        - authUrl
+      type: object
+      properties:
+        clientId:
+          minLength: 1
+          type: string
+        realm:
+          minLength: 1
+          type: string
+        authUrl:
+          $ref: "#/components/schemas/URLSchema"
+    ClientDeploymentConfigJson:
+      required:
+        - environment
+        - version
+        - publicUrl
+        - clientAuthConfig
+      type: object
+      properties:
+        environment:
+          $ref: "#/components/schemas/DeploymentEnvironment"
+        version:
+          $ref: "#/components/schemas/SemverSchema"
+        publicUrl:
+          $ref: "#/components/schemas/URLSchema"
+        clientAuthConfig:
+          $ref: "#/components/schemas/ClientAuthConfigJson"
+    CreateExampleJson:
+      required:
+        - phoneNumber
+      type: object
+      properties:
+        example:
+          type: string
+        email:
+          $ref: "#/components/schemas/EmailAddress"
+        phoneNumber:
+          $ref: "#/components/schemas/NormalizedPhoneNumber"
+    DbNumber:
+      format: number-precise
+      type: number
+    DeploymentEnvironment:
+      enum:
+        - LOCAL
+        - UNIT_TEST
+        - DEV
+        - REVIEW
+        - IAT
+        - UAT
+        - DEMO
+        - PROD
+      type: string
+    EmailAddress:
+      format: email
+      type: string
+    ExampleJson:
+      required:
+        - phoneNumber
+      type: object
+      properties:
+        example:
+          type: string
+        email:
+          $ref: "#/components/schemas/EmailAddress"
+        phoneNumber:
+          $ref: "#/components/schemas/NormalizedPhoneNumber"
+    FrankenEiner:
+      type: number
+    FrankenFuenfer:
+      type: number
+    GanzZahl:
+      type: integer
+    ID:
+      format: entity-id
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      type: string
+      example: 11111111-1111-1111-1111-111111111111
+    IDBenutzer:
+      format: entity-id
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      type: string
+      example: 11111111-1111-1111-1111-111111111111
+    NormalizedPhoneNumber:
+      format: phone-number
+      type: string
+    SemverSchema:
+      format: semantic-version
+      type: string
+    TestingParamsJson:
+      required:
+        - email
+      type: object
+      properties:
+        email:
+          $ref: "#/components/schemas/EmailAddress"
+        vorname:
+          type: string
+        nachname:
+          type: string
+        nested:
+          $ref: "#/components/schemas/TestingParamsJson"
+    TestingResponseJson:
+      required:
+        - id
+        - email
+        - publicURL
+        - environment
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/IDBenutzer"
+        email:
+          $ref: "#/components/schemas/EmailAddress"
+        publicURL:
+          $ref: "#/components/schemas/URLSchema"
+        environment:
+          $ref: "#/components/schemas/DeploymentEnvironment"
+    URLSchema:
+      format: url
+      type: string
+    Zahl:
+      format: number-zahl
+      type: number
+  securitySchemes:
+    Keycloak:
+      type: http
+      description: Authentication
+      scheme: bearer
+      bearerFormat: JWT

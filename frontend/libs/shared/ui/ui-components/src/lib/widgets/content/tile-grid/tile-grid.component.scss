@@ -1,0 +1,41 @@
+@use '../../../../styles/core/border';
+@use '../../../../styles/core/color/color-set-tile';
+@use '../../../../styles/core/radius';
+@use '../../../../styles/core/size';
+@use '../../../../styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.svui_tile-grid {
+  display: grid;
+
+  // minmax(0, 1fr) to avoid the columns to become bigger when their content is big
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+  // grid border
+  $-border: border.$width-default;
+  $-radius: radius.$base;
+
+  background-color: color-set-tile.$border;
+  grid-column-gap: $-border;
+  grid-row-gap: $-border;
+  padding-top: $-border;
+
+  // radius on last tiles
+  border-bottom-right-radius: $-radius;
+  border-bottom-left-radius: $-radius;
+
+  > ::ng-deep svui-tile {
+    background-color: color-set-tile.$background;
+
+    &:nth-last-child(2) {
+      border-bottom-left-radius: $-radius;
+    }
+
+    &:last-child {
+      border-bottom-right-radius: $-radius;
+    }
+  }
+}

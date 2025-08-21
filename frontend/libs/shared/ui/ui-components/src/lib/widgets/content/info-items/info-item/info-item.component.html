@@ -1,0 +1,13 @@
+<div class="svui_info">
+  @if (label()) {
+    <label class="svui_info__label" [for]="id">{{ label() }}</label>
+  }
+
+  <output class="svui_info__item" [attr.id]="label() ? id : undefined">
+    <ng-content />
+  </output>
+
+  @if (count()) {
+    <span class="svui_info__count">{{ count() }}</span>
+  }
+</div>

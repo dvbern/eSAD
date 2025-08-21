@@ -1,0 +1,107 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="dvbern (generated)" id="1743769702838-1">
+    <createTable tableName="documentqueue">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="documentqueuePK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="errorcount" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="language" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="lasterror" type="VARCHAR(32768)"/>
+      <column name="parameters" type="VARCHAR(32768)"/>
+      <column name="status" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampresult" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="type" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="benutzer_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="result_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1743769702838-2">
+    <createTable tableName="documentqueue_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="errorcount" type="INTEGER"/>
+      <column name="language" type="VARCHAR(30)"/>
+      <column name="lasterror" type="VARCHAR(32768)"/>
+      <column name="parameters" type="VARCHAR(32768)"/>
+      <column name="status" type="VARCHAR(30)"/>
+      <column name="timestampresult" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="type" type="VARCHAR(30)"/>
+      <column name="benutzer_id" type="UUID"/>
+      <column name="result_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1743769702838-3">
+    <addPrimaryKey columnNames="rev, id" constraintName="documentqueue_audPK" tableName="documentqueue_aud"/>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1743769702838-4">
+    <addUniqueConstraint columnNames="result_id" constraintName="UC_DOCUMENTQUEUERESULT_ID_COL" tableName="documentqueue"/>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1743769702838-5">
+    <createIndex indexName="ix_documentqueue_benutzer" tableName="documentqueue">
+      <column name="benutzer_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1743769702838-6">
+    <createIndex indexName="ix_documentqueue_filedata" tableName="documentqueue">
+      <column name="result_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1743769702838-7">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="documentqueue_aud" constraintName="FKqr448ptyxw6by45gdsuetosb" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1743769702838-8">
+    <addForeignKeyConstraint baseColumnNames="benutzer_id" baseTableName="documentqueue" constraintName="fk_documentqueue_benutzer" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1743769702838-9">
+    <addForeignKeyConstraint baseColumnNames="result_id" baseTableName="documentqueue" constraintName="fk_documentqueue_filedata" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="filedata" validate="true"/>
+  </changeSet>
+  <!--add config for scheduler-->
+  <changeSet id="1742779407226-1" author="Yanic Dobler">
+    <sql>
+      INSERT INTO schedulerconfig (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant,
+                                   batchsize, disabled, schedulertyp)
+      VALUES ('11111111-6666-1111-1111-111111111103', current_timestamp, current_timestamp, 'liquibase', 'liquibase', 0, 'BS',
+              100, true, 'DOCUMENT_QUEUE');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

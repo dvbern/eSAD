@@ -1,0 +1,239 @@
+<feat-page [heading]="'kinder.list.page.title' | transloco">
+
+  <svui-page-header-list-summary [items]="summaryItems()"/>
+
+  <svui-page-header-buttons
+    [showFilterPopup]="true"
+    [activeFilterCount]="itemTable.numberOfFilters() + kinderSummaryStore.manualErweiterteFilterCount()"
+    [activeErweiterteFilterCount]="kinderSummaryStore.manualErweiterteFilterCount()"
+    (resetFilter)="itemTable.resetFilters(); tableFilterForm.reset(); kinderSummaryStore.resetErweiterteFilter()"
+    (filter)="openFilter()"
+  />
+
+  @if (canEditKind()) {
+    <svui-page-header-add-button [addRouterLink]="Path.CREATE"/>
+  }
+
+  <svui-card [innerSpacing]="'topBottom'">
+    <table
+      svuiTable
+      [loading]="kinderSummaryStore.loader.isLoading()"
+      [totalRows]="itemTable.filteredListSize()"
+      (pageChanged)="itemTable.onPageChanged($event)"
+      [pagination]="itemTable.pagination()"
+      [tableConfig]="itemTable.tableConfig"
+      [loadedRowCount]="kinderSummaryStore.loadedRowCount()"
+      [lastLoadedPage]="itemTable.lastLoadedPage()"
+    >
+      <!-- col widths -->
+      <colgroup>
+        <col svuiColWidth [colWidth]="'text-small'">
+        <col svuiColWidth [colWidth]="'text-small'">
+        <col svuiColWidth [colWidth]="'date'">
+        <col svuiColWidth [colWidth]="'select-small'">
+        <col svuiColWidth [colWidth]="'text-small'">
+        <col svuiColWidth [colWidth]="'text-small'">
+        <col svuiColWidth [colWidth]="'select-small'">
+        <col svuiColWidth [colWidth]="'text-small'">
+        <col svuiColWidth [colWidth]="'options'">
+      </colgroup>
+      <thead>
+      <!-- Headers for sorting -->
+      <tr>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('name')"
+          (sort)="itemTable.onColSort($event, 'name')"
+        >
+          {{ 'kind.name' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('vorname')"
+          (sort)="itemTable.onColSort($event, 'vorname')"
+        >
+          {{ 'kind.vorname' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('geburtsdatum')"
+          (sort)="itemTable.onColSort($event, 'geburtsdatum')"
+        >
+          {{ 'kind.geburtsdatum' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('geschlecht')"
+          (sort)="itemTable.onColSort($event, 'geschlecht')"
+        >
+          {{ 'kind.geschlecht' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('schule.bezeichnung')"
+          (sort)="itemTable.onColSort($event, 'schule.bezeichnung')"
+        >
+          {{ 'kind.schule' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('klasse.bezeichnung')"
+          (sort)="itemTable.onColSort($event, 'klasse.bezeichnung')"
+        >
+          {{ 'kind.klasse' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('klassenStufe')"
+          (sort)="itemTable.onColSort($event, 'klassenStufe')"
+        >
+          {{ 'kind.klassenstufe' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('esadId')"
+          (sort)="itemTable.onColSort($event, 'esadId')"
+        >
+          {{ 'kind.esadId' | transloco }}
+        </th>
+        <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
+      </tr>
+      <!-- Headers for filtering-->
+      <tr>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'kind.name' | transloco">
+            <svui-input-with-icon
+              [useCase]="'information'"
+              [tooltip]="'kinder.list.name.search.info' | transloco"
+            >
+              <input svuiTextInput [formControl]="tableFilterForm.group.controls.name" class="input-field"/>
+            </svui-input-with-icon>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'kind.vorname' | transloco">
+            <svui-input-with-icon
+              [useCase]="'information'"
+              [tooltip]="'kinder.list.name.search.info' | transloco"
+            >
+              <input svuiTextInput [formControl]="tableFilterForm.group.controls.vorname" class="input-field"/>
+            </svui-input-with-icon>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'kind.geburtsdatum' | transloco">
+            <input svuiTextInput="date" [formControl]="tableFilterForm.group.controls.geburtsdatum"/>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'kind.geschlecht' | transloco">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.geschlecht"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              @for (geschlecht of geschlechter; track geschlecht) {
+                <ng-option [value]="geschlecht">
+                  {{ 'Geschlecht.' + geschlecht | transloco }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'kind.schule' | transloco">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.schule"
+              [multiple]="true"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              @for (schule of schuleOptions(); track schule.id) {
+                <ng-option [value]="schule.id">
+                  <a [title]="schule.bezeichnung">{{ schule.bezeichnung }}</a>
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'kind.klasse' | transloco">
+            <input svuiTextInput [formControl]="tableFilterForm.group.controls.klasse"/>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'kind.klassenstufe' | transloco">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.klassenstufe"
+              [multiple]="true"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco">
+              @for (stufe of klassenstufen; track stufe) {
+                <ng-option [value]="stufe">
+                  {{ 'Klassenstufe.' + stufe | transloco }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'kind.esadId' | transloco">
+            <input svuiTextInput [formControl]="tableFilterForm.group.controls.esadId"/>
+          </svui-table-filter>
+        </th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+
+      <tbody>
+        @if (!itemTable.displayedList()?.length && !kinderSummaryStore.loader.isLoading()) {
+          <tr svui-empty-table-message [message]="'kinder.list.empty' | transloco"></tr>
+        }
+        @for (item of itemTable.displayedList(); track item.id) {
+          <tr>
+            <td>
+              <svui-table-link
+                type="text"
+                [myRouterLink]="[item.id]">
+                {{ item.name }}
+              </svui-table-link>
+            </td>
+            <td>{{ item.vorname }}</td>
+            <td>{{ item.geburtsdatum | date: 'dd.MM.yyyy' }}</td>
+            <td>{{ 'Geschlecht.' + item.geschlecht | transloco }}</td>
+            <td>{{ item.schule?.bezeichnung }}</td>
+            <td>{{ item.klasse?.bezeichnung }}</td>
+            <td>{{ item.klassenStufe ? ('Klassenstufe.' + item.klassenStufe | transloco) : '' }}</td>
+            <td>{{ item.esadId }}</td>
+            <td>
+              @if (canEditKind()) {
+                <svui-collapsible-menu
+                  [loading]="false"
+                  label="{{ 'global.actionmenu.tooltip' | transloco }}">
+                  <button ngbDropdownItem
+                          (click)="changeKindAktivStatus(item)">{{ 'global.' + determineTextBasedOnStatus(item.kindAktivStatus) | transloco }}
+                  </button>
+                </svui-collapsible-menu>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </svui-card>
+
+</feat-page>

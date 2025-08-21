@@ -1,0 +1,10 @@
+<feat-page [heading]="'kind.dossier.aufgaben.titel' | transloco: {nameKind: dossierStore.nameKind()}"
+           [backLink]="{label: 'global.back' | transloco, routerLink: Path.RELATIVE_ONE_UP}">
+
+  @if (canEditAufgabe()) {
+    <svui-page-header-add-button
+      [addRouterLink]="Path.CREATE"/>
+  }
+
+	<feat-shared-aufgaben-list/>
+</feat-page>

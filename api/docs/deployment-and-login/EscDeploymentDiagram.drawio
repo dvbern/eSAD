@@ -1,0 +1,195 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36" version="27.2.0">
+  <diagram name="Page-1" id="jr8ty_rwcfo8QFyiV8ZO">
+    <mxGraphModel dx="3717" dy="2301" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="yJnInIFM5VS28ryroB-6-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" source="yJnInIFM5VS28ryroB-6-11" target="yJnInIFM5VS28ryroB-6-14" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="455" y="300" />
+              <mxPoint x="794" y="300" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="yJnInIFM5VS28ryroB-6-4" target="yJnInIFM5VS28ryroB-6-31" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.75;entryY=0;entryDx=0;entryDy=0;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" source="yJnInIFM5VS28ryroB-6-4" target="yJnInIFM5VS28ryroB-6-31" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-4" value="SÄD" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+          <mxGeometry x="435.63" y="-220" width="38.75" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" source="yJnInIFM5VS28ryroB-6-11" target="yJnInIFM5VS28ryroB-6-22" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-6" value="https" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="yJnInIFM5VS28ryroB-6-5" vertex="1" connectable="0">
+          <mxGeometry y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fillColor=#d5e8d4;strokeColor=#82b366;exitX=0.661;exitY=0.955;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.694;entryY=-0.012;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="yJnInIFM5VS28ryroB-6-11" target="yJnInIFM5VS28ryroB-6-16" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="489.95" y="180" as="sourcePoint" />
+            <mxPoint x="516.2500000000002" y="615" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-8" value="https" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="yJnInIFM5VS28ryroB-6-7" vertex="1" connectable="0">
+          <mxGeometry x="-0.7271" y="4" relative="1" as="geometry">
+            <mxPoint y="21" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" source="yJnInIFM5VS28ryroB-6-11" target="yJnInIFM5VS28ryroB-6-21" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="455" y="300" />
+              <mxPoint x="1230" y="300" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" source="yJnInIFM5VS28ryroB-6-11" target="yJnInIFM5VS28ryroB-6-23" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="455" y="300" />
+              <mxPoint x="710" y="300" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-11" value="" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="352.5" y="70" width="205" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-12" value="OpenShift (Kubernetes)" style="swimlane;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-50" y="460" width="1072.5" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-13" value="Webservice&amp;nbsp; mit Angular App&lt;br&gt;(Caddy)" style="rounded=1;whiteSpace=wrap;html=1;" parent="yJnInIFM5VS28ryroB-6-12" vertex="1">
+          <mxGeometry x="86.25" y="187" width="180" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-14" value="IAM System Keycloak &lt;br&gt;(eSchool)" style="rounded=1;whiteSpace=wrap;html=1;" parent="yJnInIFM5VS28ryroB-6-12" vertex="1">
+          <mxGeometry x="796.25" y="187" width="190" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-15" value="REST Api &lt;br&gt;(Quarkus)" style="rounded=1;whiteSpace=wrap;html=1;" parent="yJnInIFM5VS28ryroB-6-12" vertex="1">
+          <mxGeometry x="441.25" y="187" width="180" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-16" value="oAuth Proxy" style="rounded=1;whiteSpace=wrap;html=1;" parent="yJnInIFM5VS28ryroB-6-12" vertex="1">
+          <mxGeometry x="425" y="60" width="180" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fillColor=#e1d5e7;strokeColor=#9673a6;exitX=0.411;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="yJnInIFM5VS28ryroB-6-12" source="yJnInIFM5VS28ryroB-6-16" target="yJnInIFM5VS28ryroB-6-13" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="505" y="145" />
+              <mxPoint x="505" y="160" />
+              <mxPoint x="176" y="160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.654;entryY=-0.012;entryDx=0;entryDy=0;entryPerimeter=0;fillColor=#d5e8d4;strokeColor=#82b366;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" parent="yJnInIFM5VS28ryroB-6-12" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="527.9999999999998" y="145.00000000000023" as="sourcePoint" />
+            <mxPoint x="526.97" y="185.9799999999998" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" source="yJnInIFM5VS28ryroB-6-21" target="yJnInIFM5VS28ryroB-6-39" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-20" value="jdbc" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="yJnInIFM5VS28ryroB-6-19" vertex="1" connectable="0">
+          <mxGeometry x="0.025" y="3" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-21" value="Keycloak (vacme-web)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1140" y="620" width="179" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-22" value="Loadbalancer / WAF" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-345" y="340" width="1600" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-23" value="EntraId (Basel)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="650" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="yJnInIFM5VS28ryroB-6-25" target="yJnInIFM5VS28ryroB-6-28" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-25" value="Escada" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1070" y="117" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="yJnInIFM5VS28ryroB-6-27" target="yJnInIFM5VS28ryroB-6-28" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-27" value="Escada Service&lt;br&gt;(Basel)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="650" y="117" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-28" value="Escada Share" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="840" y="117" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.96;entryY=0.7;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="yJnInIFM5VS28ryroB-6-27" target="yJnInIFM5VS28ryroB-6-11" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" source="yJnInIFM5VS28ryroB-6-31" target="yJnInIFM5VS28ryroB-6-11" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-31" value="Browser" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="395.25" y="-55" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-32" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Typischer Loginprozess&lt;/h1&gt;&lt;p&gt;&lt;b&gt;A: Seite Laden&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;Der User navigiert mit seinem Browser auf die eSchool (esc) Website&lt;br&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;b&gt;B: Einloggen&lt;/b&gt;&lt;br&gt;Der OAuth Proxy erkennt dass der User kein gülgiges Logintoken&amp;nbsp; hat und beginnte den OIDC Flow indem sie den Browser umleitet zum IAM System Keycloak esc&lt;br&gt;B1: Keycloak esc erkennt, dass der User keine aktive LoginSession hat und redirected auf dem zentralen vacme-web Keycloak&lt;br&gt;B2: Der vacme-web Keycloak erkennt dass der User keine aktive Login Session hat und redirected auf die EntraId von Basel&lt;br&gt;B3: Im Browser wird dem User die Loginmaske von EntraID angezeigt falls er sich einloggen muss.&amp;nbsp;&lt;br&gt;B4: EntraId erstellt ein Logintoken und redirected zurück zum vacme-web Keycloak, dabei werden die Rollen als Attribut im Token mitgegeben&lt;br&gt;B5: Der vacme-web Keycloak mapped das Token von EntraId und redirected zurück zum Keycloak esc&amp;nbsp;&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;B6: Der Keycloak esc erstellt aus dem erhaltenen Token das definitive Logintoken und erstellt eine Usersession&lt;br&gt;B7: Der Keycloak esc redirected zurück auf die Applikation&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;b&gt;C: Daten vom REST Api laden&lt;/b&gt;&lt;br&gt;C1: Die esc Angular Applikation im Browser lädt die nötigen Daten zum darstellen der Seite aus dem REST API&lt;br&gt;C2: Das REST Api prueft das Logintoken und gibt die angefragten Daten zurück&lt;br&gt;C3: Das REST Api führt Fachlogik aus und liest/schreibt Daten in die Datenbank&lt;br&gt;&lt;br&gt;&lt;/span&gt;&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="-530" y="-90" width="870" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-33" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Escada Prozess&lt;/h1&gt;&lt;p&gt;&lt;b&gt;A: Escade legt Daten auf Escade Share&lt;/b&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;B: Escada Service Prozess von Basel liest die Daten Periodisch vom Share&lt;br&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;C: Escade Service Prozess sendet die Daten an das REST Api von esc&lt;/b&gt;&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="850" y="-55" width="870" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-34" value="esc PSQL Datenbank" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" parent="1" vertex="1">
+          <mxGeometry x="416.25" y="870" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-35" value="jdbc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" source="yJnInIFM5VS28ryroB-6-15" target="yJnInIFM5VS28ryroB-6-34" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-36" value="esc-kc PSQL Datenbank" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" parent="1" vertex="1">
+          <mxGeometry x="776.25" y="870" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" source="yJnInIFM5VS28ryroB-6-14" target="yJnInIFM5VS28ryroB-6-36" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-38" value="jdbc" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="yJnInIFM5VS28ryroB-6-37" vertex="1" connectable="0">
+          <mxGeometry x="-0.0875" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-39" value="vacme-web mysql Datenbank" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" parent="1" vertex="1">
+          <mxGeometry x="1164.5" y="860" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.681;exitY=0.967;exitDx=0;exitDy=0;entryX=0.625;entryY=0.2;entryDx=0;entryDy=0;entryPerimeter=0;fillColor=#d5e8d4;strokeColor=#82b366;exitPerimeter=0;" parent="1" source="yJnInIFM5VS28ryroB-6-31" target="yJnInIFM5VS28ryroB-6-11" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="481" y="3" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-41" value="esc S3 Bucket in&lt;br&gt;Openshift" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" parent="1" vertex="1">
+          <mxGeometry x="570" y="870" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-42" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="yJnInIFM5VS28ryroB-6-15" target="yJnInIFM5VS28ryroB-6-41" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="550" y="785" />
+              <mxPoint x="630" y="785" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-43" value="https" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="yJnInIFM5VS28ryroB-6-42" vertex="1" connectable="0">
+          <mxGeometry x="0.048" y="2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yJnInIFM5VS28ryroB-6-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fillColor=#e1d5e7;strokeColor=#9673a6;exitX=0.507;exitY=0.95;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="yJnInIFM5VS28ryroB-6-22" target="yJnInIFM5VS28ryroB-6-16" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="465" y="410" as="sourcePoint" />
+            <mxPoint x="136" y="657" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="465" y="397" />
+              <mxPoint x="465" y="500" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

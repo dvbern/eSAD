@@ -1,0 +1,21 @@
+<svui-list [heading]="'dashboard.letzte.kinder.titel' | transloco" [loading]="false">
+
+  <table svuiTable [loading]="dashboardStore.letzteAktivitaetHistoryLoader.isLoading()" aria-hidden="true">
+    <tbody>
+      @for (entry of kinderList(); track entry) {
+        <tr>
+          <td>
+            <svui-table-link type="text"
+                             [myRouterLink]="['/', Path.KINDER, entry.kind.id]">
+              {{ entry.kind.data.name }} {{ entry.kind.data.vorname }}
+            </svui-table-link>
+          </td>
+          <td>{{ getVisitDatum(entry.entityInfo.timestampErstellt) }}</td>
+        </tr>
+      } @empty {
+        <tr svui-empty-table-message [message]="'kinder.list.empty'| transloco"></tr>
+      }
+    </tbody>
+  </table>
+
+</svui-list>

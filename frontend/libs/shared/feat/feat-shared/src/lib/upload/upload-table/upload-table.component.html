@@ -1,0 +1,116 @@
+<table svuiTable
+       class="svui_upload-table"
+       [class.svui_upload-table--typ]="showTyp()"
+       [class.svui_upload-table--name-first]="!showTyp()"
+       [class.svui_upload-table--size]="showSize()"
+       [loading]="loading()"
+       [pagination]="uploadTable().pagination()"
+       [totalRows]="uploadTable().filteredListSize()"
+       (pageChanged)="uploadTable().onPageChanged($event)"
+>
+  @if (showHeader()) {
+    <thead>
+    <tr>
+      <!--      Typ-->
+      @if (showTyp()) {
+        <th scope="col"
+            svuiSortable
+            [sortState]="uploadTable().findColSortDTO('fileTyp')"
+            (sort)="uploadTable().onColSort($event, 'fileTyp')"
+        >
+          {{ 'ui..upload.table.column.typ' | transloco }}
+        </th>
+      }
+      <!--      Filename -->
+      <th scope="col"
+          svuiSortable
+          [sortState]="uploadTable().findColSortDTO('fileName.fileName')"
+          (sort)="uploadTable().onColSort($event, 'fileName.fileName')">
+        {{ 'ui.upload.table.column.column.file-name' | transloco }}
+      </th>
+      <!--       Uploaddatum-->
+      <th scope="col"
+          svuiSortable
+          [sortState]="uploadTable().findColSortDTO('entityInfo.timestampErstellt')"
+          (sort)="uploadTable().onColSort($event, 'entityInfo.timestampErstellt')">
+        {{ 'ui.upload.table.column.upload-datum' | transloco }}
+      </th>
+
+      <!--      Actions-->
+      <th scope="col">
+        <svui-spinner [working]="working()" [context]="'inline'" class="svui_upload-table__spinner"/>
+      </th>
+    </tr>
+    </thead>
+  }
+  <tbody>
+  <ng-content select="tr[svuiUploadTableItem]"/>
+
+    @if (uploadTable().rawListSize() < 1 && !loading()) {
+      <tr svui-empty-table-message [message]="'ui.upload.table.empty' | transloco"></tr>
+    } @else {
+      @for (item of uploadTable().displayedList(); track item.id) {
+        <tr>
+          <!--          Typ-->
+          @if (showTyp()) {
+            <td>{{ item.fileTyp }}</td>
+          }
+          <!--          Filename-->
+          <td>
+            <button class="svui_upload-table--name-as-link svui_upload-table--maxlength text-start" type="button"
+                    (click)="fileView.emit(item)"
+                    [title]="('ui.upload.table.action.view' | transloco)+ ' ' + item.fileName"
+            >
+              {{ item.calculatedFileName }}
+            </button>
+          </td>
+          <!--          Uploaddatum -->
+          <td>
+            <span>{{ 'ui.upload.table.column.upload-datum-at' | transloco }}</span>
+            {{ item.entityInfo.timestampErstellt | date: 'dd.MM.yyyy' }}
+          </td>
+
+          <!--          Actions-->
+          @if (showActions()) {
+            <td class="">
+              <div class="svui_upload-table--actions">
+                @if (tableConfig().showRemoveAction) {
+                  <button svuiIconOnlyButton="secondary"
+                          type="button"
+                          [tooltip]="'global.tooltip.icon.loeschen' | transloco"
+                          [icon]="'loeschen'"
+                          (click)="fileRemove.emit(item)">
+                  </button>
+                }
+                @if (tableConfig().showDirectDownloadAction) {
+                  <button svuiIconOnlyButton="secondary"
+                          type="button"
+                          [tooltip]="'global.tooltip.icon.herunterladen' | transloco"
+                          [icon]="'herunterladen'"
+                          (click)="fileDirectDownload.emit(item)">
+                  </button>
+                }
+                @if (tableConfig().showViewAction) {
+                  <button svuiIconOnlyButton="primary"
+                          type="button"
+                          [tooltip]="'global.tooltip.icon.eye' | transloco"
+                          [icon]="'eye'"
+                          (click)="fileView.emit(item)">
+                  </button>
+                }
+              </div>
+            </td>
+          }
+        </tr>
+      }
+    }
+  </tbody>
+</table>
+
+@if (showUploadButton()) {
+  <svui-file-upload-button [accepted]="accepted()"
+                           [labelOverride]="'ui.beleg.uploader.add' | transloco"
+                           (fileUploaded)="onFileUploaded($event)"/>
+}
+
+

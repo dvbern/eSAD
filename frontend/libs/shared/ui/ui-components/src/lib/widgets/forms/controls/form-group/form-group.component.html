@@ -1,0 +1,37 @@
+<fieldset class="svui_multi-control" [attr.aria-labelledby]="id">
+  <!--
+  why not use legend with fieldset? see
+  https://stackoverflow.com/questions/28078681/why-cant-fieldset-be-flex-containers
+  for explanation and solutions.
+  -->
+
+  <!--top box-->
+  <svui-form-control-top [minHeight]="isEditMode()" [iconTopRight]="iconTopRight()">
+    <div>
+      <span class="svui_multi-control__top-label">
+      {{ label() }}
+      </span>
+
+      @if (controlType === 'radios' && required) {
+        <svui-required/>
+      }
+    </div>
+  </svui-form-control-top>
+
+  <!--spinner-->
+  <svui-form-working-icon [working]="directiveOnContentWorking()"/>
+
+  <!--input|content-->
+  @if (controlType === 'radios' && !isEditMode()) {
+    <svui-view-value [viewValue]="viewValue()"/>
+  } @else {
+    <div class="svui_multi-control__content"
+         [class.svui_multi-control__content--horizontal]="direction() === 'horizontal'">
+      <!--The ng-content-select ensures, that this component is only used for inputs with wrappers => input groups-->
+      <ng-content select="svui-single-radio-wrapper,svui-single-checkbox-wrapper"/>
+    </div>
+  }
+
+  <!--bottom box-->
+  <svui-form-control-bottom [minHeight]="isEditMode()" [validateWhen]="control?.touched" [errors]="control?.errors"/>
+</fieldset>

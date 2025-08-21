@@ -1,0 +1,27 @@
+@use '../../../../styles/core/color/color-set-table';
+@use '../../../../styles/core/size';
+@use '../../../../styles/core/spacing';
+
+:host.svui_row-clickable {
+  // no :host display style on component with attribute selector
+
+  cursor: pointer;
+
+  ::ng-deep > td:last-child {
+    $-marker-spacing-x: spacing.$base;
+    $-table-row-spacing-right: $-marker-spacing-x + size.$clickable-marker-width + $-marker-spacing-x;
+
+    position: relative;
+    padding-right: $-table-row-spacing-right;
+
+    &::after {
+      // the color of the svg cannot changed via currentColor in ::after because it is generated inside <img>
+      // noinspection CssUnknownTarget
+      content: url('/assets/images/icons/chevron-right-red-freeform.svg');
+      position: absolute;
+      inset: 0 $-marker-spacing-x 0 auto;
+      display: flex;
+      align-items: center;
+    }
+  }
+}

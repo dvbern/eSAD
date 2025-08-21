@@ -1,0 +1,1208 @@
+package ch.dvbern.oss.hemed.esc.api.features.anlass;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import ch.dvbern.dvbstarter.shared.clock.AppClock;
+import ch.dvbern.oss.hemed.esc.api.Util;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.InformationEltern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.ImpfStatus;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.Impfstoff;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.DossierService;
+import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
+import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AufgabeService;
+import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.types.AufgabeStatus;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
+import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfstatusKrankheitBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungInternBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenMassnahmenBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.generated.restassured.api.UntersuchungImpfungenApiSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppFailureErrorJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ImpfStatusSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.InformationElternSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KrankheitSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfstatusKrankheitSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfstatusListSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungInternJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungInternListJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungInternSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenDataJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenMassnahmenJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenSaveJsonSpec;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.response.ResponseBody;
+import jakarta.ws.rs.core.Response.Status;
+import lombok.RequiredArgsConstructor;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+@QuarkusTest
+@RequiredArgsConstructor
+class UntersuchungImpfungenResourceITest extends AbstractITest {
+
+	private final UntersuchungImpfungenApiSpec api =
+			UntersuchungImpfungenApiSpec.untersuchungImpfungen(RequestSpecUtil.quarkusSpec());
+
+	private final UntersuchungService untersuchungService;
+	private final UntersuchungImpfungenService untersuchungImpfungenService;
+	private final UntersuchungImpfstatusKrankheitService untersuchungImpfstatusKrankheitService;
+	private final UntersuchungImpfstatusKrankheitMapper untersuchungImpfstatusKrankheitMapper;
+	private final UntersuchungImpfungInternService untersuchungImpfungInternService;
+	private final FixtureService fixtureService;
+	private final AufgabeService aufgabeService;
+	private final DossierService dossierService;
+	private final AppClock appClock;
+
+	@Override
+	@BeforeEach
+	public void setUp() {
+		super.setUp();
+	}
+
+	@Test
+	@TestAsAdminBS
+	void getUntersuchungImpfungen_Data_non_existing_should_create_data() {
+		// ARRANGE
+		Einladung einladung = fixtureService.createEinladung();
+		untersuchungService.getOrCreateUntersuchung(einladung.getId());
+		// ACT / ASSERT
+		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
+				.anlassIdPath(einladung.getAnlass().getId().getId())
+				.einladungIdPath(einladung.getId().getId())
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungenDataJsonSpec.class);
+		// ASSERT
+		Assertions.assertThat(data).isNotNull();
+		Assertions.assertThat(data.getUntersuchungImpfungen()).isNotNull();
+	}
+
+	@Test
+	@TestAsAdminBS
+	void getUntersuchungImpfungen_Data_existing_should_return_existing() {
+		// ARRANGE
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		UntersuchungImpfungen existingImpfungen =
+				untersuchungImpfungenService.getById(untersuchung.getUntersuchungImpfungen().getId());
+		Assertions.assertThat(existingImpfungen).isNotNull();
+		Assertions.assertThat(existingImpfungen.getBemerkungen()).isNotNull();
+		// ACT
+		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungenDataJsonSpec.class);
+		UntersuchungImpfungenJsonSpec result = data.getUntersuchungImpfungen();
+		// ASSERT
+		Assertions.assertThat(result).isNotNull();
+		Assertions.assertThat(result.getId()).isEqualTo(existingImpfungen.getId().getId());
+		Assertions.assertThat(result.getData().getCheckliste().getBemerkungen())
+				.isNotNull()
+				.isEqualTo(existingImpfungen.getBemerkungen());
+	}
+
+	@Test
+	@TestAsAdminBS
+	void createUntersuchungImpfungen() {
+		// ARRANGE
+		Einladung einladung = fixtureService.createEinladung();
+		Benutzer benutzer = fixtureService.createBenutzer();
+		UntersuchungImpfungenSaveJsonSpec saveJsonSpec =
+            UntersuchungImpfungenBuilder.createJaxSpec(builder -> builder
+                .withBemerkungen("Test createUntersuchungImpfungen")
+                .withVisum1(benutzer, appClock.offsetDateTime().now().toLocalDate())
+            ).getData();
+
+		// ACT
+		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceSaveUntersuchungImpfungen()
+				.anlassIdPath(einladung.getAnlass().getId().getId())
+				.einladungIdPath(einladung.getId().getId())
+				.body(saveJsonSpec)
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungenJsonSpec.class);
+
+		// ASSERT
+		Assertions.assertThat(result).isNotNull();
+		Assertions.assertThat(result.getId()).isNotNull();
+		Assertions.assertThat(result.getData().getCheckliste().getBemerkungen())
+				.isNotNull()
+				.isEqualTo("Test createUntersuchungImpfungen");
+		Assertions.assertThat(result.getData().getDoppelkontrolle().getVisumPerson1())
+				.isNotNull()
+				.extracting(BenutzerOptionJsonSpec::getId)
+				.isEqualTo(benutzer.getId().getId());
+	}
+
+	@Test
+	@TestAsAdminBS
+	void updateUntersuchungImpfungen() {
+		// ARRANGE
+		Benutzer anotherBenutzer = fixtureService.createBenutzer();
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		UntersuchungImpfungen existingImpfungen =
+				untersuchungImpfungenService.getById(untersuchung.getUntersuchungImpfungen().getId());
+		Assertions.assertThat(existingImpfungen).isNotNull();
+		Assertions.assertThat(existingImpfungen.getBemerkungen())
+				.isNotNull()
+				.isEqualTo("Bemerkungen zu den " + "Impfungen");
+		Assertions.assertThat(existingImpfungen.getVisum1())
+				.isNotNull()
+				.extracting(Visum::getPerson)
+				.isNotEqualTo(anotherBenutzer);
+
+		// ACT
+		UntersuchungImpfungenSaveJsonSpec saveJsonSpec =
+				UntersuchungImpfungenBuilder.createJaxSpec(builder -> builder.forUntersuchungImpfungen(existingImpfungen)
+						.withBemerkungen("Test updateUntersuchungImpfungen")
+						.withVisum1(anotherBenutzer, appClock.offsetDateTime().now().toLocalDate())).getData();
+		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceSaveUntersuchungImpfungen()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.body(saveJsonSpec)
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungenJsonSpec.class);
+
+		// ASSERT
+		Assertions.assertThat(result).isNotNull();
+		Assertions.assertThat(result.getId()).isNotNull();
+		Assertions.assertThat(result.getData().getCheckliste().getBemerkungen())
+				.isNotNull()
+				.isEqualTo("Test updateUntersuchungImpfungen");
+		Assertions.assertThat(result.getData().getDoppelkontrolle().getVisumPerson1())
+				.isNotNull()
+				.extracting(BenutzerOptionJsonSpec::getId)
+				.isEqualTo(anotherBenutzer.getId().getId());
+	}
+
+	@Test
+	@TestAsAdminBS
+	void visierenDoppelkontrolleVisum1() {
+		// ARRANGE
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		UntersuchungImpfungen existingImpfungen =
+				untersuchungImpfungenService.getById(untersuchung.getUntersuchungImpfungen().getId());
+		Assertions.assertThat(existingImpfungen).isNotNull();
+		// ACT
+		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceVisierenDoppelkontrolleVisum1()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungenJsonSpec.class);
+		// ASSERT
+		Assertions.assertThat(result).isNotNull();
+		Assertions.assertThat(result.getData().getDoppelkontrolle().getVisumPerson1())
+				.isNotNull()
+				.extracting(BenutzerOptionJsonSpec::getId)
+				.isEqualTo(TestAsAdminBS.BENUTZER_ID);
+		Assertions.assertThat(result.getData().getDoppelkontrolle().getVisumDatum1())
+				.isNotNull()
+				.isEqualTo(appClock.offsetDateTime().now().toLocalDate());
+	}
+
+	@Test
+	@TestAsAdminBS
+	void anfordernDoppelkontrolleVisum2() {
+		// ARRANGE
+		Benutzer anotherBenutzer = fixtureService.createBenutzer();
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		UntersuchungImpfungen existingImpfungen =
+				untersuchungImpfungenService.getById(untersuchung.getUntersuchungImpfungen().getId());
+		Assertions.assertThat(existingImpfungen).isNotNull();
+		// ACT
+		BenutzerOptionJsonSpec payload = new BenutzerOptionJsonSpec(
+				anotherBenutzer.getId().getId(),
+				anotherBenutzer.getVorname(),
+				anotherBenutzer.getNachname(),
+				anotherBenutzer.getNachname() + ' ' + anotherBenutzer.getVorname(),
+				Collections.emptyList(),
+				true);
+		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceAnfordernDoppelkontrolleVisum2()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.body(payload)
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungenJsonSpec.class);
+		// ASSERT
+		Assertions.assertThat(result).isNotNull();
+		Assertions.assertThat(result.getData().getDoppelkontrolle().getVisumPerson2())
+				.isNotNull()
+				.extracting(BenutzerOptionJsonSpec::getId)
+				.isEqualTo(anotherBenutzer.getId().getId());
+		Assertions.assertThat(result.getData().getDoppelkontrolle().getVisumDatum2()).isNull();
+		Set<Aufgabe> aufgabenOfAnotherBenutzer = aufgabeService.findAll()
+				.stream()
+				.filter(aufgabe -> aufgabe.getEmpfaenger().getId().equals(anotherBenutzer.getId()))
+				.collect(Collectors.toSet());
+		Assertions.assertThat(aufgabenOfAnotherBenutzer).isNotEmpty().hasSize(1);
+
+		for (Aufgabe aufgabe : aufgabenOfAnotherBenutzer) {
+			Assertions.assertThat(aufgabe.getLink()).isNotNull();
+			Assertions.assertThat(aufgabe.getLink())
+					.isEqualTo(Util.parseURL("https://local-esc-bs.localhost:4443/anlass/"
+							+ untersuchung.getEinladung()
+							.getAnlass()
+							.getId()
+							.getId()
+							+ "/untersuchung/einladung/"
+							+ untersuchung.getEinladung().getId().getId()
+							+ "/impfungen?einladungIds="
+							+ untersuchung.getEinladung().getId().getId()));
+		}
+	}
+
+	@Test
+	@TestAsAdminBS
+	void visierenDoppelkontrolleVisum2() {
+		// ARRANGE
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		UntersuchungImpfungen existingImpfungen =
+				untersuchungImpfungenService.getById(untersuchung.getUntersuchungImpfungen().getId());
+		Assertions.assertThat(existingImpfungen).isNotNull();
+		// ACT
+		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceVisierenDoppelkontrolleVisum2()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungenJsonSpec.class);
+		// ASSERT
+		Assertions.assertThat(result).isNotNull();
+		Assertions.assertThat(result.getData().getDoppelkontrolle().getVisumPerson2())
+				.isNotNull()
+				.extracting(BenutzerOptionJsonSpec::getId)
+				.isEqualTo(TestAsAdminBS.BENUTZER_ID);
+		Assertions.assertThat(result.getData().getDoppelkontrolle().getVisumDatum2())
+				.isNotNull()
+				.isEqualTo(appClock.offsetDateTime().now().toLocalDate());
+	}
+
+	@Test
+	@TestAsAdminBS
+	void resetDoppelkontrolle() {
+		// ARRANGE
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		UntersuchungImpfungen existingImpfungen =
+				untersuchungImpfungenService.getById(untersuchung.getUntersuchungImpfungen().getId());
+		Assertions.assertThat(existingImpfungen).isNotNull();
+		Assertions.assertThat(existingImpfungen.getVisum1()).isNotNull();
+		Assertions.assertThat(existingImpfungen.getVisum1().getPerson()).isNotNull();
+		Assertions.assertThat(existingImpfungen.getVisum1().getDatumVisiert()).isNotNull();
+		// ACT
+		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceResetDoppelkontrolle()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungenJsonSpec.class);
+		// ASSERT
+		Assertions.assertThat(result).isNotNull();
+		Assertions.assertThat(result.getData().getDoppelkontrolle().getVisumPerson1()).isNull();
+		Assertions.assertThat(result.getData().getDoppelkontrolle().getVisumDatum1()).isNull();
+		Assertions.assertThat(result.getData().getDoppelkontrolle().getVisumPerson2()).isNull();
+		Assertions.assertThat(result.getData().getDoppelkontrolle().getVisumDatum2()).isNull();
+	}
+
+	@Test
+	@TestAsAdminBS
+	void getUntersuchungImpfungenDataImpfstatus_should_return_empty_items_if_nothing_exists() {
+		// ARRANGE
+		Einladung einladung = fixtureService.createEinladung();
+		// ACT
+		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
+				.anlassIdPath(einladung.getAnlass().getId().getId())
+				.einladungIdPath(einladung.getId().getId())
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungenDataJsonSpec.class);
+		UntersuchungImpfstatusListSaveJsonSpec result = data.getImpfstatusList();
+		// ASSERT
+		Assertions.assertThat(result.getImpfstatusList())
+				.isNotNull()
+				.hasSize(Krankheit.values().length)
+				.allMatch(impfstatus -> impfstatus.getAnzahlImpfungen() == null);
+		// Es sollte ein UntersuchungImpfungen erstellt worden sein
+		Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladung.getId());
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+	}
+
+	@Test
+	@TestAsAdminBS
+	void getUntersuchungImpfungenDataImpfstatus_should_return_existing_items() {
+		// ARRANGE
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		untersuchungImpfstatusKrankheitService.persist(UntersuchungImpfstatusKrankheitBuilder.create(builder -> builder.forUntersuchungImpfungen(
+				untersuchung.getUntersuchungImpfungen()).forKrankheit(Krankheit.MASERN).withAnzahlImpfungen(2)));
+
+		// ACT
+		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungenDataJsonSpec.class);
+		UntersuchungImpfstatusListSaveJsonSpec result = data.getImpfstatusList();
+		// ASSERT
+		// Es gibt fuer jede Krankheit einen Impfstatus
+		Assertions.assertThat(result.getImpfstatusList()).isNotNull().hasSize(Krankheit.values().length);
+		// Der Impfstatus fuer Masern sollte 2 Impfungen haben
+		UntersuchungImpfstatusKrankheitSaveJsonSpec masernJson = result.getImpfstatusList()
+				.stream()
+				.filter(impfstatus -> impfstatus.getKrankheit() == KrankheitSpec.MASERN)
+				.findFirst()
+				.orElseThrow();
+		Assertions.assertThat(masernJson.getAnzahlImpfungen()).isEqualTo(2);
+		// Alle anderen Krankheiten sollten Impfstatus keine Impfungen haben
+		List<UntersuchungImpfstatusKrankheitSaveJsonSpec> allOtherKrankheitenJson = result.getImpfstatusList()
+				.stream()
+				.filter(impfstatus -> impfstatus.getKrankheit() != KrankheitSpec.MASERN)
+				.toList();
+		Assertions.assertThat(allOtherKrankheitenJson)
+				.hasSize(Krankheit.values().length - 1)
+				.allMatch(impfstatus -> impfstatus.getAnzahlImpfungen() == null);
+	}
+
+	@Test
+	@TestAsAdminBS
+	void saveUntersuchungImpfungenImpfstatus_create_new_item() {
+		// ARRANGE
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		// ACT
+		UntersuchungImpfstatusKrankheitSaveJsonSpec createJsonSpec =
+				UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder.forUntersuchungImpfungen(
+						untersuchung.getUntersuchungImpfungen()).forKrankheit(Krankheit.MASERN).withAnzahlImpfungen(4));
+		UntersuchungImpfstatusListSaveJsonSpec listSpec =
+				new UntersuchungImpfstatusListSaveJsonSpec(List.of(createJsonSpec));
+		UntersuchungImpfstatusListSaveJsonSpec result =
+				api.untersuchungImpfungenResourceSaveUntersuchungImpfungenImpfstatus()
+						.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+						.einladungIdPath(untersuchung.getEinladung().getId().getId())
+						.body(listSpec)
+						.execute(ResponseBody::prettyPeek)
+						.then()
+						.assertThat()
+						.statusCode(Status.OK.getStatusCode())
+						.extract()
+						.as(UntersuchungImpfstatusListSaveJsonSpec.class);
+		// ASSERT
+		// Es gibt fuer jede Krankheit einen Impfstatus
+		Assertions.assertThat(result.getImpfstatusList()).isNotNull().hasSize(Krankheit.values().length);
+		// Der Impfstatus fuer Masern sollte 2 Impfungen haben
+		UntersuchungImpfstatusKrankheitSaveJsonSpec masernJson = result.getImpfstatusList()
+				.stream()
+				.filter(impfstatus -> impfstatus.getKrankheit() == KrankheitSpec.MASERN)
+				.findFirst()
+				.orElseThrow();
+		Assertions.assertThat(masernJson.getAnzahlImpfungen()).isEqualTo(4);
+		// Alle anderen Krankheiten sollten Impfstatus keine Impfungen haben
+		List<UntersuchungImpfstatusKrankheitSaveJsonSpec> allOtherKrankheitenJson = result.getImpfstatusList()
+				.stream()
+				.filter(impfstatus -> impfstatus.getKrankheit() != KrankheitSpec.MASERN)
+				.toList();
+		Assertions.assertThat(allOtherKrankheitenJson)
+				.hasSize(Krankheit.values().length - 1)
+				.allMatch(impfstatus -> impfstatus.getAnzahlImpfungen() == null);
+	}
+
+	@Test
+	@TestAsAdminBS
+	void saveUntersuchungImpfungenImpfstatus_set_immunitaet_on_dossier_for_masern_varizellen() {
+		// ARRANGE
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+
+		// ACT
+		UntersuchungImpfstatusKrankheitSaveJsonSpec createMasernJsonSpec =
+				UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder
+						.forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
+						.forKrankheit(Krankheit.MASERN)
+						.withImpfschutzGegeben(true));
+
+		UntersuchungImpfstatusKrankheitSaveJsonSpec createVarizellenJsonSpec =
+				UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder
+						.forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
+						.forKrankheit(Krankheit.VARIZELLEN)
+						.withImpfschutzGegeben(true));
+
+		UntersuchungImpfstatusListSaveJsonSpec listSpec =
+				new UntersuchungImpfstatusListSaveJsonSpec(List.of(
+						createMasernJsonSpec,
+						createVarizellenJsonSpec));
+		UntersuchungImpfstatusListSaveJsonSpec result =
+				api.untersuchungImpfungenResourceSaveUntersuchungImpfungenImpfstatus()
+						.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+						.einladungIdPath(untersuchung.getEinladung().getId().getId())
+						.body(listSpec)
+						.execute(ResponseBody::prettyPeek)
+						.then()
+						.assertThat()
+						.statusCode(Status.OK.getStatusCode())
+						.extract()
+						.as(UntersuchungImpfstatusListSaveJsonSpec.class);
+		// ASSERT
+		// Es gibt fuer jede Krankheit einen Impfstatus
+		Dossier dossier = dossierService.getById(untersuchung.getEinladung().getDossier().getId());
+		Assertions.assertThat(result.getImpfstatusList()).isNotNull().hasSize(Krankheit.values().length);
+		Assertions.assertThat(dossier.isImmunitaetMasern()).isTrue();
+		Assertions.assertThat(dossier.isImmunitaetVarizellen()).isTrue();
+	}
+
+	@Test
+	@TestAsAdminBS
+	void saveUntersuchungImpfungenImpfstatus_update_existing_item() {
+		// ARRANGE
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		// Damit werden alle Krankheiten erstellt
+		untersuchungImpfstatusKrankheitMapper.getByUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen());
+        UntersuchungImpfstatusKrankheitSaveJsonSpec createSpec =
+				UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder.forUntersuchungImpfungen(
+                    untersuchung.getUntersuchungImpfungen()).forKrankheit(Krankheit.MASERN));
+        UntersuchungImpfstatusListSaveJsonSpec createListSpec =
+            new UntersuchungImpfstatusListSaveJsonSpec(List.of(createSpec));
+        api.untersuchungImpfungenResourceSaveUntersuchungImpfungenImpfstatus()
+						.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+						.einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .body(createListSpec)
+						.execute(ResponseBody::prettyPeek)
+						.then()
+						.assertThat()
+						.statusCode(Status.OK.getStatusCode())
+						.extract()
+						.as(UntersuchungImpfstatusListSaveJsonSpec.class);
+
+        // ACT
+        UntersuchungImpfstatusKrankheitSaveJsonSpec updateSpec =
+            UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder.forUntersuchungImpfungen(
+                untersuchung.getUntersuchungImpfungen()).forKrankheit(Krankheit.MASERN).withAnzahlImpfungen(4));
+        UntersuchungImpfstatusListSaveJsonSpec updateListSpec =
+            new UntersuchungImpfstatusListSaveJsonSpec(List.of(updateSpec));
+        UntersuchungImpfstatusListSaveJsonSpec result =
+            api.untersuchungImpfungenResourceSaveUntersuchungImpfungenImpfstatus()
+                .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+                .einladungIdPath(untersuchung.getEinladung().getId().getId())
+                .body(updateListSpec)
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.OK.getStatusCode())
+                .extract()
+                .as(UntersuchungImpfstatusListSaveJsonSpec.class);
+
+        // ASSERT
+		// Es gibt fuer jede Krankheit einen Impfstatus
+		Assertions.assertThat(result.getImpfstatusList()).isNotNull().hasSize(Krankheit.values().length);
+		// Der Impfstatus fuer Masern sollte 2 Impfungen haben
+		UntersuchungImpfstatusKrankheitSaveJsonSpec masernJson = result.getImpfstatusList()
+				.stream()
+				.filter(impfstatus -> impfstatus.getKrankheit() == KrankheitSpec.MASERN)
+				.findFirst()
+				.orElseThrow();
+		Assertions.assertThat(masernJson.getAnzahlImpfungen()).isEqualTo(4);
+		// Alle anderen Krankheiten sollten Impfstatus keine Impfungen haben
+		List<UntersuchungImpfstatusKrankheitSaveJsonSpec> allOtherKrankheitenJson = result.getImpfstatusList()
+				.stream()
+				.filter(impfstatus -> impfstatus.getKrankheit() != KrankheitSpec.MASERN)
+				.toList();
+		Assertions.assertThat(allOtherKrankheitenJson)
+				.hasSize(Krankheit.values().length - 1)
+				.allMatch(impfstatus -> impfstatus.getAnzahlImpfungen() == null);
+	}
+
+	@Test
+	@TestAsAdminBS
+	void getUntersuchungImpfungenDataImpfstatus_should_return_data_from_previous_impfstatus_if_impfschutz_is_gegeben() {
+		// ARRANGE
+		Dossier dossier = fixtureService.createDossier();
+
+		Anlass previousAnlass = fixtureService.createAnlass(LocalDate.of(2021, 1, 1));
+		Einladung previousEinladung = fixtureService.createEinladung(previousAnlass, dossier);
+		Untersuchung previousUntersuchung = fixtureService.createUntersuchungWithImpfungen(previousEinladung);
+		Assertions.assertThat(previousUntersuchung.getUntersuchungImpfungen()).isNotNull();
+
+		untersuchungImpfstatusKrankheitService.persist(UntersuchungImpfstatusKrankheitBuilder.create(builder -> builder.forUntersuchungImpfungen(
+						previousUntersuchung.getUntersuchungImpfungen())
+				.forKrankheit(Krankheit.MASERN)
+				.withImpfschutzGegeben(true)
+				.withDatumLetzteImpfung(LocalDate.of(2022, 2, 3))
+				.withAnzahlImpfungen(2)));
+		untersuchungImpfstatusKrankheitService.persist(UntersuchungImpfstatusKrankheitBuilder.create(builder -> builder.forUntersuchungImpfungen(
+				previousUntersuchung.getUntersuchungImpfungen()).forKrankheit(Krankheit.POLIO).withAnzahlImpfungen(2)));
+
+		Anlass newAnlass = fixtureService.createAnlass(LocalDate.of(2024, 1, 1));
+		Einladung newEinladung = fixtureService.createEinladung(newAnlass, dossier);
+		Untersuchung newUntersuchung = fixtureService.createUntersuchungWithImpfungen(newEinladung);
+		Assertions.assertThat(newUntersuchung.getUntersuchungImpfungen()).isNotNull();
+		untersuchungImpfstatusKrankheitMapper.getByUntersuchungImpfungen(newUntersuchung.getUntersuchungImpfungen());
+
+		// ACT
+		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
+				.anlassIdPath(newEinladung.getAnlass().getId().getId())
+				.einladungIdPath(newEinladung.getId().getId())
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungenDataJsonSpec.class);
+		UntersuchungImpfstatusListSaveJsonSpec result = data.getImpfstatusList();
+
+		// ASSERT
+		Assertions.assertThat(result.getImpfstatusList()).isNotNull().hasSize(Krankheit.values().length);
+		Assertions.assertThat(result.getImpfstatusList()
+				.stream()
+				.anyMatch(impfstatus -> impfstatus.getKrankheit() == KrankheitSpec.MASERN
+						&& Boolean.TRUE.equals(impfstatus.getImpfschutzGegeben())
+						&& Integer.valueOf(2).equals(impfstatus.getAnzahlImpfungen())
+						&& Objects.equals(impfstatus.getDatumLetzteImpfung(), LocalDate.of(2022, 2, 3)))).isTrue();
+
+		Assertions.assertThat(result.getImpfstatusList()
+				.stream()
+				.noneMatch(impfstatus -> impfstatus.getKrankheit() == KrankheitSpec.POLIO && Boolean.TRUE.equals(
+						impfstatus.getImpfschutzGegeben()))).isTrue();
+	}
+
+	@Test
+	@TestAsAdminBS
+	void getUntersuchungImpfungenDataImpfstatus_should_return_data_from_previous_impfliste_if_impfschutz_is_gegeben() {
+		// ARRANGE
+		Dossier dossier = fixtureService.createDossier();
+
+		Anlass previousAnlass = fixtureService.createAnlass(LocalDate.of(2021, 1, 1));
+		Einladung previousEinladung = fixtureService.createEinladung(previousAnlass, dossier);
+		Untersuchung previousUntersuchung = fixtureService.createUntersuchungWithImpfungen(previousEinladung);
+		Impfstoff impfstoff = fixtureService.createImpfstoff();
+		Assertions.assertThat(previousUntersuchung.getUntersuchungImpfungen()).isNotNull();
+
+		untersuchungImpfstatusKrankheitService.persist(UntersuchungImpfstatusKrankheitBuilder.create(builder -> builder.forUntersuchungImpfungen(
+						previousUntersuchung.getUntersuchungImpfungen())
+				.forKrankheit(Krankheit.MASERN)
+				.withAnzahlImpfungen(2)));
+
+		untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
+						previousUntersuchung.getUntersuchungImpfungen())
+				.withUserErfasst(fixtureService.createBenutzer())
+				.withImpfstoff(impfstoff)
+				.withImmunitaetForKrankheit(Krankheit.MASERN, true)
+				.withDatumImpfung(LocalDate.of(2023, 1, 27))));
+
+		untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
+						previousUntersuchung.getUntersuchungImpfungen())
+				.withUserErfasst(fixtureService.createBenutzer())
+				.withImpfstoff(impfstoff)
+				.withImmunitaetForKrankheit(Krankheit.ROETELN, false)
+				.withDatumImpfung(LocalDate.of(2023, 6, 21))));
+
+		Anlass newAnlass = fixtureService.createAnlass(LocalDate.of(2024, 1, 1));
+		Einladung newEinladung = fixtureService.createEinladung(newAnlass, dossier);
+		Untersuchung newUntersuchung = fixtureService.createUntersuchungWithImpfungen(newEinladung);
+		Assertions.assertThat(newUntersuchung.getUntersuchungImpfungen()).isNotNull();
+		untersuchungImpfstatusKrankheitMapper.getByUntersuchungImpfungen(newUntersuchung.getUntersuchungImpfungen());
+
+		// ACT
+		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
+				.anlassIdPath(newEinladung.getAnlass().getId().getId())
+				.einladungIdPath(newEinladung.getId().getId())
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungenDataJsonSpec.class);
+		UntersuchungImpfstatusListSaveJsonSpec result = data.getImpfstatusList();
+
+		// ASSERT
+		Assertions.assertThat(result.getImpfstatusList()).isNotNull().hasSize(Krankheit.values().length);
+		Assertions.assertThat(result.getImpfstatusList()
+				.stream()
+				.anyMatch(impfstatus -> impfstatus.getKrankheit() == KrankheitSpec.MASERN
+						&& Boolean.TRUE.equals(impfstatus.getImpfschutzGegeben())
+						&& Integer.valueOf(3).equals(impfstatus.getAnzahlImpfungen())
+						&& Objects.equals(impfstatus.getDatumLetzteImpfung(), LocalDate.of(2023, 1, 27)))).isTrue();
+
+		Assertions.assertThat(result.getImpfstatusList()
+				.stream()
+				.noneMatch(impfstatus -> impfstatus.getKrankheit() == KrankheitSpec.ROETELN && Boolean.TRUE.equals(
+						impfstatus.getImpfschutzGegeben()))).isTrue();
+
+	}
+
+	@Test
+	@TestAsAdminBS
+	void getUntersuchungImpfungenDataIntern_noneExist() {
+		// ARRANGE
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		// ACT
+		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungenDataJsonSpec.class);
+		UntersuchungImpfungInternListJsonSpec result = data.getImpfungInternList();
+		// ASSERT
+		Assertions.assertThat(result.getImpfungenInternList()).isNotNull().isEmpty();
+	}
+
+	@Test
+	@TestAsAdminBS
+	void getUntersuchungImpfungenDataIntern_returnExisting() {
+		// ARRANGE
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		Impfstoff impfstoff = fixtureService.createImpfstoff();
+
+		UntersuchungImpfungIntern existingImpfung =
+				untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
+								untersuchung.getUntersuchungImpfungen())
+						.withUserErfasst(fixtureService.createBenutzer())
+						.withImpfstoff(impfstoff)));
+
+		// ACT
+		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungenDataJsonSpec.class);
+		UntersuchungImpfungInternListJsonSpec result = data.getImpfungInternList();
+		// ASSERT
+		Assertions.assertThat(result.getImpfungenInternList())
+				.isNotNull()
+				.isNotEmpty()
+				.hasSize(1)
+				.flatExtracting(UntersuchungImpfungInternJsonSpec::getId)
+				.containsExactly(existingImpfung.getId().getId());
+	}
+
+	@Test
+	@TestAsAdminBS
+	void getUntersuchungImpfungenDataIntern_return_from_previous_anlass_if_existing() {
+		// ARRANGE
+		Dossier dossier = fixtureService.createDossier();
+		Anlass previousAnlass = fixtureService.createAnlass(LocalDate.of(2021, 1, 1));
+		Einladung previousEinladung = fixtureService.createEinladung(previousAnlass, dossier);
+		Untersuchung previousUntersuchung = fixtureService.createUntersuchungWithImpfungen(previousEinladung);
+		Impfstoff impfstoff = fixtureService.createImpfstoff();
+
+		Assertions.assertThat(previousUntersuchung.getUntersuchungImpfungen()).isNotNull();
+		UntersuchungImpfungIntern existingImpfung =
+				untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder
+                    .forUntersuchungImpfungen(previousUntersuchung.getUntersuchungImpfungen())
+                    .withUserErfasst(fixtureService.createBenutzer())
+					.withImpfstoff(impfstoff)
+					.withImmunitaetForKrankheit(Krankheit.MASERN, true)));
+
+		Anlass anlass = fixtureService.createAnlass(LocalDate.of(2024, 1, 1));
+		Einladung einladung = fixtureService.createEinladung(anlass, dossier);
+
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen(einladung);
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+
+		// ACT
+		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungenDataJsonSpec.class);
+		UntersuchungImpfungInternListJsonSpec result = data.getImpfungInternList();
+		// ASSERT
+		Assertions.assertThat(result.getImpfungenInternList())
+				.isNotNull()
+				.isNotEmpty()
+				.hasSize(1);
+		Assertions.assertThat(result.getImpfungenInternList().getFirst())
+				.extracting(impfungen -> impfungen.getData().getImpfstoff().getId())
+				.isEqualTo(existingImpfung.getImpfstoff().getId().getId());
+
+		Assertions.assertThat(result.getImpfungenInternList().getFirst().getData().getKrankheitenImmunitaeten())
+				.anyMatch(i -> i.getKrankheit() == KrankheitSpec.MASERN && i.getImmunitaetGenuegend());
+        List<UntersuchungImpfungIntern> impfungenBefore = untersuchungImpfungInternService.findByUntersuchung(previousUntersuchung.getId());
+        List<UntersuchungImpfungIntern> interneImpfungCopy = untersuchungImpfungInternService.findByUntersuchung(untersuchung.getId());
+        Assertions.assertThat(interneImpfungCopy).hasSameSizeAs(impfungenBefore).hasSize(1);
+
+        // compare the copy of the same impfung, they should have the same data
+        UntersuchungImpfungIntern impfungCopy = interneImpfungCopy.getFirst();
+        UntersuchungImpfungIntern impfungBefore = impfungenBefore.getFirst();
+        Assertions.assertThat(impfungCopy.getDatumImpfung()).isEqualTo(impfungBefore.getDatumImpfung());
+        Assertions.assertThat(impfungCopy.getUserErfasst()).isEqualTo(impfungBefore.getUserErfasst());
+        Assertions.assertThat(impfungCopy.getImpfstoff()).isEqualTo(impfungBefore.getImpfstoff());
+
+        // make sure each impfung only contains at most one immunitaet for a specific krankheit (bug where we copied wrong)
+        checkEachImpfungAtMostImmunizesOnceForAnyGivenKrankheit(impfungCopy);
+        checkEachImpfungAtMostImmunizesOnceForAnyGivenKrankheit(impfungBefore);
+        Assertions.assertThat(impfungCopy.getKrankheitenImmunitaeten()).hasSameSizeAs(impfungBefore.getKrankheitenImmunitaeten());
+    }
+
+    private void checkEachImpfungAtMostImmunizesOnceForAnyGivenKrankheit(UntersuchungImpfungIntern impfungIntern) {
+        for(Krankheit krankheit : Krankheit.values()) {
+            long countForKrankheit = impfungIntern.getKrankheitenImmunitaeten().stream()
+                .filter(i -> i.getKrankheit() == krankheit)
+                .count();
+            Assertions.assertThat(countForKrankheit).as("Duplicate immunitaet found for krankheit " + krankheit)
+                .isLessThanOrEqualTo(1);
+        }
+    }
+
+    @Test
+	@TestAsAdminBS
+	void createUntersuchungImpfungIntern() {
+		// ARRANGE
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		Impfstoff impfstoff = fixtureService.createImpfstoff();
+		// ACT
+		UntersuchungImpfungInternSaveJsonSpec payload =
+				UntersuchungImpfungInternBuilder.createJaxSpec(builder -> builder.forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
+						.withImpfstoff(impfstoff)).getData();
+		UntersuchungImpfungInternJsonSpec result = api.untersuchungImpfungenResourceCreateUntersuchungImpfungIntern()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.body(payload)
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.CREATED.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungInternJsonSpec.class);
+		// ASSERT
+		Assertions.assertThat(result)
+				.isNotNull()
+				.extracting(json -> json.getData().getImpfstoff().getId())
+				.isEqualTo(impfstoff.getId().getId());
+	}
+
+	@Test
+	@TestAsAdminBS
+	void updateUntersuchungImpfungenIntern_should_set_immunitaet_on_dossier_for_masern_varizellen() {
+		// ARRANGE
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		Impfstoff impfstoff = fixtureService.createImpfstoff(Krankheit.MASERN, Krankheit.VARIZELLEN);
+		// ACT
+		UntersuchungImpfungInternSaveJsonSpec payload =
+				UntersuchungImpfungInternBuilder.createJaxSpec(builder -> builder
+                    .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
+                    .withImpfstoff(impfstoff)
+					.withImmunitaetForKrankheit(Krankheit.MASERN, true)
+					.withImmunitaetForKrankheit(Krankheit.VARIZELLEN, true)).getData();
+
+		api.untersuchungImpfungenResourceCreateUntersuchungImpfungIntern()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.body(payload)
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.CREATED.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungInternJsonSpec.class);
+		// ASSERT
+		Dossier dossier = dossierService.getById(untersuchung.getEinladung().getDossier().getId());
+		Assertions.assertThat(dossier.isImmunitaetVarizellen()).isTrue();
+		Assertions.assertThat(dossier.isImmunitaetMasern()).isTrue();
+	}
+
+	@Test
+	@TestAsAdminBS
+	void updateUntersuchungImpfungenIntern() {
+		// ARRANGE
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		Impfstoff impfstoff = fixtureService.createImpfstoff();
+
+		UntersuchungImpfungIntern existingImpfung =
+				untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
+								untersuchung.getUntersuchungImpfungen())
+						.withUserErfasst(fixtureService.createBenutzer())
+						.withDatumImpfung(null)
+						.withImpfstoff(impfstoff)));
+
+		// ACT
+		UntersuchungImpfungInternSaveJsonSpec payload =
+				UntersuchungImpfungInternBuilder.createJaxSpec(builder -> builder.forImpfungIntern(existingImpfung)
+						.withImpfstoff(fixtureService.createImpfstoff())
+						.withImmunitaetForKrankheit(Krankheit.MASERN, true)
+						.withDatumImpfung(appClock.offsetDateTime().now().toLocalDate())).getData();
+		UntersuchungImpfungInternJsonSpec result = api.untersuchungImpfungenResourceUpdateUntersuchungImpfungenIntern()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.impfungInternIdPath(existingImpfung.getId().getId())
+				.body(payload)
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungInternJsonSpec.class);
+
+		// ASSERT
+		Assertions.assertThat(result).isNotNull();
+		Assertions.assertThat(result.getData().getDatumImpfung())
+				.isEqualTo(appClock.offsetDateTime().now().toLocalDate());
+		Assertions.assertThat(result.getData().getKrankheitenImmunitaeten())
+				.anyMatch(json -> json.getKrankheit() == KrankheitSpec.MASERN && json.getImmunitaetGenuegend());
+	}
+
+    @Test
+    @TestAsAdminBS
+    void updateUntersuchungImpfungenIntern_durchfuehren_setzt_anlass_durchgefuehrt() {
+        // ARRANGE
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+        Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        Impfstoff impfstoff = fixtureService.createImpfstoff();
+
+        UntersuchungImpfungIntern existingImpfung =
+            untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
+                    untersuchung.getUntersuchungImpfungen())
+                .withUserErfasst(fixtureService.createBenutzer())
+                .withDatumImpfung(null)
+                .withImpfstoff(impfstoff)));
+        Assertions.assertThat(existingImpfung.getImpfStatus()).isEqualTo(ImpfStatus.GEPLANT);
+
+        // ACT
+        UntersuchungImpfungInternSaveJsonSpec payload =
+            UntersuchungImpfungInternBuilder.createJaxSpec(builder -> builder.forImpfungIntern(existingImpfung)
+                .withImpfstoff(fixtureService.createImpfstoff())
+                .withImpfStatus(ImpfStatus.DURCHGEFUEHRT)
+                .withImmunitaetForKrankheit(Krankheit.MASERN, true)
+                .withDatumImpfung(appClock.offsetDateTime().now().toLocalDate())).getData();
+
+        UntersuchungImpfungInternJsonSpec result = api.untersuchungImpfungenResourceUpdateUntersuchungImpfungenIntern()
+            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .impfungInternIdPath(existingImpfung.getId().getId())
+            .body(payload)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungImpfungInternJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getData().getImpfStatus())
+            .isEqualTo(ImpfStatusSpec.DURCHGEFUEHRT);
+        Assertions.assertThat(result.getAnlassImpfungDurchgefuehrtId())
+            .isEqualTo(untersuchung.getEinladung().getAnlass().getId().getId());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void getUntersuchungImpfungenDataIntern_setzt_durchgefuehr_bei_neuem_anlass() {
+        // ARRANGE
+        Dossier dossier = fixtureService.createDossier();
+        Anlass previousAnlass = fixtureService.createAnlass(LocalDate.of(2021, 1, 1));
+        Einladung previousEinladung = fixtureService.createEinladung(previousAnlass, dossier);
+        Untersuchung previousUntersuchung = fixtureService.createUntersuchungWithImpfungen(previousEinladung);
+        Impfstoff impfstoff = fixtureService.createImpfstoff();
+
+        Assertions.assertThat(previousUntersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungIntern existingImpfung =
+            untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder
+                .forUntersuchungImpfungen(previousUntersuchung.getUntersuchungImpfungen())
+                .withUserErfasst(fixtureService.createBenutzer())
+                .withImpfstoff(impfstoff)
+                .withImmunitaetForKrankheit(Krankheit.MASERN, true)));
+
+        Anlass anlass = fixtureService.createAnlass(LocalDate.of(2024, 1, 1));
+        Einladung einladung = fixtureService.createEinladung(anlass, dossier);
+
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen(einladung);
+        Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+
+        // ACT
+        UntersuchungImpfungInternSaveJsonSpec payload =
+            UntersuchungImpfungInternBuilder.createJaxSpec(builder -> builder.forImpfungIntern(existingImpfung)
+                .withImpfstoff(fixtureService.createImpfstoff())
+                .withImpfStatus(ImpfStatus.DURCHGEFUEHRT)
+                .withImmunitaetForKrankheit(Krankheit.MASERN, true)
+                .withDatumImpfung(appClock.offsetDateTime().now().toLocalDate())).getData();
+
+        UntersuchungImpfungInternJsonSpec result = api.untersuchungImpfungenResourceUpdateUntersuchungImpfungenIntern()
+            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .impfungInternIdPath(existingImpfung.getId().getId())
+            .body(payload)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungImpfungInternJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getData().getImpfStatus())
+            .isEqualTo(ImpfStatusSpec.DURCHGEFUEHRT);
+        Assertions.assertThat(result.getAnlassImpfungDurchgefuehrtId())
+            .isEqualTo(untersuchung.getEinladung().getAnlass().getId().getId());
+    }
+
+    @Test
+	@TestAsAdminBS
+	void removeUntersuchungImpfungenIntern() {
+		// ARRANGE
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		Impfstoff impfstoff = fixtureService.createImpfstoff();
+
+		UntersuchungImpfungIntern existingImpfung =
+				untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
+								untersuchung.getUntersuchungImpfungen())
+						.withUserErfasst(fixtureService.createBenutzer())
+						.withDatumImpfung(null)
+						.withImpfstoff(impfstoff)));
+		List<UntersuchungImpfungIntern> impfungenVorher =
+				untersuchungImpfungInternService.findByUntersuchung(untersuchung.getId());
+		Assertions.assertThat(impfungenVorher).isNotEmpty();
+		// ACT
+		api.untersuchungImpfungenResourceRemoveUntersuchungImpfungenIntern()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.impfungInternIdPath(existingImpfung.getId().getId())
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.NO_CONTENT.getStatusCode());
+		// ASSERT
+		List<UntersuchungImpfungIntern> impfungenNachher =
+				untersuchungImpfungInternService.findByUntersuchung(untersuchung.getId());
+		Assertions.assertThat(impfungenNachher).isEmpty();
+	}
+
+	@Test
+	@TestAsAdminBS
+	void removeUntersuchungImpfungenIntern_not_allowed_if_impfung_from_another_anlass() {
+		// ARRANGE
+		Anlass anotherAnlass = fixtureService.createAnlass();
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		Impfstoff impfstoff = fixtureService.createImpfstoff();
+
+		UntersuchungImpfungIntern existingImpfung =
+				untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
+								untersuchung.getUntersuchungImpfungen())
+						.withAnlassImpfungErfasst(anotherAnlass)
+						.withUserErfasst(fixtureService.createBenutzer())
+						.withImpfstoff(impfstoff)));
+		List<UntersuchungImpfungIntern> impfungenVorher =
+				untersuchungImpfungInternService.findByUntersuchung(untersuchung.getId());
+		Assertions.assertThat(impfungenVorher).isNotEmpty();
+		// ACT
+		AppFailureErrorJsonSpec error = api.untersuchungImpfungenResourceRemoveUntersuchungImpfungenIntern()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.impfungInternIdPath(existingImpfung.getId().getId())
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
+				.extract()
+				.as(AppFailureErrorJsonSpec.class);
+		// ASSERT
+		Assertions.assertThat(error).isNotNull();
+		Assertions.assertThat(error.getSummary()).contains("Die Impfung kann nicht gelöscht werden");
+		List<UntersuchungImpfungIntern> impfungenNachher =
+				untersuchungImpfungInternService.findByUntersuchung(untersuchung.getId());
+		Assertions.assertThat(impfungenNachher).isNotEmpty();
+	}
+
+	@Test
+	@TestAsAdminBS
+	void saveUntersuchungMassnahmen_creates_aufgaben() {
+		// ARRANGE
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		UntersuchungImpfungenMassnahmenJsonSpec massnahmen =
+				UntersuchungImpfungenMassnahmenBuilder.createJaxSpec(builder -> builder.forUntersuchungImpfungen(
+								untersuchung.getUntersuchungImpfungen())
+						.withInformationEltern(InformationEltern.BRIEF)
+						.withInformationHausarzt(true)
+						.withRueckfrageHausarzt(true)
+						.withBemerkungen("Meine Impfungs-Massnahmen"));
+		// ACT
+		UntersuchungImpfungenMassnahmenJsonSpec result = api.untersuchungImpfungenResourceSaveUntersuchungMassnahmen()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.body(massnahmen.getData())
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungenMassnahmenJsonSpec.class);
+		// ASSERT
+		Assertions.assertThat(result).isNotNull();
+		Assertions.assertThat(result.getData().getInformationEltern()).isEqualTo(InformationElternSpec.BRIEF);
+		Assertions.assertThat(result.getData().getBemerkungen()).isEqualTo("Meine Impfungs-Massnahmen");
+
+		Untersuchung untersuchungWithLoadedData =
+				fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+		Assertions.assertThat(untersuchungWithLoadedData.getUntersuchungImpfungen()).isNotNull();
+		UntersuchungImpfungenMassnahmen massnahmenLoaded =
+				untersuchungWithLoadedData.getUntersuchungImpfungen().getUntersuchungImpfungenMassnahmen();
+		Assertions.assertThat(massnahmenLoaded).isNotNull();
+		Assertions.assertThat(massnahmenLoaded.getAufgabeInformationEltern()).isNotNull();
+		Assertions.assertThat(massnahmenLoaded.getAufgabeInformationHausarzt()).isNotNull();
+		Assertions.assertThat(massnahmenLoaded.getAufgabeRueckfrageHausarzt()).isNotNull();
+	}
+
+	@Test
+	@TestAsAdminBS
+	void saveUntersuchungMassnahmen_updates_aufgaben() {
+		// ARRANGE
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungenMassnahmen();
+		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+		Untersuchung untersuchungBefore =
+				fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+		Assertions.assertThat(untersuchungBefore.getUntersuchungImpfungen()).isNotNull();
+		UntersuchungImpfungenMassnahmen massnahmenBefore =
+				untersuchungBefore.getUntersuchungImpfungen().getUntersuchungImpfungenMassnahmen();
+		Assertions.assertThat(massnahmenBefore).isNotNull();
+		Assertions.assertThat(massnahmenBefore.getAufgabeInformationEltern())
+				.isNotNull()
+				.extracting(Aufgabe::getAufgabeStatus)
+				.isEqualTo(AufgabeStatus.OFFEN);
+		Assertions.assertThat(massnahmenBefore.getAufgabeInformationHausarzt())
+				.isNotNull()
+				.extracting(Aufgabe::getAufgabeStatus)
+				.isEqualTo(AufgabeStatus.OFFEN);
+		Assertions.assertThat(massnahmenBefore.getAufgabeRueckfrageHausarzt())
+				.isNotNull()
+				.extracting(Aufgabe::getAufgabeStatus)
+				.isEqualTo(AufgabeStatus.OFFEN);
+
+		// ACT
+		UntersuchungImpfungenMassnahmenJsonSpec payload =
+				UntersuchungImpfungenMassnahmenBuilder.createJaxSpec(builder -> builder.forUntersuchungImpfungen(
+								untersuchung.getUntersuchungImpfungen())
+						.withInformationEltern(InformationEltern.KEINE)
+						.withInformationHausarzt(false)
+						.withRueckfrageHausarzt(false));
+		UntersuchungImpfungenMassnahmenJsonSpec result = api.untersuchungImpfungenResourceSaveUntersuchungMassnahmen()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.body(payload.getData())
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode())
+				.extract()
+				.as(UntersuchungImpfungenMassnahmenJsonSpec.class);
+
+		// ASSERT
+		Assertions.assertThat(result).isNotNull();
+		Assertions.assertThat(result.getData().getInformationEltern()).isEqualTo(InformationElternSpec.KEINE);
+
+		Untersuchung untersuchungAfter =
+				fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+		Assertions.assertThat(untersuchungAfter.getUntersuchungImpfungen()).isNotNull();
+		UntersuchungImpfungenMassnahmen massnahmenAfter =
+				untersuchungAfter.getUntersuchungImpfungen().getUntersuchungImpfungenMassnahmen();
+		Assertions.assertThat(massnahmenAfter).isNotNull();
+		Assertions.assertThat(massnahmenAfter.getAufgabeInformationEltern())
+				.isNotNull()
+				.extracting(Aufgabe::getAufgabeStatus)
+				.isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
+		Assertions.assertThat(massnahmenAfter.getAufgabeInformationHausarzt())
+				.isNotNull()
+				.extracting(Aufgabe::getAufgabeStatus)
+				.isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
+		Assertions.assertThat(massnahmenAfter.getAufgabeRueckfrageHausarzt())
+				.isNotNull()
+				.extracting(Aufgabe::getAufgabeStatus)
+				.isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
+	}
+
+	@Test
+	@TestAsAdminBS
+	void einzelTerminErstellen() {
+		// ARRANGE
+		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+		// ACT
+		api.untersuchungImpfungenResourceEinzelTerminErstellen()
+				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.execute(ResponseBody::prettyPeek)
+				.then()
+				.assertThat()
+				.statusCode(Status.OK.getStatusCode());
+
+		// ASSERT
+		List<Aufgabe> aufgaben =
+				aufgabeService.findAllForKind(untersuchung.getEinladung().getDossier().getKind().getId());
+		Assertions.assertThat(aufgaben).isNotEmpty().hasSize(1);
+		Assertions.assertThat(aufgaben.getFirst().getTitel())
+				.isEqualTo("Gerber Emma: Einzeltermin Impfen erstellen - 2022/23 SU 4.PS Test getAnlass");
+	}
+}

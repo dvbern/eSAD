@@ -1,0 +1,269 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hora (generated)" id="1746625040546-1">
+    <addColumn tableName="kind">
+      <column name="aktivinexternalsystem" type="BOOLEAN" defaultValueBoolean="true"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-2">
+    <addColumn tableName="kind_aud">
+      <column name="aktivinexternalsystem" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-3">
+    <addColumn tableName="klasse">
+      <column name="aktivinexternalsystem" type="BOOLEAN" defaultValueBoolean="true"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-4">
+    <addColumn tableName="klasse_aud">
+      <column name="aktivinexternalsystem" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-5">
+    <addColumn tableName="kontaktpersonkind">
+      <column name="aktivinexternalsystem" type="BOOLEAN" defaultValueBoolean="true"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-6">
+    <addColumn tableName="kontaktpersonkind_aud">
+      <column name="aktivinexternalsystem" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-7">
+    <addColumn tableName="lehrperson">
+      <column name="aktivinexternalsystem" type="BOOLEAN" defaultValueBoolean="true"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-8">
+    <addColumn tableName="lehrperson_aud">
+      <column name="aktivinexternalsystem" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-9">
+    <addColumn tableName="schule">
+      <column name="aktivinexternalsystem" type="BOOLEAN" defaultValueBoolean="true"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-10">
+    <addColumn tableName="schule_aud">
+      <column name="aktivinexternalsystem" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-11">
+    <addColumn tableName="kind">
+      <column name="idinexternalsystem" type="VARCHAR(36)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-12">
+    <addColumn tableName="kind_aud">
+      <column name="idinexternalsystem" type="VARCHAR(36)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-13">
+    <addColumn tableName="klasse">
+      <column name="idinexternalsystem" type="VARCHAR(36)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-14">
+    <addColumn tableName="klasse_aud">
+      <column name="idinexternalsystem" type="VARCHAR(36)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-15">
+    <addColumn tableName="kontaktpersonkind">
+      <column name="idinexternalsystem" type="VARCHAR(36)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-16">
+    <addColumn tableName="kontaktpersonkind_aud">
+      <column name="idinexternalsystem" type="VARCHAR(36)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-17">
+    <addColumn tableName="lehrperson">
+      <column name="idinexternalsystem" type="VARCHAR(36)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-18">
+    <addColumn tableName="lehrperson_aud">
+      <column name="idinexternalsystem" type="VARCHAR(36)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-19">
+    <addColumn tableName="schule">
+      <column name="idinexternalsystem" type="VARCHAR(36)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-20">
+    <addColumn tableName="schule_aud">
+      <column name="idinexternalsystem" type="VARCHAR(36)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-21">
+    <addColumn tableName="kind">
+      <column name="timestampfirstimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-22">
+    <addColumn tableName="kind_aud">
+      <column name="timestampfirstimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-23">
+    <addColumn tableName="klasse">
+      <column name="timestampfirstimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-24">
+    <addColumn tableName="klasse_aud">
+      <column name="timestampfirstimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-25">
+    <addColumn tableName="kontaktpersonkind">
+      <column name="timestampfirstimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-26">
+    <addColumn tableName="kontaktpersonkind_aud">
+      <column name="timestampfirstimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-27">
+    <addColumn tableName="lehrperson">
+      <column name="timestampfirstimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-28">
+    <addColumn tableName="lehrperson_aud">
+      <column name="timestampfirstimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-29">
+    <addColumn tableName="schule">
+      <column name="timestampfirstimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-30">
+    <addColumn tableName="schule_aud">
+      <column name="timestampfirstimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-31">
+    <addColumn tableName="kind">
+      <column name="timestamplatestimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-32">
+    <addColumn tableName="kind_aud">
+      <column name="timestamplatestimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-33">
+    <addColumn tableName="klasse">
+      <column name="timestamplatestimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-34">
+    <addColumn tableName="klasse_aud">
+      <column name="timestamplatestimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-35">
+    <addColumn tableName="kontaktpersonkind">
+      <column name="timestamplatestimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-36">
+    <addColumn tableName="kontaktpersonkind_aud">
+      <column name="timestamplatestimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-37">
+    <addColumn tableName="lehrperson">
+      <column name="timestamplatestimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-38">
+    <addColumn tableName="lehrperson_aud">
+      <column name="timestamplatestimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-39">
+    <addColumn tableName="schule">
+      <column name="timestamplatestimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-40">
+    <addColumn tableName="schule_aud">
+      <column name="timestamplatestimport" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-41">
+    <dropColumn columnName="aktiv" tableName="kind"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-42">
+    <dropColumn columnName="aktiv" tableName="kind_aud"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-43">
+    <dropColumn columnName="aktiv" tableName="klasse"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-44">
+    <dropColumn columnName="aktiv" tableName="klasse_aud"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-45">
+    <dropColumn columnName="aktiv" tableName="kontaktpersonkind"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-46">
+    <dropColumn columnName="aktiv" tableName="kontaktpersonkind_aud"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-47">
+    <dropColumn columnName="aktiv" tableName="lehrperson"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-48">
+    <dropColumn columnName="aktiv" tableName="lehrperson_aud"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-49">
+    <dropColumn columnName="aktiv" tableName="schule"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-50">
+    <dropColumn columnName="aktiv" tableName="schule_aud"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-51">
+    <dropColumn columnName="externalsystemid" tableName="kind"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-52">
+    <dropColumn columnName="externalsystemid" tableName="kind_aud"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-53">
+    <dropColumn columnName="externalsystemid" tableName="klasse"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-54">
+    <dropColumn columnName="externalsystemid" tableName="klasse_aud"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-55">
+    <dropColumn columnName="externalsystemid" tableName="kontaktpersonkind"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-56">
+    <dropColumn columnName="externalsystemid" tableName="kontaktpersonkind_aud"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-57">
+    <dropColumn columnName="externalsystemid" tableName="lehrperson"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-58">
+    <dropColumn columnName="externalsystemid" tableName="lehrperson_aud"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-59">
+    <dropColumn columnName="externalsystemid" tableName="schule"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-60">
+    <dropColumn columnName="externalsystemid" tableName="schule_aud"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-61">
+    <dropColumn columnName="timestampableichexternal" tableName="kind"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1746625040546-62">
+    <dropColumn columnName="timestampableichexternal" tableName="kind_aud"/>
+  </changeSet>
+</databaseChangeLog>

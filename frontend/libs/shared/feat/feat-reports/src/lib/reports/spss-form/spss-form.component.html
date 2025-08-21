@@ -1,0 +1,23 @@
+<svui-card>
+  <form svuiFormLayout
+        [formType]="'kacheln'"
+        [formGroup]="form.group"
+        (ngSubmit)="submitIfValid()"
+        [mode]="DetailMode.EDIT"
+  >
+    <h2 svuiHeading="formSection" class="mb-3">{{ 'reports.spss.card.title' | transloco }}</h2>
+
+    @for (spssType of spssReports; track spssType) {
+      <svui-standalone-control [label]="'reports.spss.' + spssType | transloco">
+        <input type="checkbox" svuiCheckbox [formControl]="form.group.controls[spssType]">
+      </svui-standalone-control>
+    }
+
+    <div class="mt-2 text-end">
+      <button svuiButton="primary" type="submit">
+        {{ 'reports.spss.button.generieren' | transloco }}
+      </button>
+    </div>
+  </form>
+</svui-card>
+

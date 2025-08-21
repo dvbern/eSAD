@@ -1,0 +1,23 @@
+// Layout Utilities
+
+@use './font';
+@use './unit';
+
+@mixin flex(
+  $direction: null,
+  $wrap: null,
+  $align-items: null,
+  $justify-content: null,
+  $gap: null,
+  // use either $gap or $column-gap & row-gap
+  $row-gap: null,
+  $column-gap: null,
+) {
+  display: flex;
+  flex-flow: $direction $wrap;
+  align-items: $align-items;
+  justify-content: $justify-content;
+  gap: $gap;
+  row-gap: $row-gap;
+  column-gap: $column-gap;
+}

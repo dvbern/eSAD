@@ -1,0 +1,56 @@
+<svui-layout-columns>
+  <svui-card left>
+    <h2 svuiHeading="card">Layout Columns</h2>
+    <h2 svuiHeading="card">Card-Reihenfolge: 1</h2>
+
+    <p class="">
+      Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
+      dolore magna aliquyam erat, sed
+      diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
+      sanctus est Lorem ipsum dolor
+      sit amet.
+    </p>
+    <p class="">Lorem ipsum dolor sit amet, consetetur sadipscing elitr.</p>
+  </svui-card>
+
+  <svui-card left>
+    <div class="d-flex gap-3">
+      <svui-card-in-card class="flex-grow-1">
+        <h3>card in card</h3>
+      </svui-card-in-card>
+      <svui-card-in-card class="flex-grow-1">
+        <h3>card in card</h3>
+      </svui-card-in-card>
+    </div>
+  </svui-card>
+
+  <svui-card middle class="buttons">
+    <h2 svuiHeading="card">Card-Reihenfolge: 2</h2>
+  </svui-card>
+
+  <svui-card middle>
+    <h2 svuiHeading="card">Card-Reihenfolge: 3</h2>
+    <p>All Headings:</p>
+    <h2 svuiHeading="card">Card Heading</h2>
+    <h3 svuiHeading="formSection">FormSection Heading</h3>
+    <h3 svuiHeading="list">List Heading</h3>
+    <h4 svuiHeading="list">List Heading</h4>
+    <h5 svuiHeading="list">List Heading</h5>
+    <h6 svuiHeading="list">List Heading</h6>
+  </svui-card>
+
+  <ng-container right>
+    <svui-card>
+      <h2 svuiHeading="card">Card-Reihenfolge: 4</h2>
+
+      <svui-info-item label="Ärztin">F. Grogg</svui-info-item>
+      <svui-info-item label="MPA">F. Grogg</svui-info-item>
+      <svui-info-item label="Insgesamt" count="20">Eingeladen</svui-info-item>
+      <svui-info-item>Ohne Label</svui-info-item>
+      <svui-info-item label="Mit Icon">
+        <svui-icon [useCase]="'kalender'"/>
+        1.1.2025
+      </svui-info-item>
+    </svui-card>
+  </ng-container>
+</svui-layout-columns>

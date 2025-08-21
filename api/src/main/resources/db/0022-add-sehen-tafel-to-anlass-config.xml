@@ -1,0 +1,149 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="1743767849057-1">
+    <createTable tableName="untersuchungsehen">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungsehenPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bemerkungen" type="VARCHAR(255)"/>
+      <column name="brillelinsen" type="VARCHAR(30)"/>
+      <column name="farbsehen" type="VARCHAR(30)"/>
+      <column name="fernvisus" type="VARCHAR(255)"/>
+      <column name="fernvisuslinks" type="INTEGER"/>
+      <column name="fernvisusrechts" type="INTEGER"/>
+      <column name="inspektion" type="VARCHAR(30)"/>
+      <column name="konvergenz" type="VARCHAR(30)"/>
+      <column name="massnahmen" type="VARCHAR(255)"/>
+      <column name="motilitaet" type="VARCHAR(30)"/>
+      <column name="nahvisus" type="VARCHAR(255)"/>
+      <column name="nahvisuslinks" type="INTEGER"/>
+      <column name="nahvisusrechts" type="INTEGER"/>
+      <column name="stereotest" type="VARCHAR(30)"/>
+      <column name="strabismus" type="VARCHAR(255)"/>
+      <column name="strabismusauftreten" type="VARCHAR(255)"/>
+      <column name="strabismusauspraegung" type="VARCHAR(255)"/>
+      <column name="verwendetetafel" type="VARCHAR(30)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1743767849057-2">
+    <createTable tableName="untersuchungsehen_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="bemerkungen" type="VARCHAR(255)"/>
+      <column name="brillelinsen" type="VARCHAR(30)"/>
+      <column name="farbsehen" type="VARCHAR(30)"/>
+      <column name="fernvisus" type="VARCHAR(255)"/>
+      <column name="fernvisuslinks" type="INTEGER"/>
+      <column name="fernvisusrechts" type="INTEGER"/>
+      <column name="inspektion" type="VARCHAR(30)"/>
+      <column name="konvergenz" type="VARCHAR(30)"/>
+      <column name="massnahmen" type="VARCHAR(255)"/>
+      <column name="motilitaet" type="VARCHAR(30)"/>
+      <column name="nahvisus" type="VARCHAR(255)"/>
+      <column name="nahvisuslinks" type="INTEGER"/>
+      <column name="nahvisusrechts" type="INTEGER"/>
+      <column name="stereotest" type="VARCHAR(30)"/>
+      <column name="strabismus" type="VARCHAR(255)"/>
+      <column name="strabismusauftreten" type="VARCHAR(255)"/>
+      <column name="strabismusauspraegung" type="VARCHAR(255)"/>
+      <column name="verwendetetafel" type="VARCHAR(30)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1743767849057-3">
+    <addColumn tableName="anlassconfig">
+      <column name="sehentafel" type="VARCHAR(30)">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1743767849057-4">
+    <sql>
+      update anlassconfig
+      set sehentafel = 'NOT_VISIBLE'
+      where anlasstyp in ('IMPFAKTION', 'IMPFSPRECHSTUNDE', 'IMPFTERMIN');
+
+      update anlassconfig
+      set sehentafel = 'REQUIRED'
+      where anlasstyp not in ('IMPFAKTION', 'IMPFSPRECHSTUNDE', 'IMPFTERMIN');
+    </sql>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1743767849057-5">
+    <addNotNullConstraint tableName="anlassconfig" columnName="sehentafel"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1743767849057-6">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="sehentafel" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1743767849057-7">
+    <addColumn tableName="untersuchung">
+      <column name="untersuchungsehen_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1743767849057-8">
+    <addColumn tableName="untersuchung_aud">
+      <column name="untersuchungsehen_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1743767849057-9">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungsehen_audPK" tableName="untersuchungsehen_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1743767849057-10">
+    <addUniqueConstraint columnNames="untersuchungsehen_id"
+                         constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGSEHEN_ID_COL"
+                         tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1743767849057-11">
+    <createIndex indexName="ix_untersuchung_untersuchungsehen" tableName="untersuchung">
+      <column name="untersuchungsehen_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1743767849057-12">
+    <addForeignKeyConstraint baseColumnNames="rev"
+                             baseTableName="untersuchungsehen_aud"
+                             constraintName="FKta3kgopvkw19wg2yssrf7uogu"
+                             deferrable="false"
+                             initiallyDeferred="false"
+                             referencedColumnNames="rev"
+                             referencedTableName="revinfo"
+                             validate="true"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1743767849057-13">
+    <addForeignKeyConstraint baseColumnNames="untersuchungsehen_id"
+                             baseTableName="untersuchung"
+                             constraintName="fk_untersuchung_untersuchungsehen"
+                             deferrable="false"
+                             initiallyDeferred="false"
+                             referencedColumnNames="id"
+                             referencedTableName="untersuchungsehen"
+                             validate="true"/>
+  </changeSet>
+</databaseChangeLog>

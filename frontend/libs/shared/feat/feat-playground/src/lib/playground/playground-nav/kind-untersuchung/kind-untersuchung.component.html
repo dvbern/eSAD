@@ -1,0 +1,26 @@
+<svui-card>
+  <ul ngbNav style="margin-bottom: 1rem">
+
+    <!-- Untersuchung Tabs -->
+    @for (tabInfo of untersuchungStore.entities(); track tabInfo.id) {
+      <li ngbNavItem>
+        <a class="nav-link"
+           [routerLink]="tabInfo.id"
+           [routerLinkActive]="'active'"
+           aria-current="page">{{ tabInfo.label }}</a>
+      </li>
+    }
+
+    <!-- Abstand -->
+    <li style="flex-grow: 1"></li>
+
+    <!-- Dossier Button -->
+    <li class="nav-item" role="presentation" class="fw-bold">
+      <a class="nav-link" [routerLink]="'/kinder/' + navStore.selectedEntityId()">Zum Dossier</a>
+    </li>
+  </ul>
+
+
+  <router-outlet></router-outlet>
+
+</svui-card>

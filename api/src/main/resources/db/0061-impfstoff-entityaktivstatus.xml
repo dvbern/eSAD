@@ -1,0 +1,25 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hora" id="1750413774593-1">
+    <addColumn tableName="impfstoff">
+      <column name="impfstoffaktivstatus" type="VARCHAR(30)">
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora" id="1750413774593-2">
+    <addColumn tableName="impfstoff_aud">
+      <column name="impfstoffaktivstatus" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora" id="1750413774593-3">
+    <sql>
+      <!-- Default value for create, deactivating wasn't possible before so we assume all existing records are active -->
+      UPDATE impfstoff
+      SET impfstoffaktivstatus = 'AKTIV'
+      WHERE impfstoffaktivstatus IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="hora" id="1750413774593-">
+    <addNotNullConstraint tableName="impfstoff" columnName="impfstoffaktivstatus"/>
+  </changeSet>
+</databaseChangeLog>

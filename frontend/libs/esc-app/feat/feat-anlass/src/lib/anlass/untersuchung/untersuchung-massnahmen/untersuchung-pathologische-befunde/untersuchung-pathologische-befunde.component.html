@@ -1,0 +1,98 @@
+<h2 svuiHeading="formSection">{{ 'untersuchung.pathologische.befunde.title' | transloco }}</h2>
+
+<!-- Impfungen -->
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabImpfungen) {
+  <b>{{ 'untersuchung.tab.impfungen' | transloco }}</b>
+  @if (impfenMap().size > 0) {
+    <ul>
+      @for (key of impfenMap().keys(); track $index) {
+        <li>
+          <em>{{ key }}: </em>{{ impfenMap().get(key) }}
+        </li>
+      }
+    </ul>
+  } @else {
+    <p>-</p>
+  }
+}
+<!-- Sehen -->
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabSehen) {
+  <b>{{ 'untersuchung.tab.sehen' | transloco }}</b>
+  @if (sehenMap().size > 0) {
+    <ul>
+      @for (key of sehenMap().keys(); track $index) {
+        <li>
+          <em>{{ key }}: </em>{{ sehenMap().get(key) }}
+        </li>
+      }
+    </ul>
+  } @else {
+    <p>-</p>
+  }
+}
+<!-- Hören -->
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabHoeren) {
+  <!-- Hören Audiogramm-->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.showTabHoerenAudiogramm) {
+    <b>{{ 'untersuchung.tab.hoeren-audiogramm' | transloco }}</b>
+    @if (hoerenAudiogrammMap().size > 0) {
+      <ul>
+        @for (key of hoerenAudiogrammMap().keys(); track $index) {
+          <li>
+            <em>{{ key }}: </em>{{ hoerenAudiogrammMap().get(key) }}
+          </li>
+        }
+      </ul>
+    } @else {
+      <p>-</p>
+    }
+  }
+  <!-- Hören Otoskopie-->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.showTabHoerenOtoskopie) {
+    <b>{{ 'untersuchung.tab.hoeren-otoskopie' | transloco }}</b>
+    @if (hoerenOtoskopieMap().size > 0) {
+      <ul>
+        @for (key of hoerenOtoskopieMap().keys(); track $index) {
+          <li>
+            <em>{{ key }}: </em>{{ hoerenOtoskopieMap().get(key) }}
+          </li>
+        }
+      </ul>
+    } @else {
+      <p>-</p>
+    }
+  }
+} @else {
+  <b>{{ 'untersuchung.tab.hoeren' | transloco }}</b>
+  <p>-</p>
+}
+<!-- Grösse & Gewicht -->
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabGroesseGewicht) {
+  <b>{{ 'untersuchung.tab.groessegewicht' | transloco }}</b>
+  @if (groesseGewichtMap().size > 0) {
+    <ul>
+      @for (key of groesseGewichtMap().keys(); track $index) {
+        <li>
+          <em>{{ key }}: </em>{{ groesseGewichtMap().get(key) }}
+        </li>
+      }
+    </ul>
+  } @else {
+    <p>-</p>
+  }
+}
+<!-- Ärztliche Untersuchung -->
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabUntersuchung) {
+  <b>{{ 'untersuchung.tab.arzt' | transloco }}</b>
+  @if (arztMap().size > 0) {
+    <ul>
+      @for (key of arztMap().keys(); track $index) {
+        <li>
+          <em>{{ key }}: </em>{{ arztMap().get(key) }}
+        </li>
+      }
+    </ul>
+  } @else {
+    <p>-</p>
+  }
+}

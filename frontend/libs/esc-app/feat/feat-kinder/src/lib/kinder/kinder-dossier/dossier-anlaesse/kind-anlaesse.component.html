@@ -1,0 +1,43 @@
+<!-- Anlaesse -->
+<svui-list [heading]="'kind.dossier.anlaesse' | transloco"
+           [loading]="kindAnlaesseStore.loader.isLoading()">
+
+  @if (!kindAnlaesseStore.entities().length) {
+    <svui-empty-list-message [message]="'kind.dossier.anlaesse.list.empty' | transloco"/>
+  }
+  @if (canEditAnlaesse() && dossierStore.kindId()) {
+    <button svuiIconOnlyButton="primary"
+            listAddbutton
+            type="button"
+            [tooltip]="'global.tooltip.anlass.add' | transloco"
+            [icon]="'neu'"
+            [routerLink]="'/' + Path.ANLASS + '/' + Path.CREATE"
+            [queryParams]="{'anlassPartial': getPrefilledAnlass(), 'kindId': dossierStore.kindId()}">
+    </button>
+  }
+
+  @for (item of kindAnlaesseStore.entities(); track item.id; let index = $index) {
+    <svui-fancy-list-item
+      [mainText]="anlassTitleBasic(item.schuljahr, item.anlassTyp, item.titel, transloco)"
+      [date]="fromISODateString(item.anlassDatum)"
+      [linkText]="'global.oeffnen' | transloco"
+      [routerlinkDestination]="
+             '/' + Path.ANLASS
+            + '/' + item.anlassId
+            + '/' + Path.ANLASS_UNTERSUCHUNG
+            + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG
+            + '/' + item.einladungId
+            + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_MASSNAHMEN
+"
+      [linkQueryParams]="{'einladungIds':item.einladungId}"
+      [gray]="isAbgeschlossen(item.anlassStatus)"
+    >
+      <ng-content subBadges>
+        <svui-badge
+          [color]="einladungStatusColor(item.einladungStatus)">{{ 'EinladungStatus.' + item.einladungStatus | transloco }}
+        </svui-badge>
+      </ng-content>
+    </svui-fancy-list-item>
+  }
+
+</svui-list>

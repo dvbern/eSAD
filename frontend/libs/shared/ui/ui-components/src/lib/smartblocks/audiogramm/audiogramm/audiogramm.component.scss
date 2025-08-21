@@ -1,0 +1,99 @@
+@use '../../../../../../../ui/ui-components/src/styles/core/color/_color-set-impfentscheid';
+
+:host {
+	display: block;
+
+	.column-container {
+		display: flex;
+		flex-direction: row;
+		gap: 16px;
+
+		@media only screen and (max-width: 1000px) {
+			flex-direction: column;
+		}
+	}
+
+	.audio-table {
+
+		// width: 100%;
+		display: grid;
+		grid-template-columns: 1fr repeat(7, 1fr) 3fr repeat(7, 1fr) 1rem;
+
+
+		thead, tbody, tfoot, tr {
+			display: grid;
+			grid-column: 1 / -1;
+			grid-template-columns: subgrid;
+		}
+
+		thead th {
+			justify-content: start
+		}
+
+
+		tbody > tr {
+
+
+			&.border-bottom {
+				border-bottom: 1px dashed color-set-impfentscheid.$row-border;
+			}
+
+
+			> td {
+
+				display: flex;
+				align-content: center;
+				justify-content: center;
+				align-items: center;
+				padding-inline: 12px;
+
+
+				&.impf_table_td_name {
+					justify-content: start;
+
+					font-weight: 700;
+					font-size: 16px;
+				}
+
+
+				::ng-deep .form-check-input {
+					font-size: 1.6rem;
+					margin: 0;
+          width: 26px;
+          height: 26px;
+				}
+
+			}
+		}
+
+
+		th {
+			color: color-set-impfentscheid.$th;
+			font-weight: 700;
+			font-size: 14px;
+
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+
+			justify-content: center;
+			text-align: center;
+
+			// Silbentrennung: Achtung, language tag muss gesetzt sein
+			hyphens: auto;
+		}
+
+
+	}
+
+	.checkbox-label-around {
+		// grosser klickbarer Bereich um die Checkbox
+		width: 100%;
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		cursor: pointer;
+		padding: .5rem;
+	}
+}

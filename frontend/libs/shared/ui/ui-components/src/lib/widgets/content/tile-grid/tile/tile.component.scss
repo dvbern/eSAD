@@ -1,0 +1,27 @@
+@use '../../../../../styles/core/border';
+@use '../../../../../styles/core/size';
+@use '../../../../../styles/core/spacing';
+@use '../../../../../styles/core/color/color-set-tile';
+
+$tile-height: 174px;
+$tile-icon-size: 44px;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: $tile-height;
+  padding: spacing.$base;
+
+  ::ng-deep svui-icon {
+    --svui-icon-size: #{$tile-icon-size};
+    color: color-set-tile.$icon;
+    margin-block: spacing.$row-gap;
+  }
+
+  > ::ng-deep * {
+    width: 100%;
+  }
+}

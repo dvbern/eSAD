@@ -1,0 +1,24 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="pc (generated)" id="1743814105312-1">
+        <addColumn tableName="infomaterial">
+            <column name="aktiv" type="BOOLEAN">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="pc (generated)" id="1743814105312-2">
+        <addColumn tableName="infomaterial_aud">
+            <column name="aktiv" type="BOOLEAN"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1743815192000-1" author="dvbern">
+      <sql>
+        UPDATE infomaterial SET aktiv = true WHERE aktiv IS NULL;
+      </sql>
+    </changeSet>
+    <changeSet id="1743815252000-1" author="dvbern">
+      <addNotNullConstraint tableName="infomaterial" columnName="aktiv"/>
+    </changeSet>
+</databaseChangeLog>

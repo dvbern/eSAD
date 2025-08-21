@@ -1,0 +1,209 @@
+<form svuiFormLayout
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="store.detailMode()">
+
+  <h2 svuiHeading="formSection">{{ 'anlass.detail.anlassdaten' | transloco }}</h2>
+
+  <!-- Titel -->
+  <svui-form-control [label]="'anlass.detail.titel' | transloco"
+                     [viewValue]="form.group.value.titel" [size]="'double'"
+                     data-testid="anlass-titel-input">
+    <div class="input-group">
+      <span class="input-group-text">{{
+          anlassTitlePrefix(
+            form.controlAt('schuljahr').value,
+            form.controlAt('anlassTyp').value,
+            transloco)
+        }}
+      </span>
+      <input svuiTextInput [formControl]="form.controlAt('titel')">
+    </div>
+  </svui-form-control>
+
+  <!-- AnlassArt -->
+  <svui-form-control [label]="'anlass.detail.art' | transloco"
+                     [viewValue]="form.group.value.anlassArt ? ('AnlassArt.' + form.group.value.anlassArt | transloco) : undefined"
+                     [size]="'half'"
+                     data-testid="anlass-art-select">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.anlassArt"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+    >
+      @for (art of anlassArten; track art) {
+        <ng-option [value]="art">
+          {{ 'AnlassArt.' + art | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Anlass Typ -->
+  <svui-form-control [label]="'anlass.detail.typ' | transloco"
+                     [viewValue]="form.group.value.anlassTyp ? ('AnlassTyp.' + form.group.value.anlassTyp | transloco) : undefined"
+                     [size]="'half'"
+                     data-testid="anlass-typ-select">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.anlassTyp"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [readonly]="!this.store.selectedIsNew()"
+    >
+      @for (typ of anlassTypen; track typ) {
+        <ng-option [value]="typ">
+          {{ 'AnlassTyp.' + typ | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+
+  <!-- Datum -->
+  <svui-form-control [label]="'anlass.detail.datum' | transloco"
+                     [viewValue]="form.group.value.datum"
+                     data-testid="anlass-datum-date-picker">
+    <input svuiTextInput="date" [formControl]="form.controlAt('datum')"/>
+  </svui-form-control>
+
+  @if (store.isAbgeschlossen()) {
+    <span style="grid-column: span 2;"></span>
+  } @else {
+    <!-- Schuljahr -->
+    <svui-form-control [label]="'anlass.detail.schuljahr' | transloco"
+                       [viewValue]="displaySchuljahr(form.group.value.schuljahr)">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.schuljahr"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        [searchable]="true"
+      >
+        @for (item of getSchuljahrOptions(); track item; ) {
+          <ng-option [value]="item">
+            <span>{{ displaySchuljahr(item) }}</span>
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+  }
+
+  <!-- Von -->
+  <svui-form-control [label]="'anlass.detail.von' | transloco"
+                     [viewValue]="form.group.value.zeitVon"
+                     [size]="'half'">
+    <input svuiTextInput="time" [formControl]="form.controlAt('zeitVon')"/>
+  </svui-form-control>
+
+  <!-- Bis -->
+  <svui-form-control [label]="'anlass.detail.bis' | transloco"
+                     [viewValue]="form.group.value.zeitBis"
+                     [size]="'half'">
+    <input svuiTextInput="time" [formControl]="form.controlAt('zeitBis')"/>
+  </svui-form-control>
+
+  <!-- Schularzt -->
+  <svui-form-control [label]="'anlass.detail.schularzt' | transloco"
+                     [viewValue]="form.group.value.arzt?.fullName">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.arzt"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [searchable]="true"
+      [compareWith]="compareFnBenutzer"
+    >
+      @for (item of benutzerOptionsStore.arztOptionsIncluding(store.arztOfCurrentAnlass()); track item.id; ) {
+        <ng-option [value]="item" [disabled]="!item.aktiv">
+            <span class="w-100 d-flex justify-content-between">
+              <span>{{ item.fullName }}</span>
+            </span>
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- MPA -->
+  <svui-form-control [label]="'anlass.detail.mpa' | transloco"
+                     [viewValue]="form.group.value.mpa?.fullName">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.mpa"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [searchable]="true"
+      [compareWith]="compareFnBenutzer"
+    >
+      @for (item of benutzerOptionsStore.mpaOptionsIncluding(store.mpaOfCurrentAnlass()); track item.id; ) {
+        <ng-option [value]="item" [disabled]="!item.aktiv">
+            <span class="w-100 d-flex justify-content-between">
+              <span>{{ item.fullName }}</span>
+            </span>
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Weitere Personen -->
+  <svui-form-control [label]="'anlass.detail.weitere.personen' | transloco"
+                     [viewValue]="form.group.value.weiterePerson?.fullName">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.weiterePerson"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [searchable]="true"
+      [compareWith]="compareFnBenutzer"
+    >
+      @for (item of benutzerOptionsStore.entitiesIncluding(store.weiterePersonOfCurrentAnlass()); track item.id) {
+        <ng-option [value]="item" [disabled]="!item.aktiv">
+            <span class="w-100 d-flex justify-content-between">
+              <span>{{ item.fullName }}</span>
+            </span>
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Info Schularzt -->
+  <svui-form-control [label]="'anlass.detail.infoSchularzt' | transloco"
+                     [viewValue]="form.group.value.arztInfo">
+        <textarea svuiTextarea
+                  [formControl]="form.group.controls.arztInfo"></textarea>
+  </svui-form-control>
+
+  <!-- Info MPA -->
+  <svui-form-control [label]="'anlass.detail.infoMPA' | transloco"
+                     [viewValue]="form.group.value.mpaInfo">
+        <textarea svuiTextarea
+                  [formControl]="form.group.controls.mpaInfo"></textarea>
+  </svui-form-control>
+
+  <!-- Info Orthoptistin -->
+  <svui-form-control [label]="'anlass.detail.infoOrthoptistin' | transloco"
+                     [viewValue]="form.group.value.weiterePersonInfo">
+        <textarea svuiTextarea
+                  [formControl]="form.group.controls.weiterePersonInfo"></textarea>
+  </svui-form-control>
+
+  <!--messages for whole form -->
+  <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="store.detailMode()"
+    [isCreate]="store.selectedIsNew()"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="true"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_TWO_UP]"
+    [routeOnCancelCreate]="[Path.RELATIVE_ONE_UP]"/>
+</form>

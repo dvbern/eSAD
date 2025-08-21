@@ -1,0 +1,41 @@
+<ng-select
+  svuiNgSelect
+  bindLabel='dummy'
+  appendTo="body"
+
+  [class.roundedVariant]="styleVariant() === 'rounded'"
+
+  [multiple]="false"
+  [clearable]="clearable()"
+
+  [placeholder]="placeholder()"
+  [typeToSearchText]="'ui.typeahead.enter-n-characters' | transloco: {n: 2}"
+  [notFoundText]="'ui.typeahead.notFound' | transloco"
+  [loadingText]="'ui.typeahead.loading' | transloco"
+
+  [typeahead]="searchInput$"
+  [loading]="working()"
+  [minTermLength]="2"
+  [items]="kindSearchStore.entities()"
+  [trackByFn]="trackByFn"
+
+  [formControl]="myFormControl()">
+
+  <!-- selected Kind (closed) -->
+  <ng-template ng-label-tmp let-item="item">
+    @if (item) {
+      {{ item.name }} {{ item.vorname }} ({{ item.geburtsdatum | date: 'dd.MM.yyyy' }})
+    } @else {
+      --
+    }
+  </ng-template>
+
+  <!-- Kind options (open) -->
+  <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+    <div class="d-flex flex-column">
+      <b>{{ item.name }} {{ item.vorname }} ({{ item.geburtsdatum | date: 'dd.MM.yyyy' }})</b>
+      <span>{{ item.esadId }}</span>
+    </div>
+  </ng-template>
+
+</ng-select>

@@ -1,0 +1,21 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="pc (generated)" id="1747720683705-1">
+        <addColumn tableName="einladung">
+            <column name="spssexported" type="BOOLEAN"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="pc (generated)" id="1747720683705-2">
+        <addColumn tableName="einladung_aud">
+            <column name="spssexported" type="BOOLEAN"/>
+        </addColumn>
+    </changeSet>
+  <changeSet author="pc (generated)" id="1747720683705-3">
+    <sql>
+      UPDATE einladung SET spssexported = false WHERE spssexported IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="pc (generated)" id="1747720683705-4">
+    <addNotNullConstraint tableName="einladung" columnName="spssexported"/>
+  </changeSet>
+</databaseChangeLog>

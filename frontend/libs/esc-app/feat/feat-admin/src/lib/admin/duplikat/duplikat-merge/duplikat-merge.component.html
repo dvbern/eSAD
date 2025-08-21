@@ -1,0 +1,56 @@
+<feat-dialogs-modal [modalTitle]="'duplikat.merge' | transloco">
+
+  <!-- Anzeige Kinder Details -->
+  <svui-layout-two-columns>
+    <div left>
+      <p class="fw-bold">{{ 'duplikat.kind1' | transloco }}</p>
+      <feat-duplikat-merge-kind-info [kind]="duplikatData()?.kind1"></feat-duplikat-merge-kind-info>
+    </div>
+    <div right>
+      <p class="fw-bold">{{ 'duplikat.kind2' | transloco }}</p>
+      <feat-duplikat-merge-kind-info [kind]="duplikatData()?.kind2"></feat-duplikat-merge-kind-info>
+    </div>
+  </svui-layout-two-columns>
+
+  <form svuiFormLayout
+        [mode]="DetailMode.EDIT"
+        [formGroup]="form.group"
+        (ngSubmit)="speichern()"
+        [formType]="'kacheln'">
+
+    <!-- Auswahl Basis-Kind -->
+    <svui-form-control label="{{ 'duplikat.merge.basiskind' | transloco }}"
+                       [topLabelVisibility]="'hidden'"
+                       [viewValue]="form.group.controls.basisKind.value?.name">
+
+      <p class="fw-bold myTitleClass">{{ 'duplikat.merge.basiskind' | transloco }}</p>
+      <p> {{ 'duplikat.merge.info' | transloco }}</p>
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.basisKind"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      >
+        <ng-option [value]="duplikatData()?.kind1">
+          {{ 'duplikat.kind1' | transloco }}
+        </ng-option>
+        <ng-option [value]="duplikatData()?.kind2">
+          {{ 'duplikat.kind2' | transloco }}
+        </ng-option>
+
+      </ng-select>
+    </svui-form-control>
+
+    <!-- Buttons -->
+    <svui-save-cancel-buttons
+      [canEdit]="true"
+      [saving]="false"
+      [primaryButtonText]="'duplikat.merge' | transloco"
+      (cancelClicked)="abbrechen()"
+    >
+    </svui-save-cancel-buttons>
+
+  </form>
+
+</feat-dialogs-modal>

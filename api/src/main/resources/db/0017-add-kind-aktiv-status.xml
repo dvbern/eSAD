@@ -1,0 +1,49 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="dvbern (generated)" id="1743515497788-1">
+    <addColumn tableName="kind">
+      <column name="kindaktivstatus" type="VARCHAR(30)">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1743515497788-2">
+    <addColumn tableName="kind_aud">
+      <column name="kindaktivstatus" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1743515497788-3">
+    <addColumn tableName="kind">
+      <column name="timestampableichexternal" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1743515497788-4">
+    <addColumn tableName="kind_aud">
+      <column name="timestampableichexternal" type="TIMESTAMP(6) WITH TIME ZONE"/>
+    </addColumn>
+  </changeSet>
+  
+  <changeSet id="1743534019529-1" author="dvbern">
+    <sql>
+      UPDATE kind SET kindaktivstatus = 'AKTIV' where kindaktivstatus is null;
+    </sql>
+  </changeSet>
+  <changeSet id="1743534083265-1" author="dvbern">
+    <addNotNullConstraint tableName="kind" columnName="kindaktivstatus"/>
+  </changeSet>
+  <changeSet id="1743543764746-1" author="dvbern">
+    <sql>
+-- add scheduler config for kind aktiv status schedule
+      INSERT INTO schedulerconfig (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, batchsize, disabled, schedulertyp)
+      VALUES ('11111111-6666-1111-1111-111111111102', '2025-04-01 11:38:45.573423', '2025-04-01 11:38:45.573423', 'liquibase', 'liquibase', 0, 'BS', 500, false, 'KINDER_INAKTIVIEREN');
+    </sql>
+  </changeSet>
+  
+  
+  <changeSet author="dvbern (generated)" id="1743515497788-8">
+    <dropTable tableName="tasks"/>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1743515497788-9">
+    <dropSequence sequenceName="tasks_seq"/>
+  </changeSet>
+</databaseChangeLog>

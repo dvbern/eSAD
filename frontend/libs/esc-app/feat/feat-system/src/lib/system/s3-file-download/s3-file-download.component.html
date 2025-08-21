@@ -1,0 +1,22 @@
+<!--3d File Download-->
+<svui-card>
+  <h2 svuiHeading="card" class="mb-3">S3 File Download</h2>
+
+  <form
+    [formGroup]="s3FileDownloadForm.group"
+    (ngSubmit)="submit()"
+    class="d-flex w-100 justify-content-start align-items-end gap-4">
+
+    <!-- input -->
+    <svui-standalone-control label="File Id In Bucket">
+      <input svuiTextInput="text" [formControl]="s3FileDownloadForm.controlAt('fileIdInBucket')"/>
+    </svui-standalone-control>
+
+    <!-- BUTTONS -->
+    <button svuiButton="primary"
+            type="submit"
+            [working]="systemAdminStore.loader.isLoading()">{{ 'document-queue.download' | transloco }}
+    </button>
+
+  </form>
+</svui-card>

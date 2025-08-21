@@ -1,0 +1,16 @@
+<div class="svui_icon-button__wrapper position-relative"
+     ngbTooltip="{{computedTooltip()}}">
+  <span class="visually-hidden">
+    <ng-content/>
+  </span>
+
+  @if (badgeContent()) {
+    <span class="badge rounded-pill text-white position-absolute">
+      {{ badgeContent() }}
+    </span>
+  }
+
+  <svui-working-icon class="svui_icon-button__icons"
+                     [iconUseCase]="icon()"
+                     [working]="working()"/>
+</div>

@@ -1,0 +1,99 @@
+<svui-buttons-right-container>
+  <h2 svuiHeading="formSection">{{ 'schule.detail.tab.klassen' | transloco }}</h2>
+  <svui-page-header-list-summary
+    [items]="summaryItems()"/>
+
+  @if (canEditList()) {
+    <svui-page-header-add-button [addRouterLink]="Path.RELATIVE_THREE_UP + '/' + Path.KLASSEN + '/' + Path.CREATE"/>
+  }
+</svui-buttons-right-container>
+<svui-card [innerSpacing]="'topBottom'">
+  <table
+    svuiTable
+    [loading]="klassenStore.loader.isLoading()"
+    [totalRows]="itemTable.filteredListSize()"
+    (pageChanged)="itemTable.onPageChanged($event)"
+    [pagination]="itemTable.pagination()"
+  >
+    <!-- col widths -->
+    <colgroup>
+      <col svuiColWidth colWidth="text-medium">
+      <col svuiColWidth colWidth="text-medium">
+      <col svuiColWidth colWidth="select-medium">
+      <col svuiColWidth colWidth="select-medium">
+      <col svuiColWidth colWidth="text-medium">
+    </colgroup>
+    <thead>
+    <!-- Headers for sorting -->
+    <tr>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.schule.bezeichnung')"
+        (sort)="itemTable.onColSort($event, 'data.schule.bezeichnung')"
+      >
+        {{ 'klasse.schule' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.bezeichnung')"
+        (sort)="itemTable.onColSort($event, 'data.bezeichnung')"
+      >
+        {{ 'klasse.bezeichnung' | transloco }}
+      </th>
+
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.klassenstufe')"
+        (sort)="itemTable.onColSort($event, 'data.klassenstufe')"
+      >
+        {{ 'klasse.klassenstufe' | transloco }}
+      </th>
+
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.klasseSchulart')"
+        (sort)="itemTable.onColSort($event, 'data.klasseSchulart')"
+      >
+        {{ 'klasse.klasseSchulart' | transloco }}
+      </th>
+
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('lehrpersonenName')"
+        (sort)="itemTable.onColSort($event, 'lehrpersonenName')"
+      >
+        {{ 'klasse.lehrperson' | transloco }}
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+      @if (!itemTable.displayedList()?.length && !klassenStore.loader.isLoading()) {
+        <tr svui-empty-table-message [message]="'klasse.list.empty.hint' | transloco"></tr>
+      }
+      @for (item of itemTable.displayedList(); track item.id) {
+        <tr>
+          <td>{{ item.data.schule.bezeichnung }}</td>
+          <td>
+            <svui-table-link
+              type="text"
+			  [myRouterLink]="[Path.RELATIVE_THREE_UP, Path.KLASSEN, item.id]">
+			  {{
+                item.data.bezeichnung +
+                (item.data.klasseAktivStatus === EntityAktivStatus.INAKTIV ? ('gloabl.suffixInaktiv' | transloco) : '')
+			  }}
+            </svui-table-link>
+          </td>
+          <td>{{ 'Klassenstufe.' + item.data.klassenstufe  | transloco }}</td>
+          <td>{{ item.data.klasseSchulart }}</td>
+          <td>{{ item.lehrpersonenName }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</svui-card>
+

@@ -1,0 +1,20 @@
+<div [formGroup]="translatedStringGroup()" svuiFormLayout [mode]="mode()">
+  <!-- Name DE -->
+  @if (tenantSettingsStore.supportsLanguageDe()) {
+    <svui-form-control
+      label="{{ 'label.name' | transloco }} {{ this.tenantSettingsStore.postfixDeKey() | transloco }}"
+      [viewValue]="translatedStringGroup().controls.de.value"
+    >
+      <input svuiTextInput value="text" [formControl]="translatedStringGroup().controls.de"/>
+    </svui-form-control>
+  }
+  <!-- Name FR -->
+  @if (tenantSettingsStore.supportsLanguageFr()) {
+    <svui-form-control
+      label="{{ 'label.name' | transloco }} {{ this.tenantSettingsStore.postfixFrKey() | transloco }}"
+      [viewValue]="translatedStringGroup().controls.fr.value"
+    >
+      <input svuiTextInput value="text" [formControl]="translatedStringGroup().controls.fr"/>
+    </svui-form-control>
+  }
+</div>

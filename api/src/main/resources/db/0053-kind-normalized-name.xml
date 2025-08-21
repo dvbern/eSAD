@@ -1,0 +1,42 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hefr (generated)" id="1748958770721-1">
+    <addColumn tableName="kind">
+      <column name="normalizedname" type="VARCHAR(255)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1748958770721-2">
+    <addColumn tableName="kind">
+      <column name="normalizedvorname" type="VARCHAR(255)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="Franziska Herger" id="1748958770721-3">
+    <sql>
+      UPDATE kind SET normalizedname = 'TODO' where normalizedname IS NULL;
+      UPDATE kind SET normalizedvorname = 'TODO' WHERE normalizedvorname IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="Franziska Herger" id="1748958770721-4">
+    <addNotNullConstraint tableName="kind" columnName="normalizedname"/>
+    <addNotNullConstraint tableName="kind" columnName="normalizedvorname"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1748958770721-5">
+    <addColumn tableName="kind_aud">
+      <column name="normalizedname" type="VARCHAR(255)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1748958770721-6">
+    <addColumn tableName="kind_aud">
+      <column name="normalizedvorname" type="VARCHAR(255)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1749217784204-1">
+    <createIndex indexName="ix_kind_duplikat" tableName="kind">
+      <column name="normalizedname"/>
+      <column name="normalizedvorname"/>
+      <column name="geburtsdatum"/>
+      <column name="geschlecht"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+</databaseChangeLog>

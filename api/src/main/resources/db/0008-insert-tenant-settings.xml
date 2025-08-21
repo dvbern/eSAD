@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+  <changeSet author="homa" id="2025-11-14-1800">
+    <sql>
+
+      INSERT INTO tenantsetting (id, timestampMutiert, timestampErstellt, version, tenant, defaultlanguage, supportedlanguages, userMutiert, userErstellt)
+      VALUES (uuid_generate_v4(), current_timestamp, current_timestamp, 0, 'BS', 'DE', 'DE', 'liquibase', 'liquibase'),
+             (uuid_generate_v4(), current_timestamp, current_timestamp, 0, 'BE', 'DE', 'DE,FR', 'liquibase', 'liquibase');
+
+    </sql>
+  </changeSet>
+
+</databaseChangeLog>

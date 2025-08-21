@@ -1,0 +1,30 @@
+@use '../../../../../styles/core/spacing';
+
+:host {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: spacing.$base spacing.$card-inner;
+  flex-wrap: wrap;
+
+  .svui_card__header-icon {
+    height: 21px;
+    width: 21px;
+    --svui-icon-size: 21px;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .svui_card__header-heading {
+    flex-grow: 1;
+  }
+
+  ::ng-deep {
+    .form-control {
+      width: unset;
+    }
+  }
+}

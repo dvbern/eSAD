@@ -1,0 +1,23 @@
+<feat-page heading="System">
+  <svui-card>
+    <ul ngbNav style="margin-bottom: 2rem;">
+      <li ngbNavItem>
+        <button class="nav-link"
+                [routerLink]="Path.SYSTEM_GENERAL"
+                [routerLinkActive]="'active'"
+                aria-current="page">Actions
+        </button>
+      </li>
+
+      <li ngbNavItem>
+        <button class="nav-link"
+                [routerLink]="Path.SYSTEM_JOB"
+                [routerLinkActive]="'active'"
+                aria-current="page">Jobs
+        </button>
+      </li>
+    </ul>
+
+    <router-outlet></router-outlet>
+  </svui-card>
+</feat-page>

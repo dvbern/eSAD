@@ -1,0 +1,503 @@
+<feat-dialogs-modal [modalTitle]="'kinder.filter.erweitert.titel' | transloco">
+  <form svuiFormLayout [mode]="DetailMode.EDIT" [formGroup]="form.group" (ngSubmit)="submit()" style="align-items: end;">
+
+
+    <!-- Switch um auzuwählen ob nach Kindern gesucht wird für die ein Anlass pendent ist -->
+    <svui-single-radio-wrapper [label]="'kinder.filter.erweitert.anlassPendent.false' | transloco" class="mb-2">
+      <input svuiRadio
+             type="radio"
+             name="kinder.filter.erweitert.anlassPendent"
+             [formControl]="form.group.controls.anlassPendent"
+             [value]="false"/>
+    </svui-single-radio-wrapper>
+    <svui-single-radio-wrapper [label]="'kinder.filter.erweitert.anlassPendent.true' | transloco" class="mb-2 svui_form-layout--double" >
+      <input svuiRadio
+             type="radio"
+             name="kinder.filter.erweitert.anlassPendent"
+             [formControl]="form.group.controls.anlassPendent"
+             [value]="true"/>
+    </svui-single-radio-wrapper>
+
+    @if (!form.isStandardFilterSelected()) {
+      <span class="svui_form-layout--full">
+        {{ 'kinder.filter.erweitert.anlassPendent.true.info' | transloco }}
+      </span>
+    }
+
+    @if (form.isStandardFilterSelected()) {
+      <svui-title [context]="'formSection'">{{ 'kinder.filter.erweitert.notizen.kind' | transloco }}</svui-title>
+
+      <!--    Kind Inaktiv-->
+      <svui-single-checkbox-wrapper [label]="'kinder.filter.erweitert.kind.inaktiv' | transloco"
+                                    class="svui_form-layout--half mb-5">
+        <input svuiCheckbox
+               type="checkbox"
+               name="inaktiv"
+               [formControl]="form.group.controls.inaktiv"/>
+      </svui-single-checkbox-wrapper>
+
+      <!--    immunitaet variezellen-->
+      <svui-form-control [label]="'kinder.filter.erweitert.kind.immunitaet.variezellen' | transloco" size="half"
+                         class="svui_form-layout--normal" viewValue="">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.immunitaetVariezellen"
+          [clearable]="true"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          <ng-option [value]="true">
+            {{ 'kinder.filter.erweitert.kind.immunitaet.variezellen.true' | transloco }}
+          </ng-option>
+          <ng-option [value]="false">
+            {{ 'kinder.filter.erweitert.kind.immunitaet.variezellen.false' | transloco }}
+          </ng-option>
+        </ng-select>
+      </svui-form-control>
+
+      <!--    immunitaet  masern-->
+      <svui-form-control [label]="'kinder.filter.erweitert.kind.immunitaet.masern' | transloco" size="half"
+                         class="svui_form-layout--normal" viewValue="">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.immunitaetMasern"
+          [clearable]="true"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          <ng-option [value]="true">
+            {{ 'kinder.filter.erweitert.kind.immunitaet.masern.true' | transloco }}
+          </ng-option>
+          <ng-option [value]="false">
+            {{ 'kinder.filter.erweitert.kind.immunitaet.masern.false' | transloco }}
+          </ng-option>
+        </ng-select>
+      </svui-form-control>
+
+      <!--    Zustaendige MPA-->
+      <svui-form-control [label]="'kinder.filter.erweitert.verantwortliche.mpa' | transloco" size="half"
+                         [viewValue]="form.group.value.mpaId">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.mpaId"
+          [clearable]="true"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          <ng-option [value]="NOT_ASSIGNED">
+            {{ 'kinder.filter.erweitert.verantwortliche.mpa.unassigned' | transloco }}
+          </ng-option>
+
+          @for (each of benutzerOptionsStore.mpaOptions(); track each) {
+            <ng-option [value]="each.id">
+              {{ each.fullName }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+      <!--    Zustaendige Schulaerztin-->
+      <svui-form-control [label]="'kinder.filter.erweitert.verantwortliche.arzt' | transloco" size="half"
+                         [viewValue]="form.group.value.arztId">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.arztId"
+          [clearable]="true"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          <ng-option [value]="NOT_ASSIGNED">
+            {{ 'kinder.filter.erweitert.verantwortliche.arzt.unassigned' | transloco }}
+          </ng-option>
+
+          @for (each of benutzerOptionsStore.arztOptions(); track each) {
+            <ng-option [value]="each.id">
+              {{ each.fullName }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+      <!--    Dossier Nachkontrolle -->
+      <svui-form-control [label]="'kinder.filter.erweitert.dossier.nachkontrolle' | transloco" size="half"
+                         class="svui_form-layout--normal" viewValue="">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.dossierNachkontrolle"
+          [clearable]="true"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          <ng-option [value]="true">
+            {{ 'global.ja' | transloco }}
+          </ng-option>
+          <ng-option [value]="false">
+            {{ 'global.nein' | transloco }}
+          </ng-option>
+        </ng-select>
+      </svui-form-control>
+
+    <svui-title [context]="'formSection'">{{ 'kinder.filter.erweitert.notizen.titel' | transloco }}</svui-title>
+
+      <!-- Zeitraum von-->
+      <svui-form-control [label]="'kinder.filter.erweitert.notizen.zeitraum.von' | transloco" size="half"
+                         [viewValue]="form.group.controls.zeitraumVon.value | date: 'dd.MM.yyyy'">
+        <input svuiTextInput="date" [formControl]="form.group.controls.zeitraumVon"/>
+      </svui-form-control>
+
+      <!--  Zeitraum bis  -->
+      <svui-form-control [label]="'kinder.filter.erweitert.notizen.zeitraum.bis' | transloco" size="half"
+                         [viewValue]="form.group.controls.zeitraumBis.value | date: 'dd.MM.yyyy'">
+        <input svuiTextInput="date" [formControl]="form.group.controls.zeitraumBis"/>
+      </svui-form-control>
+
+      <!-- Schuljahr -->
+      <svui-form-control [label]="'kinder.filter.erweitert.notizen.schuljahr' | transloco" size="half"
+                         [viewValue]="displaySchuljahr(form.group.value.schuljahr)">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.schuljahr"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          [searchable]="true"
+        >
+          @for (item of getSchuljahrOptions(); track item; ) {
+            <ng-option [value]="item">
+              <span>{{ displaySchuljahr(item) }}</span>
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+      <!-- Verantwortliche Person-->
+      <svui-form-control [label]="'kinder.filter.erweitert.notizen.verantwortliche.person' | transloco" size="half"
+                         [viewValue]="form.group.value.verantwortlicherId">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.verantwortlicherId"
+          [clearable]="false"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          @for (benutzer of benutzerOptionsStore.entities(); track benutzer.id) {
+            <ng-option [value]="benutzer.id">
+              {{ benutzer.fullName }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+      <!-- Labels -->
+      <svui-form-control [label]="'kinder.filter.erweitert.notizen.labels' | transloco" size="half"
+                         [viewValue]="form.group.value.labels?.join(',')"
+      >
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [compareWith]="compareFn"
+          [formControl]="form.group.controls.labels"
+          [multiple]="true"
+          [allowBadgesToWrap]="true"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          @for (label of labelsStore.notizLabelsEnabledSorted(); track label.id) {
+            <ng-option [value]="label" [disabled]="!label.data.aktiv">
+              {{ label.data.name |translatedStringPipe }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+      <!-- Status -->
+      <svui-form-control [label]="'kinder.filter.erweitert.notizen.status' | transloco" size="half"
+                         [viewValue]="form.group.value.status">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.status"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          @for (status of notizStatus; track status) {
+            <ng-option [value]="status">
+              {{ 'NotizStatus.' + status | transloco }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+      <svui-title [context]="'formSection'">{{ 'kinder.filter.erweitert.impfungen.titel' | transloco }}</svui-title>
+
+      <!-- Impfung Zeitraum Von -->
+      <svui-form-control [label]="'kinder.filter.erweitert.impfung.zeitraum.von' | transloco" size="half"
+                         [viewValue]="form.group.controls.impfdatumVon.value | date: 'dd.MM.yyyy'">
+        <input svuiTextInput="date" [formControl]="form.group.controls.impfdatumVon"/>
+      </svui-form-control>
+
+      <!-- Impfung Zeitraum Bis -->
+      <svui-form-control [label]="'kinder.filter.erweitert.impfung.zeitraum.bis' | transloco" size="half"
+                         [viewValue]="form.group.controls.impfdatumBis.value | date: 'dd.MM.yyyy'">
+        <input svuiTextInput="date" [formControl]="form.group.controls.impfdatumBis"/>
+      </svui-form-control>
+
+      <!-- Krankheiten -->
+      <svui-form-control [label]="'kinder.filter.erweitert.krankheiten' | transloco" size="half"
+                         [viewValue]="form.group.value.krankheit">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.krankheit"
+          [multiple]="false"
+          [allowBadgesToWrap]="false"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          @for (krankheit of krankheitTypes; track krankheit) {
+            <ng-option [value]="krankheit">
+              {{ 'Krankheit.' + krankheit | transloco }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+      <!-- Impfung Charge -->
+      <svui-form-control [label]="'kinder.filter.erweitert.impfung.charge' | transloco" size="half"
+                         [viewValue]="form.group.value.impfungCharge">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.impfungCharge"
+          [clearable]="true"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          @for (charge of chargenList(); track charge.id) {
+            <ng-option [value]="charge.id">
+              {{ charge.data.name + ' (' + charge.impfstoffName + ')' }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+    }
+
+    <svui-title [context]="'formSection'">{{ 'kinder.filter.erweitert.anlass.titel' | transloco }}</svui-title>
+
+    <!-- Anlass Zeitraum Von -->
+    <svui-form-control [label]="'kinder.filter.erweitert.anlass.zeitraum.von' | transloco" size="half"
+                       [viewValue]="form.group.controls.anlassZeitraumVon.value | date: 'dd.MM.yyyy'">
+      <input svuiTextInput="date" [formControl]="form.group.controls.anlassZeitraumVon"/>
+    </svui-form-control>
+
+    <!-- Anlass Zeitraum Bis -->
+    <svui-form-control [label]="'kinder.filter.erweitert.anlass.zeitraum.bis' | transloco" size="half"
+                       [viewValue]="form.group.controls.anlassZeitraumBis.value | date: 'dd.MM.yyyy'">
+      <input svuiTextInput="date" [formControl]="form.group.controls.anlassZeitraumBis"/>
+    </svui-form-control>
+
+    @if(form.isStandardFilterSelected()) {
+      <!-- Anlass Schuljahr -->
+      <svui-form-control [label]="'kinder.filter.erweitert.anlass.schuljahr' | transloco" size="half"
+                         [viewValue]="displaySchuljahr(form.group.value.anlassSchuljahr)">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.anlassSchuljahr"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          [searchable]="true"
+        >
+          @for (item of getSchuljahrOptions(); track item; ) {
+            <ng-option [value]="item">
+              <span>{{ displaySchuljahr(item) }}</span>
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+      <!-- Anlass Status -->
+      <svui-form-control [label]="'kinder.filter.erweitert.anlass.status' | transloco" size="half"
+                         [viewValue]="form.group.value.anlassStatus">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.anlassStatus"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          @for (status of anlassStatus; track status) {
+            <ng-option [value]="status">
+              {{ 'AnlassStatus.' + status | transloco }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+      <!-- Anlass Art -->
+      <svui-form-control [label]="'kinder.filter.erweitert.anlass.art' | transloco" size="half"
+                         [viewValue]="form.group.value.anlassArt">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.anlassArt"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          @for (art of anlassArt; track art) {
+            <ng-option [value]="art">
+              {{ 'AnlassArt.' + art | transloco }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+    }
+
+    <!-- Anlass Typ -->
+    <svui-form-control [label]="(form.isStandardFilterSelected() ? 'kinder.filter.erweitert.anlass.typ' : 'kinder.filter.erweitert.anlass.typ.nichtvorhanden') | transloco" size="half"
+                       [viewValue]="form.group.value.anlassTyp">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.anlassTyp"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      >
+        @for (typ of anlassTyp; track typ) {
+          <ng-option [value]="typ">
+            {{ 'AnlassTyp.' + typ | transloco }}
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+
+    @if (form.isStandardFilterSelected()) {
+      <!-- Anlass MPA -->
+      <svui-form-control [label]="'kinder.filter.erweitert.anlass.mpa' | transloco" size="half"
+                         [viewValue]="form.group.value.anlassMpaId">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.anlassMpaId"
+          [clearable]="true"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          @for (each of benutzerOptionsStore.mpaOptions(); track each.id) {
+            <ng-option [value]="each.id">
+              {{ each.fullName }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+      <!-- Anlass Arzt -->
+      <svui-form-control [label]="'kinder.filter.erweitert.anlass.arzt' | transloco" size="half"
+                         [viewValue]="form.group.value.anlassArztId">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.anlassArztId"
+          [clearable]="true"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          @for (each of benutzerOptionsStore.arztOptions(); track each.id) {
+            <ng-option [value]="each.id">
+              {{ each.fullName }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+      <!-- Anlass Weitere Person -->
+      <svui-form-control [label]="'kinder.filter.erweitert.anlass.weitere.person' | transloco" size="half"
+                         [viewValue]="form.group.value.anlassWeiterePerson">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.anlassWeiterePerson"
+          [clearable]="true"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          @for (benutzer of benutzerOptionsStore.entities(); track benutzer.id) {
+            <ng-option [value]="benutzer.id">
+              {{ benutzer.fullName }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+      <!-- Anlass Teilnahme Status -->
+      <svui-form-control [label]="'kinder.filter.erweitert.anlass.teilnahme.status' | transloco" size="half"
+                         [viewValue]="form.group.value.anlassTeilnahmeStatus">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.anlassTeilnahmeStatus"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          @for (status of einladungStatus; track status) {
+            <ng-option [value]="status">
+              {{ 'EinladungStatus.' + status | transloco }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+      <!--    Anlass Kind für Folgetermin vormerken -->
+      <svui-form-control [label]="'kinder.filter.erweitert.anlass.impfen.folgeterminvormerken' | transloco" size="half"
+                         class="svui_form-layout--normal" viewValue="">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.anlassImpfungMassnahmeVormerkungFolgetermin"
+          [clearable]="true"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          <ng-option [value]="true">
+            {{ 'global.ja' | transloco }}
+          </ng-option>
+          <ng-option [value]="false">
+            {{ 'global.nein' | transloco }}
+          </ng-option>
+        </ng-select>
+      </svui-form-control>
+    }
+
+    <!-- start a new line-->
+    <div class="svui_form-layout--full"></div>
+    <svui-form-control [label]="'kinder.filter.erweitert.anlass.notassigned' | transloco"
+                       viewValue="" size="normal" >
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.anlassNotAssigned"
+        [clearable]="true"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      >
+        <ng-option [value]="true">
+          {{ 'global.ja' | transloco }}
+        </ng-option>
+        <ng-option [value]="false">
+          {{ 'global.nein' | transloco }}
+        </ng-option>
+      </ng-select>
+    </svui-form-control>
+
+    <svui-save-cancel-buttons
+      [saving]="false"
+      [primaryButtonText]="'kinder.filter.erweitert.anwenden'"
+      [canEdit]="true"
+      (cancelClicked)="cancel()"/>
+  </form>
+</feat-dialogs-modal>

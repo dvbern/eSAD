@@ -1,0 +1,16 @@
+[
+  "// this file is used for conventional commits _if_ they are enabled in the project. The generator adds new projects here",
+  "feat-adresse",
+  "feat-anlass",
+  "feat-aufgaben",
+  "feat-shared",
+  "feat-dashboard",
+  "feat-document-queue",
+  "feat-notizen",
+  "feat-page",
+  "feat-page3",
+  "feat-reports",
+  "feat-search-popup",
+  "feat-shared-aufgaben",
+  "feat-upload"
+]

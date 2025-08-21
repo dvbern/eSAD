@@ -1,0 +1,11 @@
+@use '../../../../../styles/core/color/color-set-table';
+
+:host {
+  display: table-cell;
+}
+
+.svui_copyable {
+  &:hover {
+    cursor: text;
+  }
+}

@@ -1,0 +1,43 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hora (generated)" id="1753705969234-1">
+    <addColumn tableName="anlassconfig">
+      <column name="impfungenmassnahmeinformationenabgegeben" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1753705969234-2">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="impfungenmassnahmeinformationenabgegeben" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora" id="1753705969234-3">
+    <sql>
+      UPDATE anlassconfig
+      SET impfungenmassnahmeinformationenabgegeben = TRUE
+      WHERE impfungenmassnahmeinformationenabgegeben IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet id="1753705969234-4" author="hora">
+    <addNotNullConstraint tableName="anlassconfig" columnName="impfungenmassnahmeinformationenabgegeben"/>
+  </changeSet>
+  <changeSet id="1753705969234-5" author="hora">
+    <addColumn tableName="untersuchungimpfungenmassnahmen">
+      <column name="informationenabgegeben" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet id="1753705969234-6" author="hora">
+    <addColumn tableName="untersuchungimpfungenmassnahmen_aud">
+      <column name="informationenabgegeben" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet id="1753705969234-7" author="hora">
+    <sql>
+      UPDATE untersuchungimpfungenmassnahmen
+      SET informationenabgegeben = FALSE
+      WHERE informationenabgegeben IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet id="1753705969234-8" author="hora">
+    <addNotNullConstraint tableName="untersuchungimpfungenmassnahmen" columnName="informationenabgegeben"/>
+  </changeSet>
+</databaseChangeLog>

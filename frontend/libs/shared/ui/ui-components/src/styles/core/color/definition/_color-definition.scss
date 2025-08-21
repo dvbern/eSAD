@@ -1,0 +1,59 @@
+// eSchool-Farbdefinitionen
+// Nicht direkt einbinden, stattdessen Color-Sets verwenden.
+
+@use 'sass:color';
+
+// branding
+$blue-400-primary: #26334d;
+$blue-300: #8192b5;
+$blue-200-b: #c3cad9;
+$blue-100: #e7ebf3;
+
+// neutral
+$white: #ffffff;
+$grey-100: #f7f8fa;
+$grey-200: #f1f1f1;
+$grey-300: #d8dbe3;
+$grey-400: #c0c0c0;
+$grey-500: #707070;
+$black: #1b2537;
+
+// informative
+$red-100: #FFF0F0;
+$red-200: #EC8389;
+$red-300: #c91818;
+$green-100: #F0FFFD;
+$green-200: #80DE7E;
+$green-300: #177215;
+$blue-200: #007BFF;
+$yellow-100: #FFF8F0;
+$yellow-200: #EA9E2C;
+$yellow-300: #89580E;
+
+// alternatives
+$alternative-lila: #6f42c1;
+$alternative-orange: #FFA574;
+$alternative-green: #009B3E;
+$alternative-limegreen: #BBDF60;
+
+// other colors found in the code
+$blue-350: #38424c;
+
+// semantic colors
+$text: $blue-400-primary;
+$text-secondary: $blue-300;
+$text-disabled: $grey-500;
+$text-transparent: $blue-350;
+$text-inactive: $grey-400;
+$text-on-dark: $white;
+$text-on-bright: $black;
+$background: $grey-100;
+$background-disabled: $grey-100;
+$background-active: $blue-100;
+$background-widget: $white;
+$background-dropdown: $grey-300;
+$border: $grey-300;
+$border-widget: $blue-300;
+$border-active: $blue-400-primary;
+$primary-button-hover: $blue-200-b;
+$secondary-button-hover: $blue-200-b;

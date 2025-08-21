@@ -1,0 +1,88 @@
+<form svuiFormLayout
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="DetailMode.EDIT">
+
+  <h2 svuiHeading="formSection">{{ 'untersuchung.doppelkontrolle.title' | transloco }}</h2>
+
+  <!-- Visum 1 -->
+  <svui-form-control [label]="'untersuchung.doppelkontrolle.visum1' | transloco"
+                     [size]="'oneAndHalf'"
+                     [viewValue]="form.group.value.visumPerson1?.fullName">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.visumPerson1"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [searchable]="true"
+      [compareWith]="compareFnBenutzer"
+      [clearable]="false"
+    >
+      @for (item of benutzerOptionsStore.entities(); track item.id) {
+        <ng-option [value]="item">
+            <span class="w-100 d-flex justify-content-between">
+              <span>{{ item.fullName }}</span>
+            </span>
+        </ng-option>
+      }
+    </ng-select>
+    <span class="fs-6" control-message>{{
+        getStatus(
+          doppelkontrolleSig()?.visumPerson1,
+          doppelkontrolleSig()?.visumDatum1)
+      }}</span>
+  </svui-form-control>
+
+  <!-- Visum 2 -->
+  @if (status === 'Visum1Visiert') {
+    <svui-form-control [label]="'untersuchung.doppelkontrolle.visum2' | transloco"
+                       [size]="'oneAndHalf'"
+                       [viewValue]="form.group.value.visumPerson2?.fullName">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.visumPerson2"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        [searchable]="true"
+        [compareWith]="compareFnBenutzer"
+      >
+        @for (item of userExceptUserOfVisum1(); track item.id) {
+          <ng-option [value]="item">
+            <span class="w-100 d-flex justify-content-between">
+              <span>{{ item.fullName }}</span>
+            </span>
+          </ng-option>
+        }
+      </ng-select>
+      <span class="fs-6" control-message>{{
+          getStatus(
+            doppelkontrolleSig()?.visumPerson2,
+            doppelkontrolleSig()?.visumDatum2)
+        }}</span>
+    </svui-form-control>
+  } @else {
+    <svui-form-control [label]="'untersuchung.doppelkontrolle.visum2' | transloco"
+                       [size]="'oneAndHalf'"
+                       [viewValue]="form.group.value.visumPerson2?.fullName">
+      <input svuiTextInput
+             value="{{ status === 'Visum2Angefordert' ? '' : form.group.controls.visumPerson2.value?.fullName}}"
+             disabled/>
+      <span class="fs-6" control-message>{{
+          getStatus(
+            doppelkontrolleSig()?.visumPerson2,
+            doppelkontrolleSig()?.visumDatum2)
+        }}</span>
+    </svui-form-control>
+  }
+
+  <!-- Zeilenumbruch -->
+  <div class="svui_form-layout--full"></div>
+
+  <!-- BUTTONS -->
+  @if (canEdit()) {
+    <button customFormButtons svuiButton="primary" type="submit">{{ getActionText() }}</button>
+  }
+
+</form>

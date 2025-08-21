@@ -1,0 +1,91 @@
+// Spacing
+
+@use './base';
+@use './border';
+@use './font';
+@use './layout';
+@use './size';
+@use './unit';
+
+// definitions
+$base: base.$spacing; // 8px
+$half: 0.5 * $base;
+$-half-3: 1.5 * $base;
+$-base-2: 2 * $base;
+$double: 2 * $base;
+
+
+// local variables
+$-input-inner: $base;
+
+
+// spacings used by multiple components -----------------------------------------------------
+
+// button
+$button-inner-y: $-half-3;
+$button-inner-x: $-base-2;
+
+// card
+$card-inner: $-base-2;
+
+// checkbox
+$check-input-bottom: unit.rem(0.25 * $base);
+$-check-input-label-gap-default: unit.rem($base);
+$check-input-label-bootstrap: size.$check-input + $-check-input-label-gap-default;
+$-check-input-label-gap-kacheln: unit.rem(3 * $base);
+$check-input-positioning-kacheln: size.$check-input + $-check-input-label-gap-kacheln;
+
+// kachel
+$kachel-inner-y: $-base-2;
+$kachel-inner-x: $base;
+$kachel-inner-left: unit.px(size.$check-input + $-check-input-label-gap-kacheln) + $kachel-inner-x;
+
+// layout
+$between-paragraphs: $-base-2;
+$between-sections: 4 * $base;
+$gutter-width: 4 * $base;
+$gutter-width-inline-elements: 3 * $base;
+$layout-outer: 3 * $base;
+$row-gap: $-base-2;
+
+// form controls
+$between-form-control-and-message: $base;
+$form-control-label-bottom: $base;
+$form-control-label-box: font.box-height-px('P1');
+$form-control-label-container: $form-control-label-box + $form-control-label-bottom;
+$form-control-message-box: font.box-height-px('message');
+$form-control-message-container: $form-control-message-box + $between-form-control-and-message;
+
+// input
+$text-input-inner: $-input-inner;
+
+// stack item
+$standalone-control-inner-y: $base;
+$standalone-control-inner-x: $-base-2;
+$standalone-control-inner-left: unit.px(size.$check-input + $-check-input-label-gap-kacheln) + $standalone-control-inner-x;
+
+// summary-row-gap
+$summary-gap-x: $gutter-width-inline-elements;
+
+
+// bootstrap spacing definitions -----------------------------------------------------------
+
+// badge
+$badge-inner-y: 3px;
+$badge-inner-x: 10px;
+
+// dropdown
+$dropdown-menu-item-y: $-input-inner;
+$dropdown-menu-item-x: $card-inner;
+$dropdown-menu-y: 0;
+
+// table
+$table-cell: $half;
+$table-cell-left: $double;
+
+// text
+$heading-bottom: 0;
+
+// tooltip
+$tooltip-inner-y: $base;
+$tooltip-inner-x: $-base-2;

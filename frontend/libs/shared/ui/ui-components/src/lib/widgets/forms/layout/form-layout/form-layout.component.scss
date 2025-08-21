@@ -1,0 +1,83 @@
+@use '../../../../../styles/core/color/color-set-default' as color;
+@use '../../../../../styles/core/layout';
+@use '../../../../../styles/core/spacing';
+
+:host {
+  // no :host display style on component with attribute selector
+}
+
+.svui_form {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: spacing.$base spacing.$gutter-width;
+
+  &--kacheln {
+    display: block;
+  }
+
+  &--upload-config {
+    color: color.$text-secondary;
+  }
+
+  &__message {
+    grid-column: span 6;
+    margin-bottom: spacing.$row-gap;
+
+    // hide if empty
+    &:not(:has(> *)) {
+      display: none;
+    }
+  }
+
+  &__buttons {
+    grid-column: span 6;
+    @include layout.flex(
+      $direction: row-reverse,
+      $wrap: wrap,
+      $justify-content: flex-start,
+      $row-gap: spacing.$row-gap,
+      $column-gap: spacing.$gutter-width
+    );
+
+    // hide if empty
+    &:not(:has(> *)) {
+      display: none;
+    }
+  }
+
+  &--kacheln &__buttons {
+    margin-top: spacing.$between-sections;
+  }
+
+  // form children widths
+  & ::ng-deep > &-layout {
+    &--normal {
+      grid-column: span 2;
+    }
+
+    &--half {
+      grid-column: span 1;
+    }
+
+    &--one_and_half {
+      grid-column: span 3;
+    }
+
+    &--double {
+      grid-column: span 4;
+    }
+
+    &--full {
+      grid-column: span 6;
+    }
+  }
+
+  &.viewmode {
+    gap: spacing.$row-gap spacing.$gutter-width;
+
+    ::ng-deep .form-label {
+      margin-bottom: 0;
+    }
+  }
+}
+

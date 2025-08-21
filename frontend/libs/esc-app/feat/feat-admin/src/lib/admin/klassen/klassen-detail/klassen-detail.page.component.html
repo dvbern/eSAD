@@ -1,0 +1,33 @@
+<feat-page [heading]="getPageTitle()"
+           [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN + '/' + Path.KLASSEN}">
+  <svui-card>
+    @if (store.loader.isLoading()) {
+      <div>{{ 'global.loading' | transloco }}</div>
+    } @else {
+
+      <ul ngbNav style="margin-bottom: 2rem;">
+
+        <li ngbNavItem>
+          <button class="nav-link"
+                  [disabled]="store.detailIsEditMode()"
+                  [routerLink]="Path.DATEN"
+                  [routerLinkActive]="'active'"
+                  aria-current="page">{{ 'klassen.detail.daten' | transloco }}
+          </button>
+        </li>
+
+        <li ngbNavItem>
+          <button class="nav-link"
+                  [disabled]="store.detailIsEditMode()"
+                  [routerLink]="Path.LEHRPERSONEN"
+                  [routerLinkActive]="'active'"
+                  disabled
+                  aria-current="page">{{ 'klassen.detail.lehrpersonen' | transloco }}
+          </button>
+        </li>
+      </ul>
+
+      <router-outlet></router-outlet>
+    }
+  </svui-card>
+</feat-page >

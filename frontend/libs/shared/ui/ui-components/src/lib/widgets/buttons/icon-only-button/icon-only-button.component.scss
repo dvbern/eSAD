@@ -1,0 +1,47 @@
+@use '../../../../styles/core/border';
+@use '../../../../styles/core/color/color-set-default' as color;
+@use '../../../../styles/core/color/color-set-statustext' as statusColor;
+@use '../../../../styles/core/css-var';
+@use '../../../../styles/core/font';
+@use '../../../../styles/core/size';
+@use '../../../../styles/core/spacing';
+
+:host {
+  // no :host display style on component with attribute selector
+
+  .svui_icon-button__wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .badge {
+    background: statusColor.$danger-icon;
+    top: 24px;
+    left: 8px;
+  }
+
+  // CSS vars for button element ( == host)
+  &.svui_icon-button {
+
+    font-size: size.$icon-big;
+    width: size.$button;
+    height: size.$button;
+    padding: 0;
+
+    &--table-row-action {
+      height: size.$button;
+      padding-block: spacing.$button-inner-y;
+      border-radius: 0;
+    }
+
+    &--input-add-on {
+      @include css-var.set-local(btn-padding-y, 0);
+      @include css-var.set-local(btn-padding-x, spacing.$base);
+      @include css-var.set-local(btn-color, inherit);
+      @include css-var.set-local(btn-line-height, size.$text-input-height);
+    }
+  }
+}

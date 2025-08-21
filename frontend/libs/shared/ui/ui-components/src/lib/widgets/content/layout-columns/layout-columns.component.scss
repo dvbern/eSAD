@@ -1,0 +1,35 @@
+@use '../../../../styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.svui_columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-areas: 'left middle right';
+  column-gap: spacing.$gutter-width;
+
+
+  &__area {
+    ::ng-deep > * {
+      display: block;
+    }
+    ::ng-deep > * + * {
+      margin-top: spacing.$layout-outer;
+    }
+
+    &--left {
+      grid-area: left;
+    }
+
+    &--middle {
+      grid-area: middle;
+    }
+
+    &--right {
+      grid-area: right;
+    }
+  }
+}
+

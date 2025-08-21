@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+  <changeSet id="2024-11-12-1200" author="dvbern">
+    <sql>
+      INSERT INTO benutzer (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, email,
+                            keycloakid, nachname, vorname, fachrollen, lastusedip, lastusedsessionid,
+                            lastusedsessiontimestamp, oidcissuer, aktiv)
+      VALUES ('53483f35-fd62-437f-b366-32f08cc9d868',
+              '2024-12-11 12:00:00.118393',
+              '2024-12-11 12:00:00.202890',
+              '11111111-1111-1111-1111-111111111111',
+              '11111111-1111-1111-1111-111111111111',
+              0,
+              'BS',
+              'escada-client@dvbern.ch',
+              null,
+              'Serviceaccount',
+              'Escada',
+              null,
+              null,
+              null,
+              null,
+              null,
+              false);
+
+      -- add Berechtigung to  do escada push
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, benutzer_id, berechtigung)
+      VALUES ('19857861-4375-4ca7-821f-c2fc2aadd4ca',
+              '2024-12-11 12:00:00.118393',
+              '2024-12-11 12:00:00.202890',
+              '11111111-1111-1111-1111-111111111111',
+              '11111111-1111-1111-1111-111111111111',
+              1,
+              'BS',
+              '53483f35-fd62-437f-b366-32f08cc9d868',
+              'ESCADA_PUSH');
+    </sql>
+    
+  </changeSet>
+
+</databaseChangeLog>
+
+
