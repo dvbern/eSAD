@@ -3,18 +3,18 @@ package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 import java.util.function.Consumer;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Dezibel;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.AudiogrammJsonSpecMapper;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AudiogrammJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AudiogrammSaveJsonSpec;
 import org.assertj.core.util.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class AudiogrammBuilder {
 
-    private Audiogramm audiogramm;
+    private final Audiogramm audiogramm;
 
     private AudiogrammBuilder() {
         this.audiogramm = defaultAudiogramm();
@@ -82,14 +82,14 @@ public class AudiogrammBuilder {
     }
 
     @NonNull
-    public static AudiogrammJson createJax(@NonNull Consumer<AudiogrammBuilder> block) {
+    public static AudiogrammSaveJson createJax(@NonNull Consumer<AudiogrammBuilder> block) {
         Audiogramm entity = create(block);
         return AudiogrammMapper.toJson(entity);
     }
 
     @NonNull
-    public static AudiogrammJsonSpec createJaxSpec(@NonNull Consumer<AudiogrammBuilder> block) {
-        AudiogrammJson json = createJax(block);
+    public static AudiogrammSaveJsonSpec createJaxSpec(@NonNull Consumer<AudiogrammBuilder> block) {
+        AudiogrammSaveJson json = createJax(block);
         return AudiogrammJsonSpecMapper.INSTANCE.audiogrammJsonToAudiogrammJsonSpec(json);
     }
 }

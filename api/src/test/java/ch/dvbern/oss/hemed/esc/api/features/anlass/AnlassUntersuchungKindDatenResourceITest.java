@@ -47,7 +47,7 @@ class AnlassUntersuchungKindDatenResourceITest extends AbstractITest {
             .extract().as(UntersuchungKindDatenJsonSpec.class);
         // ASSERT
         Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result.getName()).isEqualTo(kind.getName());
-        Assertions.assertThat(result.getGeburtsdatum()).isEqualTo(kind.getGeburtsdatum());
+        Assertions.assertThat(result.getData().getName()).isEqualTo(kind.getName());
+        Assertions.assertThat(result.getData().getGeburtsdatum()).isEqualTo(kind.getGeburtsdatum());
     }
 }

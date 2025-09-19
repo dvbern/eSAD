@@ -12,9 +12,9 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungKrankheitImmunitaet;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungKindDaten;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungTriage;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArzt;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Dezibel;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
@@ -74,7 +74,7 @@ public final class ExtractorForCsvUtil {
     @NonNull
     public static String extractUntersuchungSehen(
         @NonNull Einladung einladung,
-        @NonNull Function<UntersuchungSehen, String> stringTransformer
+        @NonNull Function<UntersuchungSehenBeurteilung, String> stringTransformer
     ) {
         return ExtractorUtil.getUntersuchungSehenOptional(einladung)
             .map(stringTransformer)
@@ -132,9 +132,9 @@ public final class ExtractorForCsvUtil {
     }
 
     @NonNull
-    public static String extractUntersuchungArzt(
+    public static String extractUntersuchungArztBeurteilung(
         @NonNull Einladung einladung,
-        @NonNull Function<UntersuchungArzt, String> stringTransformer
+        @NonNull Function<UntersuchungArztBeurteilung, String> stringTransformer
     ) {
         return ExtractorUtil.getUntersuchungArztOptional(einladung)
             .map(stringTransformer)

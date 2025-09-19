@@ -13,7 +13,6 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.labels.json.LabelJson;
 import ch.dvbern.oss.hemed.esc.api.features.labels.json.LabelSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.labels.types.LabelTyp;
-import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.OptimisticLockingService;
 import ch.dvbern.oss.hemed.esc.api.shared.mandant.TranslatedString;
 import ch.dvbern.oss.hemed.esc.api.shared.mandant.TranslatedStringMapper;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public final class LabelMapper {
 
     private final LabelService labelService;
-    private final OptimisticLockingService optimisticLockingService;
     private final TranslatedStringMapper translatedStringMapper;
 
     @NonNull
@@ -87,7 +85,7 @@ public final class LabelMapper {
             throw new AppValidationException(AppValidationMessage.autoLabelsCannotBeEditedOrDeleted());
         }
         Label entity = toEntity(existingLabel, labelJson);
-        Label updatedEntity = optimisticLockingService.persistWithOptimisticLocking(entity, labelJson);
+        Label updatedEntity = labelService.persistWithOptimisticLocking(entity, labelJson.getVersion());
         return toJson(updatedEntity);
     }
 

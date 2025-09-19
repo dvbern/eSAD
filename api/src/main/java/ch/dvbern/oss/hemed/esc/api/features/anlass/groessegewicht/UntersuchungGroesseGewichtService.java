@@ -23,6 +23,11 @@ public class UntersuchungGroesseGewichtService {
     }
 
     @NonNull
+    public UntersuchungGroesseGewicht persistWithOptimisticLocking(@NonNull UntersuchungGroesseGewicht entity, @NonNull Long versionFromFrontend) {
+        return groesseGewichtRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
+    }
+
+    @NonNull
     public UntersuchungGroesseGewicht getById(@NonNull ID<UntersuchungGroesseGewicht> groesseGewichtID) {
         return groesseGewichtRepo.getById(groesseGewichtID);
     }
@@ -37,6 +42,7 @@ public class UntersuchungGroesseGewichtService {
 
     public void untersuchungAbschliessen(@NonNull Untersuchung untersuchung) {
         UntersuchungGroesseGewicht groesseGewicht = UntersuchungGroesseGewicht.forUntersuchungAbschliessen(untersuchung);
+        groesseGewicht.disableOptimisticLockingCheck();
         persist(groesseGewicht);
     }
 }

@@ -27,7 +27,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * QuartierSaveJsonSpec
  */
 @JsonPropertyOrder({
-  QuartierSaveJsonSpec.JSON_PROPERTY_QUARTIER_NAME
+  QuartierSaveJsonSpec.JSON_PROPERTY_QUARTIER_NAME,
+  QuartierSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("QuartierSaveJson")
 @lombok.AllArgsConstructor
@@ -36,6 +37,10 @@ public class QuartierSaveJsonSpec {
   public static final String JSON_PROPERTY_QUARTIER_NAME = "quartierName";
   @jakarta.annotation.Nonnull
   private String quartierName;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public QuartierSaveJsonSpec() {
   }
@@ -65,6 +70,31 @@ public class QuartierSaveJsonSpec {
     this.quartierName = quartierName;
   }
 
+  public QuartierSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -74,12 +104,13 @@ public class QuartierSaveJsonSpec {
       return false;
     }
     QuartierSaveJsonSpec quartierSaveJson = (QuartierSaveJsonSpec) o;
-    return Objects.equals(this.quartierName, quartierSaveJson.quartierName);
+    return Objects.equals(this.quartierName, quartierSaveJson.quartierName) &&
+        Objects.equals(this.version, quartierSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(quartierName);
+    return Objects.hash(quartierName, version);
   }
 
   @Override
@@ -87,6 +118,7 @@ public class QuartierSaveJsonSpec {
     StringBuilder sb = new StringBuilder();
     sb.append("class QuartierSaveJsonSpec {\n");
     sb.append("    quartierName: ").append(toIndentedString(quartierName)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

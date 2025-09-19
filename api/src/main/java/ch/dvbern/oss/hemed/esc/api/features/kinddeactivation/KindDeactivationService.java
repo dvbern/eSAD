@@ -29,6 +29,7 @@ public class KindDeactivationService {
         @NonNull EntityAktivStatus kindAktivStatus
     ) {
         Kind kind = kindRepo.getById(kindID);
+        kind.disableOptimisticLockingCheck();
         kind.setKindAktivStatus(kindAktivStatus);
         kindRepo.persist(kind);
     }

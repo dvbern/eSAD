@@ -1,7 +1,8 @@
 import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {Geschlecht, KontaktPersonSchuleFunktion, KontaktPersonSchuleSaveJson} from '@dvb/data-access-backend';
+import {globalConstants} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensureProps, requireValue} from '@dvb/util-shared';
+import {ensureProps, Nullish, requireValue} from '@dvb/util-shared';
 
 type Config = {
   fb: NonNullableFormBuilder;
@@ -18,6 +19,7 @@ function makeForm(config: Config) {
     funktion: fb.control<KontaktPersonSchuleFunktion | undefined>(undefined, [Validators.required]),
     telefon: fb.control<string | undefined>(undefined, [AppValidators.phoneValidator(), maxLength]),
     email: fb.control<string | undefined>(undefined, [AppValidators.emailValidator, maxLength]),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 }
 
@@ -35,6 +37,7 @@ export class KontaktPersonSchulenForm extends BaseForm<ReturnType<typeof makeFor
       vorname: value.vorname,
       email: value.email,
       telefon: value.telefon,
+      version: value.version ?? globalConstants.entityPrePersistVersion,
     })
   }
 }

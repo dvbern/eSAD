@@ -2,8 +2,10 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -19,6 +21,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AufgabeService;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AutoAufgabeService;
 import ch.dvbern.oss.hemed.esc.api.shared.notizen.AutoNotizService;
+import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -42,8 +45,18 @@ public class EinladungService {
     }
 
     @NonNull
+    public Einladung persistWithOptimisticLocking(@NonNull Einladung entity, @NonNull Long versionFromFrontend) {
+        return einladungRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
+    }
+
+    @NonNull
     public Einladung getById(@NonNull ID<Einladung> einladungID) {
         return einladungRepo.getById(einladungID);
+    }
+
+    @NonNull
+    public Map<ID<Einladung>, ID<Anlass>> getAnlassEinladungsMap(@NonNull List<ID<Einladung>> einladungIds) {
+        return einladungRepo.getAnlassEinladungsMap(einladungIds);
     }
 
     public Einladung getByIdLockedQuery(@NonNull ID<Einladung> einladungId) {
@@ -81,13 +94,21 @@ public class EinladungService {
         List<Einladung> createdEinladungen = new ArrayList<>();
         for (ID<Kind> kindId : kindIdList) {
             Dossier dossier = dossierService.getOrCreateByKind(kindId);
+            Kind kind = dossier.getKind();
+            KindValidationUtil.throwErrorIfKindIsInactive(
+                kind,
+                AppValidationMessage.cannotCreateEinladungForInactiveKind(
+                    kind,
+                    anlass.getId()));
             Optional<Einladung> einladungOptional = einladungRepo.findByAnlassUndKind(anlass.getId(), kindId);
             if (einladungOptional.isEmpty()) {
                 Einladung einladung = persist(Einladung.create(anlass, dossier));
+                einladung.disableOptimisticLockingCheck();
                 Optional<Einladung>
                     urspruenglicheEinladungForNachzuegler = findUrspruenglicheEinladungForNachzuegler(anlass, dossier.getKind().getId());
                 if (urspruenglicheEinladungForNachzuegler.isPresent()) {
                     Einladung einladungNachzuegler = urspruenglicheEinladungForNachzuegler.get();
+                    einladungNachzuegler.disableOptimisticLockingCheck();
                     autoNotizService.moveImpfausweisNotiz(einladungNachzuegler, einladung);
                     autoNotizService.moveFragebogenNotiz(einladungNachzuegler, einladung);
                 }

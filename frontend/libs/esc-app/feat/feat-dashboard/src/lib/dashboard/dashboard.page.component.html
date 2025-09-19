@@ -4,12 +4,13 @@
     <feat-anlass-termine termine/>
 
     <feat-aufgaben-sidebar aufgaben
+                           [showCreateAufgabeButton]="true"
                            [aufgabenList]="dashboardStore.aufgabenList()"
                            [loading]="dashboardStore.loader.isLoading()"
                            [routingPrefix]="'/' + Path.AUFGABEN"/>
 
-	  <feat-dashboard-letze-anlaesse recent/>
+    <feat-dashboard-letze-anlaesse recent/>
 
-	  <feat-dashboard-letze-kinder kinder/>
+    <feat-dashboard-letze-kinder kinder/>
   </svui-dashboard>
 </feat-page>

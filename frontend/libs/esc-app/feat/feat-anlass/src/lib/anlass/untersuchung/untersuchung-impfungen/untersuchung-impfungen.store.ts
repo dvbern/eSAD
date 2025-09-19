@@ -6,7 +6,9 @@ import {
   UntersuchungImpfungenChecklisteSaveJson,
   UntersuchungImpfungenDoppelkontrolleSaveJson,
   UntersuchungImpfungenImpfausweisSaveJson,
+  UntersuchungImpfungenJson,
   UntersuchungImpfungenMassnahmenJson,
+  UntersuchungImpfungenSaveJson,
   UntersuchungImpfungenService,
   UntersuchungImpfungenServiceSaveUntersuchungMassnahmenRequestParams,
   UntersuchungImpfungInternJson,
@@ -14,10 +16,10 @@ import {
 } from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
 import {AppErrorHandlerService, AppNotificationStore, Loader} from '@dvb/util-angular';
-import {requireValue} from '@dvb/util-shared';
+import {ensurePropsFlat, requireValue} from '@dvb/util-shared';
 import {TranslocoService} from '@jsverse/transloco';
 import {tapResponse} from '@ngrx/operators';
-import {EmptyFeatureResult, patchState, signalStore, SignalStoreFeature, withState} from '@ngrx/signals';
+import {EmptyFeatureResult, patchState, signalStore, SignalStoreFeature, withMethods, withState} from '@ngrx/signals';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, map, pipe, switchMap, tap} from 'rxjs';
 import {UntersuchungStore} from '../untersuchung.store';
@@ -26,6 +28,7 @@ type UntersuchungState = {
   impfausweis: UntersuchungImpfungenImpfausweisSaveJson | undefined,
   checklist: UntersuchungImpfungenChecklisteSaveJson | undefined,
   doppelkontrolle: UntersuchungImpfungenDoppelkontrolleSaveJson | undefined,
+  versionUntersuchungImpfungen: number | undefined,
   massnahmen: UntersuchungImpfungenMassnahmenJson | undefined,
   impfstatusList: UntersuchungImpfstatusListSaveJson | undefined,
   impfungenInternList: UntersuchungImpfungInternJson[],
@@ -35,6 +38,7 @@ const initialState: UntersuchungState = {
   impfausweis: undefined,
   checklist: undefined,
   doppelkontrolle: undefined,
+  versionUntersuchungImpfungen: undefined,
   massnahmen: undefined,
   impfstatusList: undefined,
   impfungenInternList: [],
@@ -45,6 +49,34 @@ export class UntersuchungImpfungenStore extends signalStore(
   { protectedState: false },
   withDevtools('untersuchungImpfung') as SignalStoreFeature<EmptyFeatureResult, EmptyFeatureResult>,
   withState(initialState),
+  withMethods((store) => ({
+    prepareUntersuchungSaveJson(): UntersuchungImpfungenSaveJson {
+      return ensurePropsFlat<UntersuchungImpfungenSaveJson>({
+        impfausweis: requireValue(store.impfausweis()),
+        checkliste: requireValue(store.checklist()),
+        doppelkontrolle: requireValue(store.doppelkontrolle()),
+        version: requireValue(store.versionUntersuchungImpfungen()),
+      })
+    },
+    patchImpfausweis(data: UntersuchungImpfungenJson): void {
+      patchState(store, {
+        impfausweis: data.data.impfausweis,
+        versionUntersuchungImpfungen: data.data.version,
+      });
+    },
+    patchChecklist(data: UntersuchungImpfungenJson): void {
+      patchState(store, {
+        checklist: data.data.checkliste,
+        versionUntersuchungImpfungen: data.data.version,
+      });
+    },
+    patchDoppelkontrolle(data: UntersuchungImpfungenJson): void {
+      patchState(store, {
+        doppelkontrolle: data.data.doppelkontrolle,
+        versionUntersuchungImpfungen: data.data.version,
+      });
+    },
+  })),
 ) {
   readonly #impfungenService = inject(UntersuchungImpfungenService);
   readonly #appErrorHandlerService = inject(AppErrorHandlerService);
@@ -74,7 +106,8 @@ export class UntersuchungImpfungenStore extends signalStore(
             impfausweis: result.untersuchungImpfungen.data.impfausweis,
             checklist: result.untersuchungImpfungen.data.checkliste,
             doppelkontrolle: result.untersuchungImpfungen.data.doppelkontrolle,
-            massnahmen: result.untersuchungImpfungen.data.massnahmen,
+            versionUntersuchungImpfungen: result.untersuchungImpfungen.data.version,
+            massnahmen: result.massnahmen,
             impfstatusList: result.impfstatusList,
             impfungenInternList: result.impfungInternList.impfungenInternList,
           });
@@ -96,13 +129,11 @@ export class UntersuchungImpfungenStore extends signalStore(
             anlassId: payload.anlassId,
             einladungId: payload.einladungId,
             untersuchungImpfungenSaveJson: {
+              ... this.prepareUntersuchungSaveJson(),
               impfausweis: {
                 ...requireValue(this.impfausweis()),
                 impfausweisUnvollstaendig: payload.impfausweisUnvollstaendig,
               },
-              checkliste: requireValue(this.checklist()),
-              doppelkontrolle: requireValue(this.doppelkontrolle()),
-              massnahmen: this.massnahmen(),
             },
           }),
           error => this.#appErrorHandlerService.handleError(error),
@@ -110,7 +141,7 @@ export class UntersuchungImpfungenStore extends signalStore(
       ),
       tapResponse({
         next: result => {
-          patchState(this, {impfausweis: result.data.impfausweis});
+          this.patchImpfausweis(result);
           this.#appNotificationStore.addSuccessNotification(this.#transloco.translate(
             'untersuchung.impfungen.impfausweisUnvollstaendig.changed'));
         },
@@ -131,13 +162,11 @@ export class UntersuchungImpfungenStore extends signalStore(
             anlassId: payload.anlassId,
             einladungId: payload.einladungId,
             untersuchungImpfungenSaveJson: {
+              ... this.prepareUntersuchungSaveJson(),
               impfausweis: {
                 ...requireValue(this.impfausweis()),
                 impfausweisNichtVorhanden: payload.impfausweisNichtVorhanden,
               },
-              checkliste: requireValue(this.checklist()),
-              doppelkontrolle: requireValue(this.doppelkontrolle()),
-              massnahmen: this.massnahmen(),
             },
           }),
           error => this.#appErrorHandlerService.handleError(error),
@@ -145,7 +174,7 @@ export class UntersuchungImpfungenStore extends signalStore(
       ),
       tapResponse({
         next: result => {
-          patchState(this, {impfausweis: result.data.impfausweis});
+          this.patchImpfausweis(result);
           this.#appNotificationStore.addSuccessNotification(this.#transloco.translate(
             'untersuchung.impfungen.impfausweisNichtVorhanden.changed'));
         },
@@ -166,13 +195,11 @@ export class UntersuchungImpfungenStore extends signalStore(
             anlassId: payload.anlassId,
             einladungId: payload.einladungId,
             untersuchungImpfungenSaveJson: {
+              ... this.prepareUntersuchungSaveJson(),
               impfausweis: {
                 ...requireValue(this.impfausweis()),
                 impfausweisZweiPlusEinsSchema: payload.impfausweisZweiPlusEinsSchema,
               },
-              checkliste: requireValue(this.checklist()),
-              doppelkontrolle: requireValue(this.doppelkontrolle()),
-              massnahmen: this.massnahmen(),
             },
           }),
           error => this.#appErrorHandlerService.handleError(error),
@@ -180,7 +207,7 @@ export class UntersuchungImpfungenStore extends signalStore(
       ),
       tapResponse({
         next: result => {
-          patchState(this, {impfausweis: result.data.impfausweis});
+          this.patchImpfausweis(result);
           this.#appNotificationStore.addSuccessNotification(this.#transloco.translate(
             'untersuchung.impfungen.impfausweisZweiPlusEinsSchema.changed'));
         },
@@ -196,13 +223,16 @@ export class UntersuchungImpfungenStore extends signalStore(
           this.#impfungenService.visierenDoppelkontrolleVisum1$({
             anlassId: payload.anlassId,
             einladungId: payload.einladungId,
+            untersuchungImpfungenSaveJson: {
+              ... this.prepareUntersuchungSaveJson(),
+            },
           }),
           error => this.#appErrorHandlerService.handleError(error),
         ),
       ),
       tapResponse({
         next: result => {
-          patchState(this, {doppelkontrolle: result.data.doppelkontrolle})
+          this.patchDoppelkontrolle(result);
         },
         error: console.error,
       }),
@@ -220,14 +250,20 @@ export class UntersuchungImpfungenStore extends signalStore(
           this.#impfungenService.anfordernDoppelkontrolleVisum2$({
             anlassId: payload.anlassId,
             einladungId: payload.einladungId,
-            benutzerOptionJson: payload.user,
+            untersuchungImpfungenSaveJson: {
+              ...this.prepareUntersuchungSaveJson(),
+              doppelkontrolle: {
+                ...requireValue(this.doppelkontrolle()),
+                visumPerson2:  payload.user,
+              },
+            }
           }),
           error => this.#appErrorHandlerService.handleError(error),
         ),
       ),
       tapResponse({
         next: result => {
-          patchState(this, {doppelkontrolle: result.data.doppelkontrolle})
+          this.patchDoppelkontrolle(result);
         },
         error: console.error,
       }),
@@ -241,13 +277,16 @@ export class UntersuchungImpfungenStore extends signalStore(
           this.#impfungenService.visierenDoppelkontrolleVisum2$({
             anlassId: payload.anlassId,
             einladungId: payload.einladungId,
+            untersuchungImpfungenSaveJson: {
+              ... this.prepareUntersuchungSaveJson(),
+            },
           }),
           error => this.#appErrorHandlerService.handleError(error),
         ),
       ),
       tapResponse({
         next: result => {
-          patchState(this, {doppelkontrolle: result.data.doppelkontrolle})
+          this.patchDoppelkontrolle(result);
         },
         error: console.error,
       }),
@@ -261,13 +300,16 @@ export class UntersuchungImpfungenStore extends signalStore(
           this.#impfungenService.resetDoppelkontrolle$({
             anlassId: payload.anlassId,
             einladungId: payload.einladungId,
+            untersuchungImpfungenSaveJson: {
+              ... this.prepareUntersuchungSaveJson(),
+            },
           }),
           error => this.#appErrorHandlerService.handleError(error),
         ),
       ),
       tapResponse({
         next: result => {
-          patchState(this, {doppelkontrolle: result.data.doppelkontrolle})
+          this.patchDoppelkontrolle(result);
         },
         error: console.error,
       }),
@@ -458,10 +500,8 @@ export class UntersuchungImpfungenStore extends signalStore(
             anlassId: anlassId,
             einladungId: einladungId,
             untersuchungImpfungenSaveJson: {
-              impfausweis: requireValue(this.impfausweis()),
+              ... this.prepareUntersuchungSaveJson(),
               checkliste: checklist,
-              doppelkontrolle: requireValue(this.doppelkontrolle()),
-              massnahmen: this.massnahmen(),
             },
           }),
           error => this.#appErrorHandlerService.handleError(error),
@@ -469,7 +509,7 @@ export class UntersuchungImpfungenStore extends signalStore(
       ),
       tapResponse({
         next: result => {
-          patchState(this, {checklist: result.data.checkliste});
+          this.patchChecklist(result);
           this.#appNotificationStore.addSuccessNotification(this.#transloco.translate(
             'untersuchung.impfungen.checklist.changed'));
         },

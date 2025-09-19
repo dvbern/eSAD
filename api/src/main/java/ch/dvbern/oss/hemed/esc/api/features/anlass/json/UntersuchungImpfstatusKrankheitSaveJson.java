@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Setter
 @JaxDTO
 @AllArgsConstructor
-public class UntersuchungImpfstatusKrankheitSaveJson {
+public class UntersuchungImpfstatusKrankheitSaveJson implements SaveJsonWithOptimisticLocking {
 
     @NonNull
     @NotNull
@@ -39,5 +40,8 @@ public class UntersuchungImpfstatusKrankheitSaveJson {
 
     @Schema(required = false)
     private boolean impfentscheid = false;
+
+    @Schema(required = true)
+    private long version;
 
 }

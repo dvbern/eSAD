@@ -1,14 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.shared.documentqueue;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Objects;
-
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileNameUtil;
@@ -16,15 +7,12 @@ import ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
+import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.spss.CsvGeneratorService;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataRepo;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3Mapper;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smallrye.mutiny.Uni;
@@ -38,6 +26,15 @@ import org.apache.commons.io.FilenameUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -116,40 +113,40 @@ public class DocumentQueueService {
     @Transactional(TxType.NOT_SUPPORTED)
     public byte[] triggerGenerationFunction(@NonNull DocumentQueue documentQueue) {
         switch (documentQueue.getType()) {
-        case PLAYGROUND -> {
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new AppFailureException(AppFailureMessage.internalError("Error while sleeping"), e);
+            case PLAYGROUND -> {
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new AppFailureException(AppFailureMessage.internalError("Error while sleeping"), e);
+                }
+                try (InputStream resourceAsStream = DocumentQueueService.class.getResourceAsStream(
+                    "/playground-document/playground.pdf")) {
+                    Objects.requireNonNull(resourceAsStream);
+                    return resourceAsStream.readAllBytes();
+                } catch (IOException e) {
+                    throw new AppFailureException(AppFailureMessage.internalError("Error reading playground PDF"), e);
+                }
             }
-            try (InputStream resourceAsStream = DocumentQueueService.class.getResourceAsStream(
-                "/playground-document/playground.pdf")) {
-                Objects.requireNonNull(resourceAsStream);
-                return resourceAsStream.readAllBytes();
-            } catch (IOException e) {
-                throw new AppFailureException(AppFailureMessage.internalError("Error reading playground PDF"), e);
-            }
-        }
-        case PLAYGROUND_ERROR -> {
-            // This will always error out.
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new AppFailureException(AppFailureMessage.internalError("Error while sleeping"), e);
-            }
+            case PLAYGROUND_ERROR -> {
+                // This will always error out.
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new AppFailureException(AppFailureMessage.internalError("Error while sleeping"), e);
+                }
 
-            throw new AppFailureException(AppFailureMessage.internalError("Expected playground document queue error"));
-        }
-        case SPSS_REPORT -> {
-            // Extract payload
-            DocumentQueueParams parameters = unmarshalDocumentQueueParameter(documentQueue);
-            Objects.requireNonNull(parameters.getSpssReportType());
-            return csvGeneratorService.generateSpssReport(parameters.getSpssReportType(), documentQueue.getBenutzer().getEmail());
-        }
-        default -> throw new AppFailureException(AppFailureMessage.internalError(
-            "Unhandled FileType in DocumentQueue generator: " + documentQueue.getType()));
+                throw new AppFailureException(AppFailureMessage.internalError("Expected playground document queue error"));
+            }
+            case SPSS_REPORT -> {
+                // Extract payload
+                DocumentQueueParams parameters = unmarshalDocumentQueueParameter(documentQueue);
+                Objects.requireNonNull(parameters.getSpssReportType());
+                return csvGeneratorService.generateSpssReport(parameters.getSpssReportType(), documentQueue.getBenutzer().getEmail());
+            }
+            default -> throw new AppFailureException(AppFailureMessage.internalError(
+                "Unhandled FileType in DocumentQueue generator: " + documentQueue.getType()));
         }
     }
 
@@ -157,15 +154,15 @@ public class DocumentQueueService {
     public void storeResult(@NonNull ID<DocumentQueue> id, byte[] content) {
         DocumentQueue documentQueue = getById(id);
         LocalDate today = appClock.localDateTime().now().toLocalDate();
-        String calculatedFileName = FileNameUtil.calculateAutomaticFilename(
+        CleanFileName calculatedFileName = FileNameUtil.calculateAutomaticFilename(
             List.of(),
             today,
             getBaseFilename(documentQueue),
             documentQueue.getType(),
             getFileExtension(documentQueue));
 
-        Path tempFilePath = createTmpFile(calculatedFileName, content);
-        FileUpload fileUpload = FileUtil.fileToFileUpload(tempFilePath, calculatedFileName);
+        Path tempFilePath = createTmpFile(calculatedFileName.toString(), content);
+        FileUpload fileUpload = FileUtil.fileToFileUpload(tempFilePath, calculatedFileName.toString());
         FileInfoS3 fileInfoS3 = FileInfoS3Mapper.mapFileUploadToFileInfoS3(fileUpload, documentQueue.getType());
 
         fileStoreService.uploadToS3Async(fileUpload, fileInfoS3)

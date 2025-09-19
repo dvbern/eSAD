@@ -3,7 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.util;
 import java.util.List;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArzt;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Blutdruck;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
@@ -25,12 +25,12 @@ public class UntersuchungArztUtil {
     @Nullable
     public static Verhalten getVerhalten(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungArzt arzt,
+        @Nullable UntersuchungArztBeurteilung arztBeurteilung,
         @NonNull Verhalten defaultWert
     ) {
         if (config.getUntersuchungVerhalten().isVisible()) {
-            if (arzt != null && arzt.getVerhalten() != null) {
-                return arzt.getVerhalten();
+            if (arztBeurteilung != null && arztBeurteilung.getVerhalten() != null) {
+                return arztBeurteilung.getVerhalten();
             }
             return defaultWert;
         }
@@ -40,12 +40,12 @@ public class UntersuchungArztUtil {
     @Nullable
     public static Blutdruck getBlutdruck(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungArzt arzt,
+        @Nullable UntersuchungArztBeurteilung arztBeurteilung,
         @NonNull Blutdruck defaultWert
     ) {
         if (config.getUntersuchungBlutdruck().isVisible()) {
-            if (arzt != null && arzt.getBlutdruck() != null) {
-                return arzt.getBlutdruck();
+            if (arztBeurteilung != null && arztBeurteilung.getBlutdruck() != null) {
+                return arztBeurteilung.getBlutdruck();
             }
             return defaultWert;
         }
@@ -55,12 +55,12 @@ public class UntersuchungArztUtil {
     @Nullable
     public static Herzauskultation getHerzauskultation(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungArzt arzt,
+        @Nullable UntersuchungArztBeurteilung arztBeurteilung,
         @NonNull Herzauskultation defaultWert
     ) {
         if (config.getUntersuchungHerz().isVisible()) {
-            if (arzt != null && arzt.getHerzauskultation() != null) {
-                return arzt.getHerzauskultation();
+            if (arztBeurteilung != null && arztBeurteilung.getHerzauskultation() != null) {
+                return arztBeurteilung.getHerzauskultation();
             }
             return defaultWert;
         }
@@ -70,12 +70,12 @@ public class UntersuchungArztUtil {
     @Nullable
     public static Haut getHaut(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungArzt arzt,
+        @Nullable UntersuchungArztBeurteilung arztBeurteilung,
         @NonNull Haut defaultWert
     ) {
         if (config.getUntersuchungHaut().isVisible()) {
-            if (arzt != null && arzt.getHaut() != null) {
-                return arzt.getHaut();
+            if (arztBeurteilung != null && arztBeurteilung.getHaut() != null) {
+                return arztBeurteilung.getHaut();
             }
             return defaultWert;
         }
@@ -85,12 +85,12 @@ public class UntersuchungArztUtil {
     @Nullable
     public static List<MundAndZaehne> getMundAndZaehne(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungArzt arzt,
+        @Nullable UntersuchungArztBeurteilung arztBeurteilung,
         @NonNull MundAndZaehne defaultWert
     ) {
         if (config.getUntersuchungMundZaehne().isVisible()) {
-            if (arzt != null && !arzt.getMundAndZaehne().isEmpty()) {
-                return arzt.getMundAndZaehne();
+            if (arztBeurteilung != null && !arztBeurteilung.getMundAndZaehne().isEmpty()) {
+                return arztBeurteilung.getMundAndZaehne();
             }
             return List.of(defaultWert);
         }
@@ -100,12 +100,12 @@ public class UntersuchungArztUtil {
     @Nullable
     public static List<Sprachfaehigkeit> getSprachfaehigkeit(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungArzt arzt,
+        @Nullable UntersuchungArztBeurteilung arztBeurteilung,
         @NonNull Sprachfaehigkeit defaultWert
     ) {
         if (config.getUntersuchungSprache().isVisible()) {
-            if (arzt != null && !arzt.getSprachfaehigkeit().isEmpty()) {
-                return arzt.getSprachfaehigkeit();
+            if (arztBeurteilung != null && !arztBeurteilung.getSprachfaehigkeit().isEmpty()) {
+                return arztBeurteilung.getSprachfaehigkeit();
             }
             return List.of(defaultWert);
         }
@@ -115,12 +115,12 @@ public class UntersuchungArztUtil {
     @Nullable
     public static Motorik getMotorik(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungArzt arzt,
+        @Nullable UntersuchungArztBeurteilung arztBeurteilung,
         @NonNull Motorik defaultWert
     ) {
         if (config.getUntersuchungMotorik().isVisible()) {
-            if (arzt != null && arzt.getMotorik() != null) {
-                return arzt.getMotorik();
+            if (arztBeurteilung != null && arztBeurteilung.getMotorik() != null) {
+                return arztBeurteilung.getMotorik();
             }
             return defaultWert;
         }
@@ -130,12 +130,12 @@ public class UntersuchungArztUtil {
     @Nullable
     public static List<Bewegungsapparat> getBewegungsapparat(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungArzt arzt,
+        @Nullable UntersuchungArztBeurteilung arztBeurteilung,
         @NonNull Bewegungsapparat defaultWert
     ) {
         if (config.getUntersuchungBewegungsapparat().isVisible()) {
-            if (arzt != null && !arzt.getBewegungsapparat().isEmpty()) {
-                return arzt.getBewegungsapparat();
+            if (arztBeurteilung != null && !arztBeurteilung.getBewegungsapparat().isEmpty()) {
+                return arztBeurteilung.getBewegungsapparat();
             }
             return List.of(defaultWert);
         }
@@ -145,12 +145,12 @@ public class UntersuchungArztUtil {
     @Nullable
     public static Einbeinstand getEinbeinstand(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungArzt arzt,
+        @Nullable UntersuchungArztBeurteilung arztBeurteilung,
         @NonNull Einbeinstand defaultWert
     ) {
         if (config.getUntersuchungEinbeinstand().isVisible()) {
-            if (arzt != null && arzt.getEinbeinstand() != null) {
-                return arzt.getEinbeinstand();
+            if (arztBeurteilung != null && arztBeurteilung.getEinbeinstand() != null) {
+                return arztBeurteilung.getEinbeinstand();
             }
             return defaultWert;
         }
@@ -160,12 +160,12 @@ public class UntersuchungArztUtil {
     @Nullable
     public static Einbeinhuepfen getEinbeinhuepfen(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungArzt arzt,
+        @Nullable UntersuchungArztBeurteilung arztBeurteilung,
         @NonNull Einbeinhuepfen defaultWert
     ) {
         if (config.getUntersuchungEinbeinhuepfen().isVisible()) {
-            if (arzt != null && arzt.getEinbeinhuepfen() != null) {
-                return arzt.getEinbeinhuepfen();
+            if (arztBeurteilung != null && arztBeurteilung.getEinbeinhuepfen() != null) {
+                return arztBeurteilung.getEinbeinhuepfen();
             }
             return defaultWert;
         }
@@ -175,12 +175,12 @@ public class UntersuchungArztUtil {
     @Nullable
     public static List<Fingeropposition> getFingeropposition(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungArzt arzt,
+        @Nullable UntersuchungArztBeurteilung arztBeurteilung,
         @NonNull Fingeropposition defaultWert
     ) {
         if (config.getUntersuchungFingeropposition().isVisible()) {
-            if (arzt != null && !arzt.getFingeropposition().isEmpty()) {
-                return arzt.getFingeropposition();
+            if (arztBeurteilung != null && !arztBeurteilung.getFingeropposition().isEmpty()) {
+                return arztBeurteilung.getFingeropposition();
             }
             return List.of(defaultWert);
         }

@@ -26,12 +26,20 @@ public class UntersuchungImpfstatusKrankheitService {
 		return impfstatusKrankheit;
 	}
 
-	private void checkImmunitaetenForDossier(@NonNull UntersuchungImpfstatusKrankheit impfstatusKrankheit) {
+    @NonNull
+    public UntersuchungImpfstatusKrankheit persistWithOptimisticLocking(@NonNull UntersuchungImpfstatusKrankheit entity, @NonNull Long versionFromFrontend) {
+        UntersuchungImpfstatusKrankheit persisted = impfstatusKrankheitRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
+        checkImmunitaetenForDossier(persisted);
+        return persisted;
+    }
+
+	public void checkImmunitaetenForDossier(@NonNull UntersuchungImpfstatusKrankheit impfstatusKrankheit) {
         Dossier dossier = dossierService.getById(impfstatusKrankheit.getUntersuchungImpfungen()
             .getUntersuchung()
             .getEinladung()
             .getDossier()
             .getId());
+        dossier.disableOptimisticLockingCheck();
 		if (impfstatusKrankheit.getKrankheit() == Krankheit.MASERN && impfstatusKrankheit.isImpfschutzGegeben()) {
 			dossier.setImmunitaetMasern(true);
 			dossierService.persist(dossier);
@@ -50,7 +58,8 @@ public class UntersuchungImpfstatusKrankheitService {
 	@NonNull
 	public Optional<UntersuchungImpfstatusKrankheit> findByUntersuchungAndKrankheit(
 			@NonNull ID<UntersuchungImpfungen> untersuchungImpfungenID,
-			@NonNull Krankheit krankheit) {
+			@NonNull Krankheit krankheit
+    ) {
 		return impfstatusKrankheitRepo.findByUntersuchungAndKrankheit(untersuchungImpfungenID, krankheit);
 	}
 

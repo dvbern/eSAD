@@ -31,6 +31,7 @@ export interface UntersuchungMassnahmenSaveJson {
     ueberweisungAugenarzt: boolean;
     nachkontrolle: AnlassFlagsJson;
     bemerkungen?: string;
+    version: number;
 }
 export namespace UntersuchungMassnahmenSaveJson {
 }

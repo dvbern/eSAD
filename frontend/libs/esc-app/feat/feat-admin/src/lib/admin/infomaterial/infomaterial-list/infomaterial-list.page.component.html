@@ -1,13 +1,16 @@
 <feat-page [heading]="'infomaterial.list.page.title' | transloco"
            [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN}">
-  <svui-page-header-buttons [showFilterPopup]="false"/>
+
+  <svui-page-header-list-summary [items]="summaryItems()"/>
+
+  <svui-page-header-buttons
+    [showFilterPopup]="false"
+    [activeFilterCount]="itemTable.numberOfFilters()"
+    (resetFilter)="itemTable.resetFilters(); tableFilterForm.reset()"/>
 
   @if (this.canEditList()) {
     <svui-page-header-add-button [addRouterLink]="Path.CREATE"/>
   }
-
-  <svui-page-header-list-summary [items]="summaryItems()"/>
-
 
   <svui-card [innerSpacing]="'topBottom'">
     <table

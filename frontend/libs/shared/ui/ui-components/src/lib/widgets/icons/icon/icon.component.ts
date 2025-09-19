@@ -30,6 +30,7 @@ import {
   heroChevronUpSolid,
   heroClipboardSolid,
   heroClockSolid,
+  heroDocumentArrowDownSolid,
   heroEllipsisVerticalSolid,
   heroEyeSolid,
   heroFlagSolid,
@@ -43,6 +44,7 @@ import {
   heroPlusSolid,
   heroScaleSolid,
   heroShieldCheckSolid,
+  heroTableCellsSolid,
   heroTrashSolid,
   heroUserSolid,
   heroXMarkSolid,
@@ -69,6 +71,8 @@ export const IconUseCases = [
   'first',
   'flag',
   'herunterladen',
+  'herunterladen_dokument',
+  'tabelle',
   'hinzufuegen',
   'impfausweis',
   'information',
@@ -157,6 +161,8 @@ export class IconComponent {
       case 'first': return heroChevronDoubleLeftSolid;
       case 'flag': return heroFlagSolid;
       case 'herunterladen': return heroArrowDownTraySolid;
+      case 'herunterladen_dokument': return heroDocumentArrowDownSolid;
+      case 'tabelle': return heroTableCellsSolid;
       case 'hinzufuegen': return heroPlusSolid;
       case 'impfausweis': return heroBookOpenSolid;
       case 'information': return bootstrapInfoCircleFill;

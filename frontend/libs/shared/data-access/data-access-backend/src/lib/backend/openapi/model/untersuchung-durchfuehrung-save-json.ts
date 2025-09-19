@@ -16,6 +16,7 @@ export interface UntersuchungDurchfuehrungSaveJson {
     nachkontrolle: boolean;
     nachzuegler: boolean;
     neueintritt: boolean;
+    version: number;
 }
 
 

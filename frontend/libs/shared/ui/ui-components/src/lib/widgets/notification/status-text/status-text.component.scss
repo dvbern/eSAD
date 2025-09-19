@@ -32,6 +32,20 @@
       }
     }
 
+    &.warning {
+      border-color: color-set-statustext.$warning-color;
+      background-color: color-set-statustext.$warning-bg;
+      color: color-set-statustext.$warning-color;
+
+      .icon {
+        color: color-set-statustext.$warning-icon;
+      }
+
+      &.statustext__clickable:hover {
+        background-color: color-set-statustext.$warning-bg-hover;
+      }
+    }
+
     &.success {
       border-color: color-set-statustext.$success-color;
       background-color: color-set-statustext.$success-bg;

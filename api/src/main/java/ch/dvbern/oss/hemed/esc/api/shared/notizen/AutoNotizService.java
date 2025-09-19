@@ -1,11 +1,13 @@
 package ch.dvbern.oss.hemed.esc.api.shared.notizen;
 
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.labels.LabelService;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
@@ -18,16 +20,18 @@ import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
 import io.smallrye.mutiny.Uni;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +53,12 @@ public class AutoNotizService {
         @NonNull PrintResultDTO exportBasisKind,
         @NonNull PrintResultDTO exportOtherKind
     ) {
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            dossier.getKind(),
+            AppValidationMessage.cannotCreateEntityForInactiveKind(
+                dossier.getKind(),
+                new Notiz()
+            ));
         Notiz notiz = new Notiz(
             tl.translate("notiz.duplikat.merge.titel"),
             null,
@@ -68,6 +78,14 @@ public class AutoNotizService {
         @NonNull Einladung einladungSource,
         @NonNull Einladung einladungTarget
     ) {
+        Kind kind = einladungTarget.getDossier().getKind();
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            kind,
+            AppValidationMessage.cannotEditEntityForInactiveKind(
+                kind,
+                new Notiz()
+            ));
+
         Notiz impfausweis = einladungSource.getImpfausweis();
         if (impfausweis != null) {
             String newTitle = tl.translate(
@@ -97,6 +115,13 @@ public class AutoNotizService {
         @NonNull Einladung einladungSource,
         @NonNull Einladung einladungTarget
     ) {
+        Kind kind = einladungTarget.getDossier().getKind();
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            kind,
+            AppValidationMessage.cannotEditEntityForInactiveKind(
+                kind,
+                new Notiz()
+            ));
         Notiz fragebogen = einladungSource.getFragebogen();
         if (fragebogen != null) {
             String newTitle = tl.translate(
@@ -128,9 +153,9 @@ public class AutoNotizService {
         CleanFileName cleanFileName = new CleanFileName(prefixFilename + '_' + exportKind.getFileInfo().getFileName());
         FileInfoS3 fileInfoS3 = FileInfoS3.of(exportKind.getFileInfo());
         fileInfoS3.setFileName(cleanFileName);
-        Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileInfoS3.getMediaType().toString(),exportKind.getContent(), fileInfoS3);
+        Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileInfoS3.getMediaType().toString(), exportKind.getContent(), fileInfoS3);
         putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
-        return new FileData(FileTyp.KINDERDOSSIER, fileInfoS3.getFileName().toString(), fileInfoS3);
+        return new FileData(FileTyp.KINDERDOSSIER, fileInfoS3.getFileName(), fileInfoS3);
     }
 
     @NonNull
@@ -153,6 +178,7 @@ public class AutoNotizService {
         @NonNull List<FileUpload> fileUploads
     ) {
         Notiz savedNotiz = this.createNotizWithLabel(notiz, Label.ID_LABEL_IMPFAUSWEIS);
+        savedNotiz.disableOptimisticLockingCheck();
         for (FileUpload fileUpload : fileUploads) {
             savedNotiz = notizService.addUploadedFile(savedNotiz.getId(), fileUpload);
         }
@@ -167,6 +193,7 @@ public class AutoNotizService {
         @NonNull List<FileUpload> fileUploads
     ) {
         Notiz savedNotiz = this.createNotizWithLabel(notiz, Label.ID_LABEL_FRAGEBOGEN);
+        savedNotiz.disableOptimisticLockingCheck();
         for (FileUpload fileUpload : fileUploads) {
             savedNotiz = notizService.addUploadedFile(savedNotiz.getId(), fileUpload);
         }

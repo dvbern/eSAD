@@ -1,10 +1,17 @@
 import {inject, Injectable} from '@angular/core';
 import {
-  UntersuchungSehenJson,
-  UntersuchungSehenSaveJson,
+  UntersuchungMassnahmenService,
+  UntersuchungMassnahmenServiceGetUntersuchungMassnahmenSehenRequestParams,
+  UntersuchungMassnahmenServiceSaveUntersuchungMassnahmenSehenRequestParams,
+  UntersuchungSehenBemerkungFragebogenJson,
+  UntersuchungSehenBeurteilungJson,
+  UntersuchungSehenBeurteilungSaveJson,
+  UntersuchungSehenMassnahmenJson,
   UntersuchungSehenService,
-  UntersuchungSehenServiceGetUntersuchungSehenRequestParams,
-  UntersuchungSehenServiceSaveUntersuchungSehenRequestParams,
+  UntersuchungSehenServiceGetUntersuchungSehenBemerkungFragebogenRequestParams,
+  UntersuchungSehenServiceGetUntersuchungSehenBeurteilungRequestParams,
+  UntersuchungSehenServiceSaveUntersuchungSehenBemerkungFragebogenRequestParams,
+  UntersuchungSehenServiceSaveUntersuchungSehenBeurteilungRequestParams,
 } from '@dvb/data-access-backend';
 import {AppErrorHandlerService, AppNotificationStore, Loader} from '@dvb/util-angular';
 import {TranslocoService} from '@jsverse/transloco';
@@ -16,15 +23,19 @@ import {AnlassEinladungenId} from '../anlass-einladungen-id';
 import {UntersuchungStore} from '../untersuchung.store';
 
 type UntersuchungSehenState = {
-  sehen: UntersuchungSehenJson | undefined;
-  defaultSehenInitial: UntersuchungSehenSaveJson | undefined;
-  defaultSehenToApply: UntersuchungSehenSaveJson | undefined;
+  sehenBeurteilung: UntersuchungSehenBeurteilungJson | undefined;
+  defaultSehenBeurteilungInitial: UntersuchungSehenBeurteilungSaveJson | undefined;
+  defaultSehenBeurteilungToApply: UntersuchungSehenBeurteilungSaveJson | undefined;
+  sehenMassnahmen: UntersuchungSehenMassnahmenJson | undefined;
+  sehenBemerkungFragebogen: UntersuchungSehenBemerkungFragebogenJson | undefined;
 };
 
 const initialState: UntersuchungSehenState = {
-  sehen: undefined,
-  defaultSehenInitial: undefined,
-  defaultSehenToApply: undefined,
+  sehenBeurteilung: undefined,
+  defaultSehenBeurteilungInitial: undefined,
+  defaultSehenBeurteilungToApply: undefined,
+  sehenMassnahmen: undefined,
+  sehenBemerkungFragebogen: undefined,
 };
 
 @Injectable()
@@ -32,15 +43,25 @@ export class UntersuchungSehenStore extends signalStore(
   {protectedState: false},
   withState(initialState),
   withMethods((store) => ({
-    applyDefaultSehen(): void {
-      patchState(store, {defaultSehenToApply: store.defaultSehenInitial()});
+    defaultSehenToApplyWithCorrectedVersion(): UntersuchungSehenBeurteilungSaveJson {
+      // Ensure that the version is set correctly when applying the default Sehen
+      // noinspection UnnecessaryLocalVariableJS
+      const defaultsWithCorrectedVersion = {
+        ...store.defaultSehenBeurteilungInitial(),
+        version: store.sehenBeurteilung()?.data?.version ?? -1
+      };
+      return defaultsWithCorrectedVersion;
     },
-    resetApplyDefaultSehen(): void {
-      patchState(store, {defaultSehenToApply: undefined});
+    applyDefaultSehenBeurteilung(): void {
+      patchState(store, {defaultSehenBeurteilungToApply: this.defaultSehenToApplyWithCorrectedVersion()});
+    },
+    resetApplyDefaultSehenBeurteilung(): void {
+      patchState(store, {defaultSehenBeurteilungToApply: undefined});
     },
   })),
 ) {
   readonly #sehenService = inject(UntersuchungSehenService);
+  readonly #massnahmenService = inject(UntersuchungMassnahmenService);
   readonly #appErrorHandlerService = inject(AppErrorHandlerService);
   readonly #untersuchungStore = inject(UntersuchungStore);
   readonly #appNotificationStore = inject(AppNotificationStore);
@@ -50,50 +71,114 @@ export class UntersuchungSehenStore extends signalStore(
   readonly defaultLoader = new Loader();
   readonly saveLoader = new Loader();
 
-  loadSehen = rxMethod<UntersuchungSehenServiceGetUntersuchungSehenRequestParams>(
+  loadSehenBeurteilung = rxMethod<UntersuchungSehenServiceGetUntersuchungSehenBeurteilungRequestParams>(
     pipe(
-      tap(() => patchState(this, {sehen: undefined})),
-      switchMap(params => this.loader.tapLoading$(this.#sehenService.getUntersuchungSehen$(params),
+      tap(() => patchState(this, {sehenBeurteilung: undefined})),
+      switchMap(params => this.loader.tapLoading$(this.#sehenService.getUntersuchungSehenBeurteilung$(params),
         error => this.#appErrorHandlerService.handleError(error))),
       tapResponse({
-        next: sehen => patchState(this, {sehen}),
+        next: sehenBeurteilung => patchState(this, {sehenBeurteilung}),
         error: console.error,
       }),
     ),
   );
 
-  loadDefaultSehen = rxMethod<AnlassEinladungenId>(
+  loadDefaultSehenBeurteilung = rxMethod<AnlassEinladungenId>(
     pipe(
-      switchMap(params => this.defaultLoader.tapLoading$(this.#sehenService.getDefaultUntersuchungSehenForAnlassConfig$(
+      switchMap(params => this.defaultLoader.tapLoading$(this.#sehenService.getDefaultUntersuchungSehenBeurteilungForAnlassConfig$(
           {
             anlassId: params.anlassId,
             einladungId: params.einladungIds[0],
           }),
         error => this.#appErrorHandlerService.handleError(error))),
       tapResponse({
-        next: data => patchState(this, {defaultSehenInitial: data}),
+        next: data => patchState(this, {defaultSehenBeurteilungInitial: data}),
         error: console.error,
       }),
     ),
   );
 
-  saveSehen = rxMethod<UntersuchungSehenServiceSaveUntersuchungSehenRequestParams>(
+  saveSehenBeurteilung = rxMethod<UntersuchungSehenServiceSaveUntersuchungSehenBeurteilungRequestParams>(
     pipe(
       exhaustMap(params =>
         this.saveLoader.tapLoading$(
-          this.#sehenService.saveUntersuchungSehen$(params).pipe(
-            map(sehen => ({sehen, params})),
+          this.#sehenService.saveUntersuchungSehenBeurteilung$(params).pipe(
+            map(sehenBeurteilung => ({sehenBeurteilung, params})),
           ),
           error => this.#appErrorHandlerService.handleError(error),
         ),
       ),
       tapResponse({
-        next: ({sehen, params}) => {
-          patchState(this, {sehen});
+        next: ({sehenBeurteilung, params}) => {
+          patchState(this, {sehenBeurteilung});
           this.#untersuchungStore.loadTabsSaved({
             anlassId: params.anlassId,
             einladungId: params.einladungId,
           });
+          this.#appNotificationStore.addSuccessNotification(this.#transloco.translate('global.data.saved'));
+        },
+        error: console.error,
+      }),
+    ),
+  );
+
+  loadSehenMassnahmen = rxMethod<UntersuchungMassnahmenServiceGetUntersuchungMassnahmenSehenRequestParams>(
+    pipe(
+      tap(() => patchState(this, {sehenMassnahmen: undefined})),
+      switchMap(params => this.loader.tapLoading$(this.#massnahmenService.getUntersuchungMassnahmenSehen$(params),
+        error => this.#appErrorHandlerService.handleError(error))),
+      tapResponse({
+        next: massnahmen => patchState(this, {sehenMassnahmen: massnahmen}),
+        error: console.error,
+      }),
+    ),
+  );
+
+  saveSehenMassnahmen = rxMethod<UntersuchungMassnahmenServiceSaveUntersuchungMassnahmenSehenRequestParams>(
+    pipe(
+      exhaustMap(params =>
+        this.saveLoader.tapLoading$(
+          this.#massnahmenService.saveUntersuchungMassnahmenSehen$(params).pipe(
+            map(massnahmen => ({massnahmen, params})),
+          ),
+          error => this.#appErrorHandlerService.handleError(error),
+        ),
+      ),
+      tapResponse({
+        next: ({massnahmen}) => {
+          patchState(this, {sehenMassnahmen: massnahmen});
+          this.#appNotificationStore.addSuccessNotification(this.#transloco.translate('global.data.saved'));
+        },
+        error: console.error,
+      }),
+    ),
+  );
+
+  loadSehenBemerkungFragebogen = rxMethod<UntersuchungSehenServiceGetUntersuchungSehenBemerkungFragebogenRequestParams>(
+    pipe(
+      tap(() => patchState(this, {sehenBemerkungFragebogen: undefined})),
+      switchMap(params => this.loader.tapLoading$(this.#sehenService.getUntersuchungSehenBemerkungFragebogen$(params),
+        error => this.#appErrorHandlerService.handleError(error))),
+      tapResponse({
+        next: sehenBemerkungFragebogen => patchState(this, {sehenBemerkungFragebogen}),
+        error: console.error,
+      }),
+    ),
+  );
+
+  saveSehenBemerkungFragebogen = rxMethod<UntersuchungSehenServiceSaveUntersuchungSehenBemerkungFragebogenRequestParams>(
+    pipe(
+      exhaustMap(params =>
+        this.saveLoader.tapLoading$(
+          this.#sehenService.saveUntersuchungSehenBemerkungFragebogen$(params).pipe(
+            map(sehenBemerkungFragebogen => ({sehenBemerkungFragebogen, params})),
+          ),
+          error => this.#appErrorHandlerService.handleError(error),
+        ),
+      ),
+      tapResponse({
+        next: ({sehenBemerkungFragebogen}) => {
+          patchState(this, {sehenBemerkungFragebogen});
           this.#appNotificationStore.addSuccessNotification(this.#transloco.translate('global.data.saved'));
         },
         error: console.error,

@@ -1,5 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.docmerger;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -15,6 +16,7 @@ import java.util.stream.Stream;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
+import ch.dvbern.dvbstarter.shared.math.GanzZahl;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
@@ -23,7 +25,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankhe
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankheitService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungInternService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
@@ -402,8 +404,8 @@ public class MergeSourceCreatorService {
         @NonNull AnlassConfig anlassConfig,
         @NonNull TL tl
     ) {
-        UntersuchungSehen untersuchungSehen = untersuchung.getUntersuchungSehen();
-        if (untersuchungSehen == null) {
+        UntersuchungSehenBeurteilung untersuchungSehenBeurteilung = untersuchung.getUntersuchungSehenBeurteilung();
+        if (untersuchungSehenBeurteilung == null) {
             return new SehenDocMergerDTO(
                 PRINT_UTIL.getPlaceholder(),
                 PRINT_UTIL.getPlaceholder(),
@@ -427,27 +429,27 @@ public class MergeSourceCreatorService {
         }
 
         return new SehenDocMergerDTO(
-            getEnumValue("brief.eltern", untersuchungSehen.getBrilleLinsen(), tl),
-            getEnumValue("brief.arzt", untersuchungSehen.getBrilleLinsen(), tl),
-            getEnumValue("brief.eltern", untersuchungSehen.getStereotest(), tl),
-            getEnumValue("brief.arzt", untersuchungSehen.getStereotest(), tl),
-            getFarbeSehen(untersuchungSehen.getFarbsehen(), untersuchung.getUntersuchungMassnahmen(), tl),
-            getEnumValue(BRIEF_PREFIX, untersuchungSehen.getVerwendeteTafel(), tl),
-            getVisusString(untersuchungSehen.getFernvisus(), tl),
-            PRINT_UTIL.trimToPlaceholder(untersuchungSehen.getFernvisusRechts()),
-            PRINT_UTIL.trimToPlaceholder(untersuchungSehen.getFernvisusLinks()),
-            getVisusString(untersuchungSehen.getNahvisus(), tl),
-            PRINT_UTIL.trimToPlaceholder(untersuchungSehen.getNahvisusRechts()),
-            PRINT_UTIL.trimToPlaceholder(untersuchungSehen.getNahvisusLinks()),
-            untersuchungSehen.getStrabismus()
+            getEnumValue("brief.eltern", untersuchungSehenBeurteilung.getBrilleLinsen(), tl),
+            getEnumValue("brief.arzt", untersuchungSehenBeurteilung.getBrilleLinsen(), tl),
+            getEnumValue("brief.eltern", untersuchungSehenBeurteilung.getStereotest(), tl),
+            getEnumValue("brief.arzt", untersuchungSehenBeurteilung.getStereotest(), tl),
+            getFarbeSehen(untersuchungSehenBeurteilung.getFarbsehen(), untersuchung.getUntersuchungMassnahmen(), tl),
+            getEnumValue(BRIEF_PREFIX, untersuchungSehenBeurteilung.getVerwendeteTafel(), tl),
+            getVisusString(untersuchungSehenBeurteilung.getFernvisus(), tl),
+            PRINT_UTIL.trimToPlaceholder(untersuchungSehenBeurteilung.getFernvisusRechts()),
+            PRINT_UTIL.trimToPlaceholder(untersuchungSehenBeurteilung.getFernvisusLinks()),
+            getVisusString(untersuchungSehenBeurteilung.getNahvisus(), tl),
+            PRINT_UTIL.trimToPlaceholder(untersuchungSehenBeurteilung.getNahvisusRechts()),
+            PRINT_UTIL.trimToPlaceholder(untersuchungSehenBeurteilung.getNahvisusLinks()),
+            untersuchungSehenBeurteilung.getStrabismus()
                 .stream().map(strabismus -> getEnumValue(BRIEF_PREFIX, strabismus, tl))
                 .collect(Collectors.joining(", ")),
-            getEnumValue(BRIEF_PREFIX, untersuchungSehen.getStrabismusAuspraegung(), tl),
-            getEnumValue(BRIEF_PREFIX, untersuchungSehen.getStrabismusAuftreten(), tl),
-            getEnumValue(BRIEF_PREFIX, untersuchungSehen.getInspektion(), tl),
-            getEnumValue(BRIEF_PREFIX, untersuchungSehen.getKonvergenz(), tl),
+            getEnumValue(BRIEF_PREFIX, untersuchungSehenBeurteilung.getStrabismusAuspraegung(), tl),
+            getEnumValue(BRIEF_PREFIX, untersuchungSehenBeurteilung.getStrabismusAuftreten(), tl),
+            getEnumValue(BRIEF_PREFIX, untersuchungSehenBeurteilung.getInspektion(), tl),
+            getEnumValue(BRIEF_PREFIX, untersuchungSehenBeurteilung.getKonvergenz(), tl),
             getSehenBeurteilung(untersuchung, anlassConfig, tl),
-            getEnumValue(BRIEF_PREFIX, untersuchungSehen.getMotilitaet(), tl)
+            getEnumValue(BRIEF_PREFIX, untersuchungSehenBeurteilung.getMotilitaet(), tl)
         );
     }
 
@@ -663,7 +665,9 @@ public class MergeSourceCreatorService {
         }
 
         return new GroesseGewichtDocMergerDTO(
-            numberWithSuffix(groesseGewicht.getGroesse(), "brief.centimeter.suffix", tl),
+            numberWithSuffix(
+                groesseGewicht.getGroesse() != null ? GanzZahl.valueOf(groesseGewicht.getGroesse()).getValue() : null,
+                "brief.centimeter.suffix", tl),
             getEnumValue(BRIEF_PREFIX, groesseGewicht.getGroessePerzentile(), tl),
             numberWithSuffix(groesseGewicht.getGewicht(), "brief.kilogram.suffix", tl),
             getEnumValue(BRIEF_PREFIX, groesseGewicht.getGewichtPerzentile(), tl),
@@ -693,7 +697,7 @@ public class MergeSourceCreatorService {
     }
 
     @NonNull
-    private static String numberWithSuffix(@Nullable Integer number, @NonNull String suffix, @NonNull TL tl) {
+    private static String numberWithSuffix(@Nullable BigDecimal number, @NonNull String suffix, @NonNull TL tl) {
         if (number == null) {
             return PRINT_UTIL.getPlaceholder();
         }

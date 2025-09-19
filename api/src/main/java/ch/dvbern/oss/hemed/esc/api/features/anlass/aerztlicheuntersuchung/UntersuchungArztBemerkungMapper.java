@@ -1,0 +1,61 @@
+package ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung;
+
+import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
+import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
+import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungService;
+import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+@JaxMapper
+@RequiredArgsConstructor
+public class UntersuchungArztBemerkungMapper {
+
+    private final UntersuchungService untersuchungService;
+    private final UntersuchungArztBemerkungService untersuchungArztBemerkungService;
+
+    @Nullable
+    public static UntersuchungArztBemerkungJson toJson(@Nullable UntersuchungArztBemerkung arzt) {
+        if (arzt == null) {
+            return null;
+        }
+        return new UntersuchungArztBemerkungJson(
+            arzt.getId(),
+            EntityInfoJson.fromEntity(arzt),
+            new UntersuchungArztBemerkungSaveJson(
+                arzt.getBemerkungen(),
+                arzt.getVersion()
+            )
+        );
+    }
+
+    @NonNull
+    public static UntersuchungArztBemerkung toEntity(
+        @NonNull Untersuchung untersuchung,
+        @Nullable UntersuchungArztBemerkung untersuchungArztBemerkung,
+        @NonNull UntersuchungArztBemerkungSaveJson saveJson
+    ) {
+        if (untersuchungArztBemerkung == null) {
+            untersuchungArztBemerkung = UntersuchungArztBemerkung.forUntersuchung(untersuchung);
+        }
+        untersuchungArztBemerkung.setBemerkungen(saveJson.getBemerkungen());
+        return untersuchungArztBemerkung;
+    }
+
+    @Nullable
+    public UntersuchungArztBemerkungJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        return toJson(untersuchung.getUntersuchungArztBemerkung());
+    }
+
+    @NonNull
+    public UntersuchungArztBemerkungJson save(@NonNull ID<Einladung> einladungID, @NonNull UntersuchungArztBemerkungSaveJson saveJson) {
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        UntersuchungArztBemerkung arztBem = untersuchung.getUntersuchungArztBemerkung();
+        UntersuchungArztBemerkung entity = toEntity(untersuchung, arztBem, saveJson);
+        return toJson(untersuchungArztBemerkungService.persistWithOptimisticLocking(entity, saveJson.getVersion()));
+    }
+}

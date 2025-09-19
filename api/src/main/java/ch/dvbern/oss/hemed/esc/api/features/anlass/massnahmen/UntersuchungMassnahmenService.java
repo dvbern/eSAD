@@ -25,7 +25,15 @@ public class UntersuchungMassnahmenService {
         return massnahmen;
     }
 
+    @NonNull
+    public UntersuchungMassnahmen persistWithOptimisticLocking(@NonNull UntersuchungMassnahmen entity, @NonNull Long versionFromFrontend) {
+        UntersuchungMassnahmen persisted = massnahmenRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
+        createOrUpdateAufgaben(persisted);
+        return persisted;
+    }
+
     private void createOrUpdateAufgaben(@NonNull UntersuchungMassnahmen massnahmen) {
+        massnahmen.disableOptimisticLockingCheck();
         Anlass anlass = massnahmen.getUntersuchung().getEinladung().getAnlass();
         Kind kind = massnahmen.getUntersuchung().getEinladung().getDossier().getKind();
         if (massnahmen.getInformationEltern() != null && massnahmen.getInformationEltern() != InformationEltern.KEINE) {
@@ -62,6 +70,7 @@ public class UntersuchungMassnahmenService {
 
     public void untersuchungAbschliessen(@NonNull Untersuchung untersuchung) {
         UntersuchungMassnahmen massnahmen = UntersuchungMassnahmen.forUntersuchungAbschliessen(untersuchung);
+        massnahmen.disableOptimisticLockingCheck();
         persist(massnahmen);
     }
 }

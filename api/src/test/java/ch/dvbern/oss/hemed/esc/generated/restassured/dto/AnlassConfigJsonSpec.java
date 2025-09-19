@@ -44,7 +44,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   AnlassConfigJsonSpec.JSON_PROPERTY_IMPFUNGEN_MASSNAHME_EINZEL_FOLGETERMIN,
   AnlassConfigJsonSpec.JSON_PROPERTY_IMPFUNGEN_MASSNAHME_INFO_KINDERARZT,
   AnlassConfigJsonSpec.JSON_PROPERTY_IMPFUNGEN_MASSNAHME_BERATUNG_M_P_A,
-  AnlassConfigJsonSpec.JSON_PROPERTY_IMPFUNGEN_MASSNAHME_INFORMATIONEN_ABGEGEBEN,
+  AnlassConfigJsonSpec.JSON_PROPERTY_IMPFUNGEN_MASSNAHME_INFOMATERIAL_ABGEGEBEN,
   AnlassConfigJsonSpec.JSON_PROPERTY_IMPFUNGEN_MASSNAHME_INFO_ELTERN,
   AnlassConfigJsonSpec.JSON_PROPERTY_IMPFUNGEN_MASSNAHME_RUECKFRAGE_KINDERARZT,
   AnlassConfigJsonSpec.JSON_PROPERTY_SHOW_CHECKLIST,
@@ -53,6 +53,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   AnlassConfigJsonSpec.JSON_PROPERTY_CHECK_DOPPELKONTROLLE_IMPFENTSCHEID_DURCHGEFUEHRT,
   AnlassConfigJsonSpec.JSON_PROPERTY_UNTERSUCHUNG_IMPFUNG_BEMERKUNGEN,
   AnlassConfigJsonSpec.JSON_PROPERTY_SHOW_TAB_SEHEN,
+  AnlassConfigJsonSpec.JSON_PROPERTY_SHOW_TAB_SEHEN_BEURTEILUNG,
   AnlassConfigJsonSpec.JSON_PROPERTY_SEHEN_BRILLE_LINSEN,
   AnlassConfigJsonSpec.JSON_PROPERTY_SEHEN_FARBSEHEN,
   AnlassConfigJsonSpec.JSON_PROPERTY_SEHEN_TAFEL,
@@ -64,6 +65,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   AnlassConfigJsonSpec.JSON_PROPERTY_SEHEN_MOTILITAET,
   AnlassConfigJsonSpec.JSON_PROPERTY_SEHEN_NAHVISUS,
   AnlassConfigJsonSpec.JSON_PROPERTY_SEHEN_BEMERKUNGEN,
+  AnlassConfigJsonSpec.JSON_PROPERTY_SHOW_TAB_SEHEN_BEMERKUNGEN_FRAGENBOGEN,
+  AnlassConfigJsonSpec.JSON_PROPERTY_SEHEN_BEMERKUNGEN_FRAGEBOGEN,
+  AnlassConfigJsonSpec.JSON_PROPERTY_SHOW_TAB_SEHEN_MASSNAHMEN,
   AnlassConfigJsonSpec.JSON_PROPERTY_SEHEN_MASSNAHMEN,
   AnlassConfigJsonSpec.JSON_PROPERTY_SHOW_TAB_HOEREN,
   AnlassConfigJsonSpec.JSON_PROPERTY_SHOW_TAB_HOEREN_AUDIOGRAMM,
@@ -88,6 +92,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   AnlassConfigJsonSpec.JSON_PROPERTY_SHOW_TRIAGE_TRIAGE,
   AnlassConfigJsonSpec.JSON_PROPERTY_SHOW_TRIAGE_KIND_WEITERLEITEN,
   AnlassConfigJsonSpec.JSON_PROPERTY_SHOW_TAB_UNTERSUCHUNG,
+  AnlassConfigJsonSpec.JSON_PROPERTY_SHOW_TAB_UNTERSUCHUNG_BEURTEILUNG,
+  AnlassConfigJsonSpec.JSON_PROPERTY_SHOW_TAB_UNTERSUCHUNG_BEMERKUNG,
   AnlassConfigJsonSpec.JSON_PROPERTY_UNTERSUCHUNG_BEWEGUNGSAPPARAT,
   AnlassConfigJsonSpec.JSON_PROPERTY_UNTERSUCHUNG_EINBEINSTAND,
   AnlassConfigJsonSpec.JSON_PROPERTY_UNTERSUCHUNG_EINBEINHUEPFEN,
@@ -173,9 +179,9 @@ public class AnlassConfigJsonSpec {
   @jakarta.annotation.Nonnull
   private Boolean impfungenMassnahmeBeratungMPA;
 
-  public static final String JSON_PROPERTY_IMPFUNGEN_MASSNAHME_INFORMATIONEN_ABGEGEBEN = "impfungenMassnahmeInformationenAbgegeben";
+  public static final String JSON_PROPERTY_IMPFUNGEN_MASSNAHME_INFOMATERIAL_ABGEGEBEN = "impfungenMassnahmeInfomaterialAbgegeben";
   @jakarta.annotation.Nonnull
-  private Boolean impfungenMassnahmeInformationenAbgegeben;
+  private Boolean impfungenMassnahmeInfomaterialAbgegeben;
 
   public static final String JSON_PROPERTY_IMPFUNGEN_MASSNAHME_INFO_ELTERN = "impfungenMassnahmeInfoEltern";
   @jakarta.annotation.Nonnull
@@ -208,6 +214,10 @@ public class AnlassConfigJsonSpec {
   public static final String JSON_PROPERTY_SHOW_TAB_SEHEN = "showTabSehen";
   @jakarta.annotation.Nonnull
   private Boolean showTabSehen;
+
+  public static final String JSON_PROPERTY_SHOW_TAB_SEHEN_BEURTEILUNG = "showTabSehenBeurteilung";
+  @jakarta.annotation.Nonnull
+  private Boolean showTabSehenBeurteilung;
 
   public static final String JSON_PROPERTY_SEHEN_BRILLE_LINSEN = "sehenBrilleLinsen";
   @jakarta.annotation.Nonnull
@@ -252,6 +262,18 @@ public class AnlassConfigJsonSpec {
   public static final String JSON_PROPERTY_SEHEN_BEMERKUNGEN = "sehenBemerkungen";
   @jakarta.annotation.Nonnull
   private RequirementSettingSpec sehenBemerkungen;
+
+  public static final String JSON_PROPERTY_SHOW_TAB_SEHEN_BEMERKUNGEN_FRAGENBOGEN = "showTabSehenBemerkungenFragenbogen";
+  @jakarta.annotation.Nonnull
+  private Boolean showTabSehenBemerkungenFragenbogen;
+
+  public static final String JSON_PROPERTY_SEHEN_BEMERKUNGEN_FRAGEBOGEN = "sehenBemerkungenFragebogen";
+  @jakarta.annotation.Nonnull
+  private RequirementSettingSpec sehenBemerkungenFragebogen;
+
+  public static final String JSON_PROPERTY_SHOW_TAB_SEHEN_MASSNAHMEN = "showTabSehenMassnahmen";
+  @jakarta.annotation.Nonnull
+  private Boolean showTabSehenMassnahmen;
 
   public static final String JSON_PROPERTY_SEHEN_MASSNAHMEN = "sehenMassnahmen";
   @jakarta.annotation.Nonnull
@@ -348,6 +370,14 @@ public class AnlassConfigJsonSpec {
   public static final String JSON_PROPERTY_SHOW_TAB_UNTERSUCHUNG = "showTabUntersuchung";
   @jakarta.annotation.Nonnull
   private Boolean showTabUntersuchung;
+
+  public static final String JSON_PROPERTY_SHOW_TAB_UNTERSUCHUNG_BEURTEILUNG = "showTabUntersuchungBeurteilung";
+  @jakarta.annotation.Nonnull
+  private Boolean showTabUntersuchungBeurteilung;
+
+  public static final String JSON_PROPERTY_SHOW_TAB_UNTERSUCHUNG_BEMERKUNG = "showTabUntersuchungBemerkung";
+  @jakarta.annotation.Nonnull
+  private Boolean showTabUntersuchungBemerkung;
 
   public static final String JSON_PROPERTY_UNTERSUCHUNG_BEWEGUNGSAPPARAT = "untersuchungBewegungsapparat";
   @jakarta.annotation.Nonnull
@@ -798,29 +828,29 @@ public class AnlassConfigJsonSpec {
     this.impfungenMassnahmeBeratungMPA = impfungenMassnahmeBeratungMPA;
   }
 
-  public AnlassConfigJsonSpec impfungenMassnahmeInformationenAbgegeben(@jakarta.annotation.Nonnull Boolean impfungenMassnahmeInformationenAbgegeben) {
+  public AnlassConfigJsonSpec impfungenMassnahmeInfomaterialAbgegeben(@jakarta.annotation.Nonnull Boolean impfungenMassnahmeInfomaterialAbgegeben) {
     
-    this.impfungenMassnahmeInformationenAbgegeben = impfungenMassnahmeInformationenAbgegeben;
+    this.impfungenMassnahmeInfomaterialAbgegeben = impfungenMassnahmeInfomaterialAbgegeben;
     return this;
   }
 
   /**
-   * Get impfungenMassnahmeInformationenAbgegeben
-   * @return impfungenMassnahmeInformationenAbgegeben
+   * Get impfungenMassnahmeInfomaterialAbgegeben
+   * @return impfungenMassnahmeInfomaterialAbgegeben
    */
   @jakarta.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_IMPFUNGEN_MASSNAHME_INFORMATIONEN_ABGEGEBEN)
+  @JsonProperty(JSON_PROPERTY_IMPFUNGEN_MASSNAHME_INFOMATERIAL_ABGEGEBEN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public Boolean getImpfungenMassnahmeInformationenAbgegeben() {
-    return impfungenMassnahmeInformationenAbgegeben;
+  public Boolean getImpfungenMassnahmeInfomaterialAbgegeben() {
+    return impfungenMassnahmeInfomaterialAbgegeben;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_IMPFUNGEN_MASSNAHME_INFORMATIONEN_ABGEGEBEN)
+  @JsonProperty(JSON_PROPERTY_IMPFUNGEN_MASSNAHME_INFOMATERIAL_ABGEGEBEN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setImpfungenMassnahmeInformationenAbgegeben(@jakarta.annotation.Nonnull Boolean impfungenMassnahmeInformationenAbgegeben) {
-    this.impfungenMassnahmeInformationenAbgegeben = impfungenMassnahmeInformationenAbgegeben;
+  public void setImpfungenMassnahmeInfomaterialAbgegeben(@jakarta.annotation.Nonnull Boolean impfungenMassnahmeInfomaterialAbgegeben) {
+    this.impfungenMassnahmeInfomaterialAbgegeben = impfungenMassnahmeInfomaterialAbgegeben;
   }
 
   public AnlassConfigJsonSpec impfungenMassnahmeInfoEltern(@jakarta.annotation.Nonnull Boolean impfungenMassnahmeInfoEltern) {
@@ -1021,6 +1051,31 @@ public class AnlassConfigJsonSpec {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setShowTabSehen(@jakarta.annotation.Nonnull Boolean showTabSehen) {
     this.showTabSehen = showTabSehen;
+  }
+
+  public AnlassConfigJsonSpec showTabSehenBeurteilung(@jakarta.annotation.Nonnull Boolean showTabSehenBeurteilung) {
+    
+    this.showTabSehenBeurteilung = showTabSehenBeurteilung;
+    return this;
+  }
+
+  /**
+   * Get showTabSehenBeurteilung
+   * @return showTabSehenBeurteilung
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_SHOW_TAB_SEHEN_BEURTEILUNG)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Boolean getShowTabSehenBeurteilung() {
+    return showTabSehenBeurteilung;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SHOW_TAB_SEHEN_BEURTEILUNG)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setShowTabSehenBeurteilung(@jakarta.annotation.Nonnull Boolean showTabSehenBeurteilung) {
+    this.showTabSehenBeurteilung = showTabSehenBeurteilung;
   }
 
   public AnlassConfigJsonSpec sehenBrilleLinsen(@jakarta.annotation.Nonnull RequirementSettingSpec sehenBrilleLinsen) {
@@ -1296,6 +1351,81 @@ public class AnlassConfigJsonSpec {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setSehenBemerkungen(@jakarta.annotation.Nonnull RequirementSettingSpec sehenBemerkungen) {
     this.sehenBemerkungen = sehenBemerkungen;
+  }
+
+  public AnlassConfigJsonSpec showTabSehenBemerkungenFragenbogen(@jakarta.annotation.Nonnull Boolean showTabSehenBemerkungenFragenbogen) {
+    
+    this.showTabSehenBemerkungenFragenbogen = showTabSehenBemerkungenFragenbogen;
+    return this;
+  }
+
+  /**
+   * Get showTabSehenBemerkungenFragenbogen
+   * @return showTabSehenBemerkungenFragenbogen
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_SHOW_TAB_SEHEN_BEMERKUNGEN_FRAGENBOGEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Boolean getShowTabSehenBemerkungenFragenbogen() {
+    return showTabSehenBemerkungenFragenbogen;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SHOW_TAB_SEHEN_BEMERKUNGEN_FRAGENBOGEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setShowTabSehenBemerkungenFragenbogen(@jakarta.annotation.Nonnull Boolean showTabSehenBemerkungenFragenbogen) {
+    this.showTabSehenBemerkungenFragenbogen = showTabSehenBemerkungenFragenbogen;
+  }
+
+  public AnlassConfigJsonSpec sehenBemerkungenFragebogen(@jakarta.annotation.Nonnull RequirementSettingSpec sehenBemerkungenFragebogen) {
+    
+    this.sehenBemerkungenFragebogen = sehenBemerkungenFragebogen;
+    return this;
+  }
+
+  /**
+   * Get sehenBemerkungenFragebogen
+   * @return sehenBemerkungenFragebogen
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_SEHEN_BEMERKUNGEN_FRAGEBOGEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public RequirementSettingSpec getSehenBemerkungenFragebogen() {
+    return sehenBemerkungenFragebogen;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SEHEN_BEMERKUNGEN_FRAGEBOGEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setSehenBemerkungenFragebogen(@jakarta.annotation.Nonnull RequirementSettingSpec sehenBemerkungenFragebogen) {
+    this.sehenBemerkungenFragebogen = sehenBemerkungenFragebogen;
+  }
+
+  public AnlassConfigJsonSpec showTabSehenMassnahmen(@jakarta.annotation.Nonnull Boolean showTabSehenMassnahmen) {
+    
+    this.showTabSehenMassnahmen = showTabSehenMassnahmen;
+    return this;
+  }
+
+  /**
+   * Get showTabSehenMassnahmen
+   * @return showTabSehenMassnahmen
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_SHOW_TAB_SEHEN_MASSNAHMEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Boolean getShowTabSehenMassnahmen() {
+    return showTabSehenMassnahmen;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SHOW_TAB_SEHEN_MASSNAHMEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setShowTabSehenMassnahmen(@jakarta.annotation.Nonnull Boolean showTabSehenMassnahmen) {
+    this.showTabSehenMassnahmen = showTabSehenMassnahmen;
   }
 
   public AnlassConfigJsonSpec sehenMassnahmen(@jakarta.annotation.Nonnull RequirementSettingSpec sehenMassnahmen) {
@@ -1896,6 +2026,56 @@ public class AnlassConfigJsonSpec {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setShowTabUntersuchung(@jakarta.annotation.Nonnull Boolean showTabUntersuchung) {
     this.showTabUntersuchung = showTabUntersuchung;
+  }
+
+  public AnlassConfigJsonSpec showTabUntersuchungBeurteilung(@jakarta.annotation.Nonnull Boolean showTabUntersuchungBeurteilung) {
+    
+    this.showTabUntersuchungBeurteilung = showTabUntersuchungBeurteilung;
+    return this;
+  }
+
+  /**
+   * Get showTabUntersuchungBeurteilung
+   * @return showTabUntersuchungBeurteilung
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_SHOW_TAB_UNTERSUCHUNG_BEURTEILUNG)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Boolean getShowTabUntersuchungBeurteilung() {
+    return showTabUntersuchungBeurteilung;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SHOW_TAB_UNTERSUCHUNG_BEURTEILUNG)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setShowTabUntersuchungBeurteilung(@jakarta.annotation.Nonnull Boolean showTabUntersuchungBeurteilung) {
+    this.showTabUntersuchungBeurteilung = showTabUntersuchungBeurteilung;
+  }
+
+  public AnlassConfigJsonSpec showTabUntersuchungBemerkung(@jakarta.annotation.Nonnull Boolean showTabUntersuchungBemerkung) {
+    
+    this.showTabUntersuchungBemerkung = showTabUntersuchungBemerkung;
+    return this;
+  }
+
+  /**
+   * Get showTabUntersuchungBemerkung
+   * @return showTabUntersuchungBemerkung
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_SHOW_TAB_UNTERSUCHUNG_BEMERKUNG)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Boolean getShowTabUntersuchungBemerkung() {
+    return showTabUntersuchungBemerkung;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SHOW_TAB_UNTERSUCHUNG_BEMERKUNG)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setShowTabUntersuchungBemerkung(@jakarta.annotation.Nonnull Boolean showTabUntersuchungBemerkung) {
+    this.showTabUntersuchungBemerkung = showTabUntersuchungBemerkung;
   }
 
   public AnlassConfigJsonSpec untersuchungBewegungsapparat(@jakarta.annotation.Nonnull RequirementSettingSpec untersuchungBewegungsapparat) {
@@ -2521,7 +2701,7 @@ public class AnlassConfigJsonSpec {
         Objects.equals(this.impfungenMassnahmeEinzelFolgetermin, anlassConfigJson.impfungenMassnahmeEinzelFolgetermin) &&
         Objects.equals(this.impfungenMassnahmeInfoKinderarzt, anlassConfigJson.impfungenMassnahmeInfoKinderarzt) &&
         Objects.equals(this.impfungenMassnahmeBeratungMPA, anlassConfigJson.impfungenMassnahmeBeratungMPA) &&
-        Objects.equals(this.impfungenMassnahmeInformationenAbgegeben, anlassConfigJson.impfungenMassnahmeInformationenAbgegeben) &&
+        Objects.equals(this.impfungenMassnahmeInfomaterialAbgegeben, anlassConfigJson.impfungenMassnahmeInfomaterialAbgegeben) &&
         Objects.equals(this.impfungenMassnahmeInfoEltern, anlassConfigJson.impfungenMassnahmeInfoEltern) &&
         Objects.equals(this.impfungenMassnahmeRueckfrageKinderarzt, anlassConfigJson.impfungenMassnahmeRueckfrageKinderarzt) &&
         Objects.equals(this.showChecklist, anlassConfigJson.showChecklist) &&
@@ -2530,6 +2710,7 @@ public class AnlassConfigJsonSpec {
         Objects.equals(this.checkDoppelkontrolleImpfentscheidDurchgefuehrt, anlassConfigJson.checkDoppelkontrolleImpfentscheidDurchgefuehrt) &&
         Objects.equals(this.untersuchungImpfungBemerkungen, anlassConfigJson.untersuchungImpfungBemerkungen) &&
         Objects.equals(this.showTabSehen, anlassConfigJson.showTabSehen) &&
+        Objects.equals(this.showTabSehenBeurteilung, anlassConfigJson.showTabSehenBeurteilung) &&
         Objects.equals(this.sehenBrilleLinsen, anlassConfigJson.sehenBrilleLinsen) &&
         Objects.equals(this.sehenFarbsehen, anlassConfigJson.sehenFarbsehen) &&
         Objects.equals(this.sehenTafel, anlassConfigJson.sehenTafel) &&
@@ -2541,6 +2722,9 @@ public class AnlassConfigJsonSpec {
         Objects.equals(this.sehenMotilitaet, anlassConfigJson.sehenMotilitaet) &&
         Objects.equals(this.sehenNahvisus, anlassConfigJson.sehenNahvisus) &&
         Objects.equals(this.sehenBemerkungen, anlassConfigJson.sehenBemerkungen) &&
+        Objects.equals(this.showTabSehenBemerkungenFragenbogen, anlassConfigJson.showTabSehenBemerkungenFragenbogen) &&
+        Objects.equals(this.sehenBemerkungenFragebogen, anlassConfigJson.sehenBemerkungenFragebogen) &&
+        Objects.equals(this.showTabSehenMassnahmen, anlassConfigJson.showTabSehenMassnahmen) &&
         Objects.equals(this.sehenMassnahmen, anlassConfigJson.sehenMassnahmen) &&
         Objects.equals(this.showTabHoeren, anlassConfigJson.showTabHoeren) &&
         Objects.equals(this.showTabHoerenAudiogramm, anlassConfigJson.showTabHoerenAudiogramm) &&
@@ -2565,6 +2749,8 @@ public class AnlassConfigJsonSpec {
         Objects.equals(this.showTriageTriage, anlassConfigJson.showTriageTriage) &&
         Objects.equals(this.showTriageKindWeiterleiten, anlassConfigJson.showTriageKindWeiterleiten) &&
         Objects.equals(this.showTabUntersuchung, anlassConfigJson.showTabUntersuchung) &&
+        Objects.equals(this.showTabUntersuchungBeurteilung, anlassConfigJson.showTabUntersuchungBeurteilung) &&
+        Objects.equals(this.showTabUntersuchungBemerkung, anlassConfigJson.showTabUntersuchungBemerkung) &&
         Objects.equals(this.untersuchungBewegungsapparat, anlassConfigJson.untersuchungBewegungsapparat) &&
         Objects.equals(this.untersuchungEinbeinstand, anlassConfigJson.untersuchungEinbeinstand) &&
         Objects.equals(this.untersuchungEinbeinhuepfen, anlassConfigJson.untersuchungEinbeinhuepfen) &&
@@ -2593,7 +2779,7 @@ public class AnlassConfigJsonSpec {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, anlassTyp, gueltigkeitsZeitraum, showTabDaten, showDatenPersonendaten, datenUntersuchung, showDatenSchule, showTabImpfungen, impfungenUebersicht, impfungenListe, impfungenMassnahmeFolgetermin, impfungenMassnahmeEinzelFolgetermin, impfungenMassnahmeInfoKinderarzt, impfungenMassnahmeBeratungMPA, impfungenMassnahmeInformationenAbgegeben, impfungenMassnahmeInfoEltern, impfungenMassnahmeRueckfrageKinderarzt, showChecklist, checkEinwilligungVorhanden, checkKontraindikationenAbgeklaert, checkDoppelkontrolleImpfentscheidDurchgefuehrt, untersuchungImpfungBemerkungen, showTabSehen, sehenBrilleLinsen, sehenFarbsehen, sehenTafel, sehenFernvisus, sehenStereoTest, sehenStrabismus, sehenInspektion, sehenKonvergenz, sehenMotilitaet, sehenNahvisus, sehenBemerkungen, sehenMassnahmen, showTabHoeren, showTabHoerenAudiogramm, hoerenAudiogramm, hoerenAudiogramm250Hz, hoerenAudiogramm8000Hz, hoerenAudiogrammBeurteilung, hoerenAudiogrammZusaetzlicheAngaben, hoerenAudiogrammBemerkungen, showTabHoerenOtoskopie, hoerenOtoskopie, hoerenOtoskopieBemerkungen, showTabGroesseGewicht, groesseGewichtGroesse, groesseGewichtGewicht, groesseGewichtBmi, groesseGewichtGroessePerzentile, groesseGewichtGewichtPerzentile, groesseGewichtBmiPerzentile, groesseGewichtBemerkungen, showTabTriage, showTriageTriage, showTriageKindWeiterleiten, showTabUntersuchung, untersuchungBewegungsapparat, untersuchungEinbeinstand, untersuchungEinbeinhuepfen, untersuchungFingeropposition, untersuchungMotorik, untersuchungSprache, untersuchungMundZaehne, untersuchungHaut, untersuchungHerz, untersuchungBlutdruck, untersuchungVerhalten, untersuchungBemerkungen, showTabMassnahmen, showMassnahmenPathologischeBefunde, showMassnahmenKeine, showMassnahmenBeratungMpa, showMassnahmenBeratungSchulAerztin, showMassnahmenBereitsBehandelt, showMassnahmenInfomaterial, showMassnahmenInfoEltern, showMassnahmenUeberweisungHausarzt, showMassnahmenUeberweisungAugenarzt, showMassnahmenNachkontrolleSaed, showMassnahmenAnderes);
+    return Objects.hash(id, anlassTyp, gueltigkeitsZeitraum, showTabDaten, showDatenPersonendaten, datenUntersuchung, showDatenSchule, showTabImpfungen, impfungenUebersicht, impfungenListe, impfungenMassnahmeFolgetermin, impfungenMassnahmeEinzelFolgetermin, impfungenMassnahmeInfoKinderarzt, impfungenMassnahmeBeratungMPA, impfungenMassnahmeInfomaterialAbgegeben, impfungenMassnahmeInfoEltern, impfungenMassnahmeRueckfrageKinderarzt, showChecklist, checkEinwilligungVorhanden, checkKontraindikationenAbgeklaert, checkDoppelkontrolleImpfentscheidDurchgefuehrt, untersuchungImpfungBemerkungen, showTabSehen, showTabSehenBeurteilung, sehenBrilleLinsen, sehenFarbsehen, sehenTafel, sehenFernvisus, sehenStereoTest, sehenStrabismus, sehenInspektion, sehenKonvergenz, sehenMotilitaet, sehenNahvisus, sehenBemerkungen, showTabSehenBemerkungenFragenbogen, sehenBemerkungenFragebogen, showTabSehenMassnahmen, sehenMassnahmen, showTabHoeren, showTabHoerenAudiogramm, hoerenAudiogramm, hoerenAudiogramm250Hz, hoerenAudiogramm8000Hz, hoerenAudiogrammBeurteilung, hoerenAudiogrammZusaetzlicheAngaben, hoerenAudiogrammBemerkungen, showTabHoerenOtoskopie, hoerenOtoskopie, hoerenOtoskopieBemerkungen, showTabGroesseGewicht, groesseGewichtGroesse, groesseGewichtGewicht, groesseGewichtBmi, groesseGewichtGroessePerzentile, groesseGewichtGewichtPerzentile, groesseGewichtBmiPerzentile, groesseGewichtBemerkungen, showTabTriage, showTriageTriage, showTriageKindWeiterleiten, showTabUntersuchung, showTabUntersuchungBeurteilung, showTabUntersuchungBemerkung, untersuchungBewegungsapparat, untersuchungEinbeinstand, untersuchungEinbeinhuepfen, untersuchungFingeropposition, untersuchungMotorik, untersuchungSprache, untersuchungMundZaehne, untersuchungHaut, untersuchungHerz, untersuchungBlutdruck, untersuchungVerhalten, untersuchungBemerkungen, showTabMassnahmen, showMassnahmenPathologischeBefunde, showMassnahmenKeine, showMassnahmenBeratungMpa, showMassnahmenBeratungSchulAerztin, showMassnahmenBereitsBehandelt, showMassnahmenInfomaterial, showMassnahmenInfoEltern, showMassnahmenUeberweisungHausarzt, showMassnahmenUeberweisungAugenarzt, showMassnahmenNachkontrolleSaed, showMassnahmenAnderes);
   }
 
   @Override
@@ -2614,7 +2800,7 @@ public class AnlassConfigJsonSpec {
     sb.append("    impfungenMassnahmeEinzelFolgetermin: ").append(toIndentedString(impfungenMassnahmeEinzelFolgetermin)).append("\n");
     sb.append("    impfungenMassnahmeInfoKinderarzt: ").append(toIndentedString(impfungenMassnahmeInfoKinderarzt)).append("\n");
     sb.append("    impfungenMassnahmeBeratungMPA: ").append(toIndentedString(impfungenMassnahmeBeratungMPA)).append("\n");
-    sb.append("    impfungenMassnahmeInformationenAbgegeben: ").append(toIndentedString(impfungenMassnahmeInformationenAbgegeben)).append("\n");
+    sb.append("    impfungenMassnahmeInfomaterialAbgegeben: ").append(toIndentedString(impfungenMassnahmeInfomaterialAbgegeben)).append("\n");
     sb.append("    impfungenMassnahmeInfoEltern: ").append(toIndentedString(impfungenMassnahmeInfoEltern)).append("\n");
     sb.append("    impfungenMassnahmeRueckfrageKinderarzt: ").append(toIndentedString(impfungenMassnahmeRueckfrageKinderarzt)).append("\n");
     sb.append("    showChecklist: ").append(toIndentedString(showChecklist)).append("\n");
@@ -2623,6 +2809,7 @@ public class AnlassConfigJsonSpec {
     sb.append("    checkDoppelkontrolleImpfentscheidDurchgefuehrt: ").append(toIndentedString(checkDoppelkontrolleImpfentscheidDurchgefuehrt)).append("\n");
     sb.append("    untersuchungImpfungBemerkungen: ").append(toIndentedString(untersuchungImpfungBemerkungen)).append("\n");
     sb.append("    showTabSehen: ").append(toIndentedString(showTabSehen)).append("\n");
+    sb.append("    showTabSehenBeurteilung: ").append(toIndentedString(showTabSehenBeurteilung)).append("\n");
     sb.append("    sehenBrilleLinsen: ").append(toIndentedString(sehenBrilleLinsen)).append("\n");
     sb.append("    sehenFarbsehen: ").append(toIndentedString(sehenFarbsehen)).append("\n");
     sb.append("    sehenTafel: ").append(toIndentedString(sehenTafel)).append("\n");
@@ -2634,6 +2821,9 @@ public class AnlassConfigJsonSpec {
     sb.append("    sehenMotilitaet: ").append(toIndentedString(sehenMotilitaet)).append("\n");
     sb.append("    sehenNahvisus: ").append(toIndentedString(sehenNahvisus)).append("\n");
     sb.append("    sehenBemerkungen: ").append(toIndentedString(sehenBemerkungen)).append("\n");
+    sb.append("    showTabSehenBemerkungenFragenbogen: ").append(toIndentedString(showTabSehenBemerkungenFragenbogen)).append("\n");
+    sb.append("    sehenBemerkungenFragebogen: ").append(toIndentedString(sehenBemerkungenFragebogen)).append("\n");
+    sb.append("    showTabSehenMassnahmen: ").append(toIndentedString(showTabSehenMassnahmen)).append("\n");
     sb.append("    sehenMassnahmen: ").append(toIndentedString(sehenMassnahmen)).append("\n");
     sb.append("    showTabHoeren: ").append(toIndentedString(showTabHoeren)).append("\n");
     sb.append("    showTabHoerenAudiogramm: ").append(toIndentedString(showTabHoerenAudiogramm)).append("\n");
@@ -2658,6 +2848,8 @@ public class AnlassConfigJsonSpec {
     sb.append("    showTriageTriage: ").append(toIndentedString(showTriageTriage)).append("\n");
     sb.append("    showTriageKindWeiterleiten: ").append(toIndentedString(showTriageKindWeiterleiten)).append("\n");
     sb.append("    showTabUntersuchung: ").append(toIndentedString(showTabUntersuchung)).append("\n");
+    sb.append("    showTabUntersuchungBeurteilung: ").append(toIndentedString(showTabUntersuchungBeurteilung)).append("\n");
+    sb.append("    showTabUntersuchungBemerkung: ").append(toIndentedString(showTabUntersuchungBemerkung)).append("\n");
     sb.append("    untersuchungBewegungsapparat: ").append(toIndentedString(untersuchungBewegungsapparat)).append("\n");
     sb.append("    untersuchungEinbeinstand: ").append(toIndentedString(untersuchungEinbeinstand)).append("\n");
     sb.append("    untersuchungEinbeinhuepfen: ").append(toIndentedString(untersuchungEinbeinhuepfen)).append("\n");

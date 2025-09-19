@@ -55,7 +55,7 @@
       },
       "AnlassConfigJson" : {
         "type" : "object",
-        "required" : [ "id", "anlassTyp", "gueltigkeitsZeitraum", "showTabDaten", "showDatenPersonendaten", "datenUntersuchung", "showDatenSchule", "showTabImpfungen", "impfungenUebersicht", "impfungenListe", "impfungenMassnahmeFolgetermin", "impfungenMassnahmeEinzelFolgetermin", "impfungenMassnahmeInfoKinderarzt", "impfungenMassnahmeBeratungMPA", "impfungenMassnahmeInformationenAbgegeben", "impfungenMassnahmeInfoEltern", "impfungenMassnahmeRueckfrageKinderarzt", "showChecklist", "checkEinwilligungVorhanden", "checkKontraindikationenAbgeklaert", "checkDoppelkontrolleImpfentscheidDurchgefuehrt", "untersuchungImpfungBemerkungen", "showTabSehen", "sehenBrilleLinsen", "sehenFarbsehen", "sehenTafel", "sehenFernvisus", "sehenStereoTest", "sehenStrabismus", "sehenInspektion", "sehenKonvergenz", "sehenMotilitaet", "sehenNahvisus", "sehenBemerkungen", "sehenMassnahmen", "showTabHoeren", "showTabHoerenAudiogramm", "hoerenAudiogramm", "hoerenAudiogramm250Hz", "hoerenAudiogramm8000Hz", "hoerenAudiogrammBeurteilung", "hoerenAudiogrammZusaetzlicheAngaben", "hoerenAudiogrammBemerkungen", "showTabHoerenOtoskopie", "hoerenOtoskopie", "hoerenOtoskopieBemerkungen", "showTabGroesseGewicht", "groesseGewichtGroesse", "groesseGewichtGewicht", "groesseGewichtBmi", "groesseGewichtGroessePerzentile", "groesseGewichtGewichtPerzentile", "groesseGewichtBmiPerzentile", "groesseGewichtBemerkungen", "showTabTriage", "showTriageTriage", "showTriageKindWeiterleiten", "showTabUntersuchung", "untersuchungBewegungsapparat", "untersuchungEinbeinstand", "untersuchungEinbeinhuepfen", "untersuchungFingeropposition", "untersuchungMotorik", "untersuchungSprache", "untersuchungMundZaehne", "untersuchungHaut", "untersuchungHerz", "untersuchungBlutdruck", "untersuchungVerhalten", "untersuchungBemerkungen", "showTabMassnahmen", "showMassnahmenPathologischeBefunde", "showMassnahmenKeine", "showMassnahmenBeratungMpa", "showMassnahmenBeratungSchulAerztin", "showMassnahmenBereitsBehandelt", "showMassnahmenInfomaterial", "showMassnahmenInfoEltern", "showMassnahmenUeberweisungHausarzt", "showMassnahmenUeberweisungAugenarzt", "showMassnahmenNachkontrolleSaed", "showMassnahmenAnderes" ],
+        "required" : [ "id", "anlassTyp", "gueltigkeitsZeitraum", "showTabDaten", "showDatenPersonendaten", "datenUntersuchung", "showDatenSchule", "showTabImpfungen", "impfungenUebersicht", "impfungenListe", "impfungenMassnahmeFolgetermin", "impfungenMassnahmeEinzelFolgetermin", "impfungenMassnahmeInfoKinderarzt", "impfungenMassnahmeBeratungMPA", "impfungenMassnahmeInfomaterialAbgegeben", "impfungenMassnahmeInfoEltern", "impfungenMassnahmeRueckfrageKinderarzt", "showChecklist", "checkEinwilligungVorhanden", "checkKontraindikationenAbgeklaert", "checkDoppelkontrolleImpfentscheidDurchgefuehrt", "untersuchungImpfungBemerkungen", "showTabSehen", "showTabSehenBeurteilung", "sehenBrilleLinsen", "sehenFarbsehen", "sehenTafel", "sehenFernvisus", "sehenStereoTest", "sehenStrabismus", "sehenInspektion", "sehenKonvergenz", "sehenMotilitaet", "sehenNahvisus", "sehenBemerkungen", "showTabSehenBemerkungenFragenbogen", "sehenBemerkungenFragebogen", "showTabSehenMassnahmen", "sehenMassnahmen", "showTabHoeren", "showTabHoerenAudiogramm", "hoerenAudiogramm", "hoerenAudiogramm250Hz", "hoerenAudiogramm8000Hz", "hoerenAudiogrammBeurteilung", "hoerenAudiogrammZusaetzlicheAngaben", "hoerenAudiogrammBemerkungen", "showTabHoerenOtoskopie", "hoerenOtoskopie", "hoerenOtoskopieBemerkungen", "showTabGroesseGewicht", "groesseGewichtGroesse", "groesseGewichtGewicht", "groesseGewichtBmi", "groesseGewichtGroessePerzentile", "groesseGewichtGewichtPerzentile", "groesseGewichtBmiPerzentile", "groesseGewichtBemerkungen", "showTabTriage", "showTriageTriage", "showTriageKindWeiterleiten", "showTabUntersuchung", "showTabUntersuchungBeurteilung", "showTabUntersuchungBemerkung", "untersuchungBewegungsapparat", "untersuchungEinbeinstand", "untersuchungEinbeinhuepfen", "untersuchungFingeropposition", "untersuchungMotorik", "untersuchungSprache", "untersuchungMundZaehne", "untersuchungHaut", "untersuchungHerz", "untersuchungBlutdruck", "untersuchungVerhalten", "untersuchungBemerkungen", "showTabMassnahmen", "showMassnahmenPathologischeBefunde", "showMassnahmenKeine", "showMassnahmenBeratungMpa", "showMassnahmenBeratungSchulAerztin", "showMassnahmenBereitsBehandelt", "showMassnahmenInfomaterial", "showMassnahmenInfoEltern", "showMassnahmenUeberweisungHausarzt", "showMassnahmenUeberweisungAugenarzt", "showMassnahmenNachkontrolleSaed", "showMassnahmenAnderes" ],
         "properties" : {
           "id" : {
             "$ref" : "#/components/schemas/IDAnlassConfig"
@@ -99,7 +99,7 @@
           "impfungenMassnahmeBeratungMPA" : {
             "type" : "boolean"
           },
-          "impfungenMassnahmeInformationenAbgegeben" : {
+          "impfungenMassnahmeInfomaterialAbgegeben" : {
             "type" : "boolean"
           },
           "impfungenMassnahmeInfoEltern" : {
@@ -124,6 +124,9 @@
             "$ref" : "#/components/schemas/RequirementSetting"
           },
           "showTabSehen" : {
+            "type" : "boolean"
+          },
+          "showTabSehenBeurteilung" : {
             "type" : "boolean"
           },
           "sehenBrilleLinsen" : {
@@ -158,6 +161,15 @@
           },
           "sehenBemerkungen" : {
             "$ref" : "#/components/schemas/RequirementSetting"
+          },
+          "showTabSehenBemerkungenFragenbogen" : {
+            "type" : "boolean"
+          },
+          "sehenBemerkungenFragebogen" : {
+            "$ref" : "#/components/schemas/RequirementSetting"
+          },
+          "showTabSehenMassnahmen" : {
+            "type" : "boolean"
           },
           "sehenMassnahmen" : {
             "$ref" : "#/components/schemas/RequirementSetting"
@@ -229,6 +241,12 @@
             "type" : "boolean"
           },
           "showTabUntersuchung" : {
+            "type" : "boolean"
+          },
+          "showTabUntersuchungBeurteilung" : {
+            "type" : "boolean"
+          },
+          "showTabUntersuchungBemerkung" : {
             "type" : "boolean"
           },
           "untersuchungBewegungsapparat" : {
@@ -378,7 +396,7 @@
       "AnlassSaveJson" : {
         "description" : "Business data for a Anlass",
         "type" : "object",
-        "required" : [ "anlassTyp", "titel", "anlassStatus", "datum", "schuljahr", "anlassArt" ],
+        "required" : [ "anlassTyp", "titel", "anlassStatus", "datum", "schuljahr", "anlassArt", "version" ],
         "properties" : {
           "anlassTyp" : {
             "$ref" : "#/components/schemas/AnlassTyp"
@@ -425,6 +443,10 @@
           },
           "weiterePersonInfo" : {
             "type" : "string"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -474,6 +496,18 @@
       "ArtAbmeldung" : {
         "type" : "string",
         "enum" : [ "MAIL_ELTERN", "MAIL_LEHRPERSON", "TELEFON_ELTERN", "TELEFON_LEHRPERSON", "INFO_LEHRPERSON", "UNABGEMELDET_1", "UNABGEMELDET_2" ]
+      },
+      "ArztIdListJson" : {
+        "type" : "object",
+        "required" : [ "arztIdList" ],
+        "properties" : {
+          "arztIdList" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IDArzt"
+            }
+          }
+        }
       },
       "ArztJson" : {
         "type" : "object",
@@ -534,15 +568,19 @@
           },
           "hpvTeilnahme" : {
             "$ref" : "#/components/schemas/HpvTeilnahme"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         },
-        "required" : [ "fachrichtung", "organisation", "name", "hpvTeilnahme" ]
+        "required" : [ "fachrichtung", "organisation", "name", "hpvTeilnahme", "version" ]
       },
       "AudiogrammBeurteilung" : {
         "type" : "string",
         "enum" : [ "NORMAL", "RECHTS_REDUZIERT", "LINKS_REDUZIERT", "NICHT_GEPRUEFT" ]
       },
-      "AudiogrammJson" : {
+      "AudiogrammSaveJson" : {
         "type" : "object",
         "properties" : {
           "dbHz250" : {
@@ -565,8 +603,13 @@
           },
           "dbHz8000" : {
             "$ref" : "#/components/schemas/Dezibel"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
-        }
+        },
+        "required" : [ "version" ]
       },
       "AufgabeJson" : {
         "type" : "object",
@@ -601,7 +644,7 @@
       },
       "AufgabeSaveJson" : {
         "type" : "object",
-        "required" : [ "titel", "status", "faelligBis", "empfaenger", "userErfasst", "labels", "files" ],
+        "required" : [ "titel", "status", "faelligBis", "empfaenger", "userErfasst", "labels", "files", "version" ],
         "properties" : {
           "titel" : {
             "type" : "string",
@@ -644,6 +687,10 @@
           "link" : {
             "$ref" : "#/components/schemas/URLSchema",
             "type" : "object"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -749,9 +796,13 @@
             "items" : {
               "$ref" : "#/components/schemas/FachRolle"
             }
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         },
-        "required" : [ "name", "vorname", "fullName", "username", "email", "aktiv", "fachRollen" ]
+        "required" : [ "name", "vorname", "fullName", "username", "email", "aktiv", "fachRollen", "version" ]
       },
       "Berechtigung" : {
         "type" : "string",
@@ -797,7 +848,7 @@
       },
       "BriefvorlageSaveJson" : {
         "type" : "object",
-        "required" : [ "name", "type", "sprache" ],
+        "required" : [ "name", "type", "sprache", "version" ],
         "properties" : {
           "name" : {
             "type" : "string",
@@ -808,6 +859,10 @@
           },
           "sprache" : {
             "$ref" : "#/components/schemas/AppLanguages"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -831,7 +886,7 @@
       },
       "ClientAuthConfigJson" : {
         "type" : "object",
-        "required" : [ "clientId", "realm", "authUrl", "logoutUrl" ],
+        "required" : [ "clientId", "realm", "authUrl" ],
         "properties" : {
           "clientId" : {
             "type" : "string",
@@ -845,7 +900,7 @@
             "$ref" : "#/components/schemas/URLSchema",
             "type" : "object"
           },
-          "logoutUrl" : {
+          "logoutRedirectUrl" : {
             "$ref" : "#/components/schemas/URLSchema",
             "type" : "object"
           }
@@ -1081,7 +1136,7 @@
       "DossierSaveJson" : {
         "description" : "Business data for a Dossier",
         "type" : "object",
-        "required" : [ "kinderschutzfall", "keineAuskunftAnDrittpersonen", "sansPapier", "immunitaetMasern", "immunitaetVarizellen", "papierakteStatus", "nachkontrolle" ],
+        "required" : [ "kinderschutzfall", "keineAuskunftAnDrittpersonen", "sansPapier", "immunitaetMasern", "immunitaetVarizellen", "papierakteStatus", "nachkontrolle", "version" ],
         "properties" : {
           "kinderschutzfall" : {
             "type" : "boolean"
@@ -1115,6 +1170,10 @@
           },
           "nachkontrolle" : {
             "$ref" : "#/components/schemas/NachkontrolleJson"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -1256,7 +1315,7 @@
       "EinladungSaveJson" : {
         "description" : "Business data for a Einladung",
         "type" : "object",
-        "required" : [ "anlassId", "kindId", "einladungStatus" ],
+        "required" : [ "anlassId", "kindId", "einladungStatus", "version" ],
         "properties" : {
           "anlassId" : {
             "$ref" : "#/components/schemas/IDAnlass"
@@ -1281,6 +1340,14 @@
           },
           "fragebogen" : {
             "$ref" : "#/components/schemas/NotizJson"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "versionAbmeldungsNotiz" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -1568,6 +1635,10 @@
         "format" : "exception-id",
         "type" : "string"
       },
+      "ExportMode" : {
+        "type" : "string",
+        "enum" : [ "TEXTDOCUMENT", "SPREADSHEET" ]
+      },
       "ExternalImportInfoJson" : {
         "description" : "Information about Object coming from External System",
         "type" : "object",
@@ -1669,8 +1740,7 @@
             "format" : "int32"
           },
           "gewicht" : {
-            "type" : "integer",
-            "format" : "int32"
+            "type" : "number"
           },
           "alter" : {
             "type" : "number"
@@ -1883,7 +1953,13 @@
         "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
         "examples" : [ "11111111-1111-1111-1111-111111111111" ]
       },
-      "IDUntersuchungArzt" : {
+      "IDUntersuchungArztBemerkung" : {
+        "type" : "string",
+        "format" : "entity-id",
+        "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+        "examples" : [ "11111111-1111-1111-1111-111111111111" ]
+      },
+      "IDUntersuchungArztBeurteilung" : {
         "type" : "string",
         "format" : "entity-id",
         "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
@@ -1931,13 +2007,25 @@
         "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
         "examples" : [ "11111111-1111-1111-1111-111111111111" ]
       },
+      "IDUntersuchungKindDaten" : {
+        "type" : "string",
+        "format" : "entity-id",
+        "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+        "examples" : [ "11111111-1111-1111-1111-111111111111" ]
+      },
       "IDUntersuchungMassnahmen" : {
         "type" : "string",
         "format" : "entity-id",
         "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
         "examples" : [ "11111111-1111-1111-1111-111111111111" ]
       },
-      "IDUntersuchungSehen" : {
+      "IDUntersuchungSehenBemerkungFragebogen" : {
+        "type" : "string",
+        "format" : "entity-id",
+        "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+        "examples" : [ "11111111-1111-1111-1111-111111111111" ]
+      },
+      "IDUntersuchungSehenBeurteilung" : {
         "type" : "string",
         "format" : "entity-id",
         "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
@@ -1985,13 +2073,17 @@
       },
       "ImpfstoffChargeSaveJson" : {
         "type" : "object",
-        "required" : [ "name", "aktiv" ],
+        "required" : [ "name", "aktiv", "version" ],
         "properties" : {
           "name" : {
             "type" : "string"
           },
           "aktiv" : {
             "type" : "boolean"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -2027,7 +2119,7 @@
       },
       "ImpfstoffSaveJson" : {
         "type" : "object",
-        "required" : [ "name", "krankheiten", "impfstoffAktivStatus" ],
+        "required" : [ "name", "krankheiten", "impfstoffAktivStatus", "version" ],
         "properties" : {
           "name" : {
             "type" : "string"
@@ -2040,6 +2132,10 @@
           },
           "impfstoffAktivStatus" : {
             "$ref" : "#/components/schemas/EntityAktivStatus"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -2072,13 +2168,17 @@
       },
       "InfomaterialSaveJson" : {
         "type" : "object",
-        "required" : [ "name", "aktiv" ],
+        "required" : [ "name", "aktiv", "version" ],
         "properties" : {
           "name" : {
             "$ref" : "#/components/schemas/TranslatedStringJson"
           },
           "aktiv" : {
             "type" : "boolean"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -2267,9 +2367,13 @@
           },
           "kindAktivStatus" : {
             "$ref" : "#/components/schemas/EntityAktivStatus"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         },
-        "required" : [ "name", "vorname", "geschlecht", "geburtsdatum", "alter", "kindAktivStatus" ]
+        "required" : [ "name", "vorname", "geschlecht", "geburtsdatum", "alter", "kindAktivStatus", "version" ]
       },
       "KindSaveModeDuplikat" : {
         "type" : "string",
@@ -2419,7 +2523,7 @@
       },
       "KlasseSaveJson" : {
         "type" : "object",
-        "required" : [ "schule", "bezeichnung", "klassenstufe", "klasseSchulart", "klasseAktivStatus" ],
+        "required" : [ "schule", "bezeichnung", "klassenstufe", "klasseSchulart", "klasseAktivStatus", "version" ],
         "properties" : {
           "schule" : {
             "$ref" : "#/components/schemas/SchuleOptionJson"
@@ -2435,6 +2539,10 @@
           },
           "klasseAktivStatus" : {
             "$ref" : "#/components/schemas/EntityAktivStatus"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -2514,7 +2622,7 @@
       },
       "KontaktPersonKindSaveJson" : {
         "type" : "object",
-        "required" : [ "name", "geschlecht", "korrespondenz" ],
+        "required" : [ "name", "geschlecht", "korrespondenz", "version" ],
         "properties" : {
           "name" : {
             "type" : "string"
@@ -2539,6 +2647,10 @@
           },
           "korrespondenz" : {
             "type" : "boolean"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -2608,7 +2720,7 @@
       },
       "KontaktPersonSchuleSaveJson" : {
         "type" : "object",
-        "required" : [ "geschlecht", "funktion", "name" ],
+        "required" : [ "geschlecht", "funktion", "name", "version" ],
         "properties" : {
           "geschlecht" : {
             "$ref" : "#/components/schemas/Geschlecht"
@@ -2627,6 +2739,10 @@
           },
           "telefon" : {
             "$ref" : "#/components/schemas/NormalizedPhoneNumber"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -2784,7 +2900,7 @@
       },
       "LehrpersonSaveJson" : {
         "type" : "object",
-        "required" : [ "geschlecht", "name" ],
+        "required" : [ "geschlecht", "name", "version" ],
         "properties" : {
           "geschlecht" : {
             "$ref" : "#/components/schemas/Geschlecht"
@@ -2800,6 +2916,10 @@
           },
           "telefon" : {
             "$ref" : "#/components/schemas/NormalizedPhoneNumber"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -2842,10 +2962,14 @@
       },
       "NachkontrolleSaveJson" : {
         "type" : "object",
-        "required" : [ "anlassFlags" ],
+        "required" : [ "anlassFlags", "version" ],
         "properties" : {
           "anlassFlags" : {
             "$ref" : "#/components/schemas/AnlassFlagsJson"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -2898,7 +3022,7 @@
       },
       "NotizSaveJson" : {
         "type" : "object",
-        "required" : [ "titel", "status", "verantwortlicher", "labels", "files" ],
+        "required" : [ "titel", "status", "verantwortlicher", "labels", "files", "version" ],
         "properties" : {
           "titel" : {
             "type" : "string",
@@ -2924,6 +3048,10 @@
             "items" : {
               "$ref" : "#/components/schemas/FileDataJson"
             }
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -3106,10 +3234,14 @@
       },
       "QuartierSaveJson" : {
         "type" : "object",
-        "required" : [ "quartierName" ],
+        "required" : [ "quartierName", "version" ],
         "properties" : {
           "quartierName" : {
             "type" : "string"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -3212,7 +3344,7 @@
       },
       "SchuleSaveJson" : {
         "type" : "object",
-        "required" : [ "schulhaus", "schuleAktivStatus" ],
+        "required" : [ "schulhaus", "schuleAktivStatus", "version" ],
         "properties" : {
           "schulhaus" : {
             "type" : "string"
@@ -3249,6 +3381,10 @@
           },
           "schuleAktivStatus" : {
             "$ref" : "#/components/schemas/EntityAktivStatus"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -3451,22 +3587,50 @@
         "format" : "url",
         "type" : "string"
       },
-      "UntersuchungArztJson" : {
+      "UntersuchungArztBemerkungJson" : {
         "type" : "object",
         "required" : [ "id", "entityInfo", "data" ],
         "properties" : {
           "id" : {
-            "$ref" : "#/components/schemas/IDUntersuchungArzt"
+            "$ref" : "#/components/schemas/IDUntersuchungArztBemerkung"
           },
           "entityInfo" : {
             "$ref" : "#/components/schemas/EntityInfoJson"
           },
           "data" : {
-            "$ref" : "#/components/schemas/UntersuchungArztSaveJson"
+            "$ref" : "#/components/schemas/UntersuchungArztBemerkungSaveJson"
           }
         }
       },
-      "UntersuchungArztSaveJson" : {
+      "UntersuchungArztBemerkungSaveJson" : {
+        "type" : "object",
+        "properties" : {
+          "bemerkungen" : {
+            "type" : "string"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        },
+        "required" : [ "version" ]
+      },
+      "UntersuchungArztBeurteilungJson" : {
+        "type" : "object",
+        "required" : [ "id", "entityInfo", "data" ],
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/IDUntersuchungArztBeurteilung"
+          },
+          "entityInfo" : {
+            "$ref" : "#/components/schemas/EntityInfoJson"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/UntersuchungArztBeurteilungSaveJson"
+          }
+        }
+      },
+      "UntersuchungArztBeurteilungSaveJson" : {
         "type" : "object",
         "properties" : {
           "verhalten" : {
@@ -3546,10 +3710,12 @@
           "fingeroppositionBemerkung" : {
             "type" : "string"
           },
-          "bemerkungen" : {
-            "type" : "string"
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
-        }
+        },
+        "required" : [ "version" ]
       },
       "UntersuchungDurchfuehrungDataJson" : {
         "type" : "object",
@@ -3610,9 +3776,13 @@
           },
           "neueintritt" : {
             "type" : "boolean"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         },
-        "required" : [ "nachkontrolle", "nachzuegler", "neueintritt" ]
+        "required" : [ "nachkontrolle", "nachzuegler", "neueintritt", "version" ]
       },
       "UntersuchungGroesseGewichtDataJson" : {
         "type" : "object",
@@ -3664,8 +3834,7 @@
             "format" : "int32"
           },
           "gewicht" : {
-            "type" : "integer",
-            "format" : "int32"
+            "type" : "number"
           },
           "groessePerzentile" : {
             "$ref" : "#/components/schemas/PerzentileGroesse"
@@ -3678,8 +3847,13 @@
           },
           "bemerkungen" : {
             "type" : "string"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
-        }
+        },
+        "required" : [ "version" ]
       },
       "UntersuchungHoerenAudiogrammJson" : {
         "type" : "object",
@@ -3700,10 +3874,10 @@
         "type" : "object",
         "properties" : {
           "audiogrammRechts" : {
-            "$ref" : "#/components/schemas/AudiogrammJson"
+            "$ref" : "#/components/schemas/AudiogrammSaveJson"
           },
           "audiogrammLinks" : {
-            "$ref" : "#/components/schemas/AudiogrammJson"
+            "$ref" : "#/components/schemas/AudiogrammSaveJson"
           },
           "audiogrammBeurteilung" : {
             "type" : "array",
@@ -3719,8 +3893,13 @@
           },
           "bemerkungen" : {
             "type" : "string"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
-        }
+        },
+        "required" : [ "version" ]
       },
       "UntersuchungHoerenOtoskopieJson" : {
         "type" : "object",
@@ -3760,12 +3939,17 @@
           },
           "bemerkungen" : {
             "type" : "string"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
-        }
+        },
+        "required" : [ "version" ]
       },
       "UntersuchungImpfstatusKrankheitSaveJson" : {
         "type" : "object",
-        "required" : [ "krankheit" ],
+        "required" : [ "krankheit", "version" ],
         "properties" : {
           "krankheit" : {
             "$ref" : "#/components/schemas/Krankheit"
@@ -3786,6 +3970,10 @@
           },
           "impfentscheid" : {
             "type" : "boolean"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -3836,7 +4024,7 @@
       },
       "UntersuchungImpfungInternSaveJson" : {
         "type" : "object",
-        "required" : [ "impfstoff", "impfStatus", "krankheitenImmunitaeten" ],
+        "required" : [ "impfstoff", "impfStatus", "krankheitenImmunitaeten", "version" ],
         "properties" : {
           "impfstoff" : {
             "$ref" : "#/components/schemas/ImpfstoffJson"
@@ -3862,6 +4050,10 @@
             "items" : {
               "$ref" : "#/components/schemas/UntersuchungImpfungKrankheitImmunitaetJson"
             }
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -3902,6 +4094,9 @@
         "properties" : {
           "untersuchungImpfungen" : {
             "$ref" : "#/components/schemas/UntersuchungImpfungenJson"
+          },
+          "massnahmen" : {
+            "$ref" : "#/components/schemas/UntersuchungImpfungenMassnahmenJson"
           },
           "impfstatusList" : {
             "$ref" : "#/components/schemas/UntersuchungImpfstatusListSaveJson"
@@ -3977,7 +4172,7 @@
       },
       "UntersuchungImpfungenMassnahmenSaveJson" : {
         "type" : "object",
-        "required" : [ "keineMassnahmen", "vormerkenFuerGruppenFolgetermin", "impfberatungMpaDurchgefuehrt", "informationenAbgegeben", "informationHausarzt", "rueckfrageHausarzt" ],
+        "required" : [ "keineMassnahmen", "vormerkenFuerGruppenFolgetermin", "impfberatungMpaDurchgefuehrt", "infomaterialAbgegeben", "informationHausarzt", "rueckfrageHausarzt", "version" ],
         "properties" : {
           "keineMassnahmen" : {
             "type" : "boolean"
@@ -3991,7 +4186,7 @@
           "impfberatungMpaDurchgefuehrtBemerkungen" : {
             "type" : "string"
           },
-          "informationenAbgegeben" : {
+          "infomaterialAbgegeben" : {
             "type" : "boolean"
           },
           "informationEltern" : {
@@ -4005,76 +4200,52 @@
           },
           "bemerkungen" : {
             "type" : "string"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
       "UntersuchungImpfungenSaveJson" : {
         "type" : "object",
-        "required" : [ "impfausweis", "checkliste", "doppelkontrolle" ],
+        "required" : [ "impfausweis", "checkliste", "doppelkontrolle", "version" ],
         "properties" : {
           "impfausweis" : {
             "$ref" : "#/components/schemas/UntersuchungImpfungenImpfausweisSaveJson"
-          },
-          "massnahmen" : {
-            "$ref" : "#/components/schemas/UntersuchungImpfungenMassnahmenJson"
           },
           "checkliste" : {
             "$ref" : "#/components/schemas/UntersuchungImpfungenChecklisteSaveJson"
           },
           "doppelkontrolle" : {
             "$ref" : "#/components/schemas/UntersuchungImpfungenDoppelkontrolleSaveJson"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
       "UntersuchungKindDatenJson" : {
         "type" : "object",
-        "required" : [ "name", "vorname", "geschlecht", "geburtsdatum", "alterDuodezimal", "anlassDatum" ],
         "properties" : {
-          "name" : {
-            "type" : "string"
+          "id" : {
+            "$ref" : "#/components/schemas/IDUntersuchungKindDaten"
           },
-          "vorname" : {
-            "type" : "string"
+          "entityInfo" : {
+            "$ref" : "#/components/schemas/EntityInfoJson"
           },
-          "geschlecht" : {
-            "$ref" : "#/components/schemas/Geschlecht"
+          "data" : {
+            "$ref" : "#/components/schemas/UntersuchungKindDatenSaveJson"
           },
           "esadId" : {
             "type" : "string"
           },
-          "geburtsdatum" : {
-            "type" : "string",
-            "$ref" : "#/components/schemas/LocalDate"
-          },
           "alterDuodezimal" : {
             "type" : "string"
           },
-          "nationalitaet" : {
-            "$ref" : "#/components/schemas/Land"
-          },
           "landCode" : {
             "$ref" : "#/components/schemas/LandCode"
-          },
-          "schulhaus" : {
-            "type" : "string"
-          },
-          "quartier" : {
-            "type" : "string"
-          },
-          "schulkreis" : {
-            "type" : "string"
-          },
-          "schulhausnummer" : {
-            "type" : "string"
-          },
-          "klassenstufe" : {
-            "$ref" : "#/components/schemas/Klassenstufe"
-          },
-          "klassentyp" : {
-            "type" : "string"
-          },
-          "klasse" : {
-            "type" : "string"
           },
           "klasseId" : {
             "type" : "string"
@@ -4083,11 +4254,12 @@
             "type" : "string",
             "$ref" : "#/components/schemas/LocalDate"
           }
-        }
+        },
+        "required" : [ "entityInfo", "data", "alterDuodezimal", "anlassDatum" ]
       },
       "UntersuchungKindDatenSaveJson" : {
         "type" : "object",
-        "required" : [ "name", "vorname", "geschlecht", "geburtsdatum" ],
+        "required" : [ "name", "vorname", "geschlecht", "geburtsdatum", "version" ],
         "properties" : {
           "name" : {
             "type" : "string"
@@ -4125,6 +4297,10 @@
           },
           "klasse" : {
             "type" : "string"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -4145,7 +4321,7 @@
       },
       "UntersuchungMassnahmenSaveJson" : {
         "type" : "object",
-        "required" : [ "keineMassnahmen", "beratungMPA", "beratungSchulAerztin", "anderes", "bereitsBehandeltSehen", "bereitsBehandeltHoeren", "bereitsBehandeltGroesseGewicht", "bereitsBehandeltSprache", "bereitsBehandeltMotorik", "bereitsBehandeltAnderes", "abgegebenesInfomaterial", "ueberweisungHausarzt", "ueberweisungAugenarzt", "nachkontrolle" ],
+        "required" : [ "keineMassnahmen", "beratungMPA", "beratungSchulAerztin", "anderes", "bereitsBehandeltSehen", "bereitsBehandeltHoeren", "bereitsBehandeltGroesseGewicht", "bereitsBehandeltSprache", "bereitsBehandeltMotorik", "bereitsBehandeltAnderes", "abgegebenesInfomaterial", "ueberweisungHausarzt", "ueberweisungAugenarzt", "nachkontrolle", "version" ],
         "properties" : {
           "keineMassnahmen" : {
             "type" : "boolean"
@@ -4203,52 +4379,57 @@
           },
           "bemerkungen" : {
             "type" : "string"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
-      "UntersuchungSehenJson" : {
+      "UntersuchungSehenBemerkungFragebogenJson" : {
         "type" : "object",
         "required" : [ "id", "entityInfo", "data" ],
         "properties" : {
           "id" : {
-            "$ref" : "#/components/schemas/IDUntersuchungSehen"
+            "$ref" : "#/components/schemas/IDUntersuchungSehenBemerkungFragebogen"
           },
           "entityInfo" : {
             "$ref" : "#/components/schemas/EntityInfoJson"
           },
           "data" : {
-            "$ref" : "#/components/schemas/UntersuchungSehenSaveJson"
+            "$ref" : "#/components/schemas/UntersuchungSehenBemerkungFragebogenSaveJson"
           }
         }
       },
-      "UntersuchungSehenMassnahmenSaveJson" : {
+      "UntersuchungSehenBemerkungFragebogenSaveJson" : {
         "type" : "object",
-        "required" : [ "keineMassnahmen", "bereitsBehandeltSehen", "abgegebenesInfomaterial", "ueberweisungAugenarzt", "nachkontrolleSehen" ],
         "properties" : {
-          "keineMassnahmen" : {
-            "type" : "boolean"
+          "bemerkungenFragebogen" : {
+            "type" : "string"
           },
-          "bereitsBehandeltSehen" : {
-            "type" : "boolean"
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        },
+        "required" : [ "version" ]
+      },
+      "UntersuchungSehenBeurteilungJson" : {
+        "type" : "object",
+        "required" : [ "id", "entityInfo", "data" ],
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/IDUntersuchungSehenBeurteilung"
           },
-          "abgegebenesInfomaterial" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/InfomaterialJson"
-            }
+          "entityInfo" : {
+            "$ref" : "#/components/schemas/EntityInfoJson"
           },
-          "informationEltern" : {
-            "$ref" : "#/components/schemas/InformationEltern"
-          },
-          "ueberweisungAugenarzt" : {
-            "type" : "boolean"
-          },
-          "nachkontrolleSehen" : {
-            "type" : "boolean"
+          "data" : {
+            "$ref" : "#/components/schemas/UntersuchungSehenBeurteilungSaveJson"
           }
         }
       },
-      "UntersuchungSehenSaveJson" : {
+      "UntersuchungSehenBeurteilungSaveJson" : {
         "type" : "object",
         "properties" : {
           "brilleLinsen" : {
@@ -4311,8 +4492,53 @@
           "bemerkungen" : {
             "type" : "string"
           },
-          "massnahmen" : {
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        },
+        "required" : [ "version" ]
+      },
+      "UntersuchungSehenMassnahmenJson" : {
+        "type" : "object",
+        "required" : [ "id", "entityInfo", "data" ],
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/IDUntersuchungMassnahmen"
+          },
+          "entityInfo" : {
+            "$ref" : "#/components/schemas/EntityInfoJson"
+          },
+          "data" : {
             "$ref" : "#/components/schemas/UntersuchungSehenMassnahmenSaveJson"
+          }
+        }
+      },
+      "UntersuchungSehenMassnahmenSaveJson" : {
+        "type" : "object",
+        "required" : [ "bereitsBehandeltSehen", "abgegebenesInfomaterial", "ueberweisungAugenarzt", "nachkontrolleSehen", "version" ],
+        "properties" : {
+          "bereitsBehandeltSehen" : {
+            "type" : "boolean"
+          },
+          "abgegebenesInfomaterial" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/InfomaterialJson"
+            }
+          },
+          "informationEltern" : {
+            "$ref" : "#/components/schemas/InformationEltern"
+          },
+          "ueberweisungAugenarzt" : {
+            "type" : "boolean"
+          },
+          "nachkontrolleSehen" : {
+            "type" : "boolean"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -4396,7 +4622,7 @@
       },
       "UntersuchungTriageSaveJson" : {
         "type" : "object",
-        "required" : [ "triageSu", "triageMpa", "befundSu", "wunschSchueler", "vorinformationLehrperson" ],
+        "required" : [ "triageSu", "triageMpa", "befundSu", "wunschSchueler", "vorinformationLehrperson", "version" ],
         "properties" : {
           "triageSu" : {
             "type" : "boolean"
@@ -4430,6 +4656,10 @@
           },
           "naechsteStation" : {
             "$ref" : "#/components/schemas/NaechsteStation"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -4631,20 +4861,28 @@
         } ]
       }
     },
-    "/api/aerzte/export" : {
-      "get" : {
+    "/api/aerzte/export/{mode}" : {
+      "post" : {
         "operationId" : "ArztResource_exportAerzte",
         "tags" : [ "Aerzte" ],
         "parameters" : [ {
-          "name" : "aerzteIds",
-          "in" : "query",
+          "name" : "mode",
+          "in" : "path",
+          "required" : true,
           "schema" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/IDArzt"
-            }
+            "$ref" : "#/components/schemas/ExportMode"
           }
         } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ArztIdListJson"
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -4662,6 +4900,9 @@
           },
           "403" : {
             "description" : "Not Allowed"
+          },
+          "400" : {
+            "description" : "Bad Request"
           }
         },
         "summary" : "Export Aerzte",
@@ -5595,9 +5836,9 @@
         } ]
       }
     },
-    "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/arzt" : {
+    "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/arzt/bemerkung" : {
       "put" : {
-        "operationId" : "UntersuchungArztResource_saveUntersuchungArzt",
+        "operationId" : "UntersuchungArztResource_saveUntersuchungArztBemerkung",
         "tags" : [ "UntersuchungArzt" ],
         "parameters" : [ {
           "name" : "anlassId",
@@ -5618,7 +5859,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/UntersuchungArztSaveJson"
+                "$ref" : "#/components/schemas/UntersuchungArztBemerkungSaveJson"
               }
             }
           },
@@ -5630,7 +5871,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/UntersuchungArztJson"
+                  "$ref" : "#/components/schemas/UntersuchungArztBemerkungJson"
                 }
               }
             }
@@ -5645,13 +5886,13 @@
             "description" : "Bad Request"
           }
         },
-        "summary" : "Save Untersuchung Arzt",
+        "summary" : "Save Untersuchung Arzt Bemerkung",
         "security" : [ {
           "SecurityScheme" : [ "SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN" ]
         } ]
       },
       "get" : {
-        "operationId" : "UntersuchungArztResource_getUntersuchungArzt",
+        "operationId" : "UntersuchungArztResource_getUntersuchungArztBemerkung",
         "tags" : [ "UntersuchungArzt" ],
         "parameters" : [ {
           "name" : "anlassId",
@@ -5674,7 +5915,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/UntersuchungArztJson"
+                  "$ref" : "#/components/schemas/UntersuchungArztBemerkungJson"
                 }
               }
             }
@@ -5686,15 +5927,69 @@
             "description" : "Not Allowed"
           }
         },
-        "summary" : "Get Untersuchung Arzt",
+        "summary" : "Get Untersuchung Arzt Bemerkung",
         "security" : [ {
           "SecurityScheme" : [ "SU_AERZTLICHE_UNTERSUCHUNG_LESEN" ]
         } ]
       }
     },
-    "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/arzt/default" : {
+    "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/arzt/beurteilung" : {
+      "put" : {
+        "operationId" : "UntersuchungArztResource_saveUntersuchungArztBeurteilung",
+        "tags" : [ "UntersuchungArzt" ],
+        "parameters" : [ {
+          "name" : "anlassId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDAnlass"
+          }
+        }, {
+          "name" : "einladungId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDEinladung"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UntersuchungArztBeurteilungSaveJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UntersuchungArztBeurteilungJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Save Untersuchung Arzt Beurteilung",
+        "security" : [ {
+          "SecurityScheme" : [ "SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN" ]
+        } ]
+      },
       "get" : {
-        "operationId" : "UntersuchungArztResource_getDefaultUntersuchungArztForAnlassConfig",
+        "operationId" : "UntersuchungArztResource_getUntersuchungArztBeurteilung",
         "tags" : [ "UntersuchungArzt" ],
         "parameters" : [ {
           "name" : "anlassId",
@@ -5717,7 +6012,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/UntersuchungArztSaveJson"
+                  "$ref" : "#/components/schemas/UntersuchungArztBeurteilungJson"
                 }
               }
             }
@@ -5729,7 +6024,50 @@
             "description" : "Not Allowed"
           }
         },
-        "summary" : "Get Default Untersuchung Arzt For Anlass Config",
+        "summary" : "Get Untersuchung Arzt Beurteilung",
+        "security" : [ {
+          "SecurityScheme" : [ "SU_AERZTLICHE_UNTERSUCHUNG_LESEN" ]
+        } ]
+      }
+    },
+    "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/arzt/beurteilung/default" : {
+      "get" : {
+        "operationId" : "UntersuchungArztResource_getDefaultUntersuchungArztBeurteilungForAnlassConfig",
+        "tags" : [ "UntersuchungArzt" ],
+        "parameters" : [ {
+          "name" : "anlassId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDAnlass"
+          }
+        }, {
+          "name" : "einladungId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDEinladung"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UntersuchungArztBeurteilungSaveJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "summary" : "Get Default Untersuchung Arzt Beurteilung For Anlass Config",
         "security" : [ {
           "SecurityScheme" : [ "SU_AERZTLICHE_UNTERSUCHUNG_LESEN" ]
         } ]
@@ -6385,7 +6723,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/BenutzerOptionJson"
+                "$ref" : "#/components/schemas/UntersuchungImpfungenSaveJson"
               }
             }
           },
@@ -6745,6 +7083,16 @@
             "$ref" : "#/components/schemas/IDEinladung"
           }
         } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UntersuchungImpfungenSaveJson"
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -6761,6 +7109,9 @@
           },
           "403" : {
             "description" : "Not Allowed"
+          },
+          "400" : {
+            "description" : "Bad Request"
           }
         },
         "summary" : "Visieren Doppelkontrolle Visum 1",
@@ -6788,6 +7139,16 @@
             "$ref" : "#/components/schemas/IDEinladung"
           }
         } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UntersuchungImpfungenSaveJson"
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -6804,6 +7165,9 @@
           },
           "403" : {
             "description" : "Not Allowed"
+          },
+          "400" : {
+            "description" : "Bad Request"
           }
         },
         "summary" : "Visieren Doppelkontrolle Visum 2",
@@ -6831,6 +7195,16 @@
             "$ref" : "#/components/schemas/IDEinladung"
           }
         } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UntersuchungImpfungenSaveJson"
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -6995,9 +7369,106 @@
         } ]
       }
     },
-    "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen" : {
+    "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/massnahmen/sehen" : {
       "put" : {
-        "operationId" : "UntersuchungSehenResource_saveUntersuchungSehen",
+        "operationId" : "UntersuchungMassnahmenResource_saveUntersuchungMassnahmenSehen",
+        "tags" : [ "UntersuchungMassnahmen" ],
+        "parameters" : [ {
+          "name" : "anlassId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDAnlass"
+          }
+        }, {
+          "name" : "einladungId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDEinladung"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UntersuchungSehenMassnahmenSaveJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UntersuchungSehenMassnahmenJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Save Untersuchung Massnahmen Sehen",
+        "security" : [ {
+          "SecurityScheme" : [ "SU_MASSNAHMEN_SCHREIBEN" ]
+        } ]
+      },
+      "get" : {
+        "operationId" : "UntersuchungMassnahmenResource_getUntersuchungMassnahmenSehen",
+        "tags" : [ "UntersuchungMassnahmen" ],
+        "parameters" : [ {
+          "name" : "anlassId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDAnlass"
+          }
+        }, {
+          "name" : "einladungId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDEinladung"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UntersuchungSehenMassnahmenJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "summary" : "Get Untersuchung Massnahmen Sehen",
+        "security" : [ {
+          "SecurityScheme" : [ "SU_MASSNAHMEN_LESEN" ]
+        } ]
+      }
+    },
+    "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/bemerkungfragebogen" : {
+      "put" : {
+        "operationId" : "UntersuchungSehenResource_saveUntersuchungSehenBemerkungFragebogen",
         "tags" : [ "UntersuchungSehen" ],
         "parameters" : [ {
           "name" : "anlassId",
@@ -7018,7 +7489,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/UntersuchungSehenSaveJson"
+                "$ref" : "#/components/schemas/UntersuchungSehenBemerkungFragebogenSaveJson"
               }
             }
           },
@@ -7030,7 +7501,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/UntersuchungSehenJson"
+                  "$ref" : "#/components/schemas/UntersuchungSehenBemerkungFragebogenJson"
                 }
               }
             }
@@ -7045,13 +7516,13 @@
             "description" : "Bad Request"
           }
         },
-        "summary" : "Save Untersuchung Sehen",
+        "summary" : "Save Untersuchung Sehen Bemerkung Fragebogen",
         "security" : [ {
           "SecurityScheme" : [ "SU_SEHEN_SCHREIBEN" ]
         } ]
       },
       "get" : {
-        "operationId" : "UntersuchungSehenResource_getUntersuchungSehen",
+        "operationId" : "UntersuchungSehenResource_getUntersuchungSehenBemerkungFragebogen",
         "tags" : [ "UntersuchungSehen" ],
         "parameters" : [ {
           "name" : "anlassId",
@@ -7074,7 +7545,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/UntersuchungSehenJson"
+                  "$ref" : "#/components/schemas/UntersuchungSehenBemerkungFragebogenJson"
                 }
               }
             }
@@ -7086,15 +7557,69 @@
             "description" : "Not Allowed"
           }
         },
-        "summary" : "Get Untersuchung Sehen",
+        "summary" : "Get Untersuchung Sehen Bemerkung Fragebogen",
         "security" : [ {
           "SecurityScheme" : [ "SU_SEHEN_LESEN" ]
         } ]
       }
     },
-    "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/default" : {
+    "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/beurteilung" : {
+      "put" : {
+        "operationId" : "UntersuchungSehenResource_saveUntersuchungSehenBeurteilung",
+        "tags" : [ "UntersuchungSehen" ],
+        "parameters" : [ {
+          "name" : "anlassId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDAnlass"
+          }
+        }, {
+          "name" : "einladungId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDEinladung"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UntersuchungSehenBeurteilungSaveJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UntersuchungSehenBeurteilungJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Save Untersuchung Sehen Beurteilung",
+        "security" : [ {
+          "SecurityScheme" : [ "SU_SEHEN_SCHREIBEN" ]
+        } ]
+      },
       "get" : {
-        "operationId" : "UntersuchungSehenResource_getDefaultUntersuchungSehenForAnlassConfig",
+        "operationId" : "UntersuchungSehenResource_getUntersuchungSehenBeurteilung",
         "tags" : [ "UntersuchungSehen" ],
         "parameters" : [ {
           "name" : "anlassId",
@@ -7117,7 +7642,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/UntersuchungSehenSaveJson"
+                  "$ref" : "#/components/schemas/UntersuchungSehenBeurteilungJson"
                 }
               }
             }
@@ -7129,7 +7654,50 @@
             "description" : "Not Allowed"
           }
         },
-        "summary" : "Get Default Untersuchung Sehen For Anlass Config",
+        "summary" : "Get Untersuchung Sehen Beurteilung",
+        "security" : [ {
+          "SecurityScheme" : [ "SU_SEHEN_LESEN" ]
+        } ]
+      }
+    },
+    "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/beurteilung/default" : {
+      "get" : {
+        "operationId" : "UntersuchungSehenResource_getDefaultUntersuchungSehenBeurteilungForAnlassConfig",
+        "tags" : [ "UntersuchungSehen" ],
+        "parameters" : [ {
+          "name" : "anlassId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDAnlass"
+          }
+        }, {
+          "name" : "einladungId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDEinladung"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UntersuchungSehenBeurteilungSaveJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "summary" : "Get Default Untersuchung Sehen Beurteilung For Anlass Config",
         "security" : [ {
           "SecurityScheme" : [ "SU_SEHEN_LESEN" ]
         } ]
@@ -7951,6 +8519,55 @@
         } ]
       }
     },
+    "/api/benutzer/{benutzerID}/benutzeraktivstatus" : {
+      "put" : {
+        "operationId" : "BenutzerResource_updateBenutzerAktivStatus",
+        "tags" : [ "Benutzer" ],
+        "parameters" : [ {
+          "name" : "benutzerID",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDBenutzer"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/BenutzerSaveJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BenutzerJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Update Benutzer Aktiv Status",
+        "security" : [ {
+          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+        } ]
+      }
+    },
     "/api/briefvorlagen" : {
       "get" : {
         "operationId" : "BriefvorlageResource_findAllBriefvorlagen",
@@ -8263,25 +8880,6 @@
           }
         },
         "summary" : "Reset Database",
-        "security" : [ {
-          "SecurityScheme" : [ "SUPPORT" ]
-        } ]
-      },
-      "post" : {
-        "operationId" : "DatabaseResource_initDatabase",
-        "tags" : [ "Developer" ],
-        "responses" : {
-          "201" : {
-            "description" : "Created"
-          },
-          "401" : {
-            "description" : "Not Authorized"
-          },
-          "403" : {
-            "description" : "Not Allowed"
-          }
-        },
-        "summary" : "Init Database",
         "security" : [ {
           "SecurityScheme" : [ "SUPPORT" ]
         } ]

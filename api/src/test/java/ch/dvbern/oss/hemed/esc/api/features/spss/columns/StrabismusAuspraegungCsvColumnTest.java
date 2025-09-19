@@ -2,7 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusAuspraegungResultat;
 import org.junit.jupiter.api.Test;
 
@@ -23,24 +23,24 @@ class StrabismusAuspraegungCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        UntersuchungSehen untersuchungSehen = new UntersuchungSehen();
-        untersuchung.setUntersuchungSehen(untersuchungSehen);
+        UntersuchungSehenBeurteilung untersuchungSehenBeurteilung = new UntersuchungSehenBeurteilung();
+        untersuchung.setUntersuchungSehenBeurteilung(untersuchungSehenBeurteilung);
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungSehen.setStrabismusAuspraegung(StrabismusAuspraegungResultat.KEIN_STRABISMUS);
+        untersuchungSehenBeurteilung.setStrabismusAuspraegung(StrabismusAuspraegungResultat.KEIN_STRABISMUS);
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungSehen.setStrabismusAuspraegung(StrabismusAuspraegungResultat.MANIFEST);
+        untersuchungSehenBeurteilung.setStrabismusAuspraegung(StrabismusAuspraegungResultat.MANIFEST);
         assertThat(column.extract(einladung)).isEqualTo("1");
 
-        untersuchungSehen.setStrabismusAuspraegung(StrabismusAuspraegungResultat.LATENT);
+        untersuchungSehenBeurteilung.setStrabismusAuspraegung(StrabismusAuspraegungResultat.LATENT);
         assertThat(column.extract(einladung)).isEqualTo("2");
 
-        untersuchungSehen.setStrabismusAuspraegung(StrabismusAuspraegungResultat.INTERMITTIEREND);
+        untersuchungSehenBeurteilung.setStrabismusAuspraegung(StrabismusAuspraegungResultat.INTERMITTIEREND);
         assertThat(column.extract(einladung)).isEqualTo("3");
 
-        untersuchungSehen.setStrabismusAuspraegung(StrabismusAuspraegungResultat.NICHT_GEPRUEFT);
+        untersuchungSehenBeurteilung.setStrabismusAuspraegung(StrabismusAuspraegungResultat.NICHT_GEPRUEFT);
         assertThat(column.extract(einladung)).isEqualTo("4");
     }
 }

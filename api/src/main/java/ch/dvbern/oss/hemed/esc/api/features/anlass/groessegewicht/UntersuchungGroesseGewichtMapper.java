@@ -55,7 +55,8 @@ public class UntersuchungGroesseGewichtMapper {
                 groesseGewicht.getGroessePerzentile(),
                 groesseGewicht.getGewichtPerzentile(),
                 groesseGewicht.getBmiPerzentile(),
-                groesseGewicht.getBemerkungen()
+                groesseGewicht.getBemerkungen(),
+                groesseGewicht.getVersion()
             ),
             groesseGewicht.getAlter(),
             groesseGewicht.getAlterDuodezimal()
@@ -92,11 +93,12 @@ public class UntersuchungGroesseGewichtMapper {
     @NonNull
     private UntersuchungGroesseGewichtJson save(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungGroesseGewichtSaveJson saveJson) {
+        @NonNull UntersuchungGroesseGewichtSaveJson saveJson
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
         UntersuchungGroesseGewicht groesseGewicht = untersuchung.getUntersuchungGroesseGewicht();
         UntersuchungGroesseGewicht entity = toEntity(untersuchung, groesseGewicht, saveJson);
-        UntersuchungGroesseGewicht persisted = untersuchungGroesseGewichtService.persist(entity);
+        UntersuchungGroesseGewicht persisted = untersuchungGroesseGewichtService.persistWithOptimisticLocking(entity, saveJson.getVersion());
         return toJson(persisted);
     }
 

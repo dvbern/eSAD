@@ -26,6 +26,8 @@ export interface EinladungSaveJson {
     bemerkungAbmeldung?: string;
     impfausweis?: NotizJson;
     fragebogen?: NotizJson;
+    version: number;
+    versionAbmeldungsNotiz?: number;
 }
 export namespace EinladungSaveJson {
 }

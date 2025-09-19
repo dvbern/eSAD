@@ -203,7 +203,7 @@ describe('AppValidators', () => {
   describe('textareaMaxLength', () => {
     it.each([undefined, null])('accepts for nullish input', (input) => {
       const control = fb.control(input, {
-        validators: [AppValidators.textareaMaxLength()],
+        validators: [AppValidators.textareaMaxLength2000()],
       });
 
       expect(control.valid).toBe(true);
@@ -212,7 +212,7 @@ describe('AppValidators', () => {
 
     it.each(['', 'a', 'a'.repeat(2000)])('accepts for valid input', (input) => {
       const control = fb.control(input, {
-        validators: [AppValidators.textareaMaxLength()],
+        validators: [AppValidators.textareaMaxLength2000()],
       });
 
       expect(control.valid).toBe(true);
@@ -221,7 +221,7 @@ describe('AppValidators', () => {
 
     it.each(['a'.repeat(2001)])('reject for invalid input', (input) => {
       const control = fb.control(input, {
-        validators: [AppValidators.textareaMaxLength()],
+        validators: [AppValidators.textareaMaxLength2000()],
       });
 
       expect(control.valid).toBe(false);

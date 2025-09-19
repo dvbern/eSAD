@@ -2,12 +2,12 @@ import {DatePipe} from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
 import {FileDataJson} from '@dvb/data-access-backend';
 import {
-    EmptyTableMessageComponent,
-    FileUploadButtonComponent,
-    IconOnlyButtonComponent,
-    SortableComponent,
-    SpinnerComponent,
-    TableComponent,
+  EmptyTableMessageComponent,
+  FileUploadButtonComponent,
+  IconOnlyButtonComponent,
+  SortableComponent,
+  SpinnerComponent,
+  TableComponent,
 } from '@dvb/ui-components';
 
 import {TableModel} from '@dvb/util-angular';
@@ -40,7 +40,7 @@ export class UploadTableComponent {
   readonly uploadTable = input.required<TableModel<FileDataJson>>();
   readonly loading = input<boolean>(false);
   readonly readonly = input<boolean>(false);
-  readonly accepted = input<string>();
+  readonly accepted = input.required<string>();
   readonly working = input<boolean>(false);
   // eslint-disable-next-line @angular-eslint/no-input-rename
   readonly partialConfig = input<Partial<UploadTableConfig>>({}, {alias: 'config'});

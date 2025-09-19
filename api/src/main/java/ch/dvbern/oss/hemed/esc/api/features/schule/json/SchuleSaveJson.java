@@ -5,6 +5,7 @@ import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.quartier.json.QuartierOptionJson;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.person.AdresseJson;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import jakarta.validation.Valid;
@@ -18,7 +19,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Value
 @AllArgsConstructor
 @JaxDTO
-public class SchuleSaveJson {
+public class SchuleSaveJson implements SaveJsonWithOptimisticLocking {
 
     @NotNull
     @NonNull
@@ -72,4 +73,7 @@ public class SchuleSaveJson {
     @NotNull
     @Schema(required = true)
     private EntityAktivStatus schuleAktivStatus;
+
+    @Schema(required = true)
+    private long version;
 }

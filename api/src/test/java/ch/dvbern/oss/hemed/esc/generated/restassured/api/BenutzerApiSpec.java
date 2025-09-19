@@ -69,6 +69,7 @@ public class BenutzerApiSpec {
                 benutzerResourceFindAllBenutzer(),
                 benutzerResourceGetMyBenutzerData(),
                 benutzerResourceUpdate(),
+                benutzerResourceUpdateBenutzerAktivStatus(),
                 exampleResourceCreateExample()
         );
     }
@@ -91,6 +92,10 @@ public class BenutzerApiSpec {
 
     public BenutzerResourceUpdateOper benutzerResourceUpdate() {
         return new BenutzerResourceUpdateOper(createReqSpec());
+    }
+
+    public BenutzerResourceUpdateBenutzerAktivStatusOper benutzerResourceUpdateBenutzerAktivStatus() {
+        return new BenutzerResourceUpdateBenutzerAktivStatusOper(createReqSpec());
     }
 
     public ExampleResourceCreateExampleOper exampleResourceCreateExample() {
@@ -431,6 +436,90 @@ public class BenutzerApiSpec {
          * @return operation
          */
         public BenutzerResourceUpdateOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+            respSpecCustomizer.accept(respSpec);
+            return this;
+        }
+    }
+    /**
+     * Update Benutzer Aktiv Status
+     * 
+     *
+     * @see #benutzerIDPath  (required)
+     * @see #body  (required)
+     * return BenutzerJsonSpec
+     */
+    public static class BenutzerResourceUpdateBenutzerAktivStatusOper implements Oper {
+
+        public static final Method REQ_METHOD = PUT;
+        public static final String REQ_URI = "/api/benutzer/{benutzerID}/benutzeraktivstatus";
+
+        private RequestSpecBuilder reqSpec;
+        private ResponseSpecBuilder respSpec;
+
+        public BenutzerResourceUpdateBenutzerAktivStatusOper(RequestSpecBuilder reqSpec) {
+            this.reqSpec = reqSpec;
+            reqSpec.setContentType("application/json");
+            reqSpec.setAccept("application/json");
+            this.respSpec = new ResponseSpecBuilder();
+        }
+
+        /**
+         * PUT /api/benutzer/{benutzerID}/benutzeraktivstatus
+         * @param handler handler
+         * @param <T> type
+         * @return type
+         */
+        @Override
+        public <T> T execute(Function<Response, T> handler) {
+            return handler.apply(RestAssured.given().spec(reqSpec.build()).expect().spec(respSpec.build()).when().request(REQ_METHOD, REQ_URI));
+        }
+
+        /**
+         * PUT /api/benutzer/{benutzerID}/benutzeraktivstatus
+         * @param handler handler
+         * @return BenutzerJsonSpec
+         */
+        public BenutzerJsonSpec executeAs(Function<Response, Response> handler) {
+            TypeRef<BenutzerJsonSpec> type = new TypeRef<BenutzerJsonSpec>(){};
+            return execute(handler).as(type);
+        }
+
+         /**
+         * @param benutzerSaveJsonSpec (BenutzerSaveJsonSpec)  (required)
+         * @return operation
+         */
+        public BenutzerResourceUpdateBenutzerAktivStatusOper body(BenutzerSaveJsonSpec benutzerSaveJsonSpec) {
+            reqSpec.setBody(benutzerSaveJsonSpec);
+            return this;
+        }
+
+        public static final String BENUTZER_I_D_PATH = "benutzerID";
+
+        /**
+         * @param benutzerID (String)  (required)
+         * @return operation
+         */
+        public BenutzerResourceUpdateBenutzerAktivStatusOper benutzerIDPath(Object benutzerID) {
+            reqSpec.addPathParam(BENUTZER_I_D_PATH, benutzerID);
+            return this;
+        }
+
+        /**
+         * Customize request specification
+         * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
+         * @return operation
+         */
+        public BenutzerResourceUpdateBenutzerAktivStatusOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+            reqSpecCustomizer.accept(reqSpec);
+            return this;
+        }
+
+        /**
+         * Customize response specification
+         * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
+         * @return operation
+         */
+        public BenutzerResourceUpdateBenutzerAktivStatusOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
             respSpecCustomizer.accept(respSpec);
             return this;
         }

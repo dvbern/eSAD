@@ -4,8 +4,11 @@ import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungSehenJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungSehenSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungSehenBemerkungFragebogenJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungSehenBemerkungFragebogenSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungSehenBeurteilungJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungSehenBeurteilungSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.Nullable;
@@ -31,37 +34,72 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Timed(name = "UntersuchungSehenResourceMS", unit = MetricUnits.MILLISECONDS)
 public class UntersuchungSehenResource {
 
-    private final UntersuchungSehenMapper untersuchungSehenMapper;
+    private final UntersuchungSehenBeurteilungMapper untersuchungSehenBeurteilungMapper;
+    private final UntersuchungSehenBemerkungFragebogenMapper untersuchungSehenBemerkungFragebogenMapper;
+    private final EinladungMapper einladungMapper;
+    private final AuthorizerService authorizerService;
 
     @GET
+    @Path("/beurteilung")
     @RolesAllowed(BerechtigungName.SU_SEHEN_LESEN)
     @Nullable
-    public UntersuchungSehenJson getUntersuchungSehen(
+    public UntersuchungSehenBeurteilungJson getUntersuchungSehenBeurteilung(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
     ) {
-        return untersuchungSehenMapper.getByEinladung(einladungId);
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        return untersuchungSehenBeurteilungMapper.getByEinladung(einladungId);
     }
 
     @GET
-    @Path("/default")
+    @Path("/beurteilung/default")
     @RolesAllowed(BerechtigungName.SU_SEHEN_LESEN)
     @NotNull
-    public UntersuchungSehenSaveJson getDefaultUntersuchungSehenForAnlassConfig(
+    public UntersuchungSehenBeurteilungSaveJson getDefaultUntersuchungSehenBeurteilungForAnlassConfig(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
     ) {
-        return untersuchungSehenMapper.getDefaultUntersuchungSehenForAnlassConfig(anlassId);
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        return untersuchungSehenBeurteilungMapper.getDefaultUntersuchungSehenForAnlassConfig(anlassId);
     }
 
     @PUT
+    @Path("/beurteilung")
     @NonNull
     @RolesAllowed(BerechtigungName.SU_SEHEN_SCHREIBEN)
-    public UntersuchungSehenJson saveUntersuchungSehen(
+    public UntersuchungSehenBeurteilungJson saveUntersuchungSehenBeurteilung(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
-        @NonNull @NotNull @Valid UntersuchungSehenSaveJson saveJson
+        @NonNull @NotNull @Valid UntersuchungSehenBeurteilungSaveJson saveJson
     ) {
-        return untersuchungSehenMapper.save(einladungId, saveJson);
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
+        return untersuchungSehenBeurteilungMapper.save(einladungId, saveJson);
+    }
+
+    @GET
+    @Path("/bemerkungfragebogen")
+    @RolesAllowed(BerechtigungName.SU_SEHEN_LESEN)
+    @Nullable
+    public UntersuchungSehenBemerkungFragebogenJson getUntersuchungSehenBemerkungFragebogen(
+        @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
+        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
+    ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        return untersuchungSehenBemerkungFragebogenMapper.getByEinladung(einladungId);
+    }
+
+    @PUT
+    @Path("/bemerkungfragebogen")
+    @NonNull
+    @RolesAllowed(BerechtigungName.SU_SEHEN_SCHREIBEN)
+    public UntersuchungSehenBemerkungFragebogenJson saveUntersuchungSehenBemerkungFragebogen(
+        @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
+        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
+        @NonNull @NotNull @Valid UntersuchungSehenBemerkungFragebogenSaveJson saveJson
+    ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
+        return untersuchungSehenBemerkungFragebogenMapper.save(einladungId, saveJson);
     }
 }

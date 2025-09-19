@@ -5,6 +5,7 @@ import java.net.URL;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.dvbstarter.shared.types.url.URLSchema;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -28,8 +29,8 @@ public record ClientAuthConfigJson(
     @Schema(required = true, implementation = URLSchema.class)
     URL authUrl,
 
-    @NotNull
-    @Schema(required = true, implementation = URLSchema.class)
-    URL logoutUrl
+    @Nullable
+    @Schema(required = false, implementation = URLSchema.class)
+    URL logoutRedirectUrl
 ) {
 }

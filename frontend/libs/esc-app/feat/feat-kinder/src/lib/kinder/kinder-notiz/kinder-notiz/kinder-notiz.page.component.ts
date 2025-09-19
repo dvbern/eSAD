@@ -3,11 +3,17 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LabelJson, NotizSaveJson, NotizStatus} from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
-import {BenutzerOptionsStore, LabelsStore} from '@dvb/feat-shared';
-import {BenutzerStore} from '@dvb/feat-shared';
-import {Path} from '@dvb/feat-shared';
-import {NotizenComponent, NotizenFileParams, NotizenSaveParams} from '@dvb/feat-shared';
-import {PageComponent} from '@dvb/feat-shared';
+import {
+  BenutzerOptionsStore,
+  BenutzerStore,
+  globalConstants,
+  LabelsStore,
+  NotizenComponent,
+  NotizenFileParams,
+  NotizenSaveParams,
+  PageComponent,
+  Path,
+} from '@dvb/feat-shared';
 import {AppNotificationStore, DirtyMarker} from '@dvb/util-angular';
 import {hasAllNotizenEditBerechtigung, isNotNullish, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
@@ -72,6 +78,7 @@ export class KinderNotizPageComponent implements DirtyMarker {
           verantwortlicher: requireValue(currentUser),
           labels: labels,
           files: [],
+          version: globalConstants.entityPrePersistVersion,
         };
         return defaultNotiz;
       }

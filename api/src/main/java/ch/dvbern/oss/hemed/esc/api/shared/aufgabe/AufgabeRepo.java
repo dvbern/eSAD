@@ -13,6 +13,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.QKind;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.labels.QLabel;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.types.AufgabeStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
@@ -44,21 +45,25 @@ public class AufgabeRepo extends BaseRepo<Aufgabe> {
     }
 
     @NonNull
-    public List<Aufgabe> findAufgabenForAnlassAndLabel(@NonNull Anlass anlass, @NonNull ID<Label> labelId) {
-        return db.selectFrom(QAufgabe.aufgabe)
+    public List<Aufgabe> findAufgabenForAnlassAndLabelNoOptimisticLockingCheck(@NonNull Anlass anlass, @NonNull ID<Label> labelId) {
+        List<Aufgabe> aufgaben = db.selectFrom(QAufgabe.aufgabe)
             .leftJoin(QAufgabe.aufgabe.labels, QLabel.label)
             .where(QAufgabe.aufgabe.anlass.id.eq(anlass.getId().getUUID())
                 .and(QLabel.label.id.eq(labelId.getUUID())))
             .fetch();
+        aufgaben.forEach(AbstractEntity::disableOptimisticLockingCheck);
+        return aufgaben;
     }
 
     @NonNull
-    public List<Aufgabe> findAufgabenForKindWithLabel(@NonNull Kind kind, @NonNull ID<Label> labelId) {
-        return db.selectFrom(QAufgabe.aufgabe)
+    public List<Aufgabe> findAufgabenForKindWithLabelNoOptimisticLockingCheck(@NonNull Kind kind, @NonNull ID<Label> labelId) {
+        List<Aufgabe> aufgaben = db.selectFrom(QAufgabe.aufgabe)
             .leftJoin(QAufgabe.aufgabe.labels, QLabel.label)
             .where(QAufgabe.aufgabe.kind.id.eq(kind.getId().getUUID())
                 .and(QLabel.label.id.eq(labelId.getUUID())))
             .fetch();
+        aufgaben.forEach(AbstractEntity::disableOptimisticLockingCheck);
+        return aufgaben;
     }
 
     @NonNull

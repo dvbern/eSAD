@@ -79,7 +79,7 @@ class EdokidIdGeneratorSequenceServiceITest extends AbstractITest {
         );
     }
 
-    @AfterAll
+//    @AfterAll
     @ActivateRequestContext
     void restoreSequence() {
         // Restore previous sequence if it existed
@@ -231,6 +231,9 @@ class EdokidIdGeneratorSequenceServiceITest extends AbstractITest {
             .extracting(EdokidId::toFormattedString)
             .allMatch(s -> s.matches(EdokidIdTestGenerator.EDOKID_ID_REGEX_PATTERN))
             .allMatch(s -> s.endsWith(" 97"));
+
+
+        restoreSequence(); // since this is the last test we clean up the sequence
 
     }
 

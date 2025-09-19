@@ -19,9 +19,11 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungDurchfuehrung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungIntern;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
+
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungTriage;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArzt;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Blutdruck;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
@@ -90,7 +92,8 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.KontaktPersonKindBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.NachkontrolleBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.NotizBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.SchuleBuilder;
-import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungArztBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungArztBemerkungBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungArztBeurteilungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungDurchfuehrungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungGroesseGewichtBuilder;
@@ -99,7 +102,8 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungHoerenOtoskopieB
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfstatusKrankheitBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungInternBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungMassnahmenBuilder;
-import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBeurteilungBuilder;
+
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungTriageBuilder;
 import com.itextpdf.layout.Document;
 import lombok.extern.slf4j.Slf4j;
@@ -143,9 +147,10 @@ class PrinterTest {
             }
 
             Kind kind = KindBuilder.defaultKind();
+            kind.setName(kind.getName() + "\twith tab");
 
             KontaktPersonKind kp2 = KontaktPersonKindBuilder.create(kontaktPersonKind -> {
-                kontaktPersonKind.withName("Živan", "Üveyşê");
+                kontaktPersonKind.withName("Živan\tGarça", "Üveyşê");
                 kontaktPersonKind.withBeziehung(KontaktPersonKindBeziehung.VATER);
 
             });
@@ -156,7 +161,9 @@ class PrinterTest {
             List<FileData> files = List.of(
                 FileDataBuilder.defaultImgFileData(),
                 FileDataBuilder.create(builder -> builder.withMimeType(MediaType.parse(
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))),
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                    ).withFileName("FilenameWith\tTab.docx")
+                ),
                 FileDataBuilder.defaultPdfFileData()
             );
 
@@ -198,6 +205,7 @@ class PrinterTest {
             Untersuchung untersuchung =
                 UntersuchungBuilder.create(builder -> builder.withUntersuchungTriage(untersuchungTriage));
             Anlass anlassToday = AnlassBuilder.create(builder -> builder.withDatumSetSchuljahr(LocalDate.now()));
+            anlassToday.setTitel(anlassToday.getTitel() + "\tTest");
             KinderdossierAnlassPrintDTO anlassTeilnahme = new KinderdossierAnlassPrintDTO(
                 EinladungBuilder.create(builder ->
                     builder.withStatus(EinladungStatus.TEILNAHME_BESTAETIGT)
@@ -253,7 +261,7 @@ class PrinterTest {
                         .isNachkontrolle(true)
                         .isNeueintritt(false));
 
-            UntersuchungSehen untersuchungSehen = UntersuchungSehenBuilder.create(builder -> builder.withBrilleLinsen(
+            UntersuchungSehenBeurteilung untersuchungSehenBeurteilung = UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withBrilleLinsen(
                     BrilleLinsenResultat.MIT)
                 .withStereotest(StereotestResultat.NICHT_GEPRUEFT)
                 .withFarbsehen(FarbsehenResultat.PATHOLOGISCH)
@@ -293,15 +301,15 @@ class PrinterTest {
                 builder -> builder
                     .withBemerkung("Bemerkung")
                     .withBmi(BigDecimal.ZERO)
-                    .withGewicht(122)
+                    .withGewicht(BigDecimal.valueOf(122))
                     .withBmiPerzentile(PerzentileBmi.PERZENTILE_HOCH)
                     .withGewichtPerzentile(PerzentileGewicht.NORMAL)
                     .withGroesse(100)
                     .withGroessePerzentile(PerzentileGroesse.NICHT_GEPRUEFT)
             );
 
-            UntersuchungArzt untersuchungArzt = UntersuchungArztBuilder.create(
-                builder -> builder.withBemerkungen("Mit einer Ärztlichen Bemerkung")
+            UntersuchungArztBeurteilung untersuchungArztBrt = UntersuchungArztBeurteilungBuilder.create(
+                builder -> builder
                     .withBewegungsapparat(List.of(Bewegungsapparat.SKOLIOSE))
                     .withBlutdruck(Blutdruck.AUFFAELLIG)
                     .withMundAndZaehne(List.of(MundAndZaehne.ADENOIDHYPERPLASIE, MundAndZaehne.KARIES))
@@ -312,6 +320,10 @@ class PrinterTest {
                     .withHerzauskultation(Herzauskultation.NICHT_GEPRUEFT)
                     .withVerhalten(Verhalten.AUFFAELLIG)
                     .withSprachfaehigkeit(List.of(Sprachfaehigkeit.ARTIKULATIONSFEHLER, Sprachfaehigkeit.ANDERES))
+            );
+
+            UntersuchungArztBemerkung untersuchungArztBemerkung = UntersuchungArztBemerkungBuilder.create(
+                builder -> builder.withBemerkungen("Eine ärztliche Bemerkung")
             );
 
             UntersuchungMassnahmen untersuchungMassnahmen = UntersuchungMassnahmenBuilder.create(
@@ -325,11 +337,12 @@ class PrinterTest {
                 UntersuchungBuilder.create(builder ->
                     builder.withUntersuchungTriage(untersuchungTriage)
                         .withDurchgefuehrt(untersuchungDurchfuehrung)
-                        .withUntersuchungSehen(untersuchungSehen)
+                        .withUntersuchungSehen(untersuchungSehenBeurteilung)
                         .withUntersuchungHoerenAudiogramm(untersuchungHoerenAudiogramm)
                         .withUntersuchungHoerenOtoskopie(untersuchungHoerenOtoskopie)
                         .withUntersuchungGroesseGewicht(untersuchungGroesseGewicht)
-                        .withUntersuchungArzt(untersuchungArzt)
+                        .withUntersuchungArztBeurteilung(untersuchungArztBrt)
+                        .withUntersuchungArztBemerkung(untersuchungArztBemerkung)
                         .withUntersuchungMassnahmen(untersuchungMassnahmen)
                 );
 
@@ -391,7 +404,7 @@ class PrinterTest {
                         .isNachkontrolle(true)
                         .isNeueintritt(false));
 
-            UntersuchungSehen untersuchungSehen = UntersuchungSehenBuilder.create(builder -> builder.withBrilleLinsen(
+            UntersuchungSehenBeurteilung untersuchungSehenBeurteilung = UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withBrilleLinsen(
                     BrilleLinsenResultat.MIT)
                 .withStereotest(StereotestResultat.NICHT_GEPRUEFT)
                 .withFarbsehen(FarbsehenResultat.PATHOLOGISCH)
@@ -431,15 +444,15 @@ class PrinterTest {
                 builder -> builder
                     .withBemerkung("Bemerkung")
                     .withBmi(BigDecimal.ZERO)
-                    .withGewicht(122)
+                    .withGewicht(BigDecimal.valueOf(122))
                     .withBmiPerzentile(PerzentileBmi.PERZENTILE_HOCH)
                     .withGewichtPerzentile(PerzentileGewicht.NORMAL)
                     .withGroesse(100)
                     .withGroessePerzentile(PerzentileGroesse.NICHT_GEPRUEFT)
             );
 
-            UntersuchungArzt untersuchungArzt = UntersuchungArztBuilder.create(
-                builder -> builder.withBemerkungen("Mit einer Ärztlichen Bemerkung")
+            UntersuchungArztBeurteilung untersuchungArztBrt = UntersuchungArztBeurteilungBuilder.create(
+                builder -> builder
                     .withBewegungsapparat(List.of(Bewegungsapparat.SKOLIOSE))
                     .withBlutdruck(Blutdruck.AUFFAELLIG)
                     .withMundAndZaehne(List.of(MundAndZaehne.ADENOIDHYPERPLASIE, MundAndZaehne.KARIES))
@@ -450,6 +463,10 @@ class PrinterTest {
                     .withHerzauskultation(Herzauskultation.NICHT_GEPRUEFT)
                     .withVerhalten(Verhalten.AUFFAELLIG)
                     .withSprachfaehigkeit(List.of(Sprachfaehigkeit.ARTIKULATIONSFEHLER, Sprachfaehigkeit.ANDERES))
+            );
+
+            UntersuchungArztBemerkung untersuchungArztBemerkung = UntersuchungArztBemerkungBuilder.create(
+                builder -> builder.withBemerkungen("Mit einer Ärztlichen Bemerkung")
             );
 
             UntersuchungMassnahmen untersuchungMassnahmen = UntersuchungMassnahmenBuilder.create(
@@ -463,11 +480,12 @@ class PrinterTest {
                 UntersuchungBuilder.create(builder ->
                     builder.withUntersuchungTriage(untersuchungTriage)
                         .withDurchgefuehrt(untersuchungDurchfuehrung)
-                        .withUntersuchungSehen(untersuchungSehen)
+                        .withUntersuchungSehen(untersuchungSehenBeurteilung)
                         .withUntersuchungHoerenAudiogramm(untersuchungHoerenAudiogramm)
                         .withUntersuchungHoerenOtoskopie(untersuchungHoerenOtoskopie)
                         .withUntersuchungGroesseGewicht(untersuchungGroesseGewicht)
-                        .withUntersuchungArzt(untersuchungArzt)
+                        .withUntersuchungArztBeurteilung(untersuchungArztBrt)
+                        .withUntersuchungArztBemerkung(untersuchungArztBemerkung)
                         .withUntersuchungMassnahmen(untersuchungMassnahmen)
                 );
 
@@ -530,7 +548,7 @@ class PrinterTest {
                             + "Pellentesque a urna felis. Donec finibus tempor augue, at tempor orci cursus quis. "
                             + "Nam ultricies risus neque, et laoreet lectus vulputate sed. Sed facilisis placerat "
                             + "semper. Proin justo libero, facilisis eu augue non, fermentum tempor tortor. Nunc "
-                            + "luctus luctus tristique.")),
+                            + "luctus luctus tristique. Now a newline \nNextline. Now a tab \t after tab")),
                 NotizBuilder.create(builder -> builder.withFiles(files)
                     .withTimestampErstellt(OffsetDateTime.now().minusDays(4))
                     .withBemerkungen(

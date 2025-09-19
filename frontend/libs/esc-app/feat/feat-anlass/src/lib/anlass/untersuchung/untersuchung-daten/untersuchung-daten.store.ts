@@ -7,6 +7,7 @@ import {
   UntersuchungDurchfuehrungServiceSaveUntersuchungDurchfuehrungRequestParams,
   UntersuchungKindDatenJson,
 } from '@dvb/data-access-backend';
+import {globalConstants} from '@dvb/feat-shared';
 import {AppErrorHandlerService, AppNotificationStore, Loader} from '@dvb/util-angular';
 import {isNullish} from '@dvb/util-shared';
 import {TranslocoService} from '@jsverse/transloco';
@@ -52,7 +53,10 @@ export class UntersuchungDatenStore extends signalStore(
         next: result => patchState(this,
           {
             durchfuehrungDaten: isNullish(result.untersuchungDurchfuehrung) ?
-              result.initialValues :
+              {
+                ...result.initialValues,
+                version: globalConstants.entityPrePersistVersion
+              }:
               result.untersuchungDurchfuehrung?.data,
             kindDaten: result.kindDaten,
           }),

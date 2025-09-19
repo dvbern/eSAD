@@ -1,8 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind;
 
-import java.util.List;
-import java.util.Set;
-
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -12,10 +10,16 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.json.KontaktPersonKindJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.json.KontaktPersonKindOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.json.KontaktPersonKindSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.person.AdresseMapper;
+import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.PathParamConsistancyUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.List;
+import java.util.Set;
 
 @JaxMapper
 @RequiredArgsConstructor
@@ -39,7 +43,9 @@ public final class KontaktPersonKindMapper {
                 AdresseMapper.toJson(kontaktPerson.getAdresse()),
                 kontaktPerson.getEmail(),
                 kontaktPerson.getTelefon(),
-                kontaktPerson.isKorrespondenz())
+                kontaktPerson.isKorrespondenz(),
+                kontaktPerson.getVersion()
+            )
         );
     }
 
@@ -104,20 +110,36 @@ public final class KontaktPersonKindMapper {
             saveJson.getTelefon(),
             saveJson.isKorrespondenz()
         );
+        KindValidationUtil.throwErrorIfKindIsInactive(kind, AppValidationMessage.cannotCreateEntityForInactiveKind(kind, kontaktPersonKind));
         return toJson(kontaktPersonKindService.persist(kontaktPersonKind));
     }
 
     @NonNull
     public KontaktPersonKindJson update(
+        @NonNull ID<Kind> kindId,
         @NonNull ID<KontaktPersonKind> kontaktPersonKindID,
         @NonNull KontaktPersonKindSaveJson saveJson
     ) {
         KontaktPersonKind existingKP = kontaktPersonKindService.getById(kontaktPersonKindID);
+        Kind kind = kindService.getById(kindId);
         KontaktPersonKind entity = toEntity(existingKP, saveJson);
-        return toJson(kontaktPersonKindService.persist(entity));
+        KindValidationUtil.throwErrorIfKindIsInactive(kind, AppValidationMessage.cannotEditEntityForInactiveKind(kind, entity));
+        return toJson(kontaktPersonKindService.persistWithOptimisticLocking(entity, saveJson.getVersion()));
     }
 
-    public void delete(@NonNull ID<KontaktPersonKind> kontaktPersonKindID) {
+    public void delete(
+        @NonNull ID<Kind> kindID,
+        @NonNull ID<KontaktPersonKind> kontaktPersonKindID
+    ) {
+        Kind kind = kindService.getById(kindID);
+        KontaktPersonKind kontaktPerson = kontaktPersonKindService.getById(kontaktPersonKindID);
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            kind,
+            AppValidationMessage.cannotRemoveEntityFromInactiveKind(
+                kind,
+                kontaktPerson
+            )
+        );
         kontaktPersonKindService.remove(kontaktPersonKindID);
     }
 
@@ -126,10 +148,39 @@ public final class KontaktPersonKindMapper {
         @NonNull ID<Kind> kindID,
         @NonNull ID<KontaktPersonKind> kontaktPersonKindID
     ) {
+        Kind kind = kindService.getById(kindID);
+        KontaktPersonKind kontaktPerson = kontaktPersonKindService.getById(kontaktPersonKindID);
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            kind,
+            AppValidationMessage.cannotEditEntityForInactiveKind(
+                kind,
+                kontaktPerson
+            )
+        );
         return toJson(kontaktPersonKindService.addToKind(kindID, kontaktPersonKindID));
     }
 
-    public void removeFromKind(@NonNull ID<Kind> kindID, @NonNull ID<KontaktPersonKind> kontaktPersonKindID) {
+    public void removeFromKind(
+        @NonNull ID<Kind> kindID,
+        @NonNull ID<KontaktPersonKind> kontaktPersonKindID
+    ) {
+        Kind kind = kindService.getById(kindID);
+        KontaktPersonKind kontaktPerson = kontaktPersonKindService.getById(kontaktPersonKindID);
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            kind,
+            AppValidationMessage.cannotEditEntityForInactiveKind(
+                kind,
+                kontaktPerson
+            )
+        );
         kontaktPersonKindService.removeFromKind(kindID, kontaktPersonKindID);
+    }
+
+	public void requireConsistentPathParams(@NonNull ID<KontaktPersonKind> kontaktPersonId, @NonNull ID<Kind> expectedKindId) {
+		PathParamConsistancyUtil.requireContainsForeignId(
+            kontaktPersonId,
+            kontaktPersonKindService.getById(kontaktPersonId).getKinder().stream().map(AbstractEntity::getId).toList(),
+            expectedKindId
+        );
     }
 }

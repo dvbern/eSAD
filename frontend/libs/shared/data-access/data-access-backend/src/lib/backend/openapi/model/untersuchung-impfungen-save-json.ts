@@ -8,16 +8,15 @@
  * Do not edit the class manually.
  */
 import { UntersuchungImpfungenChecklisteSaveJson } from './untersuchung-impfungen-checkliste-save-json';
-import { UntersuchungImpfungenMassnahmenJson } from './untersuchung-impfungen-massnahmen-json';
 import { UntersuchungImpfungenImpfausweisSaveJson } from './untersuchung-impfungen-impfausweis-save-json';
 import { UntersuchungImpfungenDoppelkontrolleSaveJson } from './untersuchung-impfungen-doppelkontrolle-save-json';
 
 
 export interface UntersuchungImpfungenSaveJson { 
     impfausweis: UntersuchungImpfungenImpfausweisSaveJson;
-    massnahmen?: UntersuchungImpfungenMassnahmenJson;
     checkliste: UntersuchungImpfungenChecklisteSaveJson;
     doppelkontrolle: UntersuchungImpfungenDoppelkontrolleSaveJson;
+    version: number;
 }
 
 

@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
@@ -23,6 +24,7 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizMapper;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizJson;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
+import ch.dvbern.oss.hemed.esc.api.shared.util.PathParamConsistancyUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -58,7 +60,9 @@ public final class EinladungMapper {
                 einladung.getArtAbmeldung(),
                 einladung.getBemerkungAbmeldung(),
                 einladung.getImpfausweis() != null ? NotizMapper.toJson(einladung.getImpfausweis()) : null,
-                einladung.getFragebogen() != null ? NotizMapper.toJson(einladung.getFragebogen()) : null
+                einladung.getFragebogen() != null ? NotizMapper.toJson(einladung.getFragebogen()) : null,
+                einladung.getVersion(),
+                einladung.getAbmeldungsNotiz() != null ? einladung.getAbmeldungsNotiz().getVersion() : -1L
             ),
             KindMapper.toJson(einladung.getDossier().getKind(), now),
             NachkontrolleMapper.toJson(nachkontrolle),
@@ -90,17 +94,17 @@ public final class EinladungMapper {
         return new UntersuchungTabsSavedJson(
             untersuchung.getId(),
             untersuchung.getUntersuchungDurchfuehrung() != null,
-            untersuchungImpfungenhasAnyValues(untersuchung.getUntersuchungImpfungen(), impfstatus, impfungenInternList),
-            untersuchung.getUntersuchungSehen() != null,
+            untersuchungImpfungenHasAnyValues(untersuchung.getUntersuchungImpfungen(), impfstatus, impfungenInternList),
+            untersuchung.getUntersuchungSehenBeurteilung() != null,
             untersuchung.getUntersuchungHoerenAudiogramm() != null,
             untersuchung.getUntersuchungHoerenOtoskopie() != null,
             untersuchung.getUntersuchungGroesseGewicht() != null,
             untersuchung.getUntersuchungTriage() != null,
-            untersuchung.getUntersuchungArzt() != null,
+            untersuchung.getUntersuchungArztBeurteilung() != null,
             untersuchung.getUntersuchungMassnahmen() != null);
     }
 
-    private static boolean untersuchungImpfungenhasAnyValues(
+    private static boolean untersuchungImpfungenHasAnyValues(
         @Nullable UntersuchungImpfungen untersuchungImpfungen,
         @NonNull List<UntersuchungImpfstatusKrankheit> impfstatus,
         @NonNull List<UntersuchungImpfungIntern> impfungenInternList
@@ -220,9 +224,10 @@ public final class EinladungMapper {
             existing
         );
         Einladung updated = toEntity(existing, einladungSaveJson);
+        Einladung persistedEinladung = einladungService.persistWithOptimisticLocking(updated, einladungSaveJson.getVersion());
         Nachkontrolle nachkontrolle = this.nachkontrolleService.getOrCreateByDossier(updated.getDossier().getId());
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
-        return toJson(einladungService.persist(updated), nachkontrolle, now);
+        return toJson(persistedEinladung, nachkontrolle, now);
     }
 
     @NonNull
@@ -255,5 +260,21 @@ public final class EinladungMapper {
 
     public void untersuchungAbschliessen(@NonNull ID<Einladung> einladungId) {
         einladungService.untersuchungAbschliessen(einladungId);
+    }
+
+    public void requireConsistentPathParams(@NonNull ID<Einladung> einladungId, @NonNull ID<Anlass> expectedAnlassId) {
+        ID<Anlass> actualAnlassId = einladungService.getByIdLockedQuery(einladungId).getAnlass().getId();
+        PathParamConsistancyUtil.requireForeignIdsAreEqual(einladungId, actualAnlassId, expectedAnlassId);
+    }
+
+    public void requireConsistentPathParams(
+        @NonNull List<ID<Einladung>> einladungenIds,
+        @NonNull ID<Anlass> expectedAnlassId
+    ) {
+        Map<ID<Einladung>, ID<Anlass>> einladungenToAnlassMap = einladungService.getAnlassEinladungsMap(einladungenIds);
+        einladungenIds.forEach(einladungId -> PathParamConsistancyUtil.requireForeignIdsAreEqual(
+            einladungId,
+            einladungenToAnlassMap.get(einladungId),
+            expectedAnlassId));
     }
 }

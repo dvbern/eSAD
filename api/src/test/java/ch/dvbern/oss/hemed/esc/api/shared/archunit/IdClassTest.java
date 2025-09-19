@@ -1,6 +1,9 @@
 package ch.dvbern.oss.hemed.esc.api.shared.archunit;
 
 import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.Objects;
 
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -29,6 +32,14 @@ class IdClassTest {
         ArchRule rule = ArchRuleDefinition.methods()
             .should(haveOnlyIdParamsWithTypeID())
             .because("All Id-Parameters of Services must be of Type ID");
+        rule.allowEmptyShould(true).check(ArchConst.APP_CLASSES);
+    }
+
+    @Test
+    void use_only_ID_class_as_id_parameter_in_collections() {
+        ArchRule rule = ArchRuleDefinition.methods()
+            .should(haveOnlyIdCollectionParamsWithTypeID())
+            .because("All Collections of Id-Parameters of Services must be of Type ID");
         rule.allowEmptyShould(true).check(ArchConst.APP_CLASSES);
     }
 
@@ -76,6 +87,47 @@ class IdClassTest {
                         events.add(SimpleConditionEvent.violated(
                             method,
                             "Id-Parameter " + (parameter.getName()) + " of method " +
+                                method.getFullName() + " is not of type ch.dvbern.dvbstarter.shared.types.id.ID. "
+                                + "If this is a false positive, please annotate the parameter with "
+                                + "@IgnoreForIdClassTest"));
+                    }
+                }
+            }
+        };
+    }
+
+    @NonNull
+    private ArchCondition<JavaMethod> haveOnlyIdCollectionParamsWithTypeID() {
+        return new ArchCondition<JavaMethod>("have only id params with type ch.dvbern.dvbstarter.shared.types.id.ID") {
+            @Override
+            public void check(JavaMethod method, ConditionEvents events) {
+                final Parameter[] parameters = method.reflect().getParameters();
+                for (Parameter parameter : parameters) {
+                    boolean isIdParam = parameter.getName().equals("ids") || parameter.getName().endsWith("Ids");
+                    boolean isCollection = Collection.class.isAssignableFrom(parameter.getType());
+                    boolean isIdCollection = false;
+
+                    if(isCollection){
+                        Type[] typeArgs = {};
+                        if (parameter.getParameterizedType() instanceof ParameterizedType) {
+                            typeArgs = ((ParameterizedType)  parameter.getParameterizedType()).getActualTypeArguments();
+                        }
+
+                        if (typeArgs.length > 0) {
+                            isIdCollection = typeArgs[0].getTypeName().contains( ID.class.getName());
+                        }
+                    }
+
+                    if (isIdParam && isCollection && !isIdCollection) {
+                        if (parameter.isAnnotationPresent(IgnoreForIdClassTest.class)) {
+                            continue;
+                        }
+                        if (method.isAnnotatedWith(Generated.class)) {
+                            continue;
+                        }
+                        events.add(SimpleConditionEvent.violated(
+                            method,
+                            "Id-Collection-Parameter " + (parameter.getName()) + " of method " +
                                 method.getFullName() + " is not of type ch.dvbern.dvbstarter.shared.types.id.ID. "
                                 + "If this is a false positive, please annotate the parameter with "
                                 + "@IgnoreForIdClassTest"));

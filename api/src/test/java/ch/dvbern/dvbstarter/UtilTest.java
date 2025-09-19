@@ -1,5 +1,7 @@
 package ch.dvbern.dvbstarter;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -9,6 +11,7 @@ import ch.dvbern.oss.hemed.esc.api.Util;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -25,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SuppressWarnings({ "EmptyClass", "TestMethodWithoutAssertion", "ConstantValue" })
+@SuppressWarnings({"EmptyClass", "ConstantValue"})
 class UtilTest {
 
     @Getter
@@ -530,6 +533,63 @@ class UtilTest {
 
             assertThat(value)
                 .isEqualTo("<unknown>");
+        }
+    }
+
+    @Nested
+    class Tokenize {
+
+        @ParameterizedTest
+        @CsvSource(delimiter = '|', value = {
+            // Basic cases
+            "'todo'| 'todo'",
+            "'John-Doe'| 'John,Doe'",
+            "'John - Doe'| 'John,Doe'",
+            "'  leading'| 'leading'", // Leading spaces
+            "'trailing  '| 'trailing'", // Trailing spaces
+
+            // Common whitespace: space, tab, newline
+            "'a  b'| 'a,b'", // Multiple spaces
+            "'hello\tworld'| 'hello,world'", // Tab
+            "'one\ntwo'| 'one,two'", // Newline (LF)
+            "'one\rtwo'| 'one,two'", // Carriage return (CR)
+            "'one\r\ntwo'| 'one,two'", // CRLF (Windows line ending)
+
+            // Mixed delimiters
+            "'a - b'| 'a,b'", // Space-hyphen-space
+            "'test--value'| 'test,value'", // Multiple hyphens
+            "'hyphen-space - '| 'hyphen,space'", // Mixed, trailing
+
+            // Unicode Whitespace Galore
+            "'a\u00A0b'| 'a,b'", // No-Break Space (NBSP) - common in HTML
+            "'a\u2000b'| 'a,b'", // En Quad
+            "'a\u2001b'| 'a,b'", // Em Quad
+            "'a\u2002b'| 'a,b'", // En Space
+            "'a\u2003b'| 'a,b'", // Em Space
+            "'a\u2004b'| 'a,b'", // Three-Per-Em Space
+            "'a\u2005b'| 'a,b'", // Four-Per-Em Space
+            "'a\u2006b'| 'a,b'", // Six-Per-Em Space
+            "'a\u2007b'| 'a,b'", // Figure Space
+            "'a\u2008b'| 'a,b'", // Punctuation Space
+            "'a\u2009b'| 'a,b'", // Thin Space
+            "'a\u200Ab'| 'a,b'", // Hair Space
+            "'a\u2028b'| 'a,b'", // Line Separator
+            "'a\u2029b'| 'a,b'", // Paragraph Separator
+            "'a\u205Fb'| 'a,b'", // Medium Mathematical Space
+            "'a\u3000b'| 'a,b'", // Ideographic Space
+            "'a\u0085b'| 'a,b'", // Next Line (NEL) - C1 control character
+            "'a\u1680b'| 'a,b'", // Ogham Space Mark
+            "'a\u202Fb'| 'a,b'", // Narrow No-Break Space
+            "'a\uFEFFb'| 'a,b'", // Byte Order Mark (BOM) - zero width no-break space
+
+            // Complex combination of everything
+            "'  File\u2003--\u00A0Name\u2028-Final-\nDraft  \t'| 'File,Name,Final,Draft'"
+        })
+        void testTokenizeStringByWhiteSpacesOrHyphens(@NonNull String input, @NonNull String expectedCommaSeperated) {
+            List<String> expectedResults = Arrays.stream(expectedCommaSeperated.split(",")).toList();
+
+            List<String> result = Util.tokenizeStringByWhiteSpacesOrHyphens(input);
+            assertThat(result).containsExactlyElementsOf(expectedResults);
         }
     }
 }

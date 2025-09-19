@@ -13,9 +13,11 @@
 
 package ch.dvbern.oss.hemed.esc.generated.restassured.api;
 
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ArztIdListJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ArztJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ArztListJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ArztSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ExportModeSpec;
 import java.io.File;
 
 import java.util.ArrayList;
@@ -179,25 +181,27 @@ public class AerzteApiSpec {
      * Export Aerzte
      * 
      *
-     * @see #aerzteIdsQuery  (optional)
+     * @see #modePath  (required)
+     * @see #body  (required)
      * return File
      */
     public static class ArztResourceExportAerzteOper implements Oper {
 
-        public static final Method REQ_METHOD = GET;
-        public static final String REQ_URI = "/api/aerzte/export";
+        public static final Method REQ_METHOD = POST;
+        public static final String REQ_URI = "/api/aerzte/export/{mode}";
 
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
 
         public ArztResourceExportAerzteOper(RequestSpecBuilder reqSpec) {
             this.reqSpec = reqSpec;
+            reqSpec.setContentType("application/json");
             reqSpec.setAccept("application/octet-stream");
             this.respSpec = new ResponseSpecBuilder();
         }
 
         /**
-         * GET /api/aerzte/export
+         * POST /api/aerzte/export/{mode}
          * @param handler handler
          * @param <T> type
          * @return type
@@ -208,7 +212,7 @@ public class AerzteApiSpec {
         }
 
         /**
-         * GET /api/aerzte/export
+         * POST /api/aerzte/export/{mode}
          * @param handler handler
          * @return File
          */
@@ -217,14 +221,23 @@ public class AerzteApiSpec {
             return execute(handler).as(type);
         }
 
-        public static final String AERZTE_IDS_QUERY = "aerzteIds";
-
-        /**
-         * @param aerzteIds (List&lt;String&gt;)  (optional)
+         /**
+         * @param arztIdListJsonSpec (ArztIdListJsonSpec)  (required)
          * @return operation
          */
-        public ArztResourceExportAerzteOper aerzteIdsQuery(Object... aerzteIds) {
-            reqSpec.addQueryParam(AERZTE_IDS_QUERY, aerzteIds);
+        public ArztResourceExportAerzteOper body(ArztIdListJsonSpec arztIdListJsonSpec) {
+            reqSpec.setBody(arztIdListJsonSpec);
+            return this;
+        }
+
+        public static final String MODE_PATH = "mode";
+
+        /**
+         * @param mode (ExportModeSpec)  (required)
+         * @return operation
+         */
+        public ArztResourceExportAerzteOper modePath(Object mode) {
+            reqSpec.addPathParam(MODE_PATH, mode);
             return this;
         }
 

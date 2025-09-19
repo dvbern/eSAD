@@ -3,8 +3,8 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArzt;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilungRepo;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.PerzentileGroesse;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
@@ -29,6 +29,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizService;
+import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.KindAktivitaetHistoryRepo;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AufgabeService;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.types.AufgabeStatus;
@@ -41,11 +42,8 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.EinladungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.NotizBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
-import java.io.File;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.EinladungenApiSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppValidationErrorJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EinladungJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EinladungListJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EinladungSaveJsonSpec;
@@ -56,13 +54,17 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LabelJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungTabInfoListJsonSpec;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.arc.ArcUndeclaredThrowableException;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response.Status;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -88,15 +90,16 @@ class EinladungResourceITest extends AbstractITest {
     private final UntersuchungTriageRepo untersuchungTriageRepo;
     private final UntersuchungHoerenAudiogrammRepo untersuchungHoerenAudiogrammRepo;
     private final UntersuchungHoerenOtoskopieRepo untersuchungHoerenOtoskopieRepo;
-    private final UntersuchungSehenRepo untersuchungSehenRepo;
+    private final UntersuchungSehenBeurteilungRepo untersuchungSehenBeurteilungRepo;
     private final UntersuchungImpfstatusKrankheitRepo untersuchungImpfstatusKrankheitRepo;
     private final UntersuchungImpfungInternRepo untersuchungImpfungInternRepo;
     private final NotizService notizService;
     private final UntersuchungMassnahmenRepo untersuchungMassnahmenRepo;
     private final UntersuchungGroesseGewichtRepo untersuchungGroesseGewichtRepo;
-    private final UntersuchungArztRepo untersuchungArztRepo;
+    private final UntersuchungArztBeurteilungRepo untersuchungArztBeurteilungRepo;
     private final AufgabeService aufgabeService;
     private final AnlassService anlassService;
+    private final KindAktivitaetHistoryRepo kindAktivitaetHistoryRepo;
 
     private final AppClock appClock;
     private final TL tl;
@@ -160,8 +163,8 @@ class EinladungResourceITest extends AbstractITest {
         // ASSERT
         assertThat(result).isNotNull();
         assertThat(result.getUntersuchungKindDaten()).isNotNull();
-        assertThat(result.getUntersuchungKindDaten()
-            .getKlassenstufe()).isEqualTo(KlassenstufeSpec.PRIMAR_KLASSE_4);
+        assertThat(result.getUntersuchungKindDaten().getData().getKlassenstufe())
+            .isEqualTo(KlassenstufeSpec.PRIMAR_KLASSE_4);
     }
 
     @Test
@@ -184,8 +187,31 @@ class EinladungResourceITest extends AbstractITest {
             .extract().as(EinladungJsonSpec.class);
 
         // ASSERT
+        assertThat(kindAktivitaetHistoryRepo.findAllForKind(dossier.getKind().getId())).hasSize(1);
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(einladung.getId().getId());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void getEinladungById_fail() {
+        // ARRANGE
+        Anlass anlass = fixtureService.createAnlass();
+        Dossier dossier = fixtureService.createDossier();
+        Einladung einladung = EinladungBuilder.create(builder -> builder.withAnlass(anlass).withDossier(dossier));
+        einladungService.persist(einladung);
+
+        // ACT
+        api
+            .einladungResourceGetEinladungById()
+            .anlassIdPath("18062b95-1111-1111-1111-20da658891a9")
+            .einladungIdPath(einladung.getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat().statusCode(Status.BAD_REQUEST.getStatusCode());
+
+        // ASSERT
+        assertThat(kindAktivitaetHistoryRepo.findAllForKind(dossier.getKind().getId())).isEmpty();
     }
 
     @Test
@@ -276,11 +302,11 @@ class EinladungResourceITest extends AbstractITest {
         updateEinladung(einladung.getId(), einladung.getAnlass().getId(), jaxSpec);
         // ASSERT That the Einladung Status was set to NACHZUEGLER and Aufgabe was created
         Einladung einladungChanged = einladungService.getById(einladung.getId());
-        List<Aufgabe> aufgaben = aufgabeService.findAufgabenForKindWithLabel(
+        Optional<Aufgabe> aufgabeOptional = aufgabeService.findSingleAufgabeForKindWithLabel(
             einladungChanged.getDossier().getKind(),
             Label.ID_LABEL_NACHZUEGLER);
         assertThat(einladungChanged.getEinladungStatus()).isEqualTo(EinladungStatus.NACHZUEGLER);
-        assertThat(aufgaben).hasSize(1);
+        assertThat(aufgabeOptional).isPresent();
 
         // ACT Update the Einladung to TEILNAHME_BESTAETIGT so the Aufgabe gets closed
         jaxSpec.setEinladungStatus(EinladungStatusSpec.TEILNAHME_BESTAETIGT);
@@ -288,12 +314,12 @@ class EinladungResourceITest extends AbstractITest {
 
         // ASSERT That the Einladung Status was set to TEILNAHME_BESTAETIGT and Aufgabe was closed
         einladungChanged = einladungService.getById(einladung.getId());
-        aufgaben = aufgabeService.findAufgabenForKindWithLabel(
+        aufgabeOptional = aufgabeService.findSingleAufgabeForKindWithLabel(
             einladungChanged.getDossier().getKind(), Label.ID_LABEL_NACHZUEGLER);
         assertThat(einladungChanged.getEinladungStatus()).isEqualTo(EinladungStatus.TEILNAHME_BESTAETIGT);
-        assertThat(aufgaben).hasSize(1);
-        assertThat(aufgaben.getFirst().getAufgabeStatus()).isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
-        assertThat(aufgaben.getFirst().getTitel()).isEqualTo("Nachzügler Gerber Emma 2022/23 SU 4.PS Test getAnlass");
+        assertThat(aufgabeOptional).isPresent();
+        assertThat(aufgabeOptional.get().getAufgabeStatus()).isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
+        assertThat(aufgabeOptional.get().getTitel()).isEqualTo("Nachzügler Gerber Emma 2022/23 SU 4.PS Test getAnlass");
     }
 
     @Test
@@ -311,21 +337,21 @@ class EinladungResourceITest extends AbstractITest {
         // ASSERT That the Einladung Status was set to NACHZUEGLER and Aufgabe was created
         Einladung einladungChanged = einladungService.getById(einladung.getId());
         assertThat(einladungChanged.getEinladungStatus()).isEqualTo(EinladungStatus.NACHZUEGLER);
-        List<Aufgabe> aufgaben = aufgabeService.findAufgabenForKindWithLabel(
+        Optional<Aufgabe> aufgabeOptional = aufgabeService.findSingleAufgabeForKindWithLabel(
             einladungChanged.getDossier().getKind(),
             Label.ID_LABEL_NACHZUEGLER);
-        assertThat(aufgaben).hasSize(1);
+        assertThat(aufgabeOptional).isPresent();
         // ARRANGE Update the Einladung to TEILNAHME_BESTAETIGT so the Aufgabe gets closed
         jaxSpec.setEinladungStatus(EinladungStatusSpec.TEILNAHME_BESTAETIGT);
         updateEinladung(einladung.getId(), einladung.getAnlass().getId(), jaxSpec);
         // ASSERT That the Einladung Status was set to TEILNAHME_BESTAETIGT and Aufgabe is closed
         einladungChanged = einladungService.getById(einladung.getId());
-        aufgaben = aufgabeService.findAufgabenForKindWithLabel(
+        aufgabeOptional = aufgabeService.findSingleAufgabeForKindWithLabel(
             einladungChanged.getDossier().getKind(),
             Label.ID_LABEL_NACHZUEGLER);
         assertThat(einladungChanged.getEinladungStatus()).isEqualTo(EinladungStatus.TEILNAHME_BESTAETIGT);
-        assertThat(aufgaben).hasSize(1);
-        assertThat(aufgaben.getFirst().getAufgabeStatus()).isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
+        assertThat(aufgabeOptional).isPresent();
+        assertThat(aufgabeOptional.get().getAufgabeStatus()).isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
 
         // ACT Set Status to NACHZUEGLER again so Aufgabe is reopened
         jaxSpec.setEinladungStatus(EinladungStatusSpec.NACHZUEGLER);
@@ -334,11 +360,11 @@ class EinladungResourceITest extends AbstractITest {
         // ASSERT That the Einladung Status was set to NACHZUEGLER and Aufgabe is reopened
         einladungChanged = einladungService.getById(einladung.getId());
         assertThat(einladungChanged.getEinladungStatus()).isEqualTo(EinladungStatus.NACHZUEGLER);
-        aufgaben = aufgabeService.findAufgabenForKindWithLabel(
+        aufgabeOptional = aufgabeService.findSingleAufgabeForKindWithLabel(
             einladungChanged.getDossier().getKind(), Label.ID_LABEL_NACHZUEGLER);
-        assertThat(aufgaben).hasSize(1);
-        assertThat(aufgaben.getFirst().getAufgabeStatus()).isEqualTo(AufgabeStatus.OFFEN);
-        assertThat(aufgaben.getFirst().getTitel()).isEqualTo("Nachzügler Gerber Emma 2022/23 SU 4.PS Test getAnlass");
+        assertThat(aufgabeOptional).isPresent();
+        assertThat(aufgabeOptional.get().getAufgabeStatus()).isEqualTo(AufgabeStatus.OFFEN);
+        assertThat(aufgabeOptional.get().getTitel()).isEqualTo("Nachzügler Gerber Emma 2022/23 SU 4.PS Test getAnlass");
     }
 
     @Test
@@ -443,15 +469,15 @@ class EinladungResourceITest extends AbstractITest {
             // using the generated file2 method does not work, it seems to be using the 'file' name as form name
             .reqSpec(spec -> {
                 spec.setContentType("multipart/form-data");
-                spec.addMultiPart("file2", "terstfile2name.pdf" ,testFileBytes);
+                spec.addMultiPart("file2", "terstfile2name.pdf", testFileBytes);
             })
             .reqSpec(spec -> {
                 spec.setContentType("multipart/form-data");
-                spec.addMultiPart("file3", "terstfile3name.pdf" ,testFileBytes);
+                spec.addMultiPart("file3", "terstfile3name.pdf", testFileBytes);
             })
             .reqSpec(spec -> {
                 spec.setContentType("multipart/form-data");
-                spec.addMultiPart("file4", "terstfile4name.pdf" ,testFileBytes);
+                spec.addMultiPart("file4", "terstfile4name.pdf", testFileBytes);
             })
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -743,6 +769,44 @@ class EinladungResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
+    void createEinladungenForAnlass_withInactiveKind_shouldThrow() {
+        // ARRANGE
+        final Anlass anlass = fixtureService.createAnlass();
+        final Kind kind = fixtureService.createInactiveKind();
+        final Kind kind2 = fixtureService.createInactiveKind();
+        KindIdListJsonSpec kindIdListJsonSpec = new KindIdListJsonSpec(
+            List.of(
+                kind.getId().getId(), kind2.getId().getId()
+            )
+        );
+
+        String expectedValidationErrorMessage = String.format(
+            "Die Einladung für den Anlass %s konnte nicht erstellt werden, da das Kind %s %s inaktiv ist. Inaktive Kinder können nicht hinzugefügt werden.",
+            anlass.getId(),
+            kind.getNameVorname(),
+            kind.getId());
+
+        // ACT & ASSERT
+        AppValidationErrorJsonSpec validationError = api.einladungResourceCreateEinladungenForAnlass()
+            .anlassIdPath(anlass.getId().getId())
+            .body(kindIdListJsonSpec)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract()
+            .as(AppValidationErrorJsonSpec.class);
+
+        assertThat(validationError.getViolations()).hasSize(1);
+        assertThat(validationError.getViolations().getFirst().getKey())
+            .isEqualTo("CannotCreateEinladungForInactiveKind");
+        assertThat(validationError.getViolations().getFirst().getMessage())
+            .isEqualTo(expectedValidationErrorMessage);
+    }
+
+
+    @Test
+    @TestAsAdminBS
     void createEinladungNachzuegler_should_move_impfausweis_to_new_einladung() {
         // ARRANGE
         String titleAnlassNichtTeilgenommen = "Mein Anlass nicht Teilgenommen";
@@ -761,8 +825,6 @@ class EinladungResourceITest extends AbstractITest {
         einladungNichtTeilgenommen = einladungService.getById(einladungNichtTeilgenommen.getId());
         assertThat(einladungNichtTeilgenommen.getImpfausweis()).isNotNull();
         assertThat(einladungNichtTeilgenommen.getFragebogen()).isNotNull();
-        ID<Notiz> notizImpfausweisID = einladungNichtTeilgenommen.getImpfausweis().getId();
-        ID<Notiz> notizFragebogenID = einladungNichtTeilgenommen.getFragebogen().getId();
 
         // ACT
         String titleAnlassAlsNachzuegler = "Mein Anlass Nachzügler";
@@ -866,10 +928,10 @@ class EinladungResourceITest extends AbstractITest {
         assertThat(untersuchung.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchung.getUntersuchungHoerenAudiogramm()).isNotNull();
         assertThat(untersuchung.getUntersuchungHoerenOtoskopie()).isNotNull();
-        assertThat(untersuchung.getUntersuchungSehen()).isNotNull();
+        assertThat(untersuchung.getUntersuchungSehenBeurteilung()).isNotNull();
         assertThat(untersuchung.getUntersuchungTriage()).isNotNull();
         assertThat(untersuchung.getUntersuchungGroesseGewicht()).isNotNull();
-        assertThat(untersuchung.getUntersuchungArzt()).isNotNull();
+        assertThat(untersuchung.getUntersuchungArztBeurteilung()).isNotNull();
         assertThat(untersuchung.getEinladung().getImpfausweis()).isNotNull();
         ID<Notiz> notizImpfausweisId = untersuchung.getEinladung().getImpfausweis().getId();
         assertThat(notizService.getById(notizImpfausweisId)).isNotNull();
@@ -893,7 +955,7 @@ class EinladungResourceITest extends AbstractITest {
             .getId())).isEmpty();
         assertThat(untersuchungHoerenOtoskopieRepo.findById(untersuchung.getUntersuchungHoerenOtoskopie()
             .getId())).isEmpty();
-        assertThat(untersuchungSehenRepo.findById(untersuchung.getUntersuchungSehen().getId())).isEmpty();
+        assertThat(untersuchungSehenBeurteilungRepo.findById(untersuchung.getUntersuchungSehenBeurteilung().getId())).isEmpty();
         assertThat(untersuchungTriageRepo.findById(untersuchung.getUntersuchungTriage().getId())).isEmpty();
         assertThat(untersuchungGroesseGewichtRepo.findById(untersuchung.getUntersuchungGroesseGewicht()
             .getId())).isEmpty();
@@ -902,7 +964,7 @@ class EinladungResourceITest extends AbstractITest {
         assertThat(notizService.findById(notizFragebogenId)).isEmpty();
         assertThat(notizService.findById(notizAbmeldungsgrundId)).isEmpty();
         assertThat(untersuchungMassnahmenRepo.findById(untersuchung.getUntersuchungMassnahmen().getId())).isEmpty();
-        assertThat(untersuchungArztRepo.findById(untersuchung.getUntersuchungArzt().getId())).isEmpty();
+        assertThat(untersuchungArztBeurteilungRepo.findById(untersuchung.getUntersuchungArztBeurteilung().getId())).isEmpty();
     }
 
     @Test
@@ -1028,7 +1090,7 @@ class EinladungResourceITest extends AbstractITest {
         assertThat(hoerenOtoskopie).isNotNull();
         assertThat(hoerenOtoskopie.getOtoskopieLinks()).containsExactly(OtoskopieResultat.NICHT_GEPRUEFT);
         // Sehen
-        UntersuchungSehen sehen = untersuchungAbgeschlossen.getUntersuchungSehen();
+        UntersuchungSehenBeurteilung sehen = untersuchungAbgeschlossen.getUntersuchungSehenBeurteilung();
         assertThat(sehen).isNotNull();
         assertThat(sehen.getBrilleLinsen()).isEqualTo(BrilleLinsenResultat.NICHT_GEPRUEFT);
         // GroesseGewicht
@@ -1039,7 +1101,7 @@ class EinladungResourceITest extends AbstractITest {
         UntersuchungTriage triage = untersuchungAbgeschlossen.getUntersuchungTriage();
         assertThat(triage).isNotNull();
         // Arzt
-        UntersuchungArzt arzt = untersuchungAbgeschlossen.getUntersuchungArzt();
+        UntersuchungArztBeurteilung arzt = untersuchungAbgeschlossen.getUntersuchungArztBeurteilung();
         assertThat(arzt).isNotNull();
         assertThat(arzt.getBewegungsapparat()).containsExactly(Bewegungsapparat.NICHT_GEPRUEFT);
         // Massnahmen
@@ -1083,7 +1145,7 @@ class EinladungResourceITest extends AbstractITest {
         assertThat(hoerenOtoskopie.getOtoskopieLinks()).containsExactly(OtoskopieResultat.NICHT_EINSEHBAR);
         assertThat(hoerenOtoskopie.getOtoskopieRechts()).containsExactly(OtoskopieResultat.NORMAL);
         // Sehen
-        UntersuchungSehen sehen = untersuchungAbgeschlossen.getUntersuchungSehen();
+        UntersuchungSehenBeurteilung sehen = untersuchungAbgeschlossen.getUntersuchungSehenBeurteilung();
         assertThat(sehen).isNotNull();
         assertThat(sehen.getBrilleLinsen()).isEqualTo(BrilleLinsenResultat.OHNE_KEINE);
         // GroesseGewicht
@@ -1094,7 +1156,7 @@ class EinladungResourceITest extends AbstractITest {
         UntersuchungTriage triage = untersuchungAbgeschlossen.getUntersuchungTriage();
         assertThat(triage).isNotNull();
         // Arzt
-        UntersuchungArzt arzt = untersuchungAbgeschlossen.getUntersuchungArzt();
+        UntersuchungArztBeurteilung arzt = untersuchungAbgeschlossen.getUntersuchungArztBeurteilung();
         assertThat(arzt).isNotNull();
         assertThat(arzt.getBewegungsapparat()).containsExactlyInAnyOrder(
             Bewegungsapparat.SKOLIOSE,
@@ -1109,6 +1171,8 @@ class EinladungResourceITest extends AbstractITest {
         @NonNull ID<Anlass> anlassId,
         @NonNull EinladungSaveJsonSpec jaxSpec
     ) {
+        Einladung einladung = einladungService.getById(einladungId);
+        jaxSpec.setVersion(einladung.getVersion());
         api.einladungResourceUpdateEinladung()
             .anlassIdPath(anlassId.getId())
             .einladungIdPath(einladungId.getId())

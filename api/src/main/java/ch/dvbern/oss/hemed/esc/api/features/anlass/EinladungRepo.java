@@ -1,6 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,6 +18,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.QDossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.QKind;
+import com.querydsl.core.Tuple;
 import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -141,5 +144,29 @@ public class EinladungRepo extends BaseRepo<Einladung> {
             .set(QEinladung.einladung.spssExported, true)
             .where(QEinladung.einladung.id.in(einladungIdList.stream().map(ID::getUUID).toList()))
             .execute();
+    }
+
+    @NonNull
+    public Map<ID<Einladung>, ID<Anlass>> getAnlassEinladungsMap(@NonNull List<ID<Einladung>> einladungIdList) {
+        List<Tuple> einladungenAnlass = db.select(QEinladung.einladung.id, QAnlass.anlass.id)
+            .from(QEinladung.einladung)
+            .innerJoin(QEinladung.einladung.anlass, QAnlass.anlass)
+            .where(QEinladung.einladung.id.in(einladungIdList.stream().map(ID::getUUID).toList()))
+            .fetch();
+
+        Map<ID<Einladung>, ID<Anlass>> map = new HashMap<>();
+
+        einladungenAnlass.forEach(tuple -> {
+                UUID einladungId = tuple.get(0, UUID.class);
+                UUID anlassId = tuple.get(1, UUID.class);
+                if (einladungId != null && anlassId != null) {
+                    map.put(
+                        ID.of(einladungId, Einladung.class),
+                        ID.of(anlassId, Anlass.class)
+                    );
+                }
+            }
+        );
+        return map;
     }
 }

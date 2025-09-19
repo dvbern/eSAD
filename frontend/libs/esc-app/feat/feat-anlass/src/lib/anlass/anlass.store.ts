@@ -3,7 +3,8 @@ import {
   AnlassJson,
   AnlassSaveJson,
   AnlassService,
-  AnlassStatus, PrinterService,
+  AnlassStatus,
+  PrinterService,
   SchulInformationenJson,
 } from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';

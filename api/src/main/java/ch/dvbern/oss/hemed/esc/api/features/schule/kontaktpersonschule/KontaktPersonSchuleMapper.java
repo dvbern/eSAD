@@ -11,6 +11,7 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.kontaktpersonschule.json.KontaktPersonSchuleJson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.kontaktpersonschule.json.KontaktPersonSchuleOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.kontaktpersonschule.json.KontaktPersonSchuleSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.util.PathParamConsistancyUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -33,7 +34,9 @@ public final class KontaktPersonSchuleMapper {
                 kontaktPerson.getName(),
                 kontaktPerson.getVorname(),
                 kontaktPerson.getEmail(),
-                kontaktPerson.getTelefon())
+                kontaktPerson.getTelefon(),
+                kontaktPerson.getVersion()
+            )
         );
     }
 
@@ -103,7 +106,7 @@ public final class KontaktPersonSchuleMapper {
     ) {
         KontaktPersonSchule existingKontaktPersonSchule = kontaktPersonSchuleService.getById(kontaktPersonID);
         KontaktPersonSchule entity = toEntity(existingKontaktPersonSchule, saveJson);
-        return toJson(kontaktPersonSchuleService.persist(entity));
+        return toJson(kontaktPersonSchuleService.persistWithOptimisticLocking(entity, saveJson.getVersion()));
     }
 
     public void delete(@NonNull ID<KontaktPersonSchule> kontaktPersonID) {
@@ -119,6 +122,7 @@ public final class KontaktPersonSchuleMapper {
         KontaktPersonSchule kp = kontaktPersonSchuleService.getById(kontaktPersonSchuleID);
         Schule schule = schuleService.getById(schuleId);
         kp.getSchulen().add(schule);
+        kp.disableOptimisticLockingCheck();
         return toJson(kontaktPersonSchuleService.persist(kp));
     }
 
@@ -126,9 +130,18 @@ public final class KontaktPersonSchuleMapper {
         KontaktPersonSchule kp = kontaktPersonSchuleService.getById(kontaktPersonID);
         Schule schule = schuleService.getById(schuleId);
         kp.getSchulen().remove(schule);
+        kp.disableOptimisticLockingCheck();
         kontaktPersonSchuleService.persist(kp);
         if (kp.getSchulen().isEmpty()) {
             kontaktPersonSchuleService.remove(kp.getId());
         }
+    }
+
+    public void requireConsistentPathParams(@NonNull ID<KontaktPersonSchule> kontaktPersonId, @NonNull ID<Schule> expectedSchuleId) {
+        PathParamConsistancyUtil.requireContainsForeignId(
+            kontaktPersonId,
+            kontaktPersonSchuleService.getById(kontaktPersonId).getSchulen().stream().map(Schule::getId).toList(),
+            expectedSchuleId
+        );
     }
 }

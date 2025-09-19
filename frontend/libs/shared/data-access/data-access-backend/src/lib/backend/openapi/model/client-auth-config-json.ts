@@ -14,7 +14,7 @@ export interface ClientAuthConfigJson {
     clientId: string;
     realm: string;
     authUrl: BackendURL;
-    logoutUrl: BackendURL;
+    logoutRedirectUrl?: BackendURL;
 }
 
 

@@ -1,11 +1,22 @@
 <feat-page [heading]="'aufgaben.list.page.title' | transloco">
 
+  <svui-page-header-list-summary
+    [items]="summaryItems()"/>
+
+  <svui-page-header-buttons
+    [showFilterPopup]="false"
+    [activeFilterCount]="itemTable.numberOfFilters()"
+    (resetFilter)="itemTable.resetFilters(); tableFilterForm.reset()"/>
+
 	@if (canEditAufgabe()) {
 		<svui-page-header-add-button
 				[addRouterLink]="Path.CREATE"/>
 	}
 
 	<feat-shared-aufgaben-list
+    [itemTable]="itemTable"
+    [tableFilterForm]="tableFilterForm"
+    [loading]="store.loader.isLoading()"
     [defaultEmpfaenger]="benutzerOptionsStore.getOptionForBenutzer(benutzerStore.benutzer()?.id)"/>
 
 </feat-page>

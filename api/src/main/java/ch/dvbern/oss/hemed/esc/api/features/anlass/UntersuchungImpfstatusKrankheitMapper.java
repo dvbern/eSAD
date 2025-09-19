@@ -33,7 +33,8 @@ public final class UntersuchungImpfstatusKrankheitMapper {
         @NonNull UntersuchungImpfungen impfungen,
         @NonNull List<UntersuchungImpfstatusKrankheit> existingImpfstatusList,
         @NonNull List<UntersuchungImpfstatusKrankheit> impfstatusLastAnlass,
-        @NonNull List<UntersuchungImpfungIntern> impfungenInternList) {
+        @NonNull List<UntersuchungImpfungIntern> impfungenInternList
+    ) {
         List<UntersuchungImpfstatusKrankheit> completeImpfstatusList = new ArrayList<>();
         // Crete new or copy existing
 
@@ -58,6 +59,10 @@ public final class UntersuchungImpfstatusKrankheitMapper {
                 // übernommen. Ansonsten werden leere Einträge erstellt.
                 UntersuchungImpfstatusKrankheit newImpfung =
                     UntersuchungImpfstatusKrankheit.forKrankheit(impfungen, krankheit);
+
+                // initialized with version zero but not yet persisted
+                // avoid creating the version zero when actually persisting
+                newImpfung.setVersion(-1L);
 
                 if (uebernehmbareKrankheiten.contains(krankheit)) {
                     setUebernehmbareImpfstatus(impfstatusLastAnlass, impfungenInternList, krankheit, newImpfung);
@@ -120,7 +125,9 @@ public final class UntersuchungImpfstatusKrankheitMapper {
             impfstatusKrankheit.getDatumLetzteImpfung(),
             impfstatusKrankheit.isImpfschutzGegeben(),
             impfstatusKrankheit.isImpfempfehlung(),
-            impfstatusKrankheit.isImpfentscheid());
+            impfstatusKrankheit.isImpfentscheid(),
+            impfstatusKrankheit.getVersion()
+        );
     }
 
     @NonNull
@@ -161,7 +168,8 @@ public final class UntersuchungImpfstatusKrankheitMapper {
 
     @NonNull
     public List<UntersuchungImpfstatusKrankheitSaveJson> getByUntersuchungImpfungen(
-        @NonNull UntersuchungImpfungen impfungen) {
+        @NonNull UntersuchungImpfungen impfungen
+    ) {
         List<UntersuchungImpfstatusKrankheit> existingImpfstatus =
             untersuchungImpfstatusKrankheitService.findByUntersuchung(impfungen.getUntersuchung().getId());
 
@@ -198,7 +206,8 @@ public final class UntersuchungImpfstatusKrankheitMapper {
 
     public void persistAll(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungImpfstatusListSaveJson saveJsonList) {
+        @NonNull UntersuchungImpfstatusListSaveJson saveJsonList
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
         UntersuchungImpfungen impfungen =
             untersuchungImpfungenService.getOrCreateUntersuchungImpfungen(untersuchung.getId());
@@ -208,7 +217,7 @@ public final class UntersuchungImpfstatusKrankheitMapper {
                     impfungen.getId(),
                     statusJson.getKrankheit());
             UntersuchungImpfstatusKrankheit entity = toEntity(einladungID, existing.orElse(null), statusJson);
-            untersuchungImpfstatusKrankheitService.persist(entity);
+            untersuchungImpfstatusKrankheitService.persistWithOptimisticLocking(entity, statusJson.getVersion());
         }
     }
 }

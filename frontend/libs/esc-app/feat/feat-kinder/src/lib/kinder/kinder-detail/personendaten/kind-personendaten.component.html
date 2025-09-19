@@ -182,7 +182,7 @@
     [mode]="dossierStore.detailMode()"
     [isCreate]="isNew"
     [saving]="store.saveLoader.isLoading()"
-    [canEdit]="canEditKind()"
+    [canEdit]="canEditKind() && dossierStore.isKindAktiv()"
     routeToEdit="../edit"
     [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
     [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"/>

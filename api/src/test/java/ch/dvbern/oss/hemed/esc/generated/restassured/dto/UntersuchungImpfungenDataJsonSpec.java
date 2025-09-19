@@ -18,6 +18,7 @@ import java.util.Arrays;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfstatusListSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungInternListJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenMassnahmenJsonSpec;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -31,6 +32,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  */
 @JsonPropertyOrder({
   UntersuchungImpfungenDataJsonSpec.JSON_PROPERTY_UNTERSUCHUNG_IMPFUNGEN,
+  UntersuchungImpfungenDataJsonSpec.JSON_PROPERTY_MASSNAHMEN,
   UntersuchungImpfungenDataJsonSpec.JSON_PROPERTY_IMPFSTATUS_LIST,
   UntersuchungImpfungenDataJsonSpec.JSON_PROPERTY_IMPFUNG_INTERN_LIST
 })
@@ -41,6 +43,10 @@ public class UntersuchungImpfungenDataJsonSpec {
   public static final String JSON_PROPERTY_UNTERSUCHUNG_IMPFUNGEN = "untersuchungImpfungen";
   @jakarta.annotation.Nonnull
   private UntersuchungImpfungenJsonSpec untersuchungImpfungen;
+
+  public static final String JSON_PROPERTY_MASSNAHMEN = "massnahmen";
+  @jakarta.annotation.Nullable
+  private UntersuchungImpfungenMassnahmenJsonSpec massnahmen;
 
   public static final String JSON_PROPERTY_IMPFSTATUS_LIST = "impfstatusList";
   @jakarta.annotation.Nonnull
@@ -76,6 +82,31 @@ public class UntersuchungImpfungenDataJsonSpec {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setUntersuchungImpfungen(@jakarta.annotation.Nonnull UntersuchungImpfungenJsonSpec untersuchungImpfungen) {
     this.untersuchungImpfungen = untersuchungImpfungen;
+  }
+
+  public UntersuchungImpfungenDataJsonSpec massnahmen(@jakarta.annotation.Nullable UntersuchungImpfungenMassnahmenJsonSpec massnahmen) {
+    
+    this.massnahmen = massnahmen;
+    return this;
+  }
+
+  /**
+   * Get massnahmen
+   * @return massnahmen
+   */
+  @jakarta.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MASSNAHMEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UntersuchungImpfungenMassnahmenJsonSpec getMassnahmen() {
+    return massnahmen;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_MASSNAHMEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMassnahmen(@jakarta.annotation.Nullable UntersuchungImpfungenMassnahmenJsonSpec massnahmen) {
+    this.massnahmen = massnahmen;
   }
 
   public UntersuchungImpfungenDataJsonSpec impfstatusList(@jakarta.annotation.Nonnull UntersuchungImpfstatusListSaveJsonSpec impfstatusList) {
@@ -138,13 +169,14 @@ public class UntersuchungImpfungenDataJsonSpec {
     }
     UntersuchungImpfungenDataJsonSpec untersuchungImpfungenDataJson = (UntersuchungImpfungenDataJsonSpec) o;
     return Objects.equals(this.untersuchungImpfungen, untersuchungImpfungenDataJson.untersuchungImpfungen) &&
+        Objects.equals(this.massnahmen, untersuchungImpfungenDataJson.massnahmen) &&
         Objects.equals(this.impfstatusList, untersuchungImpfungenDataJson.impfstatusList) &&
         Objects.equals(this.impfungInternList, untersuchungImpfungenDataJson.impfungInternList);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(untersuchungImpfungen, impfstatusList, impfungInternList);
+    return Objects.hash(untersuchungImpfungen, massnahmen, impfstatusList, impfungInternList);
   }
 
   @Override
@@ -152,6 +184,7 @@ public class UntersuchungImpfungenDataJsonSpec {
     StringBuilder sb = new StringBuilder();
     sb.append("class UntersuchungImpfungenDataJsonSpec {\n");
     sb.append("    untersuchungImpfungen: ").append(toIndentedString(untersuchungImpfungen)).append("\n");
+    sb.append("    massnahmen: ").append(toIndentedString(massnahmen)).append("\n");
     sb.append("    impfstatusList: ").append(toIndentedString(impfstatusList)).append("\n");
     sb.append("    impfungInternList: ").append(toIndentedString(impfungInternList)).append("\n");
     sb.append("}");

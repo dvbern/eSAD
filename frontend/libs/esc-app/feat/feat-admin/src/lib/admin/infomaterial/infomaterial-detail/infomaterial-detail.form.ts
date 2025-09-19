@@ -1,7 +1,6 @@
 import {NonNullableFormBuilder, ValidatorFn, Validators} from '@angular/forms';
 import {InfomaterialSaveJson} from '@dvb/data-access-backend';
-import {InfomaterialStore} from '@dvb/feat-shared';
-import {TenantSettingsStore} from '@dvb/feat-shared';
+import {globalConstants, InfomaterialStore, TenantSettingsStore} from '@dvb/feat-shared';
 import {AppValidatorKeys, AppValidators, BaseForm} from '@dvb/util-angular';
 import {ensureProps, isEqualCaseInsensitive, Nullish} from '@dvb/util-shared';
 
@@ -20,6 +19,7 @@ function makeForm(config: Config) {
       fr: fb.control<string | Nullish>(undefined),
     }),
     aktiv: fb.control<boolean>(true),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
   group.setValidators([uniqueInfomaterial(config.infomaterialStore)]);
   if (config.tenantSettingsStore.supportsLanguageDe()) {
@@ -46,6 +46,7 @@ export class InfomaterialForm extends BaseForm<ReturnType<typeof makeForm>, Info
         fr: nameFr,
       },
       aktiv: valuesFromForm.aktiv,
+      version: valuesFromForm.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 }

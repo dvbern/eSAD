@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,12 +24,12 @@ class NahvisusRechtsCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        UntersuchungSehen untersuchungSehen = new UntersuchungSehen();
-        untersuchung.setUntersuchungSehen(untersuchungSehen);
+        UntersuchungSehenBeurteilung untersuchungSehenBeurteilung = new UntersuchungSehenBeurteilung();
+        untersuchung.setUntersuchungSehenBeurteilung(untersuchungSehenBeurteilung);
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungSehen.setNahvisusRechts(BigDecimal.valueOf(1500));
+        untersuchungSehenBeurteilung.setNahvisusRechts(BigDecimal.valueOf(1500));
         assertThat(column.extract(einladung)).isEqualTo("1500");
     }
 }

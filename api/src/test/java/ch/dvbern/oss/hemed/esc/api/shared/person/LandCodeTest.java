@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Slf4j
 class LandCodeTest {
 
     @Test
@@ -19,7 +17,6 @@ class LandCodeTest {
         for (Land land : laender) {
             LandCode code = LandCode.getCode(land);
 
-            LOG.info("Land: {} belongs to LandCode: {}", land, code);
             assertThat(land).isNotNull();
             assertThat(code).isNotNull();
         }
@@ -34,8 +31,6 @@ class LandCodeTest {
         for (LandCode code : codes) {
             laenderFromLandCode.addAll(code.getLaender());
         }
-        LOG.info("Länder: {}", laender.size());
-        LOG.info("Länder from LandCode: {}", laenderFromLandCode.size());
         assertThat(laender).hasSize(laenderFromLandCode.size());
     }
 }

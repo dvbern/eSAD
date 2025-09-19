@@ -4,7 +4,7 @@ import java.util.List;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArzt;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -28,8 +28,8 @@ class BewegungsapparatCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        UntersuchungArzt untersuchungArzt = new UntersuchungArzt();
-        untersuchung.setUntersuchungArzt(untersuchungArzt);
+        UntersuchungArztBeurteilung untersuchungArzt = new UntersuchungArztBeurteilung();
+        untersuchung.setUntersuchungArztBeurteilung(untersuchungArzt);
 
         assertThat(column.extract(einladung)).isEmpty();
 

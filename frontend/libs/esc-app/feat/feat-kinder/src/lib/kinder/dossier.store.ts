@@ -4,6 +4,8 @@ import {
   DossierJson,
   DossierSaveJson,
   DossierService,
+  EntityAktivStatus,
+  EntityAktivStatusSaveJson,
   EsadIdJson,
   KindanlaesseService,
   KinderdossierPrintVariant,
@@ -23,7 +25,7 @@ import {
   withDetailModeState,
   withIsNewModeFeature,
 } from '@dvb/util-angular';
-import {isNullish, isNullishOrEmpty, requireValue} from '@dvb/util-shared';
+import {isNotNullish, isNullish, isNullishOrEmpty, requireValue} from '@dvb/util-shared';
 import {TranslocoService} from '@jsverse/transloco';
 import {tapResponse} from '@ngrx/operators';
 import {
@@ -74,6 +76,9 @@ export class DossierStore extends signalStore(
     nameKind: computed(() => (selectedDossier()
       ? selectedDossier()?.kind.data.vorname + ' ' + selectedDossier()?.kind.data.name
       : '')),
+    isKindAktiv: computed(() => (
+      selectedDossier()?.kind?.data?.kindAktivStatus === EntityAktivStatus.AKTIV
+    )),
   })),
   withMethods((store) => ({
     reset(): void {
@@ -92,9 +97,10 @@ export class DossierStore extends signalStore(
   readonly loader = new Loader();
   readonly saveLoader = new Loader();
   readonly esadIdLoader = new Loader();
+  readonly changeStatusLoader = new Loader();
 
   selectedKind = computed(() =>
-     kindMarkInactiveSchuleAndKlasse(this.#transloco.translate('gloabl.suffixInaktiv'), this.selectedDossier()?.kind)
+    kindMarkInactiveSchuleAndKlasse(this.#transloco.translate('gloabl.suffixInaktiv'), this.selectedDossier()?.kind)
   );
 
   loadLastImpfung = rxMethod<BackendEntityId>(
@@ -102,7 +108,7 @@ export class DossierStore extends signalStore(
       tap(() => patchState(this, {lastImpfung: undefined})),
       switchMap((kindId) => {
           return this.loader
-            .tapLoading$(this.#kindAnlaesseService.getLatestImpfung$({ kindId }),
+            .tapLoading$(this.#kindAnlaesseService.getLatestImpfung$({kindId}),
               error => this.#appErrorHandlerService.handleError(error),
             );
         },
@@ -135,13 +141,45 @@ export class DossierStore extends signalStore(
     ),
   );
 
+  activateKind = rxMethod<{ kindId: BackendEntityId, saveJson: EntityAktivStatusSaveJson, onSuccess: () => void }>(
+    pipe(
+      exhaustMap(({kindId, saveJson, onSuccess}) =>
+        this.changeStatusLoader
+          .tapLoading$(this.#kinderService.updateKindAktivStatus$({
+              kindId: kindId,
+              entityAktivStatusSaveJson: saveJson,
+            }),
+            error =>
+              this.#appErrorHandlerService.handleError(error),
+          )
+          .pipe(
+            tapResponse({
+              next: () => {
+                const kind: KindJson | undefined = this.selectedDossier()?.kind;
+                if (isNotNullish(kind)) {
+                  kind.data.kindAktivStatus = saveJson.entityAktivStatus;
+                  // setting the entityAktivStatus increments the entities version in the backend
+                  // in order for the optimistic locking to work the version musst be increased here as well
+                  kind.data.version += 1;
+                  this.patchStateKind(kind);
+                  onSuccess();
+                }
+              },
+              error: console.error,
+            }),
+          ),
+      ),
+    ),
+  );
+
   updateKind = rxMethod<{
     kind: KindSaveJson;
     kindSaveMode: KindSaveModeDuplikat;
     onSuccess: () => void
   }>(
     pipe(
-      exhaustMap(({kind, kindSaveMode, onSuccess}) => { return this.saveLoader
+      exhaustMap(({kind, kindSaveMode, onSuccess}) => {
+          return this.saveLoader
             .tapLoading$(
               this.#kinderService.updateKind$({
                 kindId: requireValue(this.selectedDossier()?.kind.id),
@@ -227,9 +265,9 @@ export class DossierStore extends signalStore(
 
   downloadKinderdossierReport = rxMethod<{ kindId: BackendEntityId, variation: KinderdossierPrintVariant }>(
     pipe(
-      switchMap(({ variation, kindId }) =>
+      switchMap(({variation, kindId}) =>
         this.loader.tapLoading$(
-          this.#printerService.downloadKinderdossier$({ variation, kindId }, 'response'),
+          this.#printerService.downloadKinderdossier$({variation, kindId}, 'response'),
           error => this.#appErrorHandlerService.handleError(error))),
       tapResponse({
         next: result => handleBlobResponseDownload(result, true),
@@ -253,8 +291,8 @@ export class DossierStore extends signalStore(
   }
 }
 
-function kindMarkInactiveSchuleAndKlasse(translatedSuffix: string, kind?: KindJson, ) {
-  if(isNullish(kind)){
+function kindMarkInactiveSchuleAndKlasse(translatedSuffix: string, kind?: KindJson,) {
+  if (isNullish(kind)) {
     return
   }
   return {

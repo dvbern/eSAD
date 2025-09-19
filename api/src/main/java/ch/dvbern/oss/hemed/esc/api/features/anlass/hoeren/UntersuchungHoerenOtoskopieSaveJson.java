@@ -4,6 +4,7 @@ import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassConfigJson;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.anlass.UntersuchungHoerenDefaultValueUtil;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -14,7 +15,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Value
 @AllArgsConstructor
 @JaxDTO
-public class UntersuchungHoerenOtoskopieSaveJson {
+public class UntersuchungHoerenOtoskopieSaveJson implements SaveJsonWithOptimisticLocking {
 
     @Nullable
     @Schema(required = false)
@@ -36,6 +37,10 @@ public class UntersuchungHoerenOtoskopieSaveJson {
     @Schema(required = false)
     private String bemerkungen;
 
+    @Schema(required = true)
+    private long version;
+
+
     @NonNull
     public static UntersuchungHoerenOtoskopieSaveJson defaultOtoskopieValuesForAnlassConfig(
         @NonNull AnlassConfigJson anlassConfig) {
@@ -48,7 +53,8 @@ public class UntersuchungHoerenOtoskopieSaveJson {
                 anlassConfig.getHoerenOtoskopie(),
                 anlassConfig.getAnlassTyp()),
             null,
-            null
+            null,
+            0L
         );
     }
 }

@@ -13,8 +13,10 @@
 
 package ch.dvbern.oss.hemed.esc.generated.restassured.api;
 
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenBemerkungFragebogenJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenBemerkungFragebogenSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenBeurteilungJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenBeurteilungSaveJsonSpec;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,22 +60,32 @@ public class UntersuchungSehenApiSpec {
 
     public List<Oper> getAllOperations() {
         return Arrays.asList(
-                untersuchungSehenResourceGetDefaultUntersuchungSehenForAnlassConfig(),
-                untersuchungSehenResourceGetUntersuchungSehen(),
-                untersuchungSehenResourceSaveUntersuchungSehen()
+                untersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfig(),
+                untersuchungSehenResourceGetUntersuchungSehenBemerkungFragebogen(),
+                untersuchungSehenResourceGetUntersuchungSehenBeurteilung(),
+                untersuchungSehenResourceSaveUntersuchungSehenBemerkungFragebogen(),
+                untersuchungSehenResourceSaveUntersuchungSehenBeurteilung()
         );
     }
 
-    public UntersuchungSehenResourceGetDefaultUntersuchungSehenForAnlassConfigOper untersuchungSehenResourceGetDefaultUntersuchungSehenForAnlassConfig() {
-        return new UntersuchungSehenResourceGetDefaultUntersuchungSehenForAnlassConfigOper(createReqSpec());
+    public UntersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfigOper untersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfig() {
+        return new UntersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfigOper(createReqSpec());
     }
 
-    public UntersuchungSehenResourceGetUntersuchungSehenOper untersuchungSehenResourceGetUntersuchungSehen() {
-        return new UntersuchungSehenResourceGetUntersuchungSehenOper(createReqSpec());
+    public UntersuchungSehenResourceGetUntersuchungSehenBemerkungFragebogenOper untersuchungSehenResourceGetUntersuchungSehenBemerkungFragebogen() {
+        return new UntersuchungSehenResourceGetUntersuchungSehenBemerkungFragebogenOper(createReqSpec());
     }
 
-    public UntersuchungSehenResourceSaveUntersuchungSehenOper untersuchungSehenResourceSaveUntersuchungSehen() {
-        return new UntersuchungSehenResourceSaveUntersuchungSehenOper(createReqSpec());
+    public UntersuchungSehenResourceGetUntersuchungSehenBeurteilungOper untersuchungSehenResourceGetUntersuchungSehenBeurteilung() {
+        return new UntersuchungSehenResourceGetUntersuchungSehenBeurteilungOper(createReqSpec());
+    }
+
+    public UntersuchungSehenResourceSaveUntersuchungSehenBemerkungFragebogenOper untersuchungSehenResourceSaveUntersuchungSehenBemerkungFragebogen() {
+        return new UntersuchungSehenResourceSaveUntersuchungSehenBemerkungFragebogenOper(createReqSpec());
+    }
+
+    public UntersuchungSehenResourceSaveUntersuchungSehenBeurteilungOper untersuchungSehenResourceSaveUntersuchungSehenBeurteilung() {
+        return new UntersuchungSehenResourceSaveUntersuchungSehenBeurteilungOper(createReqSpec());
     }
 
     /**
@@ -87,29 +99,29 @@ public class UntersuchungSehenApiSpec {
     }
 
     /**
-     * Get Default Untersuchung Sehen For Anlass Config
+     * Get Default Untersuchung Sehen Beurteilung For Anlass Config
      * 
      *
      * @see #anlassIdPath  (required)
      * @see #einladungIdPath  (required)
-     * return UntersuchungSehenSaveJsonSpec
+     * return UntersuchungSehenBeurteilungSaveJsonSpec
      */
-    public static class UntersuchungSehenResourceGetDefaultUntersuchungSehenForAnlassConfigOper implements Oper {
+    public static class UntersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfigOper implements Oper {
 
         public static final Method REQ_METHOD = GET;
-        public static final String REQ_URI = "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/default";
+        public static final String REQ_URI = "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/beurteilung/default";
 
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
 
-        public UntersuchungSehenResourceGetDefaultUntersuchungSehenForAnlassConfigOper(RequestSpecBuilder reqSpec) {
+        public UntersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfigOper(RequestSpecBuilder reqSpec) {
             this.reqSpec = reqSpec;
             reqSpec.setAccept("application/json");
             this.respSpec = new ResponseSpecBuilder();
         }
 
         /**
-         * GET /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/default
+         * GET /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/beurteilung/default
          * @param handler handler
          * @param <T> type
          * @return type
@@ -120,12 +132,12 @@ public class UntersuchungSehenApiSpec {
         }
 
         /**
-         * GET /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/default
+         * GET /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/beurteilung/default
          * @param handler handler
-         * @return UntersuchungSehenSaveJsonSpec
+         * @return UntersuchungSehenBeurteilungSaveJsonSpec
          */
-        public UntersuchungSehenSaveJsonSpec executeAs(Function<Response, Response> handler) {
-            TypeRef<UntersuchungSehenSaveJsonSpec> type = new TypeRef<UntersuchungSehenSaveJsonSpec>(){};
+        public UntersuchungSehenBeurteilungSaveJsonSpec executeAs(Function<Response, Response> handler) {
+            TypeRef<UntersuchungSehenBeurteilungSaveJsonSpec> type = new TypeRef<UntersuchungSehenBeurteilungSaveJsonSpec>(){};
             return execute(handler).as(type);
         }
 
@@ -135,7 +147,7 @@ public class UntersuchungSehenApiSpec {
          * @param anlassId (String)  (required)
          * @return operation
          */
-        public UntersuchungSehenResourceGetDefaultUntersuchungSehenForAnlassConfigOper anlassIdPath(Object anlassId) {
+        public UntersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfigOper anlassIdPath(Object anlassId) {
             reqSpec.addPathParam(ANLASS_ID_PATH, anlassId);
             return this;
         }
@@ -146,7 +158,7 @@ public class UntersuchungSehenApiSpec {
          * @param einladungId (String)  (required)
          * @return operation
          */
-        public UntersuchungSehenResourceGetDefaultUntersuchungSehenForAnlassConfigOper einladungIdPath(Object einladungId) {
+        public UntersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfigOper einladungIdPath(Object einladungId) {
             reqSpec.addPathParam(EINLADUNG_ID_PATH, einladungId);
             return this;
         }
@@ -156,7 +168,7 @@ public class UntersuchungSehenApiSpec {
          * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
          * @return operation
          */
-        public UntersuchungSehenResourceGetDefaultUntersuchungSehenForAnlassConfigOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+        public UntersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfigOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
             reqSpecCustomizer.accept(reqSpec);
             return this;
         }
@@ -166,35 +178,35 @@ public class UntersuchungSehenApiSpec {
          * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
          * @return operation
          */
-        public UntersuchungSehenResourceGetDefaultUntersuchungSehenForAnlassConfigOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+        public UntersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfigOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
             respSpecCustomizer.accept(respSpec);
             return this;
         }
     }
     /**
-     * Get Untersuchung Sehen
+     * Get Untersuchung Sehen Bemerkung Fragebogen
      * 
      *
      * @see #anlassIdPath  (required)
      * @see #einladungIdPath  (required)
-     * return UntersuchungSehenJsonSpec
+     * return UntersuchungSehenBemerkungFragebogenJsonSpec
      */
-    public static class UntersuchungSehenResourceGetUntersuchungSehenOper implements Oper {
+    public static class UntersuchungSehenResourceGetUntersuchungSehenBemerkungFragebogenOper implements Oper {
 
         public static final Method REQ_METHOD = GET;
-        public static final String REQ_URI = "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen";
+        public static final String REQ_URI = "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/bemerkungfragebogen";
 
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
 
-        public UntersuchungSehenResourceGetUntersuchungSehenOper(RequestSpecBuilder reqSpec) {
+        public UntersuchungSehenResourceGetUntersuchungSehenBemerkungFragebogenOper(RequestSpecBuilder reqSpec) {
             this.reqSpec = reqSpec;
             reqSpec.setAccept("application/json");
             this.respSpec = new ResponseSpecBuilder();
         }
 
         /**
-         * GET /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen
+         * GET /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/bemerkungfragebogen
          * @param handler handler
          * @param <T> type
          * @return type
@@ -205,12 +217,12 @@ public class UntersuchungSehenApiSpec {
         }
 
         /**
-         * GET /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen
+         * GET /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/bemerkungfragebogen
          * @param handler handler
-         * @return UntersuchungSehenJsonSpec
+         * @return UntersuchungSehenBemerkungFragebogenJsonSpec
          */
-        public UntersuchungSehenJsonSpec executeAs(Function<Response, Response> handler) {
-            TypeRef<UntersuchungSehenJsonSpec> type = new TypeRef<UntersuchungSehenJsonSpec>(){};
+        public UntersuchungSehenBemerkungFragebogenJsonSpec executeAs(Function<Response, Response> handler) {
+            TypeRef<UntersuchungSehenBemerkungFragebogenJsonSpec> type = new TypeRef<UntersuchungSehenBemerkungFragebogenJsonSpec>(){};
             return execute(handler).as(type);
         }
 
@@ -220,7 +232,7 @@ public class UntersuchungSehenApiSpec {
          * @param anlassId (String)  (required)
          * @return operation
          */
-        public UntersuchungSehenResourceGetUntersuchungSehenOper anlassIdPath(Object anlassId) {
+        public UntersuchungSehenResourceGetUntersuchungSehenBemerkungFragebogenOper anlassIdPath(Object anlassId) {
             reqSpec.addPathParam(ANLASS_ID_PATH, anlassId);
             return this;
         }
@@ -231,7 +243,7 @@ public class UntersuchungSehenApiSpec {
          * @param einladungId (String)  (required)
          * @return operation
          */
-        public UntersuchungSehenResourceGetUntersuchungSehenOper einladungIdPath(Object einladungId) {
+        public UntersuchungSehenResourceGetUntersuchungSehenBemerkungFragebogenOper einladungIdPath(Object einladungId) {
             reqSpec.addPathParam(EINLADUNG_ID_PATH, einladungId);
             return this;
         }
@@ -241,7 +253,7 @@ public class UntersuchungSehenApiSpec {
          * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
          * @return operation
          */
-        public UntersuchungSehenResourceGetUntersuchungSehenOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+        public UntersuchungSehenResourceGetUntersuchungSehenBemerkungFragebogenOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
             reqSpecCustomizer.accept(reqSpec);
             return this;
         }
@@ -251,29 +263,114 @@ public class UntersuchungSehenApiSpec {
          * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
          * @return operation
          */
-        public UntersuchungSehenResourceGetUntersuchungSehenOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+        public UntersuchungSehenResourceGetUntersuchungSehenBemerkungFragebogenOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
             respSpecCustomizer.accept(respSpec);
             return this;
         }
     }
     /**
-     * Save Untersuchung Sehen
+     * Get Untersuchung Sehen Beurteilung
+     * 
+     *
+     * @see #anlassIdPath  (required)
+     * @see #einladungIdPath  (required)
+     * return UntersuchungSehenBeurteilungJsonSpec
+     */
+    public static class UntersuchungSehenResourceGetUntersuchungSehenBeurteilungOper implements Oper {
+
+        public static final Method REQ_METHOD = GET;
+        public static final String REQ_URI = "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/beurteilung";
+
+        private RequestSpecBuilder reqSpec;
+        private ResponseSpecBuilder respSpec;
+
+        public UntersuchungSehenResourceGetUntersuchungSehenBeurteilungOper(RequestSpecBuilder reqSpec) {
+            this.reqSpec = reqSpec;
+            reqSpec.setAccept("application/json");
+            this.respSpec = new ResponseSpecBuilder();
+        }
+
+        /**
+         * GET /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/beurteilung
+         * @param handler handler
+         * @param <T> type
+         * @return type
+         */
+        @Override
+        public <T> T execute(Function<Response, T> handler) {
+            return handler.apply(RestAssured.given().spec(reqSpec.build()).expect().spec(respSpec.build()).when().request(REQ_METHOD, REQ_URI));
+        }
+
+        /**
+         * GET /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/beurteilung
+         * @param handler handler
+         * @return UntersuchungSehenBeurteilungJsonSpec
+         */
+        public UntersuchungSehenBeurteilungJsonSpec executeAs(Function<Response, Response> handler) {
+            TypeRef<UntersuchungSehenBeurteilungJsonSpec> type = new TypeRef<UntersuchungSehenBeurteilungJsonSpec>(){};
+            return execute(handler).as(type);
+        }
+
+        public static final String ANLASS_ID_PATH = "anlassId";
+
+        /**
+         * @param anlassId (String)  (required)
+         * @return operation
+         */
+        public UntersuchungSehenResourceGetUntersuchungSehenBeurteilungOper anlassIdPath(Object anlassId) {
+            reqSpec.addPathParam(ANLASS_ID_PATH, anlassId);
+            return this;
+        }
+
+        public static final String EINLADUNG_ID_PATH = "einladungId";
+
+        /**
+         * @param einladungId (String)  (required)
+         * @return operation
+         */
+        public UntersuchungSehenResourceGetUntersuchungSehenBeurteilungOper einladungIdPath(Object einladungId) {
+            reqSpec.addPathParam(EINLADUNG_ID_PATH, einladungId);
+            return this;
+        }
+
+        /**
+         * Customize request specification
+         * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
+         * @return operation
+         */
+        public UntersuchungSehenResourceGetUntersuchungSehenBeurteilungOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+            reqSpecCustomizer.accept(reqSpec);
+            return this;
+        }
+
+        /**
+         * Customize response specification
+         * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
+         * @return operation
+         */
+        public UntersuchungSehenResourceGetUntersuchungSehenBeurteilungOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+            respSpecCustomizer.accept(respSpec);
+            return this;
+        }
+    }
+    /**
+     * Save Untersuchung Sehen Bemerkung Fragebogen
      * 
      *
      * @see #anlassIdPath  (required)
      * @see #einladungIdPath  (required)
      * @see #body  (required)
-     * return UntersuchungSehenJsonSpec
+     * return UntersuchungSehenBemerkungFragebogenJsonSpec
      */
-    public static class UntersuchungSehenResourceSaveUntersuchungSehenOper implements Oper {
+    public static class UntersuchungSehenResourceSaveUntersuchungSehenBemerkungFragebogenOper implements Oper {
 
         public static final Method REQ_METHOD = PUT;
-        public static final String REQ_URI = "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen";
+        public static final String REQ_URI = "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/bemerkungfragebogen";
 
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
 
-        public UntersuchungSehenResourceSaveUntersuchungSehenOper(RequestSpecBuilder reqSpec) {
+        public UntersuchungSehenResourceSaveUntersuchungSehenBemerkungFragebogenOper(RequestSpecBuilder reqSpec) {
             this.reqSpec = reqSpec;
             reqSpec.setContentType("application/json");
             reqSpec.setAccept("application/json");
@@ -281,7 +378,7 @@ public class UntersuchungSehenApiSpec {
         }
 
         /**
-         * PUT /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen
+         * PUT /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/bemerkungfragebogen
          * @param handler handler
          * @param <T> type
          * @return type
@@ -292,21 +389,21 @@ public class UntersuchungSehenApiSpec {
         }
 
         /**
-         * PUT /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen
+         * PUT /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/bemerkungfragebogen
          * @param handler handler
-         * @return UntersuchungSehenJsonSpec
+         * @return UntersuchungSehenBemerkungFragebogenJsonSpec
          */
-        public UntersuchungSehenJsonSpec executeAs(Function<Response, Response> handler) {
-            TypeRef<UntersuchungSehenJsonSpec> type = new TypeRef<UntersuchungSehenJsonSpec>(){};
+        public UntersuchungSehenBemerkungFragebogenJsonSpec executeAs(Function<Response, Response> handler) {
+            TypeRef<UntersuchungSehenBemerkungFragebogenJsonSpec> type = new TypeRef<UntersuchungSehenBemerkungFragebogenJsonSpec>(){};
             return execute(handler).as(type);
         }
 
          /**
-         * @param untersuchungSehenSaveJsonSpec (UntersuchungSehenSaveJsonSpec)  (required)
+         * @param untersuchungSehenBemerkungFragebogenSaveJsonSpec (UntersuchungSehenBemerkungFragebogenSaveJsonSpec)  (required)
          * @return operation
          */
-        public UntersuchungSehenResourceSaveUntersuchungSehenOper body(UntersuchungSehenSaveJsonSpec untersuchungSehenSaveJsonSpec) {
-            reqSpec.setBody(untersuchungSehenSaveJsonSpec);
+        public UntersuchungSehenResourceSaveUntersuchungSehenBemerkungFragebogenOper body(UntersuchungSehenBemerkungFragebogenSaveJsonSpec untersuchungSehenBemerkungFragebogenSaveJsonSpec) {
+            reqSpec.setBody(untersuchungSehenBemerkungFragebogenSaveJsonSpec);
             return this;
         }
 
@@ -316,7 +413,7 @@ public class UntersuchungSehenApiSpec {
          * @param anlassId (String)  (required)
          * @return operation
          */
-        public UntersuchungSehenResourceSaveUntersuchungSehenOper anlassIdPath(Object anlassId) {
+        public UntersuchungSehenResourceSaveUntersuchungSehenBemerkungFragebogenOper anlassIdPath(Object anlassId) {
             reqSpec.addPathParam(ANLASS_ID_PATH, anlassId);
             return this;
         }
@@ -327,7 +424,7 @@ public class UntersuchungSehenApiSpec {
          * @param einladungId (String)  (required)
          * @return operation
          */
-        public UntersuchungSehenResourceSaveUntersuchungSehenOper einladungIdPath(Object einladungId) {
+        public UntersuchungSehenResourceSaveUntersuchungSehenBemerkungFragebogenOper einladungIdPath(Object einladungId) {
             reqSpec.addPathParam(EINLADUNG_ID_PATH, einladungId);
             return this;
         }
@@ -337,7 +434,7 @@ public class UntersuchungSehenApiSpec {
          * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
          * @return operation
          */
-        public UntersuchungSehenResourceSaveUntersuchungSehenOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+        public UntersuchungSehenResourceSaveUntersuchungSehenBemerkungFragebogenOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
             reqSpecCustomizer.accept(reqSpec);
             return this;
         }
@@ -347,7 +444,103 @@ public class UntersuchungSehenApiSpec {
          * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
          * @return operation
          */
-        public UntersuchungSehenResourceSaveUntersuchungSehenOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+        public UntersuchungSehenResourceSaveUntersuchungSehenBemerkungFragebogenOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+            respSpecCustomizer.accept(respSpec);
+            return this;
+        }
+    }
+    /**
+     * Save Untersuchung Sehen Beurteilung
+     * 
+     *
+     * @see #anlassIdPath  (required)
+     * @see #einladungIdPath  (required)
+     * @see #body  (required)
+     * return UntersuchungSehenBeurteilungJsonSpec
+     */
+    public static class UntersuchungSehenResourceSaveUntersuchungSehenBeurteilungOper implements Oper {
+
+        public static final Method REQ_METHOD = PUT;
+        public static final String REQ_URI = "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/beurteilung";
+
+        private RequestSpecBuilder reqSpec;
+        private ResponseSpecBuilder respSpec;
+
+        public UntersuchungSehenResourceSaveUntersuchungSehenBeurteilungOper(RequestSpecBuilder reqSpec) {
+            this.reqSpec = reqSpec;
+            reqSpec.setContentType("application/json");
+            reqSpec.setAccept("application/json");
+            this.respSpec = new ResponseSpecBuilder();
+        }
+
+        /**
+         * PUT /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/beurteilung
+         * @param handler handler
+         * @param <T> type
+         * @return type
+         */
+        @Override
+        public <T> T execute(Function<Response, T> handler) {
+            return handler.apply(RestAssured.given().spec(reqSpec.build()).expect().spec(respSpec.build()).when().request(REQ_METHOD, REQ_URI));
+        }
+
+        /**
+         * PUT /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/beurteilung
+         * @param handler handler
+         * @return UntersuchungSehenBeurteilungJsonSpec
+         */
+        public UntersuchungSehenBeurteilungJsonSpec executeAs(Function<Response, Response> handler) {
+            TypeRef<UntersuchungSehenBeurteilungJsonSpec> type = new TypeRef<UntersuchungSehenBeurteilungJsonSpec>(){};
+            return execute(handler).as(type);
+        }
+
+         /**
+         * @param untersuchungSehenBeurteilungSaveJsonSpec (UntersuchungSehenBeurteilungSaveJsonSpec)  (required)
+         * @return operation
+         */
+        public UntersuchungSehenResourceSaveUntersuchungSehenBeurteilungOper body(UntersuchungSehenBeurteilungSaveJsonSpec untersuchungSehenBeurteilungSaveJsonSpec) {
+            reqSpec.setBody(untersuchungSehenBeurteilungSaveJsonSpec);
+            return this;
+        }
+
+        public static final String ANLASS_ID_PATH = "anlassId";
+
+        /**
+         * @param anlassId (String)  (required)
+         * @return operation
+         */
+        public UntersuchungSehenResourceSaveUntersuchungSehenBeurteilungOper anlassIdPath(Object anlassId) {
+            reqSpec.addPathParam(ANLASS_ID_PATH, anlassId);
+            return this;
+        }
+
+        public static final String EINLADUNG_ID_PATH = "einladungId";
+
+        /**
+         * @param einladungId (String)  (required)
+         * @return operation
+         */
+        public UntersuchungSehenResourceSaveUntersuchungSehenBeurteilungOper einladungIdPath(Object einladungId) {
+            reqSpec.addPathParam(EINLADUNG_ID_PATH, einladungId);
+            return this;
+        }
+
+        /**
+         * Customize request specification
+         * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
+         * @return operation
+         */
+        public UntersuchungSehenResourceSaveUntersuchungSehenBeurteilungOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+            reqSpecCustomizer.accept(reqSpec);
+            return this;
+        }
+
+        /**
+         * Customize response specification
+         * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
+         * @return operation
+         */
+        public UntersuchungSehenResourceSaveUntersuchungSehenBeurteilungOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
             respSpecCustomizer.accept(respSpec);
             return this;
         }

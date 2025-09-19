@@ -16,7 +16,7 @@ package ch.dvbern.oss.hemed.esc.generated.restassured.dto;
 import java.util.Objects;
 import java.util.Arrays;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AudiogrammBeurteilungSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AudiogrammJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AudiogrammSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.HoerenZusaetzlicheAngabenSpec;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -37,7 +37,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   UntersuchungHoerenAudiogrammSaveJsonSpec.JSON_PROPERTY_AUDIOGRAMM_LINKS,
   UntersuchungHoerenAudiogrammSaveJsonSpec.JSON_PROPERTY_AUDIOGRAMM_BEURTEILUNG,
   UntersuchungHoerenAudiogrammSaveJsonSpec.JSON_PROPERTY_ZUSAETZLICHE_ANGABEN,
-  UntersuchungHoerenAudiogrammSaveJsonSpec.JSON_PROPERTY_BEMERKUNGEN
+  UntersuchungHoerenAudiogrammSaveJsonSpec.JSON_PROPERTY_BEMERKUNGEN,
+  UntersuchungHoerenAudiogrammSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("UntersuchungHoerenAudiogrammSaveJson")
 @lombok.AllArgsConstructor
@@ -45,11 +46,11 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 public class UntersuchungHoerenAudiogrammSaveJsonSpec {
   public static final String JSON_PROPERTY_AUDIOGRAMM_RECHTS = "audiogrammRechts";
   @jakarta.annotation.Nullable
-  private AudiogrammJsonSpec audiogrammRechts;
+  private AudiogrammSaveJsonSpec audiogrammRechts;
 
   public static final String JSON_PROPERTY_AUDIOGRAMM_LINKS = "audiogrammLinks";
   @jakarta.annotation.Nullable
-  private AudiogrammJsonSpec audiogrammLinks;
+  private AudiogrammSaveJsonSpec audiogrammLinks;
 
   public static final String JSON_PROPERTY_AUDIOGRAMM_BEURTEILUNG = "audiogrammBeurteilung";
   @jakarta.annotation.Nullable
@@ -63,10 +64,14 @@ public class UntersuchungHoerenAudiogrammSaveJsonSpec {
   @jakarta.annotation.Nullable
   private String bemerkungen;
 
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
+
   public UntersuchungHoerenAudiogrammSaveJsonSpec() {
   }
 
-  public UntersuchungHoerenAudiogrammSaveJsonSpec audiogrammRechts(@jakarta.annotation.Nullable AudiogrammJsonSpec audiogrammRechts) {
+  public UntersuchungHoerenAudiogrammSaveJsonSpec audiogrammRechts(@jakarta.annotation.Nullable AudiogrammSaveJsonSpec audiogrammRechts) {
     
     this.audiogrammRechts = audiogrammRechts;
     return this;
@@ -80,18 +85,18 @@ public class UntersuchungHoerenAudiogrammSaveJsonSpec {
   @JsonProperty(JSON_PROPERTY_AUDIOGRAMM_RECHTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public AudiogrammJsonSpec getAudiogrammRechts() {
+  public AudiogrammSaveJsonSpec getAudiogrammRechts() {
     return audiogrammRechts;
   }
 
 
   @JsonProperty(JSON_PROPERTY_AUDIOGRAMM_RECHTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAudiogrammRechts(@jakarta.annotation.Nullable AudiogrammJsonSpec audiogrammRechts) {
+  public void setAudiogrammRechts(@jakarta.annotation.Nullable AudiogrammSaveJsonSpec audiogrammRechts) {
     this.audiogrammRechts = audiogrammRechts;
   }
 
-  public UntersuchungHoerenAudiogrammSaveJsonSpec audiogrammLinks(@jakarta.annotation.Nullable AudiogrammJsonSpec audiogrammLinks) {
+  public UntersuchungHoerenAudiogrammSaveJsonSpec audiogrammLinks(@jakarta.annotation.Nullable AudiogrammSaveJsonSpec audiogrammLinks) {
     
     this.audiogrammLinks = audiogrammLinks;
     return this;
@@ -105,14 +110,14 @@ public class UntersuchungHoerenAudiogrammSaveJsonSpec {
   @JsonProperty(JSON_PROPERTY_AUDIOGRAMM_LINKS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public AudiogrammJsonSpec getAudiogrammLinks() {
+  public AudiogrammSaveJsonSpec getAudiogrammLinks() {
     return audiogrammLinks;
   }
 
 
   @JsonProperty(JSON_PROPERTY_AUDIOGRAMM_LINKS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAudiogrammLinks(@jakarta.annotation.Nullable AudiogrammJsonSpec audiogrammLinks) {
+  public void setAudiogrammLinks(@jakarta.annotation.Nullable AudiogrammSaveJsonSpec audiogrammLinks) {
     this.audiogrammLinks = audiogrammLinks;
   }
 
@@ -207,6 +212,31 @@ public class UntersuchungHoerenAudiogrammSaveJsonSpec {
     this.bemerkungen = bemerkungen;
   }
 
+  public UntersuchungHoerenAudiogrammSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -220,12 +250,13 @@ public class UntersuchungHoerenAudiogrammSaveJsonSpec {
         Objects.equals(this.audiogrammLinks, untersuchungHoerenAudiogrammSaveJson.audiogrammLinks) &&
         Objects.equals(this.audiogrammBeurteilung, untersuchungHoerenAudiogrammSaveJson.audiogrammBeurteilung) &&
         Objects.equals(this.zusaetzlicheAngaben, untersuchungHoerenAudiogrammSaveJson.zusaetzlicheAngaben) &&
-        Objects.equals(this.bemerkungen, untersuchungHoerenAudiogrammSaveJson.bemerkungen);
+        Objects.equals(this.bemerkungen, untersuchungHoerenAudiogrammSaveJson.bemerkungen) &&
+        Objects.equals(this.version, untersuchungHoerenAudiogrammSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(audiogrammRechts, audiogrammLinks, audiogrammBeurteilung, zusaetzlicheAngaben, bemerkungen);
+    return Objects.hash(audiogrammRechts, audiogrammLinks, audiogrammBeurteilung, zusaetzlicheAngaben, bemerkungen, version);
   }
 
   @Override
@@ -237,6 +268,7 @@ public class UntersuchungHoerenAudiogrammSaveJsonSpec {
     sb.append("    audiogrammBeurteilung: ").append(toIndentedString(audiogrammBeurteilung)).append("\n");
     sb.append("    zusaetzlicheAngaben: ").append(toIndentedString(zusaetzlicheAngaben)).append("\n");
     sb.append("    bemerkungen: ").append(toIndentedString(bemerkungen)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

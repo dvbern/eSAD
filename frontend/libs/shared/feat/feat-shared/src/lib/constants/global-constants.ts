@@ -17,5 +17,9 @@
 
 
 export const globalConstants = {
-    pollingIntervalMilliSeconds: 15000 // 15 seconds
+    pollingIntervalMilliSeconds: 15000, // 15 seconds
+    entityPrePersistVersion: -1,
+
+    // Keep this list in sync with the accepted types in backend as we do not sync config to client yet
+    acceptedFileTypes: '.pdf, .docx, .xlsx, .pptx, .eml, .msg, .jpg, .jpeg, .png, .heic, .webp'
 };

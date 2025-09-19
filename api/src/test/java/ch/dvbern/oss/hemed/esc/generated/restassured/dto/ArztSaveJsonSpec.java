@@ -40,7 +40,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   ArztSaveJsonSpec.JSON_PROPERTY_TELEFON,
   ArztSaveJsonSpec.JSON_PROPERTY_EMAIL,
   ArztSaveJsonSpec.JSON_PROPERTY_BEMERKUNGEN,
-  ArztSaveJsonSpec.JSON_PROPERTY_HPV_TEILNAHME
+  ArztSaveJsonSpec.JSON_PROPERTY_HPV_TEILNAHME,
+  ArztSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("ArztSaveJson")
 @lombok.AllArgsConstructor
@@ -85,6 +86,10 @@ public class ArztSaveJsonSpec {
   public static final String JSON_PROPERTY_HPV_TEILNAHME = "hpvTeilnahme";
   @jakarta.annotation.Nonnull
   private HpvTeilnahmeSpec hpvTeilnahme;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public ArztSaveJsonSpec() {
   }
@@ -339,6 +344,31 @@ public class ArztSaveJsonSpec {
     this.hpvTeilnahme = hpvTeilnahme;
   }
 
+  public ArztSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -357,12 +387,13 @@ public class ArztSaveJsonSpec {
         Objects.equals(this.telefon, arztSaveJson.telefon) &&
         Objects.equals(this.email, arztSaveJson.email) &&
         Objects.equals(this.bemerkungen, arztSaveJson.bemerkungen) &&
-        Objects.equals(this.hpvTeilnahme, arztSaveJson.hpvTeilnahme);
+        Objects.equals(this.hpvTeilnahme, arztSaveJson.hpvTeilnahme) &&
+        Objects.equals(this.version, arztSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(anrede, fachrichtung, organisation, vorname, name, adresse, telefon, email, bemerkungen, hpvTeilnahme);
+    return Objects.hash(anrede, fachrichtung, organisation, vorname, name, adresse, telefon, email, bemerkungen, hpvTeilnahme, version);
   }
 
   @Override
@@ -379,6 +410,7 @@ public class ArztSaveJsonSpec {
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
     sb.append("    bemerkungen: ").append(toIndentedString(bemerkungen)).append("\n");
     sb.append("    hpvTeilnahme: ").append(toIndentedString(hpvTeilnahme)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -35,11 +35,12 @@ public class UntersuchungImpfungenMassnahmenMapper {
                 massnahmen.isVormerkenFuerGruppenFolgetermin(),
                 massnahmen.isImpfberatungMpaDurchgefuehrt(),
                 massnahmen.getImpfberatungMpaDurchgefuehrtBemerkungen(),
-                massnahmen.isInformationenAbgegeben(),
+                massnahmen.isInfomaterialAbgegeben(),
                 massnahmen.getInformationEltern(),
                 massnahmen.isInformationHausarzt(),
                 massnahmen.isRueckfrageHausarzt(),
-                massnahmen.getBemerkungen()
+                massnahmen.getBemerkungen(),
+                massnahmen.getVersion()
             )
         );
     }
@@ -60,7 +61,7 @@ public class UntersuchungImpfungenMassnahmenMapper {
         massnahmen.setVormerkenFuerGruppenFolgetermin(saveJson.isVormerkenFuerGruppenFolgetermin());
         massnahmen.setImpfberatungMpaDurchgefuehrt(saveJson.isImpfberatungMpaDurchgefuehrt());
         massnahmen.setImpfberatungMpaDurchgefuehrtBemerkungen(saveJson.getImpfberatungMpaDurchgefuehrtBemerkungen());
-        massnahmen.setInformationenAbgegeben(saveJson.isInformationenAbgegeben());
+        massnahmen.setInfomaterialAbgegeben(saveJson.isInfomaterialAbgegeben());
         massnahmen.setInformationEltern(saveJson.getInformationEltern());
         massnahmen.setInformationHausarzt(saveJson.isInformationHausarzt());
         massnahmen.setRueckfrageHausarzt(saveJson.isRueckfrageHausarzt());
@@ -77,9 +78,12 @@ public class UntersuchungImpfungenMassnahmenMapper {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
         UntersuchungImpfungen impfungen =
             untersuchungImpfungenService.getOrCreateUntersuchungImpfungen(untersuchung.getId());
+        impfungen.disableOptimisticLockingCheck();
         UntersuchungImpfungenMassnahmen massnahmen = impfungen.getUntersuchungImpfungenMassnahmen();
         UntersuchungImpfungenMassnahmen entity = toEntity(impfungen, massnahmen, saveJson);
-        return toJson(untersuchungImpfungenMassnahmenService.persist(entity));
+        return toJson(untersuchungImpfungenMassnahmenService.persistWithOptimisticLocking(
+            entity,
+            saveJson.getVersion()));
     }
 
     public void einzelTerminErstellen(@NonNull ID<Einladung> einladungId) {

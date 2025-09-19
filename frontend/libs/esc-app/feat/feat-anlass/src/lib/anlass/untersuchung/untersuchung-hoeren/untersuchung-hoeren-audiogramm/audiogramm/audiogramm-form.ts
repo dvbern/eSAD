@@ -1,6 +1,6 @@
 import {DestroyRef, Signal} from '@angular/core';
 import {NonNullableFormBuilder, Validators} from '@angular/forms';
-import {AnlassConfigJson, AudiogrammJson, Dezibel, RequirementSetting} from '@dvb/data-access-backend';
+import {AnlassConfigJson, AudiogrammSaveJson, Dezibel, RequirementSetting} from '@dvb/data-access-backend';
 import {BaseForm} from '@dvb/util-angular';
 import {Nullish} from '@dvb/util-shared';
 import {AudiogrammBothJson} from './audiogramm-both-json';
@@ -23,6 +23,8 @@ function makeForm(config: Config) {
     group.controls.links.addControl('' + frequenz, fb.control<Dezibel | undefined>(undefined));
     group.controls.rechts.addControl('' + frequenz, fb.control<Dezibel | undefined>(undefined));
   });
+  group.controls.links.addControl('version', fb.control<number | Nullish>({value: undefined, disabled: true}));
+  group.controls.rechts.addControl('version', fb.control<number | Nullish>({value: undefined, disabled: true}));
   return group;
 }
 
@@ -39,8 +41,8 @@ export class AudiogrammForm extends BaseForm<ReturnType<typeof makeForm>, Audiog
   resetForm(data: AudiogrammBothJson | Nullish): void {
     this.group.reset();
     if (data) {
-      const links: AudiogrammJson | Nullish = data.links;
-      const rechts: AudiogrammJson | Nullish = data.rechts;
+      const links: AudiogrammSaveJson | Nullish = data.links;
+      const rechts: AudiogrammSaveJson | Nullish = data.rechts;
       this.config.frequenzenKeys.forEach(key => {
         if (links) {
           // @ts-expect-error dynamische Forms...
@@ -51,6 +53,10 @@ export class AudiogrammForm extends BaseForm<ReturnType<typeof makeForm>, Audiog
           this.group.controls.rechts.controls[key].reset(rechts[key]);
         }
       });
+      // @ts-expect-error dynamische Forms...
+      this.group.controls.links.controls['version'].reset(links?.version ?? undefined);
+      // @ts-expect-error dynamische Forms...
+      this.group.controls.rechts.controls['version'].reset(rechts?.version ?? undefined);
     }
   }
 

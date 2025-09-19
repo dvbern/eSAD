@@ -20,7 +20,7 @@ public class BewegungsapparatCsvColumn extends AbstractCsvColumn {
     @Override
     @NonNull
     public String extract(@NonNull Einladung einladung) {
-        return ExtractorForCsvUtil.extractUntersuchungArzt(
+        return ExtractorForCsvUtil.extractUntersuchungArztBeurteilung(
             einladung,
             untersuchungArzt ->
                 untersuchungArzt.getBewegungsapparat().contains(bewegungsapparat) ? "1" : ""

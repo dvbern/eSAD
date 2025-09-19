@@ -38,6 +38,12 @@ public class KontaktPersonKindService {
     }
 
     @NonNull
+    public KontaktPersonKind persistWithOptimisticLocking(@NonNull KontaktPersonKind kontaktPerson, @NonNull Long versionFromFrontend) {
+        kontaktPersonKindRepo.persistWithOptimisticLocking(kontaktPerson, versionFromFrontend);
+        return kontaktPerson;
+    }
+
+    @NonNull
     public List<KontaktPersonKind> findAll() {
         return kontaktPersonKindRepo.findAll();
     }
@@ -59,12 +65,17 @@ public class KontaktPersonKindService {
 
     @NonNull
     public KontaktPersonKind getByExternalId(@IgnoreForIdClassTest @NonNull String externalId) {
-        return kontaktPersonKindRepo.getByExternalId(externalId);
+        KontaktPersonKind kp = kontaktPersonKindRepo.getByExternalId(externalId);
+        kp.disableOptimisticLockingCheck();
+        return kp;
     }
 
     @NonNull
     public Optional<KontaktPersonKind> findByExternalId(@IgnoreForIdClassTest @NonNull String externalId) {
-        return kontaktPersonKindRepo.findByExternalId(externalId);
+        return kontaktPersonKindRepo.findByExternalId(externalId).map(kp -> {
+            kp.disableOptimisticLockingCheck();
+            return kp;
+        });
     }
 
     public void remove(@NonNull ID<KontaktPersonKind> kontaktPersonID) {
@@ -82,6 +93,7 @@ public class KontaktPersonKindService {
     public void removeFromKind(@NonNull ID<Kind> kindID, @NonNull ID<KontaktPersonKind> kontaktPersonKindID) {
         KontaktPersonKind kp = getKontaktPersonKindAndEnsureNotEscada(kontaktPersonKindID);
         Kind kind = kindService.getById(kindID);
+        kp.disableOptimisticLockingCheck();
         kp.getKinder().remove(kind);
         persist(kp);
         // Loeschen, falls es die letzte Verknuepfung war
@@ -98,6 +110,7 @@ public class KontaktPersonKindService {
         KontaktPersonKind kp = getKontaktPersonKindAndEnsureNotEscada(kontaktPersonKindID);
         Kind kind = kindService.getById(kindID);
         kp.getKinder().add(kind);
+        kp.disableOptimisticLockingCheck();
         return persist(kp);
     }
 
@@ -107,7 +120,7 @@ public class KontaktPersonKindService {
     ) {
         KontaktPersonKind kp = getById(kontaktPersonID);
         // Darf nicht editiert werden, wenn aus ESACADA importiert und dort noch AKTIV
-        if (kp.getExternalImportInfo() != null && kp.getExternalImportInfo().isAktivInExternalSystem()) {
+        if (kp.isAktivInExternalSystem()) {
             throw new AppValidationException(AppValidationMessage.escadaObjectsCannotBeUpdated(kp));
         }
         return kp;

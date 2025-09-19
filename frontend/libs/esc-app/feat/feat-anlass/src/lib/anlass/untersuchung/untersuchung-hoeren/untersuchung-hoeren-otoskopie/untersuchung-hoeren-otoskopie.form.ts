@@ -1,11 +1,12 @@
 import {DestroyRef} from '@angular/core';
 import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {
-    AnlassConfigJson,
-    OtoskopieResultat,
-    RequirementSetting,
-    UntersuchungHoerenOtoskopieSaveJson,
+  AnlassConfigJson,
+  OtoskopieResultat,
+  RequirementSetting,
+  UntersuchungHoerenOtoskopieSaveJson,
 } from '@dvb/data-access-backend';
+import {globalConstants} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
 import {ensureProps, Nullish, requireValue, trimToUndefined} from '@dvb/util-shared';
 import {checkIfArrayContainsCheckedValue, markAllMultiCheckboxesAsTouched} from '../../untersuchung.util';
@@ -28,10 +29,11 @@ function makeForm(config: Config) {
   const fb = config.fb;
   const group = fb.group({
     otoskopieRechtsArray: fb.array<OtoskopieResultatSubFormType>([]),
-    otoskopieRechtsResultatAndere: fb.control<string>('', AppValidators.textareaMaxLength()),
+    otoskopieRechtsResultatAndere: fb.control<string>('', AppValidators.textareaMaxLength2000()),
     otoskopieLinksArray: fb.array<OtoskopieResultatSubFormType>([]),
-    otoskopieLinksResultatAndere: fb.control<string>('', AppValidators.textareaMaxLength()),
-    bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength()),
+    otoskopieLinksResultatAndere: fb.control<string>('', AppValidators.textareaMaxLength2000()),
+    bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength2000()),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 
   // Multi-Checkboxen: Wenn eines touched ist aber keines ausgewählt, müssen alle rot werden
@@ -42,7 +44,7 @@ function makeForm(config: Config) {
 }
 
 export class UntersuchungHoerenOtoskopieForm
-    extends BaseForm<ReturnType<typeof makeForm>, UntersuchungHoerenOtoskopieSaveJson> {
+  extends BaseForm<ReturnType<typeof makeForm>, UntersuchungHoerenOtoskopieSaveJson> {
 
   constructor(protected config: Config) {
     super(() => makeForm(config));
@@ -80,6 +82,7 @@ export class UntersuchungHoerenOtoskopieForm
       otoskopieLinks: value.otoskopieLinksArray.filter(i => i.isChecked).map(i => i.resultat),
       otoskopieLinksResultatAndere: value.otoskopieLinksResultatAndere,
       bemerkungen: trimToUndefined(value.bemerkungen),
+      version: value.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 
@@ -103,11 +106,11 @@ export class UntersuchungHoerenOtoskopieForm
 
   public isHoerenOtroskopieRechtsResultatAndereChecked(): boolean {
     return checkIfArrayContainsCheckedValue(this.group.controls.otoskopieRechtsArray.controls,
-        [OtoskopieResultat.ANDERES]);
+      [OtoskopieResultat.ANDERES]);
   }
 
   public isHoerenOtroskopieLinksResultatAndereChecked(): boolean {
     return checkIfArrayContainsCheckedValue(this.group.controls.otoskopieLinksArray.controls,
-        [OtoskopieResultat.ANDERES]);
+      [OtoskopieResultat.ANDERES]);
   }
 }

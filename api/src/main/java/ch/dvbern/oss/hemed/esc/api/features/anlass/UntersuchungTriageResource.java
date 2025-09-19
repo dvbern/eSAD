@@ -6,6 +6,7 @@ import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungTriageJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungTriageSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.security.RolesAllowed;
@@ -32,7 +33,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 public class UntersuchungTriageResource {
 
     private final UntersuchungTriageMapper untersuchungTriageMapper;
-
+    private final EinladungMapper einladungMapper;
+    private final AuthorizerService authorizerService;
 
     @GET
     @RolesAllowed(BerechtigungName.SU_TRIAGE_LESEN)
@@ -41,6 +43,7 @@ public class UntersuchungTriageResource {
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
         return untersuchungTriageMapper.getByEinladung(einladungId);
     }
 
@@ -52,6 +55,8 @@ public class UntersuchungTriageResource {
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
         @NotNull @NonNull @Valid UntersuchungTriageSaveJson saveJson
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
         return untersuchungTriageMapper.save(einladungId, saveJson);
     }
 }

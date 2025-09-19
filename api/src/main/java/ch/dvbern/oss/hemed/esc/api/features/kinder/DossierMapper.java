@@ -1,7 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder;
 
-import java.time.LocalDate;
-
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
@@ -10,12 +9,15 @@ import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.time.LocalDate;
 
 @JaxMapper
 @RequiredArgsConstructor
@@ -31,7 +33,8 @@ public final class DossierMapper {
     public static DossierJson toJson(
         @NonNull Dossier dossier,
         @Nullable Nachkontrolle nachkontrolle,
-        @NonNull LocalDate now) {
+        @NonNull LocalDate now
+    ) {
         Benutzer zustaendigArzt = dossier.getZustaendigArztFromDossierOrSchule();
         Benutzer zustaendigMPA = dossier.getZustaendigMPAFromDossierOrSchule();
         return new DossierJson(
@@ -48,7 +51,8 @@ public final class DossierMapper {
                 dossier.getPapierakteStatus(),
                 BenutzerMapper.toOptionJson(zustaendigArzt),
                 BenutzerMapper.toOptionJson(zustaendigMPA),
-                NachkontrolleMapper.toJson(nachkontrolle)
+                NachkontrolleMapper.toJson(nachkontrolle),
+                dossier.getVersion()
             ),
             KindMapper.toJson(dossier.getKind(), now)
         );
@@ -87,12 +91,24 @@ public final class DossierMapper {
     @NonNull
     public DossierJson update(@NonNull ID<Dossier> dossierID, @NonNull DossierSaveJson dossierJson) {
         Dossier existingDossier = dossierService.getById(dossierID);
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            existingDossier.getKind(),
+            AppValidationMessage.cannotEditEntityForInactiveKind(
+                existingDossier.getKind(),
+                existingDossier
+            ));
         Dossier entity = toEntity(existingDossier, dossierJson);
+        Dossier persistedDossier = dossierService.persistWithOptimisticLocking(entity, dossierJson.getVersion());
+        persistedDossier.disableOptimisticLockingCheck();
         Nachkontrolle nachkontrolle = nachkontrolleService.getOrCreateByDossier(existingDossier.getId());
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
+        Nachkontrolle persistedNachkontrolle = nachkontrolleService.persistWithOptimisticLocking(
+            NachkontrolleMapper.toEntity(nachkontrolle, dossierJson.getNachkontrolle()),
+            dossierJson.getNachkontrolle().getData().getVersion()
+        );
         return toJson(
-            dossierService.persist(entity),
-            nachkontrolleService.persist(NachkontrolleMapper.toEntity(nachkontrolle, dossierJson.getNachkontrolle())),
+            persistedDossier,
+            persistedNachkontrolle,
             now);
     }
 

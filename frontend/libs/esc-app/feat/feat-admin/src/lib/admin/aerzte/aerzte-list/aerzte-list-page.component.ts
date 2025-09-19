@@ -15,14 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { ArztJson } from '@dvb/data-access-backend';
+import {ChangeDetectionStrategy, Component, computed, inject, signal, DestroyRef, OnInit, effect} from '@angular/core';
+import {ArztIdListJson, ArztJson, ExportMode, Fachrichtung, HpvTeilnahme} from '@dvb/data-access-backend';
 import { BackendEntityId } from '@dvb/data-access-types';
-import { AerzteStore } from '@dvb/feat-shared';
-import { BenutzerStore } from '@dvb/feat-shared';
-import { Path } from '@dvb/feat-shared';
-import { ConfirmService } from '@dvb/feat-shared';
-import { PageComponent } from '@dvb/feat-shared';
+import { AerzteStore, BenutzerStore, ConfirmService, PageComponent, Path } from '@dvb/feat-shared';
 import {
   CardComponent,
   IconOnlyButtonComponent,
@@ -31,10 +27,17 @@ import {
   PageHeaderListSummaryComponent,
   SummaryListItem,
 } from '@dvb/ui-components';
-import { AppNotificationStore } from '@dvb/util-angular';
-import { hasAerztePageEditBerechtigung } from '@dvb/util-shared';
+import { AppNotificationStore, FilterSessionStorage, TableModel } from '@dvb/util-angular';
+import {
+  ensureProps,
+  hasAerztePageEditBerechtigung,
+  isValidEnumValue,
+  toValidEnumList,
+} from '@dvb/util-shared';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AerzteListComponent } from './aerzte-list.component';
+import { NonNullableFormBuilder } from '@angular/forms';
+import { AerzteListFilterForm, ArztFilterForm } from './aerzte-list-filter.form';
 
 @Component({
   selector: 'feat-aerzte-list.page',
@@ -52,18 +55,34 @@ import { AerzteListComponent } from './aerzte-list.component';
     PageHeaderButtonsComponent,
   ],
 })
-export class AerzteListPageComponent {
+export class AerzteListPageComponent extends FilterSessionStorage<ArztFilterForm> implements OnInit {
   protected readonly Path = Path;
   readonly #transloco = inject(TranslocoService);
-  readonly #aerzteStore = inject(AerzteStore);
+  readonly aerzteStore = inject(AerzteStore);
   readonly #benutzerStore = inject(BenutzerStore);
   readonly #confirmService = inject(ConfirmService);
   readonly #appNotificationStore = inject(AppNotificationStore);
 
-  arztList = this.#aerzteStore.entities;
+  arztList = this.aerzteStore.entities;
   canEditList = this.#benutzerStore.createHasRequiredRoleSig(hasAerztePageEditBerechtigung());
 
   filteredArztIds = signal<BackendEntityId[]>([]);
+
+  readonly SESSIONSTORAGE_KEY = 'aerzteFilter';
+
+  itemTable = new TableModel<ArztJson>(
+    {
+      rawListSignal: this.aerzteStore.entities,
+      lazyLoadOnSortOrFilter: () => this.setSessionStorageFilter(this.tableFilterForm.valueOnValid()),
+    },
+    { frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll' },
+  );
+
+  readonly tableFilterForm = new AerzteListFilterForm({
+    fb: inject(NonNullableFormBuilder),
+    destroyRef: inject(DestroyRef),
+    paginatedTable: this.itemTable,
+  });
 
   summaryItems = computed((): SummaryListItem[] => [
     {
@@ -73,12 +92,25 @@ export class AerzteListPageComponent {
     },
   ]);
 
-  public exportFilteredAerzte() {
-    this.#aerzteStore.exportAerzteAsDoc({
-      aerzteIds: this.filteredArztIds(),
+  ExportMode =ExportMode;
+
+  constructor() {
+    super();
+    effect(() => {
+      const filterIds = this.itemTable.filteredSortedList().map(({id}) => id);
+      this.filteredArztIds.set(filterIds);
+    });
+  }
+
+  public exportFilteredAerzte(mode: ExportMode) {
+    this.aerzteStore.exportAerzteAsDoc({
+      mode,
+      arztIdListJson: ensureProps<ArztIdListJson>({
+        arztIdList: this.filteredArztIds()
+      }),
       onSuccess: () => {
         this.#appNotificationStore.addSuccessNotification(
-                this.#transloco.translate('aerzte.list.page.export.success')
+          this.#transloco.translate('aerzte.list.page.export.success')
         );
       },
     });
@@ -92,7 +124,30 @@ export class AerzteListPageComponent {
         decision: this.#transloco.translate('aerzte.list.remove.decision'),
       })
       .subscribe(() => {
-        this.#aerzteStore.removeArzt(item.id);
+        this.aerzteStore.removeArzt(item.id);
       });
+  }
+
+  ngOnInit() {
+    const filter = this.getSessionStorageFilter();
+    if (filter) {
+      this.tableFilterForm.reset(filter);
+    }
+  }
+
+  mapSessionStorageStringToFilter(sessionStorageFilter: string): ArztFilterForm | undefined {
+    try {
+      const parsed = JSON.parse(sessionStorageFilter) as ArztFilterForm;
+
+      return ensureProps<ArztFilterForm>({
+        fachrichtung: toValidEnumList(Fachrichtung, parsed.fachrichtung),
+        name: parsed.name ?? '',
+        vorname: parsed.vorname ?? '',
+        hpvTeilnahme: isValidEnumValue(HpvTeilnahme, parsed.hpvTeilnahme) ? parsed.hpvTeilnahme : undefined,
+      });
+    } catch (error) {
+      console.warn('Failed to parse session storage filter:', error);
+      return undefined;
+    }
   }
 }

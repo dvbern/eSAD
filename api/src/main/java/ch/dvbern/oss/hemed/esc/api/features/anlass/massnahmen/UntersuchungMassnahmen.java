@@ -7,6 +7,7 @@ import java.util.Set;
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.infomaterial.Infomaterial;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.anlass.anlassflags.AnlassFlags;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
@@ -38,9 +39,12 @@ import org.hibernate.envers.Audited;
 @Entity
 @Table(
     indexes = {
-        @Index(name = "ix_untersuchungmassnahmen_aufgabe_informationeltern", columnList = "aufgabeinformationeltern_id, id"),
-        @Index(name = "ix_untersuchungmassnahmen_aufgabe_ueberweisunghausarzt", columnList = "aufgabeueberweisunghausarzt_id, id"),
-        @Index(name = "ix_untersuchungmassnahmen_aufgabe_ueberweisungaugenarzt", columnList = "aufgabeueberweisungaugenarzt_id, id"),
+        @Index(name = "ix_untersuchungmassnahmen_aufgabe_informationeltern",
+            columnList = "aufgabeinformationeltern_id, id"),
+        @Index(name = "ix_untersuchungmassnahmen_aufgabe_ueberweisunghausarzt",
+            columnList = "aufgabeueberweisunghausarzt_id, id"),
+        @Index(name = "ix_untersuchungmassnahmen_aufgabe_ueberweisungaugenarzt",
+            columnList = "aufgabeueberweisungaugenarzt_id, id"),
         @Index(name = "ix_untersuchungmassnahmen_aufgabe_nachkontrolle", columnList = "aufgabenachkontrolle_id, id"),
     }
 )
@@ -49,7 +53,8 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UntersuchungMassnahmen extends AbstractTenantEntity<UntersuchungMassnahmen> {
+public class UntersuchungMassnahmen extends AbstractTenantEntity<UntersuchungMassnahmen>
+    implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 7512251037224910832L;
@@ -76,8 +81,8 @@ public class UntersuchungMassnahmen extends AbstractTenantEntity<UntersuchungMas
     private boolean anderes = false;
 
     @Nullable
-    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH)
-    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH)
+    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
+    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String anderesBemerkung;
 
     @NotNull
@@ -105,8 +110,8 @@ public class UntersuchungMassnahmen extends AbstractTenantEntity<UntersuchungMas
     private boolean bereitsBehandeltAnderes = false;
 
     @Nullable
-    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH)
-    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH)
+    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
+    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String bereitsBehandeltAnderesBemerkung;
 
     @NotNull
@@ -117,13 +122,13 @@ public class UntersuchungMassnahmen extends AbstractTenantEntity<UntersuchungMas
             name = "untersuchungmassnahmen_id",
             foreignKey = @ForeignKey(name = "fk_untersuchungmassnahmen_infomaterial_untersuchungmassnahmen")),
         inverseJoinColumns = @JoinColumn(
-            name = "informaterial_id",
+            name = "infomaterial_id",
             foreignKey = @ForeignKey(name = "fk_untersuchungmassnahmen_infomaterial_infomaterial")),
         indexes = {
             @Index(name = "ix_untersuchungmassnahmen_infomaterial_untersuchungmassnahmen",
-                columnList = "untersuchungmassnahmen_id, informaterial_id"),
+                columnList = "untersuchungmassnahmen_id, infomaterial_id"),
             @Index(name = "ix_untersuchungmassnahmen_infomaterial_infomaterial",
-                columnList = "informaterial_id, untersuchungMassnahmen_id"),
+                columnList = "infomaterial_id, untersuchungMassnahmen_id"),
         }
     )
     private Set<Infomaterial> abgegebenesInfomaterial = new HashSet<>();
@@ -148,28 +153,36 @@ public class UntersuchungMassnahmen extends AbstractTenantEntity<UntersuchungMas
     private AnlassFlags nachkontrolle = new AnlassFlags();
 
     @Nullable
-    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH)
-    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH)
+    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
+    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String bemerkungen;
 
     @Nullable
     @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchungmassnahmen_aufgabe_informationeltern"), nullable = true, updatable = true)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchungmassnahmen_aufgabe_informationeltern"),
+        nullable = true,
+        updatable = true)
     private Aufgabe aufgabeInformationEltern;
 
     @Nullable
     @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchungmassnahmen_aufgabe_ueberweisunghausarzt"), nullable = true, updatable = true)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchungmassnahmen_aufgabe_ueberweisunghausarzt"),
+        nullable = true,
+        updatable = true)
     private Aufgabe aufgabeUeberweisungHausarzt;
 
     @Nullable
     @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchungmassnahmen_aufgabe_ueberweisungaugenarzt"), nullable = true, updatable = true)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchungmassnahmen_aufgabe_ueberweisungaugenarzt"),
+        nullable = true,
+        updatable = true)
     private Aufgabe aufgabeUeberweisungAugenarzt;
 
     @Nullable
     @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchungmassnahmen_aufgabe_nachkontrolle"), nullable = true, updatable = true)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchungmassnahmen_aufgabe_nachkontrolle"),
+        nullable = true,
+        updatable = true)
     private Aufgabe aufgabeNachkontrolle;
 
     @NonNull

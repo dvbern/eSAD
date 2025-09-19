@@ -10,6 +10,7 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.json.ArztJson;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.json.ArztSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.print.ArztExportService;
+import ch.dvbern.oss.hemed.esc.api.features.arzt.types.ExportMode;
 import ch.dvbern.oss.hemed.esc.api.shared.person.AdresseMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import lombok.RequiredArgsConstructor;
@@ -29,16 +30,19 @@ public class ArztMapper {
     public static ArztJson toJson(@NonNull Arzt arzt) {
         return new ArztJson(
             arzt.getId(), EntityInfoJson.fromEntity(arzt), new ArztSaveJson(
-            arzt.getAnrede(),
-            arzt.getFachrichtung(),
-            arzt.getOrganisation(),
-            arzt.getVorname(),
-            arzt.getName(),
-            AdresseMapper.toJson(arzt.getAdresse()),
-            arzt.getTelefon(),
-            arzt.getEmail(),
-            arzt.getBemerkungen(),
-            arzt.getHpvTeilnahme()));
+                arzt.getAnrede(),
+                arzt.getFachrichtung(),
+                arzt.getOrganisation(),
+                arzt.getVorname(),
+                arzt.getName(),
+                AdresseMapper.toJson(arzt.getAdresse()),
+                arzt.getTelefon(),
+                arzt.getEmail(),
+                arzt.getBemerkungen(),
+                arzt.getHpvTeilnahme(),
+                arzt.getVersion()
+            )
+        );
     }
 
     @NonNull
@@ -82,17 +86,17 @@ public class ArztMapper {
     }
 
     @NonNull
-    public PrintResultDTO  exportArztList(@NonNull List<ID<Arzt>> arztIDs) {
+    public PrintResultDTO  exportArztList(@NonNull List<ID<Arzt>> arztIDs, @NonNull ExportMode exportMode) {
         List<Arzt> aerzte = arztService.findByIds(arztIDs);
         String fileTimeStamp = appClock.localDateTime().now().toLocalDate().format(DATE_FORMATTER_FOR_FILENAME);
-        return  ArztExportService.generatAearzteExport(aerzte, fileTimeStamp, tl);
+        return  ArztExportService.generatAearzteExport(aerzte, fileTimeStamp, tl, exportMode);
     }
 
     @NonNull
     public ArztJson update(@NonNull ID<Arzt> arztId, @NonNull ArztSaveJson arztJson) {
         Arzt existingArzt = arztService.getById(arztId);
         Arzt entity = toEntity(existingArzt, arztJson);
-        return toJson(arztService.persist(entity));
+        return toJson(arztService.persistWithOptimisticLocking(entity, arztJson.getVersion()));
     }
 
     @NonNull

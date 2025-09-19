@@ -1,6 +1,7 @@
-# Set variables
-$domain = "local-esc-bs.localhost"
-$cert_alias = $domain
+# Set variables - Multiple domains separated by spaces
+$domains = "local-esc-bs.localhost local-esc-win.localhost"
+# For now, use the first domain as the cert alias for backward compatibility
+$cert_alias = ($domains -split ' ')[0]
 
 # Get the project root directory (two levels up from the script's directory)
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
@@ -28,13 +29,15 @@ if (-not (Test-Path -Path $certsDir))
   New-Item -Path $certsDir -ItemType Directory
 }
 
-$certFile = Join-Path $certsDir "$domain.pem"
-$keyFile = Join-Path $certsDir "$domain.key"
-$pkcs12File = Join-Path $certsDir "$domain.p12"
+# Use a generic name for the certificate files since we're supporting multiple domains
+$certFile = Join-Path $certsDir "multi-domain.pem"
+$keyFile = Join-Path $certsDir "multi-domain.key"
+$pkcs12File = Join-Path $certsDir "multi-domain.p12"
 
 # Generate the keypair using mkcert
-Write-Host "Generating the keypair. This might take a while..."
-mkcert -cert-file $certFile -key-file $keyFile -ecdsa $domain localhost 127.0.0.1
+Write-Host "Generating the keypair for domains: $domains. This might take a while..."
+$domainArgs = $domains -split ' '
+& mkcert -cert-file $certFile -key-file $keyFile -ecdsa @domainArgs "localhost" "127.0.0.1"
 
 # Import into local Java truststore (pkcs12 format)
 Write-Host "Importing into local java truststore: $pkcs12File"
@@ -56,3 +59,13 @@ if (Test-Path $pkcs12File)
 Write-Host "Using keytool: $( (Get-Command keytool).Path )"
 Write-Host "Adding new trusted cert: $cert_alias"
 & keytool -importcert -noprompt -v -trustcacerts -alias $cert_alias -keystore $pkcs12File -storetype PKCS12 -storepass "changeit" -file $certFile
+
+# Create individual certificate files for each domain (for backward compatibility)
+$domainList = $domains -split ' '
+foreach ($domain in $domainList) {
+    $domainCertFile = Join-Path $certsDir "$domain.pem"
+    $domainKeyFile = Join-Path $certsDir "$domain.key"
+    Write-Host "Creating individual files for $domain"
+    Copy-Item $certFile $domainCertFile
+    Copy-Item $keyFile $domainKeyFile
+}

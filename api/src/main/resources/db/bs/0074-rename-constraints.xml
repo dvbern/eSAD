@@ -1,0 +1,42 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~
+  ~ Copyright (C) 2025 DV Bern AG, Switzerland
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hefr (generated)" id="1757428441-1">
+    <dropForeignKeyConstraint baseTableName="briefvorlage" constraintName="FKf71b5psyweq6ee0sg91ahnlnp"/>
+    <addForeignKeyConstraint baseColumnNames="file_id" baseTableName="briefvorlage" constraintName="fk_briefvorlage_filedata" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="filedata" validate="true"/>
+
+    <dropForeignKeyConstraint baseTableName="untersuchunghoerenaudiogramm" constraintName="fk_untersuchunghoeren_audiogramm_rechts"/>
+    <addForeignKeyConstraint baseColumnNames="audiogrammrechts_id" baseTableName="untersuchunghoerenaudiogramm" constraintName="fk_untersuchunghoerenaudiogramm_audiogramm_rechts" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="audiogramm" validate="true"/>
+    
+    <dropForeignKeyConstraint baseTableName="untersuchunghoerenaudiogramm" constraintName="fk_untersuchunghoeren_audiogramm_links"/>
+    <addForeignKeyConstraint baseColumnNames="audiogrammlinks_id" baseTableName="untersuchunghoerenaudiogramm" constraintName="fk_untersuchunghoerenaudiogramm_audiogramm_links" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="audiogramm" validate="true"/>
+
+    <dropUniqueConstraint tableName="untersuchung" constraintName="uc_untersuchunguntersuchungarzt_id_col"/>
+    <addUniqueConstraint columnNames="untersuchungarztbeurteilung_id" constraintName="uc_untersuchunguntersuchungarztbeurteilung_id_col" tableName="untersuchung"/>
+    
+    <dropForeignKeyConstraint baseTableName="untersuchungarztbeurteilung_aud" constraintName="FKe9q390cecfkw57l7jywpff4av"/>
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungarztbeurteilung_aud" constraintName="FKacs6jg6gxf5kxt4fainrbbhiq" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+
+    <sql>
+      ALTER TABLE untersuchungarztbeurteilung_aud RENAME CONSTRAINT "untersuchungarzt_audPK" TO "untersuchungarztbeurteilung_audPK";
+      ALTER TABLE untersuchungarztbeurteilung RENAME CONSTRAINT "untersuchungarztPK" TO "untersuchungarztbeurteilungPK";
+    </sql>
+  </changeSet>
+</databaseChangeLog>

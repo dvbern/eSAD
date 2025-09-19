@@ -14,9 +14,16 @@ public class ImpfstoffChargeService {
 
     private final ImpfstoffChargeRepo impfstoffChargeRepo;
 
+
     @NonNull
     public ImpfstoffCharge persist(@NonNull ImpfstoffCharge charge) {
         impfstoffChargeRepo.persist(charge);
+        return charge;
+    }
+
+    @NonNull
+    public ImpfstoffCharge persistWithOptimisticLocking(@NonNull ImpfstoffCharge charge, @NonNull Long versionFromFrontend) {
+        impfstoffChargeRepo.persistWithOptimisticLocking(charge, versionFromFrontend);
         return charge;
     }
 

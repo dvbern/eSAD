@@ -1,8 +1,11 @@
 package ch.dvbern.dvbstarter.infrastructure.errorhandling;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.commons.i18nl10n.I18nMessage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
@@ -10,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 @Value
 @AllArgsConstructor(staticName = "of", access = AccessLevel.PRIVATE)
@@ -18,6 +22,88 @@ public class AppValidationMessage {
     // This key is sent to the client in the error response
     private final String clientKey;
     private final I18nMessage i18nMessage;
+    private static final String CONST_KIND_NAME = "kindName";
+    private static final String CONST_KIND_ID = "kindId";
+    private static final String CONST_ENTITY_CLASS = "class";
+
+    @NonNull
+    public static AppValidationMessage cannotAddEntityToInactiveKind(
+        @NonNull Kind kind,
+        @NonNull AbstractTenantEntity<?> entity
+    ) {
+        return of(
+            "CannotAddEntityToInactiveKind",
+            I18nMessage.of("AppValidation.CANNOT_ADD_ENTITY_TO_INACTIVE_KIND",
+                CONST_KIND_NAME, kind.getNameVorname(),
+                CONST_KIND_ID, kind.getId(),
+                CONST_ENTITY_CLASS, entity.getClass().getSimpleName())
+        );
+    }
+
+    @NonNull
+    public static AppValidationMessage cannotCreateEinladungForInactiveKind(
+        @NonNull Kind kind,
+        @NonNull ID<Anlass> anlassId
+    ) {
+        return of(
+            "CannotCreateEinladungForInactiveKind",
+            I18nMessage.of("AppValidation.CANNOT_CREATE_EINLADUNG_FOR_INACTIVE_KIND",
+                CONST_KIND_NAME, kind.getNameVorname(),
+                CONST_KIND_ID, kind.getId(),
+                "anlassId", anlassId)
+        );
+    }
+
+
+    public static AppValidationMessage cannotCreateEntityForInactiveKind(
+        @NonNull Kind kind,
+        @NonNull AbstractTenantEntity<?> entity
+    ) {
+        return of(
+            "CannotCeateEntityForInactiveKind",
+            I18nMessage.of("AppValidation.CANNOT_CREATE_ENTITY_FOR_INACTIVE_KIND",
+                CONST_KIND_NAME, kind.getNameVorname(),
+                CONST_KIND_ID, kind.getId(),
+                CONST_ENTITY_CLASS, entity.getClass().getSimpleName())
+        );
+    }
+
+    public static AppValidationMessage cannotEditEntityForInactiveKind(
+        @NonNull Kind kind,
+        @NonNull AbstractTenantEntity<?> entity
+    ) {
+        return of(
+            "CannotEditEntityForInactiveKind",
+            I18nMessage.of("AppValidation.CANNOT_EDIT_ENTITY_FOR_INACTIVE_KIND",
+                CONST_KIND_NAME, kind.getNameVorname(),
+                CONST_KIND_ID, kind.getId(),
+                CONST_ENTITY_CLASS, entity.getClass().getSimpleName(),
+                "entityId", entity.getId())
+        );
+    }
+
+    public static AppValidationMessage cannotEditInactiveKind(@NonNull Kind kind) {
+        return of(
+            "CannotEditInactiveKind",
+            I18nMessage.of("AppValidation.CANNOT_EDIT_INACTIVE_KIND",
+                CONST_KIND_NAME, kind.getNameVorname(),
+                CONST_KIND_ID, kind.getId())
+        );
+    }
+
+    public static AppValidationMessage cannotRemoveEntityFromInactiveKind(
+        @NonNull Kind kind,
+        @NonNull AbstractTenantEntity<?> entity
+    ) {
+        return of(
+            "CannotRemoveEntityFromInactiveKind",
+            I18nMessage.of("AppValidation.CANNOT_REMOVE_ENTITY_FROM_INACTIVE_KIND",
+                CONST_KIND_NAME, kind.getNameVorname(),
+                CONST_KIND_ID, kind.getId(),
+                CONST_ENTITY_CLASS, entity.getClass().getSimpleName(),
+                "entityId", entity.getId())
+        );
+    }
 
     @NonNull
     public static AppValidationMessage genericMessage(@NonNull String key) {
@@ -181,7 +267,7 @@ public class AppValidationMessage {
             "EscadaObjectsCannotBeUpdated",
             I18nMessage.of(
                 "AppValidation.ESCADA_OBJECTS_CANNOT_BE_UPDATED",
-                "class", entity.getClass().getSimpleName(),
+                CONST_ENTITY_CLASS, entity.getClass().getSimpleName(),
                 "id", entity.getId()));
     }
 
@@ -191,7 +277,7 @@ public class AppValidationMessage {
             "EscadaObjectsCannotBeDeactivated",
             I18nMessage.of(
                 "AppValidation.ESCADA_OBJECTS_CANNOT_BE_DEACTIVATED",
-                "class", entity.getClass().getSimpleName(),
+                CONST_ENTITY_CLASS, entity.getClass().getSimpleName(),
                 "id", entity.getId()));
     }
 
@@ -241,5 +327,39 @@ public class AppValidationMessage {
                 "anlassId",
                 anlass.getId())
         );
+    }
+
+    @NonNull
+    public static AppValidationMessage invalidEntityRelation(
+        @NonNull ID<?> entityId,
+        @NonNull ID<?> expectedForeignKey,
+        @Nullable ID<?> actualForeignKey
+    ) {
+        return of(
+            "InvalidEntityRelation", I18nMessage.of(
+                "AppValidation.INVALID_ENTITY_RELATION",
+                "entityId",
+                entityId,
+                "expectedForeignKey",
+                expectedForeignKey,
+                "actualForeignKey",
+                actualForeignKey));
+    }
+
+    @NonNull
+    public static AppValidationMessage invalidEntityRelation(
+        @NonNull ID<?> entityId,
+        @NonNull ID<?> expectedForeignKey,
+        @NonNull List<? extends ID<?>> actualForeignKeys
+    ) {
+        return of(
+            "InvalidEntityRelation", I18nMessage.of(
+                "AppValidation.INVALID_ENTITY_RELATION",
+                "entityId",
+                entityId,
+                "expectedForeignKey",
+                expectedForeignKey,
+                "actualForeignKey",
+                actualForeignKeys.toString()));
     }
 }

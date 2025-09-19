@@ -1,0 +1,36 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <!--AnlassConfig-->
+  <changeSet author="hora" id="1757325270322-11">
+    <renameColumn tableName="anlassconfig"
+                  oldColumnName="impfungenmassnahmeinformationenabgegeben"
+                  newColumnName="impfungenmassnahmeinfomaterialabgegeben"/>
+  </changeSet>
+  <changeSet author="hora" id="1757325270322-12">
+    <renameColumn tableName="anlassconfig_aud"
+                  oldColumnName="impfungenmassnahmeinformationenabgegeben"
+                  newColumnName="impfungenmassnahmeinfomaterialabgegeben"/>
+  </changeSet>
+  <!--Untersuchungmassnahmen_Infomaterial-->
+  <changeSet author="hora" id="1757325270322-13">
+    <renameColumn tableName="untersuchungmassnahmen_infomaterial"
+                  oldColumnName="informaterial_id"
+                  newColumnName="infomaterial_id"/>
+  </changeSet>
+  <changeSet author="hora" id="1757325270322-14">
+    <renameColumn tableName="untersuchungmassnahmen_infomaterial_aud"
+                  oldColumnName="informaterial_id"
+                  newColumnName="infomaterial_id"/>
+  </changeSet>
+  <!--UntersuchungImpfungenMassnahmen-->
+  <changeSet author="hora" id="1757325270322-15">
+    <renameColumn tableName="untersuchungimpfungenmassnahmen"
+                  oldColumnName="informationenabgegeben"
+                  newColumnName="infomaterialabgegeben"/>
+  </changeSet>
+  <changeSet author="hora" id="1757325270322-16">
+    <renameColumn tableName="untersuchungimpfungenmassnahmen_aud"
+                  oldColumnName="informationenabgegeben"
+                  newColumnName="infomaterialabgegeben"/>
+  </changeSet>
+</databaseChangeLog>

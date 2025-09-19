@@ -1,11 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
@@ -38,6 +32,11 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response.Status;
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 
@@ -58,6 +57,7 @@ class AnlassServiceITest extends AbstractITest {
     private final UntersuchungService untersuchungService;
     private final NachkontrolleService nachkontrolleService;
     private final BenutzerService benutzerService;
+
 
 
     @Test
@@ -209,8 +209,8 @@ class AnlassServiceITest extends AbstractITest {
         assertThat(result.getFirst().getTitel()).isEqualTo(expectedTitel);
         // should update faelligBis
         assertThat(result.getFirst().getFaelligBis()).isEqualTo(expectedFaelligBis);
-        // should update empfaenger
-        assertThat(result.getFirst().getEmpfaenger()).isEqualTo(mpa2);
+        // should NOT update empfaenger
+        assertThat(result.getFirst().getEmpfaenger()).isEqualTo(mpa);
         // should not update userErfasst
         assertThat(result.getFirst().getUserErfasst().getId().getId()).isEqualTo(TestAsAdminBS.BENUTZER_ID);
         // should not override previously added Labels

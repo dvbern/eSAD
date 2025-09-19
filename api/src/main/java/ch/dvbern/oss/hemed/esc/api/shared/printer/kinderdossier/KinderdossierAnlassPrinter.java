@@ -13,9 +13,10 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankhe
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungKindDaten;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungTriage;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArzt;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
@@ -26,6 +27,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.types.EinladungStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.anlass.anlassflags.AnlassFlags;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.PDFAPrintUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.AreaBreak;
@@ -253,7 +255,7 @@ public final class KinderdossierAnlassPrinter {
                 BEMERKUNG_KEY,
                 KinderdossierPrintUtil.extractUntersuchungSehen(
                     einladung,
-                    UntersuchungSehen::getBemerkungen),
+                    UntersuchungSehenBeurteilung::getBemerkungen),
                 document);
         }
     }
@@ -560,7 +562,7 @@ public final class KinderdossierAnlassPrinter {
                 "printer.kinderdossier.anlass.herzauskultationBemerkung",
                 KinderdossierPrintUtil.extractUntersuchungArzt(
                     einladung,
-                    UntersuchungArzt::getHerzauskultationBemerkung),
+                    UntersuchungArztBeurteilung::getHerzauskultationBemerkung),
                 document);
         }
 
@@ -578,7 +580,7 @@ public final class KinderdossierAnlassPrinter {
                 "printer.kinderdossier.anlass.hautBemerkung",
                 KinderdossierPrintUtil.extractUntersuchungArzt(
                     einladung,
-                    UntersuchungArzt::getHautBemerkung),
+                    UntersuchungArztBeurteilung::getHautBemerkung),
                 document);
         }
 
@@ -599,7 +601,7 @@ public final class KinderdossierAnlassPrinter {
                 "printer.kinderdossier.anlass.mundAndZaehneBemerkung",
                 KinderdossierPrintUtil.extractUntersuchungArzt(
                     einladung,
-                    UntersuchungArzt::getMundAndZaehneBemerkung),
+                    UntersuchungArztBeurteilung::getMundAndZaehneBemerkung),
                 document);
         }
 
@@ -620,7 +622,7 @@ public final class KinderdossierAnlassPrinter {
                 "printer.kinderdossier.anlass.sprachfaehigkeitBemerkung",
                 KinderdossierPrintUtil.extractUntersuchungArzt(
                     einladung,
-                    UntersuchungArzt::getSprachfaehigkeitBemerkung),
+                    UntersuchungArztBeurteilung::getSprachfaehigkeitBemerkung),
                 document);
         }
 
@@ -651,7 +653,7 @@ public final class KinderdossierAnlassPrinter {
                 "printer.kinderdossier.anlass.bewegungsapparatBemerkung",
                 KinderdossierPrintUtil.extractUntersuchungArzt(
                     einladung,
-                    UntersuchungArzt::getBewegungsapparatBemerkung),
+                    UntersuchungArztBeurteilung::getBewegungsapparatBemerkung),
                 document);
         }
 
@@ -667,7 +669,9 @@ public final class KinderdossierAnlassPrinter {
             // einbeinstandBemerkung
             basePrinter.addKeyValue(
                 "printer.kinderdossier.anlass.einbeinstandBemerkung",
-                KinderdossierPrintUtil.extractUntersuchungArzt(einladung, UntersuchungArzt::getEinbeinhuepfenBemerkung),
+                KinderdossierPrintUtil.extractUntersuchungArzt(
+                    einladung,
+                    UntersuchungArztBeurteilung::getEinbeinhuepfenBemerkung),
                 document);
         }
 
@@ -683,7 +687,9 @@ public final class KinderdossierAnlassPrinter {
             // einbeinhuepfenBemerkung
             basePrinter.addKeyValue(
                 "printer.kinderdossier.anlass.einbeinhuepfenBemerkung",
-                KinderdossierPrintUtil.extractUntersuchungArzt(einladung, UntersuchungArzt::getEinbeinhuepfenBemerkung),
+                KinderdossierPrintUtil.extractUntersuchungArzt(
+                    einladung,
+                    UntersuchungArztBeurteilung::getEinbeinhuepfenBemerkung),
                 document);
         }
 
@@ -704,7 +710,7 @@ public final class KinderdossierAnlassPrinter {
                 "printer.kinderdossier.anlass.fingeroppositionBemerkung",
                 KinderdossierPrintUtil.extractUntersuchungArzt(
                     einladung,
-                    UntersuchungArzt::getFingeroppositionBemerkung),
+                    UntersuchungArztBeurteilung::getFingeroppositionBemerkung),
                 document);
         }
 
@@ -712,7 +718,9 @@ public final class KinderdossierAnlassPrinter {
         if (anlassConfig.getUntersuchungBemerkungen().isVisible()) {
             basePrinter.addVerticalKeyValue(
                 BEMERKUNG_KEY,
-                KinderdossierPrintUtil.extractUntersuchungArzt(einladung, UntersuchungArzt::getBemerkungen),
+                KinderdossierPrintUtil.extractUntersuchungArztBemerkung(
+                    einladung,
+                    UntersuchungArztBemerkung::getBemerkungen),
                 document);
         }
     }
@@ -1344,12 +1352,13 @@ public final class KinderdossierAnlassPrinter {
 
     @NonNull
     private static String anlassTitle(@NonNull Anlass anlass, @NonNull BasePrinter basePrinter) {
-        return String.format(
+        String title = String.format(
             "%d/%d %s %s",
             anlass.getSchuljahr(),
             (anlass.getSchuljahr() + 1) % 100,
             basePrinter.translateValue(anlass.getAnlassConfig().getAnlassTyp()),
             anlass.getTitel());
+        return PDFAPrintUtil.sanitizeForPDFA(title);
     }
 
     private static void addAudiogramTable(

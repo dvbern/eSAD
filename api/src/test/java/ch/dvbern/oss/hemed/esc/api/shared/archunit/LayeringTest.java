@@ -13,6 +13,7 @@ import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.library.Architectures;
 import com.tngtech.archunit.library.dependencies.Slice;
 import jakarta.persistence.Entity;
+import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -42,6 +43,10 @@ class LayeringTest {
 
     public static final DescribedPredicate<JavaClass> SERVICE =
         is(interfaceWithSuffix("Service")).or(is(metaAnnotatedWith(Service.class)));
+
+    public static final DescribedPredicate<JavaClass> UTIL =
+        is(JavaClass.Predicates.simpleNameEndingWith("Util").or(is(interfaceWithSuffix("Util"))));
+
     public static final DescribedPredicate<JavaClass> NO_TRANSACTION_SERVICE =
         is(metaAnnotatedWith(NoTransactionService.class));
     public static final DescribedPredicate<JavaClass> REPOSITORY =
@@ -138,6 +143,7 @@ class LayeringTest {
                 .or(STARTER_INFRASTRUCTURE)
                 .or(STARTER_SHARED)
                 .or(SHARED_PRINTER)
+                .or(UTIL)
                 .or(CSV_COLUMNS)
                 .or(DOC_MERGER))
             .because("Entities should not be used in Resource Layer");
@@ -165,7 +171,7 @@ class LayeringTest {
             .areDeclaredInClassesThat(are(DATABASE_LAYER))
             .should()
             .onlyBeCalled()
-            .byClassesThat(are(DATABASE_LAYER).or(SERVICE)
+            .byClassesThat(are(DATABASE_LAYER).or(SERVICE).or(UTIL)
                 .or(RESOURCE_MAPPER)
                 .or(STARTER_INFRASTRUCTURE)
                 .or(STARTER_SHARED)

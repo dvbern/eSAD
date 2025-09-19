@@ -6,7 +6,7 @@ export const BaselGewichtKnabenDistribution: PercentileDistribution = {
     {
       id: 'gewichtmaleP5',
       percentile: 5,
-      type: 'bottom',
+      type: 'sub',
       data: [
         {x: 105, y: 14.5},
         {x: 120, y: 18.5},
@@ -20,7 +20,7 @@ export const BaselGewichtKnabenDistribution: PercentileDistribution = {
     {
       id: 'gewichtmaleP10',
       percentile: 10,
-      type: 'sub',
+      type: 'bottom',
       data: [
         {x: 129, y: 23},
         {x: 140, y: 28},
@@ -70,7 +70,7 @@ export const BaselGewichtKnabenDistribution: PercentileDistribution = {
     {
       id: 'gewichtmaleP90',
       percentile: 90,
-      type: 'sub',
+      type: 'top',
       data: [
         {x: 129, y: 29},
         {x: 140, y: 37},
@@ -82,7 +82,7 @@ export const BaselGewichtKnabenDistribution: PercentileDistribution = {
     {
       id: 'gewichtmaleP95',
       percentile: 95,
-      type: 'top',
+      type: 'sub',
       data: [
         {x: 105, y: 18.5},
         {x: 120, y: 25.5},

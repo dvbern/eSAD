@@ -8,6 +8,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassArt;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @AllArgsConstructor
 @JaxDTO
 @Schema(description = "Business data for a Anlass")
-public class AnlassSaveJson {
+public class AnlassSaveJson implements SaveJsonWithOptimisticLocking {
 
     @NotNull
     @NonNull
@@ -86,5 +87,8 @@ public class AnlassSaveJson {
     @Nullable
     @Schema(required = false)
     private final String weiterePersonInfo;
+
+    @Schema(required = true)
+    private long version;
 
 }

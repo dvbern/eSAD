@@ -10,6 +10,7 @@ import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.Impfstoff;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffCharge;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungImpfungIntern;
@@ -54,7 +55,8 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckUntersuchungImpfungIntern
-public class UntersuchungImpfungIntern extends AbstractTenantEntity<UntersuchungImpfungIntern> {
+public class UntersuchungImpfungIntern extends AbstractTenantEntity<UntersuchungImpfungIntern>
+        implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 4719335518255035134L;

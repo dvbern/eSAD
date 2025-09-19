@@ -19,6 +19,7 @@ export interface UntersuchungGroesseGewichtSaveJson {
     gewichtPerzentile?: PerzentileGewicht;
     bmiPerzentile?: PerzentileBmi;
     bemerkungen?: string;
+    version: number;
 }
 export namespace UntersuchungGroesseGewichtSaveJson {
 }

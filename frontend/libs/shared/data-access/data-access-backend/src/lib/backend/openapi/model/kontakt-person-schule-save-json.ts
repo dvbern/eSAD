@@ -18,6 +18,7 @@ export interface KontaktPersonSchuleSaveJson {
     vorname?: string;
     email?: string;
     telefon?: string;
+    version: number;
 }
 export namespace KontaktPersonSchuleSaveJson {
 }

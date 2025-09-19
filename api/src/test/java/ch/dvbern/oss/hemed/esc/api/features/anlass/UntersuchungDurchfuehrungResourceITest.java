@@ -285,7 +285,7 @@ class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
                 .extract().as(UntersuchungDurchfuehrungDataJsonSpec.class);
 
         Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result.getKindDaten().getVorname()).isEqualTo("Barbara");
+        Assertions.assertThat(result.getKindDaten().getData().getVorname()).isEqualTo("Barbara");
     }
 
     @Test
@@ -294,15 +294,14 @@ class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
         // ARRANGE
         Untersuchung untersuchung = fixtureService.createUntersuchungWithEveryTab();
 
-        AnlassJsonSpec result = apiAnlass
+        apiAnlass
             .anlassResourceChangeAnlassStatus()
             .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
             .statusPath(AnlassStatusSpec.ABGESCHLOSSEN)
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
-            .statusCode(Status.OK.getStatusCode())
-            .extract().as(AnlassJsonSpec.class);
+            .statusCode(Status.OK.getStatusCode());
 
         Assertions.assertThat(untersuchung).isNotNull();
         Assertions.assertThat(untersuchung.getUntersuchungDurchfuehrung()).isNotNull();

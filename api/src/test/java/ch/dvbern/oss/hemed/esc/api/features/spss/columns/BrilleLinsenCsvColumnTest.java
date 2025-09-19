@@ -2,7 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.BrilleLinsenResultat;
 import org.junit.jupiter.api.Test;
 
@@ -23,21 +23,21 @@ class BrilleLinsenCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        UntersuchungSehen untersuchungSehen = new UntersuchungSehen();
-        untersuchung.setUntersuchungSehen(untersuchungSehen);
+        UntersuchungSehenBeurteilung untersuchungSehenBeurteilung = new UntersuchungSehenBeurteilung();
+        untersuchung.setUntersuchungSehenBeurteilung(untersuchungSehenBeurteilung);
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungSehen.setBrilleLinsen(BrilleLinsenResultat.OHNE_KEINE);
+        untersuchungSehenBeurteilung.setBrilleLinsen(BrilleLinsenResultat.OHNE_KEINE);
         assertThat(column.extract(einladung)).isEqualTo("1");
 
-        untersuchungSehen.setBrilleLinsen(BrilleLinsenResultat.MIT);
+        untersuchungSehenBeurteilung.setBrilleLinsen(BrilleLinsenResultat.MIT);
         assertThat(column.extract(einladung)).isEqualTo("2");
 
-        untersuchungSehen.setBrilleLinsen(BrilleLinsenResultat.OHNE_VERGESSEN);
+        untersuchungSehenBeurteilung.setBrilleLinsen(BrilleLinsenResultat.OHNE_VERGESSEN);
         assertThat(column.extract(einladung)).isEqualTo("3");
 
-        untersuchungSehen.setBrilleLinsen(BrilleLinsenResultat.NICHT_GEPRUEFT);
+        untersuchungSehenBeurteilung.setBrilleLinsen(BrilleLinsenResultat.NICHT_GEPRUEFT);
         assertThat(column.extract(einladung)).isEqualTo("4");
     }
 }

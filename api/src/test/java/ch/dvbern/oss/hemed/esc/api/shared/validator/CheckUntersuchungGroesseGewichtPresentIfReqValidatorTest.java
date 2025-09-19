@@ -16,7 +16,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
 
-
     @ParameterizedTest
     @CsvSource({
         "REQUIRED	    ,	 ,false",
@@ -35,9 +34,14 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
         UntersuchungGroesseGewicht entity = UntersuchungGroesseGewichtBuilder.create(
             builder -> builder
                 .withGroesse(groesse));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setGroesseGewichtGroesse(requirementSetting);
+        entity.getUntersuchung()
+            .getEinladung()
+            .getAnlass()
+            .getAnlassConfig()
+            .setGroesseGewichtGroesse(requirementSetting);
         // ACT
-        CheckUntersuchungGroesseGewichtPresentIfReqValidator validator = new CheckUntersuchungGroesseGewichtPresentIfReqValidator();
+        CheckUntersuchungGroesseGewichtPresentIfReqValidator validator =
+            new CheckUntersuchungGroesseGewichtPresentIfReqValidator();
         var result = validator.isEntityValid(entity);
         // ASSERT
         Assertions.assertThat(result).isEqualTo(expectedValid);
@@ -54,16 +58,21 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
     })
     void validateGewicht(
         @NonNull RequirementSetting requirementSetting,
-        @Nullable Integer gewicht,
+        @Nullable BigDecimal gewicht,
         boolean expectedValid
     ) {
         // ARRANGE
         UntersuchungGroesseGewicht entity = UntersuchungGroesseGewichtBuilder.create(
             builder -> builder
                 .withGewicht(gewicht));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setGroesseGewichtGewicht(requirementSetting);
+        entity.getUntersuchung()
+            .getEinladung()
+            .getAnlass()
+            .getAnlassConfig()
+            .setGroesseGewichtGewicht(requirementSetting);
         // ACT
-        CheckUntersuchungGroesseGewichtPresentIfReqValidator validator = new CheckUntersuchungGroesseGewichtPresentIfReqValidator();
+        CheckUntersuchungGroesseGewichtPresentIfReqValidator validator =
+            new CheckUntersuchungGroesseGewichtPresentIfReqValidator();
         var result = validator.isEntityValid(entity);
         // ASSERT
         Assertions.assertThat(result).isEqualTo(expectedValid);
@@ -89,7 +98,8 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
                 .withBmi(bmi));
         entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setGroesseGewichtBmi(requirementSetting);
         // ACT
-        CheckUntersuchungGroesseGewichtPresentIfReqValidator validator = new CheckUntersuchungGroesseGewichtPresentIfReqValidator();
+        CheckUntersuchungGroesseGewichtPresentIfReqValidator validator =
+            new CheckUntersuchungGroesseGewichtPresentIfReqValidator();
         var result = validator.isEntityValid(entity);
         // ASSERT
         Assertions.assertThat(result).isEqualTo(expectedValid);
@@ -113,9 +123,14 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
         UntersuchungGroesseGewicht entity = UntersuchungGroesseGewichtBuilder.create(
             builder -> builder
                 .withGroessePerzentile(perzentile));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setGroesseGewichtGroessePerzentile(requirementSetting);
+        entity.getUntersuchung()
+            .getEinladung()
+            .getAnlass()
+            .getAnlassConfig()
+            .setGroesseGewichtGroessePerzentile(requirementSetting);
         // ACT
-        CheckUntersuchungGroesseGewichtPresentIfReqValidator validator = new CheckUntersuchungGroesseGewichtPresentIfReqValidator();
+        CheckUntersuchungGroesseGewichtPresentIfReqValidator validator =
+            new CheckUntersuchungGroesseGewichtPresentIfReqValidator();
         var result = validator.isEntityValid(entity);
         // ASSERT
         Assertions.assertThat(result).isEqualTo(expectedValid);
@@ -139,9 +154,14 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
         UntersuchungGroesseGewicht entity = UntersuchungGroesseGewichtBuilder.create(
             builder -> builder
                 .withGewichtPerzentile(perzentile));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setGroesseGewichtGewichtPerzentile(requirementSetting);
+        entity.getUntersuchung()
+            .getEinladung()
+            .getAnlass()
+            .getAnlassConfig()
+            .setGroesseGewichtGewichtPerzentile(requirementSetting);
         // ACT
-        CheckUntersuchungGroesseGewichtPresentIfReqValidator validator = new CheckUntersuchungGroesseGewichtPresentIfReqValidator();
+        CheckUntersuchungGroesseGewichtPresentIfReqValidator validator =
+            new CheckUntersuchungGroesseGewichtPresentIfReqValidator();
         var result = validator.isEntityValid(entity);
         // ASSERT
         Assertions.assertThat(result).isEqualTo(expectedValid);
@@ -165,9 +185,14 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
         UntersuchungGroesseGewicht entity = UntersuchungGroesseGewichtBuilder.create(
             builder -> builder
                 .withBmiPerzentile(perzentile));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setGroesseGewichtBmiPerzentile(requirementSetting);
+        entity.getUntersuchung()
+            .getEinladung()
+            .getAnlass()
+            .getAnlassConfig()
+            .setGroesseGewichtBmiPerzentile(requirementSetting);
         // ACT
-        CheckUntersuchungGroesseGewichtPresentIfReqValidator validator = new CheckUntersuchungGroesseGewichtPresentIfReqValidator();
+        CheckUntersuchungGroesseGewichtPresentIfReqValidator validator =
+            new CheckUntersuchungGroesseGewichtPresentIfReqValidator();
         var result = validator.isEntityValid(entity);
         // ASSERT
         Assertions.assertThat(result).isEqualTo(expectedValid);
@@ -191,9 +216,14 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
         UntersuchungGroesseGewicht entity = UntersuchungGroesseGewichtBuilder.create(
             builder -> builder
                 .withBemerkung(bemerkung));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setGroesseGewichtBemerkungen(requirementSetting);
+        entity.getUntersuchung()
+            .getEinladung()
+            .getAnlass()
+            .getAnlassConfig()
+            .setGroesseGewichtBemerkungen(requirementSetting);
         // ACT
-        CheckUntersuchungGroesseGewichtPresentIfReqValidator validator = new CheckUntersuchungGroesseGewichtPresentIfReqValidator();
+        CheckUntersuchungGroesseGewichtPresentIfReqValidator validator =
+            new CheckUntersuchungGroesseGewichtPresentIfReqValidator();
         var result = validator.isEntityValid(entity);
         // ASSERT
         Assertions.assertThat(result).isEqualTo(expectedValid);

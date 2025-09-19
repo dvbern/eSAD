@@ -38,7 +38,7 @@ export class BenutzerListStore extends signalStore(
     pipe(
       exhaustMap((benutzerJson) => this.loaderSave
         .tapLoading$(
-          this.#benutzerService.update$({
+          this.#benutzerService.updateBenutzerAktivStatus$({
             benutzerID: benutzerJson.id,
             benutzerSaveJson: {...benutzerJson.data, aktiv: !benutzerJson.data.aktiv},
           }), error => this.#appErrorHandlerService.handleError(error))

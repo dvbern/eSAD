@@ -4,6 +4,7 @@ import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassConfigJson;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.anlass.UntersuchungHoerenDefaultValueUtil;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -15,17 +16,17 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Value
 @AllArgsConstructor
 @JaxDTO
-public class UntersuchungHoerenAudiogrammSaveJson {
+public class UntersuchungHoerenAudiogrammSaveJson implements SaveJsonWithOptimisticLocking {
 
     @Nullable
     @Valid
     @Schema(required = false)
-    private AudiogrammJson audiogrammRechts;
+    private AudiogrammSaveJson audiogrammRechts;
 
     @Nullable
     @Valid
     @Schema(required = false)
-    private AudiogrammJson audiogrammLinks;
+    private AudiogrammSaveJson audiogrammLinks;
 
     @Nullable
     @Schema(required = false)
@@ -39,6 +40,9 @@ public class UntersuchungHoerenAudiogrammSaveJson {
     @Schema(required = false)
     private String bemerkungen;
 
+    @Schema(required = true)
+    private long version;
+
     @NonNull
     public static UntersuchungHoerenAudiogrammSaveJson defaultAudiogrammValuesForAnlassConfig(
         @NonNull AnlassConfigJson anlassConfig) {
@@ -51,7 +55,8 @@ public class UntersuchungHoerenAudiogrammSaveJson {
                 anlassConfig.getAnlassTyp()),
             UntersuchungHoerenDefaultValueUtil.getDefaultAudiogrammBeurteilung(anlassConfig.getHoerenAudiogrammBeurteilung()),
             UntersuchungHoerenDefaultValueUtil.getDefaultZusaetzlicheAngaben(anlassConfig.getHoerenAudiogrammZusaetzlicheAngaben()),
-            null
+            null,
+            0L
         );
     }
 }

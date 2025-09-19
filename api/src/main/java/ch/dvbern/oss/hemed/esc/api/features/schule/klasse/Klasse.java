@@ -10,6 +10,7 @@ import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.HasExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.Lehrperson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import jakarta.persistence.Column;
@@ -24,7 +25,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -32,6 +32,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
@@ -46,8 +47,11 @@ import org.hibernate.envers.Audited;
 @Getter
 @Setter
 @AllArgsConstructor
+@ToString(callSuper = true, onlyExplicitlyIncluded = true)
 @NoArgsConstructor
-public class Klasse extends AbstractTenantEntity<Klasse> implements Serializable, HasExternalImportInfo {
+public class Klasse
+        extends AbstractTenantEntity<Klasse>
+        implements Serializable, HasExternalImportInfo, EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 1741625114973564294L;
@@ -81,20 +85,24 @@ public class Klasse extends AbstractTenantEntity<Klasse> implements Serializable
                 columnList = "lehrperson_id, klasse_id"),
         }
     )
+
     private List<Lehrperson> lehrpersonen;
 
+    @ToString.Include
     @NotNull
     @NonNull
     @Size(max = DbConst.DB_DEFAULT_MAX_LENGTH)
     @Column(nullable = false)
     private String bezeichnung;
 
+    @ToString.Include
     @NotNull
     @NonNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     private Klassenstufe klassenstufe;
 
+    @ToString.Include
     @NotNull
     @NonNull
     @Column(nullable = false, length = DbConst.DB_DEFAULT_MAX_LENGTH)
@@ -109,19 +117,6 @@ public class Klasse extends AbstractTenantEntity<Klasse> implements Serializable
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     private EntityAktivStatus klasseAktivStatus = EntityAktivStatus.AKTIV;
 
-    @Transient
-    @Nullable
-    public String getExternalSystemIdOrNull() {
-        if (externalImportInfo == null) {
-            return null;
-        }
-        return externalImportInfo.getIdInExternalSystem();
-    }
-
-    @Transient
-    public boolean isManualOrAktivInExternalSystem() {
-        return externalImportInfo == null || externalImportInfo.isAktivInExternalSystem();
-    }
 
     public void addLehrperson(@NonNull Lehrperson lpToAdd) {
         if (!lehrpersonen.contains(lpToAdd)) {

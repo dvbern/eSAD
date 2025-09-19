@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.testutil;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
@@ -35,13 +36,17 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungenService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungKindDaten;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungKindDatenService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungRepo;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBemerkungFragebogen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBemerkungFragebogenService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungTriage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungTriageService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArzt;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Blutdruck;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
@@ -118,6 +123,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileUploadWrapper;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
+import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassConfigBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AufgabeBuilder;
@@ -136,7 +142,8 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.NachkontrolleBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.NotizBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.QuartierBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.SchuleBuilder;
-import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungArztBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungArztBemerkungBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungArztBeurteilungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungDurchfuehrungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungGroesseGewichtBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungHoerenAudiogrammBuilder;
@@ -146,7 +153,8 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungInternBui
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenMassnahmenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungMassnahmenBuilder;
-import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBemerkungFragebogenBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBeurteilungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungTriageBuilder;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.transaction.Transactional;
@@ -187,7 +195,8 @@ public class FixtureService {
     private final LehrpersonService lehrpersonService;
     private final LabelService labelService;
     private final AppClock appClock;
-    private final UntersuchungSehenService untersuchungSehenService;
+    private final UntersuchungSehenBeurteilungService untersuchungSehenBeurteilungService;
+    private final UntersuchungSehenBemerkungFragebogenService untersuchungSehenBemerkungFragebogenService;
     private final UntersuchungHoerenAudiogrammService untersuchungHoerenAudiogrammService;
     private final UntersuchungHoerenOtoskopieService untersuchungHoerenOtoskopieService;
     private final UntersuchungRepo untersuchungRepo;
@@ -195,7 +204,8 @@ public class FixtureService {
     private final UntersuchungImpfstatusKrankheitService untersuchungImpfstatusKrankheitService;
     private final UntersuchungMassnahmenService untersuchungMassnahmenService;
     private final UntersuchungGroesseGewichtService untersuchungGroesseGewichtService;
-    private final UntersuchungArztService untersuchungArztService;
+    private final UntersuchungArztBeurteilungService untersuchungArztBeurteilungService;
+    private final UntersuchungArztBemerkungService untersuchungArztBemerkungService;
     private final NachkontrolleService nachkontrolleService;
     private final BriefvorlageService briefvorlageService;
     private final UntersuchungKindDatenService untersuchungKindDatenService;
@@ -217,6 +227,7 @@ public class FixtureService {
                 .forKlasse(klassen));
         Arrays.stream(klassen).forEach(k -> {
             var kToAddL = klasseService.getById(k.getId());
+            kToAddL.disableOptimisticLockingCheck();
             kToAddL.addLehrperson(lehrperson);
         });
         return lehrpersonService.persist(lehrperson);
@@ -411,6 +422,14 @@ public class FixtureService {
     }
 
     @NonNull
+    public Kind createInactiveKind() {
+        Kind kind = KindBuilder.create(builder -> builder
+            .withKlasse(createKlasse())
+            .withKindAktivStatus(EntityAktivStatus.INAKTIV));
+        return kindService.persistWithoutDuplicateCheck(kind);
+    }
+
+    @NonNull
     public Kind createKind(
         @NonNull String vorname,
         @NonNull String name,
@@ -421,6 +440,24 @@ public class FixtureService {
             .withName(name, vorname)
             .withGeburtsdatum(geburtsdatum)
             .withGeschlecht(geschlecht));
+        return kindService.persistWithoutDuplicateCheck(kind);
+    }
+
+    @NonNull
+    public Kind createKindEscada(
+        @NonNull String vorname,
+        @NonNull String name,
+        @NonNull LocalDate geburtsdatum,
+        @NonNull Geschlecht geschlecht,
+        @Nullable SozialversicherungsNummer vnr,
+        boolean aktivInExternalSystem
+    ) {
+        Kind kind = KindBuilder.create(builder -> builder
+            .withName(name, vorname)
+            .withGeburtsdatum(geburtsdatum)
+            .withGeschlecht(geschlecht)
+            .withSozialversicherungsNummer(vnr)
+            .withExternalImportInfo(UUID.randomUUID().toString(), aktivInExternalSystem, appClock.offsetDateTime().now()));
         return kindService.persistWithoutDuplicateCheck(kind);
     }
 
@@ -483,6 +520,16 @@ public class FixtureService {
                 .withArtAbmeldung(ArtAbmeldung.INFO_LEHRPERSON)
                 .withGrundAbmeldung(GrundAbmeldung.KONTROLLE_KINDER_PRIVATARZT)
                 .withAbmeldungsNotiz(notiz)
+                .withDossier(dossier)));
+    }
+
+    @NonNull
+    public Einladung createEinladung(@NonNull Kind kind) {
+        final Anlass anlass = createAnlass();
+        final Dossier dossier = createDossier(kind);
+        return einladungService.persist(
+            EinladungBuilder.create(builder -> builder
+                .withAnlass(anlass)
                 .withDossier(dossier)));
     }
 
@@ -594,18 +641,21 @@ public class FixtureService {
 
     public void createImpfausweisNotiz(@NonNull ID<Einladung> einladungID) {
         Einladung einladung = einladungService.getById(einladungID);
+        einladung.disableOptimisticLockingCheck();
         Notiz notiz = createNotiz(einladung.getDossier(), Set.of(Label.ID_LABEL_IMPFAUSWEIS));
         einladung.setImpfausweis(notiz);
     }
 
     public void createFragebogenNotiz(@NonNull ID<Einladung> einladungID) {
         Einladung einladung = einladungService.getById(einladungID);
+        einladung.disableOptimisticLockingCheck();
         Notiz notiz = createNotiz(einladung.getDossier(), Set.of(Label.ID_LABEL_FRAGEBOGEN));
         einladung.setFragebogen(notiz);
     }
 
     public void createAbmeldungsgrundNotiz(@NonNull ID<Einladung> einladungID) {
         Einladung einladung = einladungService.getById(einladungID);
+        einladung.disableOptimisticLockingCheck();
         Notiz notiz = createNotiz(einladung.getDossier(), Set.of(Label.ID_LABEL_ABMELDUNGSGRUND));
         einladung.setAbmeldungsNotiz(notiz);
     }
@@ -629,6 +679,7 @@ public class FixtureService {
             if (untersuchungMassnahmen.getAufgabeUeberweisungAugenarzt() != null) {
                 untersuchungMassnahmen.getAufgabeUeberweisungAugenarzt().getAufgabeStatus();
             }
+            untersuchungMassnahmen.getAbgegebenesInfomaterial().size();
         }
         UntersuchungImpfungen impfungen = untersuchung.getUntersuchungImpfungen();
         if (impfungen != null) {
@@ -682,8 +733,8 @@ public class FixtureService {
                 .withImpfausweisUnvollstaendig(true)
                 .withVisum1(benutzer, appClock.offsetDateTime().now().toLocalDate())));
         // Sehen
-        UntersuchungSehen existingSehen = untersuchungSehenService.persist(
-            UntersuchungSehenBuilder.create(builder -> builder
+        UntersuchungSehenBeurteilung existingSehen = untersuchungSehenBeurteilungService.persist(
+            UntersuchungSehenBeurteilungBuilder.create(builder -> builder
                 .forUntersuchung(untersuchung)
                 .withBemerkung("Untersuchung Sehen Bemerkung")));
         // Hoeren - Audiogramm
@@ -702,7 +753,7 @@ public class FixtureService {
             UntersuchungGroesseGewichtBuilder.create(builder -> builder
                 .forUntersuchung(untersuchung)
                 .withGroesse(180)
-                .withGewicht(90)
+                .withGewicht(BigDecimal.valueOf(90))
                 .withBemerkung("Untersuchung GroesseGewicht Bemerkung")));
         // Triage
         UntersuchungTriage existingTriage = untersuchungTriageService.persist(
@@ -710,16 +761,15 @@ public class FixtureService {
                 .forUntersuchung(untersuchung)
                 .withTriageSu(true, "Triage Bemerkungen SU")));
         // Aertzliche Untersuchung
-        UntersuchungArzt existingArzt = untersuchungArztService.persist(
-            UntersuchungArztBuilder.create(builder -> builder
+        UntersuchungArztBeurteilung existingArzt = untersuchungArztBeurteilungService.persist(
+            UntersuchungArztBeurteilungBuilder.create(builder -> builder
                 .forUntersuchung(untersuchung)
-                .withBemerkungen("Untersuchung Arzt Bemerkung")
                 .withBlutdruck(Blutdruck.AUFFAELLIG)
                 .withBewegungsapparat(List.of(Bewegungsapparat.SKOLIOSE, Bewegungsapparat.FUSSFEHLSTELLUNG))
                 .withEinbeinhuepfen(Einbeinhuepfen.SICHER)
                 .withEinbeinstand(Einbeinstand.NICHT_MOEGLICH)
                 .withMotorik(Motorik.NORMAL)));
-        untersuchung.setUntersuchungArzt(existingArzt);
+        untersuchung.setUntersuchungArztBeurteilung(existingArzt);
         // Massnahmen
         UntersuchungMassnahmen existingMassnahmen = untersuchungMassnahmenService.persist(
             UntersuchungMassnahmenBuilder.create(builder -> builder
@@ -729,7 +779,7 @@ public class FixtureService {
         untersuchung.setUntersuchungKindDaten(untersuchungKindDaten);
         untersuchung.setUntersuchungDurchfuehrung(untersuchungDurchfuehrung);
         untersuchung.setUntersuchungImpfungen(existingImpfungen);
-        untersuchung.setUntersuchungSehen(existingSehen);
+        untersuchung.setUntersuchungSehenBeurteilung(existingSehen);
         untersuchung.setUntersuchungHoerenAudiogramm(existingHoerenAudiogramm);
         untersuchung.setUntersuchungHoerenOtoskopie(existingHoerenOtoskopie);
         untersuchung.setUntersuchungGroesseGewicht(existingGroesseGewicht);
@@ -805,8 +855,8 @@ public class FixtureService {
 
     @NonNull
     public Untersuchung createUntersuchungWithSehen(@NonNull Untersuchung untersuchung) {
-        UntersuchungSehen existingSehen = untersuchungSehenService.persist(
-            UntersuchungSehenBuilder.create(builder -> builder
+        UntersuchungSehenBeurteilung existingSehen = untersuchungSehenBeurteilungService.persist(
+            UntersuchungSehenBeurteilungBuilder.create(builder -> builder
                 .forUntersuchung(untersuchung)
                 .withBrilleLinsen(BrilleLinsenResultat.OHNE_KEINE)
                 .withStereotest(StereotestResultat.NORMAL)
@@ -818,7 +868,12 @@ public class FixtureService {
                 .withStrabismusAuftreten(StrabismusAuftretenResultat.KEIN_STRABISMUS)
                 .withStrabismusAuspraegung(StrabismusAuspraegungResultat.KEIN_STRABISMUS)
                 .withBemerkung("Untersuchung Sehen Bemerkung")));
-        untersuchung.setUntersuchungSehen(existingSehen);
+        untersuchung.setUntersuchungSehenBeurteilung(existingSehen);
+        UntersuchungSehenBemerkungFragebogen existingSehenFragebogen = untersuchungSehenBemerkungFragebogenService.persist(
+            UntersuchungSehenBemerkungFragebogenBuilder.create(builder -> builder
+                .forUntersuchung(untersuchung)
+                .withBemerkungFragebogen("Untersuchung Sehen Fragebogen Bemerkung")));
+        untersuchung.setUntersuchungSehenBemerkungFragebogen(existingSehenFragebogen);
         untersuchungRepo.persist(untersuchung);
         return untersuchung;
     }
@@ -832,11 +887,11 @@ public class FixtureService {
 
     @NonNull
     public Untersuchung createUntersuchungWithSehenAndMassnahme(@NonNull Untersuchung untersuchung) {
-        UntersuchungSehen existingSehen = untersuchungSehenService.persist(
-            UntersuchungSehenBuilder.create(builder -> builder
+        UntersuchungSehenBeurteilung existingSehen = untersuchungSehenBeurteilungService.persist(
+            UntersuchungSehenBeurteilungBuilder.create(builder -> builder
                 .forUntersuchung(untersuchung)
                 .withBemerkung("Untersuchung Sehen Bemerkung")));
-        untersuchung.setUntersuchungSehen(existingSehen);
+        untersuchung.setUntersuchungSehenBeurteilung(existingSehen);
 
         UntersuchungMassnahmen existingMassnahme = untersuchungMassnahmenService.persist(
             UntersuchungMassnahmenBuilder.create(builder -> builder.forUntersuchung(untersuchung)
@@ -901,7 +956,7 @@ public class FixtureService {
             UntersuchungGroesseGewichtBuilder.create(builder -> builder
                 .forUntersuchung(untersuchung)
                 .withGroesse(180)
-                .withGewicht(90)
+                .withGewicht(BigDecimal.valueOf(90))
                 .withGroessePerzentile(PerzentileGroesse.NORMAL)
                 .withGewichtPerzentile(PerzentileGewicht.NORMAL)
                 .withBmiPerzentile(PerzentileBmi.NORMAL)
@@ -919,16 +974,33 @@ public class FixtureService {
 
     @NonNull
     public Untersuchung createUntersuchungWithArztuntersuchung(@NonNull Untersuchung untersuchung) {
-        UntersuchungArzt existingArzt = untersuchungArztService.persist(
-            UntersuchungArztBuilder.create(builder -> builder
+        UntersuchungArztBeurteilung existingArzt = untersuchungArztBeurteilungService.persist(
+            UntersuchungArztBeurteilungBuilder.create(builder -> builder
                 .forUntersuchung(untersuchung)
-                .withBemerkungen("Untersuchung Arzt Bemerkung")
                 .withBlutdruck(Blutdruck.AUFFAELLIG)
                 .withBewegungsapparat(List.of(Bewegungsapparat.SKOLIOSE, Bewegungsapparat.FUSSFEHLSTELLUNG))
                 .withEinbeinhuepfen(Einbeinhuepfen.SICHER)
                 .withEinbeinstand(Einbeinstand.NICHT_MOEGLICH)
                 .withMotorik(Motorik.NORMAL)));
-        untersuchung.setUntersuchungArzt(existingArzt);
+        untersuchung.setUntersuchungArztBeurteilung(existingArzt);
+        untersuchungRepo.persist(untersuchung);
+        return untersuchung;
+    }
+
+    @NonNull
+    public Untersuchung createUntersuchungWithArztuntersuchungBemerkung() {
+        Einladung einladung = createEinladung();
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladung.getId());
+        return createUntersuchungWithArztuntersuchungBemerkung(untersuchung);
+    }
+
+    @NonNull
+    public Untersuchung createUntersuchungWithArztuntersuchungBemerkung(@NonNull Untersuchung untersuchung) {
+        UntersuchungArztBemerkung existingArzt = untersuchungArztBemerkungService.persist(
+            UntersuchungArztBemerkungBuilder.create(builder -> builder
+                .forUntersuchung(untersuchung)
+                .withBemerkungen("Untersuchung Arzt Bemerkung")));
+        untersuchung.setUntersuchungArztBemerkung(existingArzt);
         untersuchungRepo.persist(untersuchung);
         return untersuchung;
     }
@@ -967,7 +1039,7 @@ public class FixtureService {
 
     @NonNull
     public Untersuchung createUntersuchungWithImpfungen(@NonNull Einladung einladung) {
-
+        einladung.disableOptimisticLockingCheck();
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladung.getId());
         return createUntersuchungWithImpfungen(untersuchung);
     }
@@ -981,6 +1053,7 @@ public class FixtureService {
                 .withBemerkungen("Bemerkungen zu den Impfungen")
                 .withImpfausweisUnvollstaendig(true)
                 .withVisum1(benutzer, appClock.offsetDateTime().now().toLocalDate())));
+        existingImpfungen.disableOptimisticLockingCheck();
         untersuchung.setUntersuchungImpfungen(existingImpfungen);
         untersuchungRepo.persist(untersuchung);
         return untersuchung;
@@ -1137,8 +1210,18 @@ public class FixtureService {
     @Transactional(TxType.REQUIRED)
     public Kind changeNameOfKind(@NonNull ID<Kind> kindID, @NonNull String newName) {
         Kind kind = kindService.getById(kindID);
+        kind.disableOptimisticLockingCheck();
         kind.setName(newName);
         return kindService.persistWithoutDuplicateCheck(kind);
+    }
+
+    @NonNull
+    @Transactional(TxType.REQUIRED)
+    public Aufgabe changeAufgabeEmpfaenger(@NonNull ID<Aufgabe> aufgabeID, @NonNull Benutzer empfaenger) {
+        Aufgabe aufgabe = aufgabeService.getById(aufgabeID);
+        aufgabe.setEmpfaenger(empfaenger);
+        aufgabe.disableOptimisticLockingCheck();
+        return aufgabeService.persist(aufgabe);
     }
 
     @NonNull
@@ -1146,6 +1229,7 @@ public class FixtureService {
     public Kind changeEmailOfKind(@NonNull ID<Kind> kindID, @NonNull EmailAddress emailAddress) {
         Kind kind = kindService.getById(kindID);
         kind.setEmail(emailAddress);
+        kind.disableOptimisticLockingCheck();
         return kindService.persistWithoutDuplicateCheck(kind);
     }
 
@@ -1155,6 +1239,7 @@ public class FixtureService {
     public Schule setTimestampFirstImportOfSchule(@NonNull ID<Schule> schuleID, @Nullable OffsetDateTime timestamp) {
         Schule schule = schuleService.getById(schuleID);
         Objects.requireNonNull(schule.getExternalImportInfo()).setTimestampFirstImport(timestamp);
+        schule.disableOptimisticLockingCheck();
         return schuleService.persist(schule);
     }
 
@@ -1166,6 +1251,7 @@ public class FixtureService {
     @NonNull
     public Aufgabe createAufgabe(@Nullable Kind kind) {
         // Create a Aufgabe
+        Benutzer currentBenutzer = benutzerService.getCurrentBenutzerOrThrowException();
         Benutzer benutzer = createBenutzer();
         Aufgabe aufgabe = AufgabeBuilder.create(
             builder -> builder
@@ -1173,7 +1259,7 @@ public class FixtureService {
                 .withKind(kind)
                 .withTitle("Basis Aufgabe")
                 .withFaelligDatum(LocalDate.of(2025, 1, 1))
-                .withUserErfasst(benutzer)
+                .withUserErfasst(currentBenutzer)
                 .withEmpfaenger(benutzer));
         return aufgabeService.persist(aufgabe);
     }
@@ -1224,5 +1310,13 @@ public class FixtureService {
                 .withFile(fileData)
                 .withType(type));
         return briefvorlageService.persist(aufgabe);
+    }
+
+    @NonNull
+    @Transactional(TxType.REQUIRES_NEW)
+    public Benutzer readBenutzerWithBerechtigungen(@NonNull ID<Benutzer> benutzerID) {
+        Benutzer systemAdmin = benutzerService.getById(benutzerID);
+        systemAdmin.getBerechtigungen().size();
+        return systemAdmin;
     }
 }

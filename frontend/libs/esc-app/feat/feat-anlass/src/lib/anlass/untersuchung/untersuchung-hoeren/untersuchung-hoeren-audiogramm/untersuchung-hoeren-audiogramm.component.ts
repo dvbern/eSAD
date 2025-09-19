@@ -106,14 +106,14 @@ export class UntersuchungHoerenAudiogrammComponent implements DirtyMarker {
           this.form.resetForm(defaultHoerenAudiogramm);
           this.form.group.markAsDirty();
         }
-        this.hoerenAudiogrammStore.resetApplyDefaultHoerenAudiogramm();
+        this.hoerenAudiogrammStore.resetApplyDefaultHoeren();
         this.form.setDisabled(!this.anlassStore.canUserEditAnlassInCurrentState());
       }
     });
   }
 
   loadDefault(): void {
-    this.hoerenAudiogrammStore.applyDefaultHoerenAudiogramm();
+    this.hoerenAudiogrammStore.applyDefaultHoeren();
   }
 
   isDirty(): boolean {

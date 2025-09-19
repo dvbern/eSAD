@@ -91,4 +91,8 @@ hs_err_pid*.log
 
 ## Personal files
 /api/docs/escada-service/prepared-escada-curl-request.ps1
+/api/docs/escada-service/prepared-escada-curl-request.sh
+/api/docs/escada-service/prepared-escada-curl-request-dev.ps1
+/api/docs/escada-service/prepared-escada-curl-request-dev.sh
+/api/docs/escada-service/escada-client.json
 /frontend/playwright/.auth/*

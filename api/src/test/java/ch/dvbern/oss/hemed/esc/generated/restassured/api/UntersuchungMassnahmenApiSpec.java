@@ -15,6 +15,8 @@ package ch.dvbern.oss.hemed.esc.generated.restassured.api;
 
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungMassnahmenJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungMassnahmenSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenMassnahmenJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenMassnahmenSaveJsonSpec;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +61,9 @@ public class UntersuchungMassnahmenApiSpec {
     public List<Oper> getAllOperations() {
         return Arrays.asList(
                 untersuchungMassnahmenResourceGetUntersuchungMassnahmen(),
-                untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
+                untersuchungMassnahmenResourceGetUntersuchungMassnahmenSehen(),
+                untersuchungMassnahmenResourceSaveUntersuchungMassnahmen(),
+                untersuchungMassnahmenResourceSaveUntersuchungMassnahmenSehen()
         );
     }
 
@@ -67,8 +71,16 @@ public class UntersuchungMassnahmenApiSpec {
         return new UntersuchungMassnahmenResourceGetUntersuchungMassnahmenOper(createReqSpec());
     }
 
+    public UntersuchungMassnahmenResourceGetUntersuchungMassnahmenSehenOper untersuchungMassnahmenResourceGetUntersuchungMassnahmenSehen() {
+        return new UntersuchungMassnahmenResourceGetUntersuchungMassnahmenSehenOper(createReqSpec());
+    }
+
     public UntersuchungMassnahmenResourceSaveUntersuchungMassnahmenOper untersuchungMassnahmenResourceSaveUntersuchungMassnahmen() {
         return new UntersuchungMassnahmenResourceSaveUntersuchungMassnahmenOper(createReqSpec());
+    }
+
+    public UntersuchungMassnahmenResourceSaveUntersuchungMassnahmenSehenOper untersuchungMassnahmenResourceSaveUntersuchungMassnahmenSehen() {
+        return new UntersuchungMassnahmenResourceSaveUntersuchungMassnahmenSehenOper(createReqSpec());
     }
 
     /**
@@ -167,6 +179,91 @@ public class UntersuchungMassnahmenApiSpec {
         }
     }
     /**
+     * Get Untersuchung Massnahmen Sehen
+     * 
+     *
+     * @see #anlassIdPath  (required)
+     * @see #einladungIdPath  (required)
+     * return UntersuchungSehenMassnahmenJsonSpec
+     */
+    public static class UntersuchungMassnahmenResourceGetUntersuchungMassnahmenSehenOper implements Oper {
+
+        public static final Method REQ_METHOD = GET;
+        public static final String REQ_URI = "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/massnahmen/sehen";
+
+        private RequestSpecBuilder reqSpec;
+        private ResponseSpecBuilder respSpec;
+
+        public UntersuchungMassnahmenResourceGetUntersuchungMassnahmenSehenOper(RequestSpecBuilder reqSpec) {
+            this.reqSpec = reqSpec;
+            reqSpec.setAccept("application/json");
+            this.respSpec = new ResponseSpecBuilder();
+        }
+
+        /**
+         * GET /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/massnahmen/sehen
+         * @param handler handler
+         * @param <T> type
+         * @return type
+         */
+        @Override
+        public <T> T execute(Function<Response, T> handler) {
+            return handler.apply(RestAssured.given().spec(reqSpec.build()).expect().spec(respSpec.build()).when().request(REQ_METHOD, REQ_URI));
+        }
+
+        /**
+         * GET /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/massnahmen/sehen
+         * @param handler handler
+         * @return UntersuchungSehenMassnahmenJsonSpec
+         */
+        public UntersuchungSehenMassnahmenJsonSpec executeAs(Function<Response, Response> handler) {
+            TypeRef<UntersuchungSehenMassnahmenJsonSpec> type = new TypeRef<UntersuchungSehenMassnahmenJsonSpec>(){};
+            return execute(handler).as(type);
+        }
+
+        public static final String ANLASS_ID_PATH = "anlassId";
+
+        /**
+         * @param anlassId (String)  (required)
+         * @return operation
+         */
+        public UntersuchungMassnahmenResourceGetUntersuchungMassnahmenSehenOper anlassIdPath(Object anlassId) {
+            reqSpec.addPathParam(ANLASS_ID_PATH, anlassId);
+            return this;
+        }
+
+        public static final String EINLADUNG_ID_PATH = "einladungId";
+
+        /**
+         * @param einladungId (String)  (required)
+         * @return operation
+         */
+        public UntersuchungMassnahmenResourceGetUntersuchungMassnahmenSehenOper einladungIdPath(Object einladungId) {
+            reqSpec.addPathParam(EINLADUNG_ID_PATH, einladungId);
+            return this;
+        }
+
+        /**
+         * Customize request specification
+         * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
+         * @return operation
+         */
+        public UntersuchungMassnahmenResourceGetUntersuchungMassnahmenSehenOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+            reqSpecCustomizer.accept(reqSpec);
+            return this;
+        }
+
+        /**
+         * Customize response specification
+         * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
+         * @return operation
+         */
+        public UntersuchungMassnahmenResourceGetUntersuchungMassnahmenSehenOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+            respSpecCustomizer.accept(respSpec);
+            return this;
+        }
+    }
+    /**
      * Save Untersuchung Massnahmen
      * 
      *
@@ -258,6 +355,102 @@ public class UntersuchungMassnahmenApiSpec {
          * @return operation
          */
         public UntersuchungMassnahmenResourceSaveUntersuchungMassnahmenOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+            respSpecCustomizer.accept(respSpec);
+            return this;
+        }
+    }
+    /**
+     * Save Untersuchung Massnahmen Sehen
+     * 
+     *
+     * @see #anlassIdPath  (required)
+     * @see #einladungIdPath  (required)
+     * @see #body  (required)
+     * return UntersuchungSehenMassnahmenJsonSpec
+     */
+    public static class UntersuchungMassnahmenResourceSaveUntersuchungMassnahmenSehenOper implements Oper {
+
+        public static final Method REQ_METHOD = PUT;
+        public static final String REQ_URI = "/api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/massnahmen/sehen";
+
+        private RequestSpecBuilder reqSpec;
+        private ResponseSpecBuilder respSpec;
+
+        public UntersuchungMassnahmenResourceSaveUntersuchungMassnahmenSehenOper(RequestSpecBuilder reqSpec) {
+            this.reqSpec = reqSpec;
+            reqSpec.setContentType("application/json");
+            reqSpec.setAccept("application/json");
+            this.respSpec = new ResponseSpecBuilder();
+        }
+
+        /**
+         * PUT /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/massnahmen/sehen
+         * @param handler handler
+         * @param <T> type
+         * @return type
+         */
+        @Override
+        public <T> T execute(Function<Response, T> handler) {
+            return handler.apply(RestAssured.given().spec(reqSpec.build()).expect().spec(respSpec.build()).when().request(REQ_METHOD, REQ_URI));
+        }
+
+        /**
+         * PUT /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/massnahmen/sehen
+         * @param handler handler
+         * @return UntersuchungSehenMassnahmenJsonSpec
+         */
+        public UntersuchungSehenMassnahmenJsonSpec executeAs(Function<Response, Response> handler) {
+            TypeRef<UntersuchungSehenMassnahmenJsonSpec> type = new TypeRef<UntersuchungSehenMassnahmenJsonSpec>(){};
+            return execute(handler).as(type);
+        }
+
+         /**
+         * @param untersuchungSehenMassnahmenSaveJsonSpec (UntersuchungSehenMassnahmenSaveJsonSpec)  (required)
+         * @return operation
+         */
+        public UntersuchungMassnahmenResourceSaveUntersuchungMassnahmenSehenOper body(UntersuchungSehenMassnahmenSaveJsonSpec untersuchungSehenMassnahmenSaveJsonSpec) {
+            reqSpec.setBody(untersuchungSehenMassnahmenSaveJsonSpec);
+            return this;
+        }
+
+        public static final String ANLASS_ID_PATH = "anlassId";
+
+        /**
+         * @param anlassId (String)  (required)
+         * @return operation
+         */
+        public UntersuchungMassnahmenResourceSaveUntersuchungMassnahmenSehenOper anlassIdPath(Object anlassId) {
+            reqSpec.addPathParam(ANLASS_ID_PATH, anlassId);
+            return this;
+        }
+
+        public static final String EINLADUNG_ID_PATH = "einladungId";
+
+        /**
+         * @param einladungId (String)  (required)
+         * @return operation
+         */
+        public UntersuchungMassnahmenResourceSaveUntersuchungMassnahmenSehenOper einladungIdPath(Object einladungId) {
+            reqSpec.addPathParam(EINLADUNG_ID_PATH, einladungId);
+            return this;
+        }
+
+        /**
+         * Customize request specification
+         * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
+         * @return operation
+         */
+        public UntersuchungMassnahmenResourceSaveUntersuchungMassnahmenSehenOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+            reqSpecCustomizer.accept(reqSpec);
+            return this;
+        }
+
+        /**
+         * Customize response specification
+         * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
+         * @return operation
+         */
+        public UntersuchungMassnahmenResourceSaveUntersuchungMassnahmenSehenOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
             respSpecCustomizer.accept(respSpec);
             return this;
         }

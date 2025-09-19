@@ -1,12 +1,14 @@
 import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {ArtAbmeldung, EinladungJson, GrundAbmeldung} from '@dvb/data-access-backend';
-import {BaseForm} from '@dvb/util-angular';
+import {globalConstants} from '@dvb/feat-shared';
+import {AppValidators, BaseForm} from '@dvb/util-angular';
 import {ensureProps, Nullish, requireFilledIn, requireValue} from '@dvb/util-shared';
 
 export interface EinladungAbmeldenJson {
   grundAbmeldung: GrundAbmeldung;
   artAbmeldung: ArtAbmeldung;
   bemerkungAbmeldung: string;
+  versionAbmeldungsNotiz: number
 }
 
 function makeForm(fb: NonNullableFormBuilder) {
@@ -15,7 +17,8 @@ function makeForm(fb: NonNullableFormBuilder) {
     name: fb.control<string>({value: '', disabled: true}),
     grundAbmeldung: fb.control<GrundAbmeldung | undefined>(undefined, Validators.required),
     artAbmeldung: fb.control<ArtAbmeldung | undefined>(undefined, Validators.required),
-    bemerkungAbmeldung: fb.control<string>(''),
+    bemerkungAbmeldung: fb.control<string>('', AppValidators.textareaMaxLength2000()),
+    versionAbmeldungsNotiz: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 }
 
@@ -31,6 +34,7 @@ export class EinladungAbmeldenForm extends BaseForm<ReturnType<typeof makeForm>,
       grundAbmeldung: einladung?.data.grundAbmeldung,
       artAbmeldung: einladung?.data.artAbmeldung,
       bemerkungAbmeldung: einladung?.data.bemerkungAbmeldung,
+      versionAbmeldungsNotiz: einladung?.data.versionAbmeldungsNotiz
     });
   }
 
@@ -40,6 +44,7 @@ export class EinladungAbmeldenForm extends BaseForm<ReturnType<typeof makeForm>,
       grundAbmeldung: requireFilledIn(value.grundAbmeldung),
       artAbmeldung: requireFilledIn(value.artAbmeldung),
       bemerkungAbmeldung: value.bemerkungAbmeldung,
+      versionAbmeldungsNotiz: value.versionAbmeldungsNotiz ?? globalConstants.entityPrePersistVersion,
     });
   }
 }

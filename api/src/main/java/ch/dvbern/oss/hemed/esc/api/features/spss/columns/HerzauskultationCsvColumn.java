@@ -16,7 +16,7 @@ public class HerzauskultationCsvColumn extends AbstractCsvColumn {
     @Override
     @NonNull
     public String extract(@NonNull Einladung einladung) {
-        return ExtractorForCsvUtil.extractUntersuchungArzt(
+        return ExtractorForCsvUtil.extractUntersuchungArztBeurteilung(
             einladung,
             untersuchungArzt -> {
                 if (untersuchungArzt.getHerzauskultation() == null) {

@@ -35,7 +35,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   UntersuchungHoerenOtoskopieSaveJsonSpec.JSON_PROPERTY_OTOSKOPIE_RECHTS_RESULTAT_ANDERE,
   UntersuchungHoerenOtoskopieSaveJsonSpec.JSON_PROPERTY_OTOSKOPIE_LINKS,
   UntersuchungHoerenOtoskopieSaveJsonSpec.JSON_PROPERTY_OTOSKOPIE_LINKS_RESULTAT_ANDERE,
-  UntersuchungHoerenOtoskopieSaveJsonSpec.JSON_PROPERTY_BEMERKUNGEN
+  UntersuchungHoerenOtoskopieSaveJsonSpec.JSON_PROPERTY_BEMERKUNGEN,
+  UntersuchungHoerenOtoskopieSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("UntersuchungHoerenOtoskopieSaveJson")
 @lombok.AllArgsConstructor
@@ -60,6 +61,10 @@ public class UntersuchungHoerenOtoskopieSaveJsonSpec {
   public static final String JSON_PROPERTY_BEMERKUNGEN = "bemerkungen";
   @jakarta.annotation.Nullable
   private String bemerkungen;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public UntersuchungHoerenOtoskopieSaveJsonSpec() {
   }
@@ -205,6 +210,31 @@ public class UntersuchungHoerenOtoskopieSaveJsonSpec {
     this.bemerkungen = bemerkungen;
   }
 
+  public UntersuchungHoerenOtoskopieSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -218,12 +248,13 @@ public class UntersuchungHoerenOtoskopieSaveJsonSpec {
         Objects.equals(this.otoskopieRechtsResultatAndere, untersuchungHoerenOtoskopieSaveJson.otoskopieRechtsResultatAndere) &&
         Objects.equals(this.otoskopieLinks, untersuchungHoerenOtoskopieSaveJson.otoskopieLinks) &&
         Objects.equals(this.otoskopieLinksResultatAndere, untersuchungHoerenOtoskopieSaveJson.otoskopieLinksResultatAndere) &&
-        Objects.equals(this.bemerkungen, untersuchungHoerenOtoskopieSaveJson.bemerkungen);
+        Objects.equals(this.bemerkungen, untersuchungHoerenOtoskopieSaveJson.bemerkungen) &&
+        Objects.equals(this.version, untersuchungHoerenOtoskopieSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(otoskopieRechts, otoskopieRechtsResultatAndere, otoskopieLinks, otoskopieLinksResultatAndere, bemerkungen);
+    return Objects.hash(otoskopieRechts, otoskopieRechtsResultatAndere, otoskopieLinks, otoskopieLinksResultatAndere, bemerkungen, version);
   }
 
   @Override
@@ -235,6 +266,7 @@ public class UntersuchungHoerenOtoskopieSaveJsonSpec {
     sb.append("    otoskopieLinks: ").append(toIndentedString(otoskopieLinks)).append("\n");
     sb.append("    otoskopieLinksResultatAndere: ").append(toIndentedString(otoskopieLinksResultatAndere)).append("\n");
     sb.append("    bemerkungen: ").append(toIndentedString(bemerkungen)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

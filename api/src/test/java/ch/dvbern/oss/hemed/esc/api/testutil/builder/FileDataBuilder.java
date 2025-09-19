@@ -1,10 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
-import ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil;
-import io.vertx.mutiny.ext.web.FileUpload;
-import java.time.OffsetDateTime;
-import java.util.function.Consumer;
-
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
@@ -15,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.tika.mime.MediaType;
 import org.assertj.core.util.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.time.OffsetDateTime;
+import java.util.function.Consumer;
 
 @RequiredArgsConstructor
 public class FileDataBuilder {
@@ -32,7 +30,7 @@ public class FileDataBuilder {
         fileInfoS3.setFileIdInBucket("pdf");
         FileData fileData = new FileData(
             FileTyp.NOTIZUPLOAD,
-            TestUtil.getRandomString("FileName"),
+            new CleanFileName(TestUtil.getRandomString("FileName")),
             fileInfoS3
         );
 
@@ -49,7 +47,7 @@ public class FileDataBuilder {
         fileInfoS3.setFileIdInBucket("word");
         FileData fileData = new FileData(
             FileTyp.BRIEFVORLAGE,
-            TestUtil.getRandomString("FileName"),
+            new CleanFileName(TestUtil.getRandomString("FileName")),
             fileInfoS3
         );
 
@@ -63,7 +61,7 @@ public class FileDataBuilder {
         fileInfoS3.setFileIdInBucket("picture");
         FileData fileData = new FileData(
             FileTyp.NOTIZUPLOAD,
-            TestUtil.getRandomString("FileName"),
+            new CleanFileName(TestUtil.getRandomString("FileName")),
             fileInfoS3
         );
 
@@ -82,6 +80,7 @@ public class FileDataBuilder {
     @CanIgnoreReturnValue
     public FileDataBuilder withFileName(@NonNull String fileName) {
         this.fileData.getFileInfoBucket().setFileName(new CleanFileName(fileName));
+        this.fileData.setCalculatedFileName(new CleanFileName("calculatedfilename_" + fileName));
         return this;
     }
 

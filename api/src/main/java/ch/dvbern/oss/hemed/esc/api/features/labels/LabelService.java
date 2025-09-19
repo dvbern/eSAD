@@ -22,6 +22,11 @@ public class LabelService {
         return label;
     }
 
+    @NonNull
+    public Label persistWithOptimisticLocking(@NonNull Label entity, @NonNull Long versionFromFrontend) {
+        return labelRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
+    }
+
     public void remove(@NonNull ID<Label> labelID) {
         labelRepo.remove(labelID);
     }

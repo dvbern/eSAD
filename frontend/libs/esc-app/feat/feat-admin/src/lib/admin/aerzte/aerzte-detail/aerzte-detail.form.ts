@@ -17,7 +17,7 @@
 
 import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {ArztSaveJson, Fachrichtung, HpvTeilnahme, Organisation} from '@dvb/data-access-backend';
-import {AdresseForm} from '@dvb/feat-shared';
+import {AdresseForm, globalConstants} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
 import {ensurePropsFlat, Nullish, requireFilledIn, requireValue, trimToUndefined} from '@dvb/util-shared';
 
@@ -41,6 +41,7 @@ function makeForm(config: Config) {
         telefon: fb.control<string | Nullish>(undefined, [AppValidators.phoneValidator(), maxLength]),
         bemerkungen: fb.control<string | Nullish>(undefined, [maxLength]),
         hpvTeilnahme: fb.control<HpvTeilnahme | Nullish>(undefined, [Validators.required]),
+        version: fb.control<number | Nullish>({value: undefined, disabled: true}),
     });
     return group;
 }
@@ -67,6 +68,7 @@ export class ArztDetailForm extends BaseForm<ReturnType<typeof makeForm>, ArztSa
             fachrichtung: requireFilledIn(value.fachrichtung),
             organisation: requireFilledIn(value.organisation),
             adresse: this.adresseForm.valueOnValid(),
+            version: value.version ?? globalConstants.entityPrePersistVersion,
         });
     }
 }

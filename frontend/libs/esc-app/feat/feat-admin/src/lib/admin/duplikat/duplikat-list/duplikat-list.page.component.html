@@ -1,7 +1,12 @@
 <feat-page [heading]="'duplikat.list.page.title' | transloco"
            [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN}">
 
-  <svui-page-header-buttons>
+  <svui-page-header-list-summary [items]="summaryItems()"/>
+
+  <svui-page-header-buttons
+    [showFilterPopup]="false"
+    [activeFilterCount]="itemTable.numberOfFilters()"
+    (resetFilter)="itemTable.resetFilters(); tableFilterForm.reset();">
     <button svuiButton="secondary"
             type="button"
             [icon]="'aktualisieren'"

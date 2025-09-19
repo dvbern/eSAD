@@ -69,7 +69,7 @@ public class AnlassConfigJson {
     private boolean impfungenMassnahmeBeratungMPA;
 
     @Schema(required = true)
-    private boolean impfungenMassnahmeInformationenAbgegeben;
+    private boolean impfungenMassnahmeInfomaterialAbgegeben;
 
     @Schema(required = true)
     private boolean impfungenMassnahmeInfoEltern;
@@ -100,6 +100,9 @@ public class AnlassConfigJson {
 
     @Schema(required = true)
     private boolean showTabSehen;
+
+    @Schema(required = true)
+    private boolean showTabSehenBeurteilung;
 
     @NonNull
     @Schema(required = true)
@@ -144,6 +147,16 @@ public class AnlassConfigJson {
     @NonNull
     @Schema(required = true)
     private RequirementSetting sehenBemerkungen;
+
+    @Schema(required = true)
+    private boolean showTabSehenBemerkungenFragenbogen;
+
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting sehenBemerkungenFragebogen;
+
+    @Schema(required = true)
+    private boolean showTabSehenMassnahmen;
 
     @NonNull
     @Schema(required = true)
@@ -244,6 +257,12 @@ public class AnlassConfigJson {
 
     @Schema(required = true)
     private boolean showTabUntersuchung;
+
+    @Schema(required = true)
+    private boolean showTabUntersuchungBeurteilung;
+
+    @Schema(required = true)
+    private boolean showTabUntersuchungBemerkung;
 
     @NonNull
     @Schema(required = true)

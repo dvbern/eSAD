@@ -20,6 +20,11 @@ public class UntersuchungTriageService {
     }
 
     @NonNull
+    public UntersuchungTriage persistWithOptimisticLocking(@NonNull UntersuchungTriage entity, @NonNull Long versionFromFrontend) {
+        return triageRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
+    }
+
+    @NonNull
     public UntersuchungTriage getById(@NonNull ID<UntersuchungTriage> triageID) {
         return triageRepo.getById(triageID);
     }
@@ -35,6 +40,7 @@ public class UntersuchungTriageService {
 
     public void untersuchungAbschliessen(@NonNull Untersuchung untersuchung) {
         UntersuchungTriage triage = UntersuchungTriage.forUntersuchungAbschliessen(untersuchung);
+        triage.disableOptimisticLockingCheck();
         persist(triage);
     }
 }

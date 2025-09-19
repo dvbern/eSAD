@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
+import java.math.BigDecimal;
+
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
@@ -27,8 +29,8 @@ class GewichtWertCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungGroesseGewicht.setGewicht(1600);
+        untersuchungGroesseGewicht.setGewicht(BigDecimal.valueOf(25.3));
 
-        assertThat(column.extract(einladung)).isEqualTo("1600");
+        assertThat(column.extract(einladung)).isEqualTo("25.3");
     }
 }

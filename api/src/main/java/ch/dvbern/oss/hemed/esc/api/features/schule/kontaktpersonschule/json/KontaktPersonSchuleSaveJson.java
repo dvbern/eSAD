@@ -4,6 +4,7 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.KontaktPersonSchuleFunktion;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -16,7 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Value
 @AllArgsConstructor
 @JaxDTO
-public class KontaktPersonSchuleSaveJson {
+public class KontaktPersonSchuleSaveJson implements SaveJsonWithOptimisticLocking {
 
     @NonNull
     @NotNull
@@ -46,4 +47,7 @@ public class KontaktPersonSchuleSaveJson {
     @Nullable
     @Schema(required = false)
     private NormalizedPhoneNumber telefon;
+
+    @Schema(required = true)
+    private long version;
 }

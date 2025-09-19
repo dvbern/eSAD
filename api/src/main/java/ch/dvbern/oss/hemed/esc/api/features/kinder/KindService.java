@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.KindDuplikatException;
@@ -9,6 +10,7 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.sozialversicherungsnummer.SozialversicherungsNummer;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.duplikate.Duplikat;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.duplikate.DuplikatService;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.types.KindSaveModeDuplikat;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.shared.person.RemoveKindService;
@@ -33,7 +35,16 @@ public class KindService {
 
     @NonNull
     public Kind persistWithoutDuplicateCheck(@NonNull Kind kind) {
-        kindRepo.persist(kind);
+        return persistWithoutDuplicateCheck(kind, null);
+    }
+
+    @NonNull
+    public Kind persistWithoutDuplicateCheck(@NonNull Kind kind, @Nullable Long versionFromFrontend) {
+        if (versionFromFrontend != null) {
+           kindRepo.persistWithOptimisticLocking(kind, versionFromFrontend);
+        } else {
+            kindRepo.persist(kind);
+        }
         return kind;
     }
 
@@ -45,9 +56,8 @@ public class KindService {
         Optional<Kind> preexistingKindWithVnrOpt = findBySozialversicherungsnummer(vnr);
         if (preexistingKindWithVnrOpt.isPresent()) {
             Kind kindWithSameVnr = preexistingKindWithVnrOpt.get();
-            if (kindWithSameVnr.getExternalImportInfo() != null) { // escada imported kind
-                if (kindWithSameVnr.getExternalSystemIdOrNull() == null
-                    || !kindWithSameVnr.getExternalSystemIdOrNull().equals(externalSchuelerId)
+            if (kindWithSameVnr.getExternalSystemIdOrNull() != null) { // escada imported kind
+                if (!kindWithSameVnr.getExternalSystemIdOrNull().equals(externalSchuelerId)
                 ) {
                     // Es existiert schon ein Escada-Kind mit der gleichen Sozialversicherungsnummer aber anderer
                     // escadaid.
@@ -64,6 +74,7 @@ public class KindService {
                 // identisch sind, werden sie im Duplikat-Batchjob aufschlagen, dies ist etwas konservativer als
                 // direkt zu mergen da der Kunde noch selber entscheiden kann ob er mergen will
                 kindWithSameVnr.setSozialversicherungsNummer(null);
+                kindWithSameVnr.disableOptimisticLockingCheck();
                 persistWithoutDuplicateCheck(kindWithSameVnr);
                 LOG.info(
                     "ESCADA: Kind with Sozialversicherungsnummer '{}' already exists (manually created), removing "
@@ -75,11 +86,25 @@ public class KindService {
         }
     }
 
+    public Kind persistWithDuplicateCheck(@NonNull Kind kind, @Nullable Long versionFromFrontend, @NonNull KindSaveModeDuplikat kindSaveMode) {
+        return persistInternal(
+            kind,
+            kindSaveMode == KindSaveModeDuplikat.MARK_AS_FALSE_POSITIVE,
+            versionFromFrontend != null,
+            versionFromFrontend
+        );
+    }
+
     @NonNull
-    public Kind persist(@NonNull Kind kind, boolean forceSaveAkzeptiereDuplikate) {
+    private Kind persistInternal(@NonNull Kind kind, boolean forceSaveAkzeptiereDuplikate, boolean withOptimisticLocking, @Nullable Long versionFromFrontend) {
         kind.setNormalizedName(StringNormalizerUtil.normalizeAndStripDiarcritics(kind.getName()));
         kind.setNormalizedVorname(StringNormalizerUtil.normalizeAndStripDiarcritics(kind.getVorname()));
-        kindRepo.persist(kind); // check unique key constraints first (note that this will be rolled back if kind is new duplicate)
+        // check unique key constraints first (note that this will be rolled back if kind is new duplicate)
+        if (withOptimisticLocking) {
+            kindRepo.persistWithOptimisticLocking(kind, Objects.requireNonNull(versionFromFrontend));
+        } else {
+            kindRepo.persist(kind);
+        }
         List<Kind> potentialKindDuplikate = duplikatService.searchPotentialKindDuplikate(kind);
 
         for (Kind potentialKindDuplikat : potentialKindDuplikate) {
@@ -100,7 +125,6 @@ public class KindService {
                 }
             }
         }
-
         return kind;
     }
 
@@ -159,6 +183,7 @@ public class KindService {
         Kind kind = getById(id);
         kind.setNormalizedName(StringNormalizerUtil.normalizeAndStripDiarcritics(kind.getName()));
         kind.setNormalizedVorname(StringNormalizerUtil.normalizeAndStripDiarcritics(kind.getVorname()));
+        kind.disableOptimisticLockingCheck();
         persistWithoutDuplicateCheck(kind);
     }
 }

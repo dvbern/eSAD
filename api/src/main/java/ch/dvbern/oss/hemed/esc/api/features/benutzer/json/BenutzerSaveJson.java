@@ -5,6 +5,7 @@ import java.util.List;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Value
 @AllArgsConstructor
 @JaxDTO
-public class BenutzerSaveJson {
+public class BenutzerSaveJson implements SaveJsonWithOptimisticLocking {
 
     @Nullable
     @Schema(required = false)
@@ -59,4 +60,7 @@ public class BenutzerSaveJson {
     @NonNull
     @Schema(required = true)
     private List<FachRolle> fachRollen;
+
+    @Schema(required = true)
+    private long version;
 }

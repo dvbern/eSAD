@@ -153,7 +153,11 @@ export class AnlassListPageComponent extends FilterSessionStorage<AnlassFilterFo
     try {
       const parsed = JSON.parse(sessionStorageFilter) as AnlassFilterForm;
 
-      // Reconstruct the filter with proper data types and validation
+      if (parsed.anlassStatus.length == 0) {
+        parsed.anlassStatus = Object.values(AnlassStatus).filter(
+          status => ![AnlassStatus.ABGESCHLOSSEN, AnlassStatus.ABGESAGT].includes(status)
+        );
+      }
       return {
         fullTitle: parsed.fullTitle ?? '',
         anlassStatus: toValidEnumList(AnlassStatus, parsed.anlassStatus),

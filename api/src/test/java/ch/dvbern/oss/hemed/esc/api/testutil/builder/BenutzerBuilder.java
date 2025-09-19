@@ -1,11 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
-import java.time.OffsetDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Consumer;
-
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
@@ -21,6 +15,12 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerJsonSpec;
 import org.assertj.core.util.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 public class BenutzerBuilder {
 
@@ -101,6 +101,13 @@ public class BenutzerBuilder {
     @CanIgnoreReturnValue
     public BenutzerBuilder withTelefon(@NonNull NormalizedPhoneNumber telefon) {
         this.benutzer.setTelefon(telefon);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public BenutzerBuilder withEmail(@NonNull EmailAddress email) {
+        this.benutzer.setEmail(email);
         return this;
     }
 

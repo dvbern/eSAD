@@ -100,6 +100,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RequiredArgsConstructor
 class SearchResourceITest extends AbstractITest {
 
+    private static final int MAX_PAGE_SIZE = Integer.MAX_VALUE;
+
     private final SearchApiSpec api = SearchApiSpec.search(RequestSpecUtil.quarkusSpec());
 
     private final FixtureService fixtureService;
@@ -372,7 +374,7 @@ class SearchResourceITest extends AbstractITest {
                 SearchColumnsSpec.NAME, "%all",
                 FilterCombinationSpec.OR);
             SearchJsonSpec searchSpec = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 20, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(nameFilter)
             );
@@ -389,7 +391,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(20, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 2);
 
@@ -420,7 +422,7 @@ class SearchResourceITest extends AbstractITest {
                 SearchColumnsSpec.NAME, uuid.toString() + "Bürgenme",
                 FilterCombinationSpec.OR);
             SearchJsonSpec searchSpec = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 20, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(nameFilter)
             );
@@ -437,7 +439,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(20, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -462,7 +464,7 @@ class SearchResourceITest extends AbstractITest {
                 SearchColumnsSpec.NAME, name1ToFind + "  " + name2ToFind,
                 FilterCombinationSpec.OR);
             SearchJsonSpec searchSpec = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 20, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(nameFilter)
             );
@@ -479,7 +481,7 @@ class SearchResourceITest extends AbstractITest {
 
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(20, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 2);
 
@@ -519,7 +521,7 @@ class SearchResourceITest extends AbstractITest {
                 SearchColumnsSpec.NAME, "Ra",
                 FilterCombinationSpec.SINGLE);
             SearchJsonSpec searchSpecWithoutPercent = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, Integer.MAX_VALUE, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(nameFilterWithoutPercent)
             );
@@ -551,7 +553,7 @@ class SearchResourceITest extends AbstractITest {
                 SearchColumnsSpec.NAME, "%ra",
                 FilterCombinationSpec.SINGLE);
             SearchJsonSpec searchSpecWithPercent = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, Integer.MAX_VALUE, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(nameFilterWithPercent)
             );
@@ -607,7 +609,7 @@ class SearchResourceITest extends AbstractITest {
                 SearchColumnsSpec.VORNAME, "Ma",
                 FilterCombinationSpec.SINGLE);
             SearchJsonSpec searchSpecWithoutPercent = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, Integer.MAX_VALUE, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(vornameFilterWithoutPercent)
             );
@@ -639,7 +641,7 @@ class SearchResourceITest extends AbstractITest {
                 SearchColumnsSpec.VORNAME, "%ma",
                 FilterCombinationSpec.SINGLE);
             SearchJsonSpec searchSpecWithPercent = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, Integer.MAX_VALUE, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(vornameFilterWithPercent)
             );
@@ -694,7 +696,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec searchSpec = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 50, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(klassenstufeFilter, nameFilter)
             );
@@ -711,7 +713,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(50, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -739,7 +741,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.SINGLE);
 
             SearchJsonSpec searchSpec = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 20, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(klassenstufeFilter)
             );
@@ -756,7 +758,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(20, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -781,7 +783,7 @@ class SearchResourceITest extends AbstractITest {
                 SearchColumnsSpec.SCHULNAME, klassenstufeSearchTerm,
                 FilterCombinationSpec.OR);
             SearchJsonSpec searchSpec = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 20, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(nameFilter)
             );
@@ -798,7 +800,7 @@ class SearchResourceITest extends AbstractITest {
 
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(20, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -822,7 +824,7 @@ class SearchResourceITest extends AbstractITest {
                 SearchColumnsSpec.SCHULE_ID, schuleIdSearchTerm,
                 FilterCombinationSpec.OR);
             SearchJsonSpec searchSpec = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 20, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(nameFilter)
             );
@@ -839,7 +841,7 @@ class SearchResourceITest extends AbstractITest {
 
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(20, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count == 1);
 
@@ -867,7 +869,7 @@ class SearchResourceITest extends AbstractITest {
                 SearchColumnsSpec.NOTIZ_VERANTWORTLICHER_ID, benutzer.getId().getId(),
                 FilterCombinationSpec.AND);
             SearchJsonSpec searchSpec = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 20, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(statusFilter, benutzerFilter)
             );
@@ -884,7 +886,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(20, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count == 2);
         }
@@ -913,7 +915,7 @@ class SearchResourceITest extends AbstractITest {
                 labels.stream().map(l -> l.getId().getId()).collect(Collectors.joining(" ")),
                 FilterCombinationSpec.AND);
             SearchJsonSpec searchSpec = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 20, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(zeitraumLabels)
             );
@@ -930,7 +932,7 @@ class SearchResourceITest extends AbstractITest {
 
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(20, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count == 1);
 
@@ -1040,7 +1042,7 @@ class SearchResourceITest extends AbstractITest {
                 SearchColumnsSpec.DOSSIER_MPA_ID, mpaIdSearchTerm,
                 FilterCombinationSpec.AND);
             SearchJsonSpec searchSpec = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 20, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(filterTerm)
             );
@@ -1057,7 +1059,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT that Dossier with given mpa was found
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(20, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -1075,7 +1077,7 @@ class SearchResourceITest extends AbstractITest {
                 SearchColumnsSpec.DOSSIER_MPA_ID, mpaThroughSchuleSearchIdTerm,
                 FilterCombinationSpec.AND);
             SearchJsonSpec searchForMpa = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 20, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(mpaTrhoughSchuleFilter)
             );
@@ -1092,7 +1094,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT that Dossier with given mpa was found
             assertThat(schuleMpaResult)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(20, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -1114,7 +1116,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND
             );
             SearchJsonSpec mpaUnassignedSearch = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 40, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(mpaUnassignedFilter, nameFilter)
                 // add name filter to make sure we only match kinder of this testrun
@@ -1132,7 +1134,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT that Dossier with given mpa was found
             assertThat(mpaUnassignedResult)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(40, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -1194,7 +1196,7 @@ class SearchResourceITest extends AbstractITest {
                 SearchColumnsSpec.DOSSIER_ARZT_ID, arztIdSearchTerm,
                 FilterCombinationSpec.AND);
             SearchJsonSpec searchSpec = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 20, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(filterTerm)
             );
@@ -1211,7 +1213,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT that Dossier with given arzt was found
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(20, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -1229,7 +1231,7 @@ class SearchResourceITest extends AbstractITest {
                 SearchColumnsSpec.DOSSIER_ARZT_ID, arztThroughSchuleSearchIdTerm,
                 FilterCombinationSpec.AND);
             SearchJsonSpec searchForMpa = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 20, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(arztTrhoughSchuleFilter)
             );
@@ -1246,7 +1248,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT that Dossier with given arzt was found
             assertThat(schuleArztResult)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(20, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -1268,7 +1270,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND
             );
             SearchJsonSpec arztUnassignedSearch = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 20, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(arztUnassignedFilter, nameFilter)
                 // add name filter to make sure we only find kidner of this testrun
@@ -1286,7 +1288,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT that Dossier with given mpa was found
             assertThat(mpaUnassignedResult)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(20, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -1350,7 +1352,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec masernSearch = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 40, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(masernFilter)
             );
@@ -1367,7 +1369,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT Masern
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(40, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -1384,7 +1386,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec varizellenSearch = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 40, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(varizellenFilter)
             );
@@ -1401,7 +1403,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT Varizellen
             assertThat(resultVarizellen)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(40, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -1431,7 +1433,7 @@ class SearchResourceITest extends AbstractITest {
                 SearchColumnsSpec.NAME, uuid.toString(),
                 FilterCombinationSpec.AND);
             SearchJsonSpec searchSpec = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 40, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(inaktivFilter, nameFilter)
             );
@@ -1448,7 +1450,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(40, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -1480,7 +1482,7 @@ class SearchResourceITest extends AbstractITest {
                 SearchColumnsSpec.NAME, uuid.toString(),
                 FilterCombinationSpec.AND);
             SearchJsonSpec searchSpec = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 40, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(inaktivFilter, nameFilter)
             );
@@ -1497,7 +1499,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(40, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -1536,7 +1538,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec searchSpec = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 40, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(krankheitFilter)
             );
@@ -1553,7 +1555,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(40, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -1576,7 +1578,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec searchByDatum = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 40, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(dateImpfungFilterVon, dateImpfungFilterBis)
             );
@@ -1593,7 +1595,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT
             assertThat(resultByDatum)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(40, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -1640,7 +1642,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec searchByDatum = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 40, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(dateAnlassFilterVon, dateAnlassFilterBis)
             );
@@ -1657,7 +1659,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(40, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -1700,7 +1702,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec searchBySchuljahr = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 40, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(schuljahrFilter)
             );
@@ -1717,7 +1719,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(40, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -1734,10 +1736,10 @@ class SearchResourceITest extends AbstractITest {
         @TestAsAdminBS
         void findPaginatedKinder_should_filter_anlass_status() {
             // ARRANGE
-            // Create kind with anlass in status IN_PLANUNG
+            // Create kind with anlass in status AUFGEBOTEN
             Dossier dossier1 = fixtureService.createDossier();
             Kind kind1 = dossier1.getKind();
-            Anlass anlass1 = fixtureService.createAnlass(AnlassStatus.IN_PLANUNG);
+            Anlass anlass1 = fixtureService.createAnlass(AnlassStatus.AUFGEBOTEN);
             fixtureService.createEinladung(anlass1, dossier1);
 
             // Create kind with anlass in status BEREIT
@@ -1750,14 +1752,14 @@ class SearchResourceITest extends AbstractITest {
             Dossier dossier3 = fixtureService.createDossier();
             Kind kind3 = dossier3.getKind();
 
-            // ACT search by status IN_PLANUNG
+            // ACT search by status AUFGEBOTEN
             SearchJsonFiltersInnerSpec statusFilter = new SearchJsonFiltersInnerSpec(
                 SearchColumnsSpec.ANLASS_STATUS,
-                AnlassStatus.IN_PLANUNG.toString(),
+                AnlassStatus.AUFGEBOTEN.toString(),
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec searchByStatus = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 40, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(statusFilter)
             );
@@ -1774,11 +1776,12 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(40, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
-            // Verify that only kind1 with anlass in status IN_PLANUNG is returned
+
+            // Verify that only kind1 with anlass in status AUFGEBOTEN is returned
             assertThat(result.getData())
                 .isNotEmpty()
                 .extracting(SearchSummaryJsonSpec::getId)
@@ -1843,7 +1846,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec searchByMpa = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 40, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(mpaFilter)
             );
@@ -1872,7 +1875,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec searchByArzt = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 40, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(arztFilter)
             );
@@ -1901,7 +1904,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec searchByWeiterePerson = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 40, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(weiterePersonFilter)
             );
@@ -1957,7 +1960,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec searchByTeilnahmeStatus = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 40, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(teilnahmeStatusFilter)
             );
@@ -1974,7 +1977,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(40, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -2015,7 +2018,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec searchSpec = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, 40, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(chargeFilter)
             );
@@ -2032,7 +2035,7 @@ class SearchResourceITest extends AbstractITest {
             // ASSERT
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
-                .returns(40, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
+                .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
                 .matches(count -> count >= 1);
 
@@ -2083,7 +2086,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.SINGLE);
 
             SearchJsonSpec searchByVormerkung = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, Integer.MAX_VALUE, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(vormerkungFilter)
             );
@@ -2117,7 +2120,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.SINGLE);
 
             SearchJsonSpec searchByNoVormerkung = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, Integer.MAX_VALUE, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(noVormerkungFilter)
             );
@@ -2165,7 +2168,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec searchNoAnlass = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, Integer.MAX_VALUE, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(noAnlassFilter)
             );
@@ -2197,7 +2200,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec searchHasAnlass = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, Integer.MAX_VALUE, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(hasAnlassFilter)
             );
@@ -2249,7 +2252,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec searchByNachkontrolle = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, Integer.MAX_VALUE, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(nachkontrolleFilter)
             );
@@ -2283,7 +2286,7 @@ class SearchResourceITest extends AbstractITest {
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec searchByNoNachkontrolle = new SearchJsonSpec(
-                new PageRequestJsonSpec(1L, Integer.MAX_VALUE, true),
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
                 Collections.emptyList(),
                 List.of(noNachkontrolleFilter)
             );

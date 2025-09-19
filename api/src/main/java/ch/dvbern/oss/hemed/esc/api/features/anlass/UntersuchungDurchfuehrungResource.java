@@ -37,6 +37,7 @@ public class UntersuchungDurchfuehrungResource {
     private final UntersuchungDurchfuehrungMapper untersuchungDurchfuehrungMapper;
     private final AuthorizerService authorizerService;
     private final AnlassService anlassService;
+    private final EinladungMapper einladungMapper;
 
     @GET
     @RolesAllowed(BerechtigungName.SU_DATEN_LESEN)
@@ -45,6 +46,7 @@ public class UntersuchungDurchfuehrungResource {
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
         return untersuchungDurchfuehrungMapper.getByEinladung(einladungId);
     }
 
@@ -56,6 +58,8 @@ public class UntersuchungDurchfuehrungResource {
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
         @NotNull @NonNull @Valid UntersuchungDurchfuehrungSaveJson saveJson
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
         return untersuchungDurchfuehrungMapper.save(einladungId, saveJson);
     }
 
@@ -68,6 +72,7 @@ public class UntersuchungDurchfuehrungResource {
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
         @NotNull @NonNull @Valid UntersuchungDurchfuehrungDataSaveJson saveJson
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
         authorizerService.requireWriteAuthorizationAnlass(anlassId);
         anlassService.requireAnlassAbgeschlossen(anlassId);
 

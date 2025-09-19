@@ -38,7 +38,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   UntersuchungTriageSaveJsonSpec.JSON_PROPERTY_WUNSCH_SCHUELER_BEMERKUNGEN,
   UntersuchungTriageSaveJsonSpec.JSON_PROPERTY_VORINFORMATION_LEHRPERSON,
   UntersuchungTriageSaveJsonSpec.JSON_PROPERTY_VORINFORMATION_LEHRPERSON_BEMERKUNGEN,
-  UntersuchungTriageSaveJsonSpec.JSON_PROPERTY_NAECHSTE_STATION
+  UntersuchungTriageSaveJsonSpec.JSON_PROPERTY_NAECHSTE_STATION,
+  UntersuchungTriageSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("UntersuchungTriageSaveJson")
 @lombok.AllArgsConstructor
@@ -87,6 +88,10 @@ public class UntersuchungTriageSaveJsonSpec {
   public static final String JSON_PROPERTY_NAECHSTE_STATION = "naechsteStation";
   @jakarta.annotation.Nullable
   private NaechsteStationSpec naechsteStation;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public UntersuchungTriageSaveJsonSpec() {
   }
@@ -366,6 +371,31 @@ public class UntersuchungTriageSaveJsonSpec {
     this.naechsteStation = naechsteStation;
   }
 
+  public UntersuchungTriageSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -385,12 +415,13 @@ public class UntersuchungTriageSaveJsonSpec {
         Objects.equals(this.wunschSchuelerBemerkungen, untersuchungTriageSaveJson.wunschSchuelerBemerkungen) &&
         Objects.equals(this.vorinformationLehrperson, untersuchungTriageSaveJson.vorinformationLehrperson) &&
         Objects.equals(this.vorinformationLehrpersonBemerkungen, untersuchungTriageSaveJson.vorinformationLehrpersonBemerkungen) &&
-        Objects.equals(this.naechsteStation, untersuchungTriageSaveJson.naechsteStation);
+        Objects.equals(this.naechsteStation, untersuchungTriageSaveJson.naechsteStation) &&
+        Objects.equals(this.version, untersuchungTriageSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(triageSu, triageSuBemerkungen, triageMpa, triageMpaBemerkungen, befundSu, befundSuBemerkungen, wunschSchueler, wunschSchuelerBemerkungen, vorinformationLehrperson, vorinformationLehrpersonBemerkungen, naechsteStation);
+    return Objects.hash(triageSu, triageSuBemerkungen, triageMpa, triageMpaBemerkungen, befundSu, befundSuBemerkungen, wunschSchueler, wunschSchuelerBemerkungen, vorinformationLehrperson, vorinformationLehrpersonBemerkungen, naechsteStation, version);
   }
 
   @Override
@@ -408,6 +439,7 @@ public class UntersuchungTriageSaveJsonSpec {
     sb.append("    vorinformationLehrperson: ").append(toIndentedString(vorinformationLehrperson)).append("\n");
     sb.append("    vorinformationLehrpersonBemerkungen: ").append(toIndentedString(vorinformationLehrpersonBemerkungen)).append("\n");
     sb.append("    naechsteStation: ").append(toIndentedString(naechsteStation)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -28,7 +28,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  */
 @JsonPropertyOrder({
   ImpfstoffChargeSaveJsonSpec.JSON_PROPERTY_NAME,
-  ImpfstoffChargeSaveJsonSpec.JSON_PROPERTY_AKTIV
+  ImpfstoffChargeSaveJsonSpec.JSON_PROPERTY_AKTIV,
+  ImpfstoffChargeSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("ImpfstoffChargeSaveJson")
 @lombok.AllArgsConstructor
@@ -41,6 +42,10 @@ public class ImpfstoffChargeSaveJsonSpec {
   public static final String JSON_PROPERTY_AKTIV = "aktiv";
   @jakarta.annotation.Nonnull
   private Boolean aktiv;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public ImpfstoffChargeSaveJsonSpec() {
   }
@@ -95,6 +100,31 @@ public class ImpfstoffChargeSaveJsonSpec {
     this.aktiv = aktiv;
   }
 
+  public ImpfstoffChargeSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -105,12 +135,13 @@ public class ImpfstoffChargeSaveJsonSpec {
     }
     ImpfstoffChargeSaveJsonSpec impfstoffChargeSaveJson = (ImpfstoffChargeSaveJsonSpec) o;
     return Objects.equals(this.name, impfstoffChargeSaveJson.name) &&
-        Objects.equals(this.aktiv, impfstoffChargeSaveJson.aktiv);
+        Objects.equals(this.aktiv, impfstoffChargeSaveJson.aktiv) &&
+        Objects.equals(this.version, impfstoffChargeSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, aktiv);
+    return Objects.hash(name, aktiv, version);
   }
 
   @Override
@@ -119,6 +150,7 @@ public class ImpfstoffChargeSaveJsonSpec {
     sb.append("class ImpfstoffChargeSaveJsonSpec {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    aktiv: ").append(toIndentedString(aktiv)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

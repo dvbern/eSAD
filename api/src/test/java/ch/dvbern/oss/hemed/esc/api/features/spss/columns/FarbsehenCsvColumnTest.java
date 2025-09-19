@@ -2,7 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.FarbsehenResultat;
 import org.junit.jupiter.api.Test;
 
@@ -23,21 +23,21 @@ class FarbsehenCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        UntersuchungSehen untersuchungSehen = new UntersuchungSehen();
-        untersuchung.setUntersuchungSehen(untersuchungSehen);
+        UntersuchungSehenBeurteilung untersuchungSehenBeurteilung = new UntersuchungSehenBeurteilung();
+        untersuchung.setUntersuchungSehenBeurteilung(untersuchungSehenBeurteilung);
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungSehen.setFarbsehen(FarbsehenResultat.NORMAL);
+        untersuchungSehenBeurteilung.setFarbsehen(FarbsehenResultat.NORMAL);
         assertThat(column.extract(einladung)).isEqualTo("1");
 
-        untersuchungSehen.setFarbsehen(FarbsehenResultat.PATHOLOGISCH);
+        untersuchungSehenBeurteilung.setFarbsehen(FarbsehenResultat.PATHOLOGISCH);
         assertThat(column.extract(einladung)).isEqualTo("2");
 
-        untersuchungSehen.setFarbsehen(FarbsehenResultat.UNSICHER);
+        untersuchungSehenBeurteilung.setFarbsehen(FarbsehenResultat.UNSICHER);
         assertThat(column.extract(einladung)).isEqualTo("3");
 
-        untersuchungSehen.setFarbsehen(FarbsehenResultat.NICHT_GEPRUEFT);
+        untersuchungSehenBeurteilung.setFarbsehen(FarbsehenResultat.NICHT_GEPRUEFT);
         assertThat(column.extract(einladung)).isEqualTo("4");
     }
 }

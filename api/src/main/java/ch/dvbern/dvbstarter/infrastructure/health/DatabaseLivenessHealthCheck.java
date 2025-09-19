@@ -1,6 +1,8 @@
 package ch.dvbern.dvbstarter.infrastructure.health;
 
 import ch.dvbern.dvbstarter.infrastructure.db.Db;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import io.smallrye.health.api.Wellness;
 import jakarta.enterprise.context.RequestScoped;
@@ -17,14 +19,14 @@ public class DatabaseLivenessHealthCheck implements HealthCheck {
 
     private static final String NAME = "Database";
     private final Db db;
+    private final TenantProducer tenantProducer;
 
     @Override
     public HealthCheckResponse call() {
-
         try {
-            var adminFound = db.find(Benutzer.SYSTEM_ADMIN_ID)
+            tenantProducer.setCurrentTenant(TenantEnum.BS);
+            var adminFound = db.find(Benutzer.SYSTEM_ADMIN_BS_ID)
                 .isPresent();
-
             if (!adminFound) {
                 LOG.error("probe failed: Admin not found");
                 return HealthCheckResponse

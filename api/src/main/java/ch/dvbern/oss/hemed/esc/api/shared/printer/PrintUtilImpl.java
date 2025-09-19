@@ -5,9 +5,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.function.Function;
 
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -19,26 +21,28 @@ public final class PrintUtilImpl {
     public final String placeholder;
     public final DateTimeFormatter printDateFormat;
     public final DateTimeFormatter printTimeFormat;
+    public final Function<String, String> stringSanitizer; // will be applied to strings, if you don't need it pass the identity function
 
     public PrintUtilImpl(@NonNull String placeholder) {
         this.placeholder = placeholder;
         this.printDateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         this.printTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
+        this.stringSanitizer = Function.identity();
     }
 
     @NonNull
     public String trimToPlaceholder(@Nullable String input) {
-        return input == null || input.isBlank() ? placeholder : input.trim();
+        return input == null || input.isBlank() ? placeholder : stringSanitizer.apply(input.trim());
     }
 
     @NonNull
     public String trimNameVornameToPlaceholder(@Nullable Benutzer benutzer) {
-        return benutzer == null ? placeholder : benutzer.getNameVorname();
+        return benutzer == null ? placeholder : stringSanitizer.apply(benutzer.getNameVorname());
     }
 
     @NonNull
     public String trimVornameNameToPlaceholder(@Nullable Benutzer benutzer) {
-        return benutzer == null ? placeholder : benutzer.getVornameName();
+        return benutzer == null ? placeholder : stringSanitizer.apply(benutzer.getVornameName());
     }
 
     @NonNull
@@ -72,6 +76,11 @@ public final class PrintUtilImpl {
     }
 
     @NonNull
+    public String replaceWhitespaceWithNonBreakingSpace(@NonNull String input) {
+        return input.replaceAll("\\s", "\u00A0");
+    }
+
+    @NonNull
     public String formatDate(@NonNull LocalDate date) {
         return date.format(printDateFormat);
     }
@@ -84,5 +93,16 @@ public final class PrintUtilImpl {
     @NonNull
     public String formatTime(@Nullable LocalDateTime localDateTime) {
         return localDateTime != null ? localDateTime.format(printTimeFormat) : placeholder;
+    }
+
+    @NonNull
+    String getNameWithAnrede(@NonNull BasePrinter basePrinter, @NonNull Geschlecht geschlecht, @NonNull String name) {
+        String anrede = switch (geschlecht) {
+            case MAENNLICH ->  basePrinter.translateValue("printer.anrede.MAENNLICH");
+            case WEIBLICH ->  basePrinter.translateValue("printer.anrede.WEIBLICH");
+            default -> "";
+        };
+
+        return String.join(" ", anrede, name).trim();
     }
 }

@@ -20,7 +20,7 @@ public class HautCsvColumn extends AbstractCsvColumn {
     @Override
     @NonNull
     public String extract(@NonNull Einladung einladung) {
-        return ExtractorForCsvUtil.extractUntersuchungArzt(
+        return ExtractorForCsvUtil.extractUntersuchungArztBeurteilung(
             einladung,
             untersuchungArzt ->
                 (untersuchungArzt.getHaut() != null && untersuchungArzt.getHaut() == haut) ? "1" : ""

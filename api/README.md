@@ -12,8 +12,8 @@ Local Dev-Hostname: local-esc.localhost
 
 ### Installation (quick-start)
 
-1. Add **hostname** entry to `/etc/hosts` (windows: `c:\Windows\System32\drivers\etc\hosts`) in the form: \
-   `127.0.0.1 local-esc-bs.localhost`
+1. Add **hostname** entries to `/etc/hosts` (windows: `c:\Windows\System32\drivers\etc\hosts`) in the form: \
+   `127.0.0.1 local-esc-bs.localhost` and `127.0.0.1 local-esc-win.localhost`  
 2. **Generate a new keypair** for HTTPS communication: `scripts/certs/generate-keypair.sh` (windows: `scripts\certs\generate-keypair.ps1`)
 3. **Import certificate** to the correct Java (e.g. Windows as Admin user: 
 ```

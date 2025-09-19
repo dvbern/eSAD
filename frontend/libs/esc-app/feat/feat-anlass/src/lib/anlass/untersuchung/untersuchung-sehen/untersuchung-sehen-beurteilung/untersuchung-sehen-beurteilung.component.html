@@ -1,0 +1,286 @@
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabSehenBeurteilung) {
+
+  <form svuiFormLayout
+        [formType]="'kacheln'"
+        [mode]="'edit'"
+        [formGroup]="form.group"
+        (ngSubmit)="submitIfValid()">
+
+    <!-- Inspektion -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.sehenInspektion !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.verwendete.inspektion' | transloco">
+        @for (each of inspektionKonvergenzItems; track each) {
+          <svui-kachel-control [label]="'InspektionKonvergenzResultat.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="inspektion"
+                   [formControl]="form.group.controls.inspektion"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- Brille Linsen -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.sehenBrilleLinsen !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.brillelinsen' | transloco">
+        @for (each of brilleLinsenItems; track each) {
+          <svui-kachel-control [label]="'BrilleLinsenResultat.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="brillelinsen"
+                   [formControl]="form.group.controls.brilleLinsen"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- Stereotest -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.sehenStereoTest !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.stereotest' | transloco">
+        @for (each of stereotestItems; track each) {
+          <svui-kachel-control [label]="'StereotestResultat.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="stereoTest"
+                   [formControl]="form.group.controls.stereotest"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- Farbsehen -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.sehenFarbsehen !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.farbsehen' | transloco">
+        @for (each of farbsehenItems; track each) {
+          <svui-kachel-control [label]="'FarbsehenResultat.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="farbsehen"
+                   [formControl]="form.group.controls.farbsehen"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- Verwendete Tafel -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.sehenTafel !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.verwendete.tafel' | transloco">
+        @for (each of verwendeteTafelItems; track each) {
+          <svui-kachel-control [label]="'VerwendetTafelResultat.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="verwendeteTafel"
+                   [formControl]="form.group.controls.verwendeteTafel"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!--    Fernvisus-->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.sehenFernvisus !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.fernvisus' | transloco">
+        @for (fernvisus of getFernvisusFormArray().controls; track $index) {
+          <svui-kachel-control [label]="'DistanzSehenResultat.' + fernvisus.controls.resultat.value | transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="fernvisus"
+                   [formControl]="fernvisus.controls.isChecked"
+            />
+          </svui-kachel-control>
+        }
+
+        <div class="linksrechts_wrapper">
+          <svui-form-control [label]="'untersuchung.tab.sehen.rechts' | transloco"
+                             [size]="'oneAndHalf'"
+                             [viewValue]="form.group.controls.fernvisusRechts.value?.toString()">
+            <ng-select
+              class="linksrechts"
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="form.group.controls.fernvisusRechts"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              @for (option of visusOptions; track option) {
+                <ng-option [value]="option">
+                  {{ option.toFixed(1) }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-form-control>
+
+          <svui-form-control [label]="'untersuchung.tab.sehen.links' | transloco"
+                             [size]="'oneAndHalf'"
+                             [viewValue]="form.group.controls.fernvisusLinks.value?.toString()">
+            <ng-select
+              class="linksrechts"
+
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="form.group.controls.fernvisusLinks"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              @for (option of visusOptions; track option) {
+                <ng-option [value]="option">
+                  {{ option.toFixed(1) }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-form-control>
+        </div>
+      </svui-kachel-form-section>
+    }
+
+    <!-- Nahvisus -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.sehenNahvisus !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.nahvisus' | transloco">
+        @for (nahvisus of getNahvisusFormArray().controls; track $index) {
+          <svui-kachel-control [label]="'DistanzSehenResultat.' + nahvisus.controls.resultat.value | transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="nahvisus"
+                   [formControl]="nahvisus.controls.isChecked"/>
+          </svui-kachel-control>
+        }
+
+        <div class="linksrechts_wrapper">
+          <svui-form-control [label]="'untersuchung.tab.sehen.rechts' | transloco"
+                             [size]="'oneAndHalf'"
+                             [viewValue]="form.group.controls.nahvisusRechts.value?.toString()">
+            <ng-select
+              class="linksrechts"
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="form.group.controls.nahvisusRechts"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              @for (option of visusOptions; track option) {
+                <ng-option [value]="option">
+                  {{ option.toFixed(1) }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-form-control>
+
+          <svui-form-control [label]="'untersuchung.tab.sehen.links' | transloco"
+                             [size]="'oneAndHalf'"
+                             [viewValue]="form.group.controls.nahvisusLinks.value?.toString()">
+            <ng-select
+              class="linksrechts"
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="form.group.controls.nahvisusLinks"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              @for (option of visusOptions; track option) {
+                <ng-option [value]="option">
+                  {{ option.toFixed(1) }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-form-control>
+        </div>
+      </svui-kachel-form-section>
+    }
+
+    <!-- Motilität -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.sehenMotilitaet !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.verwendete.motilitaet' | transloco">
+        @for (each of motilitaetItems; track each) {
+          <svui-kachel-control [label]="'MotilitaetResultat.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="motilitaet"
+                   [formControl]="form.group.controls.motilitaet"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- Konvergenz -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.sehenKonvergenz !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.verwendete.konvergenz' | transloco">
+        @for (each of inspektionKonvergenzItems; track each) {
+          <svui-kachel-control [label]="'InspektionKonvergenzResultat.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="konvergenz"
+                   [formControl]="form.group.controls.konvergenz"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- Strabismus -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.sehenStrabismus !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.verwendete.strabismus' | transloco">
+        @for (strabismus of getStrabismusFormArray().controls; track $index) {
+          <svui-kachel-control [label]="'StrabismusResultat.' + strabismus.controls.resultat.value |transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="strabismus"
+                   [formControl]="strabismus.controls.isChecked"
+            />
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+      <!-- Strabismus Ausprägung-->
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.verwendete.strabismus.auspraegung' | transloco">
+        @for (auspraegung of strabismusAuspraegungItems; track auspraegung) {
+          <svui-kachel-control
+            [label]="'StrabismusAuspraegungResultat.' + auspraegung |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="strabismusAuspraegung"
+                   [formControl]="form.group.controls.strabismusAuspraegung"
+                   [value]="auspraegung"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+
+      <!-- Strabismus Auftreten -->
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.verwendete.strabismus.auftreten' | transloco">
+        @for (auftreten of strabismusAuftretenItems; track auftreten) {
+          <svui-kachel-control [label]="'StrabismusAuftretenResultat.' + auftreten |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="strabismusAuftreten"
+                   [formControl]="form.group.controls.strabismusAuftreten"
+                   [value]="auftreten"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- Bemerkung -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.sehenBemerkungen !== RequirementSetting.NOT_VISIBLE) {
+      <svui-title [context]="'formSection'"
+                  class="mb-3">{{ 'untersuchung.tab.sehen.bemerkung' | transloco }}
+      </svui-title>
+      <svui-form-control
+        [label]="'untersuchung.tab.sehen.bemerkung' | transloco"
+        [topLabelVisibility]="'hidden'"
+        [viewValue]="form.group.controls.bemerkungen.value">
+        <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
+      </svui-form-control>
+    }
+
+    <!-- Save / Cancel Buttons -->
+    @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+      <svui-save-cancel-buttons
+        [saving]="false"
+        [canEdit]="true"
+        (cancelClicked)="abbrechen()"/>
+    }
+  </form>
+}

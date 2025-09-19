@@ -2,7 +2,8 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
 import java.io.Serial;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArzt;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
@@ -32,13 +33,14 @@ import org.hibernate.envers.Audited;
         @Index(name = "ix_untersuchung_untersuchungdurchfuehrung", columnList = "untersuchungdurchfuehrung_id, id"),
         @Index(name = "ix_untersuchung_untersuchungtriage", columnList = "untersuchungtriage_id, id"),
         @Index(name = "ix_untersuchung_untersuchungimpfungen", columnList = "untersuchungimpfungen_id, id"),
-        @Index(name = "ix_untersuchung_untersuchungsehen", columnList = "untersuchungsehen_id, id"),
-        @Index(name = "ix_untersuchung_untersuchunghoerenaudiogramm",
-            columnList = "untersuchunghoerenaudiogramm_id, id"),
+        @Index(name = "ix_untersuchung_untersuchungsehenbeurteilung", columnList = "untersuchungsehenbeurteilung_id, id"),
+        @Index(name = "ix_untersuchung_untersuchungsehenbemerkungfragebogen", columnList = "untersuchungsehenbemerkungfragebogen_id, id"),
+        @Index(name = "ix_untersuchung_untersuchunghoerenaudiogramm", columnList = "untersuchunghoerenaudiogramm_id, id"),
         @Index(name = "ix_untersuchung_untersuchunghoerenotoskopie", columnList = "untersuchunghoerenotoskopie_id, id"),
         @Index(name = "ix_untersuchung_untersuchungmassnahmen", columnList = "untersuchungmassnahmen_id, id"),
         @Index(name = "ix_untersuchung_untersuchunggroessegewicht", columnList = "untersuchunggroessegewicht_id, id"),
-        @Index(name = "ix_untersuchung_untersuchungarzt", columnList = "untersuchungarzt_id, id"),
+        @Index(name = "ix_untersuchung_untersuchungarztbeurteilung", columnList = "untersuchungarztbeurteilung_id, id"),
+        @Index(name = "ix_untersuchung_untersuchungarztbemerkung", columnList = "untersuchungarztbemerkung_id, id"),
     }
 )
 @Audited
@@ -84,8 +86,13 @@ public class Untersuchung extends AbstractTenantEntity<Untersuchung> {
 
     @Nullable
     @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungsehen"), nullable = true)
-    private UntersuchungSehen untersuchungSehen;
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungsehenbeurteilung"), nullable = true)
+    private UntersuchungSehenBeurteilung untersuchungSehenBeurteilung;
+
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungsehenbemerkungfragebogen"), nullable = true)
+    private UntersuchungSehenBemerkungFragebogen untersuchungSehenBemerkungFragebogen;
 
     @Nullable
     @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
@@ -109,8 +116,13 @@ public class Untersuchung extends AbstractTenantEntity<Untersuchung> {
 
     @Nullable
     @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungarzt"), nullable = true)
-    private UntersuchungArzt untersuchungArzt;
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungarztbeurteilung"), nullable = true)
+    private UntersuchungArztBeurteilung untersuchungArztBeurteilung;
+
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungarztbemerkung"), nullable = true)
+    private UntersuchungArztBemerkung untersuchungArztBemerkung;
 
     @NonNull
     public static Untersuchung forEinladung(@NonNull Einladung einladung) {

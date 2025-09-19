@@ -23,7 +23,7 @@ export const appRoutes: Route[] = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: Path.KINDER,
+        redirectTo: Path.DASHBOARD,
       },
       {
         path: Path.NO_ROLES,

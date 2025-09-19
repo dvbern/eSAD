@@ -40,7 +40,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   DossierSaveJsonSpec.JSON_PROPERTY_PAPIERAKTE_STATUS,
   DossierSaveJsonSpec.JSON_PROPERTY_ZUSTAENDIG_ARZT,
   DossierSaveJsonSpec.JSON_PROPERTY_ZUSTAENDIG_M_P_A,
-  DossierSaveJsonSpec.JSON_PROPERTY_NACHKONTROLLE
+  DossierSaveJsonSpec.JSON_PROPERTY_NACHKONTROLLE,
+  DossierSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("DossierSaveJson")
 @lombok.AllArgsConstructor
@@ -89,6 +90,10 @@ public class DossierSaveJsonSpec {
   public static final String JSON_PROPERTY_NACHKONTROLLE = "nachkontrolle";
   @jakarta.annotation.Nonnull
   private NachkontrolleJsonSpec nachkontrolle;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public DossierSaveJsonSpec() {
   }
@@ -368,6 +373,31 @@ public class DossierSaveJsonSpec {
     this.nachkontrolle = nachkontrolle;
   }
 
+  public DossierSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -387,12 +417,13 @@ public class DossierSaveJsonSpec {
         Objects.equals(this.papierakteStatus, dossierSaveJson.papierakteStatus) &&
         Objects.equals(this.zustaendigArzt, dossierSaveJson.zustaendigArzt) &&
         Objects.equals(this.zustaendigMPA, dossierSaveJson.zustaendigMPA) &&
-        Objects.equals(this.nachkontrolle, dossierSaveJson.nachkontrolle);
+        Objects.equals(this.nachkontrolle, dossierSaveJson.nachkontrolle) &&
+        Objects.equals(this.version, dossierSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(kinderschutzfall, keineAuskunftAnDrittpersonen, sansPapier, andereZusatzinformation, andereZusatzInformationText, immunitaetMasern, immunitaetVarizellen, papierakteStatus, zustaendigArzt, zustaendigMPA, nachkontrolle);
+    return Objects.hash(kinderschutzfall, keineAuskunftAnDrittpersonen, sansPapier, andereZusatzinformation, andereZusatzInformationText, immunitaetMasern, immunitaetVarizellen, papierakteStatus, zustaendigArzt, zustaendigMPA, nachkontrolle, version);
   }
 
   @Override
@@ -410,6 +441,7 @@ public class DossierSaveJsonSpec {
     sb.append("    zustaendigArzt: ").append(toIndentedString(zustaendigArzt)).append("\n");
     sb.append("    zustaendigMPA: ").append(toIndentedString(zustaendigMPA)).append("\n");
     sb.append("    nachkontrolle: ").append(toIndentedString(nachkontrolle)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

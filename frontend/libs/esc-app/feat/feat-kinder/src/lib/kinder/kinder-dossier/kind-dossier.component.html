@@ -5,6 +5,8 @@
 
     <!-- Anlaesse -->
     <feat-kind-dossier-anlaesse-list middle/>
+
+    <!-- Impfungen -->
     <feat-kind-dossier-impfungen middle/>
 
     <!-- Notizen -->
@@ -12,6 +14,7 @@
 
     <!-- Aufgaben -->
     <feat-aufgaben-sidebar right
+                           [showCreateAufgabeButton]="dossierStore.isKindAktiv()"
                            [aufgabenList]="aufgabenStore.entities()"
                            [loading]="aufgabenStore.loader.isLoading()"
                            [routingPrefix]="Path.AUFGABEN"/>

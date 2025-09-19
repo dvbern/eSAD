@@ -39,7 +39,7 @@ class FileDataMapperTest {
             2900
         );
 
-        FileData fileData = new FileData(FileTyp.NOTIZUPLOAD, "11-3-2025_Max-Musterman.pdf", fileInfoS3);
+        FileData fileData = new FileData(FileTyp.NOTIZUPLOAD, new CleanFileName("11-3-2025_Max-Musterman.pdf"), fileInfoS3);
         ID<FileData> id = ID.random(FileData.class);
         fileData.setId(id);
         TestUtil.setEntityInfo(fileData);
@@ -51,7 +51,7 @@ class FileDataMapperTest {
         assertNotNull(fileDataJson);
         assertEquals(id, fileDataJson.getId());
         assertEquals(fileData.getFileTyp(), fileDataJson.getFileTyp());
-        assertEquals(fileData.getCalculatedFileName(), fileDataJson.getCalculatedFileName());
+        assertEquals(fileData.getCalculatedFileName().toString(), fileDataJson.getCalculatedFileName());
         assertEquals(fileInfoS3.getFileName(), fileDataJson.getFileName());
         assertEquals(fileInfoS3.getFileSize(), fileDataJson.getFileSize());
         assertEquals(fileInfoS3.getMediaType().toString(), fileDataJson.getMimeType());

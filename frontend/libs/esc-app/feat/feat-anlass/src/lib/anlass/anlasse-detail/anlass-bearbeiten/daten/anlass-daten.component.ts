@@ -74,13 +74,15 @@ export class AnlassDatenComponent {
       const selectedEntity = this.store.selectedEntity();
       const mode = this.store.detailMode();
 
-      // prefill
-      const prefilledAnlass = this.store.prefilledAnlass();
-      this.form.group.reset(prefilledAnlass);
-
       // fill with entity or reset to empty
+      this.form.resetForm(selectedEntity, mode);
+
       untracked(() => {
-        this.form.resetForm(selectedEntity, mode);
+        // prefill only once and only if no selected entity is present
+        const prefilledAnlass = this.store.prefilledAnlass();
+        if (prefilledAnlass && !selectedEntity){
+          this.form.group.reset(prefilledAnlass);
+        }
       });
     });
   }
@@ -115,13 +117,12 @@ export class AnlassDatenComponent {
         this.store.createAnlass({
           anlass: payload,
           onSuccess: (result) => {
-
             // prefill Kind
             const prefillKindId = this.store.prefilledKindId();
             const anlassId = requireValue(result.id);
 
+            this.store.resetPrefill();
             if (prefillKindId) {
-              this.store.resetPrefill();
               this.anlassKinderStore.addKinder({ anlassId: anlassId, kindIds: [prefillKindId] });
             }
 

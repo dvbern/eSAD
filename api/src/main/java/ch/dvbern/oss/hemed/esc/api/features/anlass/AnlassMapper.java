@@ -59,7 +59,8 @@ public final class AnlassMapper {
                 mpa != null ? BenutzerMapper.toOptionJson(mpa) : null,
                 anlass.getMpaInfo(),
                 weiterePerson != null ? BenutzerMapper.toOptionJson(weiterePerson) : null,
-                anlass.getWeiterePersonInfo()
+                anlass.getWeiterePersonInfo(),
+                anlass.getVersion()
             ),
             AnlassConfigMapper.toJson(anlass.getAnlassConfig())
         );
@@ -162,7 +163,7 @@ public final class AnlassMapper {
     public AnlassJson update(@NonNull ID<Anlass> anlassID, @NonNull AnlassSaveJson saveJson) {
         Anlass existingAnlass = anlassService.getById(anlassID);
         Anlass entity = toEntity(existingAnlass, saveJson);
-        return toJson(anlassService.persist(entity));
+        return toJson(anlassService.persistWithOptimisticLocking(entity, saveJson.getVersion()));
     }
 
     @NonNull

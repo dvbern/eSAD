@@ -1,10 +1,20 @@
 <feat-page [heading]="'klasse.list.page.title' | transloco"
            [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN}">
-  <svui-page-header-buttons></svui-page-header-buttons>
-  <svui-page-header-list-summary [items]="summaryItems()"/>
+
+  <svui-page-header-list-summary
+    [items]="summaryItems()"/>
+
+  <svui-page-header-buttons
+    [showFilterPopup]="false"
+    [activeFilterCount]="itemTable.numberOfFilters()"
+    (resetFilter)="itemTable.resetFilters(); tableFilterForm.reset()"/>
+
   @if (canEditList()) {
     <svui-page-header-add-button
       [addRouterLink]="Path.CREATE"/>
   }
-  <feat-klassen-list></feat-klassen-list>
+  <feat-klassen-list
+    [itemTable]="itemTable"
+    [tableFilterForm]="tableFilterForm"
+    [loading]="klassenStore.loader.isLoading()"></feat-klassen-list>
 </feat-page>

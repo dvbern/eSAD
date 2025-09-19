@@ -44,11 +44,11 @@
     }
   }
 
-  <!-- Informationen abgegeben -->
-  @if (anlassStore.selectedEntity()?.anlassConfig?.impfungenMassnahmeInformationenAbgegeben) {
+  <!-- Infomaterial abgegeben -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.impfungenMassnahmeInfomaterialAbgegeben) {
     <svui-standalone-control class="mt-3"
-                             [label]="'untersuchung.tab.impfungen.massnahmen.informationenAbgegeben' | transloco">
-      <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.informationenAbgegeben">
+                             [label]="'untersuchung.tab.impfungen.massnahmen.infomaterialAbgegeben' | transloco">
+      <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.infomaterialAbgegeben">
     </svui-standalone-control>
   }
 

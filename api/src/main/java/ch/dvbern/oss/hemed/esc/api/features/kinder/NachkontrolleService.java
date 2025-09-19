@@ -36,8 +36,15 @@ public class NachkontrolleService {
         return nachkontrolle;
     }
 
+    @NonNull
+    public Nachkontrolle persistWithOptimisticLocking(@NonNull Nachkontrolle nachkontrolle, @NonNull Long versionFromFrontend) {
+        nachkontrolleRepo.persistWithOptimisticLocking(nachkontrolle, versionFromFrontend);
+        return nachkontrolle;
+    }
+
     public void updateNachkontrolle(@NonNull ID<Dossier> dossierID, @NonNull AnlassFlags flags) {
         Nachkontrolle nachkontrolle = getOrCreateByDossier(dossierID);
+        nachkontrolle.disableOptimisticLockingCheck();
         nachkontrolle.setAnlassFlags(flags);
         nachkontrolleRepo.persist(nachkontrolle);
     }

@@ -14,6 +14,7 @@ import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.HasExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
@@ -69,7 +70,8 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckKindKlasseSchuleConsistency
-public class Kind extends AbstractTenantEntity<Kind> implements Serializable, HasExternalImportInfo {
+public class Kind extends AbstractTenantEntity<Kind>
+        implements Serializable, HasExternalImportInfo, EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 8005202370526715032L;
@@ -176,19 +178,6 @@ public class Kind extends AbstractTenantEntity<Kind> implements Serializable, Ha
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     private EntityAktivStatus kindAktivStatus = EntityAktivStatus.AKTIV;
 
-    @Transient
-    @Nullable
-    public String getExternalSystemIdOrNull() {
-        if (externalImportInfo == null) {
-            return null;
-        }
-        return externalImportInfo.getIdInExternalSystem();
-    }
-
-    @Transient
-    public boolean isManualOrAktivInExternalSystem() {
-        return externalImportInfo == null || externalImportInfo.isAktivInExternalSystem();
-    }
 
     @NonNull
     public String getNameVorname() {
@@ -200,5 +189,4 @@ public class Kind extends AbstractTenantEntity<Kind> implements Serializable, Ha
     public Schule extractSchule() {
         return klasse != null ? klasse.getSchule() : schule;
     }
-
 }

@@ -1,0 +1,17 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="dvbern" id="1757420455">
+    <dropDefaultValue tableName="kind" columnName="aktivinexternalsystem"/>
+    <dropDefaultValue tableName="klasse" columnName="aktivinexternalsystem"/>
+    <dropDefaultValue tableName="kontaktpersonkind" columnName="aktivinexternalsystem"/>
+    <dropDefaultValue tableName="lehrperson" columnName="aktivinexternalsystem"/>
+    <dropDefaultValue tableName="schule" columnName="aktivinexternalsystem"/>
+  </changeSet>
+  <changeSet author="dvbern" id="1757512385">
+    <dropNotNullConstraint tableName="kind" columnName="aktivinexternalsystem"/>
+    <dropNotNullConstraint tableName="klasse" columnName="aktivinexternalsystem"/>
+    <dropNotNullConstraint tableName="kontaktpersonkind" columnName="aktivinexternalsystem"/>
+    <dropNotNullConstraint tableName="lehrperson" columnName="aktivinexternalsystem"/>
+    <dropNotNullConstraint tableName="schule" columnName="aktivinexternalsystem"/>
+  </changeSet>
+</databaseChangeLog>

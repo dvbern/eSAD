@@ -4,8 +4,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class StringNormalizerUtilTest {
 
@@ -27,6 +26,6 @@ class StringNormalizerUtilTest {
     })
     void testNormalizeAndStripDiarcritics(@NonNull String input, @NonNull String expected) {
         String result = StringNormalizerUtil.normalizeAndStripDiarcritics(input);
-        assertThat(result, is(expected));
+        assertThat(result).isEqualTo(expected);
     }
 }

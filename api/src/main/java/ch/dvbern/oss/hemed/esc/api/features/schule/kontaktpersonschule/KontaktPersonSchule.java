@@ -8,6 +8,7 @@ import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.KontaktPersonSchuleFunktion;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import jakarta.persistence.Column;
@@ -37,7 +38,9 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class KontaktPersonSchule extends AbstractTenantEntity<KontaktPersonSchule> {
+public class KontaktPersonSchule
+        extends AbstractTenantEntity<KontaktPersonSchule>
+        implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = -2616852567861298939L;

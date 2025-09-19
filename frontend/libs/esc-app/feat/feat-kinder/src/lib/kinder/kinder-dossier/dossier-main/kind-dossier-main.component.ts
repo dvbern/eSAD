@@ -6,8 +6,9 @@ import {
   AnlassFlagsJson,
   BenutzerOptionJson,
   DossierSaveJson,
+  EntityAktivStatus,
   EsadIdJson,
-  Geschlecht,
+  Geschlecht, NachkontrolleSaveJson,
   PapierakteStatus,
 } from '@dvb/data-access-backend';
 import {randomEntityId, requireValidBackendEntityId} from '@dvb/data-access-types';
@@ -21,6 +22,7 @@ import {
   TimetravelStore,
 } from '@dvb/feat-shared';
 import {
+  ButtonComponent,
   CardComponent,
   CardHeaderComponent,
   CollapsibleMenuComponent,
@@ -81,6 +83,7 @@ import {KinderZusatzinformationenJson} from '../kinder-zusatzinformationen-modal
     NgSelectComponent,
     NgSelectDirective,
     StatusTextComponent,
+    ButtonComponent,
   ],
 })
 export class KindDossierMainComponent {
@@ -106,7 +109,12 @@ export class KindDossierMainComponent {
   zustaendigArzt = computed(() => this.dossier()?.data?.zustaendigArzt);
   zustaendigMPA = computed(() => this.dossier()?.data?.zustaendigMPA);
 
-  canEditKind = this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung());
+  canActivateKind = this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung());
+
+  canEditKind = computed(() =>
+    this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung()) &&
+    this.dossierStore.isKindAktiv()
+  );
   canDownloadDossierExport = this.benutzerStore.createHasRequiredRoleSig(hasDownloadDossierBerechtigung());
 
   canEditAfterAbgeschlossen = this.benutzerStore.createHasRequiredRoleSig(hasAnlassEditBerechtigungForAbgeschlossen());
@@ -143,6 +151,29 @@ export class KindDossierMainComponent {
         return 'divers';
       case 'UNBEKANNT':
         return 'placeholder_seethrough';
+    }
+  }
+
+  protected activateKind(): void {
+    const kind = this.dossierStore.selectedDossier()?.kind;
+    if (isNotNullish(kind)) {
+      this.dossierStore.activateKind({
+        kindId: kind.id,
+        saveJson: {
+          entityAktivStatus: EntityAktivStatus.AKTIV,
+        },
+        onSuccess: () => {
+          this.appNotificationStore.addNotification({
+            alertType: 'success',
+            id: 'kindActivated' + randomEntityId(),
+            summary: this.transloco.translate('kind.dossier.activateKind.success', {
+              name: kind.data.name,
+              vorname: kind.data.vorname
+            }),
+            autohide: true,
+          });
+        }
+      });
     }
   }
 
@@ -271,14 +302,14 @@ export class KindDossierMainComponent {
     if (dossier && this.canEditKind()) {
       const ngbModalRef = this.#ngbModal.open(KinderNachkontrolleModalComponent, {size: 'lg'});
       ngbModalRef.componentInstance.dossierData.set(dossier.data);
-      const result: AnlassFlagsJson | undefined =
+      const result: NachkontrolleSaveJson | undefined =
         await firstValueFrom(ngbModalRef.closed, {defaultValue: undefined});
       if (result) {
         const requestObject: DossierSaveJson = {
           ...dossier.data,
           nachkontrolle: {
             ...dossier.data.nachkontrolle,
-            data: {anlassFlags: result},
+            data: result,
           },
         };
         this.dossierStore.updateDossier({
@@ -338,4 +369,6 @@ export class KindDossierMainComponent {
       }
     }
   }
+
+  protected readonly EntityAktivStatus = EntityAktivStatus;
 }

@@ -293,8 +293,8 @@
             </td>
           } @else {
             <td>{{
-                item.untersuchungKindDaten?.klassenstufe ?
-                  ('Klassenstufe.' + item.untersuchungKindDaten?.klassenstufe | transloco) :
+                item.untersuchungKindDaten?.data?.klassenstufe ?
+                  ('Klassenstufe.' + item.untersuchungKindDaten?.data?.klassenstufe | transloco) :
                   ''
               }}
             </td>
@@ -328,7 +328,7 @@
                 bindLabel='dummy'
                 appendTo="body"
                 [clearable]="false"
-                [ngModel]="item.data.einladungStatus"
+				[formControl]="einladungStatusForm.controls[item.id]"
                 (change)="einladungsstatusChanged(item, $event)"
                 [disabled]="store.loader.isLoading() || !anlassStore.canUserEditAnlassInCurrentState()"
                 [placeholder]="'global.select.bitte-auswaehlen' | transloco ">

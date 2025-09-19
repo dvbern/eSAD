@@ -207,7 +207,7 @@ class KlasseResourceITest extends AbstractITest {
         ID<Klasse> existingSchuleId = existingKlasse.getId();
         assertThat(existingKlasse.getKlasseAktivStatus()).isEqualTo(EntityAktivStatus.AKTIV);
         assertThat(existingKlasse.getExternalImportInfo()).isNotNull();
-        assertThat(existingKlasse.getExternalImportInfo().isAktivInExternalSystem()).isFalse();
+        assertThat(existingKlasse.isAktivInExternalSystem()).isFalse();
         EntityAktivStatusSpec desiredStatus = EntityAktivStatusSpec.INAKTIV;
         EntityAktivStatusSaveJsonSpec saveJson = new EntityAktivStatusSaveJsonSpec(EntityAktivStatusSpec.INAKTIV);
 
@@ -236,7 +236,7 @@ class KlasseResourceITest extends AbstractITest {
         ID<Klasse> existingKlasseId = existingKlasse.getId();
         assertThat(existingKlasse.getKlasseAktivStatus()).isEqualTo(EntityAktivStatus.AKTIV);
         assertThat(existingKlasse.getExternalImportInfo()).isNotNull();
-        assertThat(existingKlasse.getExternalImportInfo().isAktivInExternalSystem()).isTrue();
+        assertThat(existingKlasse.isAktivInExternalSystem()).isTrue();
         EntityAktivStatusSaveJsonSpec saveJson = new EntityAktivStatusSaveJsonSpec(EntityAktivStatusSpec.INAKTIV);
 
         // ACT

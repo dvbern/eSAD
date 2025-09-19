@@ -12,9 +12,10 @@ import {
   LabelJson,
 } from '@dvb/data-access-backend';
 import {BackendURL, isBackendURL, ISODateString} from '@dvb/data-access-types';
-import { DeploymentStore } from '../../deployment/deployment.store';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensureProps, ensurePropsFlat, requireFilledIn, requireValue} from '@dvb/util-shared';
+import {ensureProps, ensurePropsFlat, Nullish, requireFilledIn, requireValue} from '@dvb/util-shared';
+import {globalConstants} from '../../constants/global-constants';
+import {DeploymentStore} from '../../deployment/deployment.store';
 
 type Config = {
   fb: NonNullableFormBuilder;
@@ -22,21 +23,22 @@ type Config = {
 };
 
 function makeForm(config: Config) {
-  const { fb, deploymentStore } = config;
+  const {fb, deploymentStore} = config;
   return fb.group({
     titel: fb.control<string>('', [Validators.required, AppValidators.dbMaxLength()]),
-    bemerkungen: fb.control<string>('', [AppValidators.textareaMaxLength()]),
+    bemerkungen: fb.control<string>('', [AppValidators.textareaMaxLength5000()]),
     status: fb.control<AufgabeStatus>(AufgabeStatus.OFFEN, Validators.required),
     faelligBis: fb.control<ISODateString | undefined>(undefined,
       [Validators.required, AppValidators.aufgabeFaelligBisValidator(new Date())]),
     empfaenger: fb.control<BenutzerOptionJson | undefined>(undefined, Validators.required),
-    userErfasst: fb.control<BenutzerOptionJson | undefined>({ value: undefined, disabled: true }),
+    userErfasst: fb.control<BenutzerOptionJson | undefined>({value: undefined, disabled: true}),
     kind: fb.control<KindSearchJson | null>(null),
     anlass: fb.control<AnlassOptionJson | null>(null),
     labels: fb.control<LabelJson[]>([]),
     files: fb.control<FileDataJson[]>([]),
     link: fb.control<BackendURL | undefined>(undefined,
-      [AppValidators.textareaMaxLength(), AppValidators.publicUrlValidator(deploymentStore.publicUrl())]),
+      [AppValidators.textareaMaxLength2000(), AppValidators.publicUrlValidator(deploymentStore.publicUrl())]),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 }
 
@@ -89,6 +91,7 @@ export class AufgabeDetailsForm extends BaseForm<ReturnType<typeof makeForm>, Au
       labels: value.labels,
       files: value.files,
       link: isBackendURL(value.link) ? value.link : undefined,
+      version: value.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 }

@@ -8,10 +8,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
-import ch.dvbern.oss.hemed.esc.api.features.arzt.print.ArztExportService;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Fachrichtung;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.HpvTeilnahme;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Organisation;
@@ -23,9 +21,11 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.ArztBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.AerzteApiSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ArztIdListJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ArztJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ArztListJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ArztSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ExportModeSpec;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import io.restassured.response.ResponseOptions;
@@ -272,12 +272,18 @@ class ArztResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void exportAerzteApi() throws IOException {
-        setTime(OffsetDateTime.of(2025,6,25,0,0,0,0, ZoneOffset.UTC));
+    void exportAerzteApi() {
+        setTime(OffsetDateTime.of(2025, 6, 25, 0, 0, 0, 0, ZoneOffset.UTC));
+        ArztIdListJsonSpec idList = new ArztIdListJsonSpec(
+            Stream.of(
+                    "11111111-1111-1111-1111-111111111001",
+                    "11111111-1111-1111-1111-111111111002")
+                .toList());
+
         // ACT
         byte[] actualContent = api.arztResourceExportAerzte()
-            .aerzteIdsQuery("11111111-1111-1111-1111-111111111001")
-            .aerzteIdsQuery("11111111-1111-1111-1111-111111111002")
+            .body(idList)
+            .modePath(ExportModeSpec.TEXTDOCUMENT.getValue())
             .execute(ResponseOptions::andReturn)
             .then()
             .assertThat()
@@ -290,5 +296,32 @@ class ArztResourceITest extends AbstractITest {
         // ASSERT
         Assertions.assertThat(actualContent).isNotNull().hasSizeGreaterThan(0);
 
+    }
+
+    @Test
+    @TestAsAdminBS
+    void exportAerzteCsvApi() throws IOException {
+        setTime(OffsetDateTime.of(2025, 6, 25, 0, 0, 0, 0, ZoneOffset.UTC));
+        ArztIdListJsonSpec idList = new ArztIdListJsonSpec(
+            Stream.of(
+                    "11111111-1111-1111-1111-111111111001",
+                    "11111111-1111-1111-1111-111111111002")
+                .toList());
+
+        // ACT
+        byte[] actualContent = api.arztResourceExportAerzte()
+            .body(idList)
+            .modePath(ExportModeSpec.SPREADSHEET.getValue())
+            .execute(ResponseOptions::andReturn)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .header("Content-Disposition", "attachment;filename*=UTF-8''export_aerzte_25-06-2025.csv")
+            .header("Content-Type", "application/csv")
+            .extract()
+            .asByteArray();
+
+        // ASSERT
+        Assertions.assertThat(actualContent).isNotNull().hasSizeGreaterThan(0);
     }
 }

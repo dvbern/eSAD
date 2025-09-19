@@ -1,31 +1,19 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder;
 
-import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
-import java.io.Serial;
-
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.types.PapierakteStatus;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
+import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
+
+import java.io.Serial;
 
 @Entity
 @Table(
@@ -40,7 +28,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Dossier extends AbstractTenantEntity<Dossier> {
+public class Dossier extends AbstractTenantEntity<Dossier> implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = -114539261691711361L;
@@ -68,7 +56,7 @@ public class Dossier extends AbstractTenantEntity<Dossier> {
     private boolean andereZusatzinformation = false;
 
     @Nullable
-    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String andereZusatzInformationText;
 
     @NotNull

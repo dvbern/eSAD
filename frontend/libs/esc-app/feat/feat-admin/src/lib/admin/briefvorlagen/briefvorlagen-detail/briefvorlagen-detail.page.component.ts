@@ -3,12 +3,15 @@ import {ChangeDetectionStrategy, Component, computed, effect, inject, signal, un
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {BriefvorlageSaveJson, BriefvorlageType, FileDataJson} from '@dvb/data-access-backend';
-import {BriefvorlagenStore} from '@dvb/feat-shared';
-import {BenutzerStore} from '@dvb/feat-shared';
-import {Path} from '@dvb/feat-shared';
-import {PageComponent} from '@dvb/feat-shared';
-import {TenantSettingsStore} from '@dvb/feat-shared';
-import {FileDropComponent, UploadTableComponent} from '@dvb/feat-shared';
+import {
+  BenutzerStore,
+  BriefvorlagenStore,
+  FileDropComponent,
+  PageComponent,
+  Path,
+  TenantSettingsStore,
+  UploadTableComponent,
+} from '@dvb/feat-shared';
 import {
   CardComponent,
   DashboardComponent,
@@ -54,7 +57,8 @@ export class BriefvorlagenDetailPageComponent implements DirtyMarker {
 
   fileUpload: File | undefined;
 
-  readonly acceptedFiletypes = signal('.doc, .docx');
+  // Keep this list in sync with the accepted types in backend as we do not sync config to client yet
+  readonly acceptedFiletypes = '.docx';
 
   briefvorlageFiles = signal<FileDataJson[]>([]);
   uploadTable = new TableModel<FileDataJson>(

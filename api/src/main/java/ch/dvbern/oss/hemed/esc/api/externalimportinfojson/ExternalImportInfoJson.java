@@ -40,13 +40,14 @@ public class ExternalImportInfoJson {
         if (entity == null ||
             entity.getIdInExternalSystem() == null ||
             entity.getTimestampFirstImport() == null ||
-            entity.getTimestampLatestImport() == null
+            entity.getTimestampLatestImport() == null ||
+            entity.getAktivInExternalSystem() == null
         ) {
             return null;
         }
         return new ExternalImportInfoJson(
             entity.getIdInExternalSystem(),
-            entity.isAktivInExternalSystem(),
+            entity.getAktivInExternalSystem(),
             entity.getTimestampFirstImport(),
             entity.getTimestampLatestImport()
         );

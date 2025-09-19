@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.impfstoff.json;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Setter
 @AllArgsConstructor
 @JaxDTO
-public class ImpfstoffChargeSaveJson {
+public class ImpfstoffChargeSaveJson implements SaveJsonWithOptimisticLocking {
 
     @NotNull
     @NonNull
@@ -22,4 +23,7 @@ public class ImpfstoffChargeSaveJson {
     @NotNull
     @Schema(required = true)
     private boolean aktiv;
+
+    @Schema(required = true)
+    private long version;
 }

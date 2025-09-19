@@ -86,6 +86,7 @@ public class AnlassResource {
     @Path("/{anlassId}")
     @RolesAllowed(BerechtigungName.ANLASSPLANUNG_SCHREIBEN)
     public void removeAnlass(@NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassID) {
+        authorizerService.requireWriteAuthorizationAnlass(anlassID);
         anlassMapper.remove(anlassID);
     }
 

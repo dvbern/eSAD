@@ -32,11 +32,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_VORMERKEN_FUER_GRUPPEN_FOLGETERMIN,
   UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_IMPFBERATUNG_MPA_DURCHGEFUEHRT,
   UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_IMPFBERATUNG_MPA_DURCHGEFUEHRT_BEMERKUNGEN,
-  UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_INFORMATIONEN_ABGEGEBEN,
+  UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_INFOMATERIAL_ABGEGEBEN,
   UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_INFORMATION_ELTERN,
   UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_INFORMATION_HAUSARZT,
   UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_RUECKFRAGE_HAUSARZT,
-  UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_BEMERKUNGEN
+  UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_BEMERKUNGEN,
+  UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("UntersuchungImpfungenMassnahmenSaveJson")
 @lombok.AllArgsConstructor
@@ -58,9 +59,9 @@ public class UntersuchungImpfungenMassnahmenSaveJsonSpec {
   @jakarta.annotation.Nullable
   private String impfberatungMpaDurchgefuehrtBemerkungen;
 
-  public static final String JSON_PROPERTY_INFORMATIONEN_ABGEGEBEN = "informationenAbgegeben";
+  public static final String JSON_PROPERTY_INFOMATERIAL_ABGEGEBEN = "infomaterialAbgegeben";
   @jakarta.annotation.Nonnull
-  private Boolean informationenAbgegeben;
+  private Boolean infomaterialAbgegeben;
 
   public static final String JSON_PROPERTY_INFORMATION_ELTERN = "informationEltern";
   @jakarta.annotation.Nullable
@@ -77,6 +78,10 @@ public class UntersuchungImpfungenMassnahmenSaveJsonSpec {
   public static final String JSON_PROPERTY_BEMERKUNGEN = "bemerkungen";
   @jakarta.annotation.Nullable
   private String bemerkungen;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public UntersuchungImpfungenMassnahmenSaveJsonSpec() {
   }
@@ -181,29 +186,29 @@ public class UntersuchungImpfungenMassnahmenSaveJsonSpec {
     this.impfberatungMpaDurchgefuehrtBemerkungen = impfberatungMpaDurchgefuehrtBemerkungen;
   }
 
-  public UntersuchungImpfungenMassnahmenSaveJsonSpec informationenAbgegeben(@jakarta.annotation.Nonnull Boolean informationenAbgegeben) {
+  public UntersuchungImpfungenMassnahmenSaveJsonSpec infomaterialAbgegeben(@jakarta.annotation.Nonnull Boolean infomaterialAbgegeben) {
     
-    this.informationenAbgegeben = informationenAbgegeben;
+    this.infomaterialAbgegeben = infomaterialAbgegeben;
     return this;
   }
 
   /**
-   * Get informationenAbgegeben
-   * @return informationenAbgegeben
+   * Get infomaterialAbgegeben
+   * @return infomaterialAbgegeben
    */
   @jakarta.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_INFORMATIONEN_ABGEGEBEN)
+  @JsonProperty(JSON_PROPERTY_INFOMATERIAL_ABGEGEBEN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public Boolean getInformationenAbgegeben() {
-    return informationenAbgegeben;
+  public Boolean getInfomaterialAbgegeben() {
+    return infomaterialAbgegeben;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_INFORMATIONEN_ABGEGEBEN)
+  @JsonProperty(JSON_PROPERTY_INFOMATERIAL_ABGEGEBEN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setInformationenAbgegeben(@jakarta.annotation.Nonnull Boolean informationenAbgegeben) {
-    this.informationenAbgegeben = informationenAbgegeben;
+  public void setInfomaterialAbgegeben(@jakarta.annotation.Nonnull Boolean infomaterialAbgegeben) {
+    this.infomaterialAbgegeben = infomaterialAbgegeben;
   }
 
   public UntersuchungImpfungenMassnahmenSaveJsonSpec informationEltern(@jakarta.annotation.Nullable InformationElternSpec informationEltern) {
@@ -306,6 +311,31 @@ public class UntersuchungImpfungenMassnahmenSaveJsonSpec {
     this.bemerkungen = bemerkungen;
   }
 
+  public UntersuchungImpfungenMassnahmenSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -319,16 +349,17 @@ public class UntersuchungImpfungenMassnahmenSaveJsonSpec {
         Objects.equals(this.vormerkenFuerGruppenFolgetermin, untersuchungImpfungenMassnahmenSaveJson.vormerkenFuerGruppenFolgetermin) &&
         Objects.equals(this.impfberatungMpaDurchgefuehrt, untersuchungImpfungenMassnahmenSaveJson.impfberatungMpaDurchgefuehrt) &&
         Objects.equals(this.impfberatungMpaDurchgefuehrtBemerkungen, untersuchungImpfungenMassnahmenSaveJson.impfberatungMpaDurchgefuehrtBemerkungen) &&
-        Objects.equals(this.informationenAbgegeben, untersuchungImpfungenMassnahmenSaveJson.informationenAbgegeben) &&
+        Objects.equals(this.infomaterialAbgegeben, untersuchungImpfungenMassnahmenSaveJson.infomaterialAbgegeben) &&
         Objects.equals(this.informationEltern, untersuchungImpfungenMassnahmenSaveJson.informationEltern) &&
         Objects.equals(this.informationHausarzt, untersuchungImpfungenMassnahmenSaveJson.informationHausarzt) &&
         Objects.equals(this.rueckfrageHausarzt, untersuchungImpfungenMassnahmenSaveJson.rueckfrageHausarzt) &&
-        Objects.equals(this.bemerkungen, untersuchungImpfungenMassnahmenSaveJson.bemerkungen);
+        Objects.equals(this.bemerkungen, untersuchungImpfungenMassnahmenSaveJson.bemerkungen) &&
+        Objects.equals(this.version, untersuchungImpfungenMassnahmenSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(keineMassnahmen, vormerkenFuerGruppenFolgetermin, impfberatungMpaDurchgefuehrt, impfberatungMpaDurchgefuehrtBemerkungen, informationenAbgegeben, informationEltern, informationHausarzt, rueckfrageHausarzt, bemerkungen);
+    return Objects.hash(keineMassnahmen, vormerkenFuerGruppenFolgetermin, impfberatungMpaDurchgefuehrt, impfberatungMpaDurchgefuehrtBemerkungen, infomaterialAbgegeben, informationEltern, informationHausarzt, rueckfrageHausarzt, bemerkungen, version);
   }
 
   @Override
@@ -339,11 +370,12 @@ public class UntersuchungImpfungenMassnahmenSaveJsonSpec {
     sb.append("    vormerkenFuerGruppenFolgetermin: ").append(toIndentedString(vormerkenFuerGruppenFolgetermin)).append("\n");
     sb.append("    impfberatungMpaDurchgefuehrt: ").append(toIndentedString(impfberatungMpaDurchgefuehrt)).append("\n");
     sb.append("    impfberatungMpaDurchgefuehrtBemerkungen: ").append(toIndentedString(impfberatungMpaDurchgefuehrtBemerkungen)).append("\n");
-    sb.append("    informationenAbgegeben: ").append(toIndentedString(informationenAbgegeben)).append("\n");
+    sb.append("    infomaterialAbgegeben: ").append(toIndentedString(infomaterialAbgegeben)).append("\n");
     sb.append("    informationEltern: ").append(toIndentedString(informationEltern)).append("\n");
     sb.append("    informationHausarzt: ").append(toIndentedString(informationHausarzt)).append("\n");
     sb.append("    rueckfrageHausarzt: ").append(toIndentedString(rueckfrageHausarzt)).append("\n");
     sb.append("    bemerkungen: ").append(toIndentedString(bemerkungen)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

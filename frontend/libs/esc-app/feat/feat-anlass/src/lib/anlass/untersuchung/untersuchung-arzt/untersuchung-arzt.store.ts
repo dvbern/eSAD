@@ -18,12 +18,16 @@
 
 import {inject, Injectable} from '@angular/core';
 import {
-  UntersuchungArztJson,
+  UntersuchungArztBemerkungJson,
+  UntersuchungArztBeurteilungJson,
+  UntersuchungArztBeurteilungSaveJson,
   UntersuchungArztService,
-  UntersuchungArztServiceGetUntersuchungArztRequestParams,
-  UntersuchungArztServiceSaveUntersuchungArztRequestParams,
-  UntersuchungSehenSaveJson,
+  UntersuchungArztServiceGetUntersuchungArztBemerkungRequestParams,
+  UntersuchungArztServiceGetUntersuchungArztBeurteilungRequestParams,
+  UntersuchungArztServiceSaveUntersuchungArztBemerkungRequestParams,
+  UntersuchungArztServiceSaveUntersuchungArztBeurteilungRequestParams,
 } from '@dvb/data-access-backend';
+import {globalConstants} from '@dvb/feat-shared';
 import {AppErrorHandlerService, AppNotificationStore, Loader} from '@dvb/util-angular';
 import {TranslocoService} from '@jsverse/transloco';
 import {tapResponse} from '@ngrx/operators';
@@ -34,15 +38,17 @@ import {AnlassEinladungenId} from '../anlass-einladungen-id';
 import {UntersuchungStore} from '../untersuchung.store';
 
 type UntersuchungArztState = {
-  untersuchungArzt: UntersuchungArztJson | undefined;
-  defaultArztInitial: UntersuchungSehenSaveJson | undefined;
-  defaultArztToApply: UntersuchungSehenSaveJson | undefined;
+  untersuchungArztBeurteilung: UntersuchungArztBeurteilungJson | undefined;
+  defaultArztInitial: UntersuchungArztBeurteilungSaveJson | undefined;
+  defaultArztToApply: UntersuchungArztBeurteilungSaveJson | undefined;
+  untersuchungArztBemerkung: UntersuchungArztBemerkungJson | undefined;
 };
 
 const initialState: UntersuchungArztState = {
-  untersuchungArzt: undefined,
+  untersuchungArztBeurteilung: undefined,
   defaultArztInitial: undefined,
   defaultArztToApply: undefined,
+  untersuchungArztBemerkung: undefined,
 };
 
 @Injectable()
@@ -50,8 +56,16 @@ export class UntersuchungArztStore extends signalStore(
   {protectedState: false},
   withState(initialState),
   withMethods((store) => ({
+    defaultArztToApplyWithCorrectedVersion(): UntersuchungArztBeurteilungSaveJson {
+      // Ensure that the version is set correctly when applying the default Sehen
+      const defaultsWithCorrectedVersion = {
+        ...store.defaultArztInitial(),
+        version: store.untersuchungArztBeurteilung()?.data.version ?? globalConstants.entityPrePersistVersion,
+      };
+      return defaultsWithCorrectedVersion;
+    },
     applyDefaultUntersuchungArzt(): void {
-      patchState(store, {defaultArztToApply: store.defaultArztInitial()});
+      patchState(store, {defaultArztToApply: this.defaultArztToApplyWithCorrectedVersion()});
     },
     resetApplyDefaultUntersuchungArzt(): void {
       patchState(store, {defaultArztToApply: undefined});
@@ -67,13 +81,13 @@ export class UntersuchungArztStore extends signalStore(
   readonly loader = new Loader();
   readonly saveLoader = new Loader();
 
-  loadUntersuchungArzt = rxMethod<UntersuchungArztServiceGetUntersuchungArztRequestParams>(
+  loadUntersuchungArzt = rxMethod<UntersuchungArztServiceGetUntersuchungArztBeurteilungRequestParams>(
     pipe(
-      tap(() => patchState(this, {untersuchungArzt: undefined})),
-      switchMap(params => this.loader.tapLoading$(this.#untersuchungArztService.getUntersuchungArzt$(params),
+      tap(() => patchState(this, {untersuchungArztBeurteilung: undefined})),
+      switchMap(params => this.loader.tapLoading$(this.#untersuchungArztService.getUntersuchungArztBeurteilung$(params),
         error => this.#appErrorHandlerService.handleError(error))),
       tapResponse({
-        next: untersuchungArzt => patchState(this, {untersuchungArzt: untersuchungArzt}),
+        next: untersuchungArztBeurteilung => patchState(this, {untersuchungArztBeurteilung: untersuchungArztBeurteilung}),
         error: console.error,
       }),
     ),
@@ -81,7 +95,7 @@ export class UntersuchungArztStore extends signalStore(
 
   loadDefaultUntersuchungArzt = rxMethod<AnlassEinladungenId>(
     pipe(
-      switchMap(params => this.loader.tapLoading$(this.#untersuchungArztService.getDefaultUntersuchungArztForAnlassConfig$(
+      switchMap(params => this.loader.tapLoading$(this.#untersuchungArztService.getDefaultUntersuchungArztBeurteilungForAnlassConfig$(
           {
             anlassId: params.anlassId,
             einladungId: params.einladungIds[0],
@@ -94,23 +108,55 @@ export class UntersuchungArztStore extends signalStore(
     ),
   );
 
-  saveUntersuchungArzt = rxMethod<UntersuchungArztServiceSaveUntersuchungArztRequestParams>(
+  saveUntersuchungArzt = rxMethod<UntersuchungArztServiceSaveUntersuchungArztBeurteilungRequestParams>(
     pipe(
       exhaustMap(params =>
         this.saveLoader.tapLoading$(
-          this.#untersuchungArztService.saveUntersuchungArzt$(params).pipe(
-            map(untersuchungArzt => ({untersuchungArzt, params}))
+          this.#untersuchungArztService.saveUntersuchungArztBeurteilung$(params).pipe(
+            map(untersuchungArztBeurt => ({untersuchungArzt: untersuchungArztBeurt, params}))
           ),
           error => this.#appErrorHandlerService.handleError(error),
         ),
       ),
       tapResponse({
         next: ({untersuchungArzt, params}) => {
-          patchState(this, {untersuchungArzt: untersuchungArzt});
+          patchState(this, {untersuchungArztBeurteilung: untersuchungArzt});
           this.#untersuchungStore.loadTabsSaved({
             anlassId: params.anlassId,
             einladungId: params.einladungId,
           });
+          this.#appNotificationStore.addSuccessNotification(this.#transloco.translate('global.data.saved'));
+        },
+        error: console.error,
+      }),
+    ),
+  );
+
+  loadUntersuchungArztBemerkung = rxMethod<UntersuchungArztServiceGetUntersuchungArztBemerkungRequestParams>(
+    pipe(
+      tap(() => patchState(this, {untersuchungArztBeurteilung: undefined})),
+      switchMap(params => this.loader.tapLoading$(this.#untersuchungArztService.getUntersuchungArztBemerkung$(params),
+        error => this.#appErrorHandlerService.handleError(error))),
+      tapResponse({
+        next: untersuchungArzt => patchState(this, {untersuchungArztBemerkung: untersuchungArzt}),
+        error: console.error,
+      }),
+    ),
+  );
+
+  saveUntersuchungArztBemerkung = rxMethod<UntersuchungArztServiceSaveUntersuchungArztBemerkungRequestParams>(
+    pipe(
+      exhaustMap(params =>
+        this.saveLoader.tapLoading$(
+          this.#untersuchungArztService.saveUntersuchungArztBemerkung$(params).pipe(
+            map(untersuchungArzt => ({untersuchungArzt, params}))
+          ),
+          error => this.#appErrorHandlerService.handleError(error),
+        ),
+      ),
+      tapResponse({
+        next: ({untersuchungArzt}) => {
+          patchState(this, {untersuchungArztBemerkung: untersuchungArzt});
           this.#appNotificationStore.addSuccessNotification(this.#transloco.translate('global.data.saved'));
         },
         error: console.error,

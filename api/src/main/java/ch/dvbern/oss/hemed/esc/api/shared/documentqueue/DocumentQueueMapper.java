@@ -17,10 +17,11 @@ import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueSaveJs
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.List;
 
 @Slf4j
 @JaxMapper
@@ -45,7 +46,7 @@ public class DocumentQueueMapper {
             documentQueue.getType(),
             documentQueue.getStatus(),
             documentQueue.getTimestampResult(),
-            fileData != null ? fileData.getCalculatedFileName() : null,
+            fileData != null ? fileData.getCalculatedFileName().toString() : null,
             documentQueue.getLastError(),
             DocumentQueueService.unmarshalDocumentQueueParameter(documentQueue));
     }

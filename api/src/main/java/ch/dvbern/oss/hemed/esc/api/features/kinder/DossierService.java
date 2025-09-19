@@ -22,6 +22,12 @@ public class DossierService {
         return dossier;
     }
 
+    @NonNull
+    public Dossier persistWithOptimisticLocking(@NonNull Dossier dossier, @NonNull Long versionFromFrontend) {
+        dossierRepo.persistWithOptimisticLocking(dossier, versionFromFrontend);
+        return dossier;
+    }
+
     public void remove(@NonNull ID<Dossier> dossierID) {
         dossierRepo.remove(dossierID);
     }

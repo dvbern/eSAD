@@ -11,6 +11,7 @@
 
 export interface QuartierSaveJson { 
     quartierName: string;
+    version: number;
 }
 
 

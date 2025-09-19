@@ -19,12 +19,22 @@ public class UntersuchungHoerenAudiogrammService {
     }
 
     @NonNull
+    public UntersuchungHoerenAudiogramm persistWithOptimisticLocking(@NonNull UntersuchungHoerenAudiogramm entity, @NonNull Long versionFromFrontend) {
+        return hoerenRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
+    }
+
+    public void cascadeOptimisticLocking(@NonNull Audiogramm audiogrammRechts, long version) {
+        hoerenRepo.cascadeOptimisticLocking(audiogrammRechts, version);
+    }
+
+    @NonNull
     public UntersuchungHoerenAudiogramm getById(@NonNull ID<UntersuchungHoerenAudiogramm> hoerenID) {
         return hoerenRepo.getById(hoerenID);
     }
 
     public void untersuchungAbschliessen(@NonNull Untersuchung untersuchung) {
         UntersuchungHoerenAudiogramm hoeren = UntersuchungHoerenAudiogramm.forUntersuchungAbschliessen(untersuchung);
+        hoeren.disableOptimisticLockingCheck();
         persist(hoeren);
     }
 }

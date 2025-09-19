@@ -17,31 +17,6 @@ public class QuartierMapper {
 
     private final QuartierService quartierService;
 
-    @NonNull
-    private Quartier toEntity(
-        @NonNull Quartier existingQuartier,
-        @NonNull QuartierSaveJson quartierSaveJson
-    ) {
-        existingQuartier.setQuartierName(quartierSaveJson.getQuartierName());
-        return existingQuartier;
-    }
-
-    @Nullable
-    public Quartier toEntity(
-        @Nullable QuartierOptionJson quartierOptionJson
-    ) {
-        if (quartierOptionJson == null) {
-            return null;
-        }
-        return this.quartierService.getById(quartierOptionJson.getId());
-    }
-
-    @NonNull
-    private Quartier toEntityForCreate(@NonNull QuartierSaveJson quartierSaveJson) {
-        return new Quartier(
-            quartierSaveJson.getQuartierName()
-        );
-    }
 
     @NonNull
     public static QuartierJson toJson(@NonNull Quartier quartier) {
@@ -49,7 +24,8 @@ public class QuartierMapper {
             quartier.getId(),
             EntityInfoJson.fromEntity(quartier),
             new QuartierSaveJson(
-                quartier.getQuartierName()
+                quartier.getQuartierName(),
+                quartier.getVersion()
             )
         );
     }
@@ -77,5 +53,15 @@ public class QuartierMapper {
         return quartierService.findAll().stream()
             .map(QuartierMapper::toOptionJson)
             .toList();
+    }
+
+    @Nullable
+    public Quartier findByOptionJson(
+        @Nullable QuartierOptionJson quartierOptionJson
+    ) {
+        if (quartierOptionJson == null) {
+            return null;
+        }
+        return this.quartierService.getById(quartierOptionJson.getId());
     }
 }

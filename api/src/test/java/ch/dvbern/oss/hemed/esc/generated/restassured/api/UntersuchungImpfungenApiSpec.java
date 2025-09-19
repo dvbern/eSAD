@@ -13,7 +13,6 @@
 
 package ch.dvbern.oss.hemed.esc.generated.restassured.api;
 
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfstatusListSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungInternJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungInternSaveJsonSpec;
@@ -184,11 +183,11 @@ public class UntersuchungImpfungenApiSpec {
         }
 
          /**
-         * @param benutzerOptionJsonSpec (BenutzerOptionJsonSpec)  (required)
+         * @param untersuchungImpfungenSaveJsonSpec (UntersuchungImpfungenSaveJsonSpec)  (required)
          * @return operation
          */
-        public UntersuchungImpfungenResourceAnfordernDoppelkontrolleVisum2Oper body(BenutzerOptionJsonSpec benutzerOptionJsonSpec) {
-            reqSpec.setBody(benutzerOptionJsonSpec);
+        public UntersuchungImpfungenResourceAnfordernDoppelkontrolleVisum2Oper body(UntersuchungImpfungenSaveJsonSpec untersuchungImpfungenSaveJsonSpec) {
+            reqSpec.setBody(untersuchungImpfungenSaveJsonSpec);
             return this;
         }
 
@@ -581,6 +580,7 @@ public class UntersuchungImpfungenApiSpec {
      *
      * @see #anlassIdPath  (required)
      * @see #einladungIdPath  (required)
+     * @see #body  (required)
      * return UntersuchungImpfungenJsonSpec
      */
     public static class UntersuchungImpfungenResourceResetDoppelkontrolleOper implements Oper {
@@ -593,6 +593,7 @@ public class UntersuchungImpfungenApiSpec {
 
         public UntersuchungImpfungenResourceResetDoppelkontrolleOper(RequestSpecBuilder reqSpec) {
             this.reqSpec = reqSpec;
+            reqSpec.setContentType("application/json");
             reqSpec.setAccept("application/json");
             this.respSpec = new ResponseSpecBuilder();
         }
@@ -616,6 +617,15 @@ public class UntersuchungImpfungenApiSpec {
         public UntersuchungImpfungenJsonSpec executeAs(Function<Response, Response> handler) {
             TypeRef<UntersuchungImpfungenJsonSpec> type = new TypeRef<UntersuchungImpfungenJsonSpec>(){};
             return execute(handler).as(type);
+        }
+
+         /**
+         * @param untersuchungImpfungenSaveJsonSpec (UntersuchungImpfungenSaveJsonSpec)  (required)
+         * @return operation
+         */
+        public UntersuchungImpfungenResourceResetDoppelkontrolleOper body(UntersuchungImpfungenSaveJsonSpec untersuchungImpfungenSaveJsonSpec) {
+            reqSpec.setBody(untersuchungImpfungenSaveJsonSpec);
+            return this;
         }
 
         public static final String ANLASS_ID_PATH = "anlassId";
@@ -1062,6 +1072,7 @@ public class UntersuchungImpfungenApiSpec {
      *
      * @see #anlassIdPath  (required)
      * @see #einladungIdPath  (required)
+     * @see #body  (required)
      * return UntersuchungImpfungenJsonSpec
      */
     public static class UntersuchungImpfungenResourceVisierenDoppelkontrolleVisum1Oper implements Oper {
@@ -1074,6 +1085,7 @@ public class UntersuchungImpfungenApiSpec {
 
         public UntersuchungImpfungenResourceVisierenDoppelkontrolleVisum1Oper(RequestSpecBuilder reqSpec) {
             this.reqSpec = reqSpec;
+            reqSpec.setContentType("application/json");
             reqSpec.setAccept("application/json");
             this.respSpec = new ResponseSpecBuilder();
         }
@@ -1097,6 +1109,15 @@ public class UntersuchungImpfungenApiSpec {
         public UntersuchungImpfungenJsonSpec executeAs(Function<Response, Response> handler) {
             TypeRef<UntersuchungImpfungenJsonSpec> type = new TypeRef<UntersuchungImpfungenJsonSpec>(){};
             return execute(handler).as(type);
+        }
+
+         /**
+         * @param untersuchungImpfungenSaveJsonSpec (UntersuchungImpfungenSaveJsonSpec)  (required)
+         * @return operation
+         */
+        public UntersuchungImpfungenResourceVisierenDoppelkontrolleVisum1Oper body(UntersuchungImpfungenSaveJsonSpec untersuchungImpfungenSaveJsonSpec) {
+            reqSpec.setBody(untersuchungImpfungenSaveJsonSpec);
+            return this;
         }
 
         public static final String ANLASS_ID_PATH = "anlassId";
@@ -1147,6 +1168,7 @@ public class UntersuchungImpfungenApiSpec {
      *
      * @see #anlassIdPath  (required)
      * @see #einladungIdPath  (required)
+     * @see #body  (required)
      * return UntersuchungImpfungenJsonSpec
      */
     public static class UntersuchungImpfungenResourceVisierenDoppelkontrolleVisum2Oper implements Oper {
@@ -1159,6 +1181,7 @@ public class UntersuchungImpfungenApiSpec {
 
         public UntersuchungImpfungenResourceVisierenDoppelkontrolleVisum2Oper(RequestSpecBuilder reqSpec) {
             this.reqSpec = reqSpec;
+            reqSpec.setContentType("application/json");
             reqSpec.setAccept("application/json");
             this.respSpec = new ResponseSpecBuilder();
         }
@@ -1182,6 +1205,15 @@ public class UntersuchungImpfungenApiSpec {
         public UntersuchungImpfungenJsonSpec executeAs(Function<Response, Response> handler) {
             TypeRef<UntersuchungImpfungenJsonSpec> type = new TypeRef<UntersuchungImpfungenJsonSpec>(){};
             return execute(handler).as(type);
+        }
+
+         /**
+         * @param untersuchungImpfungenSaveJsonSpec (UntersuchungImpfungenSaveJsonSpec)  (required)
+         * @return operation
+         */
+        public UntersuchungImpfungenResourceVisierenDoppelkontrolleVisum2Oper body(UntersuchungImpfungenSaveJsonSpec untersuchungImpfungenSaveJsonSpec) {
+            reqSpec.setBody(untersuchungImpfungenSaveJsonSpec);
+            return this;
         }
 
         public static final String ANLASS_ID_PATH = "anlassId";

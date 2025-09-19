@@ -39,7 +39,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   NotizSaveJsonSpec.JSON_PROPERTY_STATUS,
   NotizSaveJsonSpec.JSON_PROPERTY_VERANTWORTLICHER,
   NotizSaveJsonSpec.JSON_PROPERTY_LABELS,
-  NotizSaveJsonSpec.JSON_PROPERTY_FILES
+  NotizSaveJsonSpec.JSON_PROPERTY_FILES,
+  NotizSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("NotizSaveJson")
 @lombok.AllArgsConstructor
@@ -68,6 +69,10 @@ public class NotizSaveJsonSpec {
   public static final String JSON_PROPERTY_FILES = "files";
   @jakarta.annotation.Nonnull
   private List<FileDataJsonSpec> files;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public NotizSaveJsonSpec() {
   }
@@ -238,6 +243,31 @@ public class NotizSaveJsonSpec {
     this.files = files;
   }
 
+  public NotizSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -252,12 +282,13 @@ public class NotizSaveJsonSpec {
         Objects.equals(this.status, notizSaveJson.status) &&
         Objects.equals(this.verantwortlicher, notizSaveJson.verantwortlicher) &&
         Objects.equals(this.labels, notizSaveJson.labels) &&
-        Objects.equals(this.files, notizSaveJson.files);
+        Objects.equals(this.files, notizSaveJson.files) &&
+        Objects.equals(this.version, notizSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(titel, bemerkungen, status, verantwortlicher, labels, files);
+    return Objects.hash(titel, bemerkungen, status, verantwortlicher, labels, files, version);
   }
 
   @Override
@@ -270,6 +301,7 @@ public class NotizSaveJsonSpec {
     sb.append("    verantwortlicher: ").append(toIndentedString(verantwortlicher)).append("\n");
     sb.append("    labels: ").append(toIndentedString(labels)).append("\n");
     sb.append("    files: ").append(toIndentedString(files)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

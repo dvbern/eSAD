@@ -6,6 +6,7 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.json.ImpfstoffChargeJson;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.json.ImpfstoffChargeSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.util.PathParamConsistancyUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -24,7 +25,8 @@ public final class ImpfstoffChargeMapper {
             charge.getImpfstoff().getName(),
             new ImpfstoffChargeSaveJson(
                 charge.getName(),
-                charge.isAktiv()
+                charge.isAktiv(),
+                charge.getVersion()
             )
         );
     }
@@ -63,6 +65,7 @@ public final class ImpfstoffChargeMapper {
         impfstoffChargeService.findAllByImpfstoff(impfstoffId)
             .forEach(charge -> {
                 charge.setAktiv(false);
+                charge.disableOptimisticLockingCheck();
                 impfstoffChargeService.persist(charge);
             });
     }
@@ -88,6 +91,10 @@ public final class ImpfstoffChargeMapper {
     ) {
         ImpfstoffCharge existing = impfstoffChargeService.getById(impfstoffChargeId);
         ImpfstoffCharge entity = toEntity(existing, impfstoffChargeSaveJson);
-        return toJson(impfstoffChargeService.persist(entity));
+        return toJson(impfstoffChargeService.persistWithOptimisticLocking(entity, impfstoffChargeSaveJson.getVersion()));
+    }
+
+    public void requireConsistentPathParams(@NonNull ID<ImpfstoffCharge> impfstoffChargeId, @NonNull ID<Impfstoff> expectedImpfstoffId) {
+        PathParamConsistancyUtil.requireForeignIdsAreEqual(impfstoffChargeId, impfstoffChargeService.getById(impfstoffChargeId).getImpfstoff().getId(), expectedImpfstoffId);
     }
 }

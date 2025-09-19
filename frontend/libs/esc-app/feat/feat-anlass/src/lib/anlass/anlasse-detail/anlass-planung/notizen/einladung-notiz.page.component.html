@@ -1,4 +1,4 @@
-<feat-page [heading]="pageTitle() | transloco"
+<feat-page [heading]="pageTitle() | transloco : { nameKind: anlassKinderStore.nameKind() }"
            [backLink]="{label: 'global.back' | transloco, routerLink: Path.RELATIVE_FOUR_UP + '/' + Path.ANLASS_PLANUNG}">
 
   <feat-notizen

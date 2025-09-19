@@ -45,7 +45,8 @@ public final class BriefvorlageMapper {
             new BriefvorlageSaveJson(
                 briefvorlage.getName(),
                 briefvorlage.getType(),
-                briefvorlage.getSprache()
+                briefvorlage.getSprache(),
+                briefvorlage.getVersion()
             ),
             FileDataMapper.toJson(briefvorlage.getFile())
         );
@@ -89,7 +90,7 @@ public final class BriefvorlageMapper {
             entity.setFile(fileData);
         }
 
-        Briefvorlage savedBriefvorlage = briefvorlageService.persist(entity);
+        Briefvorlage savedBriefvorlage = briefvorlageService.persistWithOptimisticLocking(entity, briefvorlageSaveJson.getVersion());
         return toJson(savedBriefvorlage);
     }
 

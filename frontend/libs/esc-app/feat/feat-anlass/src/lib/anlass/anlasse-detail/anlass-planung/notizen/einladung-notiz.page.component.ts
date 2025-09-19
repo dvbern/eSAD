@@ -6,6 +6,7 @@ import {BackendEntityId} from '@dvb/data-access-types';
 import {
   BenutzerOptionsStore,
   BenutzerStore,
+  globalConstants,
   LabelsStore,
   NotizenComponent,
   NotizenFileParams,
@@ -52,12 +53,12 @@ export class EinladungNotizPageComponent implements DirtyMarker {
 
   readonly notizTyp = input.required<EinladungNotizTyp>();
 
-  kindId = computed<BackendEntityId | undefined>(() => this.anlassKinderStore.getSelectedEinladung()?.kind.id);
+  kindId = computed<BackendEntityId | undefined>(() => this.anlassKinderStore.selectedEinladung()?.kind.id);
   currentNotiz = computed<NotizJson | undefined>(() => {
     if (this.notizTyp() === 'impfausweis') {
-      return this.anlassKinderStore.getSelectedEinladung()?.data?.impfausweis;
+      return this.anlassKinderStore.selectedEinladung()?.data?.impfausweis;
     } else {
-      return this.anlassKinderStore.getSelectedEinladung()?.data?.fragebogen;
+      return this.anlassKinderStore.selectedEinladung()?.data?.fragebogen;
     }
   });
   currentIsNew = computed(() => !this.currentNotiz());
@@ -68,9 +69,17 @@ export class EinladungNotizPageComponent implements DirtyMarker {
 
   pageTitle = computed(() => {
     if (this.notizTyp() === 'impfausweis') {
-      return 'einladung.impfausweis.page.title';
+      if (this.currentIsNew()) {
+        return 'einladung.impfausweis.page.create.title';
+      } else {
+        return 'einladung.impfausweis.page.edit.title';
+      }
     } else {
-      return 'einladung.fragebogen.page.title';
+      if (this.currentIsNew()) {
+        return 'einladung.fragebogen.page.create.title';
+      } else {
+        return 'einladung.fragebogen.page.edit.title';
+      }
     }
   });
 
@@ -93,7 +102,7 @@ export class EinladungNotizPageComponent implements DirtyMarker {
       const titel = this.defaultNotizTitleSig();
       const labels = this.defaultNotizLabelSig();
       const currentUser = this.#benutzerOptionsStore.getOptionForBenutzer(this.benutzerStore.benutzer()?.id);
-      if(isNullish(currentUser)) {
+      if (isNullish(currentUser)) {
         return undefined;
       }
       const defaultNotiz: NotizSaveJson = {
@@ -103,6 +112,7 @@ export class EinladungNotizPageComponent implements DirtyMarker {
         verantwortlicher: requireValue(currentUser),
         labels: labels,
         files: [],
+        version: globalConstants.entityPrePersistVersion,
       };
       return defaultNotiz;
     },

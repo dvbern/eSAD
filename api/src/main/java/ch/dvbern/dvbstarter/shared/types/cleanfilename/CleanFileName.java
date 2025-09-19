@@ -1,8 +1,5 @@
 package ch.dvbern.dvbstarter.shared.types.cleanfilename;
 
-import java.io.Serializable;
-import java.nio.file.Path;
-
 import ch.dvbern.dvbstarter.shared.inputvalidation.InputValidationUtil;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.EqualsAndHashCode;
@@ -10,9 +7,14 @@ import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.nio.file.Path;
+
 @Getter
 @EqualsAndHashCode
 public class CleanFileName implements Serializable {
+    @Serial
     private static final long serialVersionUID = -4274317691559857419L;
 
     @NotEmpty

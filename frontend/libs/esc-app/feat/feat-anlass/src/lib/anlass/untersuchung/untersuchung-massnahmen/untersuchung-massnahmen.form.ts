@@ -1,10 +1,11 @@
-import { DestroyRef } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NonNullableFormBuilder } from '@angular/forms';
-import { InfomaterialJson, InformationEltern, UntersuchungMassnahmenSaveJson } from '@dvb/data-access-backend';
-import { AppValidators, BaseForm } from '@dvb/util-angular';
-import { ensureProps, Nullish, requireValue } from '@dvb/util-shared';
-import { distinctUntilChanged } from 'rxjs';
+import {DestroyRef} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {NonNullableFormBuilder} from '@angular/forms';
+import {InfomaterialJson, InformationEltern, UntersuchungMassnahmenSaveJson} from '@dvb/data-access-backend';
+import {globalConstants} from '@dvb/feat-shared';
+import {AppValidators, BaseForm} from '@dvb/util-angular';
+import {ensureProps, ensurePropsFlat, Nullish, requireValue} from '@dvb/util-shared';
+import {distinctUntilChanged} from 'rxjs';
 
 type Config = {
   fb: NonNullableFormBuilder;
@@ -18,9 +19,9 @@ function makeForm(config: Config) {
     beratungMPA: fb.control<boolean>(false),
     beratungSchulAerztin: fb.control<boolean>(false),
     anderes: fb.control<boolean>(false),
-    anderesBemerkung: fb.control<string>('', AppValidators.textareaMaxLength()),
+    anderesBemerkung: fb.control<string>('', AppValidators.textareaMaxLength2000()),
     bereitsBehandeltAnderes: fb.control<boolean>(false),
-    bereitsBehandeltAnderesBemerkung: fb.control<string>('', AppValidators.textareaMaxLength()),
+    bereitsBehandeltAnderesBemerkung: fb.control<string>('', AppValidators.textareaMaxLength2000()),
     bereitsBehandeltGroesseGewicht: fb.control<boolean>(false),
     bereitsBehandeltHoeren: fb.control<boolean>(false),
     bereitsBehandeltMotorik: fb.control<boolean>(false),
@@ -36,7 +37,8 @@ function makeForm(config: Config) {
     nachkontrolleSprache: fb.control<boolean>(false),
     nachkontrolleMotorik: fb.control<boolean>(false),
     nachkontrolleAnderes: fb.control<boolean>(false),
-    bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength()),
+    bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength2000()),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 
   group.controls.anderes.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef)).subscribe({
@@ -81,7 +83,7 @@ export class UntersuchungMassnahmenForm extends BaseForm<ReturnType<typeof makeF
 
   public override valueOnValid(): UntersuchungMassnahmenSaveJson {
     const value = requireValue(this.group.getRawValue());
-    return ensureProps<UntersuchungMassnahmenSaveJson>({
+    const saveJson = ensureProps<Omit<UntersuchungMassnahmenSaveJson, 'abgegebenesInfomaterial'>>({
       keineMassnahmen: value.keineMassnahmen,
       beratungMPA: value.beratungMPA,
       beratungSchulAerztin: value.beratungSchulAerztin,
@@ -94,8 +96,6 @@ export class UntersuchungMassnahmenForm extends BaseForm<ReturnType<typeof makeF
       bereitsBehandeltMotorik: value.bereitsBehandeltMotorik,
       bereitsBehandeltSehen: value.bereitsBehandeltSehen,
       bereitsBehandeltSprache: value.bereitsBehandeltSprache,
-      // @ts-expect-error scheint er nicht zu erkennen
-      abgegebenesInfomaterial: value.abgegebenesInfomaterial ?? [],
       informationEltern: value.informationEltern,
       ueberweisungAugenarzt: value.ueberweisungAugenarzt,
       ueberweisungHausarzt: value.ueberweisungHausarzt,
@@ -108,6 +108,13 @@ export class UntersuchungMassnahmenForm extends BaseForm<ReturnType<typeof makeF
         nachkontrolleAnderes: value.nachkontrolleAnderes,
       },
       bemerkungen: value.bemerkungen,
+      version: value.version ?? globalConstants.entityPrePersistVersion,
+    });
+
+    return ensurePropsFlat<UntersuchungMassnahmenSaveJson>({
+      ...saveJson,
+      // nested langague props in TranslatedStringJson are optional, ensureProps can't be used
+      abgegebenesInfomaterial: value.abgegebenesInfomaterial
     });
   }
 }

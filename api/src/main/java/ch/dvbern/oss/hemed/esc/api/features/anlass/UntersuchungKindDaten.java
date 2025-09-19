@@ -8,6 +8,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Land;
@@ -34,7 +35,8 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UntersuchungKindDaten extends AbstractTenantEntity<UntersuchungKindDaten> {
+public class UntersuchungKindDaten extends AbstractTenantEntity<UntersuchungKindDaten>
+        implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 202768990618477062L;

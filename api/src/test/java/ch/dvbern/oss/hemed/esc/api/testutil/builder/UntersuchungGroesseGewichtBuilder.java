@@ -38,7 +38,8 @@ public class UntersuchungGroesseGewichtBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungGroesseGewichtBuilder forUntersuchungGroesseGewicht(@NonNull UntersuchungGroesseGewicht existing) {
+    public UntersuchungGroesseGewichtBuilder forUntersuchungGroesseGewicht(
+        @NonNull UntersuchungGroesseGewicht existing) {
         this.groesseGewicht = existing;
         return this;
     }
@@ -59,7 +60,7 @@ public class UntersuchungGroesseGewichtBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungGroesseGewichtBuilder withGewicht(@Nullable Integer gewicht) {
+    public UntersuchungGroesseGewichtBuilder withGewicht(@Nullable BigDecimal gewicht) {
         this.groesseGewicht.setGewicht(gewicht);
         return this;
     }
@@ -99,7 +100,6 @@ public class UntersuchungGroesseGewichtBuilder {
         return this;
     }
 
-
     @NonNull
     public static UntersuchungGroesseGewicht create(@NonNull Consumer<UntersuchungGroesseGewichtBuilder> block) {
         UntersuchungGroesseGewichtBuilder builder = new UntersuchungGroesseGewichtBuilder();
@@ -114,8 +114,10 @@ public class UntersuchungGroesseGewichtBuilder {
     }
 
     @NonNull
-    public static UntersuchungGroesseGewichtJsonSpec createJaxSpec(@NonNull Consumer<UntersuchungGroesseGewichtBuilder> block) {
+    public static UntersuchungGroesseGewichtJsonSpec createJaxSpec(
+        @NonNull Consumer<UntersuchungGroesseGewichtBuilder> block) {
         UntersuchungGroesseGewichtJson json = createJax(block);
-        return UntersuchungGroesseGewichtJsonSpecMapper.INSTANCE.untersuchungGroesseGewichtJsonToUntersuchungGroesseGewichtJsonSpec(json);
+        return UntersuchungGroesseGewichtJsonSpecMapper.INSTANCE.untersuchungGroesseGewichtJsonToUntersuchungGroesseGewichtJsonSpec(
+            json);
     }
 }

@@ -1,6 +1,6 @@
 import {DatePipe} from '@angular/common';
-import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject, model} from '@angular/core';
-import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, model} from '@angular/core';
+import {FormControl, FormRecord, FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {RouterLink} from '@angular/router';
 import {
   AnlassStatus,
@@ -37,7 +37,6 @@ import {
   formatTimeWithDateIfNotToday,
   hasAllNotizenEditBerechtigung,
   hasDownloadDossierBerechtigung,
-  isNullish,
 } from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {NgbDropdownItem, NgbModal} from '@ng-bootstrap/ng-bootstrap';
@@ -48,6 +47,7 @@ import {getUseCaseGechlecht} from '../../anlass-bearbeiten/kinder/kinder.util';
 import {AnlassKinderStore, EinladungJsonEnhanced} from '../../anlass-kinder.store';
 import {EinladungenListeFilterForm} from './einladungen-liste-filter.form';
 import {EinladungAbmeldenComponent} from './modal/einladung-abmelden.component';
+import {EinladungAbmeldenJson} from './modal/einladung-abmelden.form';
 
 export enum AnlassFlags {
   NACHKONTROLLESEHEN = 'NachkontrolleSehen',
@@ -97,6 +97,7 @@ export class EinladungenListeComponent {
   readonly #ngModal = inject(NgbModal);
   readonly navigationService = inject(NavigationService);
   readonly #benutzerStore = inject(BenutzerStore);
+  readonly #fb = inject(NonNullableFormBuilder);
 
   protected readonly geschlechter = Object.values(Geschlecht);
   protected readonly einladungStatusValues = Object.values(EinladungStatus);
@@ -120,10 +121,21 @@ export class EinladungenListeComponent {
   protected readonly formatTimeWithDateIfNotToday = formatTimeWithDateIfNotToday;
 
   readonly tableFilterForm = new EinladungenListeFilterForm({
-    fb: inject(NonNullableFormBuilder),
+    fb: this.#fb,
     destroyRef: inject(DestroyRef),
     paginatedTable: this.itemTable,
   });
+
+  einladungStatusForm : FormRecord<FormControl<EinladungStatus>> = this.#fb.record({});
+
+  constructor() {
+    effect(() => {
+      this.einladungStatusForm = this.#fb.record({});
+      this.store.einladungen().forEach((einladung) => {
+        this.einladungStatusForm.addControl(einladung.id, this.#fb.control({value: einladung.data.einladungStatus, disabled: false}));
+      });
+    });
+  }
 
   public isMarkedForUntersuchung(id: BackendEntityId): boolean {
     return this.store.isEinladungMarkedForUntersuchung(id);
@@ -148,33 +160,40 @@ export class EinladungenListeComponent {
   }
 
   async einladungsstatusChanged(item: EinladungJson, $event: EinladungStatus) {
-    this.store.updateEinladungStatus({einladungId: item.id, status: $event});
     if ($event === EinladungStatus.TEILNAHME_ABGESAGT) {
       await this.addAbmeldungsgrund(item);
+    } else {
+      this.store.updateEinladungStatus({einladungId: item.id, status: $event});
     }
   }
 
   async addAbmeldungsgrund(einladung: EinladungJson) {
-    const ngbModalRef = this.#ngModal.open(EinladungAbmeldenComponent, {size: 'lg'});
+    const ngbModalRef = this.#ngModal.open(EinladungAbmeldenComponent, { size: 'lg'});
     ngbModalRef.componentInstance.einladungData.set(einladung);
+    ngbModalRef.componentInstance.saveForm.subscribe(
+        (form: EinladungAbmeldenJson ) => {
+          const requestObject: EinladungSaveJson = {
+            ...einladung.data,
+            einladungStatus: EinladungStatus.TEILNAHME_ABGESAGT,
+            bemerkungAbmeldung: form.bemerkungAbmeldung,
+            artAbmeldung: form.artAbmeldung,
+            grundAbmeldung: form.grundAbmeldung,
+          };
+          this.store.einladungAbmelden({
+            einladungId: einladung.id,
+            einladungSaveJson: requestObject,
+            onSuccess: () => {
+              ngbModalRef.close({ result: 'success'});
+            },
+          });
+        }
+      );
+
     const result = await firstValueFrom(ngbModalRef.closed, {defaultValue: undefined});
-    if (result) {
-      const requestObject: EinladungSaveJson = {
-        ...einladung.data,
-        einladungStatus: EinladungStatus.TEILNAHME_ABGESAGT,
-        bemerkungAbmeldung: result.bemerkungAbmeldung,
-        artAbmeldung: result.artAbmeldung,
-        grundAbmeldung: result.grundAbmeldung,
-      };
-      this.store.einladungAbmelden({
-        einladungId: einladung.id,
-        einladungSaveJson: requestObject,
-      });
-    } else {
-      // Only reset if we haven't filled out a reason
-      if (isNullish(einladung.data.grundAbmeldung)) {
-        this.store.updateEinladungStatus({einladungId: einladung.id, status: EinladungStatus.TEILNAHME_BESTAETIGT});
-      }
+
+    if (!result) {
+      const previousStatus = this.store.einladungById(einladung.id)?.data?.einladungStatus;
+      this.einladungStatusForm.controls[einladung.id].reset(previousStatus);
     }
   }
 

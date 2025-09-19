@@ -37,7 +37,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   KontaktPersonKindSaveJsonSpec.JSON_PROPERTY_ADRESSE,
   KontaktPersonKindSaveJsonSpec.JSON_PROPERTY_EMAIL,
   KontaktPersonKindSaveJsonSpec.JSON_PROPERTY_TELEFON,
-  KontaktPersonKindSaveJsonSpec.JSON_PROPERTY_KORRESPONDENZ
+  KontaktPersonKindSaveJsonSpec.JSON_PROPERTY_KORRESPONDENZ,
+  KontaktPersonKindSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("KontaktPersonKindSaveJson")
 @lombok.AllArgsConstructor
@@ -74,6 +75,10 @@ public class KontaktPersonKindSaveJsonSpec {
   public static final String JSON_PROPERTY_KORRESPONDENZ = "korrespondenz";
   @jakarta.annotation.Nonnull
   private Boolean korrespondenz;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public KontaktPersonKindSaveJsonSpec() {
   }
@@ -278,6 +283,31 @@ public class KontaktPersonKindSaveJsonSpec {
     this.korrespondenz = korrespondenz;
   }
 
+  public KontaktPersonKindSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -294,12 +324,13 @@ public class KontaktPersonKindSaveJsonSpec {
         Objects.equals(this.adresse, kontaktPersonKindSaveJson.adresse) &&
         Objects.equals(this.email, kontaktPersonKindSaveJson.email) &&
         Objects.equals(this.telefon, kontaktPersonKindSaveJson.telefon) &&
-        Objects.equals(this.korrespondenz, kontaktPersonKindSaveJson.korrespondenz);
+        Objects.equals(this.korrespondenz, kontaktPersonKindSaveJson.korrespondenz) &&
+        Objects.equals(this.version, kontaktPersonKindSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, vorname, geschlecht, beziehung, adresse, email, telefon, korrespondenz);
+    return Objects.hash(name, vorname, geschlecht, beziehung, adresse, email, telefon, korrespondenz, version);
   }
 
   @Override
@@ -314,6 +345,7 @@ public class KontaktPersonKindSaveJsonSpec {
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
     sb.append("    telefon: ").append(toIndentedString(telefon)).append("\n");
     sb.append("    korrespondenz: ").append(toIndentedString(korrespondenz)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -34,7 +34,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonPropertyOrder({
   ImpfstoffSaveJsonSpec.JSON_PROPERTY_NAME,
   ImpfstoffSaveJsonSpec.JSON_PROPERTY_KRANKHEITEN,
-  ImpfstoffSaveJsonSpec.JSON_PROPERTY_IMPFSTOFF_AKTIV_STATUS
+  ImpfstoffSaveJsonSpec.JSON_PROPERTY_IMPFSTOFF_AKTIV_STATUS,
+  ImpfstoffSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("ImpfstoffSaveJson")
 @lombok.AllArgsConstructor
@@ -51,6 +52,10 @@ public class ImpfstoffSaveJsonSpec {
   public static final String JSON_PROPERTY_IMPFSTOFF_AKTIV_STATUS = "impfstoffAktivStatus";
   @jakarta.annotation.Nonnull
   private EntityAktivStatusSpec impfstoffAktivStatus;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public ImpfstoffSaveJsonSpec() {
   }
@@ -138,6 +143,31 @@ public class ImpfstoffSaveJsonSpec {
     this.impfstoffAktivStatus = impfstoffAktivStatus;
   }
 
+  public ImpfstoffSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -149,12 +179,13 @@ public class ImpfstoffSaveJsonSpec {
     ImpfstoffSaveJsonSpec impfstoffSaveJson = (ImpfstoffSaveJsonSpec) o;
     return Objects.equals(this.name, impfstoffSaveJson.name) &&
         Objects.equals(this.krankheiten, impfstoffSaveJson.krankheiten) &&
-        Objects.equals(this.impfstoffAktivStatus, impfstoffSaveJson.impfstoffAktivStatus);
+        Objects.equals(this.impfstoffAktivStatus, impfstoffSaveJson.impfstoffAktivStatus) &&
+        Objects.equals(this.version, impfstoffSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, krankheiten, impfstoffAktivStatus);
+    return Objects.hash(name, krankheiten, impfstoffAktivStatus, version);
   }
 
   @Override
@@ -164,6 +195,7 @@ public class ImpfstoffSaveJsonSpec {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    krankheiten: ").append(toIndentedString(krankheiten)).append("\n");
     sb.append("    impfstoffAktivStatus: ").append(toIndentedString(impfstoffAktivStatus)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

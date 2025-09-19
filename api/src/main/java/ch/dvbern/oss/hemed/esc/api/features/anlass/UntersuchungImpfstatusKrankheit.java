@@ -6,6 +6,7 @@ import java.time.OffsetDateTime;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungImpfstatusKrankheitPresentIfReq;
 import jakarta.persistence.Column;
@@ -43,7 +44,8 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckUntersuchungImpfstatusKrankheitPresentIfReq
-public class UntersuchungImpfstatusKrankheit extends AbstractTenantEntity<UntersuchungImpfstatusKrankheit> {
+public class UntersuchungImpfstatusKrankheit extends AbstractTenantEntity<UntersuchungImpfstatusKrankheit>
+        implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 4719335518255035134L;

@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.BrilleLinsenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.DistanzSehenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.FarbsehenResultat;
@@ -25,7 +25,7 @@ public class UntersuchungSehenUtil {
     @Nullable
     public static BrilleLinsenResultat getBrilleLinsen(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehen sehen,
+        @Nullable UntersuchungSehenBeurteilung sehen,
         @Nullable BrilleLinsenResultat defaultWert
     ) {
         if (config.getSehenBrilleLinsen().isVisible()) {
@@ -40,7 +40,7 @@ public class UntersuchungSehenUtil {
     @Nullable
     public static StereotestResultat getStereoTest(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehen sehen,
+        @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull StereotestResultat defaultWert
     ) {
         if (config.getSehenStereoTest().isVisible()) {
@@ -55,7 +55,7 @@ public class UntersuchungSehenUtil {
     @Nullable
     public static FarbsehenResultat getFarbsehen(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehen sehen,
+        @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull FarbsehenResultat defaultWert
     ) {
         if (config.getSehenFarbsehen().isVisible()) {
@@ -70,7 +70,7 @@ public class UntersuchungSehenUtil {
     @Nullable
     public static VerwendetTafelResultat getVerwendeteTafel(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehen sehen,
+        @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull VerwendetTafelResultat defaultWert
     ) {
         if (config.getSehenTafel().isVisible()) {
@@ -85,7 +85,7 @@ public class UntersuchungSehenUtil {
     @Nullable
     public static List<DistanzSehenResultat> getFernvisus(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehen sehen,
+        @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull DistanzSehenResultat defaultWert
     ) {
         if (config.getSehenFernvisus().isVisible()) {
@@ -100,7 +100,7 @@ public class UntersuchungSehenUtil {
     @Nullable
     public static BigDecimal getFernvisusRechts(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehen sehen,
+        @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull BigDecimal defaultWert
     ) {
         if (config.getSehenFernvisus().isVisible()) {
@@ -115,7 +115,7 @@ public class UntersuchungSehenUtil {
     @Nullable
     public static BigDecimal getFernvisusLinks(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehen sehen,
+        @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull BigDecimal defaultWert
     ) {
         if (config.getSehenFernvisus().isVisible()) {
@@ -130,7 +130,7 @@ public class UntersuchungSehenUtil {
     @Nullable
     public static List<DistanzSehenResultat> getNahvisus(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehen sehen,
+        @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull DistanzSehenResultat defaultWert) {
         if (config.getSehenNahvisus().isVisible()) {
             if (sehen != null && !sehen.getNahvisus().isEmpty()) {
@@ -144,7 +144,7 @@ public class UntersuchungSehenUtil {
     @Nullable
     public static MotilitaetResultat getMotilitaet(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehen sehen,
+        @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull MotilitaetResultat defaultWert
     ) {
         if (config.getSehenMotilitaet().isVisible()) {
@@ -159,7 +159,7 @@ public class UntersuchungSehenUtil {
     @Nullable
     public static List<StrabismusResultat> getStrabismus(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehen sehen,
+        @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull StrabismusResultat defaultWert) {
         if (config.getSehenStrabismus().isVisible()) {
             if (sehen != null && !sehen.getStrabismus().isEmpty()) {
@@ -173,7 +173,7 @@ public class UntersuchungSehenUtil {
     @Nullable
     public static StrabismusAuspraegungResultat getStrabismusAuspraegung(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehen sehen,
+        @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull StrabismusAuspraegungResultat defaultWert
     ) {
         if (config.getSehenStrabismus().isVisible()) {
@@ -188,7 +188,7 @@ public class UntersuchungSehenUtil {
     @Nullable
     public static StrabismusAuftretenResultat getStrabismusAuftreten(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehen sehen,
+        @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull StrabismusAuftretenResultat defaultWert
     ) {
         if (config.getSehenStrabismus().isVisible()) {
@@ -203,7 +203,7 @@ public class UntersuchungSehenUtil {
     @Nullable
     public static InspektionKonvergenzResultat getInspektion(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehen sehen,
+        @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull InspektionKonvergenzResultat defaultWert
     ) {
         if (config.getSehenInspektion().isVisible()) {
@@ -218,7 +218,7 @@ public class UntersuchungSehenUtil {
     @Nullable
     public static InspektionKonvergenzResultat getKonvergenz(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehen sehen,
+        @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull InspektionKonvergenzResultat defaultWert
     ) {
         if (config.getSehenKonvergenz().isVisible()) {

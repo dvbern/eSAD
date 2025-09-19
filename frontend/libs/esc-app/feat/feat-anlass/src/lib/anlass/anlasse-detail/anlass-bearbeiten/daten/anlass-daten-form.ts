@@ -11,7 +11,7 @@ import {
   BenutzerOptionJson,
 } from '@dvb/data-access-backend';
 import {ISODateString} from '@dvb/data-access-types';
-import {KlassenOptionsStore, TimetravelStore} from '@dvb/feat-shared';
+import {globalConstants, KlassenOptionsStore, TimetravelStore} from '@dvb/feat-shared';
 import {AppValidators, BaseForm, DetailMode} from '@dvb/util-angular';
 import {
   ensureProps,
@@ -56,6 +56,7 @@ function makeForm(config: Config) {
     arztInfo: fb.control<string>('', AppValidators.dbMaxLength()),
     mpaInfo: fb.control<string>('', AppValidators.dbMaxLength()),
     weiterePersonInfo: fb.control<string>('', AppValidators.dbMaxLength()),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   }, {
     validators: [AppValidators.zeitBisIsAfterZeitVon('zeitVon', 'zeitBis')],
   });
@@ -137,6 +138,7 @@ export class AnlassDatenForm extends BaseForm<ReturnType<typeof makeForm>, Anlas
       mpaInfo: trimToUndefined(value.mpaInfo),
       weiterePerson: value.weiterePerson,
       weiterePersonInfo: trimToUndefined(value.weiterePersonInfo),
+      version: value.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 }

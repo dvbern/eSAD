@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -23,6 +24,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.AufgabeSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataMapper;
+import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -57,7 +59,8 @@ public class AufgabeMapper {
                 kind != null ? SearchMapper.toSearchJson(kind) : null,
                 anlass != null ? AnlassMapper.toOptionJson(anlass) : null,
                 aufgabe.getFiles().stream().map(FileDataMapper::toJson).toList(),
-                aufgabe.getLink()
+                aufgabe.getLink(),
+                aufgabe.getVersion()
             )
         );
     }
@@ -68,7 +71,7 @@ public class AufgabeMapper {
         existingAufgabe.setBemerkung(saveJson.getBemerkungen());
         existingAufgabe.setAufgabeStatus(saveJson.getStatus());
         existingAufgabe.setFaelligBis(saveJson.getFaelligBis());
-        existingAufgabe.setUserErfasst(benutzerService.getById(saveJson.getUserErfasst().getId()));
+        // User Erfasst wird nicht angepasst im update
         existingAufgabe.setEmpfaenger(benutzerService.getById(saveJson.getEmpfaenger().getId()));
         Set<Label> desiredLabels = labelMapper.toEntityList(saveJson.getLabels());
         labelMapper.requireNoDisabledOrInactivLabelAddedOrRemoved(existingAufgabe.getLabels(), desiredLabels);
@@ -83,7 +86,7 @@ public class AufgabeMapper {
     @NonNull
     private Aufgabe toEntityForCreate(@NonNull AufgabeSaveJson saveJson) {
         Benutzer empfaenger = this.benutzerService.getById(saveJson.getEmpfaenger().getId());
-        Benutzer erfasser = this.benutzerService.getById(saveJson.getUserErfasst().getId());
+        Benutzer erfasser = this.benutzerService.getCurrentBenutzerOrThrowException();
         Kind kind = saveJson.getKind() != null ? this.kindService.getById(saveJson.getKind().getId()) : null;
         Anlass anlass =
             saveJson.getAnlass() != null ? this.anlassService.getById(saveJson.getAnlass().getAnlassId()) : null;
@@ -135,14 +138,29 @@ public class AufgabeMapper {
     @NonNull
     public AufgabeJson create(@NonNull AufgabeSaveJson aufgabeJson) {
         Aufgabe entity = toEntityForCreate(aufgabeJson);
+        if (aufgabeJson.getKind() != null) {
+            Kind kind = kindService.getById(aufgabeJson.getKind().getId());
+            KindValidationUtil.throwErrorIfKindIsInactive(
+                kind,
+                AppValidationMessage.cannotCreateEntityForInactiveKind(
+                    kind,
+                    entity));
+        }
         return toJson(aufgabeService.persist(entity));
     }
 
     @NonNull
     public AufgabeJson update(@NonNull ID<Aufgabe> aufgabeID, @NonNull AufgabeSaveJson aufgabeJson) {
         Aufgabe existingAufgabe = aufgabeService.getById(aufgabeID);
+        if (existingAufgabe.getKind() != null) {
+            KindValidationUtil.throwErrorIfKindIsInactive(
+                existingAufgabe.getKind(),
+                AppValidationMessage.cannotEditEntityForInactiveKind(
+                    existingAufgabe.getKind(),
+                    existingAufgabe));
+        }
         Aufgabe entity = toEntity(existingAufgabe, aufgabeJson);
-        return toJson(aufgabeService.persist(entity));
+        return toJson(aufgabeService.persistWithOptimisticLocking(entity, aufgabeJson.getVersion()));
     }
 
     int getNumOfOffeneFaelligeAufgaben() {
@@ -154,18 +172,42 @@ public class AufgabeMapper {
     }
 
     public void remove(@NonNull ID<Aufgabe> aufgabeID) {
+        Aufgabe aufgabe = aufgabeService.getById(aufgabeID);
+        if (aufgabe.getKind() != null) {
+            KindValidationUtil.throwErrorIfKindIsInactive(
+                aufgabe.getKind(),
+                AppValidationMessage.cannotRemoveEntityFromInactiveKind(
+                    aufgabe.getKind(),
+                    aufgabe));
+        }
         aufgabeService.remove(aufgabeID);
     }
 
     @NonNull
     public AufgabeJson addUploadedFile(@NonNull ID<Aufgabe> aufgabeID, @NonNull FileUpload file) {
+        Aufgabe aufgabe = aufgabeService.getById(aufgabeID);
+        if (aufgabe.getKind() != null) {
+            KindValidationUtil.throwErrorIfKindIsInactive(
+                aufgabe.getKind(),
+                AppValidationMessage.cannotAddEntityToInactiveKind(
+                    aufgabe.getKind(),
+                    aufgabe));
+        }
         Aufgabe updatedAufgabe = aufgabeService.addUploadedFile(aufgabeID, file);
+        updatedAufgabe.disableOptimisticLockingCheck();
         return toJson(aufgabeService.persist(updatedAufgabe));
     }
 
     @NonNull
     public AufgabeJson removeUploadedFile(@NonNull ID<Aufgabe> aufgabeID, @NonNull ID<FileData> fileIdToRemove) {
         Aufgabe existingAufgabe = aufgabeService.getById(aufgabeID);
+        if (existingAufgabe.getKind() != null) {
+            KindValidationUtil.throwErrorIfKindIsInactive(
+                existingAufgabe.getKind(),
+                AppValidationMessage.cannotRemoveEntityFromInactiveKind(
+                    existingAufgabe.getKind(),
+                    new FileData()));
+        }
         aufgabeService.removeUploadedFile(existingAufgabe, fileIdToRemove);
         return toJson(existingAufgabe);
     }

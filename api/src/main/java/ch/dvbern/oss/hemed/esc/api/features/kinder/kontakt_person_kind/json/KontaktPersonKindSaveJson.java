@@ -4,6 +4,7 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.types.KontaktPersonKindBeziehung;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.person.AdresseJson;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import jakarta.validation.Valid;
@@ -17,7 +18,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Value
 @AllArgsConstructor
 @JaxDTO
-public class KontaktPersonKindSaveJson {
+public class KontaktPersonKindSaveJson implements SaveJsonWithOptimisticLocking {
 
     @NotNull
     @NonNull
@@ -53,4 +54,7 @@ public class KontaktPersonKindSaveJson {
     @NotNull
     @Schema(required = true)
     private boolean korrespondenz;
+
+    @Schema(required = true)
+    private long version;
 }

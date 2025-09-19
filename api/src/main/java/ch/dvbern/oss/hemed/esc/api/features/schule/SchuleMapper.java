@@ -54,7 +54,8 @@ public final class SchuleMapper {
                 schule.getBemerkungen(),
                 BenutzerMapper.toOptionJson(schule.getZustaendigArzt()),
                 BenutzerMapper.toOptionJson(schule.getZustaendigMPA()),
-                schule.getSchuleAktivStatus()
+                schule.getSchuleAktivStatus(),
+                schule.getVersion()
             ),
             klassenstufen
         );
@@ -78,7 +79,7 @@ public final class SchuleMapper {
         existingSchule.setSchulstandort(saveJson.getSchulstandort());
         existingSchule.setSchulkreis(saveJson.getSchulkreis());
         existingSchule.setSchulhausnummer(saveJson.getSchulhausnummer());
-        existingSchule.setQuartier(quartierMapper.toEntity(saveJson.getQuartier()));
+        existingSchule.setQuartier(quartierMapper.findByOptionJson(saveJson.getQuartier()));
         existingSchule.setAdresse(AdresseMapper.toEntity(saveJson.getAdresse()));
         existingSchule.setEmail(saveJson.getEmail());
         existingSchule.setTelefon(saveJson.getTelefon());
@@ -100,7 +101,7 @@ public final class SchuleMapper {
             saveJson.getSchulhaus(),
             saveJson.getSchulstandort(),
             saveJson.getSchulkreis(),
-            quartierMapper.toEntity(saveJson.getQuartier()),
+            quartierMapper.findByOptionJson(saveJson.getQuartier()),
             saveJson.getSchulhausnummer(),
             AdresseMapper.toEntity(saveJson.getAdresse()),
             saveJson.getEmail(),
@@ -161,17 +162,20 @@ public final class SchuleMapper {
     public SchuleJson update(@NonNull ID<Schule> schuleId, @NonNull SchuleSaveJson saveJson) {
         Schule existingSchule = schuleService.getById(schuleId);
         zustaendigePersonService.resetZustaendigkeitenOnDossierIfChangedOnSchule(existingSchule, saveJson);
-        Schule entity = schuleService.persist(toEntity(existingSchule, saveJson));
+        Schule updatedSchule = toEntity(existingSchule, saveJson);
+        Schule entity = schuleService.persistWithOptimisticLocking(updatedSchule, saveJson.getVersion());
         return toJson(entity, klasseService.extractEscadaKlassenStufen(entity.getId()));
     }
 
     public SchuleJson changeSchuleAktivStatus(
         @NonNull ID<Schule> schuleId,
-        @NonNull EntityAktivStatusSaveJson saveJson) {
+        @NonNull EntityAktivStatusSaveJson saveJson
+    ) {
         Schule schule = schuleService.getById(schuleId);
-        if (schule.getExternalImportInfo() != null && schule.getExternalImportInfo().isAktivInExternalSystem()) {
+        if (schule.getExternalImportInfo() != null && schule.isAktivInExternalSystem()) {
             throw new AppValidationException(AppValidationMessage.escadaObjectsCannotBeDeactivated(schule));
         }
+        schule.disableOptimisticLockingCheck();
         schule.setSchuleAktivStatus(saveJson.getEntityAktivStatus());
 
         return toJson(this.schuleService.persist(schule), klasseService.extractEscadaKlassenStufen(schuleId));
@@ -179,7 +183,7 @@ public final class SchuleMapper {
 
     public void remove(@NonNull ID<Schule> schuleId) {
         Schule schule = schuleService.getById(schuleId);
-        if (schule.getExternalImportInfo() != null && schule.getExternalImportInfo().isAktivInExternalSystem()) {
+        if (schule.getExternalImportInfo() != null && schule.isAktivInExternalSystem()) {
             throw new AppValidationException(AppValidationMessage.schuleToDeleteIsFromEscada(
                 schule.getSchulhaus(),
                 schuleId));

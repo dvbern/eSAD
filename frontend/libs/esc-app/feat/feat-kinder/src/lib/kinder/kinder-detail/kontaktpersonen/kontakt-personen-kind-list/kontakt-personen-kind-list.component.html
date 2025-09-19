@@ -3,7 +3,7 @@
   <svui-page-header-list-summary
     [items]="summaryItems()"/>
 
-  @if (canEditList()) {
+  @if (canEditList() && dossierStore.isKindAktiv()) {
     <div svuiButton>
       <button svuiButton="tertiary"
               type="button"
@@ -26,14 +26,14 @@
   >
     <!-- col widths -->
     <colgroup>
-      <col svuiColWidth colWidth="text-small">
-      <col svuiColWidth colWidth="text-medium">
-      <col svuiColWidth colWidth="text-medium">
-      <col svuiColWidth colWidth="text-medium">
-      <col svuiColWidth colWidth="text-medium">
-      <col svuiColWidth colWidth="text-medium">
-      <col svuiColWidth colWidth="text-medium">
-      <col svuiColWidth colWidth="options">
+      <col svuiColWidth [colWidth]="'text-small'">
+      <col svuiColWidth [colWidth]="'text-medium'">
+      <col svuiColWidth [colWidth]="'text-medium'">
+      <col svuiColWidth [colWidth]="'text-medium'">
+      <col svuiColWidth [colWidth]="'text-medium'">
+      <col svuiColWidth [colWidth]="'text-medium'">
+      <col svuiColWidth [colWidth]="'text-medium'">
+      <col svuiColWidth [colWidth]="'options'">
     </colgroup>
     <thead>
     <!-- Headers for sorting -->
@@ -120,12 +120,12 @@
             >
               @if (canEditList()) {
                 <button ngbDropdownItem
-                        [disabled]="isEscadaItem(item)"
+                        [disabled]="isEscadaItem(item) || !dossierStore.isKindAktiv()"
                         (click)="deleteKontaktPersonKind(item)">
                   {{ 'kind.kontaktperson.list.actionmenu.delete' | transloco }}
                 </button>
                 <button ngbDropdownItem
-                        [disabled]="isEscadaItem(item)"
+                        [disabled]="isEscadaItem(item) || !dossierStore.isKindAktiv()"
                         (click)="removeKontaktPersonKindFromKind(item)">
                   {{ 'kind.kontaktperson.list.actionmenu.remove-connection' | transloco }}
                 </button>

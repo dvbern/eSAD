@@ -18,16 +18,19 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.example.developer.dbinfo;
 
-import java.util.List;
-import java.util.Optional;
-
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import io.quarkus.liquibase.LiquibaseDataSource;
 import io.quarkus.liquibase.LiquibaseFactory;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
+import java.util.List;
+import java.util.Optional;
 import liquibase.Liquibase;
+import liquibase.exception.LiquibaseException;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -36,9 +39,15 @@ import org.eclipse.microprofile.config.ConfigProvider;
 @RequiredArgsConstructor
 public class DatabaseService {
 
-    private final LiquibaseFactory liquibaseFactory;
+    @LiquibaseDataSource("bs")
+    public LiquibaseFactory liquibaseFactoryBS;
+
+    @LiquibaseDataSource("win")
+    public LiquibaseFactory liquibaseFactoryWIN;
 
     private final DatabaseInfoRepo databaseInfoRepo;
+
+    private final TenantProducer tenantProducer;
 
     /**
      * Resets the database and reinitializes it while preserving the current value of the revinfo_seq
@@ -47,38 +56,32 @@ public class DatabaseService {
      * This would lead to a conflict once the sequence re-reaches the value of the cached value
      */
     @Transactional(TxType.NOT_SUPPORTED)
-    public void resetAndReinitDatabasePreservingHibernateSequenceValue() {
-        long nextHibernateRevInfoSeqValue = databaseInfoRepo.getNextHibernateRevInfoSeqValue();
-        resetDatabase();
-        liquibaseUpdate();
-        // sequence is incremented by 50 so we skip a block of 50 values
-        long saveNextValueForHibernateRevInfoSeq = nextHibernateRevInfoSeqValue + 50;
-        databaseInfoRepo.setNextHibernateRevInfoSeqValue(saveNextValueForHibernateRevInfoSeq);
-    }
+    public void resetAndReinitDatabasePreservingHibernateSequenceValue(@NonNull TenantEnum tenant) {
 
-    private void resetDatabase() {
-        try (Liquibase liquibase = liquibaseFactory.createLiquibase()) {
-            liquibase.dropAll();
-        } catch (Exception e) {
-            throw new AppFailureException(AppFailureMessage.internalError("Could not drop database"), e);
-        }
-    }
+        LiquibaseFactory liquibaseFactory = createLiquibaseFactory(tenant);
+        try (Liquibase ourSingleLiquibase = liquibaseFactory.createLiquibase()) {
 
-    @Transactional(TxType.NOT_SUPPORTED)
-    public void initDatabase() {
-        liquibaseUpdate();
-    }
-
-    private void liquibaseUpdate() {
-        Optional<String> context = ConfigProvider.getConfig().getOptionalValue("quarkus.liquibase.contexts", String.class);
-        try (Liquibase liquibase = liquibaseFactory.createLiquibase()) {
-            if (context.isPresent()) {
-                liquibase.update(context.get());
-            } else {
-                liquibase.update();
-            }
+            tenantProducer.setCurrentTenant(tenant);
+            long nextHibernateRevInfoSeqValue = databaseInfoRepo.getNextHibernateRevInfoSeqValue();
+            ourSingleLiquibase.dropAll();
+            liquibaseUpdate(tenant, ourSingleLiquibase);
+            // sequence is incremented by 50 so we skip a block of 50 values
+            long saveNextValueForHibernateRevInfoSeq = nextHibernateRevInfoSeqValue + 50;
+            databaseInfoRepo.setNextHibernateRevInfoSeqValue(saveNextValueForHibernateRevInfoSeq);
         } catch (Exception e) {
             throw new AppFailureException(AppFailureMessage.internalError("Could not init database"), e);
+        }
+
+    }
+
+    private void liquibaseUpdate(@NonNull TenantEnum tenant, @NonNull Liquibase liquibase) throws LiquibaseException {
+        String hibernateMultiTenancyIdentifier = tenant.getHibernateMultiTenancyIdentifier();
+        Optional<String> context = ConfigProvider.getConfig()
+            .getOptionalValue("quarkus.liquibase." + hibernateMultiTenancyIdentifier + ".contexts", String.class);
+        if (context.isPresent()) {
+            liquibase.update(context.get());
+        } else {
+            liquibase.update();
         }
     }
 
@@ -90,5 +93,18 @@ public class DatabaseService {
     @NonNull
     public String getDBVersion() {
         return databaseInfoRepo.getDBVersion();
+    }
+
+    @NonNull
+    private LiquibaseFactory createLiquibaseFactory(@NonNull TenantEnum tenant) {
+        tenantProducer.setCurrentTenant(tenant);
+        if (TenantEnum.BS == tenant) {
+            return liquibaseFactoryBS;
+        }
+        if (TenantEnum.WIN == tenant) {
+            return liquibaseFactoryWIN;
+        }
+        throw new AppFailureException(AppFailureMessage.internalError("Unknown tenant: " + tenant));
+
     }
 }

@@ -19,7 +19,7 @@ import {FileSystemFileEntry, NgxFileDropEntry, NgxFileDropModule} from 'ngx-file
 })
 export class FileDropComponent {
 
-  readonly acceptedFiletypes = input<string>('application/pdf,image/png,image/jpg,image/jpeg,.xlsx');
+  readonly acceptedFiletypes = input.required<string>();
   readonly readonly = input<boolean>(false);
   readonly multiple = input<boolean>(true);
 

@@ -9,27 +9,18 @@
  */
 import { ISODateString } from '@dvb/data-access-types';
 import { LandCode } from './land-code';
-import { Geschlecht } from './geschlecht';
-import { Klassenstufe } from './klassenstufe';
-import { Land } from './land';
+import { EntityInfoJson } from './entity-info-json';
+import { UntersuchungKindDatenSaveJson } from './untersuchung-kind-daten-save-json';
+import { BackendEntityId } from '@dvb/data-access-types';
 
 
 export interface UntersuchungKindDatenJson { 
-    name: string;
-    vorname: string;
-    geschlecht: Geschlecht;
+    id?: BackendEntityId;
+    entityInfo: EntityInfoJson;
+    data: UntersuchungKindDatenSaveJson;
     esadId?: string;
-    geburtsdatum: ISODateString;
     alterDuodezimal: string;
-    nationalitaet?: Land;
     landCode?: LandCode;
-    schulhaus?: string;
-    quartier?: string;
-    schulkreis?: string;
-    schulhausnummer?: string;
-    klassenstufe?: Klassenstufe;
-    klassentyp?: string;
-    klasse?: string;
     klasseId?: string;
     anlassDatum: ISODateString;
 }

@@ -44,7 +44,8 @@ public final class UntersuchungDurchfuehrungMapper {
                 mpa != null ? BenutzerMapper.toOptionJson(mpa) : null,
                 durchfuehrung.isNachkontrolle(),
                 durchfuehrung.isNachzuegler(),
-                durchfuehrung.isNeueintritt()
+                durchfuehrung.isNeueintritt(),
+                durchfuehrung.getVersion()
             )
         );
     }
@@ -68,7 +69,8 @@ public final class UntersuchungDurchfuehrungMapper {
                 mpa != null ? BenutzerMapper.toOptionJson(mpa) : null,
                 existingDurchfuehrungOrDefaults.isNachkontrolle(),
                 existingDurchfuehrungOrDefaults.isNachzuegler(),
-                existingDurchfuehrungOrDefaults.isNeueintritt()
+                existingDurchfuehrungOrDefaults.isNeueintritt(),
+                existingDurchfuehrungOrDefaults.getVersion()
             ),
             existingDurchfuehrungOrDefaults.getTimestampErstellt() != null ? toJson(existingDurchfuehrung) : null,
             UntersuchungKindDatenMapper.toJson(currentUntersuchung, now)
@@ -115,7 +117,7 @@ public final class UntersuchungDurchfuehrungMapper {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
         UntersuchungDurchfuehrung durchfuehrung = untersuchung.getUntersuchungDurchfuehrung();
         UntersuchungDurchfuehrung entity = toEntity(untersuchung, durchfuehrung, saveJson);
-        return toJson(untersuchungDurchfuehrungService.persist(entity));
+        return toJson(untersuchungDurchfuehrungService.persistWithOptimisticLocking(entity, saveJson.getVersion()));
     }
 
     @NonNull

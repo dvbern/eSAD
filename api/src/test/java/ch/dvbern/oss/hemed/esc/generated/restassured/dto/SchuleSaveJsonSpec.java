@@ -42,7 +42,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   SchuleSaveJsonSpec.JSON_PROPERTY_BEMERKUNGEN,
   SchuleSaveJsonSpec.JSON_PROPERTY_ZUSTAENDIG_ARZT,
   SchuleSaveJsonSpec.JSON_PROPERTY_ZUSTAENDIG_M_P_A,
-  SchuleSaveJsonSpec.JSON_PROPERTY_SCHULE_AKTIV_STATUS
+  SchuleSaveJsonSpec.JSON_PROPERTY_SCHULE_AKTIV_STATUS,
+  SchuleSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("SchuleSaveJson")
 @lombok.AllArgsConstructor
@@ -95,6 +96,10 @@ public class SchuleSaveJsonSpec {
   public static final String JSON_PROPERTY_SCHULE_AKTIV_STATUS = "schuleAktivStatus";
   @jakarta.annotation.Nonnull
   private EntityAktivStatusSpec schuleAktivStatus;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public SchuleSaveJsonSpec() {
   }
@@ -399,6 +404,31 @@ public class SchuleSaveJsonSpec {
     this.schuleAktivStatus = schuleAktivStatus;
   }
 
+  public SchuleSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -419,12 +449,13 @@ public class SchuleSaveJsonSpec {
         Objects.equals(this.bemerkungen, schuleSaveJson.bemerkungen) &&
         Objects.equals(this.zustaendigArzt, schuleSaveJson.zustaendigArzt) &&
         Objects.equals(this.zustaendigMPA, schuleSaveJson.zustaendigMPA) &&
-        Objects.equals(this.schuleAktivStatus, schuleSaveJson.schuleAktivStatus);
+        Objects.equals(this.schuleAktivStatus, schuleSaveJson.schuleAktivStatus) &&
+        Objects.equals(this.version, schuleSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(schulhaus, schulstandort, schulkreis, quartier, schulhausnummer, adresse, email, telefon, bemerkungen, zustaendigArzt, zustaendigMPA, schuleAktivStatus);
+    return Objects.hash(schulhaus, schulstandort, schulkreis, quartier, schulhausnummer, adresse, email, telefon, bemerkungen, zustaendigArzt, zustaendigMPA, schuleAktivStatus, version);
   }
 
   @Override
@@ -443,6 +474,7 @@ public class SchuleSaveJsonSpec {
     sb.append("    zustaendigArzt: ").append(toIndentedString(zustaendigArzt)).append("\n");
     sb.append("    zustaendigMPA: ").append(toIndentedString(zustaendigMPA)).append("\n");
     sb.append("    schuleAktivStatus: ").append(toIndentedString(schuleAktivStatus)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

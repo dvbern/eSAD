@@ -1,13 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.features.benutzer;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppAuthException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
@@ -31,6 +23,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage.noUserLoggedIn;
 
@@ -105,6 +101,11 @@ public class BenutzerService {
     }
 
     @NonNull
+    public Benutzer persistWithOptimisticLocking(@NonNull Benutzer entity, @NonNull Long versionFromFrontend) {
+        return benutzerRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
+    }
+
+    @NonNull
     public List<Benutzer> findAllBenutzer() {
         return benutzerRepo.findAll();
     }
@@ -127,11 +128,13 @@ public class BenutzerService {
         @NonNull ID<Benutzer> benutzerID,
         @NonNull Set<Berechtigung> desiredBerechtigungn
     ) {
+        Benutzer benutzer = benutzerRepo.referenceById(benutzerID);
+        benutzer.disableOptimisticLockingCheck();
+
         List<BenutzerBerechtigung> currentBerechtigungen
             = benutzerberechtigungRepo.findBenutzerBerechtigungenByBenutzerId(benutzerID);
-
         removeLostBerechtigungen(desiredBerechtigungn, currentBerechtigungen);
-        addGainedBerechtigungen(benutzerRepo.referenceById(benutzerID), desiredBerechtigungn, currentBerechtigungen);
+        addGainedBerechtigungen(benutzer, desiredBerechtigungn, currentBerechtigungen);
 
         return benutzerberechtigungRepo.findBenutzerBerechtigungenByBenutzerId(benutzerID);
     }

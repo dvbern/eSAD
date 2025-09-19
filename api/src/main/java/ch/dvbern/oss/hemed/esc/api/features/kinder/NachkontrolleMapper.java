@@ -25,7 +25,8 @@ public final class NachkontrolleMapper {
             nachkontrolle.getId(),
             EntityInfoJson.fromEntity(nachkontrolle),
             new NachkontrolleSaveJson(
-                AnlassFlagsMapper.toJson(nachkontrolle.getAnlassFlags())
+                AnlassFlagsMapper.toJson(nachkontrolle.getAnlassFlags()),
+                nachkontrolle.getVersion()
             )
         );
     }

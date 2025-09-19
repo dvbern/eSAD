@@ -1,6 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.example.developer;
 
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
@@ -15,6 +17,7 @@ import io.restassured.response.ResponseOptions;
 import jakarta.ws.rs.core.Response.Status;
 import java.io.File;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,6 +31,12 @@ class S3ResourceITest {
 
     private final FileStoreService fileStoreService;
     private final FixtureService fixtureService;
+    private final TenantProducer tenantProducer;
+
+    @BeforeEach
+    void setUp() {
+        tenantProducer.setCurrentTenant(TenantEnum.BS);
+    }
 
     @Test
     @TestAsSupport

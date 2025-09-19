@@ -1,11 +1,13 @@
 package ch.dvbern.oss.hemed.esc.api.shared.person;
 
-import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
-import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import java.util.List;
 
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.dvbstarter.shared.types.sozialversicherungsnummer.SozialversicherungsNummer;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.EinladungService;
 import ch.dvbern.oss.hemed.esc.api.features.kindanlaesse.KindAnlaesseService;
@@ -26,6 +28,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.notizen.AutoNotizService;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintService;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintVariant;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -45,6 +48,7 @@ public class DuplikatMergeService {
     private final KindService kindService;
     private final AutoNotizService autoNotizService;
     private final KinderdossierPrintService kinderdossierPrintService;
+    private final EntityManager entityManager;
 
 
     @NonNull
@@ -56,6 +60,8 @@ public class DuplikatMergeService {
         }
         Kind basisKind = duplikat.getKind1().getId().equals(basisKindId) ? duplikat.getKind1() : duplikat.getKind2();
         Kind otherKind = duplikat.getKind1().getId().equals(basisKindId) ? duplikat.getKind2() : duplikat.getKind1();
+        basisKind.disableOptimisticLockingCheck();
+        otherKind.disableOptimisticLockingCheck();
         Dossier basisDossier = dossierService.getOrCreateByKind(basisKind.getId());
         dossierService.getOrCreateByKind(otherKind.getId()); // Muss erstellt werden, damit der Export funktioniert
 
@@ -68,22 +74,45 @@ public class DuplikatMergeService {
         autoNotizService.createDuplikatMergeNotiz(basisDossier, exportBasisKind, exportOtherKind);
 
         // ExternalImportInfo umhaengen wenn basiskind nicht aus escada
-        if (basisKind.getExternalImportInfo() == null && otherKind.getExternalImportInfo() != null) {
+        ExternalImportInfo otherKindExternalImportInfo = otherKind.getExternalImportInfo();
+        if (basisKind.getExternalSystemIdOrNull() == null
+                && otherKindExternalImportInfo != null
+                && otherKind.getExternalSystemIdOrNull() != null
+        ) {
             // Wir uebernehmen die ExternalSystemId des anderen Kindes
-            basisKind.setExternalImportInfo(otherKind.getExternalImportInfo());
+            basisKind.setExternalImportInfo(
+                new ExternalImportInfo(
+                    otherKindExternalImportInfo.getIdInExternalSystem(),
+                    otherKindExternalImportInfo.getAktivInExternalSystem(),
+                    otherKindExternalImportInfo.getTimestampFirstImport(),
+                    otherKindExternalImportInfo.getTimestampLatestImport()
+                )
+            );
         }
+        // AhvNummer umhaengen wenn basiskind nicht aus escada
+        if (basisKind.getSozialversicherungsNummer() == null && otherKind.getSozialversicherungsNummer() != null) {
+            // Wir uebernehmen die AHV-Nummer des anderen Kindes
+            SozialversicherungsNummer sozialversicherungsNummer = otherKind.getSozialversicherungsNummer();
+            otherKind.setSozialversicherungsNummer(null); // VNR des anderen Kindes auf null setzen, damit sie eindeutig ist
+            kindService.persistWithoutDuplicateCheck(otherKind);
+            entityManager.flush();
+            basisKind.setSozialversicherungsNummer(sozialversicherungsNummer);
+        }
+
         // Kontaktpersonen umhaengen
         List<KontaktPersonKind> kpOfOtherKind = kontaktPersonKindService.findByKind(otherKind.getId());
         for (KontaktPersonKind kontaktPersonKind : kpOfOtherKind) {
             // Wir uebernehmen die Kontaktpersonen des anderen Kindes in das Kind das wir behalten
             kontaktPersonKind.getKinder().add(basisKind);
             kontaktPersonKind.getKinder().remove(otherKind);
+            kontaktPersonKind.disableOptimisticLockingCheck();
             kontaktPersonKindService.persist(kontaktPersonKind);
         }
         // Notizen umhaengen
         List<Notiz> notizenOfOtherKind = notizService.findAllForKind(otherKind.getId());
         for (Notiz notiz : notizenOfOtherKind) {
             // Wir uebernehmen die Notizen des anderen Kindes
+            notiz.disableOptimisticLockingCheck();
             notiz.setDossier(basisDossier);
             notizService.persist(notiz);
         }
@@ -91,6 +120,7 @@ public class DuplikatMergeService {
         List<Aufgabe> aufgabenOfOtherKind = aufgabeService.findAllForKind(otherKind.getId());
         for (Aufgabe aufgabe : aufgabenOfOtherKind) {
             // Wir uebernehmen die Aufgaben des anderen Kindes
+            aufgabe.disableOptimisticLockingCheck();
             aufgabe.setKind(basisKind);
             aufgabeService.persist(aufgabe);
         }

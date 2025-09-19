@@ -26,6 +26,7 @@ export interface UntersuchungKindDatenSaveJson {
     klassenstufe?: Klassenstufe;
     klassentyp?: string;
     klasse?: string;
+    version: number;
 }
 export namespace UntersuchungKindDatenSaveJson {
 }

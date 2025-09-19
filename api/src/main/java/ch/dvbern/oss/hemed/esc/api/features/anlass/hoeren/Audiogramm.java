@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren;
 import java.io.Serial;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,7 +24,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Audiogramm extends AbstractTenantEntity<Audiogramm> {
+public class Audiogramm extends AbstractTenantEntity<Audiogramm> implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 5285023727443911252L;

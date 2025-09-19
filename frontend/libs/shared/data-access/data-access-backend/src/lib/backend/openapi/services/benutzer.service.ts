@@ -40,6 +40,11 @@ export interface BenutzerServiceUpdateRequestParams {
     benutzerSaveJson: BenutzerSaveJson;
 }
 
+export interface BenutzerServiceUpdateBenutzerAktivStatusRequestParams {
+    benutzerID: BackendEntityId;
+    benutzerSaveJson: BenutzerSaveJson;
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -521,6 +526,91 @@ export class BenutzerService {
         }
 
         let localVarPath = `/api/benutzer/${this.configuration.encodeParam({name: "benutzerID", value: benutzerID, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
+        return this.httpClient.request<BenutzerJson>('put', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: benutzerSaveJson,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Update Benutzer Aktiv Status
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public updateBenutzerAktivStatus$(requestParameters?: BenutzerServiceUpdateBenutzerAktivStatusRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<BenutzerJson>;
+    public updateBenutzerAktivStatus$(requestParameters?: BenutzerServiceUpdateBenutzerAktivStatusRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<BenutzerJson>>;
+    public updateBenutzerAktivStatus$(requestParameters?: BenutzerServiceUpdateBenutzerAktivStatusRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<BenutzerJson>>;
+    public updateBenutzerAktivStatus$(requestParameters?: BenutzerServiceUpdateBenutzerAktivStatusRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const benutzerID = requestParameters?.benutzerID;
+        if (benutzerID === null || benutzerID === undefined) {
+            throw new Error('Required parameter benutzerID was null or undefined when calling updateBenutzerAktivStatus.');
+        }
+        const benutzerSaveJson = requestParameters?.benutzerSaveJson;
+        if (benutzerSaveJson === null || benutzerSaveJson === undefined) {
+            throw new Error('Required parameter benutzerSaveJson was null or undefined when calling updateBenutzerAktivStatus.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (SecurityScheme) required
+        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
+        if (localVarCredential) {
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/benutzer/${this.configuration.encodeParam({name: "benutzerID", value: benutzerID, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/benutzeraktivstatus`;
         return this.httpClient.request<BenutzerJson>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

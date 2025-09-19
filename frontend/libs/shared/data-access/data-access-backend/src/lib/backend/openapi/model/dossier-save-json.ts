@@ -27,6 +27,7 @@ export interface DossierSaveJson {
     zustaendigArzt?: BenutzerOptionJson;
     zustaendigMPA?: BenutzerOptionJson;
     nachkontrolle: NachkontrolleJson;
+    version: number;
 }
 export namespace DossierSaveJson {
 }

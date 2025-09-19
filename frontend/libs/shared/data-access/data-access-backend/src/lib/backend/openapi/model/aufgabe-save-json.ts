@@ -29,6 +29,7 @@ export interface AufgabeSaveJson {
     anlass?: AnlassOptionJson;
     files: Array<FileDataJson>;
     link?: BackendURL;
+    version: number;
 }
 export namespace AufgabeSaveJson {
 }

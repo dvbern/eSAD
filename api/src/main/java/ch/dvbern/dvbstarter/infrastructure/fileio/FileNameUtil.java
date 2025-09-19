@@ -1,15 +1,6 @@
 package ch.dvbern.dvbstarter.infrastructure.fileio;
 
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
-
+import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
@@ -17,6 +8,11 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @UtilityClass
 public class FileNameUtil {
@@ -34,7 +30,7 @@ public class FileNameUtil {
      * * e.g 05-03-2025_Musterkind-Max_Impfausweis.pdf
      */
     @NonNull
-    public static String calculateAutomaticFilename(
+    public static CleanFileName calculateAutomaticFilename(
         @NonNull List<FileData> existingFiles,
         @NonNull LocalDate today,
         @NonNull String baseFilename,
@@ -63,7 +59,8 @@ public class FileNameUtil {
         } else {
             calculatedFileName = baseFileName + fileEnding;
         }
-        return calculatedFileName;
+
+        return new CleanFileName(calculatedFileName);
     }
 
     /**
@@ -112,7 +109,7 @@ public class FileNameUtil {
             return 0;
         }
 
-        String fileName = latestFile.get().getCalculatedFileName();
+        String fileName = latestFile.get().getCalculatedFileName().toString();
         List<String> seperatedFileNameParts = Arrays.stream(fileName.split(UNDERLINE)).toList();
         String possibleNumber = Arrays.stream(seperatedFileNameParts.getLast().split("\\.")).toList().getFirst();
 

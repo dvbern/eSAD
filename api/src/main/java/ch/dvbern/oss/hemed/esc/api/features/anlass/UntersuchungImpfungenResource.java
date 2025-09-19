@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
+import java.util.Objects;
+
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
@@ -13,7 +15,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungImpfungenSav
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmenJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmenMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmenSaveJson;
-import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import io.smallrye.faulttolerance.api.RateLimit;
 import io.vertx.core.http.HttpServerResponse;
@@ -48,10 +50,11 @@ public class UntersuchungImpfungenResource {
     private final UntersuchungImpfstatusKrankheitMapper untersuchungImpfstatusKrankheitMapper;
     private final UntersuchungImpfungInternMapper untersuchungImpfungInternMapper;
     private final UntersuchungImpfungenMassnahmenMapper untersuchungImpfungenMassnahmenMapper;
+    private final EinladungMapper einladungMapper;
+    private final AuthorizerService authorizerService;
 
     @Context
     private HttpServerResponse response;
-
 
     @GET
     @RolesAllowed(BerechtigungName.SU_IMPFEN_LESEN)
@@ -60,6 +63,7 @@ public class UntersuchungImpfungenResource {
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
         return untersuchungImpfungenMapper.getByEinladung(einladungId);
     }
 
@@ -71,6 +75,8 @@ public class UntersuchungImpfungenResource {
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
         @NotNull @NonNull @Valid UntersuchungImpfungenSaveJson saveJson
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
         return untersuchungImpfungenMapper.save(einladungId, saveJson);
     }
 
@@ -79,9 +85,12 @@ public class UntersuchungImpfungenResource {
     @RolesAllowed(BerechtigungName.SU_IMPFEN_SCHREIBEN)
     public UntersuchungImpfungenJson visierenDoppelkontrolleVisum1(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
+        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
+        @NotNull @NonNull @Valid UntersuchungImpfungenSaveJson saveJson
     ) {
-        return untersuchungImpfungenMapper.visierenDoppelkontrolleVisum1(einladungId);
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
+        return untersuchungImpfungenMapper.visierenDoppelkontrolleVisum1(einladungId, saveJson);
     }
 
     @POST
@@ -90,9 +99,13 @@ public class UntersuchungImpfungenResource {
     public UntersuchungImpfungenJson anfordernDoppelkontrolleVisum2(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
-        @NotNull @NonNull @Valid BenutzerOptionJson benutzerJson
+        @NotNull @NonNull @Valid UntersuchungImpfungenSaveJson saveJson
     ) {
-        return untersuchungImpfungenMapper.anfordernDoppelkontrolleVisum2(einladungId, benutzerJson);
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
+        Objects.requireNonNull(saveJson.getDoppelkontrolle().getVisumPerson2());
+        return untersuchungImpfungenMapper.anfordernDoppelkontrolleVisum2(
+            einladungId, saveJson.getDoppelkontrolle().getVisumPerson2(), saveJson);
     }
 
     @POST
@@ -100,9 +113,12 @@ public class UntersuchungImpfungenResource {
     @RolesAllowed(BerechtigungName.SU_IMPFEN_SCHREIBEN)
     public UntersuchungImpfungenJson visierenDoppelkontrolleVisum2(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
+        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
+        @NotNull @NonNull @Valid UntersuchungImpfungenSaveJson saveJson
     ) {
-        return untersuchungImpfungenMapper.visierenDoppelkontrolleVisum2(einladungId);
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
+        return untersuchungImpfungenMapper.visierenDoppelkontrolleVisum2(einladungId, saveJson);
     }
 
     @DELETE
@@ -110,9 +126,12 @@ public class UntersuchungImpfungenResource {
     @RolesAllowed(BerechtigungName.SU_IMPFEN_SCHREIBEN)
     public UntersuchungImpfungenJson resetDoppelkontrolle(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
+        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
+        @NotNull @NonNull @Valid UntersuchungImpfungenSaveJson saveJson
     ) {
-        return untersuchungImpfungenMapper.resetDoppelkontrolle(einladungId);
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
+        return untersuchungImpfungenMapper.resetDoppelkontrolle(einladungId, saveJson);
     }
 
     @PUT
@@ -124,6 +143,8 @@ public class UntersuchungImpfungenResource {
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
         @NonNull @NotNull @Valid UntersuchungImpfungenMassnahmenSaveJson saveJson
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
         return untersuchungImpfungenMassnahmenMapper.save(einladungId, saveJson);
     }
 
@@ -135,6 +156,8 @@ public class UntersuchungImpfungenResource {
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
         untersuchungImpfungenMassnahmenMapper.einzelTerminErstellen(einladungId);
         return Response.ok().build();
     }
@@ -148,6 +171,8 @@ public class UntersuchungImpfungenResource {
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
         @NotNull @NonNull @Valid UntersuchungImpfstatusListSaveJson saveJson
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
         untersuchungImpfstatusKrankheitMapper.persistAll(einladungId, saveJson);
         return new UntersuchungImpfstatusListSaveJson(
             untersuchungImpfstatusKrankheitMapper.getByEinladung(einladungId));
@@ -161,6 +186,8 @@ public class UntersuchungImpfungenResource {
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
         @NotNull @NonNull @Valid UntersuchungImpfungInternSaveJson saveJson
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
         response.setStatusCode(Status.CREATED.getStatusCode());
         return untersuchungImpfungInternMapper.create(einladungId, saveJson);
     }
@@ -175,6 +202,8 @@ public class UntersuchungImpfungenResource {
         @NotNull @NonNull @PathParam("impfungInternId") ID<UntersuchungImpfungIntern> impfungInternId,
         @NotNull @NonNull @Valid UntersuchungImpfungInternSaveJson saveJson
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
         return untersuchungImpfungInternMapper.update(einladungId, impfungInternId, saveJson);
     }
 
@@ -186,6 +215,8 @@ public class UntersuchungImpfungenResource {
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
         @NotNull @NonNull @PathParam("impfungInternId") ID<UntersuchungImpfungIntern> impfungInternId
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
         untersuchungImpfungInternMapper.remove(anlassId, impfungInternId);
     }
 }

@@ -29,7 +29,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  */
 @JsonPropertyOrder({
   InfomaterialSaveJsonSpec.JSON_PROPERTY_NAME,
-  InfomaterialSaveJsonSpec.JSON_PROPERTY_AKTIV
+  InfomaterialSaveJsonSpec.JSON_PROPERTY_AKTIV,
+  InfomaterialSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("InfomaterialSaveJson")
 @lombok.AllArgsConstructor
@@ -42,6 +43,10 @@ public class InfomaterialSaveJsonSpec {
   public static final String JSON_PROPERTY_AKTIV = "aktiv";
   @jakarta.annotation.Nonnull
   private Boolean aktiv;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public InfomaterialSaveJsonSpec() {
   }
@@ -96,6 +101,31 @@ public class InfomaterialSaveJsonSpec {
     this.aktiv = aktiv;
   }
 
+  public InfomaterialSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -106,12 +136,13 @@ public class InfomaterialSaveJsonSpec {
     }
     InfomaterialSaveJsonSpec infomaterialSaveJson = (InfomaterialSaveJsonSpec) o;
     return Objects.equals(this.name, infomaterialSaveJson.name) &&
-        Objects.equals(this.aktiv, infomaterialSaveJson.aktiv);
+        Objects.equals(this.aktiv, infomaterialSaveJson.aktiv) &&
+        Objects.equals(this.version, infomaterialSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, aktiv);
+    return Objects.hash(name, aktiv, version);
   }
 
   @Override
@@ -120,6 +151,7 @@ public class InfomaterialSaveJsonSpec {
     sb.append("class InfomaterialSaveJsonSpec {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    aktiv: ").append(toIndentedString(aktiv)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

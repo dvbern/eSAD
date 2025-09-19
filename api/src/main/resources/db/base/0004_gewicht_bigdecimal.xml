@@ -1,0 +1,12 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet id="1757073979096-1" author="hora">
+    <sql>
+      alter table if exists UntersuchungGroesseGewicht alter column gewicht set data type numeric (30,1);
+      alter table if exists UntersuchungGroesseGewicht_AUD alter column gewicht set data type numeric (30,1);
+    </sql>
+  </changeSet>
+</databaseChangeLog>
+
+
+

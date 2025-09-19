@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   ClientAuthConfigJsonSpec.JSON_PROPERTY_CLIENT_ID,
   ClientAuthConfigJsonSpec.JSON_PROPERTY_REALM,
   ClientAuthConfigJsonSpec.JSON_PROPERTY_AUTH_URL,
-  ClientAuthConfigJsonSpec.JSON_PROPERTY_LOGOUT_URL
+  ClientAuthConfigJsonSpec.JSON_PROPERTY_LOGOUT_REDIRECT_URL
 })
 @JsonTypeName("ClientAuthConfigJson")
 @lombok.AllArgsConstructor
@@ -48,9 +48,9 @@ public class ClientAuthConfigJsonSpec {
   @jakarta.annotation.Nonnull
   private String authUrl;
 
-  public static final String JSON_PROPERTY_LOGOUT_URL = "logoutUrl";
-  @jakarta.annotation.Nonnull
-  private String logoutUrl;
+  public static final String JSON_PROPERTY_LOGOUT_REDIRECT_URL = "logoutRedirectUrl";
+  @jakarta.annotation.Nullable
+  private String logoutRedirectUrl;
 
   public ClientAuthConfigJsonSpec() {
   }
@@ -130,29 +130,29 @@ public class ClientAuthConfigJsonSpec {
     this.authUrl = authUrl;
   }
 
-  public ClientAuthConfigJsonSpec logoutUrl(@jakarta.annotation.Nonnull String logoutUrl) {
+  public ClientAuthConfigJsonSpec logoutRedirectUrl(@jakarta.annotation.Nullable String logoutRedirectUrl) {
     
-    this.logoutUrl = logoutUrl;
+    this.logoutRedirectUrl = logoutRedirectUrl;
     return this;
   }
 
   /**
-   * Get logoutUrl
-   * @return logoutUrl
+   * Get logoutRedirectUrl
+   * @return logoutRedirectUrl
    */
-  @jakarta.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_LOGOUT_URL)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @jakarta.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_LOGOUT_REDIRECT_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getLogoutUrl() {
-    return logoutUrl;
+  public String getLogoutRedirectUrl() {
+    return logoutRedirectUrl;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_LOGOUT_URL)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setLogoutUrl(@jakarta.annotation.Nonnull String logoutUrl) {
-    this.logoutUrl = logoutUrl;
+  @JsonProperty(JSON_PROPERTY_LOGOUT_REDIRECT_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLogoutRedirectUrl(@jakarta.annotation.Nullable String logoutRedirectUrl) {
+    this.logoutRedirectUrl = logoutRedirectUrl;
   }
 
   @Override
@@ -167,12 +167,12 @@ public class ClientAuthConfigJsonSpec {
     return Objects.equals(this.clientId, clientAuthConfigJson.clientId) &&
         Objects.equals(this.realm, clientAuthConfigJson.realm) &&
         Objects.equals(this.authUrl, clientAuthConfigJson.authUrl) &&
-        Objects.equals(this.logoutUrl, clientAuthConfigJson.logoutUrl);
+        Objects.equals(this.logoutRedirectUrl, clientAuthConfigJson.logoutRedirectUrl);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(clientId, realm, authUrl, logoutUrl);
+    return Objects.hash(clientId, realm, authUrl, logoutRedirectUrl);
   }
 
   @Override
@@ -182,7 +182,7 @@ public class ClientAuthConfigJsonSpec {
     sb.append("    clientId: ").append(toIndentedString(clientId)).append("\n");
     sb.append("    realm: ").append(toIndentedString(realm)).append("\n");
     sb.append("    authUrl: ").append(toIndentedString(authUrl)).append("\n");
-    sb.append("    logoutUrl: ").append(toIndentedString(logoutUrl)).append("\n");
+    sb.append("    logoutRedirectUrl: ").append(toIndentedString(logoutRedirectUrl)).append("\n");
     sb.append("}");
     return sb.toString();
   }

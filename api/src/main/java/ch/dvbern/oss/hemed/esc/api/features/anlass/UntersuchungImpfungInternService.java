@@ -29,12 +29,20 @@ public class UntersuchungImpfungInternService {
 		return impfstatusKrankheit;
 	}
 
+    @NonNull
+    public UntersuchungImpfungIntern persistWithOptimisticLocking(@NonNull UntersuchungImpfungIntern entity, @NonNull Long versionFromFrontend) {
+        UntersuchungImpfungIntern persisted = untersuchungImpfungInternRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
+        checkImmunitaetenForDossier(persisted);
+        return persisted;
+    }
+
 	private void checkImmunitaetenForDossier(@NonNull UntersuchungImpfungIntern impfungIntern) {
         Dossier dossier = dossierService.getById(impfungIntern.getUntersuchungImpfungen()
             .getUntersuchung()
             .getEinladung()
             .getDossier()
             .getId());
+        dossier.disableOptimisticLockingCheck();
 		Set<UntersuchungImpfungKrankheitImmunitaet> immunitaeten = impfungIntern.getKrankheitenImmunitaeten();
 		if (immunitaeten.stream().anyMatch(i -> i.getKrankheit() == Krankheit.MASERN
                 && i.isImmunitaetGenuegend())) {

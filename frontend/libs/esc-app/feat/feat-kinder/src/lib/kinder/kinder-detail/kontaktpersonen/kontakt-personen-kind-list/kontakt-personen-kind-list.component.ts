@@ -3,10 +3,7 @@ import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/cor
 import {toSignal} from '@angular/core/rxjs-interop';
 import {ReactiveFormsModule} from '@angular/forms';
 import {KontaktPersonKindJson} from '@dvb/data-access-backend';
-import {getAdresse} from '@dvb/feat-shared';
-import {BenutzerStore} from '@dvb/feat-shared';
-import {BooleanPipe, Path} from '@dvb/feat-shared';
-import {ConfirmService} from '@dvb/feat-shared';
+import {BenutzerStore, BooleanPipe, ConfirmService, getAdresse, Path} from '@dvb/feat-shared';
 import {
   ButtonComponent,
   ButtonsRightContainerComponent,
@@ -59,7 +56,7 @@ import {KontaktPersonKindAddComponent} from '../kontakt-personen-kind-add/kontak
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class KontaktPersonenKindListComponent {
-  readonly #dossierStore = inject(DossierStore);
+  readonly dossierStore = inject(DossierStore);
   readonly store = inject(KontaktPersonKindStore);
   readonly benutzerStore = inject(BenutzerStore);
   readonly confirmService = inject(ConfirmService);
@@ -101,7 +98,7 @@ export class KontaktPersonenKindListComponent {
       decision: this.#transloco.translate('kind.kontaktperson.list.delete.decision'),
     }).subscribe(() => {
       this.store.deleteKontaktPerson({
-        kindID: requireValue(this.#dossierStore.selectedKind()?.id),
+        kindID: requireValue(this.dossierStore.selectedKind()?.id),
         kontaktPersonId: kontaktPerson.id,
       })
     });
@@ -116,11 +113,11 @@ export class KontaktPersonenKindListComponent {
       decision: this.#transloco.translate('kind.kontaktperson.list.remove-connection.decision'),
     }).subscribe(() => {
       this.store.removeKontaktPersonFromKind({
-        kindID: requireValue(this.#dossierStore.kindId()),
+        kindID: requireValue(this.dossierStore.kindId()),
         kontaktPersonId: kontaktPerson.id,
         // Die Kontaktpersonen neu einlesen, welche zum Hinzufuegen verfuegbar sind
         onSuccess: () => this.#kontaktPersonKindOptionsStore.loadKontaktPersonenByKindOptions({
-          kindID: requireValue(this.#dossierStore.kindId()),
+          kindID: requireValue(this.dossierStore.kindId()),
         }),
       });
     });
@@ -132,11 +129,11 @@ export class KontaktPersonenKindListComponent {
     const result = await firstValueFrom(ngbModalRef.closed, {defaultValue: undefined});
     if (result) {
       this.store.addKontaktPersonToKind({
-        kindID: requireValue(this.#dossierStore.kindId()),
+        kindID: requireValue(this.dossierStore.kindId()),
         kontaktPersonId: result.id,
         // Die Kontaktpersonen neu einlesen, welche zum Hinzufuegen verfuegbar sind
         onSuccess: () => this.#kontaktPersonKindOptionsStore.loadKontaktPersonenByKindOptions({
-          kindID: requireValue(this.#dossierStore.kindId()),
+          kindID: requireValue(this.dossierStore.kindId()),
         }),
       });
     }

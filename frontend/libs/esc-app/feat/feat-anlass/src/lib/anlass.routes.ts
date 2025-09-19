@@ -238,7 +238,7 @@ export const anlassRoutes: Route[] = [
                     inject(ImpfstoffeChargenStore).loadImpfstoffeAndChargen();
                     inject(UntersuchungStore).setCurrentTabId(currentEinladungId);
                     inject(UntersuchungStore).loadEinladung(params);
-                    inject(UntersuchungSehenStore).loadDefaultSehen(params);
+                    inject(UntersuchungSehenStore).loadDefaultSehenBeurteilung(params);
                     inject(UntersuchungHoerenAudiogrammStore).loadDefaultHoerenAudiogramm(params);
                     inject(UntersuchungHoerenOtoskopieStore).loadDefaultHoerenOtoskopie(params);
                     inject(UntersuchungArztStore).loadDefaultUntersuchungArzt(params);
@@ -296,7 +296,15 @@ export const anlassRoutes: Route[] = [
                         const currentAnlassId = requireValidBackendEntityId(
                           route.parent?.parent?.parent?.paramMap.get('anlassId'),
                         );
-                        inject(UntersuchungSehenStore).loadSehen({
+                        inject(UntersuchungSehenStore).loadSehenBeurteilung({
+                          anlassId: currentAnlassId,
+                          einladungId: currentEinladungId,
+                        });
+                        inject(UntersuchungSehenStore).loadSehenMassnahmen({
+                          anlassId: currentAnlassId,
+                          einladungId: currentEinladungId,
+                        });
+                        inject(UntersuchungSehenStore).loadSehenBemerkungFragebogen({
                           anlassId: currentAnlassId,
                           einladungId: currentEinladungId,
                         });
@@ -376,6 +384,10 @@ export const anlassRoutes: Route[] = [
                           anlassId: currentAnlassId,
                           einladungId: currentEinladungId,
                         });
+                        inject(UntersuchungArztStore).loadUntersuchungArztBemerkung({
+                          anlassId: currentAnlassId,
+                          einladungId: currentEinladungId,
+                        });
                       },
                     },
                     canActivate: [requireRole(hasAerztlicheUntersuchungViewBerechtigung())],
@@ -398,7 +410,15 @@ export const anlassRoutes: Route[] = [
                           anlassId: currentAnlassId,
                           einladungId: currentEinladungId,
                         });
-                        inject(UntersuchungSehenStore).loadSehen({
+                        inject(UntersuchungSehenStore).loadSehenBeurteilung({
+                          anlassId: currentAnlassId,
+                          einladungId: currentEinladungId,
+                        });
+                        inject(UntersuchungSehenStore).loadSehenMassnahmen({
+                          anlassId: currentAnlassId,
+                          einladungId: currentEinladungId,
+                        });
+                        inject(UntersuchungSehenStore).loadSehenBemerkungFragebogen({
                           anlassId: currentAnlassId,
                           einladungId: currentEinladungId,
                         });
@@ -415,6 +435,10 @@ export const anlassRoutes: Route[] = [
                           einladungId: currentEinladungId,
                         });
                         inject(UntersuchungArztStore).loadUntersuchungArzt({
+                          anlassId: currentAnlassId,
+                          einladungId: currentEinladungId,
+                        });
+                        inject(UntersuchungArztStore).loadUntersuchungArztBemerkung({
                           anlassId: currentAnlassId,
                           einladungId: currentEinladungId,
                         });

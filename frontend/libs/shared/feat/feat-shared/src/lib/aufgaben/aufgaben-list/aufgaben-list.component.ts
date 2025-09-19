@@ -1,8 +1,14 @@
 import {CommonModule} from '@angular/common';
-import {ChangeDetectionStrategy, Component, DestroyRef, inject, input, OnInit} from '@angular/core';
-import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
-import {AufgabeStatus, BenutzerOptionJson, LabelJson} from '@dvb/data-access-backend';
-import {BackendEntityId, isISODateString} from '@dvb/data-access-types';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  input,
+  OnInit,
+} from '@angular/core';
+import {ReactiveFormsModule} from '@angular/forms';
+import { AufgabeStatus, BenutzerOptionJson, LabelJson } from '@dvb/data-access-backend';
+import {BackendEntityId} from '@dvb/data-access-types';
 import {
   BadgeComponent,
   CardComponent,
@@ -16,18 +22,18 @@ import {
   TableLinkComponent,
   TextInputDirective,
 } from '@dvb/ui-components';
-import {FilterSessionStorage, TableModel} from '@dvb/util-angular';
-import {compareFn, ensurePropsFlat, hasAufgabenEditBerechtigungen, toValidEnumList} from '@dvb/util-shared';
+import {compareFn, hasAufgabenEditBerechtigungen} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbDropdownItem} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
-import {AufgabeJsonEnhanced, AufgabenStore} from '../../admin-shared/aufgaben.store';
+import { AufgabeJsonEnhanced, AufgabenStore } from '../../admin-shared/aufgaben.store';
 import {BenutzerOptionsStore} from '../../admin-shared/benutzer-options.store';
 import {LabelsStore} from '../../admin-shared/labels.store';
 import {BenutzerStore} from '../../benutzer/benutzer/benutzer.store';
 import {ConfirmService} from '../../dialogs/confirm/confirm.service';
 import {TranslatedStringPipe} from '../../translated-strings/view/translated-string.pipe';
-import {AufgabeListFilterForm, AufgabenListFilter} from './aufgaben-list-filter.form';
+import { TableModel } from '@dvb/util-angular';
+import { AufgabeListFilterForm } from './aufgaben-list-filter.form';
 
 @Component({
   selector: 'feat-shared-aufgaben-list',
@@ -55,8 +61,11 @@ import {AufgabeListFilterForm, AufgabenListFilter} from './aufgaben-list-filter.
   styleUrl: './aufgaben-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AufgabenListComponent extends FilterSessionStorage<AufgabenListFilter> implements OnInit {
+export class AufgabenListComponent implements OnInit{
   readonly defaultEmpfaenger = input<BenutzerOptionJson>();
+  itemTable = input.required<TableModel<AufgabeJsonEnhanced>>();
+  tableFilterForm = input.required<AufgabeListFilterForm>();
+  loading = input.required<boolean>();
 
   readonly store = inject(AufgabenStore);
   readonly labelsStore = inject(LabelsStore);
@@ -72,33 +81,6 @@ export class AufgabenListComponent extends FilterSessionStorage<AufgabenListFilt
 
   canEditAufgabe = this.benutzerStore.createHasRequiredRoleSig(hasAufgabenEditBerechtigungen());
 
-  readonly SESSIONSTORAGE_KEY = 'aufgabenFilter';
-
-  aufgabenTable = new TableModel<AufgabeJsonEnhanced>(
-    {
-      rawListSignal: this.store.entities,
-      lazyLoadOnSortOrFilter: () => this.setSessionStorageFilter(this.tableFilterForm.valueOnValid()),
-    },
-    {frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll'},
-  );
-  readonly tableFilterForm = new AufgabeListFilterForm({
-    fb: inject(NonNullableFormBuilder),
-    destroyRef: inject(DestroyRef),
-    paginatedTable: this.aufgabenTable,
-  });
-
-  ngOnInit() {
-    const filter = this.getSessionStorageFilter();
-    if (filter) {
-      this.tableFilterForm.reset(filter);
-    }
-
-    const defaultEmpfaenger = this.defaultEmpfaenger();
-    if (defaultEmpfaenger && !filter?.empfaenger.length ) {
-      this.tableFilterForm.setEmpfaenger(defaultEmpfaenger);
-    }
-  }
-
   checkRemoveItem(aufgabeId: BackendEntityId): void {
     this.confirmService.confirm({
       question: this.#transloco.translate('aufgaben.list.delete.question'),
@@ -110,23 +92,12 @@ export class AufgabenListComponent extends FilterSessionStorage<AufgabenListFilt
     );
   }
 
-  mapSessionStorageStringToFilter(sessionStorageFilter: string): AufgabenListFilter | undefined {
-    try {
-      const parsed = JSON.parse(sessionStorageFilter) as AufgabenListFilter;
+  ngOnInit() {
+    const defaultEmpfaenger = this.defaultEmpfaenger();
+    const form = this.tableFilterForm();
 
-      // Reconstruct the filter with proper data types and validation
-      return ensurePropsFlat<AufgabenListFilter>({
-        faelligBis: isISODateString(parsed.faelligBis) ? parsed.faelligBis : null,
-        aufgabeStatus: toValidEnumList(AufgabeStatus, parsed.aufgabeStatus),
-        label: Array.isArray(parsed.label) ? parsed.label : [],
-        titel: parsed.titel ?? '',
-        erstelltDurch: Array.isArray(parsed.erstelltDurch) ? parsed.erstelltDurch : [],
-        empfaenger: Array.isArray(parsed.empfaenger) ? parsed.empfaenger : [],
-        kind: parsed.kind ?? '',
-      });
-    } catch (error) {
-      console.warn('Failed to parse session storage filter:', error);
-      return undefined;
+    if (defaultEmpfaenger && !form.valueOnValid().empfaenger?.length) {
+      form.setEmpfaenger(defaultEmpfaenger);
     }
   }
 

@@ -12,6 +12,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.InformationEltern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmenJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmenMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungSehenMassnahmenMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungSehenMassnahmenSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.infomaterial.Infomaterial;
 import ch.dvbern.oss.hemed.esc.api.shared.anlass.anlassflags.AnlassFlags;
@@ -185,7 +186,7 @@ public class UntersuchungMassnahmenBuilder {
     @NonNull
     public static UntersuchungSehenMassnahmenSaveJson createSehenMassnahmenSaveJax(@NonNull Consumer<UntersuchungMassnahmenBuilder> block) {
         UntersuchungMassnahmen entity = create(block);
-        return UntersuchungMassnahmenMapper.toSehenMassnahmenJson(entity);
+        return UntersuchungSehenMassnahmenMapper.toJson(entity).getData();
     }
 
     @NonNull

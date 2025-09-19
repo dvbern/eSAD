@@ -13,6 +13,7 @@ import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumberConverter;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
@@ -57,7 +58,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Benutzer extends AbstractTenantEntity<Benutzer> {
+public class Benutzer extends AbstractTenantEntity<Benutzer> implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = -4471131500166716925L;
@@ -69,6 +70,8 @@ public class Benutzer extends AbstractTenantEntity<Benutzer> {
         ID.parse("11111111-1111-1111-1111-111111111112", Benutzer.class);
     public static final ID<Benutzer> SYSTEM_ADMIN_BE_ID =
         ID.parse("11111111-1111-1111-1111-111111111113", Benutzer.class);
+    public static final ID<Benutzer> SYSTEM_ADMIN_WIN_ID =
+        ID.parse("11111111-1111-1111-1111-111111111114", Benutzer.class);
 
     @Nullable
     @Size(max = DbConst.DB_DEFAULT_MAX_LENGTH)

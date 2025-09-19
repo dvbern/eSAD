@@ -3,7 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.pub.settings;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminWIN;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.TenantSettingsApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.TenantSettingsJsonSpec;
@@ -49,7 +49,7 @@ class TenantSettingsResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsAdminBE
+    @TestAsAdminWIN
     void getTenantSettings_be_returnsCorrectSettings() {
         // ARRANGE
         // settings are inserted in liquibase
@@ -66,6 +66,6 @@ class TenantSettingsResourceITest extends AbstractITest {
         Assertions.assertThat(result)
             .isNotNull();
         Assertions.assertThat(result.getDefaultLanguage().name()).isEqualTo(AppLanguages.DE.name());
-        Assertions.assertThat(result.getSupportedLanguages()).hasSize(2);
+        Assertions.assertThat(result.getSupportedLanguages()).hasSize(1);
     }
 }

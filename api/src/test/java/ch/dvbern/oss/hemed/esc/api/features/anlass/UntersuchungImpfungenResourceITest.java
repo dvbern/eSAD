@@ -1,12 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.oss.hemed.esc.api.Util;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.InformationEltern;
@@ -46,6 +39,11 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenSa
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response.Status;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -175,7 +173,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 				.isEqualTo("Bemerkungen zu den " + "Impfungen");
 		Assertions.assertThat(existingImpfungen.getVisum1())
 				.isNotNull()
-				.extracting(Visum::getPerson)
+				.extracting(visum -> visum != null ? visum.getPerson() : null)
 				.isNotEqualTo(anotherBenutzer);
 
 		// ACT
@@ -216,9 +214,13 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 				untersuchungImpfungenService.getById(untersuchung.getUntersuchungImpfungen().getId());
 		Assertions.assertThat(existingImpfungen).isNotNull();
 		// ACT
+        UntersuchungImpfungenSaveJsonSpec payload = UntersuchungImpfungenBuilder.createJaxSpec(
+            untersuchungImpfungenBuilder -> untersuchungImpfungenBuilder
+                .forUntersuchungImpfungen(existingImpfungen)).getData();
 		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceVisierenDoppelkontrolleVisum1()
 				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
 				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+                .body(payload)
 				.execute(ResponseBody::prettyPeek)
 				.then()
 				.assertThat()
@@ -247,13 +249,10 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 				untersuchungImpfungenService.getById(untersuchung.getUntersuchungImpfungen().getId());
 		Assertions.assertThat(existingImpfungen).isNotNull();
 		// ACT
-		BenutzerOptionJsonSpec payload = new BenutzerOptionJsonSpec(
-				anotherBenutzer.getId().getId(),
-				anotherBenutzer.getVorname(),
-				anotherBenutzer.getNachname(),
-				anotherBenutzer.getNachname() + ' ' + anotherBenutzer.getVorname(),
-				Collections.emptyList(),
-				true);
+        UntersuchungImpfungenSaveJsonSpec payload = UntersuchungImpfungenBuilder.createJaxSpec(
+            untersuchungImpfungenBuilder -> untersuchungImpfungenBuilder
+                .forUntersuchungImpfungen(existingImpfungen)
+                .withVisum2(anotherBenutzer, LocalDate.now())).getData();
 		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceAnfordernDoppelkontrolleVisum2()
 				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
 				.einladungIdPath(untersuchung.getEinladung().getId().getId())
@@ -302,9 +301,13 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 				untersuchungImpfungenService.getById(untersuchung.getUntersuchungImpfungen().getId());
 		Assertions.assertThat(existingImpfungen).isNotNull();
 		// ACT
+        UntersuchungImpfungenSaveJsonSpec payload = UntersuchungImpfungenBuilder.createJaxSpec(
+            untersuchungImpfungenBuilder -> untersuchungImpfungenBuilder
+                .forUntersuchungImpfungen(existingImpfungen)).getData();
 		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceVisierenDoppelkontrolleVisum2()
 				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
 				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+                .body(payload)
 				.execute(ResponseBody::prettyPeek)
 				.then()
 				.assertThat()
@@ -335,9 +338,13 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		Assertions.assertThat(existingImpfungen.getVisum1().getPerson()).isNotNull();
 		Assertions.assertThat(existingImpfungen.getVisum1().getDatumVisiert()).isNotNull();
 		// ACT
+        UntersuchungImpfungenSaveJsonSpec payload = UntersuchungImpfungenBuilder.createJaxSpec(
+            untersuchungImpfungenBuilder -> untersuchungImpfungenBuilder
+                .forUntersuchungImpfungen(existingImpfungen)).getData();
 		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceResetDoppelkontrolle()
 				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
 				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+                .body(payload)
 				.execute(ResponseBody::prettyPeek)
 				.then()
 				.assertThat()
@@ -1131,24 +1138,24 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		Assertions.assertThat(massnahmenBefore).isNotNull();
 		Assertions.assertThat(massnahmenBefore.getAufgabeInformationEltern())
 				.isNotNull()
-				.extracting(Aufgabe::getAufgabeStatus)
+				.extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null)
 				.isEqualTo(AufgabeStatus.OFFEN);
 		Assertions.assertThat(massnahmenBefore.getAufgabeInformationHausarzt())
 				.isNotNull()
-				.extracting(Aufgabe::getAufgabeStatus)
+				.extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null)
 				.isEqualTo(AufgabeStatus.OFFEN);
 		Assertions.assertThat(massnahmenBefore.getAufgabeRueckfrageHausarzt())
 				.isNotNull()
-				.extracting(Aufgabe::getAufgabeStatus)
+				.extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null)
 				.isEqualTo(AufgabeStatus.OFFEN);
 
 		// ACT
 		UntersuchungImpfungenMassnahmenJsonSpec payload =
-				UntersuchungImpfungenMassnahmenBuilder.createJaxSpec(builder -> builder.forUntersuchungImpfungen(
-								untersuchung.getUntersuchungImpfungen())
-						.withInformationEltern(InformationEltern.KEINE)
-						.withInformationHausarzt(false)
-						.withRueckfrageHausarzt(false));
+				UntersuchungImpfungenMassnahmenBuilder.createJaxSpec(builder -> builder
+                    .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
+                    .withInformationEltern(InformationEltern.KEINE)
+                    .withInformationHausarzt(false)
+                    .withRueckfrageHausarzt(false));
 		UntersuchungImpfungenMassnahmenJsonSpec result = api.untersuchungImpfungenResourceSaveUntersuchungMassnahmen()
 				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
 				.einladungIdPath(untersuchung.getEinladung().getId().getId())
@@ -1172,15 +1179,15 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		Assertions.assertThat(massnahmenAfter).isNotNull();
 		Assertions.assertThat(massnahmenAfter.getAufgabeInformationEltern())
 				.isNotNull()
-				.extracting(Aufgabe::getAufgabeStatus)
+				.extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null)
 				.isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
 		Assertions.assertThat(massnahmenAfter.getAufgabeInformationHausarzt())
 				.isNotNull()
-				.extracting(Aufgabe::getAufgabeStatus)
+				.extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null)
 				.isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
 		Assertions.assertThat(massnahmenAfter.getAufgabeRueckfrageHausarzt())
 				.isNotNull()
-				.extracting(Aufgabe::getAufgabeStatus)
+				.extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null)
 				.isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
 	}
 

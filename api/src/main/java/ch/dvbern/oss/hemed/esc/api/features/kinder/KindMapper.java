@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.KindDuplikatException;
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
@@ -30,6 +31,7 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
 import ch.dvbern.oss.hemed.esc.api.shared.person.AdresseMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.person.LandCode;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatusSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Validate;
@@ -51,7 +53,8 @@ public final class KindMapper {
     @NonNull
     public static KindJson toJson(
         @NonNull Kind kind,
-        @NonNull LocalDate now) {
+        @NonNull LocalDate now
+    ) {
         Klasse klasse = null;
         Klassenstufe klassenstufe = null;
         if (kind.getKlasse() != null) {
@@ -81,7 +84,8 @@ public final class KindMapper {
                 schuleToSend != null ? SchuleMapper.toOptionJson(schuleToSend) : null,
                 klasse != null ? KlasseMapper.toOptionJson(klasse) : null,
                 klassenstufe,
-                kind.getKindAktivStatus()
+                kind.getKindAktivStatus(),
+                kind.getVersion()
             ),
             LandCode.getCode(kind.getNationalitaet())
         );
@@ -156,40 +160,22 @@ public final class KindMapper {
         existingKind.setAdresse(AdresseMapper.toEntity(saveJson.getAdresse()));
         existingKind.setEmail(saveJson.getEmail());
         existingKind.setTelefon(saveJson.getTelefon());
-        Klasse newklasse = saveJson.getKlasse() != null ? klasseService.getById(saveJson.getKlasse().getId()) : null;
-        existingKind.setKlasse(newklasse);
-        Schule newSchule = saveJson.getSchule() != null ? schuleService.getById(saveJson.getSchule().getId()) : null;
-        Schule newSchuleToSet = mapSchuleFromKlasseOrSchule(newklasse, newSchule);
-        resetArztMpaIfSchuleChanged(existingKind.getId(), existingKind.getSchule(), newSchuleToSet);
-        existingKind.setSchule(newSchuleToSet);
         existingKind.setKindAktivStatus(saveJson.getKindAktivStatus());
+        // Schule und Klasse werden separat gesetzt, damit die Optimistic Locking Checks nicht fehlschlagen
         return existingKind;
     }
 
     @NonNull
     public KindJson generateEsadIdForKind(@NonNull ID<Kind> kindId) {
         Kind kind = kindService.getById(kindId);
+        KindValidationUtil.throwErrorIfKindIsInactive(kind, AppValidationMessage.cannotEditInactiveKind(kind));
+        kind.disableOptimisticLockingCheck();
         Schule schule = kind.extractSchule();
         EdokidId edokidId = edokidIdGeneratorService.generateNextEdokidId(schule);
         kind.setEsadId(edokidId.toFormattedString());
         kind = kindService.persistWithoutDuplicateCheck(kind);
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
         return toJson(kind, now);
-    }
-
-    private void resetArztMpaIfSchuleChanged(
-        @NonNull ID<Kind> kindID,
-        @Nullable Schule oldSchule,
-        @Nullable Schule newSchule
-    ) {
-        if (newSchule == null) {
-            return;
-        }
-        Optional<Dossier> dossierOptional = dossierService.findByKind(kindID);
-        if ((!newSchule.equals(oldSchule)) && dossierOptional.isPresent()) {
-            dossierOptional.get().setZustaendigMPA(null);
-            dossierOptional.get().setZustaendigArzt(null);
-        }
     }
 
     @NonNull
@@ -229,21 +215,30 @@ public final class KindMapper {
     @NonNull
     public KindSaveResultJson create(@NonNull KindSaveJson kindJson, @NonNull KindSaveModeDuplikat kindSaveMode) {
         Kind entity = toEntityForCreate(kindJson);
-        return saveKind(kindSaveMode, entity);
+        return saveKind(kindSaveMode, entity, kindJson.getVersion());
     }
 
     @NonNull
     public KindSaveResultJson update(
         @NonNull ID<Kind> kindID,
         @NonNull KindSaveJson kindJson,
-        @NonNull KindSaveModeDuplikat kindSaveMode) {
+        @NonNull KindSaveModeDuplikat kindSaveMode
+    ) {
         Kind existingKind = kindService.getById(kindID);
+        KindValidationUtil.throwErrorIfKindIsInactive(existingKind, AppValidationMessage.cannotEditInactiveKind(existingKind));
         Kind entity = toEntity(existingKind, kindJson);
-        return saveKind(kindSaveMode, entity);
+        KindSaveResultJson resultJson = saveKind(kindSaveMode, entity, kindJson.getVersion());
+        if (resultJson.getKindJson() == null) {
+            // Wenn es ein Duplikat ist, dann wird das KindJson nicht gesetzt. Wir brechen hier ab
+            return resultJson;
+        }
+        updateSchuleAndKlasse(kindJson, entity);
+        return saveKind(KindSaveModeDuplikat.NO_CHECK, entity, null);
     }
 
     public void changeKindAktivStatus(@NonNull ID<Kind> kindId, @NonNull EntityAktivStatusSaveJson saveJson) {
         Kind kind = kindService.getById(kindId);
+        kind.disableOptimisticLockingCheck();
         kind.setKindAktivStatus(saveJson.getEntityAktivStatus());
         this.kindService.persistWithoutDuplicateCheck(kind);
     }
@@ -251,16 +246,16 @@ public final class KindMapper {
     @NonNull
     private KindSaveResultJson saveKind(
         @NonNull KindSaveModeDuplikat kindSaveMode,
-        @NonNull Kind entity
+        @NonNull Kind entity,
+        @Nullable Long versionFromFrontend
     ) {
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
         if (kindSaveMode == KindSaveModeDuplikat.NO_CHECK) {
-            Kind persistedKind = kindService.persistWithoutDuplicateCheck(entity);
+            Kind persistedKind = kindService.persistWithoutDuplicateCheck(entity, versionFromFrontend);
             return toSaveResultJson(persistedKind, null, now);
         }
         try {
-            boolean forceMode = kindSaveMode == KindSaveModeDuplikat.MARK_AS_FALSE_POSITIVE;
-            Kind savedKind = kindService.persist(entity, forceMode);
+            Kind savedKind = kindService.persistWithDuplicateCheck(entity, versionFromFrontend, kindSaveMode);
             return toSaveResultJson(savedKind, null, now);
         } catch (KindDuplikatException e) {
             return toSaveResultJson(null, e.getKindDuplikatIds(), now);
@@ -274,8 +269,38 @@ public final class KindMapper {
     @NonNull
     public KindJson setEsadIdForKind(@NonNull ID<Kind> kindId, @NonNull EsadIdJson esadIdJson) {
         Kind kind = kindService.getById(kindId);
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            kind,
+            AppValidationMessage.cannotEditInactiveKind(kind)
+        );
+        kind.disableOptimisticLockingCheck();
         kind.setEsadId(esadIdJson.getEsadId());
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
         return toJson(kindService.persistWithoutDuplicateCheck(kind), now);
+    }
+
+    private void updateSchuleAndKlasse(@NonNull KindSaveJson kindJson, @NonNull Kind entity) {
+        entity.disableOptimisticLockingCheck();
+        Klasse newklasse = kindJson.getKlasse() != null ? klasseService.getById(kindJson.getKlasse().getId()) : null;
+        entity.setKlasse(newklasse);
+        Schule newSchule = kindJson.getSchule() != null ? schuleService.getById(kindJson.getSchule().getId()) : null;
+        Schule newSchuleToSet = mapSchuleFromKlasseOrSchule(newklasse, newSchule);
+        resetArztMpaIfSchuleChanged(entity.getId(), entity.getSchule(), newSchuleToSet);
+        entity.setSchule(newSchuleToSet);
+    }
+
+    private void resetArztMpaIfSchuleChanged(
+        @NonNull ID<Kind> kindID,
+        @Nullable Schule oldSchule,
+        @Nullable Schule newSchule
+    ) {
+        if (newSchule == null) {
+            return;
+        }
+        Optional<Dossier> dossierOptional = dossierService.findByKind(kindID);
+        if ((!newSchule.equals(oldSchule)) && dossierOptional.isPresent()) {
+            dossierOptional.get().setZustaendigMPA(null);
+            dossierOptional.get().setZustaendigArzt(null);
+        }
     }
 }

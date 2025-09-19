@@ -1,0 +1,129 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  
+  <changeSet author="hefr (generated)" id="1757420437141-5">
+    <createTable tableName="untersuchungsehenbemerkungfragebogen">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungsehenbemerkungfragebogenPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bemerkungenfragebogen" type="VARCHAR(2000)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1757420437141-6">
+    <createTable tableName="untersuchungsehenbemerkungfragebogen_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="bemerkungenfragebogen" type="VARCHAR(2000)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1757420437141-7">
+    <renameTable oldTableName="untersuchungsehen" newTableName="untersuchungsehenbeurteilung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1757420437141-8">
+    <renameTable oldTableName="untersuchungsehen_aud" newTableName="untersuchungsehenbeurteilung_aud"/>
+  </changeSet>
+
+
+  <changeSet author="hefr (generated)" id="1757420437141-9">
+    <addColumn tableName="anlassconfig">
+      <column name="sehenbemerkungenfragebogen" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>            
+      UPDATE anlassconfig SET sehenbemerkungenfragebogen = 'OPTIONAL' WHERE sehenbemerkungenfragebogen IS NULL AND anlassTyp = 'KINDERGARTEN';
+      UPDATE anlassconfig SET sehenbemerkungenfragebogen = 'NOT_VISIBLE' WHERE sehenbemerkungenfragebogen IS NULL AND anlassTyp != 'KINDERGARTEN';
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="sehenbemerkungenfragebogen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1757420437141-10">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="sehenbemerkungenfragebogen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1757420437141-11">
+    <addColumn tableName="untersuchung">
+      <column name="untersuchungsehenbemerkungfragebogen_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1757420437141-12">
+    <addColumn tableName="untersuchung_aud">
+      <column name="untersuchungsehenbemerkungfragebogen_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1757420437141-13">
+    <renameColumn tableName="untersuchung" oldColumnName="untersuchungsehen_id" newColumnName="untersuchungsehenbeurteilung_id"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1757420437141-14">
+    <renameColumn tableName="untersuchung_aud" oldColumnName="untersuchungsehen_id" newColumnName="untersuchungsehenbeurteilung_id"/>
+  </changeSet>
+  
+  <changeSet author="hefr (generated)" id="1757420437141-27">
+    <dropForeignKeyConstraint baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchungsehen"/>
+    <addForeignKeyConstraint baseColumnNames="untersuchungsehenbeurteilung_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchungsehenbeurteilung" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungsehenbeurteilung" validate="true"/>
+  </changeSet>
+  
+  
+  
+ 
+ 
+  
+  <changeSet author="hefr (generated)" id="1757420437141-15">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungsehenbemerkungfragebogen_audPK" tableName="untersuchungsehenbemerkungfragebogen_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1757420437141-16">
+    <dropPrimaryKey tableName="untersuchungsehenbeurteilung_aud"/>
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungsehenbeurteilung_audPK" tableName="untersuchungsehenbeurteilung_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1757420437141-17">
+    <addUniqueConstraint columnNames="untersuchungsehenbemerkungfragebogen_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGSEHENBEMERKUNGFRAGEBOGEN_ID_COL" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1757420437141-18">
+    <dropUniqueConstraint constraintName="uc_untersuchunguntersuchungsehen_id_col" tableName="untersuchung"/>
+    <addUniqueConstraint columnNames="untersuchungsehenbeurteilung_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGSEHENBEURTEILUNG_ID_COL" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1757420437141-20">
+    <createIndex indexName="ix_untersuchung_untersuchungsehenbemerkungfragebogen" tableName="untersuchung">
+      <column name="untersuchungsehenbemerkungfragebogen_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1757420437141-21">
+    <dropIndex tableName="untersuchung" indexName="ix_untersuchung_untersuchungsehen"/>
+    <createIndex indexName="ix_untersuchung_untersuchungsehenbeurteilung" tableName="untersuchung">
+      <column name="untersuchungsehenbeurteilung_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1757420437141-22">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungsehenbemerkungfragebogen_aud" constraintName="FK42ps8hvnco90tieo2mfpohess" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1757420437141-24">
+    <addForeignKeyConstraint baseColumnNames="untersuchungsehenbemerkungfragebogen_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchungsehenbemerkungfragebogen" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungsehenbemerkungfragebogen" validate="true"/>
+  </changeSet>
+</databaseChangeLog>

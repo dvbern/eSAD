@@ -17,6 +17,11 @@ public class UntersuchungKindDatenService {
         return kindDaten;
     }
 
+    @NonNull
+    public UntersuchungKindDaten persistWithOptimisticLocking(@NonNull UntersuchungKindDaten kindDaten, @NonNull Long versionFromFrontend) {
+        return untersuchungKindDatenRepo.persistWithOptimisticLocking(kindDaten, versionFromFrontend);
+    }
+
     public void removeByUntersuchung(@NonNull Untersuchung untersuchung) {
         if (untersuchung.getUntersuchungKindDaten() != null) {
             untersuchungKindDatenRepo.remove(untersuchung.getUntersuchungKindDaten().getId());

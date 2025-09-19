@@ -26,6 +26,11 @@ public class UntersuchungDurchfuehrungService {
     }
 
     @NonNull
+    public UntersuchungDurchfuehrung persistWithOptimisticLocking(@NonNull UntersuchungDurchfuehrung durchfuehrung, @NonNull Long versionFromFrontend) {
+        return durchfuehrungRepo.persistWithOptimisticLocking(durchfuehrung, versionFromFrontend);
+    }
+
+    @NonNull
     public UntersuchungDurchfuehrung getById(@NonNull ID<UntersuchungDurchfuehrung> durchfuehrungID) {
         return durchfuehrungRepo.getById(durchfuehrungID);
     }
@@ -38,6 +43,7 @@ public class UntersuchungDurchfuehrungService {
             arzt,
             mpa
         );
+        durchfuehrung.disableOptimisticLockingCheck();
         persist(durchfuehrung);
     }
 

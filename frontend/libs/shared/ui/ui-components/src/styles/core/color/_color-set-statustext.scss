@@ -7,6 +7,11 @@ $danger-bg-hover: rgba(color-definition.$red-200, .3);
 $danger-color: color-definition.$red-300;
 $danger-icon: color-definition.$red-300;
 
+$warning-bg: color-definition.$yellow-100;
+$warning-bg-hover: rgba(color-definition.$yellow-200, .3);
+$warning-color: color-definition.$yellow-200;
+$warning-icon: color-definition.$yellow-200;
+
 $success-bg: transparent;
 $success-bg-hover: rgba(color-definition.$green-200, .2);
 $success-color: color-definition.$black;

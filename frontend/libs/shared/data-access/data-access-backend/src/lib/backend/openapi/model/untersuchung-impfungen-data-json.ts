@@ -9,11 +9,13 @@
  */
 import { UntersuchungImpfstatusListSaveJson } from './untersuchung-impfstatus-list-save-json';
 import { UntersuchungImpfungenJson } from './untersuchung-impfungen-json';
+import { UntersuchungImpfungenMassnahmenJson } from './untersuchung-impfungen-massnahmen-json';
 import { UntersuchungImpfungInternListJson } from './untersuchung-impfung-intern-list-json';
 
 
 export interface UntersuchungImpfungenDataJson { 
     untersuchungImpfungen: UntersuchungImpfungenJson;
+    massnahmen?: UntersuchungImpfungenMassnahmenJson;
     impfstatusList: UntersuchungImpfstatusListSaveJson;
     impfungInternList: UntersuchungImpfungInternListJson;
 }

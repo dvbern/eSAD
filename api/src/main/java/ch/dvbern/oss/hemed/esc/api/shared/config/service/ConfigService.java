@@ -18,17 +18,12 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.config.service;
 
-import java.net.URL;
-import java.time.Duration;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
 import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -41,6 +36,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import java.net.URL;
+import java.time.Duration;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 @Slf4j
 @ApplicationScoped
 @Getter
@@ -48,6 +49,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @Service
 @Transactional(TxType.NOT_SUPPORTED)
 public class ConfigService {
+
+    private final TenantProducer tenantProducer;
 
     @ConfigProperty(name = "app.deployment.app-project")
     String appProject;
@@ -61,8 +64,13 @@ public class ConfigService {
     @ConfigProperty(name = "app.deployment.instance")
     String instance;
 
-    @ConfigProperty(name = "app.deployment.public-url")
-    URL publicUrl;
+    @Getter(AccessLevel.NONE)
+    @ConfigProperty(name = "app.deployment.public-url.bs" )
+    URL publicUrlBS;
+
+    @Getter(AccessLevel.NONE)
+    @ConfigProperty(name = "app.deployment.public-url.win" )
+    URL publicUrlWIN;
 
     @ConfigProperty(name = "app.deployment.version")
     String version;
@@ -75,24 +83,13 @@ public class ConfigService {
     String clientAuthConfigRealm;
 
     @ConfigProperty(name = "app.deployment.client-auth-config.logout-url")
-    URL clientAuthConfigLogoutUrl;
+    Optional<URL> clientAuthConfigLogoutUrl;
 
     @ConfigProperty(name = "app.deployment.client-auth-config.auth-url")
     URL clientAuthConfigAuthUrl;
 
     @ConfigProperty(name = "esc.benutzer.rolle.cache.timeout.minutes", defaultValue = "30")
     int benutzerRollenCacheTimeoutMinutes;
-
-    /**
-     * WARNING: to override this for your local dev envirionment do not set the property for all quarkus profield
-     * (i.e. dev, test, prod) but only for the specific profile you are running (e.g. dev) because the tests
-     * will likely fail otherwise.
-     *
-     * The best way is to write _DEV_ESC_TENANT_OVERRIDE=BS in your .env file*
-     */
-    @ConfigProperty(name = "esc.tenant.override")
-    @Getter(AccessLevel.NONE)
-    Optional<String> tenantOverride;
 
     @ConfigProperty(name = "app.allow-db-reset")
     boolean allowDbReset;
@@ -119,9 +116,15 @@ public class ConfigService {
     @ConfigProperty(name = "esc.s3.upload-timeout-seconds", defaultValue = "30s")
     Duration s3UploadTimeout;
 
+    @Getter(AccessLevel.NONE)
     @ConfigProperty(name = "esc.s3.encryption-key.bs")
     Optional<String> s3EncryptionKeyBS;
 
+    @Getter(AccessLevel.NONE)
+    @ConfigProperty(name = "esc.s3.encryption-key.win")
+    Optional<String> s3EncryptionKeyWIN;
+
+    @Getter(AccessLevel.NONE)
     @ConfigProperty(name = "esc.s3.encryption-key.be")
     Optional<String> s3EncryptionKeyBE;
 
@@ -155,9 +158,12 @@ public class ConfigService {
     /**
      * a list of file extensions that are allowed to be uploaded, can be extension or media type (e.g. .pdf or
      * application/pdf)
+     * !!!IMPORTANT!!!
+     * Keep list in frontend in sync, as we do not sync the config to the client yet
+     * See usages of feat-upload-table and feat-file-drop to cover all upload use cases
      */
     @ConfigProperty(name = "esc.upload.extension.whitelist",
-        defaultValue = ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.eml,.msg,.mbox,.jpg,.jpeg,.png,.heic,.webp")
+        defaultValue = ".pdf,.docx,.xlsx,.pptx,.eml,.msg,.jpg,.jpeg,.png,.heic,.webp")
     Set<String> uploadExtensionWhitelist;
 
     /**
@@ -180,13 +186,8 @@ public class ConfigService {
     @ConfigProperty(name = "esc.dashboard.aktivitaet.history.limit", defaultValue = "20")
     int dashboardAktivitaetHistoryLimit;
 
-    @NonNull
-    public Optional<TenantEnum> getTenantOverride() {
-        if (tenantOverride.isPresent()) {
-            return tenantOverride.map(TenantEnum::valueOf);
-        }
-        return Optional.empty();
-    }
+    @ConfigProperty(name = "esc.feature.optimistic.locking.disabled", defaultValue = "false")
+    boolean featureOptimisticLockingDisabled;
 
     public void validateNotProdAndDbResetFeatureEnabled() {
         if (isStufeProd() || !isAllowDbReset()) {
@@ -208,14 +209,14 @@ public class ConfigService {
     }
 
     @NonNull
-    public Set<String> getFiletypeWhitelistedFileExtensionsForUploadType(@NonNull FileTyp notizupload) {
-        if (notizupload == FileTyp.ESCADA_SYNC) {
-            return Set.of("text/csv", "text/plain", "application/octet-stream");
+    public Set<String> getFileTypeWhitelistedFileExtensionsForUploadType(@NonNull FileTyp fileTyp) {
+        if (fileTyp == FileTyp.ESCADA_SYNC) {
+            return Set.of("text/csv", "text/plain");
         }
-        if (notizupload == FileTyp.BRIEFVORLAGE) {
-            return Set.of(
-                "application/msword",
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        if (fileTyp == FileTyp.BRIEFVORLAGE) {
+            // According to MDN, this is mime type is for .docx files
+            // https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types/Common_types
+            return Set.of("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
         }
         return this.uploadExtensionWhitelist;
     }
@@ -224,10 +225,22 @@ public class ConfigService {
      * this will return the Base64 encoded encryption key for the given tenant*
      */
     @NonNull
-    public Optional<String> getS3EncryptionKey(@NonNull TenantEnum tenantEnum) {
+    public Optional<String> getS3EncryptionKey() {
+        TenantEnum tenantEnum = tenantProducer.produceTenant();
         return switch (tenantEnum) {
             case TenantEnum.BS -> s3EncryptionKeyBS;
+            case TenantEnum.WIN -> s3EncryptionKeyWIN;
             case TenantEnum.BE -> s3EncryptionKeyBE;
+            default -> throw new AppFailureException(AppFailureMessage.internalError("Unknown tenant: " + tenantEnum));
+        };
+    }
+
+    @NonNull
+    public URL getPublicUrl() {
+        TenantEnum tenantEnum = tenantProducer.produceTenant();
+        return switch (tenantEnum) {
+            case TenantEnum.BS -> publicUrlBS;
+            case TenantEnum.WIN -> publicUrlWIN;
             default -> throw new AppFailureException(AppFailureMessage.internalError("Unknown tenant: " + tenantEnum));
         };
     }

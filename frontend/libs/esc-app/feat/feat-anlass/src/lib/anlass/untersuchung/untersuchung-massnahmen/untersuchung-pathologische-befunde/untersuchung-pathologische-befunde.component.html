@@ -16,7 +16,7 @@
   }
 }
 <!-- Sehen -->
-@if (anlassStore.selectedEntity()?.anlassConfig?.showTabSehen) {
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabSehenBeurteilung) {
   <b>{{ 'untersuchung.tab.sehen' | transloco }}</b>
   @if (sehenMap().size > 0) {
     <ul>

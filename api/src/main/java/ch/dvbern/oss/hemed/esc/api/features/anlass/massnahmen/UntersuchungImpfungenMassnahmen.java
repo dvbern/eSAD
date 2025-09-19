@@ -4,6 +4,7 @@ import java.io.Serial;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import jakarta.persistence.CascadeType;
@@ -43,7 +44,8 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UntersuchungImpfungenMassnahmen extends AbstractTenantEntity<UntersuchungImpfungenMassnahmen> {
+public class UntersuchungImpfungenMassnahmen extends AbstractTenantEntity<UntersuchungImpfungenMassnahmen>
+    implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 7512251037224910832L;
@@ -66,13 +68,13 @@ public class UntersuchungImpfungenMassnahmen extends AbstractTenantEntity<Unters
     private boolean impfberatungMpaDurchgefuehrt = false;
 
     @Nullable
-    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH)
-    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH)
+    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
+    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String impfberatungMpaDurchgefuehrtBemerkungen;
 
     @NotNull
     @Column(nullable = false)
-    private boolean informationenAbgegeben = false;
+    private boolean infomaterialAbgegeben = false;
 
     @Nullable
     @Enumerated(EnumType.STRING)
@@ -88,8 +90,8 @@ public class UntersuchungImpfungenMassnahmen extends AbstractTenantEntity<Unters
     private boolean rueckfrageHausarzt = false;
 
     @Nullable
-    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH)
-    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH)
+    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
+    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String bemerkungen;
 
     @Nullable

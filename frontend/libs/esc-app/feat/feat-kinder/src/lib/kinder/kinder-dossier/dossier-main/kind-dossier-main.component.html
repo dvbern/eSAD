@@ -1,8 +1,22 @@
 <svui-card left [innerSpacing]="'none'">
 
   <!-- Dossier -->
+  @if (kind()?.data?.kindAktivStatus === EntityAktivStatus.INAKTIV) {
+    <div class="p-3">
+      <svui-status-text icon="information" [statusColor]="'warning'">
+        {{ 'kind.dossier.kindIsInaktiv' | transloco }}
+        @if (canActivateKind()) {
+          <button svuiButton="primary"
+                  type="button"
+                  class="btn-primary"
+                  (click)="activateKind()">
+            {{ 'kind.dossier.activateKind' | transloco }}
+          </button>
+        }
+      </svui-status-text>
+    </div>
+  }
   <svui-card-header [heading]="fullName()" class="p-3">
-
     <svui-icon cardIcon [useCase]="geschlecht()"
                [title]="('kind.geschlecht' | transloco) + ' ' + (kind() ? (('Geschlecht.' + kind()?.data?.geschlecht) | transloco) : '')"
     />
@@ -20,9 +34,9 @@
           {{ 'kind.dossier.link.nachkontrolle' | transloco }}
         </button>
         @if (canDownloadDossierExport()) {
-        <button ngbDropdownItem (click)="exportDossier()">
-          {{ 'kind.dossier.link.exportieren' | transloco }}
-        </button>
+          <button ngbDropdownItem (click)="exportDossier()">
+            {{ 'kind.dossier.link.exportieren' | transloco }}
+          </button>
         }
         <button ngbDropdownItem
                 [disabled]="!canChangeIdNr()"

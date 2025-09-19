@@ -12,6 +12,7 @@ import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.HasExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.types.KontaktPersonKindBeziehung;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
@@ -27,7 +28,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -46,7 +46,9 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class KontaktPersonKind extends AbstractTenantEntity<KontaktPersonKind> implements Serializable, HasExternalImportInfo {
+public class KontaktPersonKind
+        extends AbstractTenantEntity<KontaktPersonKind>
+        implements Serializable, HasExternalImportInfo, EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = -2616852567861298939L;
@@ -117,20 +119,9 @@ public class KontaktPersonKind extends AbstractTenantEntity<KontaktPersonKind> i
 
     @NonNull
     public String getNameVorname() {
-        return name + ' ' + vorname;
-    }
-
-    @Transient
-    @Nullable
-    public String getExternalSystemIdOrNull() {
-        if (externalImportInfo == null) {
-            return null;
+        if(vorname != null) {
+            return name + ' ' + vorname;
         }
-        return externalImportInfo.getIdInExternalSystem();
-    }
-
-    @Transient
-    public boolean isManualOrAktivInExternalSystem() {
-        return externalImportInfo != null && externalImportInfo.isAktivInExternalSystem();
+        return name;
     }
 }

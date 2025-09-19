@@ -6,7 +6,7 @@ export const BaselGewichtMaedchenDistribution: PercentileDistribution = {
     {
       id: 'gewichtfemaleP5',
       percentile: 5,
-      type: 'bottom',
+      type: 'sub',
       data: [
         {x: 104, y: 14},
         {x: 130, y: 22},
@@ -19,7 +19,7 @@ export const BaselGewichtMaedchenDistribution: PercentileDistribution = {
     {
       id: 'gewichtfemaleP10',
       percentile: 10,
-      type: 'sub',
+      type: 'bottom',
       data: [
         {x: 130, y: 23},
         {x: 146, y: 30.5},
@@ -68,7 +68,7 @@ export const BaselGewichtMaedchenDistribution: PercentileDistribution = {
     {
       id: 'gewichtfemaleP90',
       percentile: 90,
-      type: 'sub',
+      type: 'top',
       data: [
         {x: 130, y: 30},
         {x: 146, y: 43},
@@ -80,7 +80,7 @@ export const BaselGewichtMaedchenDistribution: PercentileDistribution = {
     {
       id: 'gewichtfemaleP95',
       percentile: 95,
-      type: 'top',
+      type: 'sub',
       data: [
         {x: 104, y: 18},
         {x: 130, y: 32},

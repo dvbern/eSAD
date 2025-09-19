@@ -1,8 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.features.kindanlaesse;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateConst;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
@@ -27,6 +24,8 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LastImpfungJsonSpec;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response.Status;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +39,7 @@ class KindAnlaesseResourceITest extends AbstractITest {
     private final FixtureService fixtureService;
     private final UntersuchungImpfungInternService untersuchungImpfungInternService;
     private final UntersuchungImpfstatusKrankheitService untersuchungImpfstatusKrankheitService;
+
 
     @Test
     @TestAsAdminBS

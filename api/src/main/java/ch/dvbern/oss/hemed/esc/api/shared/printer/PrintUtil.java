@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -16,9 +17,10 @@ public final class PrintUtil {
     public static final String PLACEHOLDER = "-";
     public static final DateTimeFormatter PRINT_DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     public static final DateTimeFormatter PRINT_TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
-    public static final Pattern WHITESPACE = Pattern.compile("\\s");
+    public static final Pattern WHITESPACE = Pattern.compile("\\s", Pattern.UNICODE_CHARACTER_CLASS);
     private static final PrintUtilImpl PRINT_UTIL =
-        new PrintUtilImpl(PLACEHOLDER, PRINT_DATE_FORMAT, PRINT_TIME_FORMAT);
+        new PrintUtilImpl(PLACEHOLDER, PRINT_DATE_FORMAT, PRINT_TIME_FORMAT, PDFAPrintUtil::sanitizeForPDFA);
+
 
     private PrintUtil() {
         // utility class
@@ -60,6 +62,11 @@ public final class PrintUtil {
     }
 
     @NonNull
+    public static String replaceWhitespaceWithNonBreakingSpace(@NonNull String input) {
+        return PRINT_UTIL.replaceWhitespaceWithNonBreakingSpace(input);
+    }
+
+    @NonNull
     public static String formatDate(@NonNull LocalDate date) {
         return PRINT_UTIL.formatDate(date);
     }
@@ -72,5 +79,10 @@ public final class PrintUtil {
     @NonNull
     public static String formatTime(@NonNull LocalDateTime localDateTime) {
         return PRINT_UTIL.formatTime(localDateTime);
+    }
+
+    @NonNull
+    public static String getNameWithAnrede(@NonNull BasePrinter basePrinter, @NonNull Geschlecht geschlecht, @NonNull String nameVorname) {
+        return PRINT_UTIL.getNameWithAnrede(basePrinter,geschlecht, nameVorname);
     }
 }

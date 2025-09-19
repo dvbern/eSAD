@@ -15,6 +15,7 @@ export interface ImpfstoffSaveJson {
     name: string;
     krankheiten: Array<Krankheit>;
     impfstoffAktivStatus: EntityAktivStatus;
+    version: number;
 }
 export namespace ImpfstoffSaveJson {
 }

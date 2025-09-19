@@ -28,7 +28,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * NachkontrolleSaveJsonSpec
  */
 @JsonPropertyOrder({
-  NachkontrolleSaveJsonSpec.JSON_PROPERTY_ANLASS_FLAGS
+  NachkontrolleSaveJsonSpec.JSON_PROPERTY_ANLASS_FLAGS,
+  NachkontrolleSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("NachkontrolleSaveJson")
 @lombok.AllArgsConstructor
@@ -37,6 +38,10 @@ public class NachkontrolleSaveJsonSpec {
   public static final String JSON_PROPERTY_ANLASS_FLAGS = "anlassFlags";
   @jakarta.annotation.Nonnull
   private AnlassFlagsJsonSpec anlassFlags;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public NachkontrolleSaveJsonSpec() {
   }
@@ -66,6 +71,31 @@ public class NachkontrolleSaveJsonSpec {
     this.anlassFlags = anlassFlags;
   }
 
+  public NachkontrolleSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -75,12 +105,13 @@ public class NachkontrolleSaveJsonSpec {
       return false;
     }
     NachkontrolleSaveJsonSpec nachkontrolleSaveJson = (NachkontrolleSaveJsonSpec) o;
-    return Objects.equals(this.anlassFlags, nachkontrolleSaveJson.anlassFlags);
+    return Objects.equals(this.anlassFlags, nachkontrolleSaveJson.anlassFlags) &&
+        Objects.equals(this.version, nachkontrolleSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(anlassFlags);
+    return Objects.hash(anlassFlags, version);
   }
 
   @Override
@@ -88,6 +119,7 @@ public class NachkontrolleSaveJsonSpec {
     StringBuilder sb = new StringBuilder();
     sb.append("class NachkontrolleSaveJsonSpec {\n");
     sb.append("    anlassFlags: ").append(toIndentedString(anlassFlags)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

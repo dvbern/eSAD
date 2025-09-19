@@ -1,10 +1,22 @@
 <feat-page [heading]="'kind.dossier.aufgaben.titel' | transloco: {nameKind: dossierStore.nameKind()}"
            [backLink]="{label: 'global.back' | transloco, routerLink: Path.RELATIVE_ONE_UP}">
 
+  <svui-page-header-list-summary
+    [items]="summaryItems()"/>
+
+  <svui-page-header-buttons
+    [showFilterPopup]="false"
+    [activeFilterCount]="itemTable.numberOfFilters()"
+    (resetFilter)="itemTable.resetFilters(); tableFilterForm.reset()"/>
+
   @if (canEditAufgabe()) {
     <svui-page-header-add-button
       [addRouterLink]="Path.CREATE"/>
   }
 
-	<feat-shared-aufgaben-list/>
+	<feat-shared-aufgaben-list
+    [itemTable]="itemTable"
+    [tableFilterForm]="tableFilterForm"
+    [loading]="store.loader.isLoading()"
+  />
 </feat-page>

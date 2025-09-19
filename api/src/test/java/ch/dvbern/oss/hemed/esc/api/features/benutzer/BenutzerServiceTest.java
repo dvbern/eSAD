@@ -11,10 +11,12 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.JsonWebTokenDataDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerBerechtigung;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminWIN;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -34,6 +36,9 @@ class BenutzerServiceTest {
 
     @Inject
     protected BenutzerService service;
+
+    @Inject
+    protected TenantProducer tenantProducer;
 
     @Test
     void throws_on_missing_subject() {
@@ -82,10 +87,11 @@ class BenutzerServiceTest {
     }
 
     @Test
-    @TestAsAdminBE
+    @TestAsAdminWIN
     void check_system_admin_be_has_all_roles() {
+        tenantProducer.setCurrentTenant(TenantEnum.WIN); // Default ist BS
         Optional<Set<Berechtigung>> berechtigungenOfSysAdmin =
-            service.findBerechtigungenByEmail(EmailAddress.fromString("be-esc@dvbern.ch"));
+            service.findBerechtigungenByEmail(EmailAddress.fromString("win-esc@dvbern.ch"));
         Assertions.assertThat(berechtigungenOfSysAdmin)
             .isPresent()
             .get()

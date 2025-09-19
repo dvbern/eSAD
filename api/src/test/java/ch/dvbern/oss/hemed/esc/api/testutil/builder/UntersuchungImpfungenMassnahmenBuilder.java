@@ -50,6 +50,11 @@ public class UntersuchungImpfungenMassnahmenBuilder {
     @CanIgnoreReturnValue
     public UntersuchungImpfungenMassnahmenBuilder forUntersuchungImpfungen(@NonNull UntersuchungImpfungen impfungen) {
         this.massnahmen.setUntersuchungImpfungen(impfungen);
+        if (impfungen.getUntersuchungImpfungenMassnahmen() != null) {
+            this.massnahmen.setVersion(impfungen.getUntersuchungImpfungenMassnahmen().getVersion());
+        } else {
+            this.massnahmen.setVersion(0L);
+        }
         return this;
     }
 

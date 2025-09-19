@@ -28,7 +28,8 @@ public final class ImpfstoffMapper {
             new ImpfstoffSaveJson(
                 impfstoff.getName(),
                 impfstoff.getKrankheiten(),
-                impfstoff.getImpfstoffAktivStatus()
+                impfstoff.getImpfstoffAktivStatus(),
+                impfstoff.getVersion()
             )
         );
     }
@@ -77,21 +78,20 @@ public final class ImpfstoffMapper {
     public ImpfstoffJson update(@NonNull ID<Impfstoff> impfstoffID, @NonNull ImpfstoffSaveJson impfstoffSaveJson) {
         Impfstoff existing = impfstoffService.getById(impfstoffID);
         Impfstoff entity = toEntity(existing, impfstoffSaveJson);
-
-        return toJson(impfstoffService.persist(entity));
+        return toJson(impfstoffService.persistWithOptimisticLocking(entity, impfstoffSaveJson.getVersion()));
     }
 
     public ImpfstoffJson changeImpfstoffAktivStatus(
         @NonNull ID<Impfstoff> impfstoffId,
-        @NonNull EntityAktivStatusSaveJson saveJson) {
-
+        @NonNull EntityAktivStatusSaveJson saveJson
+    ) {
         Impfstoff existing = impfstoffService.getById(impfstoffId);
         if (saveJson.getEntityAktivStatus() == EntityAktivStatus.INAKTIV
             && existing.getImpfstoffAktivStatus() == EntityAktivStatus.AKTIV) {
             deactivateImpfstoffChargen(impfstoffId);
         }
         existing.setImpfstoffAktivStatus(saveJson.getEntityAktivStatus());
-
+        existing.disableOptimisticLockingCheck();
         return toJson(this.impfstoffService.persist(existing));
     }
 

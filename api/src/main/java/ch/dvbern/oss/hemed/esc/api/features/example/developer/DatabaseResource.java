@@ -6,6 +6,7 @@ import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst;
 import ch.dvbern.oss.hemed.esc.api.features.example.developer.dbinfo.DBInfoJson;
 import ch.dvbern.oss.hemed.esc.api.features.example.developer.dbinfo.DatabaseService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.security.RolesAllowed;
@@ -13,7 +14,6 @@ import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -35,15 +35,8 @@ public class DatabaseResource {
     @Transactional(TxType.NOT_SUPPORTED)
     public void resetDatabase() {
         configService.validateNotProdAndDbResetFeatureEnabled();
-        databaseService.resetAndReinitDatabasePreservingHibernateSequenceValue();
-    }
-
-    @POST
-    @RolesAllowed(BerechtigungName.SUPPORT)
-    @Transactional(TxType.NOT_SUPPORTED)
-    public void initDatabase() {
-        configService.validateNotProdAndDbResetFeatureEnabled();
-        databaseService.initDatabase();
+        // TODO ESC-754: DB Endpoints aktuell nur fuer BS umgesetzt
+        databaseService.resetAndReinitDatabasePreservingHibernateSequenceValue(TenantEnum.BS);
     }
 
     @Path("dbcheck")

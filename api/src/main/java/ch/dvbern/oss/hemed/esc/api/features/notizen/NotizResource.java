@@ -1,5 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.notizen;
 
+import java.util.List;
+import java.util.Objects;
+
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileDownloadUtil;
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
@@ -38,8 +41,6 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.stream.Streams;
@@ -60,7 +61,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 @Tag(name = OpenApiConst.Tags.TAG_NOTIZEN)
 @RequiredArgsConstructor
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@RolesAllowed({BerechtigungName.KINDER_ALLE_NOTIZEN_LESEN, BerechtigungName.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN })
+@RolesAllowed({BerechtigungName.KINDER_ALLE_NOTIZEN_LESEN, BerechtigungName.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN})
 public class NotizResource {
 
     private final NotizMapper notizMapper;
@@ -74,7 +75,7 @@ public class NotizResource {
 
     @GET
     @NonNull
-    @RolesAllowed({BerechtigungName.KINDER_ALLE_NOTIZEN_LESEN, BerechtigungName.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN })
+    @RolesAllowed({BerechtigungName.KINDER_ALLE_NOTIZEN_LESEN, BerechtigungName.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN})
     public NotizListJson findAllForKind(
         @PathParam("kindId") @NotNull @NonNull ID<Kind> kindId
     ) {
@@ -94,13 +95,14 @@ public class NotizResource {
         @Nullable @RestForm("file4") final FileUpload fileUpload4,
         @NotNull @NonNull @Valid @RestForm("notizCreateJson") @PartType(MediaType.APPLICATION_JSON) final NotizSaveJson createJson
     ) {
-        response.setStatusCode(Status.CREATED.getStatusCode());
+
         ID<Dossier> dossierId = dossierService.getDossierIdByKind(kindId);
         List<FileUpload> fileUploads = Streams.of(fileUpload, fileUpload2, fileUpload3, fileUpload4)
             .filter(Objects::nonNull)
             .toList();
         NotizJson notizJson = notizMapper.create(createJson, dossierId, fileUploads);
         authorizerService.requireWriteAuthorizationNotiz(notizJson.getId());
+        response.setStatusCode(Status.CREATED.getStatusCode());
         return notizJson;
     }
 
@@ -119,6 +121,7 @@ public class NotizResource {
         @Nullable @RestForm("file4") final FileUpload fileUpload4,
         @NotNull @NonNull @Valid @RestForm("notizSaveJson") @PartType(MediaType.APPLICATION_JSON) final NotizSaveJson saveJson
     ) {
+        notizMapper.requireConsistentPathParams(notizId, kindId);
         authorizerService.requireWriteAuthorizationNotiz(notizId);
         // collect uploadedFiles
         List<FileUpload> fileUploads = Streams.of(fileUpload, fileUpload2, fileUpload3, fileUpload4)
@@ -151,6 +154,7 @@ public class NotizResource {
         @PathParam("notizId") @NotNull @NonNull ID<Notiz> notizId,
         @NotNull @NonNull @PathParam("fileId") ID<FileData> fileId
     ) {
+        notizMapper.requireConsistentPathParams(notizId, kindId);
         authorizerService.requireWriteAuthorizationNotiz(notizId);
         return notizMapper.removeUploadedFile(notizId, fileId);
     }
@@ -164,7 +168,7 @@ public class NotizResource {
         schema = @Schema(type = SchemaType.STRING, format = "binary")), description = "OK", responseCode = "200")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Path("/{notizId}/file/{fileId}")
-    @RolesAllowed({BerechtigungName.KINDER_ALLE_NOTIZEN_LESEN, BerechtigungName.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN })
+    @RolesAllowed({BerechtigungName.KINDER_ALLE_NOTIZEN_LESEN, BerechtigungName.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN})
     @NonNull
     @Blocking
     public Multi<Buffer> downloadNotizFile(
@@ -172,6 +176,7 @@ public class NotizResource {
         @PathParam("notizId") @NotNull @NonNull ID<Notiz> notizId,
         @NotNull @NonNull @PathParam("fileId") ID<FileData> fileId
     ) {
+        notizMapper.requireConsistentPathParams(notizId, kindId);
         authorizerService.requireReadAuthorizationNotiz(notizId);
         FileInfoS3 fileInfoS3 = notizService.findUploadedFileInfoS3(notizId, fileId);
         return FileDownloadUtil.getBufferRestMultiWithInfo(fileInfoS3, fileStoreService);
@@ -186,7 +191,7 @@ public class NotizResource {
         schema = @Schema(type = SchemaType.STRING, format = "binary")), description = "OK", responseCode = "200")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Path("/{notizId}/file/{fileId}/sync")
-    @RolesAllowed({BerechtigungName.KINDER_ALLE_NOTIZEN_LESEN, BerechtigungName.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN })
+    @RolesAllowed({BerechtigungName.KINDER_ALLE_NOTIZEN_LESEN, BerechtigungName.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN})
     @NonNull
     @Blocking
     public Response downloadNotizFileSync(
@@ -194,6 +199,7 @@ public class NotizResource {
         @PathParam("notizId") @NotNull @NonNull ID<Notiz> notizId,
         @NotNull @NonNull @PathParam("fileId") ID<FileData> fileId
     ) {
+        notizMapper.requireConsistentPathParams(notizId, kindId);
         authorizerService.requireReadAuthorizationNotiz(notizId);
         FileInfoS3 fileInfo = notizService.findUploadedFileInfoS3(notizId, fileId);
         var content = fileStoreService.getFileBytesSync(fileInfo.getFileIdInBucket());
@@ -207,6 +213,7 @@ public class NotizResource {
         @PathParam("kindId") @NotNull @NonNull ID<Kind> kindId,
         @PathParam("notizId") @NotNull @NonNull ID<Notiz> notizId
     ) {
+        notizMapper.requireConsistentPathParams(notizId, kindId);
         authorizerService.requireWriteAuthorizationNotiz(notizId);
         notizMapper.remove(notizId);
     }
@@ -214,11 +221,12 @@ public class NotizResource {
     @GET
     @NonNull
     @Path("/{notizId}")
-    @RolesAllowed({BerechtigungName.KINDER_ALLE_NOTIZEN_LESEN, BerechtigungName.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN })
+    @RolesAllowed({BerechtigungName.KINDER_ALLE_NOTIZEN_LESEN, BerechtigungName.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN})
     public NotizJson getNotiz(
         @PathParam("kindId") @NotNull @NonNull ID<Kind> kindId,
         @PathParam("notizId") @NotNull @NonNull ID<Notiz> notizId
     ) {
+        notizMapper.requireConsistentPathParams(notizId, kindId);
         authorizerService.requireReadAuthorizationNotiz(notizId);
         return notizMapper.getNotiz(notizId);
     }

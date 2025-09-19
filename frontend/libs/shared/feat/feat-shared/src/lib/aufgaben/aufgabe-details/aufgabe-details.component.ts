@@ -1,5 +1,5 @@
 import {CommonModule} from '@angular/common';
-import {ChangeDetectionStrategy, Component, computed, effect, inject, input, output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, effect, inject, input, output} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {
   AufgabeJson,
@@ -10,18 +10,6 @@ import {
   LabelJson,
 } from '@dvb/data-access-backend';
 import {requireValidBackendEntityId} from '@dvb/data-access-types';
-import { AufgabenStore } from '../../admin-shared/aufgaben.store';
-import { BenutzerOptionsStore } from '../../admin-shared/benutzer-options.store';
-import { LabelsStore } from '../../admin-shared/labels.store';
-import { BenutzerStore } from '../../benutzer/benutzer/benutzer.store';
-import { NavigationService } from '../../core/navigation.service';
-import { Path } from '../../core/path';
-import { ConfirmService } from '../../dialogs/confirm/confirm.service';
-import { DeploymentStore } from '../../deployment/deployment.store';
-import { KindSearchComponent } from '../../kind-search/kind-search.component';
-import { TranslatedStringPipe } from '../../translated-strings/view/translated-string.pipe';
-import { FileDropComponent } from '../../upload/file-drop/file-drop.component';
-import { UploadTableComponent } from '../../upload/upload-table/upload-table.component';
 import {
   BadgeComponent,
   CardComponent,
@@ -42,6 +30,19 @@ import {compareFn, hasAufgabenEditBerechtigungen, isNotNullish} from '@dvb/util-
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbNav, NgbNavItem} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
+import {AufgabenStore} from '../../admin-shared/aufgaben.store';
+import {BenutzerOptionsStore} from '../../admin-shared/benutzer-options.store';
+import {LabelsStore} from '../../admin-shared/labels.store';
+import {BenutzerStore} from '../../benutzer/benutzer/benutzer.store';
+import {globalConstants} from '../../constants/global-constants';
+import {NavigationService} from '../../core/navigation.service';
+import {Path} from '../../core/path';
+import {DeploymentStore} from '../../deployment/deployment.store';
+import {ConfirmService} from '../../dialogs/confirm/confirm.service';
+import {KindSearchComponent} from '../../kind-search/kind-search.component';
+import {TranslatedStringPipe} from '../../translated-strings/view/translated-string.pipe';
+import {FileDropComponent} from '../../upload/file-drop/file-drop.component';
+import {UploadTableComponent} from '../../upload/upload-table/upload-table.component';
 import {AufgabeDetailsForm} from './aufgabe-details.form';
 
 @Component({
@@ -111,9 +112,8 @@ export class AufgabeDetailsComponent implements DirtyMarker {
   protected readonly compareLabel = compareFn<LabelJson>;
 
   fileUploads: File[] | undefined;
-  // keep in sync with backend setting as we do not sync config to client yet
-  readonly acceptedFiletypes = signal(
-    '.pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .eml, .msg, .mbox, .jpg, .jpeg, .png, .heic, .webp');
+
+  readonly acceptedFiletypes = globalConstants.acceptedFileTypes;
 
   entityInfo = computed(() => this.store.selectedEntity()?.entityInfo);
   aufgabenFiles = computed(() => this.store.selectedEntity()?.data.files ?? []);

@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.schule.klasse.json;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.oss.hemed.esc.api.features.schule.json.SchuleOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +15,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Value
 @AllArgsConstructor
 @JaxDTO
-public class KlasseSaveJson {
+public class KlasseSaveJson implements SaveJsonWithOptimisticLocking {
 
     @Valid
     @NonNull
@@ -41,4 +42,8 @@ public class KlasseSaveJson {
     @NotNull
     @Schema(required = true)
     private EntityAktivStatus klasseAktivStatus;
+
+    @NotNull
+    @Schema(required = true)
+    private long version;
 }

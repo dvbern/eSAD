@@ -6,6 +6,7 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.labels.json.LabelJson;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizStatus;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataJson;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -19,7 +20,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Value
 @AllArgsConstructor
 @JaxDTO
-public class NotizSaveJson {
+public class NotizSaveJson implements SaveJsonWithOptimisticLocking {
 
     @NotNull
     @NotEmpty
@@ -51,4 +52,8 @@ public class NotizSaveJson {
     @NonNull
     @Schema(required = true)
     private List<FileDataJson> files;
+
+    @NotNull
+    @Schema(required = true)
+    private long version;
 }

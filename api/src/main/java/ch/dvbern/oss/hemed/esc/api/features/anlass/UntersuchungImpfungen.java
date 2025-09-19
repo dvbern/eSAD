@@ -1,19 +1,10 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
-import java.io.Serial;
-
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +13,8 @@ import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
+
+import java.io.Serial;
 
 @Entity
 @Table(
@@ -36,7 +29,8 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UntersuchungImpfungen extends AbstractTenantEntity<UntersuchungImpfungen> {
+public class UntersuchungImpfungen extends AbstractTenantEntity<UntersuchungImpfungen>
+        implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 4719335518255035134L;
@@ -71,7 +65,7 @@ public class UntersuchungImpfungen extends AbstractTenantEntity<UntersuchungImpf
     private boolean checkDoppelkontrolleImpfentscheidDurchgefuehrt;
 
     @Nullable
-    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String bemerkungen;
 
     @Nullable

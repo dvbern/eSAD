@@ -13,6 +13,7 @@ import { TranslatedStringJson } from './translated-string-json';
 export interface InfomaterialSaveJson { 
     name: TranslatedStringJson;
     aktiv: boolean;
+    version: number;
 }
 
 

@@ -39,7 +39,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   BenutzerSaveJsonSpec.JSON_PROPERTY_EMAIL,
   BenutzerSaveJsonSpec.JSON_PROPERTY_TELEFON,
   BenutzerSaveJsonSpec.JSON_PROPERTY_AKTIV,
-  BenutzerSaveJsonSpec.JSON_PROPERTY_FACH_ROLLEN
+  BenutzerSaveJsonSpec.JSON_PROPERTY_FACH_ROLLEN,
+  BenutzerSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("BenutzerSaveJson")
 @lombok.AllArgsConstructor
@@ -80,6 +81,10 @@ public class BenutzerSaveJsonSpec {
   public static final String JSON_PROPERTY_FACH_ROLLEN = "fachRollen";
   @jakarta.annotation.Nonnull
   private List<FachRolleSpec> fachRollen;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public BenutzerSaveJsonSpec() {
   }
@@ -317,6 +322,31 @@ public class BenutzerSaveJsonSpec {
     this.fachRollen = fachRollen;
   }
 
+  public BenutzerSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -334,12 +364,13 @@ public class BenutzerSaveJsonSpec {
         Objects.equals(this.email, benutzerSaveJson.email) &&
         Objects.equals(this.telefon, benutzerSaveJson.telefon) &&
         Objects.equals(this.aktiv, benutzerSaveJson.aktiv) &&
-        Objects.equals(this.fachRollen, benutzerSaveJson.fachRollen);
+        Objects.equals(this.fachRollen, benutzerSaveJson.fachRollen) &&
+        Objects.equals(this.version, benutzerSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(titel, name, vorname, fullName, username, email, telefon, aktiv, fachRollen);
+    return Objects.hash(titel, name, vorname, fullName, username, email, telefon, aktiv, fachRollen, version);
   }
 
   @Override
@@ -355,6 +386,7 @@ public class BenutzerSaveJsonSpec {
     sb.append("    telefon: ").append(toIndentedString(telefon)).append("\n");
     sb.append("    aktiv: ").append(toIndentedString(aktiv)).append("\n");
     sb.append("    fachRollen: ").append(toIndentedString(fachRollen)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

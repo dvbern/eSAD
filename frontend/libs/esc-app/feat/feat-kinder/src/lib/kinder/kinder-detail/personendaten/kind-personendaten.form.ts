@@ -10,9 +10,9 @@ import {
   SchuleOptionJson,
 } from '@dvb/data-access-backend';
 import {ISODateString} from '@dvb/data-access-types';
-import {AdresseForm} from '@dvb/feat-shared';
+import {AdresseForm, globalConstants} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensurePropsFlat, requireFilledIn, requireValue, trimToUndefined} from '@dvb/util-shared';
+import {ensurePropsFlat, Nullish, requireFilledIn, requireValue, trimToUndefined} from '@dvb/util-shared';
 import {KinderSummaryStore} from '../../kinder-summary.store';
 
 type Config = {
@@ -44,6 +44,7 @@ function makeForm(config: Config) {
     klasse: fb.control<KlasseOptionJson | undefined>(undefined, []),
     klassenstufe: fb.control<Klassenstufe | undefined>(undefined, []),
     kindAktivStatus: fb.control<EntityAktivStatus>(EntityAktivStatus.AKTIV, Validators.required),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 }
 
@@ -75,6 +76,7 @@ export class KindPersonendatenForm extends BaseForm<ReturnType<typeof makeForm>,
       klassenstufe: trimToUndefined(value.klassenstufe),
       alter: '',
       kindAktivStatus: requireFilledIn(value.kindAktivStatus),
+      version: value.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 

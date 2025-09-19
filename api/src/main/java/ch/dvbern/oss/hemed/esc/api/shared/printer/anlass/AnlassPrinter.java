@@ -30,8 +30,8 @@ import ch.dvbern.oss.commons.i18nl10n.I18nMessage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
-import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
+import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
@@ -121,15 +121,23 @@ public final class AnlassPrinter {
             basePrinter.addKeyValue("printer.anlass.zeit", PrintUtil.PLACEHOLDER, document);
         }
 
-        // Add Schule/n and Klasse/n - these will be populated in the service
+        // These will be populated in the service
+        // Add Schule/n
         basePrinter.addKeyValue(
             "printer.anlass.schulen",
             PrintUtil.trimToPlaceholder(dto.getSchulenCommaSeparated()),
             document);
+        // Add Klasse/n
         basePrinter.addKeyValue(
             "printer.anlass.klassen",
             PrintUtil.trimToPlaceholder(dto.getKlassenCommaSeparated()),
             document);
+        // Add Lehrperson/en
+        basePrinter.addKeyValue(
+            "printer.anlass.lehrpersonen",
+            PrintUtil.trimToPlaceholder(dto.getLehrpersonenCommaSeparated(basePrinter)),
+            document
+        );
     }
 
     @NonNull
@@ -161,6 +169,9 @@ public final class AnlassPrinter {
         basePrinter.addKeyValue(
             "printer.anlass.weitere.info",
             PrintUtil.trimToPlaceholder(anlass.getWeiterePersonInfo()), document);
+
+        // Add PageBreak
+        basePrinter.addPageBreak(document, true);
     }
 
     private static void addEingeladeneKinder(
@@ -200,11 +211,14 @@ public final class AnlassPrinter {
             row.add(PrintUtil.trimToPlaceholder(kind.getVorname()));
             row.add(basePrinter.translateValue(kind.getGeschlecht()));
             row.add(PrintUtil.trimToPlaceholder(kind.getGeburtsdatum()));
-            row.add(PrintUtil.trimToPlaceholder(kind.getEsadId()));
+            row.add(PrintUtil.replaceWhitespaceWithNonBreakingSpace(
+                PrintUtil.trimToPlaceholder(kind.getEsadId())));
             Klassenstufe klassenstufe = kind.getKlasse() != null ? kind.getKlasse().getKlassenstufe() : null;
-            row.add(PrintUtil.trimToPlaceholder(basePrinter.translateValue(klassenstufe)));
+            row.add(PrintUtil.replaceWhitespaceWithNonBreakingSpace(
+                PrintUtil.trimToPlaceholder(basePrinter.translateValue(klassenstufe))));
             // Check if nachkontrolle is set in UntersuchungDurchfuehrung
-            boolean nachkontrolle = (einladung.getUntersuchung() != null && einladung.getUntersuchung().getUntersuchungDurchfuehrung() != null)
+            boolean nachkontrolle = (einladung.getUntersuchung() != null
+                && einladung.getUntersuchung().getUntersuchungDurchfuehrung() != null)
                 ? einladung.getUntersuchung().getUntersuchungDurchfuehrung().isNachkontrolle()
                 : (nachkontrolleOfKind != null && nachkontrolleOfKind.getAnlassFlags().hasAnyNachkontrolle());
             row.add(basePrinter.translateValue(nachkontrolle));
@@ -217,6 +231,9 @@ public final class AnlassPrinter {
 
         // Add table to document
         basePrinter.addTable(headers, rows, document, true);
+        basePrinter.addValue(I18nMessage.of("printer.anlass.abbrevation.Nachkontrolle"), false, document);
+        basePrinter.addValue(I18nMessage.of("printer.anlass.abbrevation.Impfausweis"), false, document);
+        basePrinter.addValue(I18nMessage.of("printer.anlass.abbrevation.Fragebogen"), false, document);
     }
 
     private static boolean isNotizWithFiles(@Nullable Notiz notiz) {

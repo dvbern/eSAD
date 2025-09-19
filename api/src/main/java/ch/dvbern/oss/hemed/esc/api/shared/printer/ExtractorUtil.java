@@ -6,9 +6,10 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungDurchfuehrung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungKindDaten;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungTriage;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArzt;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
@@ -54,17 +55,18 @@ public class ExtractorUtil {
     }
 
     @NonNull
-    public static Optional<UntersuchungSehen> getUntersuchungSehenOptional(@NonNull Einladung einladung) {
+    public static Optional<UntersuchungSehenBeurteilung> getUntersuchungSehenOptional(@NonNull Einladung einladung) {
         if (einladung.getUntersuchung() == null) {
             return Optional.empty();
         }
 
-        UntersuchungSehen untersuchungSehen = einladung.getUntersuchung().getUntersuchungSehen();
-        if (untersuchungSehen == null) {
+        UntersuchungSehenBeurteilung
+				untersuchungSehenBeurteilung = einladung.getUntersuchung().getUntersuchungSehenBeurteilung();
+        if (untersuchungSehenBeurteilung == null) {
             return Optional.empty();
         }
 
-        return Optional.of(untersuchungSehen);
+        return Optional.of(untersuchungSehenBeurteilung);
     }
 
     @NonNull
@@ -180,15 +182,29 @@ public class ExtractorUtil {
     }
 
     @NonNull
-    public static Optional<UntersuchungArzt> getUntersuchungArztOptional(
+    public static Optional<UntersuchungArztBeurteilung> getUntersuchungArztOptional(
         @NonNull Einladung einladung
     ) {
         if (einladung.getUntersuchung() == null) {
             return Optional.empty();
         }
 
-        UntersuchungArzt untersuchungArzt =
-            einladung.getUntersuchung().getUntersuchungArzt();
+        UntersuchungArztBeurteilung untersuchungArzt =
+            einladung.getUntersuchung().getUntersuchungArztBeurteilung();
+        if (untersuchungArzt == null) {
+            return Optional.empty();
+        }
+        return Optional.of(untersuchungArzt);
+    }
+
+    @NonNull
+    public static Optional<UntersuchungArztBemerkung> getUntersuchungArztBemerkungOptional(
+        @NonNull Einladung einladung
+    ) {
+        if (einladung.getUntersuchung() == null) {
+            return Optional.empty();
+        }
+        UntersuchungArztBemerkung untersuchungArzt = einladung.getUntersuchung().getUntersuchungArztBemerkung();
         if (untersuchungArzt == null) {
             return Optional.empty();
         }

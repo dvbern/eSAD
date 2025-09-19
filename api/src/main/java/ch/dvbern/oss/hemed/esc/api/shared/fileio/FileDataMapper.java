@@ -35,7 +35,7 @@ public final class FileDataMapper {
             EntityInfoJson.fromEntity(data),
             data.getFileTyp(),
             data.getFileInfoBucket().getFileName(),
-            data.getCalculatedFileName(),
+            data.getCalculatedFileName().toString(),
             data.getFileInfoBucket().getFileSize(),
             data.getFileInfoBucket().getMediaType().toString(),
             data.getFileInfoBucket().getFileIdInBucket()

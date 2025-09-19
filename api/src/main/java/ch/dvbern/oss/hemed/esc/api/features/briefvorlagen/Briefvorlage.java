@@ -4,6 +4,7 @@ import java.io.Serial;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import jakarta.persistence.CascadeType;
@@ -39,7 +40,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
-public class Briefvorlage extends AbstractTenantEntity<Briefvorlage> {
+public class Briefvorlage extends AbstractTenantEntity<Briefvorlage> implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 6284371698249768390L;

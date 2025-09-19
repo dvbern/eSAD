@@ -29,7 +29,8 @@ public final class InfomaterialMapper {
         return new InfomaterialJson(
             infomaterial.getId(), EntityInfoJson.fromEntity(infomaterial), new InfomaterialSaveJson(
             TranslatedStringMapper.toJson(infomaterial.getName()),
-            infomaterial.isAktiv()));
+            infomaterial.isAktiv(),
+            infomaterial.getVersion()));
     }
 
     @NonNull
@@ -66,10 +67,11 @@ public final class InfomaterialMapper {
     @NonNull
     public InfomaterialJson update(
         @NonNull ID<Infomaterial> infomaterialID,
-        @NonNull InfomaterialSaveJson infomaterialJson) {
+        @NonNull InfomaterialSaveJson infomaterialSaveJson
+    ) {
         Infomaterial existingInfomaterial = infomaterialService.getById(infomaterialID);
-        Infomaterial entity = toEntity(existingInfomaterial, infomaterialJson);
-        return toJson(infomaterialService.persist(entity));
+        Infomaterial entity = toEntity(existingInfomaterial, infomaterialSaveJson);
+        return toJson(infomaterialService.persistWithOptimisticLocking(entity, infomaterialSaveJson.getVersion()));
     }
 
     public void remove(@NonNull ID<Infomaterial> infomaterialID) {

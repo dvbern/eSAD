@@ -15,7 +15,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
-import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungArztBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungArztBemerkungBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungArztBeurteilungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsEmpfang;
@@ -29,8 +30,10 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.HautSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.HerzauskultationSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.MundAndZaehneSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SprachfaehigkeitSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungArztJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungArztSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungArztBemerkungJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungArztBemerkungSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungArztBeurteilungJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungArztBeurteilungSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.VerhaltenSpec;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
@@ -48,18 +51,19 @@ class UntersuchungArztResourceITest extends AbstractITest {
     private final UntersuchungArztApiSpec api = UntersuchungArztApiSpec.untersuchungArzt(RequestSpecUtil.quarkusSpec());
 
     private final UntersuchungService untersuchungService;
-    private final UntersuchungArztService untersuchungArztService;
+    private final UntersuchungArztBeurteilungService untersuchungArztBeurteilungService;
+    private final UntersuchungArztBemerkungService untersuchungArztBemerkungService;
     private final FixtureService fixtureService;
 
     @Test
     @TestAsAdminBS
-    void getUntersuchungArzt_non_existing_should_not_create_data() {
+    void getUntersuchungArzt_Beurteilung_non_existing_should_not_create_data() {
         // ARRANGE
         Einladung einladung = fixtureService.createEinladung();
         untersuchungService.getOrCreateUntersuchung(einladung.getId());
         // ACT / ASSERT
         api
-            .untersuchungArztResourceGetUntersuchungArzt()
+            .untersuchungArztResourceGetUntersuchungArztBeurteilung()
             .anlassIdPath(einladung.getAnlass().getId().getId())
             .einladungIdPath(einladung.getId().getId())
             .execute(ResponseBody::prettyPeek)
@@ -70,61 +74,54 @@ class UntersuchungArztResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void getUntersuchungArzt_existing_should_return_existing() {
+    void getUntersuchungArzt_Beurteilung_existing_should_return_existing() {
         // ARRANGE
         Untersuchung untersuchung = fixtureService.createUntersuchungWithArztuntersuchung();
-        Assertions.assertThat(untersuchung.getUntersuchungArzt()).isNotNull();
+        Assertions.assertThat(untersuchung.getUntersuchungArztBeurteilung()).isNotNull();
 
-        UntersuchungArzt existingArzt =
-            untersuchungArztService.getById(untersuchung.getUntersuchungArzt().getId());
+        UntersuchungArztBeurteilung existingArzt =
+            untersuchungArztBeurteilungService.getById(untersuchung.getUntersuchungArztBeurteilung().getId());
         Assertions.assertThat(existingArzt).isNotNull();
-        Assertions.assertThat(existingArzt.getBemerkungen()).isNotNull();
         // ACT
-        UntersuchungArztJsonSpec result = api
-            .untersuchungArztResourceGetUntersuchungArzt()
+        UntersuchungArztBeurteilungJsonSpec result = api
+            .untersuchungArztResourceGetUntersuchungArztBeurteilung()
             .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
             .einladungIdPath(untersuchung.getEinladung().getId().getId())
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
             .statusCode(Status.OK.getStatusCode())
-            .extract().as(UntersuchungArztJsonSpec.class);
+            .extract().as(UntersuchungArztBeurteilungJsonSpec.class);
         // ASSERT
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getId()).isEqualTo(existingArzt.getId().getId());
-        Assertions.assertThat(result.getData().getBemerkungen())
-            .isNotNull()
-            .isEqualTo(existingArzt.getBemerkungen());
     }
 
     @Test
     @TestAsAdminBS
-    void saveUntersuchungArzt_should_work_for_update() {
+    void saveUntersuchungArzt_Beurteilung_should_work_for_update() {
         // ARRANGE
         Einladung einladung = fixtureService.createEinladung();
         Untersuchung untersuchung = fixtureService.createUntersuchungWithArztuntersuchung();
-        Assertions.assertThat(untersuchung.getUntersuchungArzt()).isNotNull();
-        UntersuchungArzt existingArztuntersuchung =
-            untersuchungArztService.getById(untersuchung.getUntersuchungArzt().getId());
+        Assertions.assertThat(untersuchung.getUntersuchungArztBeurteilung()).isNotNull();
+        UntersuchungArztBeurteilung existingArztuntersuchung =
+            untersuchungArztBeurteilungService.getById(untersuchung.getUntersuchungArztBeurteilung().getId());
         Assertions.assertThat(existingArztuntersuchung).isNotNull();
-        Assertions.assertThat(existingArztuntersuchung.getBemerkungen()).isNotNull()
-            .isEqualTo("Untersuchung Arzt Bemerkung");
 
         // ACT
-        // Create a new UntersuchungArztSaveJsonSpec
-        UntersuchungArztSaveJsonSpec saveJsonSpec =
-            UntersuchungArztBuilder.createJaxSpec(builder -> builder
+        // Create a new UntersuchungArztBeurteilungSaveJsonSpec
+        UntersuchungArztBeurteilungSaveJsonSpec saveJsonSpec =
+            UntersuchungArztBeurteilungBuilder.createJaxSpec(builder -> builder
                 .forUntersuchungArzt(existingArztuntersuchung)
                 .withBlutdruck(Blutdruck.NORMAL)
                 .withBewegungsapparat(Collections.singletonList(Bewegungsapparat.FUSSFEHLSTELLUNG))
                 .withSprachfaehigkeit(List.of(
                     Sprachfaehigkeit.ARTIKULATIONSFEHLER,
                     Sprachfaehigkeit.ENTWICKLUNGSVERZOEGERUNG))
-                .withHerzauskultation(Herzauskultation.UNAUFFAELLIG)
-                .withBemerkungen("Testbemerkung Untersuchung Arzt Update")).getData();
+                .withHerzauskultation(Herzauskultation.UNAUFFAELLIG)).getData();
 
-        UntersuchungArztJsonSpec result = api
-            .untersuchungArztResourceSaveUntersuchungArzt()
+        UntersuchungArztBeurteilungJsonSpec result = api
+            .untersuchungArztResourceSaveUntersuchungArztBeurteilung()
             .anlassIdPath(einladung.getAnlass().getId().getId())
             .einladungIdPath(einladung.getId().getId())
             .body(saveJsonSpec)
@@ -132,14 +129,11 @@ class UntersuchungArztResourceITest extends AbstractITest {
             .then()
             .assertThat()
             .statusCode(Status.OK.getStatusCode())
-            .extract().as(UntersuchungArztJsonSpec.class);
+            .extract().as(UntersuchungArztBeurteilungJsonSpec.class);
 
         // ASSERT
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getId()).isNotNull();
-        Assertions.assertThat(result.getData().getBemerkungen())
-            .isNotNull()
-            .isEqualTo("Testbemerkung Untersuchung Arzt Update");
         Assertions.assertThat(result.getData().getBlutdruck()).isEqualTo(BlutdruckSpec.NORMAL);
         Assertions.assertThat(result.getData().getBewegungsapparat()).contains(BewegungsapparatSpec.FUSSFEHLSTELLUNG);
         Assertions.assertThat(result.getData().getSprachfaehigkeit()).contains(
@@ -152,11 +146,11 @@ class UntersuchungArztResourceITest extends AbstractITest {
     void saveUntersuchungAsEmpfang_should_work_for_create(){
         // ARRANGE
         Einladung someEinladung = fixtureService.createEinladung();
-        var us = UntersuchungArztBuilder.createJaxSpec(a -> a.withEinbeinstand(Einbeinstand.NICHT_GEPRUEFT));
+        var us = UntersuchungArztBeurteilungBuilder.createJaxSpec(a -> a.withEinbeinstand(Einbeinstand.NICHT_GEPRUEFT));
 
         // ACT
-        UntersuchungArztJsonSpec result = api
-            .untersuchungArztResourceSaveUntersuchungArzt()
+        UntersuchungArztBeurteilungJsonSpec result = api
+            .untersuchungArztResourceSaveUntersuchungArztBeurteilung()
             .anlassIdPath(someEinladung.getAnlass().getId().getId())
             .einladungIdPath(someEinladung.getId().getId())
             .body(us.getData())
@@ -164,13 +158,12 @@ class UntersuchungArztResourceITest extends AbstractITest {
             .then()
             .assertThat()
             .statusCode(Status.OK.getStatusCode())
-            .extract().as(UntersuchungArztJsonSpec.class);
+            .extract().as(UntersuchungArztBeurteilungJsonSpec.class);
 
         // ASSERT
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getId()).isNotNull();
         Assertions.assertThat(result.getData().getEinbeinstand()).isEqualTo(EinbeinstandSpec.NICHT_GEPRUEFT);
-
     }
 
     @Test
@@ -178,11 +171,11 @@ class UntersuchungArztResourceITest extends AbstractITest {
     void saveUntersuchungAsEmpfang_should_fail_for_empfang(){
         // ARRANGE
         Einladung someEinladung = fixtureService.createEinladung();
-        var us = UntersuchungArztBuilder.createJaxSpec(a -> a.withEinbeinstand(Einbeinstand.NICHT_GEPRUEFT));
+        var us = UntersuchungArztBeurteilungBuilder.createJaxSpec(a -> a.withEinbeinstand(Einbeinstand.NICHT_GEPRUEFT));
 
         // ACT
         api
-            .untersuchungArztResourceSaveUntersuchungArzt()
+            .untersuchungArztResourceSaveUntersuchungArztBeurteilung()
             .anlassIdPath(someEinladung.getAnlass().getId().getId())
             .einladungIdPath(someEinladung.getId().getId())
             .body(us.getData())
@@ -190,18 +183,18 @@ class UntersuchungArztResourceITest extends AbstractITest {
             .then()
             .assertThat()
             .statusCode(Status.FORBIDDEN.getStatusCode());
-
     }
 
     @Test
     @TestAsAdminBS
-    void getDefaultUntersuchungArztForAnlassConfigKindergarten() {
+    void getDefaultUntersuchungArztBeurteilungForAnlassConfigKindergarten() {
         // ARRANGE
         Anlass anlass = fixtureService.createAnlass(AnlassTyp.KINDERGARTEN);
         Einladung einladung = fixtureService.createEinladung(anlass);
 
         // ACT
-        UntersuchungArztSaveJsonSpec result = api.untersuchungArztResourceGetDefaultUntersuchungArztForAnlassConfig()
+        UntersuchungArztBeurteilungSaveJsonSpec result =
+            api.untersuchungArztResourceGetDefaultUntersuchungArztBeurteilungForAnlassConfig()
             .anlassIdPath(einladung.getAnlass().getId().getId())
             .einladungIdPath(einladung.getId().getId())
             .execute(ResponseBody::prettyPeek)
@@ -209,7 +202,7 @@ class UntersuchungArztResourceITest extends AbstractITest {
             .assertThat()
             .statusCode(Status.OK.getStatusCode())
             .extract()
-            .as(UntersuchungArztSaveJsonSpec.class);
+            .as(UntersuchungArztBeurteilungSaveJsonSpec.class);
 
         // ASSERT
         assertThat(result).isNotNull();
@@ -234,23 +227,90 @@ class UntersuchungArztResourceITest extends AbstractITest {
         assertThat(result.getEinbeinhuepfenBemerkung()).isNull();
         assertThat(result.getFingeropposition()).containsExactly(FingeroppositionSpec.ALTERSENTSPRECHEND);
         assertThat(result.getFingeroppositionBemerkung()).isNull();
-        assertThat(result.getBemerkungen()).isNull();
     }
 
     @Test
     @TestAsAdminBS
-    void getDefaultUntersuchungArztForAnlassConfigNichtKindergarten() {
+    void getDefaultUntersuchungArztBeurteilungForAnlassConfigNichtKindergarten() {
         // ARRANGE
         Anlass anlass = fixtureService.createAnlass(AnlassTyp.KLASSE_4);
         Einladung einladung = fixtureService.createEinladung(anlass);
 
         // ACT / ASSERT
-        api.untersuchungArztResourceGetDefaultUntersuchungArztForAnlassConfig()
+        api.untersuchungArztResourceGetDefaultUntersuchungArztBeurteilungForAnlassConfig()
             .anlassIdPath(einladung.getAnlass().getId().getId())
             .einladungIdPath(einladung.getId().getId())
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
             .statusCode(Status.NO_CONTENT.getStatusCode());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void getUntersuchungArztBemerkung_existing_should_return_existing() {
+        // ARRANGE
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithArztuntersuchungBemerkung();
+        Assertions.assertThat(untersuchung.getUntersuchungArztBemerkung()).isNotNull();
+
+        UntersuchungArztBemerkung existingBemerkung =
+            untersuchungArztBemerkungService.getById(untersuchung.getUntersuchungArztBemerkung().getId());
+        Assertions.assertThat(existingBemerkung).isNotNull();
+        // ACT
+        UntersuchungArztBemerkungJsonSpec result = api
+            .untersuchungArztResourceGetUntersuchungArztBemerkung()
+            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(UntersuchungArztBemerkungJsonSpec.class);
+        // ASSERT
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getData().getBemerkungen())
+            .isNotNull()
+            .isEqualTo(existingBemerkung.getBemerkungen());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void saveUntersuchungArztBeurteilungBemerkung_should_work_for_update() {
+        // ARRANGE
+
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithArztuntersuchungBemerkung();
+        Einladung einladung = untersuchung.getEinladung();
+        Assertions.assertThat(untersuchung.getUntersuchungArztBemerkung()).isNotNull();
+        UntersuchungArztBemerkung existingBemerkung =
+            untersuchungArztBemerkungService.getById(untersuchung.getUntersuchungArztBemerkung().getId());
+        Assertions.assertThat(existingBemerkung).isNotNull();
+        Assertions.assertThat(existingBemerkung.getBemerkungen()).isNotNull()
+            .isEqualTo("Untersuchung Arzt Bemerkung");
+
+        // ACT
+        // Create a new UntersuchungArztBeurteilungSaveJsonSpec
+        UntersuchungArztBemerkungSaveJsonSpec saveJsonSpec =
+            UntersuchungArztBemerkungBuilder.createJaxSpec(builder -> builder
+                .forUntersuchungArztBemerkung(existingBemerkung)
+                .withBemerkungen("Testbemerkung Untersuchung Arzt Update")
+            ).getData();
+
+        UntersuchungArztBemerkungJsonSpec result = api
+            .untersuchungArztResourceSaveUntersuchungArztBemerkung()
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .einladungIdPath(einladung.getId().getId())
+            .body(saveJsonSpec)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(UntersuchungArztBemerkungJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getId()).isNotNull();
+        Assertions.assertThat(result.getData().getBemerkungen())
+            .isNotNull()
+            .isEqualTo("Testbemerkung Untersuchung Arzt Update");
     }
 }

@@ -1,10 +1,6 @@
 import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, Component, inject, OnInit, signal, TemplateRef, WritableSignal} from '@angular/core';
 import {NavigationEnd, NavigationStart, Router, RouterLink, RouterLinkActive} from '@angular/router';
-import {AufgabenStore} from '../../admin-shared/aufgaben.store';
-import {BenutzerStore} from '../../benutzer/benutzer/benutzer.store';
-import {Path} from '../../core/path';
-import {DeploymentStore} from '../../deployment/deployment.store';
 import {
   CollapsibleMenuComponent,
   IconOnlyButtonComponent,
@@ -17,11 +13,15 @@ import {
   hasKindPageViewBerechtigung,
   hasPlaygroundViewBerechtigung,
   hasReportViewBerechtigung,
-  hasSystemPageViewBerechtiung,
+  hasSystemPageViewBerechtiung, isNullish,
 } from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {NgbDropdownItem, NgbOffcanvas, OffcanvasDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import {filter} from 'rxjs';
+import {AufgabenStore} from '../../admin-shared/aufgaben.store';
+import {BenutzerStore} from '../../benutzer/benutzer/benutzer.store';
+import {Path} from '../../core/path';
+import {DeploymentStore} from '../../deployment/deployment.store';
 
 import {FachRollenListComponent} from './fach-rollen-list/fach-rollen-list.component';
 import {GlobalSearchComponent} from './global-search/global-search.component';
@@ -65,8 +65,15 @@ export class PageComponent extends WithHeadingDirective implements OnInit {
   closeResult: WritableSignal<string> = signal('');
 
   public logout(): void {
-    const encodedRedirectUri = encodeURIComponent(this.deploymentStore.config().clientAuthConfig.logoutUrl);
-    window.location.href = `/oauth2/sign_out?rd=${encodedRedirectUri}`;
+    // If the logoutRedirectUrl is not set, we redirect to the application root. Note that a passed logoutRedirectUrl
+    // must be whitelisted in the oauth2proxy config
+    const logoutRedirectUrl = this.deploymentStore.config().clientAuthConfig.logoutRedirectUrl;
+    if (isNullish(logoutRedirectUrl) || (logoutRedirectUrl.length === 0)) {
+      window.location.href = `/oauth2/sign_out?rd=${window.location.origin}/`;
+    } else {
+      const encodedRedirectUri = encodeURIComponent(logoutRedirectUrl);
+      window.location.href = `/oauth2/sign_out?rd=${encodedRedirectUri}`
+    }
   }
 
   public ngOnInit(): void {

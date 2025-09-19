@@ -30,13 +30,13 @@ public class UntersuchungHoerenAudiogrammMapper {
         return new UntersuchungHoerenAudiogrammJson(
             hoeren.getId(),
             EntityInfoJson.fromEntity(hoeren),
-
             new UntersuchungHoerenAudiogrammSaveJson(
                 AudiogrammMapper.toJson(hoeren.getAudiogrammRechts()),
                 AudiogrammMapper.toJson(hoeren.getAudiogrammLinks()),
                 hoeren.getAudiogrammBeurteilung(),
                 hoeren.getZusaetzlicheAngaben(),
-                hoeren.getBemerkungen()
+                hoeren.getBemerkungen(),
+                hoeren.getVersion()
             )
         );
     }
@@ -71,17 +71,26 @@ public class UntersuchungHoerenAudiogrammMapper {
     @NonNull
     public UntersuchungHoerenAudiogrammJson saveAudiogramm(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungHoerenAudiogrammSaveJson saveJson) {
+        @NonNull UntersuchungHoerenAudiogrammSaveJson saveJson
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
         UntersuchungHoerenAudiogramm hoerenAudiogramm = untersuchung.getUntersuchungHoerenAudiogramm();
         UntersuchungHoerenAudiogramm entity = toEntity(untersuchung, hoerenAudiogramm, saveJson);
-        return toJson(untersuchungHoerenService.persist(entity));
+        if (entity.getAudiogrammRechts() != null && saveJson.getAudiogrammRechts() != null) {
+            untersuchungHoerenService.cascadeOptimisticLocking(entity.getAudiogrammRechts(), saveJson.getAudiogrammRechts().getVersion());
+        }
+        if (entity.getAudiogrammLinks() != null && saveJson.getAudiogrammLinks() != null) {
+            untersuchungHoerenService.cascadeOptimisticLocking(entity.getAudiogrammLinks(), saveJson.getAudiogrammLinks().getVersion());
+        }
+        return toJson(untersuchungHoerenService.persistWithOptimisticLocking(entity, saveJson.getVersion()));
     }
 
+    @NonNull
     public UntersuchungHoerenAudiogrammSaveJson getDefaultUntersuchungHoerenAudiogrammForAnlassConfig(
-        @NonNull ID<Anlass> anlassID) {
+        @NonNull ID<Anlass> anlassID
+    ) {
         AnlassConfig anlassConfig = anlassService.getById(anlassID).getAnlassConfig();
-        return UntersuchungHoerenAudiogrammSaveJson.defaultAudiogrammValuesForAnlassConfig(AnlassConfigMapper.toJson(
-            anlassConfig));
+        return UntersuchungHoerenAudiogrammSaveJson
+            .defaultAudiogrammValuesForAnlassConfig(AnlassConfigMapper.toJson(anlassConfig));
     }
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Land;
 import jakarta.validation.constraints.NotNull;
@@ -16,7 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Value
 @AllArgsConstructor
 @JaxDTO
-public class UntersuchungKindDatenSaveJson {
+public class UntersuchungKindDatenSaveJson implements SaveJsonWithOptimisticLocking {
 
     @NotNull
     @NonNull
@@ -69,4 +70,7 @@ public class UntersuchungKindDatenSaveJson {
     @Nullable
     @Schema(required = false)
     private String klasse;
+
+    @Schema(required = true)
+    private long version;
 }

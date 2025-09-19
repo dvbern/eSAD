@@ -19,9 +19,9 @@ public class SozialversicherungsNummerTestGenerator {
     }
 
     // seed number for the generation of the next Sozialversicherungsnummer, omits pruefziffer
-    private long counter = 756123456789L;
+    private long counter = INITIAL_SEED_NUMBER;
 
-    public SozialversicherungsNummer getNextSozialversicherungsnummer() {
+    public synchronized SozialversicherungsNummer getNextSozialversicherungsnummer() {
 
         int pz = SozialversicherungsNummer.berechnePruefziffer(counter * 10);
         long nextSvnr = Long.parseLong(counter + "" + pz);

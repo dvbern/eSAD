@@ -31,9 +31,12 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.api.DossierApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.KinderApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.SchulenApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassFlagsJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppValidationErrorJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EntityAktivStatusSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EntityAktivStatusSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindSaveModeDuplikatSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindSaveResultJsonSpec;
@@ -173,6 +176,74 @@ class DossierResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
+    void updateDossier_throws_if_Kind_is_inactive() {
+        // ARRANGE
+        Kind kind = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
+        Dossier existingDossier = dossierService.persist(
+            DossierBuilder.create(builder -> builder.forKind(kind)));
+        Assertions.assertThat(existingDossier.isAndereZusatzinformation()).isFalse();
+        Assertions.assertThat(existingDossier.getAndereZusatzInformationText()).isNull();
+        String zusatzinformation = "MeineTestInfo";
+
+        Benutzer createDto = BenutzerBuilder.create(
+            builder -> builder
+                .withRandomEmail("nina.neu@example.com")
+                .withRandomVorname("Nina")
+                .withRandomNachname("Neu")
+                .withFachRolle(List.of(FachRolle.SCHULAERZTIN, FachRolle.MPA))
+                .withKeycloakId(UUID.randomUUID().toString())
+        );
+        benutzerRepo.persist(createDto);
+
+        EntityAktivStatusSaveJsonSpec saveJson = new EntityAktivStatusSaveJsonSpec(EntityAktivStatusSpec.INAKTIV);
+        kindAPI.kindResourceUpdateKindAktivStatus()
+            .kindIdPath(kind.getId().getId())
+            .body(saveJson)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.NO_CONTENT.getStatusCode());
+
+        Benutzer zustaendigArztMPA = benutzerService.getById(createDto.getId());
+
+        DossierJsonSpec updatedDossierJson = DossierBuilder.createJaxSpec(
+            builder -> builder
+                .forDossier(existingDossier)
+                .withAndereZusatzinformation(true, zusatzinformation)
+                .withZustaendigMPA(zustaendigArztMPA)
+                .withZustaendigArzt(zustaendigArztMPA),
+            appClock.offsetDateTime().now().toLocalDate());
+
+        updatedDossierJson.getData().setNachkontrolle(NachkontrolleBuilder.createJaxSpec(builder ->
+            builder.
+                withNachkontrolleSehen(true)));
+
+        String expectedValidationErrorMessage = String.format(
+            "Das Kind %s %s ist inaktiv. Es können keine Änderungen an Dossier %s vorgenommen werden.",
+            kind.getNameVorname(),
+            kind.getId(),
+            existingDossier.getId());
+
+        // ACT
+        AppValidationErrorJsonSpec validationError = api
+                .dossierResourceUpdateDossier()
+                .dossierIdPath(existingDossier.getId().getId())
+                .body(updatedDossierJson.getData())
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.BAD_REQUEST.getStatusCode())
+                .extract().as(AppValidationErrorJsonSpec.class);
+
+        assertThat(validationError.getViolations()).hasSize(1);
+        assertThat(validationError.getViolations().getFirst().getKey())
+            .isEqualTo("CannotEditEntityForInactiveKind");
+        assertThat(validationError.getViolations().getFirst().getMessage())
+            .isEqualTo(expectedValidationErrorMessage);
+    }
+
+    @Test
+    @TestAsAdminBS
     void updateDossier_throws_if_benutzer_does_not_have_fachrolle() {
         // ARRANGE
         Kind kind = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
@@ -198,18 +269,21 @@ class DossierResourceITest extends AbstractITest {
         // ACT
         String dossierId = existingDossier.getId().getId();
         DossierSaveJsonSpec data = updatedDossierJson.getData();
-        assertThrows(
-            AssertionError.class,
-            () -> api
+        AppValidationErrorJsonSpec validationError = api
                 .dossierResourceUpdateDossier()
                 .dossierIdPath(dossierId)
                 .body(data)
                 .execute(ResponseBody::prettyPeek)
                 .then()
                 .assertThat()
-                .statusCode(Status.OK.getStatusCode())
-                .extract().as(DossierJsonSpec.class)
-        );
+                .statusCode(Status.BAD_REQUEST.getStatusCode())
+                .extract().as(AppValidationErrorJsonSpec.class);
+
+        assertThat(validationError.getViolations()).hasSize(1);
+        assertThat(validationError.getViolations().getFirst().getKey())
+            .isEqualTo("NotNull");
+        assertThat(validationError.getViolations().getFirst().getMessage())
+            .isEqualTo("darf nicht null sein");
     }
 
     @Test

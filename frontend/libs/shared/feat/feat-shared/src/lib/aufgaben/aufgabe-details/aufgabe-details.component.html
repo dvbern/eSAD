@@ -53,7 +53,8 @@
             [placeholder]="'global.select.bitte-auswaehlen' | transloco"
             [compareWith]="compareBenutzer"
           >
-            @for (benutzer of benutzerOptionsStore.entitiesIncluding(store.selectedEntity()?.data?.empfaenger); track benutzer.id) {
+            @for (
+              benutzer of benutzerOptionsStore.entitiesIncluding(store.selectedEntity()?.data?.empfaenger); track benutzer.id) {
               <ng-option [value]="benutzer" [disabled]="!benutzer.aktiv">
                 {{ benutzer.fullName }}
               </ng-option>
@@ -73,7 +74,8 @@
             [placeholder]="'global.select.bitte-auswaehlen' | transloco"
             [compareWith]="compareBenutzer"
           >
-            @for (benutzer of benutzerOptionsStore.entitiesIncluding(store.selectedEntity()?.data?.userErfasst); track benutzer.id) {
+            @for (
+              benutzer of benutzerOptionsStore.entitiesIncluding(store.selectedEntity()?.data?.userErfasst); track benutzer.id) {
               <ng-option [value]="benutzer">
                 {{ benutzer.fullName }}
               </ng-option>
@@ -175,7 +177,7 @@
         <!-- Fileupload -->
         <feat-file-drop
           (filesToUpload)="onFilesSelected($event)"
-          [acceptedFiletypes]="this.acceptedFiletypes()"
+          [acceptedFiletypes]="acceptedFiletypes"
         />
 
         <!--messages for whole form -->
@@ -195,10 +197,12 @@
     <svui-card>
       <h3 svuiHeading="card" class="mb-3">{{ 'global.uploaded.files' | transloco }}</h3>
 
-      <feat-upload-table [uploadTable]="uploadTable"
-                         (fileRemove)="onFileDelete($event)"
-                         (fileView)="onFileView($event)"
-                         (fileDirectDownload)="onFileDirectDownload($event)"
+      <feat-upload-table
+        [accepted]="acceptedFiletypes"
+        [uploadTable]="uploadTable"
+        (fileRemove)="onFileDelete($event)"
+        (fileView)="onFileView($event)"
+        (fileDirectDownload)="onFileDirectDownload($event)"
       >
       </feat-upload-table>
     </svui-card>

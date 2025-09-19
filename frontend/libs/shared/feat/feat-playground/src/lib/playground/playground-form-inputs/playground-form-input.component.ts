@@ -3,8 +3,7 @@ import {ChangeDetectionStrategy, Component, output} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Geschlecht} from '@dvb/data-access-backend';
 import {randomEntityId} from '@dvb/data-access-types';
-import {Path} from '@dvb/feat-shared';
-import {KindSearchComponent} from '@dvb/feat-shared';
+import {KindSearchComponent, Path} from '@dvb/feat-shared';
 import {
   ButtonComponent,
   CardComponent,
@@ -37,41 +36,41 @@ import {PlaygroundFormInputForm} from './playground-form-input.form';
 import {PlaygroundDemoStates, PlaygroundFormOutputType} from './playground-form.types';
 
 @Component({
-    selector: 'feat-playground-form-input',
-    templateUrl: './playground-form-input.component.html',
-    styleUrl: './playground-form-input.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        FormsModule,
-        CardComponent,
-        FormControlComponent,
-        TextInputDirective,
-        TextareaDirective,
-        ButtonComponent,
-        FormLayoutComponent,
-        CheckboxDirective,
-        RadioDirective,
-        TypeaheadComponent,
-        ReactiveFormsModule,
-        TranslocoPipe,
-        CardComponent,
-        HeadingDirective,
-        JsonPipe,
-        NgSelectComponent,
-        NgOptionComponent,
-        NgIf,
-        NgSelectDirective,
-        DatePipe,
-        SingleRadioWrapperComponent,
-        SingleCheckboxWrapperComponent,
-        FormGroupComponent,
-        FormButtonsComponent,
-        FileUploadButtonComponent,
-        FormUploadOneComponent,
-        IconOnlyButtonComponent,
-        CardInCardComponent,
-        KindSearchComponent,
-    ]
+  selector: 'feat-playground-form-input',
+  templateUrl: './playground-form-input.component.html',
+  styleUrl: './playground-form-input.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    FormsModule,
+    CardComponent,
+    FormControlComponent,
+    TextInputDirective,
+    TextareaDirective,
+    ButtonComponent,
+    FormLayoutComponent,
+    CheckboxDirective,
+    RadioDirective,
+    TypeaheadComponent,
+    ReactiveFormsModule,
+    TranslocoPipe,
+    CardComponent,
+    HeadingDirective,
+    JsonPipe,
+    NgSelectComponent,
+    NgOptionComponent,
+    NgIf,
+    NgSelectDirective,
+    DatePipe,
+    SingleRadioWrapperComponent,
+    SingleCheckboxWrapperComponent,
+    FormGroupComponent,
+    FormButtonsComponent,
+    FileUploadButtonComponent,
+    FormUploadOneComponent,
+    IconOnlyButtonComponent,
+    CardInCardComponent,
+    KindSearchComponent,
+  ]
 })
 export class PlaygroundFormInputComponent {
   file: string | undefined = 'Datei.pdf';
@@ -171,8 +170,7 @@ export class PlaygroundFormInputComponent {
   protected readonly Path = Path;
 
   fileUpload: File | undefined;
-  acceptedFileEndings =
-    '.pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .eml, .msg, .mbox, .jpg, .jpeg, .png, .heic, .webp"';
+  acceptedFileEndings = '.pdf, .docx, .xlsx, .pptx, .eml, .msg, .jpg, .jpeg, .png, .heic, .webp';
 
   public removeFileFromUpload(): void {
     this.fileUpload = undefined;

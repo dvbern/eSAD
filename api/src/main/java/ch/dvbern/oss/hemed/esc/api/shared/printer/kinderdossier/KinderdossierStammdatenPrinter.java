@@ -8,6 +8,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPe
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import com.itextpdf.layout.Document;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -93,7 +94,11 @@ public final class KinderdossierStammdatenPrinter {
         @NonNull BasePrinter basePrinter,
         @NonNull Document document
     ) {
-        basePrinter.addValue(KinderdossierPrintUtil.getNameWithAnrede(kontaktPerson, basePrinter), true, document);
+        basePrinter.addValue(
+            PrintUtil.getNameWithAnrede(
+                basePrinter,
+                kontaktPerson.getGeschlecht(),
+                kontaktPerson.getNameVorname()), true, document);
         basePrinter.addKeyValue(
             "printer.kinderdossier.stammdaten.beziehung.label",
             kontaktPerson.getBeziehung(),

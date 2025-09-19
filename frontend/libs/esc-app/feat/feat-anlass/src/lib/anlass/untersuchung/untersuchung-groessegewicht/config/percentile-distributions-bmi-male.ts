@@ -6,7 +6,7 @@ export const BaselBmiKnabenDistribution: PercentileDistribution = {
     {
       id: 'bmimaleP3',
       percentile: 3,
-      type: 'bottom',
+      type: 'sub',
       data: [
         {x: 2, y: 13.9},
         {x: 5, y: 13.15},
@@ -18,7 +18,7 @@ export const BaselBmiKnabenDistribution: PercentileDistribution = {
     {
       id: 'bmimaleP10',
       percentile: 10,
-      type: 'sub',
+      type: 'bottom',
       data: [
         {x: 2, y: 14.55},
         {x: 5, y: 13.75},
@@ -66,7 +66,7 @@ export const BaselBmiKnabenDistribution: PercentileDistribution = {
     {
       id: 'bmimaleP90',
       percentile: 90,
-      type: 'sub',
+      type: 'top',
       data: [
         {x: 2, y: 17.8},
         {x: 4.5, y: 17.1},
@@ -78,7 +78,7 @@ export const BaselBmiKnabenDistribution: PercentileDistribution = {
     {
       id: 'bmimaleP97',
       percentile: 97,
-      type: 'top',
+      type: 'sub',
       data: [
         {x: 2, y: 18.7},
         {x: 4, y: 18},

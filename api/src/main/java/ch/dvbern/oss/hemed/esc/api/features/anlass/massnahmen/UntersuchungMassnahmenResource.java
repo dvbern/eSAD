@@ -6,6 +6,8 @@ import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.EinladungMapper;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.Nullable;
@@ -32,6 +34,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 public class UntersuchungMassnahmenResource {
 
     private final UntersuchungMassnahmenMapper untersuchungMassnahmenMapper;
+    private final UntersuchungSehenMassnahmenMapper untersuchungSehenMassnahmenMapper;
+    private final EinladungMapper einladungMapper;
+    private final AuthorizerService authorizerService;
 
     @GET
     @RolesAllowed(BerechtigungName.SU_MASSNAHMEN_LESEN)
@@ -40,6 +45,7 @@ public class UntersuchungMassnahmenResource {
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
         return untersuchungMassnahmenMapper.getByEinladung(einladungId);
     }
 
@@ -51,7 +57,34 @@ public class UntersuchungMassnahmenResource {
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
         @NonNull @NotNull @Valid UntersuchungMassnahmenSaveJson saveJson
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
         return untersuchungMassnahmenMapper.save(einladungId, saveJson);
     }
 
+    @GET
+    @Path("/sehen")
+    @RolesAllowed(BerechtigungName.SU_MASSNAHMEN_LESEN)
+    @Nullable
+    public UntersuchungSehenMassnahmenJson getUntersuchungMassnahmenSehen(
+        @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
+        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
+    ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        return untersuchungSehenMassnahmenMapper.getByEinladung(einladungId);
+    }
+
+    @PUT
+    @Path("/sehen")
+    @NonNull
+    @RolesAllowed(BerechtigungName.SU_MASSNAHMEN_SCHREIBEN)
+    public UntersuchungSehenMassnahmenJson saveUntersuchungMassnahmenSehen(
+        @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
+        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
+        @NonNull @NotNull @Valid UntersuchungSehenMassnahmenSaveJson saveJson
+    ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
+        return untersuchungSehenMassnahmenMapper.save(einladungId, saveJson);
+    }
 }

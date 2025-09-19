@@ -1,5 +1,6 @@
 # Best practice:
-# Copy File and rename to "prepared-escada-curl-request" so it's ignored by git
+# Copy File and rename to "prepared-escada-curl-request(.sh/.ps1)" so it's ignored by git
+# Copy File second time and rename to "prepared-escada-curl-request-dev(.sh/.ps1)" to save the import for dev
 # Change Client Secret and Password to according values
 # Potentially change testdata.csv to prefered file
 

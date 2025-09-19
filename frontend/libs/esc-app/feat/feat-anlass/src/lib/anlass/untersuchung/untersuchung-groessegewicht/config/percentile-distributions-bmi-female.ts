@@ -6,7 +6,7 @@ export const BaselBmiMaedchenDistribution: PercentileDistribution = {
     {
       id: 'bmifemaleP3',
       percentile: 3,
-      type: 'bottom',
+      type: 'sub',
       data: [
         {x: 2, y: 13.5},
         {x: 4, y: 12.95},
@@ -19,7 +19,7 @@ export const BaselBmiMaedchenDistribution: PercentileDistribution = {
     {
       id: 'bmifemaleP10',
       percentile: 10,
-      type: 'sub',
+      type: 'bottom',
       data: [
         {x: 2, y: 14.1},
         {x: 4, y: 13.65},
@@ -71,7 +71,7 @@ export const BaselBmiMaedchenDistribution: PercentileDistribution = {
     {
       id: 'bmifemaleP90',
       percentile: 90,
-      type: 'sub',
+      type: 'top',
       data: [
         {x: 2, y: 17.6},
         {x: 4, y: 17.2},
@@ -84,7 +84,7 @@ export const BaselBmiMaedchenDistribution: PercentileDistribution = {
     {
       id: 'bmifemaleP97',
       percentile: 97,
-      type: 'top',
+      type: 'sub',
       data: [
         {x: 2, y: 18.55},
         {x: 3, y: 18.2},

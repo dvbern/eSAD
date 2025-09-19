@@ -1,5 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder.external;
 
+import ch.dvbern.oss.hemed.esc.api.features.schule.EscadaDummySchulenIds;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -406,6 +407,7 @@ public class KindExternalSyncHelperService {
             existingkindExternal,
             appClock.offsetDateTime().now()
         );
+        updatedKind.disableOptimisticLockingCheck();
 
         KindExternal updatedKindExt = toEntityKindExternal(existingkindExternal, remoteKindExternal);
         ensureNoManualKindWithSameVnrExisting(updatedKindExt, existingkindExternal.getExternalId() );
@@ -416,18 +418,15 @@ public class KindExternalSyncHelperService {
 
         // update klasse if it has changed
         Klasse klasseToConnect = klasseService.getByExternalId(escadaKlasseId);
-        if (!klasseToConnect.equals(updatedKind.getKlasse())) {
-            LOG.info(
-                "ESCADA: Klasse of Kind has changed, updating Klasse from {} to {}",
-                updatedKind.getKlasse(), klasseToConnect.getBezeichnung());
-            updatedKind.setKlasse(klasseToConnect); // klasse might have changed
-            updatedKind.setSchule(klasseToConnect.getSchule());
-        }
+        updateSchuleAndKlasse(updatedKind, klasseToConnect);
+        ensureKindAktiv(updatedKind);
 
         updatedKind = kindService.persistWithoutDuplicateCheck(updatedKind);
 
         return ItemSyncResultJson.createUpdateOkItem(idDTO, Kind.class, updatedKind.getName());
     }
+
+
 
     @NonNull
     @Transactional(TxType.REQUIRES_NEW)
@@ -447,18 +446,24 @@ public class KindExternalSyncHelperService {
         // NEVER update them
         internalKind =
             preexistingKindOpt
-                .map(kind -> updateKindBasedOnKindExternal(
-                    kind,
-                    kindExternalToAdd,
-                    kindExternalToAdd,
-                    appClock.offsetDateTime().now()
-                ))
+                .map(kind -> {
+                    var kindUpdated =updateKindBasedOnKindExternal(
+                        kind,
+                        kindExternalToAdd,
+                        kindExternalToAdd,
+                        appClock.offsetDateTime().now()
+                    );
+                    updateSchuleAndKlasse(kindUpdated, klasseToConnect);
+                    ensureKindAktiv(kindUpdated);
+                    return kindUpdated;
+                })
                 .orElseGet(() -> toEntityForCreate(
                     kindExternalToAdd,
                     klasseToConnect,
                     appClock.offsetDateTime().now()
                 ));
 
+        internalKind.disableOptimisticLockingCheck();
         internalKind = kindService.persistWithoutDuplicateCheck(internalKind);
         kindExternalToAdd.setKind(internalKind);
         kindExternalRepo.persist(kindExternalToAdd);
@@ -476,6 +481,26 @@ public class KindExternalSyncHelperService {
             result.getExternalId()
         );
         return result;
+    }
+
+    private static void updateSchuleAndKlasse(@NonNull Kind updatedKind, @NonNull Klasse klasseToConnect) {
+        if (!Objects.equals(klasseToConnect, updatedKind.getKlasse())) {
+            LOG.info(
+                "ESCADA: Klasse of Kind {} has changed, updating Klasse from {} to {}",
+                updatedKind.getExternalSystemIdOrNull(), updatedKind.getKlasse(), klasseToConnect);
+            updatedKind.setKlasse(klasseToConnect); // klasse might have changed
+            updatedKind.setSchule(klasseToConnect.getSchule());
+        }
+    }
+
+    private static void ensureKindAktiv(@NonNull Kind updatedKind) {
+        if (updatedKind.getKindAktivStatus() == EntityAktivStatus.INAKTIV) {
+            LOG.info(
+                "ESCADA: Kind with UUID {} and ExternalID {} was INAKTIV, resetting to AKTIV",
+                updatedKind.getId().getUUID(),
+                updatedKind.getExternalSystemIdOrNull());
+            updatedKind.setKindAktivStatus(EntityAktivStatus.AKTIV);
+        }
     }
 
     private void ensureNoManualKindWithSameVnrExisting(
@@ -508,8 +533,21 @@ public class KindExternalSyncHelperService {
             kindExternalToDelete.getExternalId(),
             kind.getId());
 
-        if (kind.getExternalImportInfo() != null && kind.getExternalImportInfo().isAktivInExternalSystem()) {
+        if (kind.getExternalImportInfo() != null && kind.isAktivInExternalSystem()) {
             kind.getExternalImportInfo().setAktivInExternalSystem(false);
+            // If the Kind to deactivate has an Escada-Schul/Klasse we remove it
+            if (kind.getKlasse() != null && kind.getKlasse().getExternalSystemIdOrNull() != null) {
+                kind.setKlasse(null);
+            }
+            if (kind.getSchule() != null
+                && (
+                    kind.getSchule().getExternalSystemIdOrNull() != null
+                    || EscadaDummySchulenIds.isDummySchule(kind.getSchule().getId())
+                )
+            ) {
+                kind.setSchule(null);
+            }
+            kind.disableOptimisticLockingCheck();
         }
 
         kindExternalRepo.remove(kindExternalToDelete.getId());

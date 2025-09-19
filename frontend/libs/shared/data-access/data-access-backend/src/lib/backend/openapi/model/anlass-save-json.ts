@@ -33,6 +33,7 @@ export interface AnlassSaveJson {
     mpaInfo?: string;
     weiterePerson?: BenutzerOptionJson;
     weiterePersonInfo?: string;
+    version: number;
 }
 export namespace AnlassSaveJson {
 }

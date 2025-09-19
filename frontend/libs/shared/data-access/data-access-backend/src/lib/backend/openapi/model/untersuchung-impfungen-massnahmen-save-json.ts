@@ -15,11 +15,12 @@ export interface UntersuchungImpfungenMassnahmenSaveJson {
     vormerkenFuerGruppenFolgetermin: boolean;
     impfberatungMpaDurchgefuehrt: boolean;
     impfberatungMpaDurchgefuehrtBemerkungen?: string;
-    informationenAbgegeben: boolean;
+    infomaterialAbgegeben: boolean;
     informationEltern?: InformationEltern;
     informationHausarzt: boolean;
     rueckfrageHausarzt: boolean;
     bemerkungen?: string;
+    version: number;
 }
 export namespace UntersuchungImpfungenMassnahmenSaveJson {
 }

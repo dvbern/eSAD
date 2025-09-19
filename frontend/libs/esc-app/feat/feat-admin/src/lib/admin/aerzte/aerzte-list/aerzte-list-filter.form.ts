@@ -39,7 +39,11 @@ function makeForm(config: Config) {
     fachrichtung: fb.control<Fachrichtung[]>([]),
     vorname: fb.control<string>(''),
     name: fb.control<string>(''),
-    hpvTeilnahme: fb.control<HpvTeilnahme|undefined>(undefined),
+    adresseZusatz: fb.control<string>(''),
+    strasseUndNr: fb.control<string>(''),
+    plz: fb.control<string>(''),
+    ort: fb.control<string>(''),
+    hpvTeilnahme: fb.control<HpvTeilnahme | undefined>(undefined),
   });
 
   onTextInput(group.controls.fachrichtung, config.destroyRef).subscribe({
@@ -77,6 +81,55 @@ function makeForm(config: Config) {
     },
     error: console.error,
   });
+
+  onTextInput(group.controls.adresseZusatz, config.destroyRef).subscribe({
+    next: adresseZusatz => {
+      config.paginatedTable.onFilterChanged({
+        filterValue: adresseZusatz ?? '',
+        filterMethod: FilterMethod.SUBSTRING,
+        filterCombinationMethod: FilterCombinationMethod.AND,
+        filterName: 'data.adresse.adresseZusatz',
+      })
+    },
+    error: console.error,
+  });
+
+  onTextInput(group.controls.strasseUndNr, config.destroyRef).subscribe({
+    next: strasseUndNr => {
+      config.paginatedTable.onFilterChanged({
+        filterValue: strasseUndNr ?? '',
+        filterMethod: FilterMethod.SUBSTRING,
+        filterCombinationMethod: FilterCombinationMethod.AND,
+        filterName: 'data.adresse.strasseUndNr',
+      })
+    },
+    error: console.error,
+  });
+
+  onTextInput(group.controls.plz, config.destroyRef).subscribe({
+    next: plz => {
+      config.paginatedTable.onFilterChanged({
+        filterValue: plz ?? '',
+        filterMethod: FilterMethod.SUBSTRING,
+        filterCombinationMethod: FilterCombinationMethod.AND,
+        filterName: 'data.adresse.plz',
+      })
+    },
+    error: console.error,
+  });
+
+  onTextInput(group.controls.ort, config.destroyRef).subscribe({
+    next: ort => {
+      config.paginatedTable.onFilterChanged({
+        filterValue: ort ?? '',
+        filterMethod: FilterMethod.SUBSTRING,
+        filterCombinationMethod: FilterCombinationMethod.AND,
+        filterName: 'data.adresse.ort',
+      })
+    },
+    error: console.error,
+  });
+
 
   onTextInput(group.controls.hpvTeilnahme, config.destroyRef).subscribe({
     next: hpvTeilname => {

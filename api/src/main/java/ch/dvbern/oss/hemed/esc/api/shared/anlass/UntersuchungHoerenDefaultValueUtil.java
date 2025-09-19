@@ -3,7 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.anlass;
 import java.util.List;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Dezibel;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.HoerenZusaetzlicheAngaben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.OtoskopieResultat;
@@ -17,30 +17,32 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class UntersuchungHoerenDefaultValueUtil {
 
     @Nullable
-    public static AudiogrammJson getDefaultAudiogramm(
+    public static AudiogrammSaveJson getDefaultAudiogramm(
         @NonNull RequirementSetting requirementSetting,
         @NonNull AnlassTyp anlassTyp
     ) {
         if (requirementSetting.isVisible()) {
             if (anlassTyp == AnlassTyp.KINDERGARTEN) {
-                return new AudiogrammJson(
+                return new AudiogrammSaveJson(
                     null,
                     Dezibel.DB20,
                     Dezibel.DB20,
                     Dezibel.DB20,
                     Dezibel.DB20,
                     Dezibel.DB20,
-                    null
+                    null,
+                    0L
                 );
             }
-            return new AudiogrammJson(
+            return new AudiogrammSaveJson(
                 Dezibel.DB20,
                 Dezibel.DB20,
                 Dezibel.DB20,
                 Dezibel.DB20,
                 Dezibel.DB20,
                 Dezibel.DB20,
-                Dezibel.DB20
+                Dezibel.DB20,
+                0L
             );
         }
         return null;

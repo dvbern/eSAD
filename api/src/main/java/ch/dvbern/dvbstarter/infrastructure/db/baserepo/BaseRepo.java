@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import ch.dvbern.dvbstarter.infrastructure.db.Db;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import jakarta.inject.Inject;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -30,6 +31,31 @@ public abstract class BaseRepo<T extends AbstractEntity<T>> {
 
     public void persist(@NonNull T entity) {
         db.persist(entity);
+    }
+
+    @NonNull
+    public final <E extends AbstractEntity<T> & EntityWithOptimisticLocking> E persistWithOptimisticLocking(
+        @NonNull E entity,
+        @NonNull Long versionFromFrontend
+    ) {
+        // Setze die Version vom Frontend. Dies wird im AbstractEntityListener dann
+        // mit der Version des Entity verglichen
+        entity.setVersionFromFrontend(versionFromFrontend);
+
+        db.persist(entity);
+        db.flush(); // Damit wird die Version aktualisiert
+        return entity;
+    }
+
+    @NonNull
+    public final <E extends AbstractEntity<E> & EntityWithOptimisticLocking> E cascadeOptimisticLocking(
+        @NonNull E entity,
+        @NonNull Long versionFromFrontend
+    ) {
+        // Setze die Version vom Frontend. Dies wird im AbstractEntityListener dann
+        // mit der Version des Entity verglichen
+        entity.setVersionFromFrontend(versionFromFrontend);
+        return entity;
     }
 
     public void remove(@NonNull ID<T> id) {

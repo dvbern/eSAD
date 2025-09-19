@@ -1,0 +1,132 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~
+  ~ Copyright (C) 2024 DV Bern AG, Switzerland
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <include file="db/bs/0001-init-schema.xml"/>
+  <include file="db/bs/0002-create-scheduler-tables.xml"/>
+  <include file="db/bs/0003-insert-uuid-extension.xml"/>
+  <include file="db/bs/0004-enable-pg_trgm-indizes.xml"/>
+  <include file="db/bs/0005-insert-systemadmin-default.xml"/>
+  <include file="db/bs/0006-insert-systemadmin-bs.xml"/>
+  <include file="db/bs/0007-insert-systemadmin-be.xml"/>
+  <include file="db/bs/0008-insert-tenant-settings.xml"/>
+  <include file="db/bs/0009-insert-infomaterial.xml"/>
+  <include file="db/bs/0010-insert-auto-labels.xml"/>
+  <include file="db/bs/0011-insert-quartier.xml"/>
+  <include file="db/bs/0012-insert-schedulerconfig-inaktivieren.xml"/>
+  <include file="db/bs/0013-insert-anlassconfig.xml"/>
+  <include file="db/bs/0014-insert-impfstoffe.xml"/>
+  <include file="db/bs/0015-insert-escada-service-user.xml"/>
+  <include file="db/bs/0016-insert-dummy-schulen-for-escada-import.xml"/>
+  <include file="db/bs/0017-add-kind-aktiv-status.xml"/>
+  <include file="db/bs/0018-add-plz-data-table.xml"/>
+  <include file="db/bs/0019-add-document-queue-table.xml"/>
+  <include file="db/bs/0020-schulstandort-to-untersuchung-kind-daten.xml"/>
+  <include file="db/bs/0021-add-aktiv-col-infomaterial.xml"/>
+  <include file="db/bs/0022-add-sehen-tafel-to-anlass-config.xml"/>
+  <include file="db/bs/0023-add-label-aktiv.xml"/>
+  <include file="db/bs/0025-anlassconfig-korrigiert.xml"/>
+  <include file="db/bs/0026-create-untersuchung-massnahmen.xml"/>
+  <include file="db/bs/0027-insert-hoeren.xml"/>
+  <include file="db/bs/0028-insert-groesse-gewicht.xml"/>
+  <include file="db/bs/0029-create-missing-indizes-from-quarkus.xml"/>
+  <include file="db/bs/0030-alter-untersuchung-sehen.xml"/>
+  <include file="db/bs/0031-remove-massnahme-from-untersuchung-sehen.xml"/>
+  <include file="db/bs/0032-create-table-untersuchungarzt.xml"/>
+  <include file="db/bs/0033-add-briefvorlage-table.xml"/>
+  <include file="db/bs/0034-insert-folgetermin-label.xml"/>
+  <include file="db/bs/0035-aufgabe-add-anlass.xml"/>
+  <include file="db/bs/0036-change-type-bemerkungen-on-massnahmen.xml"/>
+  <include file="db/bs/0037-update-untersuchungbem-to-optional.xml"/>
+  <include file="db/bs/0038-rename-perzentile.xml"/>
+  <include file="db/bs/0039-add-checkliste-to-anlassconfig-table.xml"/>
+  <include file="db/bs/0040-add-link-col-aufgabe-table.xml"/>
+  <include file="db/bs/0041-add-aufgaben-to-massnahmen.xml"/>
+  <include file="db/bs/0042-external-import-info.xml"/>
+  <include file="db/bs/0043-change-anlassconfig-kindergarten.xml"/>
+  <include file="db/bs/0044-update-anlassconfig-arzt.xml"/>
+  <include file="db/bs/0045-arztuntersuchung-bemerkung-entfernen.xml"/>
+  <include file="db/bs/0046-add-spssexported-col-einladung.xml"/>
+  <include file="db/bs/0047-insert-schedulerconfig-documentqueue-cleanup.xml"/>
+  <include file="db/bs/0047-add-naechste-station.xml"/>
+  <include file="db/bs/0048-add-Herz-to-anlass-config-and-remove-NotNull-on-audiogramm.xml"/>
+  <include file="db/bs/0049-create-impfungen-massnahmen.xml"/>
+  <include file="db/bs/0050-timestamp-benutzer-activated.xml"/>
+  <include file="db/bs/0051-update-sehen.xml"/>
+  <include file="db/bs/0052-insert-nachzuegler-label.xml"/>
+  <include file="db/bs/0053-kind-normalized-name.xml"/>
+  <include file="db/bs/0054-insert-duplikate.xml"/>
+  <include file="db/bs/0054-migrate-strabismus.xml"/>
+  <include file="db/bs/0055-create-arzt-table.xml"/>
+  <include file="db/bs/0056-create-aktiviatet.xml"/>
+  <include file="db/bs/0057-show-naechstestation-kindergarten.xml"/>
+  <include file="db/bs/0058-drop-infomaterial-typ-column.xml"/>
+  <include file="db/bs/0059-activate-document-queue.xml"/>
+  <include file="db/bs/0059-schule-klasse-entityaktivstatus.xml"/>
+  <include file="db/bs/0060-alter-duodezimal-auf-groessegewicht.xml"/>
+  <include file="db/bs/0060-add-timestamplastmanualchange-column.xml"/>
+  <include file="db/bs/0061-impfstoff-entityaktivstatus.xml"/>
+  <include file="db/bs/0060-add-berechtigungen.xml"/>
+  <include file="db/bs/0062-vorname-optional.xml"/>
+  <include file="db/bs/0063-change-anlassconfig-sehen.xml"/>
+  <include file="db/bs/0064-add-berechtigungen-aerzte.xml"/>
+  <include file="db/bs/0065-add-untersuchung-masnahmen-beratung-sae.xml"/>
+  <include file="db/bs/0066-kindergarten-show-untersuchung-masnahmen-beratung-sae.xml"/>
+  <include file="db/bs/0067-add-impfung-intern-anlass-durchgefuehrt.xml"/>
+  <include file="db/bs/0068-change-anlassconfig-sehen.xml"/>
+  <include file="db/bs/0069-untersuchung-hoeren-new-two-entities.xml"/>
+  <include file="db/bs/0070-add-massnahme-impfen.xml"/>
+  <include file="db/bs/0070-add-title-and-telefon-benutzer.xml"/>
+  <include file="db/bs/0071-untersuchung-arzt-bemerkung.xml"/>
+  <include file="db/bs/0072-remove-other-tenants.xml"/>
+  <include file="db/base/0001-update-aufgabe-notiz-bemerkung-maxlengt.xml"/>
+  <include file="db/base/0002-update-absagebemerkung-maxlength.xml"/>
+  <include file="db/base/0003_rename_informationenAbgegeben.xml"/>
+  <include file="db/bs/0073-aktivinexternalsystem-no-default.xml"/>
+  <include file="db/bs/0074-rename-constraints.xml"/>
+  <include file="db/base/0004_gewicht_bigdecimal.xml"/>
+  <include file="db/base/0005-split-tab-sehen.xml"/>
+  
+  <!--  The following scripts only run in the 'test' context-->
+  <include file="db-test/0001-insert-test-benutzer-support.xml" context="@test"/>
+  <include file="db-test/0002-insert-test-benutzer-mpa.xml" context="@test"/>
+  <include file="db-test/0003-insert-test-benutzer-empfang.xml" context="@test"/>
+  <include file="db-test/0004-insert-test-benutzer-admin-bs.xml" context="@test"/>
+  <include file="db-test/0006-insert-test-benutzer-schularzt.xml" context="@test"/>
+  <include file="db-test/0007-insert-test-benutzer-orthoptist.xml" context="@test"/>
+  <include file="db-test/0008-insert-test-benutzer-mpa-super.xml" context="@test"/>
+  <include file="db-test/0009-create-tables-for-ordering-tests.xml" context="@test"/>
+  <include file="db-test/0010-insert-test-aerzte.xml" context="@test"/>
+
+  <!-- The following scripts only run in the 'dev' context
+	  To use it, insert the following in your .env:
+	  _DEV_QUARKUS_LIQUIBASE_CONTEXTS=dev,test
+  -->
+  <include file="db-dev/0000-insert-example-benutzer-mpa-arzt.xml" context="@dev"/>
+  <include file="db-dev/0001-insert-example-schulen.xml" context="@dev"/>
+  <include file="db-dev/0002-insert-example-klassen.xml" context="@dev"/>
+  <include file="db-dev/0003-insert-example-kinder.xml" context="@dev"/>
+  <include file="db-dev/0004-insert-example-labels.xml" context="@dev"/>
+  <include file="db-dev/0005-insert-example-impfstoffchargen.xml" context="@dev"/>
+  <include file="db-dev/0006-insert-example-anlass.xml" context="@dev"/>
+  <include file="db-dev/0007-insert-example-aerzte.xml" context="@dev"/>
+</databaseChangeLog>

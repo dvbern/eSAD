@@ -4,6 +4,7 @@ import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.oss.hemed.esc.api.features.infomaterial.json.InfomaterialJson;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -14,11 +15,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Value
 @AllArgsConstructor
 @JaxDTO
-public class UntersuchungSehenMassnahmenSaveJson {
-
-    @NotNull
-    @Schema(required = true)
-    private boolean keineMassnahmen;
+public class UntersuchungSehenMassnahmenSaveJson implements SaveJsonWithOptimisticLocking {
 
     @NotNull
     @Schema(required = true)
@@ -40,4 +37,7 @@ public class UntersuchungSehenMassnahmenSaveJson {
     @NotNull
     @Schema(required = true)
     private boolean nachkontrolleSehen;
+
+    @Schema(required = true)
+    private long version;
 }

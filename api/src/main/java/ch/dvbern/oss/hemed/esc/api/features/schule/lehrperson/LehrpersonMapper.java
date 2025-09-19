@@ -1,5 +1,9 @@
 package ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
@@ -14,9 +18,7 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.json.KlasseOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.json.LehrpersonJson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.json.LehrpersonOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.json.LehrpersonSaveJson;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import ch.dvbern.oss.hemed.esc.api.shared.util.PathParamConsistancyUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -40,14 +42,17 @@ public final class LehrpersonMapper {
                 lehrperson.getName(),
                 lehrperson.getVorname(),
                 lehrperson.getEmail(),
-                lehrperson.getTelefon())
+                lehrperson.getTelefon(),
+                lehrperson.getVersion()
+            )
         );
     }
 
     @NonNull
     public static Lehrperson toEntity(
         @NonNull Lehrperson existingLehrperson,
-        @NonNull LehrpersonSaveJson saveJson) {
+        @NonNull LehrpersonSaveJson saveJson
+    ) {
         existingLehrperson.setGeschlecht(saveJson.getGeschlecht());
         existingLehrperson.setName(saveJson.getName());
         existingLehrperson.setVorname(saveJson.getVorname());
@@ -125,13 +130,13 @@ public final class LehrpersonMapper {
         @NonNull ID<Lehrperson> lehrpersonID,
         @NonNull LehrpersonSaveJson saveJson
     ) {
-        Lehrperson existingLehrperson = getLehrpersonAndEnsureNotEscada(lehrpersonID);
+        Lehrperson existingLehrperson = getLehrpersonAndEnsureNotExternalAktiv(lehrpersonID);
         Lehrperson entity = toEntity(existingLehrperson, saveJson);
-        return toJson(lehrpersonService.persist(entity));
+        return toJson(lehrpersonService.persistWithOptimisticLocking(entity, saveJson.getVersion()));
     }
 
     public void delete(@NonNull ID<Lehrperson> lehrpersonID) {
-        Lehrperson lehrpers = getLehrpersonAndEnsureNotEscada(lehrpersonID);
+        Lehrperson lehrpers = getLehrpersonAndEnsureNotExternalAktiv(lehrpersonID);
         klasseService.findByLehrperson(lehrpers.getId())
             .forEach(klasse -> {
                 lehrpers.getKlassen().remove(klasse);
@@ -144,19 +149,20 @@ public final class LehrpersonMapper {
         @NonNull ID<Klasse> klasseId,
         @NonNull ID<Lehrperson> lehrpersonID
     ) {
-
-        Lehrperson lehrperson = getLehrpersonAndEnsureNotEscada(lehrpersonID);
+        Lehrperson lehrperson = getLehrpersonAndEnsureNotExternalAktiv(lehrpersonID);
         Klasse klasse = klasseService.getById(klasseId);
         klasseService.addLehrpersonToKlasse(klasse, lehrperson);
         lehrperson.getKlassen().add(klasse);
+        lehrperson.disableOptimisticLockingCheck();
         return toJson(lehrpersonService.persist(lehrperson));
     }
 
     public void removeFromKlasse(@NonNull ID<Klasse> klasseId, @NonNull ID<Lehrperson> lehrpersonID) {
-        Lehrperson lehrperson = getLehrpersonAndEnsureNotEscada(lehrpersonID);
+        Lehrperson lehrperson = getLehrpersonAndEnsureNotExternalAktiv(lehrpersonID);
         Klasse klasse = klasseService.getById(klasseId);
         klasseService.removeLehrpersonFromKlasse(klasse, lehrperson);
         lehrperson.getKlassen().remove(klasse);
+        lehrperson.disableOptimisticLockingCheck();
         lehrpersonService.persist(lehrperson);
         // Loeschen, falls es die letzte Verknuepfung war
         if (lehrperson.getKlassen().isEmpty()) {
@@ -165,14 +171,21 @@ public final class LehrpersonMapper {
     }
 
     @NonNull
-    private Lehrperson getLehrpersonAndEnsureNotEscada(
+    private Lehrperson getLehrpersonAndEnsureNotExternalAktiv(
         @NonNull ID<Lehrperson> lehrpersonID
     ) {
         Lehrperson lehrperson = lehrpersonService.getById(lehrpersonID);
-        if (lehrperson.getExternalImportInfo() != null && lehrperson.getExternalImportInfo()
-            .isAktivInExternalSystem()) {
+        if (lehrperson.isAktivInExternalSystem()) {
             throw new AppValidationException(AppValidationMessage.escadaObjectsCannotBeUpdated(lehrperson));
         }
         return lehrperson;
+    }
+
+	public void requireConsistentPathParams(@NonNull ID<Lehrperson> lehrpersonID, @NonNull ID<Klasse> expectedKlasseId) {
+        PathParamConsistancyUtil.requireContainsForeignId(
+            lehrpersonID,
+            lehrpersonService.getById(lehrpersonID).getKlassen().stream().map(Klasse::getId).toList(),
+            expectedKlasseId
+        );
     }
 }

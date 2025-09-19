@@ -18,6 +18,8 @@
 
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
 import java.time.LocalDate;
 import java.util.function.Consumer;
 
@@ -28,9 +30,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungDurchfuehrung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungTriage;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArzt;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
@@ -80,8 +81,8 @@ public class UntersuchungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungBuilder withUntersuchungSehen(@NonNull UntersuchungSehen untersuchungSehen) {
-        this.untersuchung.setUntersuchungSehen(untersuchungSehen);
+    public UntersuchungBuilder withUntersuchungSehen(@NonNull UntersuchungSehenBeurteilung untersuchungSehenBeurteilung) {
+        this.untersuchung.setUntersuchungSehenBeurteilung(untersuchungSehenBeurteilung);
         return this;
     }
 
@@ -111,10 +112,18 @@ public class UntersuchungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungBuilder withUntersuchungArzt(@NonNull UntersuchungArzt untersuchungArzt) {
-        this.untersuchung.setUntersuchungArzt(untersuchungArzt);
+    public UntersuchungBuilder withUntersuchungArztBeurteilung(@NonNull UntersuchungArztBeurteilung untersuchungArztBrt) {
+        this.untersuchung.setUntersuchungArztBeurteilung(untersuchungArztBrt);
         return this;
     }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungBuilder withUntersuchungArztBemerkung(@NonNull UntersuchungArztBemerkung uaBem) {
+        this.untersuchung.setUntersuchungArztBemerkung(uaBem);
+        return this;
+    }
+
 
     @NonNull
     @CanIgnoreReturnValue

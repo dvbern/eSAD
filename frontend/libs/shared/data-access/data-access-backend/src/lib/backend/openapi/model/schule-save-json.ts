@@ -26,6 +26,7 @@ export interface SchuleSaveJson {
     zustaendigArzt?: BenutzerOptionJson;
     zustaendigMPA?: BenutzerOptionJson;
     schuleAktivStatus: EntityAktivStatus;
+    version: number;
 }
 export namespace SchuleSaveJson {
 }

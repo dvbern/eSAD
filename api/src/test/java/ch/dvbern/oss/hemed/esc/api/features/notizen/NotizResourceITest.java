@@ -18,15 +18,6 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.notizen;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.time.LocalDate;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.FailureType;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileNameUtil;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -67,6 +58,14 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import io.restassured.response.ResponseOptions;
 import jakarta.ws.rs.core.Response.Status;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
@@ -144,15 +143,15 @@ class NotizResourceITest extends AbstractITest {
             // using the generated file2 method does not work, it seems to be using the 'file' name as form name
             .reqSpec(spec -> {
                 spec.setContentType("multipart/form-data");
-                spec.addMultiPart("file2", "terstfile2name.pdf" ,testFileBytes);
+                spec.addMultiPart("file2", "terstfile2name.pdf", testFileBytes);
             })
             .reqSpec(spec -> {
                 spec.setContentType("multipart/form-data");
-                spec.addMultiPart("file3", "terstfile3name.pdf" ,testFileBytes);
+                spec.addMultiPart("file3", "terstfile3name.pdf", testFileBytes);
             })
             .reqSpec(spec -> {
                 spec.setContentType("multipart/form-data");
-                spec.addMultiPart("file4", "terstfile4name.pdf" ,testFileBytes);
+                spec.addMultiPart("file4", "terstfile4name.pdf", testFileBytes);
             })
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -167,6 +166,53 @@ class NotizResourceITest extends AbstractITest {
         assertThat(result.getData().getBemerkungen()).isEqualTo("Neue Bemerkungen");
         assertThat(result.getData().getVerantwortlicher().getId()).isEqualTo(verantwortlicher.getId().getId());
         assertThat(result.getData().getFiles()).isNotEmpty().hasSize(4);
+    }
+
+    @Test
+    @TestAsAdminBS
+    void createNotiz_forInactiveKind_shouldThrow() throws IOException {
+        // ARRANGE
+        Kind kind = fixtureService.createInactiveKind();
+        Dossier dossier = fixtureService.createDossier(kind);
+
+        NotizSaveJsonSpec saveNotizJson = NotizBuilder.createJaxSpec(builder -> builder
+            .withTitel("Neue Notiz")
+            .withBemerkungen("Neue Bemerkungen")
+            .withVerantwortlicher(verantwortlicher)
+            .withDossier(dossier)).getData();
+        File testFile = TestUtil.loadTestImage();
+        byte[] testFileBytes = Files.readAllBytes(TestUtil.loadTestPDF().toPath());
+        String saveNotizJsonString = objectMapper.writeValueAsString(saveNotizJson);
+        String expectedValidationErrorMessage = String.format(
+            "Das Kind %s %s ist inaktiv. Es kann keine Notiz für ein inaktives Kind erstellt werden.",
+            kind.getNameVorname(),
+            kind.getId());
+
+        // ACT & ASSERT
+        AppValidationErrorJsonSpec validationError =  api
+                .notizResourceCreate()
+                .kindIdPath(kind.getId().getId())
+                .reqSpec(spec -> {
+                    spec.setContentType("multipart/form-data");
+                    spec.addMultiPart("notizCreateJson", saveNotizJsonString, "application/json");
+                })
+                ._fileMultiPart(testFile)
+                // using the generated file2 method does not work, it seems to be using the 'file' name as form name
+                .reqSpec(spec -> {
+                    spec.setContentType("multipart/form-data");
+                    spec.addMultiPart("file2", "terstfile2name.pdf", testFileBytes);
+                })
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.BAD_REQUEST.getStatusCode())
+                .extract().as(AppValidationErrorJsonSpec.class);
+
+        assertThat(validationError.getViolations()).hasSize(1);
+        assertThat(validationError.getViolations().getFirst().getKey())
+            .isEqualTo("CannotCeateEntityForInactiveKind");
+        assertThat(validationError.getViolations().getFirst().getMessage())
+            .isEqualTo(expectedValidationErrorMessage);
     }
 
     @Test
@@ -286,6 +332,56 @@ class NotizResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
+    void removeNotiz_ofInactiveKind_shouldThrow() {
+        // ARRANGE
+        Kind kind = fixtureService.createInactiveKind();
+        Dossier dossier = fixtureService.createDossier(kind);
+        Notiz notiz = NotizBuilder.create(
+            builder -> builder
+                .withID(ID.random(Notiz.class))
+                .withTitel("Einzelne Notiz")
+                .withVerantwortlicher(verantwortlicher)
+                .withDossier(dossier));
+        notizService.persist(notiz);
+
+        NotizJsonSpec result = api
+            .notizResourceGetNotiz()
+            .kindIdPath(kind.getId().getId())
+            .notizIdPath(notiz.getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(NotizJsonSpec.class);
+        assertThat(result).isNotNull();
+
+        String expectedValidationErrorMessage = String.format(
+            "Das Kind %s %s ist inaktiv. Notiz mit %s kann nicht vom Kind entfernt werden.",
+            kind.getNameVorname(),
+            kind.getId(),
+            notiz.getId());
+
+        // ACT
+        AppValidationErrorJsonSpec validationError =  api
+                .notizResourceDeleteNotiz()
+                .kindIdPath(kind.getId().getId())
+                .notizIdPath(notiz.getId().getId())
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.BAD_REQUEST.getStatusCode())
+                .extract().as(AppValidationErrorJsonSpec.class);
+
+        assertThat(validationError.getViolations()).hasSize(1);
+        assertThat(validationError.getViolations().getFirst().getKey())
+            .isEqualTo("CannotRemoveEntityFromInactiveKind");
+        assertThat(validationError.getViolations().getFirst().getMessage())
+            .isEqualTo(expectedValidationErrorMessage);
+    }
+
+
+    @Test
+    @TestAsAdminBS
     void updateNotiz() throws IOException {
         // ARRANGE
         Notiz notiz = NotizBuilder.create(
@@ -387,7 +483,7 @@ class NotizResourceITest extends AbstractITest {
                 ._fileMultiPart(testFile)
                 .reqSpec(spec -> {
                     spec.setContentType("multipart/form-data");
-                    spec.addMultiPart("file3", "terstfile3name.docx" ,testFileBytes);
+                    spec.addMultiPart("file3", "terstfile3name.docx", testFileBytes);
                 })
                 .execute(ResponseBody::prettyPeek)
                 .then()
@@ -409,6 +505,77 @@ class NotizResourceITest extends AbstractITest {
         } catch (Exception e) {
             throw new RuntimeException("Error converting NotizSaveJsonSpec to JSON", e);
         }
+    }
+
+
+    @Test
+    @TestAsAdminBS
+    void updateNotizAllAtOnce_forInactiveKind_shouldThrow() throws IOException {
+        // ARRANGE
+        Kind kind = fixtureService.createInactiveKind();
+        Dossier dossier = fixtureService.createDossier(kind);
+        Notiz notiz = NotizBuilder.create(
+            builder -> builder
+                .withID(ID.random(Notiz.class))
+                .withTitel("Base Notiz")
+                .withVerantwortlicher(verantwortlicher)
+                .withDossier(dossier));
+        notizService.persist(notiz);
+
+        NotizJsonSpec result = api
+            .notizResourceGetNotiz()
+            .kindIdPath(kind.getId().getId())
+            .notizIdPath(notiz.getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(NotizJsonSpec.class);
+
+        NotizSaveJsonSpec data = result.getData();
+        List<LabelJsonSpec> labelsToUpdate = getNonUniqueLabel();
+        data.setBemerkungen("changed bemerkung with files");
+        data.setTitel("changed titel with files");
+        data.setStatus(NotizStatusSpec.ABGESCHLOSSEN);
+        data.setLabels(labelsToUpdate);
+
+        File testFile = TestUtil.loadTestImage();
+
+        byte[] testFileBytes = Files.readAllBytes(TestUtil.loadTestWord().toPath());
+
+
+        // Convert NotizSaveJsonSpec to JSON string
+        String saveNotizJsonString = this.objectMapper.writeValueAsString(data);
+        String expectedValidationErrorMessage = String.format(
+            "Das Kind %s %s ist inaktiv. Es können keine Änderungen an Notiz %s vorgenommen werden.",
+            kind.getNameVorname(),
+            kind.getId(),
+            notiz.getId());
+
+        // ACT
+        // Use the NotizenApiSpec method for updateNotizAllAtOnce
+        AppValidationErrorJsonSpec validationError =  api.notizResourceUpdateNotiz()
+                .kindIdPath(kind.getId().getId())
+                .notizIdPath(notiz.getId().getId())
+                .reqSpec(spec -> {
+                    spec.addMultiPart("notizSaveJson", saveNotizJsonString, "application/json");
+                })
+                ._fileMultiPart(testFile)
+                .reqSpec(spec -> {
+                    spec.setContentType("multipart/form-data");
+                    spec.addMultiPart("file3", "terstfile3name.docx", testFileBytes);
+                })
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.BAD_REQUEST.getStatusCode())
+                .extract().as(AppValidationErrorJsonSpec.class);
+
+        assertThat(validationError.getViolations()).hasSize(1);
+        assertThat(validationError.getViolations().getFirst().getKey())
+            .isEqualTo("CannotEditEntityForInactiveKind");
+        assertThat(validationError.getViolations().getFirst().getMessage())
+            .isEqualTo(expectedValidationErrorMessage);
     }
 
     @Test

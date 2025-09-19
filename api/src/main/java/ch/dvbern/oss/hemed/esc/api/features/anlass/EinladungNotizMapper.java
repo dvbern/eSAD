@@ -19,6 +19,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
@@ -35,7 +36,6 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizStatus;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
 import ch.dvbern.oss.hemed.esc.api.shared.notizen.AutoNotizService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -62,6 +62,7 @@ public class EinladungNotizMapper {
         @NonNull List<FileUpload> fileUploads
     ) {
         Einladung einladung = einladungService.getById(einladungId);
+        einladung.disableOptimisticLockingCheck();
         Notiz notiz = notizMapper.toEntityForCreate(createJson, einladung.getDossier().getId());
         return autoNotizService.createImpfausweisNotiz(einladung, notiz, fileUploads);
     }
@@ -73,6 +74,7 @@ public class EinladungNotizMapper {
         @NonNull List<FileUpload> fileUploads
     ) {
         Einladung einladung = einladungService.getById(einladungId);
+        einladung.disableOptimisticLockingCheck();
         Notiz notiz = notizMapper.toEntityForCreate(createJson, einladung.getDossier().getId());
         return autoNotizService.createFragebogenNotiz(einladung, notiz,fileUploads);
     }
@@ -85,7 +87,8 @@ public class EinladungNotizMapper {
         // ABGESAGT -> NICHT-ABGESAGT: delete
         if (einladung.getEinladungStatus() == EinladungStatus.TEILNAHME_ABGESAGT
             && einladungSaveJson.getEinladungStatus() != EinladungStatus.TEILNAHME_ABGESAGT
-            && einladung.getAbmeldungsNotiz() != null) {
+            && einladung.getAbmeldungsNotiz() != null
+        ) {
             notizService.remove(einladung.getAbmeldungsNotiz().getId());
             return null;
         }
@@ -101,7 +104,7 @@ public class EinladungNotizMapper {
             existingNotiz.setTitel(notizTitel);
             existingNotiz.setBemerkungen(getAbmeldungsnotizBemerkung(einladungSaveJson));
 
-            return notizService.persist(existingNotiz);
+            return notizService.persistWithOptimisticLocking(existingNotiz, einladungSaveJson.getVersionAbmeldungsNotiz());
         }
         // Neu ABGESAGT -> create
         String notizTitel = getAbmeldungsNotizTitel(einladung);
@@ -111,7 +114,8 @@ public class EinladungNotizMapper {
             NotizStatus.ABGESCHLOSSEN,
             BenutzerMapper.toOptionJson(currentUserService.currentUserRef()),
             new ArrayList<>(),
-            new ArrayList<>()
+            new ArrayList<>(),
+            0L // version
         );
         Notiz entityForCreate = notizMapper.toEntityForCreate(notizSaveJson, einladung.getDossier().getId());
         return autoNotizService.createNotizWithLabel(entityForCreate, Label.ID_LABEL_ABMELDUNGSGRUND);

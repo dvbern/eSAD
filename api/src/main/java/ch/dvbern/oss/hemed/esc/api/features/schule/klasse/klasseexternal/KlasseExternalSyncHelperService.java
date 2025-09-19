@@ -130,6 +130,7 @@ public class KlasseExternalSyncHelperService {
             updatedKlasseExt,
             appClock.offsetDateTime().now()
         );
+        updatedKlasse.disableOptimisticLockingCheck();
         updatedKlasse = klasseService.persist(updatedKlasse);
 
         return ItemSyncResultJson.createUpdateOkItem(idDTO, Klasse.class, updatedKlasse.getBezeichnung());
@@ -208,8 +209,9 @@ public class KlasseExternalSyncHelperService {
             klasseExternalToDelete.getExternalId(),
             klasse.getId());
 
-        if (klasse.getExternalImportInfo() != null && klasse.getExternalImportInfo().isAktivInExternalSystem()) {
+        if (klasse.getExternalImportInfo() != null && klasse.isAktivInExternalSystem()) {
             klasse.getExternalImportInfo().setAktivInExternalSystem(false);
+            klasse.disableOptimisticLockingCheck();
         }
         klasseExternalRepo.remove(klasseExternalToDelete.getId());
         if (klasse.getKlasseAktivStatus() == EntityAktivStatus.AKTIV) {

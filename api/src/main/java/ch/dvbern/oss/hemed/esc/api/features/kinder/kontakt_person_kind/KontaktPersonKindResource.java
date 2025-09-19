@@ -74,6 +74,7 @@ public class KontaktPersonKindResource {
         @NonNull @NotNull @PathParam("kindID") ID<Kind> kindID,
         @NonNull @NotNull @PathParam("kontaktPersonKindID") ID<KontaktPersonKind> kontaktPersonKindID
     ) {
+        kontaktPersonKindMapper.requireConsistentPathParams(kontaktPersonKindID, kindID);
         return kontaktPersonKindMapper.getById(kontaktPersonKindID);
     }
 
@@ -97,7 +98,8 @@ public class KontaktPersonKindResource {
         @NotNull @NonNull @PathParam("kontaktPersonKindID") ID<KontaktPersonKind> kontaktPersonKindID,
         @NotNull @NonNull @Valid KontaktPersonKindSaveJson kontaktPersonKindSaveJson
     ) {
-        return kontaktPersonKindMapper.update(kontaktPersonKindID, kontaktPersonKindSaveJson);
+        kontaktPersonKindMapper.requireConsistentPathParams(kontaktPersonKindID, kindID);
+        return kontaktPersonKindMapper.update(kindID, kontaktPersonKindID, kontaktPersonKindSaveJson);
     }
 
     @DELETE
@@ -107,7 +109,8 @@ public class KontaktPersonKindResource {
         @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID,
         @NotNull @NonNull @PathParam("kontaktPersonKindID") ID<KontaktPersonKind> kontaktPersonKindID
     ) {
-        kontaktPersonKindMapper.delete(kontaktPersonKindID);
+        kontaktPersonKindMapper.requireConsistentPathParams(kontaktPersonKindID, kindID);
+        kontaktPersonKindMapper.delete(kindID, kontaktPersonKindID);
     }
 
     @PUT
@@ -127,6 +130,7 @@ public class KontaktPersonKindResource {
         @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID,
         @NotNull @NonNull @PathParam("kontaktPersonKindID") ID<KontaktPersonKind> kontaktPersonKindID
     ) {
+        kontaktPersonKindMapper.requireConsistentPathParams(kontaktPersonKindID, kindID);
         kontaktPersonKindMapper.removeFromKind(kindID, kontaktPersonKindID);
     }
 }

@@ -35,7 +35,8 @@ public class UntersuchungHoerenOtoskopieMapper {
                 hoeren.getOtoskopieRechtsResultatAndere(),
                 hoeren.getOtoskopieLinks(),
                 hoeren.getOtoskopieLinksResultatAndere(),
-                hoeren.getBemerkungen()
+                hoeren.getBemerkungen(),
+                hoeren.getVersion()
             )
         );
     }
@@ -74,17 +75,20 @@ public class UntersuchungHoerenOtoskopieMapper {
     @NonNull
     public UntersuchungHoerenOtoskopieJson saveOtoskopie(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungHoerenOtoskopieSaveJson saveJson) {
+        @NonNull UntersuchungHoerenOtoskopieSaveJson saveJson
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
         UntersuchungHoerenOtoskopie hoerenOtoskopie = untersuchung.getUntersuchungHoerenOtoskopie();
         UntersuchungHoerenOtoskopie entity = toEntity(untersuchung, hoerenOtoskopie, saveJson);
-        return toJson(untersuchungHoerenService.persist(entity));
+        return toJson(untersuchungHoerenService.persistWithOptimisticLocking(entity, saveJson.getVersion()));
     }
 
+    @NonNull
     public UntersuchungHoerenOtoskopieSaveJson getDefaultUntersuchungHoerenOtoskopieForAnlassConfig(
-        @NonNull ID<Anlass> anlassID) {
+        @NonNull ID<Anlass> anlassID
+    ) {
         AnlassConfig anlassConfig = anlassService.getById(anlassID).getAnlassConfig();
-        return UntersuchungHoerenOtoskopieSaveJson.defaultOtoskopieValuesForAnlassConfig(AnlassConfigMapper.toJson(
-            anlassConfig));
+        return UntersuchungHoerenOtoskopieSaveJson
+            .defaultOtoskopieValuesForAnlassConfig(AnlassConfigMapper.toJson(anlassConfig));
     }
 }

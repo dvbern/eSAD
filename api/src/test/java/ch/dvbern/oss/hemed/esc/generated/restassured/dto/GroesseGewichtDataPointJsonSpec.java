@@ -44,7 +44,7 @@ public class GroesseGewichtDataPointJsonSpec {
 
   public static final String JSON_PROPERTY_GEWICHT = "gewicht";
   @jakarta.annotation.Nullable
-  private Integer gewicht;
+  private BigDecimal gewicht;
 
   public static final String JSON_PROPERTY_ALTER = "alter";
   @jakarta.annotation.Nullable
@@ -86,7 +86,7 @@ public class GroesseGewichtDataPointJsonSpec {
     this.groesse = groesse;
   }
 
-  public GroesseGewichtDataPointJsonSpec gewicht(@jakarta.annotation.Nullable Integer gewicht) {
+  public GroesseGewichtDataPointJsonSpec gewicht(@jakarta.annotation.Nullable BigDecimal gewicht) {
     
     this.gewicht = gewicht;
     return this;
@@ -100,14 +100,14 @@ public class GroesseGewichtDataPointJsonSpec {
   @JsonProperty(JSON_PROPERTY_GEWICHT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Integer getGewicht() {
+  public BigDecimal getGewicht() {
     return gewicht;
   }
 
 
   @JsonProperty(JSON_PROPERTY_GEWICHT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setGewicht(@jakarta.annotation.Nullable Integer gewicht) {
+  public void setGewicht(@jakarta.annotation.Nullable BigDecimal gewicht) {
     this.gewicht = gewicht;
   }
 

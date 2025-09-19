@@ -12,8 +12,9 @@ import {
   UntersuchungKindDatenSaveJson,
 } from '@dvb/data-access-backend';
 import {ISODateString} from '@dvb/data-access-types';
+import {globalConstants} from '@dvb/feat-shared';
 import {AppValidators, BaseForm, DetailMode} from '@dvb/util-angular';
-import {ensureProps, requireFilledIn, requireValue} from '@dvb/util-shared';
+import {ensureProps, Nullish, requireFilledIn, requireValue} from '@dvb/util-shared';
 
 function makeForm(fb: NonNullableFormBuilder) {
   const maxLength = AppValidators.dbMaxLength();
@@ -40,6 +41,8 @@ function makeForm(fb: NonNullableFormBuilder) {
     nachkontrolle: fb.control<boolean>(false),
     nachzuegler: fb.control<boolean>(false),
     neueintritt: fb.control<boolean>(false),
+    versionDurchfuehrung: fb.control<number | Nullish>({value: undefined, disabled: true}),
+    versionKindDaten: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 }
 
@@ -63,8 +66,13 @@ export class UntersuchungDatenForm extends BaseForm<ReturnType<typeof makeForm>,
     super.reset(durchfuehrungDaten, mode);
     this.group.reset({
       ...durchfuehrungDaten,
+      ...kindDaten?.data,
       ...kindDaten,
     });
+    // Wir haben zwei SaveJsons mit Versionsnummer in diesem Form, darum muss dies
+    // manuell gemappt werden
+    this.group.controls.versionDurchfuehrung.reset(durchfuehrungDaten?.version);
+    this.group.controls.versionKindDaten.reset(kindDaten?.data?.version);
   }
 
   override valueOnValid(): UntersuchungDurchfuehrungSaveJson {
@@ -75,6 +83,7 @@ export class UntersuchungDatenForm extends BaseForm<ReturnType<typeof makeForm>,
       nachkontrolle: value.nachkontrolle,
       nachzuegler: value.nachzuegler,
       neueintritt: value.neueintritt,
+      version: value.versionDurchfuehrung ?? globalConstants.entityPrePersistVersion,
     });
   }
 
@@ -97,6 +106,7 @@ export class UntersuchungDatenForm extends BaseForm<ReturnType<typeof makeForm>,
         klassenstufe: values.klassenstufe,
         klassentyp: values.klassentyp,
         klasse: values.klasse,
+        version: values.versionKindDaten ?? globalConstants.entityPrePersistVersion,
       }),
     }
   }

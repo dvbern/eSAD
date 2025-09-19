@@ -1,13 +1,15 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.json;
 
+import java.time.LocalDate;
+
+import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
-import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
-import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
-import ch.dvbern.oss.hemed.esc.api.shared.person.Land;
+import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungKindDaten;
 import ch.dvbern.oss.hemed.esc.api.shared.person.LandCode;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -19,20 +21,23 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @JaxDTO
 public class UntersuchungKindDatenJson {
 
-    @NotNull
-    @NonNull
-    @Schema(required = true)
-    private String name;
+    // Hier nullable, weil die Daten anfangs vom Kind genommen werden und erst später als
+    // UntersuchungKindDaten gespeichert werden.
+    @Nullable
+    @Schema(required = false)
+    private ID<UntersuchungKindDaten> id;
 
     @NotNull
     @NonNull
+    @Valid
     @Schema(required = true)
-    private String vorname;
+    private final EntityInfoJson entityInfo;
 
     @NotNull
     @NonNull
+    @Valid
     @Schema(required = true)
-    private Geschlecht geschlecht;
+    private final UntersuchungKindDatenSaveJson data;
 
     @Nullable
     @Schema(required = false)
@@ -42,48 +47,11 @@ public class UntersuchungKindDatenJson {
     @NotNull
     @NonNull
     @Schema(required = true)
-    private LocalDate geburtsdatum;
-
-    @NotNull
-    @NonNull
-    @Schema(required = true)
     private String alterDuodezimal;
 
     @Nullable
     @Schema(required = false)
-    private Land nationalitaet;
-
-    @Nullable
-    @Schema(required = false)
     private LandCode landCode;
-
-    @Nullable
-    @Schema(required = false)
-    private String schulhaus;
-
-    @Nullable
-    @Schema(required = false)
-    private String quartier;
-
-    @Nullable
-    @Schema(required = false)
-    private String schulkreis;
-
-    @Nullable
-    @Schema(required = false)
-    private String schulhausnummer;
-
-    @Nullable
-    @Schema(required = false)
-    private Klassenstufe klassenstufe;
-
-    @Nullable
-    @Schema(required = false)
-    private String klassentyp;
-
-    @Nullable
-    @Schema(required = false)
-    private String klasse;
 
     @Nullable
     @Schema(required = false)

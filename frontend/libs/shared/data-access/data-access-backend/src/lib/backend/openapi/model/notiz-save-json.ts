@@ -20,6 +20,7 @@ export interface NotizSaveJson {
     verantwortlicher: BenutzerOptionJson;
     labels: Array<LabelJson>;
     files: Array<FileDataJson>;
+    version: number;
 }
 export namespace NotizSaveJson {
 }

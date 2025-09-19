@@ -10,25 +10,26 @@ public final class AudiogrammMapper {
     }
 
     @Nullable
-    public static AudiogrammJson toJson(@Nullable Audiogramm audiogramm) {
+    public static AudiogrammSaveJson toJson(@Nullable Audiogramm audiogramm) {
         if (audiogramm == null) {
             return null;
         }
-        return new AudiogrammJson(
+        return new AudiogrammSaveJson(
             audiogramm.getDbHz250(),
             audiogramm.getDbHz500(),
             audiogramm.getDbHz1000(),
             audiogramm.getDbHz2000(),
             audiogramm.getDbHz4000(),
             audiogramm.getDbHz6000(),
-            audiogramm.getDbHz8000()
+            audiogramm.getDbHz8000(),
+            audiogramm.getVersion()
         );
     }
 
     @Nullable
     public static Audiogramm toEntity(
         @Nullable Audiogramm audiogramm,
-        @Nullable AudiogrammJson saveJson
+        @Nullable AudiogrammSaveJson saveJson
     ) {
         if (saveJson == null) {
             return null;

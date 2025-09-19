@@ -48,7 +48,6 @@ public final class UntersuchungImpfungenMapper {
                     impfungen.isImpfausweisNichtVorhanden(),
                     impfungen.isImpfausweisZweiPlusEinsSchema()
                 ),
-                UntersuchungImpfungenMassnahmenMapper.toJson(impfungen.getUntersuchungImpfungenMassnahmen()),
                 new UntersuchungImpfungenChecklisteSaveJson(
                     impfungen.isCheckEinwilligungVorhanden(),
                     impfungen.isCheckKontraindikationenAbgeklaert(),
@@ -68,7 +67,8 @@ public final class UntersuchungImpfungenMapper {
                     impfungen.getVisum2() != null
                         ? impfungen.getVisum2().getDatumVisiert()
                         : null
-                )
+                ),
+                impfungen.getVersion()
             )
         );
     }
@@ -114,6 +114,7 @@ public final class UntersuchungImpfungenMapper {
         List<UntersuchungImpfungInternJson> impfungenInternList = untersuchungImpfungInternMapper.findByEinladung(einladungId);
         return new UntersuchungImpfungenDataJson(
             toJson(impfungen),
+            UntersuchungImpfungenMassnahmenMapper.toJson(impfungen.getUntersuchungImpfungenMassnahmen()),
             new UntersuchungImpfstatusListSaveJson(impfstatusJsonList),
             new UntersuchungImpfungInternListJson(impfungenInternList));
     }
@@ -126,47 +127,60 @@ public final class UntersuchungImpfungenMapper {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
         UntersuchungImpfungen existingUntersuchungImpfung = untersuchung.getUntersuchungImpfungen();
         UntersuchungImpfungen entity = toEntity(untersuchung, existingUntersuchungImpfung, saveJson);
-        return toJson(untersuchungImpfungenService.persist(entity));
+        return toJson(untersuchungImpfungenService.persistWithOptimisticLocking(entity, saveJson.getVersion()));
     }
 
     @NonNull
     public UntersuchungImpfungenJson visierenDoppelkontrolleVisum1(
-        @NonNull ID<Einladung> einladungID
+        @NonNull ID<Einladung> einladungID,
+        @NonNull UntersuchungImpfungenSaveJson saveJson
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
         UntersuchungImpfungen untersuchungImpfung = untersuchung.getUntersuchungImpfungen();
         Objects.requireNonNull(untersuchungImpfung);
-        return toJson(untersuchungImpfungenService.visierenDoppelkontrolleVisum1(untersuchungImpfung));
+        return toJson(untersuchungImpfungenService.visierenDoppelkontrolleVisum1(
+            untersuchungImpfung,
+            saveJson.getVersion()));
     }
 
     @NonNull
     public UntersuchungImpfungenJson anfordernDoppelkontrolleVisum2(
         @NonNull ID<Einladung> einladungID,
-        @NonNull BenutzerOptionJson benutzerJson
+        @NonNull BenutzerOptionJson benutzerJson,
+        @NonNull UntersuchungImpfungenSaveJson saveJson
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
         UntersuchungImpfungen untersuchungImpfung = untersuchung.getUntersuchungImpfungen();
         Objects.requireNonNull(untersuchungImpfung);
-        return toJson(untersuchungImpfungenService.anfordernDoppelkontrolleVisum2(untersuchungImpfung, benutzerJson.getId()));
+        return toJson(untersuchungImpfungenService.anfordernDoppelkontrolleVisum2(
+            untersuchungImpfung,
+            saveJson.getVersion(),
+            benutzerJson.getId()));
     }
 
     @NonNull
     public UntersuchungImpfungenJson visierenDoppelkontrolleVisum2(
-        @NonNull ID<Einladung> einladungID
+        @NonNull ID<Einladung> einladungID,
+        @NonNull UntersuchungImpfungenSaveJson saveJson
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
         UntersuchungImpfungen untersuchungImpfung = untersuchung.getUntersuchungImpfungen();
         Objects.requireNonNull(untersuchungImpfung);
-        return toJson(untersuchungImpfungenService.visierenDoppelkontrolleVisum2(untersuchungImpfung));
+        return toJson(untersuchungImpfungenService.visierenDoppelkontrolleVisum2(
+            untersuchungImpfung,
+            saveJson.getVersion()));
     }
 
     @NonNull
     public UntersuchungImpfungenJson resetDoppelkontrolle(
-        @NonNull ID<Einladung> einladungID
+        @NonNull ID<Einladung> einladungID,
+        @NonNull UntersuchungImpfungenSaveJson saveJson
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
         UntersuchungImpfungen untersuchungImpfung = untersuchung.getUntersuchungImpfungen();
         Objects.requireNonNull(untersuchungImpfung);
-        return toJson(untersuchungImpfungenService.resetDoppelkontrolle(untersuchungImpfung));
+        return toJson(untersuchungImpfungenService.resetDoppelkontrolle(
+            untersuchungImpfung,
+            saveJson.getVersion()));
     }
 }

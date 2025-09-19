@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { EntityAktivStatus, KlasseJson } from '@dvb/data-access-backend';
-import { BenutzerStore, ConfirmService, KlasseJsonEnhanced, KlassenStore } from '@dvb/feat-shared';
+import {BenutzerStore, ConfirmService, KlasseJsonEnhanced, KlassenStore} from '@dvb/feat-shared';
 import {
   CardComponent,
   CollapsibleMenuComponent,
@@ -15,12 +15,12 @@ import {
   TableLinkComponent,
   TextInputDirective,
 } from '@dvb/ui-components';
-import { FilterSessionStorage, TableModel } from '@dvb/util-angular';
-import { ensureProps, hasListEditBerechtigung, isNullish, isValidEnumValue } from '@dvb/util-shared';
+import { hasListEditBerechtigung, isNullish } from '@dvb/util-shared';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { NgbDropdownItem } from '@ng-bootstrap/ng-bootstrap';
 import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
-import { KlassenListFilter, KlassenListFilterForm } from './klassen-list-filter.form';
+import { TableModel } from '@dvb/util-angular';
+import { KlassenListFilterForm } from './klassen-list-filter.form';
 
 @Component({
   selector: 'feat-klassen-list',
@@ -46,7 +46,7 @@ import { KlassenListFilter, KlassenListFilterForm } from './klassen-list-filter.
   styleUrl: './klassen-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class KlassenListComponent extends FilterSessionStorage<KlassenListFilter> implements OnInit {
+export class KlassenListComponent {
   readonly klassenStore = inject(KlassenStore);
   readonly benutzerStore = inject(BenutzerStore);
   readonly confirmService = inject(ConfirmService);
@@ -54,44 +54,27 @@ export class KlassenListComponent extends FilterSessionStorage<KlassenListFilter
 
   canEditList = this.benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
 
-  readonly SESSIONSTORAGE_KEY = 'klassenFilter';
+  itemTable = input.required<TableModel<KlasseJsonEnhanced>>();
+  tableFilterForm = input.required<KlassenListFilterForm>();
+  loading = input.required<boolean>();
 
-  itemTable = new TableModel<KlasseJsonEnhanced>(
-    {
-      rawListSignal: this.klassenStore.entities,
-      lazyLoadOnSortOrFilter: () => this.setSessionStorageFilter(this.tableFilterForm.valueOnValid()),
-    },
-    { frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll' },
-  );
-  readonly tableFilterForm = new KlassenListFilterForm({
-    fb: inject(NonNullableFormBuilder),
-    destroyRef: inject(DestroyRef),
-    paginatedTable: this.itemTable,
-  });
   readonly klasseAktivStati = Object.values(EntityAktivStatus);
 
-  ngOnInit() {
-    const filter = this.getSessionStorageFilter();
-    if (filter) {
-      this.tableFilterForm.reset(filter);
-    }
-  }
-
-  public deleteTitleTextForKlasse(klasse: KlasseJson): string {
+  public deleteTitleTextForKlasse(klasse: KlasseJsonEnhanced): string {
     if (this.isExternalKlasseAndActive(klasse)) {
       return 'klasse.list.delete.impossible.tooltip';
     }
     return '';
   }
 
-  public isExternalKlasseAndActive(klasse: KlasseJson): boolean {
+  public isExternalKlasseAndActive(klasse: KlasseJsonEnhanced): boolean {
     if (isNullish(klasse.externalImportInfoJson)) {
       return false;
     }
     return klasse.externalImportInfoJson.aktivInExternalSystem;
   }
 
-  public changeKlasseAktivStatus(klasse: KlasseJson): void {
+  public changeKlasseAktivStatus(klasse: KlasseJsonEnhanced): void {
     const decideText = this.determineTextBasedOnStatus(klasse.data.klasseAktivStatus);
 
     this.confirmService
@@ -131,26 +114,5 @@ export class KlassenListComponent extends FilterSessionStorage<KlassenListFilter
       .subscribe(() => {
         this.klassenStore.removeKlasse(klasse.id);
       });
-  }
-
-  mapSessionStorageStringToFilter(sessionStorageFilter: string): KlassenListFilter | undefined {
-    try {
-      const parsed = JSON.parse(sessionStorageFilter) as KlassenListFilter;
-
-      // Reconstruct the filter with proper data types and validation
-      return ensureProps<KlassenListFilter>({
-        schule: parsed.schule ?? '',
-        bezeichnung: parsed.bezeichnung ?? '',
-        klassenstufe: parsed.klassenstufe ?? '',
-        klasseSchulart: parsed.klasseSchulart ?? '',
-        lehrperson: parsed.lehrperson ?? '',
-        klasseAktivStatus: isValidEnumValue(EntityAktivStatus, parsed.klasseAktivStatus)
-          ? parsed.klasseAktivStatus
-          : undefined,
-      });
-    } catch (error) {
-      console.warn('Failed to parse session storage filter:', error);
-      return undefined;
-    }
   }
 }

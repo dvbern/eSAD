@@ -45,17 +45,29 @@ public class SchuleService {
         return schule;
     }
 
+    @NonNull
+    public Schule persistWithOptimisticLocking(@NonNull Schule entity, @NonNull Long versionFromFrontend) {
+        return schuleRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
+    }
+
     public void remove(@NonNull ID<Schule> id) {
         schuleRepo.remove(id);
     }
 
     @NonNull
     public Schule getByExternalId(@IgnoreForIdClassTest @NonNull String externalId) {
-        return schuleRepo.getByExternalId(externalId);
+        Schule schule = schuleRepo.getByExternalId(externalId);
+        schule.disableOptimisticLockingCheck();
+        return schule;
     }
 
+    @NonNull
     public Optional<Schule> findByExternalId(@IgnoreForIdClassTest @NonNull String externalId) {
-        return schuleRepo.findByExternalId(externalId);
+        return schuleRepo.findByExternalId(externalId)
+            .map(schule -> {
+            schule.disableOptimisticLockingCheck();
+            return schule;
+        });
     }
 
     @NonNull

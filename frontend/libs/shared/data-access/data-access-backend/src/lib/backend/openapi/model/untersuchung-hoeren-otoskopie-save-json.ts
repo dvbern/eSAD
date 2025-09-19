@@ -16,6 +16,7 @@ export interface UntersuchungHoerenOtoskopieSaveJson {
     otoskopieLinks?: Array<OtoskopieResultat>;
     otoskopieLinksResultatAndere?: string;
     bemerkungen?: string;
+    version: number;
 }
 
 

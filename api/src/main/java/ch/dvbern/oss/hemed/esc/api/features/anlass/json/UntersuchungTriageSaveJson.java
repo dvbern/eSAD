@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.json;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.NaechsteStation;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -11,7 +12,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Value
 @AllArgsConstructor
 @JaxDTO
-public class UntersuchungTriageSaveJson {
+public class UntersuchungTriageSaveJson implements SaveJsonWithOptimisticLocking {
 
     @NotNull
     @Schema(required = true)
@@ -56,4 +57,7 @@ public class UntersuchungTriageSaveJson {
     @Nullable
     @Schema(required = false)
     private NaechsteStation naechsteStation;
+
+    @Schema(required = true)
+    private long version;
 }

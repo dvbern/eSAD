@@ -18,6 +18,17 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.escada;
 
+import java.io.File;
+import java.io.Reader;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.dvbstarter.shared.types.sozialversicherungsnummer.SozialversicherungsNummer;
@@ -51,8 +62,8 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.schulenexternal.SchuleExterna
 import ch.dvbern.oss.hemed.esc.api.features.schule.schulenexternal.SchuleExternalRepo;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.escada.ItemSyncResultJson;
-import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Land;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
@@ -69,26 +80,24 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.util.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-
-import java.io.File;
-import java.io.Reader;
-import java.nio.file.Path;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import static ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil.createReaderFromPath;
-import static ch.dvbern.oss.hemed.esc.api.features.escada.json.EscadaImportMode.*;
+import static ch.dvbern.oss.hemed.esc.api.features.escada.json.EscadaImportMode.CREATE;
+import static ch.dvbern.oss.hemed.esc.api.features.escada.json.EscadaImportMode.DELETE;
+import static ch.dvbern.oss.hemed.esc.api.features.escada.json.EscadaImportMode.UPDATE;
 
 @QuarkusTest
 @RequiredArgsConstructor
 @TestMethodOrder(OrderAnnotation.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(Lifecycle.PER_CLASS)
 class EscadaServiceITest extends AbstractITest {
 
     private final EscadaService escadaService;
@@ -125,7 +134,7 @@ class EscadaServiceITest extends AbstractITest {
     }
 
     private void resetDatabase() {
-        databaseService.resetAndReinitDatabasePreservingHibernateSequenceValue();
+        databaseService.resetAndReinitDatabasePreservingHibernateSequenceValue(TenantEnum.BS);
     }
 
     @Test
@@ -222,7 +231,8 @@ class EscadaServiceITest extends AbstractITest {
         Schule schule = schuleService.getByExternalId("57"); // should be Margrethen
         fixtureService.setTimestampFirstImportOfSchule(schule.getId(), null);
         Assertions.assertThat(schuleService.getByExternalId("57").getExternalImportInfo()).isNotNull()
-            .returns(null, ExternalImportInfo::getTimestampFirstImport);
+            .returns(null,
+                externalImportInfo -> externalImportInfo != null ? externalImportInfo.getTimestampFirstImport() : null);
 
         // ACT - run import again to update the timestamp
         resetTime();
@@ -230,12 +240,12 @@ class EscadaServiceITest extends AbstractITest {
 
         Schule schuleAfterUpdate = schuleService.getByExternalId("57");
         assertExternalImportInfo(schuleAfterUpdate, "57", true, this.getAppClock().offsetDateTime().now());
-
     }
 
     @Test
     @TestAsEscada
     @Order(20)
+    @SuppressWarnings("java:S5961" /* Keep number of assertions */)
     void testKlassenImportShouldBeRunnableMultipleTimes() {
         importSchulenBasedataIntoEmptyDB("/EscadaTest/klassen/csv_klassen_1.csv");
 
@@ -464,6 +474,7 @@ class EscadaServiceITest extends AbstractITest {
     @Test
     @TestAsEscada
     @Order(40)
+    @SuppressWarnings("java:S5961" /* Keep number of assertions */)
     void testKinderImportShouldBeRunnableMultipleTimes() {
 
         // ARRANGE
@@ -521,15 +532,15 @@ class EscadaServiceITest extends AbstractITest {
             .returns(Geschlecht.MAENNLICH, Kind::getGeschlecht)
             .returns("222538", Kind::getExternalSystemIdOrNull)
             .extracting(Kind::getAdresse).isNotNull()
-            .returns("Inzlingerstrasse 270c", Adresse::getStrasseUndNr)
-            .returns("4125", Adresse::getPlz)
-            .returns("Riehen", Adresse::getOrt)
-            .returns(Land.SCHWEIZ, Adresse::getLand);
+            .returns("Inzlingerstrasse 270c", a -> a != null ? a.getStrasseUndNr() : null)
+            .returns("4125", a -> a != null ? a.getPlz() : null)
+            .returns("Riehen", a -> a != null ? a.getOrt() : null)
+            .returns(Land.SCHWEIZ, a -> a != null ? a.getLand() : null);
         assertExternalImportInfo(kindBeforeUpdate, "222538", true, this.getAppClock().offsetDateTime().now());
 
         Assertions.assertThat(kindBeforeUpdate.getKlasse()).isNotNull()
-            .returns("11994011", Klasse::getExternalSystemIdOrNull)
-            .returns("KG  BU WEISS 2", Klasse::getBezeichnung);
+            .returns("11994011", k -> k != null ? k.getExternalSystemIdOrNull() : null)
+            .returns("KG  BU WEISS 2", k -> k != null ? k.getBezeichnung() : null);
 
         // ACT
         resetTime(); // advance time
@@ -576,14 +587,14 @@ class EscadaServiceITest extends AbstractITest {
             .returns(Geschlecht.WEIBLICH, Kind::getGeschlecht)
             .returns("222538", Kind::getExternalSystemIdOrNull)
             .extracting(Kind::getAdresse).isNotNull()
-            .returns("Changestrasse 1", Adresse::getStrasseUndNr)
-            .returns("4126", Adresse::getPlz)
-            .returns("Riehen BS", Adresse::getOrt)
-            .returns(Land.SCHWEIZ, Adresse::getLand);
+            .returns("Changestrasse 1", a -> a != null ? a.getStrasseUndNr() : null)
+            .returns("4126", a -> a != null ? a.getPlz() : null)
+            .returns("Riehen BS", a -> a != null ? a.getOrt() : null)
+            .returns(Land.SCHWEIZ, a -> a != null ? a.getLand() : null);
 
         Assertions.assertThat(kindAfterUpdate.getKlasse()).isNotNull()
-            .returns("11976367", Klasse::getExternalSystemIdOrNull)
-            .returns("Sek DW DEWET 3t", Klasse::getBezeichnung);
+            .returns("11976367", k -> k != null ? k.getExternalSystemIdOrNull() : null)
+            .returns("Sek DW DEWET 3t", k -> k != null ? k.getBezeichnung() : null);
 
         KindExternal extKindAfterUpdate = kindExternalRepo.getExternalKindForKind(kindAfterUpdate.getId());
         Assertions.assertThat(extKindAfterUpdate).isNotNull()
@@ -663,22 +674,24 @@ class EscadaServiceITest extends AbstractITest {
         Kind kindSgf1 = kindService.getByExternalId("528310");
         Assertions.assertThat(kindSgf1)
             .extracting(Kind::getSchule)
-            .returns(EscadaDummySchulenIds.SCHULE_FUER_GESTALTUNG, Schule::getId);
+            .returns(EscadaDummySchulenIds.SCHULE_FUER_GESTALTUNG, s -> s != null ? s.getId() : null);
 
         Kind kindSgf2 = kindService.getByExternalId("442859");
         Assertions.assertThat(kindSgf2)
             .extracting(Kind::getSchule)
-            .returns(EscadaDummySchulenIds.SCHULE_FUER_GESTALTUNG, Schule::getId);
+            .returns(EscadaDummySchulenIds.SCHULE_FUER_GESTALTUNG, s -> s != null ? s.getId() : null);
 
         Kind kindNotSgf = kindService.getByExternalId("307324");
         Assertions.assertThat(kindNotSgf)
             .extracting(Kind::getSchule)
-            .returns(EscadaDummySchulenIds.ALLGEMEINE_GEWERBESCHULE_BASEL, Schule::getId);
+            .returns(EscadaDummySchulenIds.ALLGEMEINE_GEWERBESCHULE_BASEL,
+                s -> s != null ? s.getId() : null);
     }
 
     @Test
     @TestAsEscada
     @Order(50)
+    @SuppressWarnings("java:S5961" /* Keep number of assertions */)
     void testKontaktpersonKindImportShouldBeRunnableMultipleTimes() {
 
         // ARRANGE
@@ -796,6 +809,7 @@ class EscadaServiceITest extends AbstractITest {
     @Test
     @TestAsEscada
     @Order(60)
+    @SuppressWarnings("java:S5961" /* Keep number of assertions */)
     void testDeactivateAndReactivate() {
         // ARRANGE
         // make sure there are some kinder to deaktivieren
@@ -829,6 +843,16 @@ class EscadaServiceITest extends AbstractITest {
                 Kind kind = kindService.getByExternalId(externalId);
                 Assertions.assertThat(kind).isNotNull()
                     .returns(false, Kind::isManualOrAktivInExternalSystem);
+                // Beim Deaktivieren sollten die Kinder keine Klasse und keine Schule mehr haben
+                Assertions.assertThat(kind.getKlasse()).isNull();
+                // if schule is not dummy schule
+                Assertions.assertThat(kind.getSchule()).satisfiesAnyOf(
+                    schule -> Assertions.assertThat(schule).isNull(),
+                    schule -> Assertions.assertThat(schule)
+                        .isNotNull()
+                        .extracting(s -> Objects.requireNonNull(s).getExternalSystemIdOrNull())
+                        .isNull()
+                );
             });
 
         // REIMPORT
@@ -884,9 +908,11 @@ class EscadaServiceITest extends AbstractITest {
             .first()
             .returns(true, Kind::isManualOrAktivInExternalSystem)
             .as("Kind Data should not be updated since we could have changed it manually")
-            .returns("Beat", Kind::getVorname);
+            .returns("Beat", Kind::getVorname)
+            .doesNotReturn(null, Kind::getSchule)
+            .doesNotReturn(null, Kind::getKlasse);
 
-        // check that lehrperson exists only once because the old one was reactivated and reused
+        // check that kontaktperson kind exists only once because the old one was reactivated and reused
         Assertions.assertThat(kontaktPersonKindService.findAll()
                 .stream()
                 .filter(kontaktPersonKind -> kontaktPersonKind.getName().equals("Roth")))

@@ -22,7 +22,33 @@ public final class AnlassConfigMapper {
         boolean isHoerenOtoskopieVisible = isAnyVisible(
             config.getHoerenOtoskopie(),
             config.getHoerenOtoskopieBemerkungen());
-
+        boolean isArztUntersuchungBeurteilungVisible = isAnyVisible(
+            config.getUntersuchungBewegungsapparat(),
+            config.getUntersuchungEinbeinstand(),
+            config.getUntersuchungEinbeinhuepfen(),
+            config.getUntersuchungFingeropposition(),
+            config.getUntersuchungMotorik(),
+            config.getUntersuchungSprache(),
+            config.getUntersuchungMundZaehne(),
+            config.getUntersuchungHaut(),
+            config.getUntersuchungHerz(),
+            config.getUntersuchungBlutdruck(),
+            config.getUntersuchungVerhalten());
+        boolean isArztBemerkungVisible = isAnyVisible(
+            config.getUntersuchungBemerkungen());
+        boolean isSehenBeurteilungVisible = isAnyVisible(
+            config.getSehenBrilleLinsen(),
+            config.getSehenFarbsehen(),
+            config.getSehenTafel(),
+            config.getSehenFernvisus(),
+            config.getSehenStereoTest(),
+            config.getSehenStrabismus(),
+            config.getSehenInspektion(),
+            config.getSehenKonvergenz(),
+            config.getSehenMotilitaet(),
+            config.getSehenNahvisus(),
+            config.getSehenBemerkungen(),
+            config.getSehenMassnahmen());
         return new AnlassConfigJson(
             config.getId(),
             config.getAnlassTyp(),
@@ -42,7 +68,7 @@ public final class AnlassConfigMapper {
                 || config.isImpfungenMassnahmeEinzelFolgetermin()
                 || config.isImpfungenMassnahmeInfoKinderarzt()
                 || config.isImpfungenMassnahmeBeratungMPA()
-                || config.isImpfungenMassnahmeInformationenAbgegeben()
+                || config.isImpfungenMassnahmeInfomaterialAbgegeben()
                 || config.isImpfungenMassnahmeInfoEltern()
                 || config.isImpfungenMassnahmeRueckfrageKinderarzt(),
             config.getImpfungenUebersicht(),
@@ -51,7 +77,7 @@ public final class AnlassConfigMapper {
             config.isImpfungenMassnahmeEinzelFolgetermin(),
             config.isImpfungenMassnahmeInfoKinderarzt(),
             config.isImpfungenMassnahmeBeratungMPA(),
-            config.isImpfungenMassnahmeInformationenAbgegeben(),
+            config.isImpfungenMassnahmeInfomaterialAbgegeben(),
             config.isImpfungenMassnahmeInfoEltern(),
             config.isImpfungenMassnahmeRueckfrageKinderarzt(),
             isAnyVisible(
@@ -66,18 +92,12 @@ public final class AnlassConfigMapper {
             config.getUntersuchungImpfungBemerkungen(),
             // Sehen
             isAnyVisible(
-                config.getSehenBrilleLinsen(),
-                config.getSehenFarbsehen(),
-                config.getSehenTafel(),
-                config.getSehenFernvisus(),
-                config.getSehenStereoTest(),
-                config.getSehenStrabismus(),
-                config.getSehenInspektion(),
-                config.getSehenKonvergenz(),
-                config.getSehenMotilitaet(),
-                config.getSehenNahvisus(),
-                config.getSehenBemerkungen(),
-                config.getSehenMassnahmen()),
+                isSehenBeurteilungVisible,
+                isAnyVisible(config.getSehenBemerkungenFragebogen()),
+                isAnyVisible(config.getSehenMassnahmen())
+            ),
+            // Sehen Beurteilung
+            isSehenBeurteilungVisible,
             config.getSehenBrilleLinsen(),
             config.getSehenFarbsehen(),
             config.getSehenTafel(),
@@ -89,6 +109,11 @@ public final class AnlassConfigMapper {
             config.getSehenMotilitaet(),
             config.getSehenNahvisus(),
             config.getSehenBemerkungen(),
+            // Sehen Bemerkung Fragebogen
+            isAnyVisible(config.getSehenBemerkungenFragebogen()),
+            config.getSehenBemerkungenFragebogen(),
+            // Sehen Massnahmen
+            isAnyVisible(config.getSehenMassnahmen()),
             config.getSehenMassnahmen(),
             // Hoeren
             isAnyVisible(isHoerenAudiogrammVisible, isHoerenOtoskopieVisible),
@@ -127,20 +152,13 @@ public final class AnlassConfigMapper {
             ),
             config.isShowTriageTriage(),
             config.isShowTriageKindWeiterleiten(),
-            // Untersuchung
+            // Untersuchung Arzt
             isAnyVisible(
-                config.getUntersuchungBewegungsapparat(),
-                config.getUntersuchungEinbeinstand(),
-                config.getUntersuchungEinbeinhuepfen(),
-                config.getUntersuchungFingeropposition(),
-                config.getUntersuchungMotorik(),
-                config.getUntersuchungSprache(),
-                config.getUntersuchungMundZaehne(),
-                config.getUntersuchungHaut(),
-                config.getUntersuchungHerz(),
-                config.getUntersuchungBlutdruck(),
-                config.getUntersuchungVerhalten(),
-                config.getUntersuchungBemerkungen()),
+                isArztUntersuchungBeurteilungVisible,
+                isArztBemerkungVisible
+            ),
+            isArztUntersuchungBeurteilungVisible,
+            isArztBemerkungVisible,
             config.getUntersuchungBewegungsapparat(),
             config.getUntersuchungEinbeinstand(),
             config.getUntersuchungEinbeinhuepfen(),

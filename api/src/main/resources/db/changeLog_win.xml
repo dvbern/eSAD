@@ -1,0 +1,49 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~
+  ~ Copyright (C) 2024 DV Bern AG, Switzerland
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <include file="db/win/0001-init-schema-win.xml"/>
+  <include file="db/win/0002-insert-systemadmin-win.xml"/>
+  <include file="db/win/0003-insert-tenantsettings-win.xml"/>
+  <include file="db/win/0004-insert-infomaterial-win.xml"/>
+  <include file="db/win/0005-insert-quartier-win.xml"/>
+  <include file="db/win/0006-insert-labels-win.xml"/>
+  <include file="db/win/0007-insert-anlassconfig-win.xml"/>
+  <include file="db/win/0008-insert-impfstoffe-win.xml"/>
+  <include file="db/win/0009-insert-schedulerconfig-win.xml"/>
+  <include file="db/base/0001-update-aufgabe-notiz-bemerkung-maxlengt.xml"/>
+  <include file="db/base/0002-update-absagebemerkung-maxlength.xml"/>
+  <include file="db/base/0003_rename_informationenAbgegeben.xml"/>
+  <include file="db/win/0010-aktivinexternalsystem-nullable.xml"/>
+  <include file="db/win/0011-enable-pg_trgm-indizes-gin.xml"/>
+  <include file="db/base/0004_gewicht_bigdecimal.xml"/>
+  <include file="db/base/0005-split-tab-sehen.xml"/>
+
+  <!--  The following scripts only run in the 'test' context-->
+  <include file="db-test/0011-insert-test-benutzer-admin-win.xml" context="@test"/>
+
+  <!-- The following scripts only run in the 'dev' context
+	  To use it, insert the following in your .env:
+	  _DEV_QUARKUS_LIQUIBASE_CONTEXTS=dev,test
+  -->
+
+</databaseChangeLog>

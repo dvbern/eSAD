@@ -21,6 +21,7 @@ export interface KontaktPersonKindSaveJson {
     email?: string;
     telefon?: string;
     korrespondenz: boolean;
+    version: number;
 }
 export namespace KontaktPersonKindSaveJson {
 }

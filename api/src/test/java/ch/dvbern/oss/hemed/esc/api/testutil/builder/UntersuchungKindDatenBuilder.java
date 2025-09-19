@@ -130,7 +130,8 @@ public class UntersuchungKindDatenBuilder {
             entity.getSchulhausnummer(),
             entity.getKlassenstufe(),
             entity.getKlassentyp(),
-            entity.getKlasse()
+            entity.getKlasse(),
+            entity.getVersion()
         );
     }
 

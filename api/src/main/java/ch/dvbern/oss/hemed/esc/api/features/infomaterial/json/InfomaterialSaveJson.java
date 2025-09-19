@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.infomaterial.json;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.mandant.TranslatedStringJson;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +15,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Setter
 @AllArgsConstructor
 @JaxDTO
-public class InfomaterialSaveJson {
+public class InfomaterialSaveJson implements SaveJsonWithOptimisticLocking {
 
     @Valid
     @NonNull
@@ -25,4 +26,7 @@ public class InfomaterialSaveJson {
     @NotNull
     @Schema(required = true)
     private boolean aktiv = true;
+
+    @Schema(required = true)
+    private long version;
 }

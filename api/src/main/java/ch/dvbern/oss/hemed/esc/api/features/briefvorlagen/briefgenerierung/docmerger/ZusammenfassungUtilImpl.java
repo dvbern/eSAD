@@ -2,7 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.docm
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Dezibel;
@@ -23,7 +23,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public final class ZusammenfassungUtilImpl {
 
     private final AnlassConfig anlassConfig;
-    private final UntersuchungSehen untersuchungSehen;
+    private final UntersuchungSehenBeurteilung untersuchungSehenBeurteilung;
     private final UntersuchungHoerenAudiogramm untersuchungHoerenAudiogramm;
     private final UntersuchungHoerenOtoskopie untersuchungHoerenOtoskopie;
 
@@ -37,43 +37,43 @@ public final class ZusammenfassungUtilImpl {
             : new UntersuchungHoerenAudiogramm();
         this.untersuchungHoerenOtoskopie = untersuchung.getUntersuchungHoerenOtoskopie() != null ?
             untersuchung.getUntersuchungHoerenOtoskopie() : new UntersuchungHoerenOtoskopie();
-        this.untersuchungSehen = untersuchung.getUntersuchungSehen() != null
-            ? untersuchung.getUntersuchungSehen()
-            : new UntersuchungSehen();
+        this.untersuchungSehenBeurteilung = untersuchung.getUntersuchungSehenBeurteilung() != null
+            ? untersuchung.getUntersuchungSehenBeurteilung()
+            : new UntersuchungSehenBeurteilung();
     }
 
     public boolean isStereotest(@NonNull StereotestResultat resultat) {
-        return !anlassConfig.getSehenStereoTest().isVisible() || untersuchungSehen.getStereotest() == resultat;
+        return !anlassConfig.getSehenStereoTest().isVisible() || untersuchungSehenBeurteilung.getStereotest() == resultat;
     }
 
     public boolean isFarbsehen(@NonNull FarbsehenResultat resultat) {
-        return !anlassConfig.getSehenFarbsehen().isVisible() || untersuchungSehen.getFarbsehen() == resultat;
+        return !anlassConfig.getSehenFarbsehen().isVisible() || untersuchungSehenBeurteilung.getFarbsehen() == resultat;
     }
 
     public boolean isFernvisus(@NonNull DistanzSehenResultat resultat) {
-        return !anlassConfig.getSehenFernvisus().isVisible() || untersuchungSehen.getFernvisus()
+        return !anlassConfig.getSehenFernvisus().isVisible() || untersuchungSehenBeurteilung.getFernvisus()
             .stream()
             .allMatch(value -> value == resultat);
     }
 
     public boolean isNahvisus(@NonNull DistanzSehenResultat resultat) {
-        return !anlassConfig.getSehenNahvisus().isVisible() || untersuchungSehen.getNahvisus()
+        return !anlassConfig.getSehenNahvisus().isVisible() || untersuchungSehenBeurteilung.getNahvisus()
             .stream()
             .allMatch(value -> value == resultat);
     }
 
     public boolean isStrabismus(@NonNull StrabismusResultat resultat) {
-        return !anlassConfig.getSehenStrabismus().isVisible() || untersuchungSehen.getStrabismus()
+        return !anlassConfig.getSehenStrabismus().isVisible() || untersuchungSehenBeurteilung.getStrabismus()
             .stream()
             .allMatch(value -> value == resultat);
     }
 
     public boolean isInspektion(@NonNull InspektionKonvergenzResultat resultat) {
-        return !anlassConfig.getSehenInspektion().isVisible() || untersuchungSehen.getInspektion() == resultat;
+        return !anlassConfig.getSehenInspektion().isVisible() || untersuchungSehenBeurteilung.getInspektion() == resultat;
     }
 
     public boolean isKonvergenz(@NonNull InspektionKonvergenzResultat resultat) {
-        return !anlassConfig.getSehenKonvergenz().isVisible() || untersuchungSehen.getKonvergenz() == resultat;
+        return !anlassConfig.getSehenKonvergenz().isVisible() || untersuchungSehenBeurteilung.getKonvergenz() == resultat;
     }
 
     public boolean isAudiogramBeurteilung(@NonNull AudiogrammBeurteilung resultat) {
@@ -116,10 +116,10 @@ public final class ZusammenfassungUtilImpl {
     }
 
     public boolean isBrilleLinsen(@NonNull BrilleLinsenResultat resultat) {
-        return !anlassConfig.getSehenBrilleLinsen().isVisible() || untersuchungSehen.getBrilleLinsen() == resultat;
+        return !anlassConfig.getSehenBrilleLinsen().isVisible() || untersuchungSehenBeurteilung.getBrilleLinsen() == resultat;
     }
 
     public boolean isMotilitaet(@NonNull MotilitaetResultat resultat) {
-        return !anlassConfig.getSehenMotilitaet().isVisible() || untersuchungSehen.getMotilitaet() == resultat;
+        return !anlassConfig.getSehenMotilitaet().isVisible() || untersuchungSehenBeurteilung.getMotilitaet() == resultat;
     }
 }

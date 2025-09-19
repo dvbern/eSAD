@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht;
 
+import java.math.BigDecimal;
+
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungService;
@@ -22,7 +24,8 @@ import org.junit.jupiter.api.Test;
 @RequiredArgsConstructor
 class UntersuchungGroesseGewichtResourceITest extends AbstractITest {
 
-    private final UntersuchungGroesseGewichtApiSpec api = UntersuchungGroesseGewichtApiSpec.untersuchungGroesseGewicht(RequestSpecUtil.quarkusSpec());
+    private final UntersuchungGroesseGewichtApiSpec api =
+        UntersuchungGroesseGewichtApiSpec.untersuchungGroesseGewicht(RequestSpecUtil.quarkusSpec());
 
     private final UntersuchungService untersuchungService;
     private final UntersuchungGroesseGewichtService untersuchungGroesseGewichtService;
@@ -74,7 +77,8 @@ class UntersuchungGroesseGewichtResourceITest extends AbstractITest {
         // ASSERT
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getUntersuchungGroesseGewichtJson()).isNotNull();
-        Assertions.assertThat(result.getUntersuchungGroesseGewichtJson().getId()).isEqualTo(existingGroesseGewicht.getId().getId());
+        Assertions.assertThat(result.getUntersuchungGroesseGewichtJson().getId())
+            .isEqualTo(existingGroesseGewicht.getId().getId());
         Assertions.assertThat(result.getUntersuchungGroesseGewichtJson().getData().getBemerkungen())
             .isNotNull()
             .isEqualTo(existingGroesseGewicht.getBemerkungen());
@@ -98,7 +102,7 @@ class UntersuchungGroesseGewichtResourceITest extends AbstractITest {
             UntersuchungGroesseGewichtBuilder.createJaxSpec(builder -> builder
                 .forUntersuchungGroesseGewicht(existingGroesseGewicht)
                 .withGroesse(175)
-                .withGewicht(68)
+                .withGewicht(BigDecimal.valueOf(68.8))
                 .withBemerkung("Test updateUntersuchungGroesseGewicht")).getData();
 
         UntersuchungGroesseGewichtDataJsonSpec result = api
@@ -120,6 +124,7 @@ class UntersuchungGroesseGewichtResourceITest extends AbstractITest {
             .isNotNull()
             .isEqualTo("Test updateUntersuchungGroesseGewicht");
         Assertions.assertThat(result.getUntersuchungGroesseGewichtJson().getData().getGroesse()).isEqualTo(175);
-        Assertions.assertThat(result.getUntersuchungGroesseGewichtJson().getData().getGewicht()).isEqualTo(68);
+        Assertions.assertThat(result.getUntersuchungGroesseGewichtJson().getData().getGewicht())
+            .isEqualTo(BigDecimal.valueOf(68.8));
     }
 }

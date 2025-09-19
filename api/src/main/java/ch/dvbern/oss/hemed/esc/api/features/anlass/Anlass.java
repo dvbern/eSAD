@@ -7,6 +7,7 @@ import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassArt;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.util.AnlassTitelUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
@@ -50,7 +51,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckAnlassConfigZeitraum
-public class Anlass extends AbstractTenantEntity<Anlass> {
+public class Anlass extends AbstractTenantEntity<Anlass> implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 5285023727443911252L;

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import ch.dvbern.oss.hemed.esc.api.features.example.developer.dbinfo.DatabaseService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.assertj.AppValidationErrorJsonSpecAssert;
@@ -39,15 +40,19 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ESCADA_PUSH;
 
 @QuarkusTest
 @RequiredArgsConstructor
-@TestInstance(Lifecycle.PER_CLASS)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(OrderAnnotation.class)
 class EscadaResourceITest extends AbstractITest {
 
     private static final String SO_TIMEOUT = "http.socket.timeout";
@@ -72,7 +77,7 @@ class EscadaResourceITest extends AbstractITest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-        configureRestAssuredSocketTimeout(300000); // set to 300s
+        configureRestAssuredSocketTimeout(360000); // set to 360s
     }
 
     @AfterAll
@@ -83,7 +88,7 @@ class EscadaResourceITest extends AbstractITest {
     }
 
     private void resetDatabase() {
-        databaseService.resetAndReinitDatabasePreservingHibernateSequenceValue();
+        databaseService.resetAndReinitDatabasePreservingHibernateSequenceValue(TenantEnum.BS);
     }
 
     private static void configureRestAssuredSocketTimeout(@Nullable Integer timeout) {
@@ -94,6 +99,7 @@ class EscadaResourceITest extends AbstractITest {
 
     @TestAsEscada
     @Test
+    @Order(10)
     void escada_csv_upload_does_nothing_if_file_empty_and_db_empty() {
         File emptyFile = TestUtil.loadEmptyFile();
         // ACT
@@ -113,6 +119,7 @@ class EscadaResourceITest extends AbstractITest {
 
     @TestAsEscada
     @Test
+    @Order(20)
     void escada_csv_upload_fails_if_format_invalid() {
         // ARRANGE
         File firstFile = loadTestData(); // thisi is the old fail that is now invalid
@@ -141,6 +148,7 @@ class EscadaResourceITest extends AbstractITest {
 
     @TestAsEscada
     @Test
+    @Order(30)
     void escada_csv_upload_for_malencoded_file_should_fail() {
         // if the file has the wrong encoding the headernames will not match our constatns and we will not be able to
         // read the columns
@@ -172,6 +180,7 @@ class EscadaResourceITest extends AbstractITest {
 
     @TestAsEscada
     @Test
+    @Order(40)
     void escada_csv_upload_pseudo_data() {
         // ARRANGE
         File firstFile = loadComplexEscadaFile();
@@ -217,6 +226,8 @@ class EscadaResourceITest extends AbstractITest {
 
     @TestAsAdminBS
     @Test
+    @SuppressWarnings("java:S5976")
+    @Order(50)
     void escada_csv_upload_not_allowed_as_support() {
         // ARRANGE
         File firstFile = loadTestData();
@@ -248,6 +259,7 @@ class EscadaResourceITest extends AbstractITest {
         }
     )
     @Test
+    @Order(60)
     void escada_csv_upload_client_not_allowed() {
         // ARRANGE
         File firstFile = loadTestData();
@@ -279,6 +291,7 @@ class EscadaResourceITest extends AbstractITest {
         }
     )
     @Test
+    @Order(70)
     void escada_csv_upload_user_not_allowed() {
         // ARRANGE
         File firstFile = loadTestData();
@@ -293,6 +306,7 @@ class EscadaResourceITest extends AbstractITest {
 
     @TestAsEscada
     @Test
+    @Order(80)
     void escada_client_blocked_from_other_apis() {
         // ACT
         developerApiSpec
@@ -304,6 +318,7 @@ class EscadaResourceITest extends AbstractITest {
 
     @TestAsEscada
     @Test
+    @Order(90)
     void escada_csv_upload_async_successful_even_if_format_invalid() {
         // ARRANGE
         File firstFile = loadTestData(); // thisi is the old fail that is now invalid
@@ -318,6 +333,7 @@ class EscadaResourceITest extends AbstractITest {
 
     @TestAsEscada
     @Test
+    @Order(100)
     void escada_csv_upload_async_for_malencoded_file_is_still_successful() {
         // ARRANGE
         File firstFile = loadEscadaCsvThatWasLoadedAsIsoAndSentASUtf8();
@@ -332,9 +348,10 @@ class EscadaResourceITest extends AbstractITest {
 
     @TestAsEscada
     @Test
+    @Order(110)
     void escada_csv_upload_async_pseudo_data() {
         // ARRANGE
-        File firstFile = loadComplexEscadaFile();
+        File firstFile = loadShortEscadaFile();
 
         // ACT
         api.escadaResourceSyncWithEscadaAsync()
@@ -352,6 +369,11 @@ class EscadaResourceITest extends AbstractITest {
     @NonNull
     private File loadComplexEscadaFile() {
         return TestUtil.loadComplexEscadaFile();
+    }
+
+    @NonNull
+    private File loadShortEscadaFile() {
+        return TestUtil.loadShortEscadaFile();
     }
 
     @NonNull

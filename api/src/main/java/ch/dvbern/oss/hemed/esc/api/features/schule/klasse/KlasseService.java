@@ -26,6 +26,12 @@ public class KlasseService {
     }
 
     @NonNull
+    public Klasse persistWithOptimisticLocking(@NonNull Klasse klasse, @NonNull Long versionFromFrontend) {
+        klasseRepo.persistWithOptimisticLocking(klasse, versionFromFrontend);
+        return klasse;
+    }
+
+    @NonNull
     public List<Klasse> findAll() {
         return klasseRepo.findAll();
     }
@@ -60,17 +66,24 @@ public class KlasseService {
 
     @NonNull
     public Klasse getByExternalId(@IgnoreForIdClassTest @NonNull String externalId) {
-        return klasseRepo.getByExternalId(externalId);
+        Klasse klasse = klasseRepo.getByExternalId(externalId);
+        klasse.disableOptimisticLockingCheck();
+        return klasse;
     }
 
     @NonNull
     public Klasse getByExternalIdLockedQuery(@IgnoreForIdClassTest @NonNull String externalId) {
-        return klasseRepo.getByExternalIdLockedQuery(externalId);
+        Klasse klasse = klasseRepo.getByExternalIdLockedQuery(externalId);
+        klasse.disableOptimisticLockingCheck();
+        return klasse;
     }
 
     @NonNull
 	public Optional<Klasse> findByExternalId(@IgnoreForIdClassTest @NonNull String externalId) {
-        return klasseRepo.findByExternalId(externalId);
+        return klasseRepo.findByExternalId(externalId).map(klasse -> {
+            klasse.disableOptimisticLockingCheck();
+            return klasse;
+        });
 	}
 
     public List<Klasse> findByLehrperson(@NonNull ID<Lehrperson> id) {
@@ -79,11 +92,13 @@ public class KlasseService {
 
     public void addLehrpersonToKlasse(@NonNull Klasse klasse, @NonNull Lehrperson lehrperson) {
         klasse.addLehrperson(lehrperson);
+        klasse.disableOptimisticLockingCheck();
         persist(klasse);
     }
 
     public void removeLehrpersonFromKlasse(@NonNull Klasse klasse, @NonNull Lehrperson lehrperson) {
         klasse.removeLehrperson(lehrperson);
+        klasse.disableOptimisticLockingCheck();
         persist(klasse);
     }
 }

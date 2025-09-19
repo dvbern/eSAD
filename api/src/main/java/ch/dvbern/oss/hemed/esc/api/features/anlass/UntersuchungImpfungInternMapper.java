@@ -1,31 +1,23 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungImpfungInternJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungImpfungInternSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
-import ch.dvbern.oss.hemed.esc.api.features.impfstoff.Impfstoff;
-import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffCharge;
-import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffChargeMapper;
-import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffChargeService;
-import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffMapper;
-import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffService;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.*;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @JaxMapper
 @RequiredArgsConstructor
@@ -60,7 +52,8 @@ public final class UntersuchungImpfungInternMapper {
                 impfung.getKrankheitenImmunitaeten()
                     .stream()
                     .map(UntersuchungImpfungKrankheitImmunitaetMapper::toJson)
-                    .toList()
+                    .toList(),
+                impfung.getVersion()
             ),
             BenutzerMapper.toOptionJson(impfung.getUserErfasst()),
             impfung.getAnlassImpfungDurchgefuehrt() != null ? impfung.getAnlassImpfungDurchgefuehrt().getId() : null
@@ -125,14 +118,17 @@ public final class UntersuchungImpfungInternMapper {
 
     @NonNull
     public List<UntersuchungImpfungInternJson> getByUntersuchungImpfungen(@NonNull UntersuchungImpfungen impfungen) {
-        List<UntersuchungImpfungIntern> existingimpfungen =
+        List<UntersuchungImpfungIntern> existingImpfungen =
             untersuchungImpfungInternService.findByUntersuchung(impfungen.getUntersuchung().getId());
 
-        if (existingimpfungen.isEmpty()) {
-            Optional<Einladung> lastEinladung =
-                einladungService.findLastEinladungForKind(
-                    impfungen.getUntersuchung().getEinladung().getAnlass(),
-                    impfungen.getUntersuchung().getEinladung().getDossier().getKind().getId());
+        // Eigentlich sollten wir nur das erste Mal kopieren. Da das Objekt aber immer schon existiert
+        // kopieren wir wenn die Liste (noch) leer ist. Das ist eigentlich zu viel. Insbesondere sollten
+        // wir bei abgeschlossenen Anlaessen nicht mehr kopieren.
+        if (impfungen.getUntersuchung().getEinladung().getAnlass().getAnlassStatus() != AnlassStatus.ABGESCHLOSSEN &&
+            existingImpfungen.isEmpty()) {
+            Optional<Einladung> lastEinladung = einladungService.findLastEinladungForKind(
+                impfungen.getUntersuchung().getEinladung().getAnlass(),
+                impfungen.getUntersuchung().getEinladung().getDossier().getKind().getId());
 
             if (lastEinladung.isPresent() && lastEinladung.get().getUntersuchung() != null) {
                 List<UntersuchungImpfungIntern> oldImpfungen =
@@ -144,14 +140,16 @@ public final class UntersuchungImpfungInternMapper {
                 ).map(UntersuchungImpfungInternMapper::toJson).toList();
             }
         }
-
-        return existingimpfungen.stream().map(UntersuchungImpfungInternMapper::toJson).toList();
+        return existingImpfungen.stream().
+            map(UntersuchungImpfungInternMapper::toJson).
+            toList();
     }
 
     @NonNull
-    public UntersuchungImpfungIntern copyImpfung(
+    private UntersuchungImpfungIntern copyImpfung(
         @NonNull UntersuchungImpfungen untersuchungImpfungen,
-        @NonNull UntersuchungImpfungIntern impfung) {
+        @NonNull UntersuchungImpfungIntern impfung
+    ) {
         UntersuchungImpfungIntern newImpfung = UntersuchungImpfungIntern.forUntersuchungImpfung(untersuchungImpfungen);
         newImpfung.setImpfstoff(impfung.getImpfstoff());
         newImpfung.setCharge(impfung.getCharge());
@@ -198,7 +196,8 @@ public final class UntersuchungImpfungInternMapper {
     public UntersuchungImpfungInternJson update(
         @NonNull ID<Einladung> einladungId,
         @NonNull ID<UntersuchungImpfungIntern> impfungInternId,
-        @NonNull UntersuchungImpfungInternSaveJson saveJson) {
+        @NonNull UntersuchungImpfungInternSaveJson saveJson
+    ) {
         UntersuchungImpfungIntern existingImpfung = untersuchungImpfungInternService.getById(impfungInternId);
         return save(einladungId, existingImpfung, saveJson);
     }
@@ -207,16 +206,17 @@ public final class UntersuchungImpfungInternMapper {
     private UntersuchungImpfungInternJson save(
         @NonNull ID<Einladung> einladungId,
         @Nullable UntersuchungImpfungIntern existingImpfung,
-        @NonNull UntersuchungImpfungInternSaveJson saveJson) {
+        @NonNull UntersuchungImpfungInternSaveJson saveJson
+    ) {
         UntersuchungImpfungIntern entity = toEntity(einladungId, existingImpfung, saveJson);
         replaceKrankheitImmunitaeten(entity, saveJson);
-        UntersuchungImpfungIntern persisted = untersuchungImpfungInternService.persist(entity);
-        return toJson(persisted);
+        return toJson(untersuchungImpfungInternService.persistWithOptimisticLocking(entity, saveJson.getVersion()));
     }
 
     private void replaceKrankheitImmunitaeten(
         @NonNull UntersuchungImpfungIntern impfung,
-        @NonNull UntersuchungImpfungInternSaveJson saveJson) {
+        @NonNull UntersuchungImpfungInternSaveJson saveJson
+    ) {
         Set<UntersuchungImpfungKrankheitImmunitaet> desiredImmunitaeten = saveJson.getKrankheitenImmunitaeten()
             .stream()
             .map(untersuchungImpfungKrankheitImmunitaetJson -> UntersuchungImpfungKrankheitImmunitaetMapper.toEntity(

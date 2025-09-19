@@ -163,6 +163,7 @@ public class LehrpersonExternalSyncHelperService {
             updatedExternal,
             appClock.offsetDateTime().now()
         );
+        updatedLehrperson.disableOptimisticLockingCheck();
 
         // update klassen relations
         Set<Klasse> klassen = loadLinkedKlassen(updatedExternal);
@@ -189,10 +190,12 @@ public class LehrpersonExternalSyncHelperService {
         klassenToRemoveLehrerFrom.removeAll(klassenLehrerBelongsToExternally);
         // add lehrperson to klassen since klassen is owing side
         for (Klasse klasse : klassenLehrerBelongsToExternally) {
+            klasse.disableOptimisticLockingCheck();
             klasseService.addLehrpersonToKlasse(klasse, updatedLehrperson);
         }
         // remove lehrer from klassen that he no longer belongs to
         for (Klasse klasse : klassenToRemoveLehrerFrom) {
+            klasse.disableOptimisticLockingCheck();
             klasseService.removeLehrpersonFromKlasse(klasse, updatedLehrperson);
         }
     }
@@ -230,9 +233,9 @@ public class LehrpersonExternalSyncHelperService {
             externalToDelete.getExternalId(),
             lehrperson.getId());
 
-        if (lehrperson.getExternalImportInfo() != null && lehrperson.getExternalImportInfo()
-            .isAktivInExternalSystem()) {
+        if (lehrperson.getExternalImportInfo() != null && lehrperson.isAktivInExternalSystem()) {
             lehrperson.getExternalImportInfo().setAktivInExternalSystem(false);
+            lehrperson.disableOptimisticLockingCheck();
         }
 
         lehrpersonExternalRepo.remove(externalToDelete.getId());

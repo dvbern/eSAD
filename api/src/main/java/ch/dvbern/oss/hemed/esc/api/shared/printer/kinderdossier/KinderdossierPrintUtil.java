@@ -7,8 +7,9 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungDurchfuehrung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungKindDaten;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArzt;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
@@ -17,11 +18,9 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfun
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
-import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKind;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.shared.anlass.anlassflags.AnlassFlags;
-import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.ExtractorUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -32,17 +31,6 @@ public final class KinderdossierPrintUtil {
 
     private KinderdossierPrintUtil() {
         // utility class
-    }
-
-    @NonNull
-    public static String getNameWithAnrede(@NonNull KontaktPersonKind kontaktPerson, @NonNull BasePrinter basePrinter) {
-        final String anrede = switch (kontaktPerson.getGeschlecht()) {
-            case MAENNLICH -> basePrinter.translateValue("printer.anrede.MAENNLICH");
-            case WEIBLICH -> basePrinter.translateValue("printer.anrede.WEIBLICH");
-            default -> "";
-        };
-
-        return String.format("%s %s", anrede, kontaktPerson.getNameVorname()).trim();
     }
 
     @NonNull
@@ -106,7 +94,7 @@ public final class KinderdossierPrintUtil {
     @NonNull
     public static String extractUntersuchungSehen(
         @NonNull Einladung einladung,
-        @NonNull Function<UntersuchungSehen, String> stringTransformer
+        @NonNull Function<UntersuchungSehenBeurteilung, String> stringTransformer
     ) {
         return ExtractorUtil.getUntersuchungSehenOptional(einladung)
             .map(stringTransformer)
@@ -166,9 +154,19 @@ public final class KinderdossierPrintUtil {
     @NonNull
     public static String extractUntersuchungArzt(
         @NonNull Einladung einladung,
-        @NonNull Function<UntersuchungArzt, String> stringFunction
+        @NonNull Function<UntersuchungArztBeurteilung, String> stringFunction
     ) {
         return ExtractorUtil.getUntersuchungArztOptional(einladung)
+            .map(stringFunction)
+            .orElse(PLACEHOLDER);
+    }
+
+    @NonNull
+    public static String extractUntersuchungArztBemerkung(
+        @NonNull Einladung einladung,
+        @NonNull Function<UntersuchungArztBemerkung, String> stringFunction
+    ) {
+        return ExtractorUtil.getUntersuchungArztBemerkungOptional(einladung)
             .map(stringFunction)
             .orElse(PLACEHOLDER);
     }

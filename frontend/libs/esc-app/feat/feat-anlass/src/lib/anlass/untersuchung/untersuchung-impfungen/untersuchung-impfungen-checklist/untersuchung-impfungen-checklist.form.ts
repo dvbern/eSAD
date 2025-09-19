@@ -15,7 +15,7 @@ function makeForm(config: Config) {
     checkEinwilligungVorhanden: fb.control(false),
     checkKontraindikationenAbgeklaert: fb.control(false),
     checkDoppelkontrolleImpfentscheidDurchgefuehrt: fb.control(false),
-    bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength()),
+    bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength2000()),
   });
 }
 

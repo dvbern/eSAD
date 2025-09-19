@@ -1,15 +1,5 @@
 import {CommonModule, Location} from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  input,
-  output,
-  signal,
-  untracked,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, effect, inject, input, output, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {
   BenutzerOptionJson,
@@ -20,8 +10,6 @@ import {
   NotizStatus,
 } from '@dvb/data-access-backend';
 import {BackendEntityId, requireValidBackendEntityId} from '@dvb/data-access-types';
-import { FileDropComponent } from '../upload/file-drop/file-drop.component';
-import { UploadTableComponent } from '../upload/upload-table/upload-table.component';
 import {
   BadgeComponent,
   CardComponent,
@@ -43,9 +31,12 @@ import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {BenutzerOptionsStore} from '../admin-shared/benutzer-options.store';
 import {LabelsStore} from '../admin-shared/labels.store';
 import {BenutzerStore} from '../benutzer/benutzer/benutzer.store';
+import {globalConstants} from '../constants/global-constants';
 import {Path} from '../core/path';
 import {ConfirmService} from '../dialogs/confirm/confirm.service';
 import {TranslatedStringPipe} from '../translated-strings/view/translated-string.pipe';
+import {FileDropComponent} from '../upload/file-drop/file-drop.component';
+import {UploadTableComponent} from '../upload/upload-table/upload-table.component';
 import {NotizenFileParams} from './notizen.file.params';
 import {NotizenForm} from './notizen.form';
 import {NotizenSaveParams} from './notizen.save.params';
@@ -106,9 +97,8 @@ export class NotizenComponent implements DirtyMarker {
 
   fileUploads: File[] | undefined;
 
-  // keep in sync with backend setting as we do not sync config to client yet
-  readonly acceptedFiletypes = signal(
-    '.pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .eml, .msg, .mbox, .jpg, .jpeg, .png, .heic, .webp');
+  // Keep this list in sync with the accepted types in backend as we do not sync config to client yet
+  readonly acceptedFiletypes = globalConstants.acceptedFileTypes;
 
   entityInfo = computed(() => this.existingNotiz()?.entityInfo);
   inaktivLabels = computed(() => this.existingNotiz()?.data?.labels?.filter(label => !label.data.aktiv) ?? []);

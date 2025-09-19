@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.math.BigDecimal;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -35,7 +36,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   UntersuchungGroesseGewichtSaveJsonSpec.JSON_PROPERTY_GROESSE_PERZENTILE,
   UntersuchungGroesseGewichtSaveJsonSpec.JSON_PROPERTY_GEWICHT_PERZENTILE,
   UntersuchungGroesseGewichtSaveJsonSpec.JSON_PROPERTY_BMI_PERZENTILE,
-  UntersuchungGroesseGewichtSaveJsonSpec.JSON_PROPERTY_BEMERKUNGEN
+  UntersuchungGroesseGewichtSaveJsonSpec.JSON_PROPERTY_BEMERKUNGEN,
+  UntersuchungGroesseGewichtSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("UntersuchungGroesseGewichtSaveJson")
 @lombok.AllArgsConstructor
@@ -47,7 +49,7 @@ public class UntersuchungGroesseGewichtSaveJsonSpec {
 
   public static final String JSON_PROPERTY_GEWICHT = "gewicht";
   @jakarta.annotation.Nullable
-  private Integer gewicht;
+  private BigDecimal gewicht;
 
   public static final String JSON_PROPERTY_GROESSE_PERZENTILE = "groessePerzentile";
   @jakarta.annotation.Nullable
@@ -64,6 +66,10 @@ public class UntersuchungGroesseGewichtSaveJsonSpec {
   public static final String JSON_PROPERTY_BEMERKUNGEN = "bemerkungen";
   @jakarta.annotation.Nullable
   private String bemerkungen;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public UntersuchungGroesseGewichtSaveJsonSpec() {
   }
@@ -93,7 +99,7 @@ public class UntersuchungGroesseGewichtSaveJsonSpec {
     this.groesse = groesse;
   }
 
-  public UntersuchungGroesseGewichtSaveJsonSpec gewicht(@jakarta.annotation.Nullable Integer gewicht) {
+  public UntersuchungGroesseGewichtSaveJsonSpec gewicht(@jakarta.annotation.Nullable BigDecimal gewicht) {
     
     this.gewicht = gewicht;
     return this;
@@ -107,14 +113,14 @@ public class UntersuchungGroesseGewichtSaveJsonSpec {
   @JsonProperty(JSON_PROPERTY_GEWICHT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Integer getGewicht() {
+  public BigDecimal getGewicht() {
     return gewicht;
   }
 
 
   @JsonProperty(JSON_PROPERTY_GEWICHT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setGewicht(@jakarta.annotation.Nullable Integer gewicht) {
+  public void setGewicht(@jakarta.annotation.Nullable BigDecimal gewicht) {
     this.gewicht = gewicht;
   }
 
@@ -218,6 +224,31 @@ public class UntersuchungGroesseGewichtSaveJsonSpec {
     this.bemerkungen = bemerkungen;
   }
 
+  public UntersuchungGroesseGewichtSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -232,12 +263,13 @@ public class UntersuchungGroesseGewichtSaveJsonSpec {
         Objects.equals(this.groessePerzentile, untersuchungGroesseGewichtSaveJson.groessePerzentile) &&
         Objects.equals(this.gewichtPerzentile, untersuchungGroesseGewichtSaveJson.gewichtPerzentile) &&
         Objects.equals(this.bmiPerzentile, untersuchungGroesseGewichtSaveJson.bmiPerzentile) &&
-        Objects.equals(this.bemerkungen, untersuchungGroesseGewichtSaveJson.bemerkungen);
+        Objects.equals(this.bemerkungen, untersuchungGroesseGewichtSaveJson.bemerkungen) &&
+        Objects.equals(this.version, untersuchungGroesseGewichtSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(groesse, gewicht, groessePerzentile, gewichtPerzentile, bmiPerzentile, bemerkungen);
+    return Objects.hash(groesse, gewicht, groessePerzentile, gewichtPerzentile, bmiPerzentile, bemerkungen, version);
   }
 
   @Override
@@ -250,6 +282,7 @@ public class UntersuchungGroesseGewichtSaveJsonSpec {
     sb.append("    gewichtPerzentile: ").append(toIndentedString(gewichtPerzentile)).append("\n");
     sb.append("    bmiPerzentile: ").append(toIndentedString(bmiPerzentile)).append("\n");
     sb.append("    bemerkungen: ").append(toIndentedString(bemerkungen)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

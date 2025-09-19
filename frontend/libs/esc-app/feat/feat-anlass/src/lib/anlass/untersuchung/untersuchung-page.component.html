@@ -80,7 +80,7 @@
         </li>
       }
       <!-- Sehen -->
-      @if (anlassStore.selectedEntity()?.anlassConfig?.showTabSehen && canViewUntersuchungSehen()) {
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showTabSehenBeurteilung && canViewUntersuchungSehen()) {
         <li ngbNavItem>
           <a class="nav-link"
              [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_SEHEN"

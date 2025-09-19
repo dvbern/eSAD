@@ -23,14 +23,14 @@
     >
       <!-- col widths -->
       <colgroup>
-        <col svuiColWidth colWidth="text-medium">
-        <col svuiColWidth colWidth="select-medium">
-        <col svuiColWidth colWidth="date">
-        <col svuiColWidth colWidth="timeVonBis">
-        <col svuiColWidth colWidth="select-medium">
-        <col svuiColWidth colWidth="select-medium">
-        <col svuiColWidth colWidth="select-medium">
-        <col svuiColWidth colWidth="options">
+        <col svuiColWidth [colWidth]="'text-medium'">
+        <col svuiColWidth [colWidth]="'select-medium'">
+        <col svuiColWidth [colWidth]="'date'">
+        <col svuiColWidth [colWidth]="'timeVonBis'">
+        <col svuiColWidth [colWidth]="'select-medium'">
+        <col svuiColWidth [colWidth]="'select-medium'">
+        <col svuiColWidth [colWidth]="'select-medium'">
+        <col svuiColWidth [colWidth]="'options'">
       </colgroup>
       <thead>
       <!-- Headers for sorting -->
@@ -54,8 +54,8 @@
         <th
           scope="col"
           svuiSortable
-          [sortState]="itemTable.findColSortDTO('data.datum')"
-          (sort)="itemTable.onColSort($event, 'data.datum')"
+          [sortState]="itemTable.findColSortDTO('dateTime')"
+          (sort)="itemTable.onColSort($event, 'dateTime')"
         >
           {{ 'anlass.datum' | transloco }}
         </th>
@@ -132,7 +132,7 @@
               [compareWith]="compareBenutzerFn"
               [multiple]="true"
             >
-              @for (each of benutzerOptionsStore.arztOptions(); track each.id; let index = $index) {
+              @for (each of benutzerOptionsStore.arztOptions(); track each.id; ) {
                 <ng-option [value]="each.id">
                   {{ each.fullName }}
                 </ng-option>
@@ -151,7 +151,7 @@
               [compareWith]="compareBenutzerFn"
               [multiple]="true"
             >
-              @for (each of benutzerOptionsStore.mpaOptions(); track each; let index = $index) {
+              @for (each of benutzerOptionsStore.mpaOptions(); track each; ) {
                 <ng-option [value]="each.id">
                   {{ each.fullName }}
                 </ng-option>

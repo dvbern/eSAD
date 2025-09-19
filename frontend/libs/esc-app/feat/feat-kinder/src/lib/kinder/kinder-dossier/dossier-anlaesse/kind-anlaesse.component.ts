@@ -1,11 +1,9 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {RouterLink} from '@angular/router';
 import {AnlassArt, AnlassSaveJson, AnlassStatus, EinladungStatus} from '@dvb/data-access-backend';
-import {BenutzerOptionsStore} from '@dvb/feat-shared';
+import {BenutzerOptionsStore, BenutzerStore, Path, TimetravelStore} from '@dvb/feat-shared';
 import {anlassTitleBasic} from '@dvb/feat-anlass';
-import {BenutzerStore} from '@dvb/feat-shared';
-import {Path, TimetravelStore} from '@dvb/feat-shared';
 import {
   BadgeColor,
   BadgeComponent,
@@ -43,7 +41,10 @@ export class KindAnlaesseComponent {
   readonly transloco = inject(TranslocoService);
   readonly timetravelStore = inject(TimetravelStore);
 
-  canEditAnlaesse = this.benutzerStore.createHasRequiredRoleSig(hasAnlassEditBerechtigungForNotAbgeschlossen());
+  canEditAnlaesse = computed(() =>
+    this.benutzerStore.createHasRequiredRoleSig(hasAnlassEditBerechtigungForNotAbgeschlossen()) &&
+    this.dossierStore.isKindAktiv()
+  );
 
   protected readonly Path = Path;
   protected readonly fromISODateString = fromISODateString;

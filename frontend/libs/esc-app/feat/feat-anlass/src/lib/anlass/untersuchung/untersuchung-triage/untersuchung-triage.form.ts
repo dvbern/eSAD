@@ -2,8 +2,9 @@ import {DestroyRef} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {NonNullableFormBuilder} from '@angular/forms';
 import {NaechsteStation, UntersuchungTriageSaveJson} from '@dvb/data-access-backend';
+import {globalConstants} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensurePropsFlat, requireValue} from '@dvb/util-shared';
+import {ensurePropsFlat, Nullish, requireValue} from '@dvb/util-shared';
 import {distinctUntilChanged} from 'rxjs';
 
 type Config = {
@@ -16,16 +17,17 @@ function makeForm(config: Config) {
 
   const group = fb.group({
     triageSu: fb.control(false),
-    triageSuBemerkungen: fb.control('', AppValidators.textareaMaxLength()),
+    triageSuBemerkungen: fb.control('', AppValidators.textareaMaxLength2000()),
     triageMpa: fb.control(false),
-    triageMpaBemerkungen: fb.control('', AppValidators.textareaMaxLength()),
+    triageMpaBemerkungen: fb.control('', AppValidators.textareaMaxLength2000()),
     befundSu: fb.control(false),
-    befundSuBemerkungen: fb.control('', AppValidators.textareaMaxLength()),
+    befundSuBemerkungen: fb.control('', AppValidators.textareaMaxLength2000()),
     wunschSchueler: fb.control(false),
-    wunschSchuelerBemerkungen: fb.control('', AppValidators.textareaMaxLength()),
+    wunschSchuelerBemerkungen: fb.control('', AppValidators.textareaMaxLength2000()),
     vorinformationLehrperson: fb.control(false),
-    vorinformationLehrpersonBemerkungen: fb.control('', AppValidators.textareaMaxLength()),
+    vorinformationLehrpersonBemerkungen: fb.control('', AppValidators.textareaMaxLength2000()),
     naechsteStation: fb.control<NaechsteStation | undefined>(undefined),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 
   group.controls.triageSu.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
@@ -101,6 +103,7 @@ export class UntersuchungTriageForm extends BaseForm<ReturnType<typeof makeForm>
       vorinformationLehrperson: value.vorinformationLehrperson,
       vorinformationLehrpersonBemerkungen: value.vorinformationLehrpersonBemerkungen,
       naechsteStation: value.naechsteStation,
+      version: value.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 }

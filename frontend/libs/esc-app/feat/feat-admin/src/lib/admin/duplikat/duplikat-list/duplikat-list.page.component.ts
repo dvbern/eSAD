@@ -1,5 +1,5 @@
 import {CommonModule, DatePipe} from '@angular/common';
-import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit} from '@angular/core';
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {DuplikatJson, DuplikatKindJson, DuplikatStatus} from '@dvb/data-access-backend';
 import {
@@ -19,7 +19,9 @@ import {
   EmptyTableMessageComponent,
   NgSelectDirective,
   PageHeaderButtonsComponent,
+  PageHeaderListSummaryComponent,
   SortableComponent,
+  SummaryListItem,
   TableComponent,
   TableFilterComponent,
 } from '@dvb/ui-components';
@@ -56,6 +58,7 @@ import {DuplikatListFilterForm} from './duplikat-list-filter.form';
     NgSelectComponent,
     NgSelectDirective,
     NgbDropdownItem,
+    PageHeaderListSummaryComponent,
   ],
   templateUrl: './duplikat-list.page.component.html',
   styleUrl: './duplikat-list.page.component.scss',
@@ -77,8 +80,9 @@ export class DuplikatListPageComponent implements OnInit {
   readonly Path = Path;
 
   protected readonly DuplikatStatus = DuplikatStatus;
+
   itemTable = new TableModel<DuplikatJson>(
-    {rawListSignal: this.duplikatStore.entities},
+    { rawListSignal: this.duplikatStore.entities },
     {frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll'});
 
   readonly tableFilterForm = new DuplikatListFilterForm({
@@ -86,6 +90,14 @@ export class DuplikatListPageComponent implements OnInit {
     destroyRef: inject(DestroyRef),
     paginatedTable: this.itemTable,
   });
+
+  summaryItems = computed((): SummaryListItem[] => [
+    {
+      name: this.#transloco.translate('duplikat.list.summary', {}),
+      totalCount: this.itemTable.rawListSize(),
+      filteredCount: this.itemTable.filteredListSize(),
+    },
+  ]);
 
   ngOnInit(): void {
     // filter for Dubletten im Status offen only
@@ -107,9 +119,9 @@ export class DuplikatListPageComponent implements OnInit {
 
   markDuplikatAsFalsePositive(duplikat: DuplikatJson): void {
     this.confirmService.confirm({
-      question: this.#transloco.translate('duplikat.mark.false.positive.question'),
-      consequence: this.#transloco.translate('duplikat.mark.false.positive.consequence'),
-      decision: this.#transloco.translate('duplikat.mark.false.positive.decision'),
+        question: this.#transloco.translate('duplikat.mark.false.positive.question'),
+        consequence: this.#transloco.translate('duplikat.mark.false.positive.consequence'),
+        decision: this.#transloco.translate('duplikat.mark.false.positive.decision'),
     }).subscribe(() => {
         this.duplikatStore.markDuplikatAsFalsePositive(duplikat);
       },
@@ -117,9 +129,9 @@ export class DuplikatListPageComponent implements OnInit {
   }
 
   async openMergeDialog(einladung: DuplikatJson) {
-    const ngbModalRef = this.#ngModal.open(DuplikatMergeComponent, {size: 'lg'});
+    const ngbModalRef = this.#ngModal.open(DuplikatMergeComponent, { size: 'lg' });
     ngbModalRef.componentInstance.duplikatData.set(einladung);
-    const result: DuplikatMergeJson = await firstValueFrom(ngbModalRef.closed, {defaultValue: undefined});
+    const result: DuplikatMergeJson = await firstValueFrom(ngbModalRef.closed, { defaultValue: undefined });
     if (result) {
       this.duplikatStore.merge(result);
     }

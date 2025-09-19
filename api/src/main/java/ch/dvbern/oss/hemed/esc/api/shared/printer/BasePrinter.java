@@ -1,14 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.shared.printer;
 
-import com.itextpdf.layout.properties.UnitValue;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Objects;
-import java.util.regex.Pattern;
-
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
@@ -31,35 +22,29 @@ import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.font.PdfFontFactory.EmbeddingStrategy;
 import com.itextpdf.kernel.geom.PageSize;
-import com.itextpdf.kernel.pdf.PdfAConformanceLevel;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfDocumentInfo;
-import com.itextpdf.kernel.pdf.PdfOutputIntent;
-import com.itextpdf.kernel.pdf.PdfPage;
-import com.itextpdf.kernel.pdf.PdfReader;
-import com.itextpdf.kernel.pdf.PdfString;
-import com.itextpdf.kernel.pdf.PdfVersion;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.kernel.pdf.WriterProperties;
+import com.itextpdf.kernel.pdf.*;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.kernel.pdf.xobject.PdfFormXObject;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
-import com.itextpdf.layout.element.AreaBreak;
-import com.itextpdf.layout.element.Cell;
-import com.itextpdf.layout.element.Image;
-import com.itextpdf.layout.element.ListItem;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import com.itextpdf.pdfa.PdfADocument;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.mime.MediaType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class BasePrinter {
@@ -70,6 +55,7 @@ public class BasePrinter {
 
     private static final String BS_HEADER_IMAGE = "/logo/logo_bs.jpg";
     private static final String BE_HEADER_IMAGE = "/logo/logo_be.jpg";
+    private static final String WIN_HEADER_IMAGE = "/logo/logo_win.jpg";
 
     // !!! Don't add any other services !!!
     // Otherwise testing becomes really difficult!
@@ -92,6 +78,7 @@ public class BasePrinter {
     public Document getDocument(@NonNull OutputStream outputStream) {
         return getDocument(outputStream, PageSize.A4);
     }
+
     public Document getDocument(@NonNull OutputStream outputStream, @NonNull PageSize pageSize) {
 
         //PDF/A-4 requires a PDF 2.0 document
@@ -128,7 +115,7 @@ public class BasePrinter {
 
                 Paragraph adressBlock = new Paragraph();
                 adressBlock.setMultipliedLeading(1.0f);
-                adressBlock.add(tl.translate("printer.kinderdossier.tenant.adresse"));
+                adressBlock.add(PDFAPrintUtil.sanitizeForPDFA(tl.translate("printer.kinderdossier.tenant.adresse")));
                 adressBlock.setFontSize(10);
 
                 var table = new Table(2).useAllAvailableWidth();
@@ -146,14 +133,18 @@ public class BasePrinter {
         }
     }
 
+    public void addPageBreak(@NonNull Document document, boolean rotate) {
+        document.add(new AreaBreak(rotate ? PageSize.A4.rotate() : PageSize.A4));
+    }
+
     public void addPaginationFooter(@NonNull I18nMessage key, @NonNull Document document) {
         FooterWithPageCounterHandler footerWithPageCounterHandler =
-            new FooterWithPageCounterHandler(new Paragraph(tl.translate(key)));
+            new FooterWithPageCounterHandler(new Paragraph(PDFAPrintUtil.sanitizeForPDFA(tl.translate(key))));
         document.getPdfDocument().addEventHandler(PdfDocumentEvent.END_PAGE, footerWithPageCounterHandler);
     }
 
     public void addH1Title(@NonNull String text, @NonNull Document document) {
-        Paragraph paragraph = new Paragraph(text);
+        Paragraph paragraph = new Paragraph(PDFAPrintUtil.sanitizeForPDFA(text));
         paragraph.setBold();
         paragraph.setFontSize(20.0f);
         paragraph.setTextAlignment(TextAlignment.LEFT);
@@ -162,11 +153,11 @@ public class BasePrinter {
     }
 
     public void addH1Title(@NonNull I18nMessage key, @NonNull Document document) {
-        addH1Title(tl.translate(key), document);
+        addH1Title(PDFAPrintUtil.sanitizeForPDFA(tl.translate(key)), document);
     }
 
     public void addH2Title(@NonNull String text, @NonNull Document document) {
-        Paragraph paragraph = new Paragraph(text);
+        Paragraph paragraph = new Paragraph(PDFAPrintUtil.sanitizeForPDFA(text));
         paragraph.setBold();
         paragraph.setFontSize(14.0f);
         document.add(paragraph);
@@ -177,7 +168,7 @@ public class BasePrinter {
     }
 
     public void addH3Title(@NonNull String text, @NonNull Document document) {
-        Paragraph paragraph = new Paragraph(text);
+        Paragraph paragraph = new Paragraph(PDFAPrintUtil.sanitizeForPDFA(text));
         paragraph.setUnderline();
         paragraph.setFontSize(14.0f);
         document.add(paragraph);
@@ -207,7 +198,9 @@ public class BasePrinter {
         if (value == null) {
             return PrintUtil.PLACEHOLDER;
         }
-        return tl.translate(I18nMessage.of(value.getDeclaringClass().getSimpleName() + '.' + value.name()));
+        return PDFAPrintUtil.sanitizeForPDFA(tl.translate(
+            I18nMessage.of(value.getDeclaringClass().getSimpleName() + '.' + value.name())
+        ));
     }
 
     @NonNull
@@ -223,7 +216,7 @@ public class BasePrinter {
     }
 
     public void addKeyValue(@NonNull String key, @Nullable String value, @NonNull Document document) {
-        String translatedKey = tl.translate(I18nMessage.of(key));
+        String translatedKey = PDFAPrintUtil.sanitizeForPDFA(tl.translate(I18nMessage.of(key)));
         float keyPercentage = getKeyWidthPercentage(translatedKey.length());
         float valuePercentage = 100 - keyPercentage;
 
@@ -278,10 +271,10 @@ public class BasePrinter {
 
             adresseFormat = replaceEmptyCommaSeparators.matcher(String.format(
                     "%s, %s, %s %s, %s",
-                    StringUtils.trimToEmpty(adresse.getStrasseUndNr()),
-                    StringUtils.trimToEmpty(adresse.getAdresseZusatz()),
-                    StringUtils.trimToEmpty(adresse.getPlz()),
-                    StringUtils.trimToEmpty(adresse.getOrt()),
+                    PDFAPrintUtil.sanitizeAndTrimToEmpty(adresse.getStrasseUndNr()),
+                    PDFAPrintUtil.sanitizeAndTrimToEmpty(adresse.getAdresseZusatz()),
+                    PDFAPrintUtil.sanitizeAndTrimToEmpty(adresse.getPlz()),
+                    PDFAPrintUtil.sanitizeAndTrimToEmpty(adresse.getOrt()),
                     translatedLand))
                 .replaceAll("");
 
@@ -325,7 +318,7 @@ public class BasePrinter {
 
         keyParagraph.add(tl.translate(I18nMessage.of(key)));
 
-        Paragraph valueParagraph = new Paragraph(value);
+        Paragraph valueParagraph = new Paragraph(PDFAPrintUtil.sanitizeForPDFA(value));
         valueParagraph.setMarginBottom(20.0f);
 
         document.add(keyParagraph);
@@ -337,7 +330,7 @@ public class BasePrinter {
     }
 
     public void addValue(@NonNull String text, boolean bold, @NonNull Document document) {
-        Paragraph paragraph = new Paragraph(text);
+        Paragraph paragraph = new Paragraph(PDFAPrintUtil.sanitizeForPDFA(text));
         paragraph.setMarginBottom(0.0f);
         paragraph.setMarginTop(0.0f);
         paragraph.setMultipliedLeading(1.1f);
@@ -353,7 +346,7 @@ public class BasePrinter {
         list.setListSymbol("• ");
         list.setMarginLeft(30);
         for (I18nMessage i18nMessage : key) {
-            ListItem listItem = new ListItem(tl.translate(i18nMessage));
+            ListItem listItem = new ListItem(PDFAPrintUtil.sanitizeForPDFA(tl.translate(i18nMessage)));
             list.add(listItem);
         }
         document.add(list);
@@ -361,14 +354,15 @@ public class BasePrinter {
 
     @NonNull
     public Paragraph addBlockText(@NonNull I18nMessage key) {
-        return addBlockText(tl.translate(key));
+        return addBlockText(
+            PDFAPrintUtil.sanitizeForPDFA(tl.translate(key)));
     }
 
     @NonNull
     public Paragraph addBlockText(@NonNull String text) {
         Paragraph blockText = new Paragraph();
         blockText.setMultipliedLeading(1.0f);
-        blockText.add(text);
+        blockText.add(PDFAPrintUtil.sanitizeForPDFA(text));
         blockText.setFontSize(10);
         return blockText;
     }
@@ -377,7 +371,7 @@ public class BasePrinter {
     public Paragraph getTableHeaderText(@NonNull I18nMessage key) {
         Paragraph blockText = new Paragraph();
         blockText.setMultipliedLeading(1.0f);
-        blockText.add(tl.translate(key));
+        blockText.add(PDFAPrintUtil.sanitizeForPDFA(tl.translate(key)));
         blockText.setFontSize(10);
         blockText.setBold();
         return blockText;
@@ -437,14 +431,14 @@ public class BasePrinter {
 
         MediaType fileMediaType = fileData.getFileInfoBucket().getMediaType();
         switch (fileMediaType.toString()) {
-        case "application/pdf" -> addPdf(fileBytesSync, document);
-        // According to this documentation: https://kb.itextpdf.com/itext/which-image-types-are-supported-by-itext#:~:text=iText%20supports%20JPEG%2C%20JPEG2000%2C%20GIF,TIFF%2C%20CCITT%20and%20JBIG2%20images.
-        case "image/jpeg", "image/png", "image/gif", "image/svg+xml", "image/bmp", "windows/metafile", "image/tiff" ->
-            addImage(fileBytesSync, document);
-        default -> {
-            document.add(new AreaBreak());
-            addValue(I18nMessage.of("printer.file-format.not-supported", "extension", fileMediaType), true, document);
-        }
+            case "application/pdf" -> addPdf(fileBytesSync, document);
+            // According to this documentation: https://kb.itextpdf.com/itext/which-image-types-are-supported-by-itext#:~:text=iText%20supports%20JPEG%2C%20JPEG2000%2C%20GIF,TIFF%2C%20CCITT%20and%20JBIG2%20images.
+            case "image/jpeg", "image/png", "image/gif", "image/svg+xml", "image/bmp", "windows/metafile",
+                 "image/tiff" -> addImage(fileBytesSync, document);
+            default -> {
+                document.add(new AreaBreak());
+                addValue(I18nMessage.of("printer.file-format.not-supported", "extension", fileMediaType), true, document);
+            }
         }
     }
 
@@ -495,10 +489,11 @@ public class BasePrinter {
     }
 
     @NonNull
-    private static String getTenantHeaderImage(@NonNull TenantEnum tenant) {
+    public static String getTenantHeaderImage(@NonNull TenantEnum tenant) {
         return switch (tenant) {
             case BS -> BS_HEADER_IMAGE;
             case BE -> BE_HEADER_IMAGE;
+            case WIN -> WIN_HEADER_IMAGE;
             default -> throw new IllegalArgumentException("Tenant not supported");
         };
     }

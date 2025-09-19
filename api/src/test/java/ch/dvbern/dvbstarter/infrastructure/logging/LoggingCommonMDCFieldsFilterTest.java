@@ -1,5 +1,11 @@
 package ch.dvbern.dvbstarter.infrastructure.logging;
 
+import java.io.IOException;
+import java.net.URI;
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.Nullable;
 
 import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentConfigFixtures;
@@ -10,12 +16,6 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriInfo;
-import java.io.IOException;
-import java.net.URI;
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -225,7 +225,6 @@ class LoggingCommonMDCFieldsFilterTest {
     }
 
     private void setupDeploymentConfigMock(DeploymentConfigDTO config) {
-        Mockito.when(configServiceMock.getTenantOverride()).thenReturn(Optional.empty());
         doReturn(config.appProject())
             .when(configServiceMock)
             .getAppProject();

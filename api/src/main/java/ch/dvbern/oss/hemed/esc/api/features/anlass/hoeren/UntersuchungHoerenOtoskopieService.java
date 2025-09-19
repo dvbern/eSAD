@@ -19,6 +19,11 @@ public class UntersuchungHoerenOtoskopieService {
     }
 
     @NonNull
+    public UntersuchungHoerenOtoskopie persistWithOptimisticLocking(@NonNull UntersuchungHoerenOtoskopie entity, @NonNull Long versionFromFrontend) {
+        return hoerenRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
+    }
+
+    @NonNull
     public UntersuchungHoerenOtoskopie getById(@NonNull ID<UntersuchungHoerenOtoskopie> hoerenID) {
         return hoerenRepo.getById(hoerenID);
     }
@@ -26,6 +31,7 @@ public class UntersuchungHoerenOtoskopieService {
     public void untersuchungAbschliessen(@NonNull Untersuchung untersuchung) {
         UntersuchungHoerenOtoskopie hoerenOtoskopie =
             UntersuchungHoerenOtoskopie.forUntersuchungAbschliessen(untersuchung);
+        hoerenOtoskopie.disableOptimisticLockingCheck();
         persist(hoerenOtoskopie);
     }
 }

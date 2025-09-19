@@ -18,6 +18,15 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.kinddeactivation;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateConst;
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateUtil;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -26,8 +35,8 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.DossierService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
-import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
+import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.DossierBuilder;
@@ -41,10 +50,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.*;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
@@ -54,6 +59,9 @@ class KinderDeactivationServiceTest extends AbstractITest {
     private static final int INACTIVATION_AGE = 16;
     private static final int UNUSED_FOR_MOTHS = 9;
     public static final int DEFAULT_BATCHSIZE_FOR_TESTING = 30000;
+
+    private final LocalDate shortTimeAgo = getAppClock().localDateTime().now().toLocalDate();
+    private final LocalDate longTimeAgo = shortTimeAgo.minusYears(1);
 
     private final FixtureService fixtureService;
     private final KindService kindService;
@@ -74,38 +82,39 @@ class KinderDeactivationServiceTest extends AbstractITest {
         List<ID<Kind>> manualKinderToBeDeleted = createKinder(
             2,
             cutoffGeburtsdatum.minusDays(1), null, true,
-            null, null
+            null, null, shortTimeAgo // last import timestamp is irrelevant for manually created (should not be set anyway)
         ).stream().map(Kind::getId).toList();
 
         // create some manually created Kinder that should not be deleted because of age
         List<ID<Kind>> manualNotDeletedAge = createKinder(
             2,
-            cutoffGeburtsdatum.plusDays(1), null, true, null, null
+            cutoffGeburtsdatum.plusDays(1), null, true,
+            null, null, longTimeAgo
         ).stream().map(Kind::getId).toList();
 
         // create some manually created Kinder that should not be deleted because of newish Notiz
         List<ID<Kind>> manualNotDeletedBecauseNewNotiz = createKinder(
             2,
-            cutoffGeburtsdatum.minusDays(1), null,
-            true, cutoffNotizAndAnlass.plusDays(1), null
+            cutoffGeburtsdatum.minusDays(1), null, true,
+            cutoffNotizAndAnlass.plusDays(1), null, longTimeAgo
         ).stream().map(Kind::getId).toList();
 
         List<ID<Kind>> manualDeletedWithOldNotiz = createKinder(
             1,
             cutoffGeburtsdatum.minusDays(1), null, true,
-            cutoffNotizAndAnlass.minusDays(1), null
+            cutoffNotizAndAnlass.minusDays(1), null, null
         ).stream().map(Kind::getId).toList();
 
         List<ID<Kind>> manualDeleteWithOldAnlass = createKinder(
             2,
             cutoffGeburtsdatum.minusDays(1), null, true,
-            null, cutoffNotizAndAnlass.minusDays(1)
+            null, cutoffNotizAndAnlass.minusDays(1), longTimeAgo
         ).stream().map(Kind::getId).toList();
 
         List<ID<Kind>> maualNotDeleteWithNewishAnlass = createKinder(
             3,
             cutoffGeburtsdatum.minusDays(1), null, true,
-            null, cutoffNotizAndAnlass
+            null, cutoffNotizAndAnlass, cutoffNotizAndAnlass
         ).stream().map(Kind::getId).toList();
 
         // Act
@@ -133,12 +142,26 @@ class KinderDeactivationServiceTest extends AbstractITest {
         LocalDate cutoffGeburtsdatum = getAppClock().localDateTime().now().minusYears(INACTIVATION_AGE).toLocalDate();
         // deactivate kinder that are inaktiv in escada if they have no dossier, age irrelevant
         List<ID<Kind>> externalKinderToDeactivate =
-            createKinder(3, cutoffGeburtsdatum.minusYears(2), UUID.randomUUID().toString(), false, null, null)
-                .stream().map(Kind::getId).toList();
+            createKinder(
+                3,
+                cutoffGeburtsdatum.minusYears(2),
+                UUID.randomUUID().toString(),
+                false,
+                null,
+                null,
+                longTimeAgo // will only deactivate if it is a long time ago since we last imported
+            ).stream().map(Kind::getId).toList();
 
         // keep kinder that are still active in escada (age etc is irrelevant)
         List<ID<Kind>> externalKinderToKeep =
-            createKinder(3, cutoffGeburtsdatum.minusYears(50), UUID.randomUUID().toString(), true, null, null)
+            createKinder(
+                3,
+                cutoffGeburtsdatum.minusYears(50),
+                UUID.randomUUID().toString(),
+                true,
+                null,
+                null,
+                longTimeAgo)
                 .stream().map(Kind::getId).toList();
 
         //ACT
@@ -162,15 +185,25 @@ class KinderDeactivationServiceTest extends AbstractITest {
             getAppClock().localDateTime().now().toLocalDate().minusMonths(UNUSED_FOR_MOTHS);
 
         List<ID<Kind>> externalKinderToDeactivate = createKinder(
-            4, cutoffGeburtsdatum,
-            UUID.randomUUID().toString(), false, cutoffNotizAndAnlass, null)
-            .stream().map(Kind::getId).toList();
+            4,
+            cutoffGeburtsdatum,
+            UUID.randomUUID().toString(),
+            false,
+            cutoffNotizAndAnlass,
+            null,
+            longTimeAgo
+        ).stream().map(Kind::getId).toList();
 
         // keep kinder even if they are inaktiv in escada if they have a current notiz
         List<ID<Kind>> externalKinderWithNewishNotiz = createKinder(
-            1, cutoffGeburtsdatum.minusYears(50),
-            UUID.randomUUID().toString(), false, cutoffNotizAndAnlass.plusDays(1), null)
-            .stream().map(Kind::getId).toList();
+            1,
+            cutoffGeburtsdatum.minusYears(50),
+            UUID.randomUUID().toString(),
+            false,
+            cutoffNotizAndAnlass.plusDays(1),
+            null,
+            longTimeAgo
+        ).stream().map(Kind::getId).toList();
 
         //ACT
         List<ID<Kind>> foundKinderToDeactivate = kindDeactivationService
@@ -193,15 +226,25 @@ class KinderDeactivationServiceTest extends AbstractITest {
             getAppClock().localDateTime().now().toLocalDate().minusMonths(UNUSED_FOR_MOTHS);
 
         List<ID<Kind>> externalKinderToDeactivate = createKinder(
-            2, cutoffGeburtsdatum,
-            UUID.randomUUID().toString(), false, null, cutoffNotizAndAnlass.minusDays(1))
-            .stream().map(Kind::getId).toList();
+            2,
+            cutoffGeburtsdatum,
+            UUID.randomUUID().toString(),
+            false,
+            null,
+            cutoffNotizAndAnlass.minusDays(1),
+            longTimeAgo
+        ).stream().map(Kind::getId).toList();
 
         // keep kinder even if they are inaktiv in escada if they have a current notiz
         List<ID<Kind>> externalKinderWithNewishAnlass = createKinder(
-            3, cutoffGeburtsdatum.minusYears(50),
-            UUID.randomUUID().toString(), false, null, cutoffNotizAndAnlass)
-            .stream().map(Kind::getId).toList();
+            3,
+            cutoffGeburtsdatum.minusYears(50),
+            UUID.randomUUID().toString(),
+            false,
+            null,
+            cutoffNotizAndAnlass,
+            longTimeAgo
+        ).stream().map(Kind::getId).toList();
 
         //ACT
         List<ID<Kind>> foundKinderToDeactivate = kindDeactivationService
@@ -224,8 +267,14 @@ class KinderDeactivationServiceTest extends AbstractITest {
             getAppClock().localDateTime().now().toLocalDate().minusMonths(UNUSED_FOR_MOTHS);
 
         createKinder(
-            6, cutoffGeburtsdatum,
-            UUID.randomUUID().toString(), false, cutoffNotizAndAnlass, cutoffNotizAndAnlass.minusDays(1));
+            6,
+            cutoffGeburtsdatum,
+            UUID.randomUUID().toString(),
+            false,
+            cutoffNotizAndAnlass,
+            cutoffNotizAndAnlass.minusDays(1),
+            longTimeAgo
+        );
 
         //ACT
         List<ID<Kind>> foundKinderToDeactivate = kindDeactivationService
@@ -247,9 +296,16 @@ class KinderDeactivationServiceTest extends AbstractITest {
             getAppClock().localDateTime().now().toLocalDate().minusMonths(UNUSED_FOR_MOTHS);
 
         List<Kind> kinder = createKinder(
-            6, cutoffGeburtsdatum,
-            UUID.randomUUID().toString(), false, cutoffNotizAndAnlass, cutoffNotizAndAnlass.minusDays(1));
+            6,
+            cutoffGeburtsdatum,
+            UUID.randomUUID().toString(),
+            false,
+            cutoffNotizAndAnlass,
+            cutoffNotizAndAnlass.minusDays(1),
+            longTimeAgo
+        );
         Kind deactivatedKind = kinder.getFirst();
+        deactivatedKind.disableOptimisticLockingCheck();
         deactivatedKind.setKindAktivStatus(EntityAktivStatus.INAKTIV);
         deactivatedKind = kindService.persistWithoutDuplicateCheck(deactivatedKind);
 
@@ -263,18 +319,134 @@ class KinderDeactivationServiceTest extends AbstractITest {
             .doesNotContain(deactivatedKind.getId());
     }
 
+    @Test
+    @TestAsAdminBS
+    @TestTransaction
+        // rollback after test since we might introduce new anlass configs
+    void given_external_kinder_findKinderToDeactivate_should_delete_kinder_with_last_import_long_ago() {
+        // ARRANGE
+        LocalDateTime now = getAppClock().localDateTime().now();
+        LocalDate cutoffGeburtsdatum = now.minusYears(INACTIVATION_AGE).toLocalDate();
+        // deactivate kinder that are inaktiv in escada if they have no dossier, age irrelevant
+        LocalDate geburtsdatum = cutoffGeburtsdatum.minusYears(2);
+
+        Kind kindExternAktivOhneDossierKuerzlichImportiert = createKindWithAnlassAndNotiz(
+            geburtsdatum,
+            UUID.randomUUID().toString(),
+            true,
+            null,
+            null,
+            shortTimeAgo);
+
+        Kind kindExternAktivOhneDossierLangeImportiert = createKindWithAnlassAndNotiz(
+            geburtsdatum,
+            UUID.randomUUID().toString(),
+            true,
+            null,
+            null,
+            longTimeAgo);
+
+        Kind kindExternInaktivOhneDossierKuerzlichImportiert = createKindWithAnlassAndNotiz(
+            geburtsdatum,
+            UUID.randomUUID().toString(),
+            false,
+            null,
+            null,
+            shortTimeAgo);
+
+        // Kein Dossier, lange importiert -> deaktiveren
+        Kind kindExternInaktivOhneDossierLangeImportiert = createKindWithAnlassAndNotiz(
+            geburtsdatum,
+            UUID.randomUUID().toString(),
+            false,
+            null,
+            null,
+            longTimeAgo);
+
+        Kind kindExternInaktivMitDossierAllesKuerzlich = createKindWithAnlassAndNotiz(
+            geburtsdatum,
+            UUID.randomUUID().toString(),
+            false,
+            now.toLocalDate().minusMonths(1),
+            now.toLocalDate().minusMonths(1),
+            now.toLocalDate().minusMonths(1));
+
+        Kind kindExternInaktivMitDossierLangeImportiert = createKindWithAnlassAndNotiz(
+            geburtsdatum,
+            UUID.randomUUID().toString(),
+            false,
+            now.toLocalDate().minusMonths(1),
+            now.toLocalDate().minusMonths(1),
+            now.toLocalDate().minusYears(1));
+
+        Kind kindExternInaktivMitDossierLangeAnlass = createKindWithAnlassAndNotiz(
+            geburtsdatum,
+            UUID.randomUUID().toString(),
+            false,
+            now.toLocalDate().minusMonths(1),
+            longTimeAgo,
+            now.toLocalDate().minusMonths(1));
+
+        Kind kindExternInaktivMitDossierLangeNotiz = createKindWithAnlassAndNotiz(
+            geburtsdatum,
+            UUID.randomUUID().toString(),
+            false,
+            longTimeAgo,
+            now.toLocalDate().minusMonths(1),
+            now.toLocalDate().minusMonths(1));
+
+        Kind kindExternInaktivMitDossierLangeNotizAndAnlass = createKindWithAnlassAndNotiz(
+            geburtsdatum,
+            UUID.randomUUID().toString(),
+            false,
+            longTimeAgo,
+            longTimeAgo,
+            now.toLocalDate().minusMonths(1));
+
+        // Sowohl Anlass, Notiz, Import lange -> deaktivieren
+        Kind kindExternInaktivMitDossierLangeAlles = createKindWithAnlassAndNotiz(
+            geburtsdatum,
+            UUID.randomUUID().toString(),
+            false,
+            longTimeAgo,
+            longTimeAgo,
+            longTimeAgo);
+
+        // ACT
+        List<ID<Kind>> foundKinderToDeactivate = kindDeactivationService
+            .findKinderToDeactivate(UNUSED_FOR_MOTHS, INACTIVATION_AGE, DEFAULT_BATCHSIZE_FOR_TESTING);
+
+        // ASSERT
+        Assertions.assertThat(foundKinderToDeactivate)
+            .contains(
+                kindExternInaktivOhneDossierLangeImportiert.getId(),
+                kindExternInaktivMitDossierLangeAlles.getId()
+            )
+            .doesNotContain(
+                kindExternAktivOhneDossierKuerzlichImportiert.getId(),
+                kindExternAktivOhneDossierLangeImportiert.getId(),
+                kindExternInaktivOhneDossierKuerzlichImportiert.getId(),
+                kindExternInaktivMitDossierAllesKuerzlich.getId(),
+                kindExternInaktivMitDossierLangeImportiert.getId(),
+                kindExternInaktivMitDossierLangeAnlass.getId(),
+                kindExternInaktivMitDossierLangeNotiz.getId(),
+                kindExternInaktivMitDossierLangeNotizAndAnlass.getId()
+            );
+    }
+
     private List<Kind> createKinder(
         int count,
         @NonNull LocalDate geburtsdatum, // to check if a manual kind is to be deleted
         @Nullable String externalId, // to determine if kind is manually added or through escada
         @Nullable Boolean externalAktiv, // null if not escada
         @Nullable LocalDate lastNotizDate,
-        @Nullable LocalDate lastAnlassDate
+        @Nullable LocalDate lastAnlassDate,
+        @Nullable LocalDate lastImportDate
     ) {
         List<Kind> createdKinder = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             Kind k =
-                createKindWithAnlassAndNotiz(geburtsdatum, externalId, externalAktiv, lastNotizDate, lastAnlassDate);
+                createKindWithAnlassAndNotiz(geburtsdatum, externalId, externalAktiv, lastNotizDate, lastAnlassDate, lastImportDate);
             createdKinder.add(k);
         }
         return createdKinder;
@@ -285,16 +457,21 @@ class KinderDeactivationServiceTest extends AbstractITest {
         @Nullable String externalId,
         @Nullable Boolean externalAktiv,
         @Nullable LocalDate lastNotizDate,
-        @Nullable LocalDate lastAnlassDate
+        @Nullable LocalDate lastAnlassDate,
+        @Nullable LocalDate lastImportDate
     ) {
         Klasse klasse = fixtureService.createKlasse();
         Kind kind;
         if (externalAktiv != null && externalId != null ) {
+            Assertions.assertThat(lastImportDate).as("lastImportDate must be set if externalAktiv is set").isNotNull();
+            OffsetDateTime lastImportTimestamp = OffsetDateTime.ofInstant(
+                    lastImportDate.atStartOfDay().atZone(DateConst.ZONE_ID).toInstant(),
+                    DateConst.ZONE_ID);
             boolean primitiveExternalAktiv = externalAktiv;
             kind = KindBuilder.create(builder -> builder
                 .withKlasse(klasse)
                 .withGeburtsdatum(geburtsdatum)
-                .withExternalImportInfo(externalId, primitiveExternalAktiv, getAppClock().offsetDateTime().now())
+                .withExternalImportInfo(externalId, primitiveExternalAktiv, getAppClock().offsetDateTime().now(), lastImportTimestamp)
             );
         } else {
             kind = KindBuilder.create(builder -> builder
@@ -334,5 +511,4 @@ class KinderDeactivationServiceTest extends AbstractITest {
         }
         return kind;
     }
-
 }

@@ -39,7 +39,8 @@ public final class KlasseMapper {
                 klasse.getBezeichnung(),
                 klasse.getKlassenstufe(),
                 klasse.getKlasseSchulart(),
-                klasse.getKlasseAktivStatus()
+                klasse.getKlasseAktivStatus(),
+                klasse.getVersion()
             ),
             klasse.getLehrpersonen().stream()
                 .map(LehrpersonMapper::toOptionJson)
@@ -58,9 +59,8 @@ public final class KlasseMapper {
 
     @NonNull
     private Klasse toEntity(@NonNull Klasse existingKlasse, @NonNull KlasseSaveJson saveJson) {
-        if (existingKlasse.getExternalImportInfo() != null && existingKlasse.getExternalImportInfo()
-            .isAktivInExternalSystem()) {
-            throw new AppValidationException(AppValidationMessage.escadaObjectsCannotBeDeactivated(existingKlasse));
+        if (existingKlasse.getExternalImportInfo() != null && existingKlasse.isAktivInExternalSystem()) {
+            throw new AppValidationException(AppValidationMessage.escadaObjectsCannotBeUpdated(existingKlasse));
         }
         Schule schule = schuleMapper.toEntity(saveJson.getSchule());
         existingKlasse.setSchule(schule);
@@ -129,24 +129,24 @@ public final class KlasseMapper {
     ) {
         Klasse existingKlasse = klasseService.getById(klasseID);
         Klasse entity = toEntity(existingKlasse, klasseJson);
-        return toJson(klasseService.persist(entity));
+        return toJson(klasseService.persistWithOptimisticLocking(entity, klasseJson.getVersion()));
     }
 
     public KlasseJson changeKlasseAktivStatus(
         @NonNull ID<Klasse> klasseId,
         @NonNull EntityAktivStatusSaveJson saveJson) {
         Klasse klasse = klasseService.getById(klasseId);
-        if (klasse.getExternalImportInfo() != null && klasse.getExternalImportInfo().isAktivInExternalSystem()) {
+        if (klasse.getExternalImportInfo() != null && klasse.isAktivInExternalSystem()) {
             throw new AppValidationException(AppValidationMessage.escadaObjectsCannotBeDeactivated(klasse));
         }
         klasse.setKlasseAktivStatus(saveJson.getEntityAktivStatus());
-
+        klasse.disableOptimisticLockingCheck();
         return toJson(this.klasseService.persist(klasse));
     }
 
     public void remove(@NonNull ID<Klasse> klasseId) {
         Klasse klasse = klasseService.getById(klasseId);
-        if (klasse.getExternalImportInfo() != null && klasse.getExternalImportInfo().isAktivInExternalSystem()) {
+        if (klasse.getExternalImportInfo() != null && klasse.isAktivInExternalSystem()) {
             throw new AppValidationException(AppValidationMessage.klasseToDeleteIsFromEscada(
                 klasse.getBezeichnung(),
                 klasseId));

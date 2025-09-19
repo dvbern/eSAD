@@ -2,7 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArzt;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,8 +23,8 @@ class BlutdruckDiastolischCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        UntersuchungArzt untersuchungArzt = new UntersuchungArzt();
-        untersuchung.setUntersuchungArzt(untersuchungArzt);
+        UntersuchungArztBeurteilung untersuchungArzt = new UntersuchungArztBeurteilung();
+        untersuchung.setUntersuchungArztBeurteilung(untersuchungArzt);
 
         assertThat(column.extract(einladung)).isEmpty();
 

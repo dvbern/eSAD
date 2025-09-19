@@ -19,10 +19,13 @@
 package ch.dvbern.oss.hemed.esc.api.shared.scheduler;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Service zum starten periodischer Tasks
@@ -32,34 +35,46 @@ import lombok.RequiredArgsConstructor;
 public class ScheduledTaskService {
 
     private final SuperAdminRunnerService superAdminRunnerService;
+    private final TenantProducer tenantProducer;
+
 
     @Scheduled(cron = "{app.scheduler.benutzer.inaktivieren.cronexpression}")
     @Transactional(TxType.NOT_SUPPORTED)
     public void scheduleBenutzerInaktivierenJob() {
-        superAdminRunnerService.runBenutzerInaktivierenJob(false);
+        runForActiveTenants(() -> superAdminRunnerService.runBenutzerInaktivierenJob(false));
     }
 
     @Scheduled(cron = "{app.scheduler.document-queue.cronexpression}")
     @Transactional(TxType.NOT_SUPPORTED)
     public void scheduleDocumentQueueJob() {
-        superAdminRunnerService.runDocumentQueueJob(false);
+        runForActiveTenants(() -> superAdminRunnerService.runDocumentQueueJob(false));
     }
 
     @Scheduled(cron = "{app.scheduler.kinder.inaktivieren.cronexpression}")
     @Transactional(TxType.NOT_SUPPORTED)
     public void scheduleKinderInaktivierenJob() {
-        superAdminRunnerService.runKinderInaktivierenJob(false);
+        runForActiveTenants(() -> superAdminRunnerService.runKinderInaktivierenJob(false));
     }
 
     @Scheduled(cron = "{app.scheduler.document-queue.clean-up.cronexpression}")
     @Transactional(TxType.NOT_SUPPORTED)
     public void scheduleDocumentQueueCleanupJob() {
-        superAdminRunnerService.runDocumentQueueCleanupJob(false);
+        runForActiveTenants(() -> superAdminRunnerService.runDocumentQueueCleanupJob(false));
     }
 
     @Scheduled(cron = "{app.scheduler.reload.duplikate.cronexpression}")
     @Transactional(TxType.NOT_SUPPORTED)
     public void scheduleReloadDuplikateJob() {
-        superAdminRunnerService.runReloadDuplikateJob(false);
+        runForActiveTenants(() -> superAdminRunnerService.runReloadDuplikateJob(false));
+    }
+
+    private void runForActiveTenants(@NonNull Runnable task) {
+        for (TenantEnum tenant : TenantEnum.values()) {
+            if (tenant.isAktiv()) {
+                // Set the current tenant for the super admin runner service
+                tenantProducer.setCurrentTenant(tenant);
+                task.run();
+            }
+        }
     }
 }

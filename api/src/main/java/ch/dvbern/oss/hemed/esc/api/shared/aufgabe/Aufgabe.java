@@ -8,10 +8,11 @@ import java.util.Set;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.types.AufgabeStatus;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.types.AufgabeStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckAllowedLink;
@@ -53,7 +54,8 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Aufgabe extends AbstractTenantEntity<Aufgabe> {
+public class Aufgabe extends AbstractTenantEntity<Aufgabe> implements EntityWithOptimisticLocking {
+
     @Serial
     private static final long serialVersionUID = 360072862301835622L;
 
@@ -64,8 +66,8 @@ public class Aufgabe extends AbstractTenantEntity<Aufgabe> {
     private String titel;
 
     @Nullable
-    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH)
-    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH)
+    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_5000)
+    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_5000)
     private String bemerkung;
 
     @NotNull
@@ -82,7 +84,7 @@ public class Aufgabe extends AbstractTenantEntity<Aufgabe> {
     @NotNull
     @NonNull
     @ManyToOne(optional = false)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_aufgabe_benutzer_erfasst"), nullable = false)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_aufgabe_benutzer_erfasst"), nullable = false, updatable = false)
     private Benutzer userErfasst;
 
     @NotNull
@@ -140,7 +142,7 @@ public class Aufgabe extends AbstractTenantEntity<Aufgabe> {
     private List<FileData> files;
 
     @Nullable
-    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     @CheckAllowedLink
     private URL link;
 

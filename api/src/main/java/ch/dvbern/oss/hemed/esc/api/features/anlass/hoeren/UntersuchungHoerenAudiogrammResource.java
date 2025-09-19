@@ -6,6 +6,8 @@ import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.EinladungMapper;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.Nullable;
@@ -32,6 +34,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 public class UntersuchungHoerenAudiogrammResource {
 
     private final UntersuchungHoerenAudiogrammMapper untersuchungHoerenAudiogrammMapper;
+    private final EinladungMapper einladungMapper;
+    private final AuthorizerService authorizerService;
 
     @GET
     @RolesAllowed(BerechtigungName.SU_HOREN_LESEN)
@@ -40,6 +44,7 @@ public class UntersuchungHoerenAudiogrammResource {
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
         return untersuchungHoerenAudiogrammMapper.getByEinladung(einladungId);
     }
 
@@ -51,6 +56,7 @@ public class UntersuchungHoerenAudiogrammResource {
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
         return untersuchungHoerenAudiogrammMapper.getDefaultUntersuchungHoerenAudiogrammForAnlassConfig(anlassId);
     }
 
@@ -62,6 +68,8 @@ public class UntersuchungHoerenAudiogrammResource {
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
         @NonNull @NotNull @Valid UntersuchungHoerenAudiogrammSaveJson saveJson
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
         return untersuchungHoerenAudiogrammMapper.saveAudiogramm(einladungId, saveJson);
     }
 }

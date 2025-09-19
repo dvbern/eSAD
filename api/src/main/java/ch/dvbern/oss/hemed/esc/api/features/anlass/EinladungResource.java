@@ -1,5 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
+import java.util.List;
+import java.util.Objects;
+
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
@@ -14,6 +17,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungTabsSavedJso
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindIdListJson;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizJson;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import io.smallrye.faulttolerance.api.RateLimit;
 import io.vertx.core.http.HttpServerResponse;
@@ -33,8 +37,6 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.stream.Streams;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -57,6 +59,7 @@ public class EinladungResource {
 
     private final EinladungMapper einladungMapper;
     private final UntersuchungKindDatenMapper untersuchungKindDatenMapper;
+    private final AuthorizerService authorizerService;
 
     @Context
     private HttpServerResponse response;
@@ -68,6 +71,7 @@ public class EinladungResource {
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @Valid KindIdListJson kindIdListJson
     ) {
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
         return new EinladungListJson(einladungMapper.createEinladungenForAnlass(anlassId, kindIdListJson));
     }
 
@@ -78,6 +82,11 @@ public class EinladungResource {
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @Valid EinladungListJson einladungListJson
     ) {
+        List<ID<Einladung>> einladungenId =
+            einladungListJson.getEinladungList().stream().map(EinladungJson::getId).toList();
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
+        einladungMapper.requireConsistentPathParams(einladungenId, anlassId);
+
         einladungMapper.removeEinladungen(einladungListJson);
         return Response.ok().build();
     }
@@ -99,6 +108,7 @@ public class EinladungResource {
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
         return einladungMapper.getById(einladungId);
     }
 
@@ -110,6 +120,7 @@ public class EinladungResource {
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
         return einladungMapper.getTabsSavedByEinladungId(einladungId);
     }
 
@@ -122,6 +133,8 @@ public class EinladungResource {
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
         @NotNull @NonNull @Valid EinladungSaveJson einladungSaveJson
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
         return einladungMapper.updateEinladung(einladungId, einladungSaveJson);
     }
 
@@ -138,8 +151,11 @@ public class EinladungResource {
         @Nullable @RestForm("file2") final FileUpload fileUpload2,
         @Nullable @RestForm("file3") final FileUpload fileUpload3,
         @Nullable @RestForm("file4") final FileUpload fileUpload4,
-        @NotNull @NonNull @Valid @RestForm("notizCreateJson") @PartType(MediaType.APPLICATION_JSON) final NotizSaveJson createJson
+        @NotNull @NonNull @Valid @RestForm("notizCreateJson") @PartType(MediaType.APPLICATION_JSON)
+        final NotizSaveJson createJson
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
         response.setStatusCode(Status.CREATED.getStatusCode());
         List<FileUpload> fileUploads = Streams.of(fileUpload, fileUpload2, fileUpload3, fileUpload4)
             .filter(Objects::nonNull)
@@ -163,6 +179,8 @@ public class EinladungResource {
         @NotNull @NonNull @Valid @RestForm("notizCreateJson") @PartType(MediaType.APPLICATION_JSON)
         final NotizSaveJson createJson
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
         response.setStatusCode(Status.CREATED.getStatusCode());
         List<FileUpload> fileUploads = Streams.of(fileUpload, fileUpload2, fileUpload3, fileUpload4)
             .filter(Objects::nonNull)
@@ -178,6 +196,7 @@ public class EinladungResource {
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @QueryParam("einladungIds") List<ID<Einladung>> einladungIds
     ) {
+        einladungMapper.requireConsistentPathParams(einladungIds, anlassId);
         List<UntersuchungTabInfoJson> untersuchungTabInfos = einladungMapper.getUntersuchungTabInfos(einladungIds);
         return new UntersuchungTabInfoListJson(untersuchungTabInfos);
     }
@@ -190,6 +209,7 @@ public class EinladungResource {
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @QueryParam("einladungIds") List<ID<Einladung>> einladungIds
     ) {
+        einladungMapper.requireConsistentPathParams(einladungIds, anlassId);
         List<UntersuchungTabInfoJson> untersuchungTabInfos =
             einladungMapper.getHiddenUntersuchungTabInfos(anlassId, einladungIds);
         return new UntersuchungTabInfoListJson(untersuchungTabInfos);
@@ -203,6 +223,7 @@ public class EinladungResource {
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
         return untersuchungKindDatenMapper.getByEinladung(einladungId);
     }
 
@@ -214,6 +235,8 @@ public class EinladungResource {
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
     ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
         einladungMapper.untersuchungAbschliessen(einladungId);
         return Response.ok().build();
     }

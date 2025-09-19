@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.json;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -12,7 +13,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Value
 @AllArgsConstructor
 @JaxDTO
-public class UntersuchungDurchfuehrungSaveJson {
+public class UntersuchungDurchfuehrungSaveJson implements SaveJsonWithOptimisticLocking {
 
     @Nullable
     @Schema(required = false)
@@ -35,5 +36,8 @@ public class UntersuchungDurchfuehrungSaveJson {
     @NotNull
     @Schema(required = true)
     private boolean neueintritt;
+
+    @Schema(required = true)
+    private long version;
 
 }

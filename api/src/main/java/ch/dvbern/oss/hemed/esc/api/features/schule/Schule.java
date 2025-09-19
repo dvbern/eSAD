@@ -12,6 +12,7 @@ import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumberConver
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.HasExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.features.schule.quartier.Quartier;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
@@ -52,7 +53,8 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Schule extends AbstractTenantEntity<Schule> implements Serializable, HasExternalImportInfo {
+public class Schule extends AbstractTenantEntity<Schule>
+        implements Serializable, HasExternalImportInfo, EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 1741625114973564294L;
@@ -126,19 +128,6 @@ public class Schule extends AbstractTenantEntity<Schule> implements Serializable
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     private EntityAktivStatus schuleAktivStatus = EntityAktivStatus.AKTIV;
 
-    @Transient
-    @Nullable
-    public String getExternalSystemIdOrNull() {
-        if (externalImportInfo == null) {
-            return null;
-        }
-        return externalImportInfo.getIdInExternalSystem();
-    }
-
-    @Transient
-    public boolean isManualOrAktivInExternalSystem() {
-        return externalImportInfo == null || externalImportInfo.isAktivInExternalSystem();
-    }
 
     @Transient
     @NonNull
@@ -147,7 +136,6 @@ public class Schule extends AbstractTenantEntity<Schule> implements Serializable
             throw new AppValidationException(AppValidationMessage.noSchulhausnummer(
                 schulhaus));
         }
-
         return String.format("%03d", Integer.parseInt(schulhausnummer));
     }
 }

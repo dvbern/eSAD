@@ -1,9 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.features.notizen;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -20,9 +17,15 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataMapper;
+import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.PathParamConsistancyUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @JaxMapper
 @RequiredArgsConstructor
@@ -45,7 +48,8 @@ public final class NotizMapper {
                 notiz.getStatus(),
                 BenutzerMapper.toOptionJson(notiz.getVerantwortlicher()),
                 notiz.getLabels().stream().map(LabelMapper::toJson).toList(),
-                notiz.getFiles().stream().map(FileDataMapper::toJson).toList()
+                notiz.getFiles().stream().map(FileDataMapper::toJson).toList(),
+                notiz.getVersion()
             )
         );
     }
@@ -67,6 +71,11 @@ public final class NotizMapper {
     @NonNull
     public Notiz toEntityForCreate(@NonNull NotizSaveJson notizJson, @NonNull ID<Dossier> dossierId) {
         Dossier dossier = this.dossierService.getById(dossierId);
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            dossier.getKind(),
+            AppValidationMessage.cannotCreateEntityForInactiveKind(
+                dossier.getKind(),
+                new Notiz()));
         Benutzer verantwortlicher = this.benutzerService.getById(notizJson.getVerantwortlicher().getId());
         Set<Label> desiredLabels = labelMapper.toEntityList(notizJson.getLabels());
         return new Notiz(
@@ -92,7 +101,7 @@ public final class NotizMapper {
         @NonNull List<FileUpload> fileUploads
     ) {
         Notiz savedNotiz = notizService.persist(toEntityForCreate(notizJson, dossierId));
-        return toJson(notizService.updateWithFiles(savedNotiz, fileUploads));
+        return toJson(notizService.updateWithFiles(savedNotiz, fileUploads, notizJson.getVersion()));
     }
 
     @NonNull
@@ -102,11 +111,24 @@ public final class NotizMapper {
         @NonNull List<FileUpload> fileUploads
     ) {
         Notiz existingNotiz = notizService.getById(notizId);
+        Kind kind = existingNotiz.getDossier().getKind();
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            kind,
+            AppValidationMessage.cannotEditEntityForInactiveKind(
+                kind,
+                existingNotiz));
         Notiz entity = toEntity(existingNotiz, saveJson);
-        return toJson(notizService.updateWithFiles(entity, fileUploads));
+        return toJson(notizService.updateWithFiles(entity, fileUploads, saveJson.getVersion()));
     }
 
     public void remove(@NonNull ID<Notiz> notizID) {
+        Notiz notiz = notizService.getById(notizID);
+        Kind kind = notiz.getDossier().getKind();
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            kind,
+            AppValidationMessage.cannotRemoveEntityFromInactiveKind(
+                kind,
+                notiz));
         notizService.remove(notizID);
     }
 
@@ -126,6 +148,13 @@ public final class NotizMapper {
 
     @NonNull
     public NotizJson addUploadedFile(@NonNull ID<Notiz> notizID, @NonNull FileUpload file) {
+        Notiz existingNotiz = notizService.getById(notizID);
+        Kind kind = existingNotiz.getDossier().getKind();
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            kind,
+            AppValidationMessage.cannotAddEntityToInactiveKind(
+                kind,
+                new FileData()));
         Notiz updatedNotiz = notizService.addUploadedFile(notizID, file);
         return toJson(updatedNotiz);
     }
@@ -133,7 +162,17 @@ public final class NotizMapper {
     @NonNull
     public NotizJson removeUploadedFile(@NonNull ID<Notiz> notizID, @NonNull ID<FileData> fileIdToRemove) {
         Notiz existingNotiz = notizService.getById(notizID);
+        Kind kind = existingNotiz.getDossier().getKind();
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            kind,
+            AppValidationMessage.cannotRemoveEntityFromInactiveKind(
+                kind,
+                new FileData()));
         notizService.removeUploadedFile(existingNotiz, fileIdToRemove);
         return toJson(existingNotiz);
+    }
+
+	public void requireConsistentPathParams(@NonNull ID<Notiz> notizId, @NonNull ID<Kind> expectedKindId) {
+        PathParamConsistancyUtil.requireForeignIdsAreEqual(notizId, notizService.getById(notizId).getDossier().getKind().getId(), expectedKindId );
     }
 }

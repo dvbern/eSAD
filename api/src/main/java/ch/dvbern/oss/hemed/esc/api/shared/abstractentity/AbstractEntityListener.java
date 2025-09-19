@@ -2,13 +2,14 @@ package ch.dvbern.oss.hemed.esc.api.shared.abstractentity;
 
 import java.util.Objects;
 
+import ch.dvbern.dvbstarter.infrastructure.db.baserepo.BaseRepo;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.OptimisticLockingService;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.util.StringNormalizerUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -30,6 +31,9 @@ public class AbstractEntityListener {
 
     @Inject
     CurrentUserService currentUserService;
+
+    @Inject
+    ConfigService configService;
 
     @PrePersist
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -64,13 +68,19 @@ public class AbstractEntityListener {
     }
 
     private void ensureOptimisticLocking(@NonNull AbstractEntity<?> entity) {
+        if (configService.isFeatureOptimisticLockingDisabled()) {
+            return;
+        }
         if (entity instanceof EntityWithOptimisticLocking) {
+            if (entity.isOptimisticLockingCheckDisabled()) {
+                return;
+            }
             if (entity.getVersionFromFrontend() == null) {
-                throw new AppFailureException(AppFailureMessage.internalError("Version from frontend is null. Use " + OptimisticLockingService.class.getName()
-                    + " for update"));
+				throw new AppFailureException(AppFailureMessage.internalError(
+                    "Version from frontend is null for Entity " + entity.getClass().getSimpleName() + ". Use " + BaseRepo.class.getName() + ".persistWithOptimisticLocking for update"));
             }
             if (!Objects.equals(entity.getVersion(), entity.getVersionFromFrontend())) {
-                throw new AppFailureException(AppFailureMessage.changedByOtherUser());
+                throw new AppFailureException(AppFailureMessage.changedByOtherUser(entity));
             }
         }
     }

@@ -37,6 +37,7 @@ export interface KindSaveJson {
     klasse?: KlasseOptionJson;
     klassenstufe?: Klassenstufe;
     kindAktivStatus: EntityAktivStatus;
+    version: number;
 }
 export namespace KindSaveJson {
 }

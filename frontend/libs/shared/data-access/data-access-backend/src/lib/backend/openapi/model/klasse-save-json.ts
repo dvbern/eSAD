@@ -18,6 +18,7 @@ export interface KlasseSaveJson {
     klassenstufe: Klassenstufe;
     klasseSchulart: string;
     klasseAktivStatus: EntityAktivStatus;
+    version: number;
 }
 export namespace KlasseSaveJson {
 }

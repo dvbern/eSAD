@@ -58,7 +58,7 @@ import {KontaktPersonKindForm} from './kontakt-person-kind.form';
 export class KontaktPersonKindComponent implements DirtyMarker {
   readonly store = inject(KontaktPersonKindStore);
   readonly #benutzerStore = inject(BenutzerStore);
-  readonly #dossierStore = inject(DossierStore);
+  readonly dossierStore = inject(DossierStore);
   readonly #router = inject(Router);
   readonly #activatedRoute = inject(ActivatedRoute);
 
@@ -130,7 +130,7 @@ export class KontaktPersonKindComponent implements DirtyMarker {
   }
 
   async submitIfValid(): Promise<void> {
-    const currentKindId = this.#dossierStore.selectedKind()?.id;
+    const currentKindId = this.dossierStore.selectedKind()?.id;
     if (isValidBackendEntityId(currentKindId)) {
       if (await this.form.validate()) {
         const payload = this.form.valueOnValid();

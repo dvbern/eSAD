@@ -25,7 +25,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankheit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungIntern;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Dezibel;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.HoerenZusaetzlicheAngaben;
@@ -68,7 +68,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungHoerenOtoskopieB
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfstatusKrankheitBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungInternBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungMassnahmenBuilder;
-import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBeurteilungBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
@@ -240,7 +240,7 @@ class DocMergerTest {
     @MethodSource("beurteilungSehenResults")
     void beurteilungSehen(
         @NonNull String expectedValue,
-        @NonNull UntersuchungSehen untersuchungSehen,
+        @NonNull UntersuchungSehenBeurteilung untersuchungSehenBeurteilung,
         @NonNull UntersuchungMassnahmen untersuchungMassnahmen,
         @NonNull AnlassConfig anlassConfig
     ) throws DocTemplateException {
@@ -248,7 +248,7 @@ class DocMergerTest {
             "anlass.sehen.beurteilung",
             expectedValue,
             untersuchungMassnahmen,
-            untersuchungSehen,
+				untersuchungSehenBeurteilung,
             null,
             null,
             anlassConfig);
@@ -258,14 +258,14 @@ class DocMergerTest {
     @MethodSource("farbsehenResults")
     void farbsehen(
         @NonNull String expectedValue,
-        @NonNull UntersuchungSehen untersuchungSehen,
+        @NonNull UntersuchungSehenBeurteilung untersuchungSehenBeurteilung,
         @Nullable UntersuchungMassnahmen untersuchungMassnahmen
     ) throws DocTemplateException {
         testRootMergeSource(
             "anlass.sehen.farbsehen",
             expectedValue,
             untersuchungMassnahmen,
-            untersuchungSehen,
+				untersuchungSehenBeurteilung,
             null,
             null,
             AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL));
@@ -354,7 +354,7 @@ class DocMergerTest {
         @NonNull String key,
         @NotNull String expectedValue,
         @Nullable UntersuchungMassnahmen untersuchungMassnahmen,
-        @Nullable UntersuchungSehen untersuchungSehen,
+        @Nullable UntersuchungSehenBeurteilung untersuchungSehenBeurteilung,
         @Nullable UntersuchungHoerenAudiogramm untersuchungHoerenAudiogramm,
         @Nullable UntersuchungHoerenOtoskopie untersuchungHoerenOtoskopie,
         @NonNull AnlassConfig anlassConfig
@@ -365,7 +365,7 @@ class DocMergerTest {
         Benutzer currentBenutzer = BenutzerBuilder.defaultBenutzer();
 
         Untersuchung untersuchung = MergeSourceDummyDataCreator.getTestUntersuchung();
-        untersuchung.setUntersuchungSehen(untersuchungSehen);
+        untersuchung.setUntersuchungSehenBeurteilung(untersuchungSehenBeurteilung);
         untersuchung.setUntersuchungHoerenAudiogramm(untersuchungHoerenAudiogramm);
         untersuchung.setUntersuchungHoerenOtoskopie(untersuchungHoerenOtoskopie);
         untersuchung.setUntersuchungMassnahmen(untersuchungMassnahmen);
@@ -411,7 +411,7 @@ class DocMergerTest {
             // Everything good
             Arguments.of(
                 "normal",
-                UntersuchungSehenBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.NORMAL)
+                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.NORMAL)
                     .withStereotest(StereotestResultat.NORMAL)
                     .withBrilleLinsen(BrilleLinsenResultat.OHNE_KEINE)
                     .withFernvisus(List.of(DistanzSehenResultat.NORMAL))
@@ -426,28 +426,28 @@ class DocMergerTest {
             // Stuff's always normal if nothing has to be filled out. ¯\_(ツ)_/¯
             Arguments.of(
                 "normal",
-                UntersuchungSehenBuilder.defaultUntersuchungSehen(LocalDate.now()),
+                UntersuchungSehenBeurteilungBuilder.defaultUntersuchungSehen(LocalDate.now()),
                 UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now()),
                 AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.NOT_VISIBLE)
             ),
             // Anything thats off -> "siehe begleitbrief"
             Arguments.of(
                 "siehe Begleitbrief",
-                UntersuchungSehenBuilder.create(builder -> builder.withBrilleLinsen(BrilleLinsenResultat.OHNE_VERGESSEN)),
+                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withBrilleLinsen(BrilleLinsenResultat.OHNE_VERGESSEN)),
                 UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now()),
                 AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL)
             ),
             // Nothing matters if bereits in Untersuchung for Sehen
             Arguments.of(
                 "bereits in Behandlung",
-                UntersuchungSehenBuilder.defaultUntersuchungSehen(LocalDate.now()),
+                UntersuchungSehenBeurteilungBuilder.defaultUntersuchungSehen(LocalDate.now()),
                 UntersuchungMassnahmenBuilder.create(builder -> builder.withBereitsBehandeltSehen(true)),
                 AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL)
             ),
             // Nothing has been checked
             Arguments.arguments(
-                "nicht geprüft worden.",
-                UntersuchungSehenBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.NICHT_GEPRUEFT)
+                "nicht geprüft worden",
+                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.NICHT_GEPRUEFT)
                     .withStereotest(StereotestResultat.NICHT_GEPRUEFT)
                     .withBrilleLinsen(BrilleLinsenResultat.NICHT_GEPRUEFT)
                     .withFernvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT))
@@ -466,22 +466,22 @@ class DocMergerTest {
         return Stream.of(
             Arguments.of(
                 "unklar und muss daher von einem Augenarzt/ einer Augenärztin überprüft werden.",
-                UntersuchungSehenBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.UNSICHER)),
+                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.UNSICHER)),
                 UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now())
                 ),
             Arguments.of(
                 "unklar und muss daher von einem Augenarzt/ einer Augenärztin überprüft werden.",
-                UntersuchungSehenBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.UNSICHER)),
+                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.UNSICHER)),
                 null
                 ),
             Arguments.of(
                 "unklar und muss daher von einem Augenarzt/ einer Augenärztin überprüft werden.",
-                UntersuchungSehenBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.UNSICHER)),
+                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.UNSICHER)),
                 UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now())
             ),
             Arguments.of(
-                "unklar und wird in nächster schulärztlicher Untersuchung nochmals kontrolliert.",
-                UntersuchungSehenBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.UNSICHER)),
+                "unklar und wird in der nächsten schulärztlichen Untersuchung nochmals kontrolliert",
+                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.UNSICHER)),
                 UntersuchungMassnahmenBuilder.create(builder -> builder.withNachkontrolle(
                     true,
                     false,
@@ -559,7 +559,7 @@ class DocMergerTest {
                 UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(List.of(
                     AudiogrammBeurteilung.NORMAL)))),
             Arguments.of(
-                "nicht geprüft worden",
+                "nicht geprüft",
                 UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(List.of(
                     AudiogrammBeurteilung.NICHT_GEPRUEFT)))
             ),
@@ -568,7 +568,7 @@ class DocMergerTest {
                 UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(List.of()))
             ),
             Arguments.of(
-                "unaufällig, nicht geprüft worden",
+                "unaufällig, nicht geprüft",
                 UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(List.of(
                     AudiogrammBeurteilung.NICHT_GEPRUEFT, AudiogrammBeurteilung.NORMAL)))
             ),

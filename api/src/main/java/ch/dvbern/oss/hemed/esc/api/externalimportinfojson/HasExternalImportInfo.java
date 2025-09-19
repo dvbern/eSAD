@@ -18,7 +18,35 @@
 
 package ch.dvbern.oss.hemed.esc.api.externalimportinfojson;
 
+import jakarta.persistence.Transient;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 public interface HasExternalImportInfo {
 
+    @Nullable
     ExternalImportInfo getExternalImportInfo();
+
+    @Transient
+    @Nullable
+    default String getExternalSystemIdOrNull() {
+        if (getExternalImportInfo() == null) {
+            return null;
+        }
+        return getExternalImportInfo().getIdInExternalSystem();
+    }
+
+    @Transient
+    default boolean isManualOrAktivInExternalSystem() {
+        if (getExternalSystemIdOrNull() == null) {
+            return true; // manual object therefore true
+        }
+        return isAktivInExternalSystem();
+    }
+
+    @Transient
+    default boolean isAktivInExternalSystem() {
+        var externalImportInfo = getExternalImportInfo();
+        // here we should be talking about an imported object. Check if it is active in the external system
+        return externalImportInfo != null && Boolean.TRUE.equals(externalImportInfo.getAktivInExternalSystem());
+    }
 }

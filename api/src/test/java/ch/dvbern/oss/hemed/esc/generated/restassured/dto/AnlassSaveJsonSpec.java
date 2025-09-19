@@ -46,7 +46,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   AnlassSaveJsonSpec.JSON_PROPERTY_MPA,
   AnlassSaveJsonSpec.JSON_PROPERTY_MPA_INFO,
   AnlassSaveJsonSpec.JSON_PROPERTY_WEITERE_PERSON,
-  AnlassSaveJsonSpec.JSON_PROPERTY_WEITERE_PERSON_INFO
+  AnlassSaveJsonSpec.JSON_PROPERTY_WEITERE_PERSON_INFO,
+  AnlassSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("AnlassSaveJson")
 @lombok.AllArgsConstructor
@@ -107,6 +108,10 @@ public class AnlassSaveJsonSpec {
   public static final String JSON_PROPERTY_WEITERE_PERSON_INFO = "weiterePersonInfo";
   @jakarta.annotation.Nullable
   private String weiterePersonInfo;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public AnlassSaveJsonSpec() {
   }
@@ -461,6 +466,31 @@ public class AnlassSaveJsonSpec {
     this.weiterePersonInfo = weiterePersonInfo;
   }
 
+  public AnlassSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -483,12 +513,13 @@ public class AnlassSaveJsonSpec {
         Objects.equals(this.mpa, anlassSaveJson.mpa) &&
         Objects.equals(this.mpaInfo, anlassSaveJson.mpaInfo) &&
         Objects.equals(this.weiterePerson, anlassSaveJson.weiterePerson) &&
-        Objects.equals(this.weiterePersonInfo, anlassSaveJson.weiterePersonInfo);
+        Objects.equals(this.weiterePersonInfo, anlassSaveJson.weiterePersonInfo) &&
+        Objects.equals(this.version, anlassSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(anlassTyp, titel, anlassStatus, datum, schuljahr, zeitVon, zeitBis, anlassArt, arzt, arztInfo, mpa, mpaInfo, weiterePerson, weiterePersonInfo);
+    return Objects.hash(anlassTyp, titel, anlassStatus, datum, schuljahr, zeitVon, zeitBis, anlassArt, arzt, arztInfo, mpa, mpaInfo, weiterePerson, weiterePersonInfo, version);
   }
 
   @Override
@@ -509,6 +540,7 @@ public class AnlassSaveJsonSpec {
     sb.append("    mpaInfo: ").append(toIndentedString(mpaInfo)).append("\n");
     sb.append("    weiterePerson: ").append(toIndentedString(weiterePerson)).append("\n");
     sb.append("    weiterePersonInfo: ").append(toIndentedString(weiterePersonInfo)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

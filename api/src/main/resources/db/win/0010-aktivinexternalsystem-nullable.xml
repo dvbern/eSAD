@@ -1,0 +1,19 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="dvbern" id="1757420456">
+    <dropNotNullConstraint tableName="kind" columnName="aktivinexternalsystem"/>
+    <dropNotNullConstraint tableName="klasse" columnName="aktivinexternalsystem"/>
+    <dropNotNullConstraint tableName="kontaktpersonkind" columnName="aktivinexternalsystem"/>
+    <dropNotNullConstraint tableName="lehrperson" columnName="aktivinexternalsystem"/>
+    <dropNotNullConstraint tableName="schule" columnName="aktivinexternalsystem"/>
+  </changeSet>
+  <changeSet author="dvbern" id="2025-09-10-1">
+    <sql>
+        update kind set aktivinexternalsystem = null where aktivinexternalsystem is not null;
+        update klasse set aktivinexternalsystem = null where aktivinexternalsystem is not null;
+        update kontaktpersonkind set aktivinexternalsystem = null where aktivinexternalsystem is not null;
+        update lehrperson set aktivinexternalsystem = null where aktivinexternalsystem is not null;
+        update schule set aktivinexternalsystem = null where aktivinexternalsystem is not null;
+    </sql>
+  </changeSet>
+</databaseChangeLog>

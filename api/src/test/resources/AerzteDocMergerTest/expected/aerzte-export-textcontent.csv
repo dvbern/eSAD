@@ -1,0 +1,9 @@
+Anrede,Name,Vorname,Adresszusatz,Strasse & Nr,PLZ,Ort,Email,Telefon,Bemerkung,HPV Teilnahme
+,Arzt1,,c/o Muster,Bahnhofstrasse 10,90001,Bern,arzt.default@mailbucket.dvbern.ch,+41 79 123 45 67,Lorem ipsum,Nein
+,Arzt2,,c/o Muster,Bahnhofstrasse 10,80001,Bern,arzt.default@mailbucket.dvbern.ch,+41 79 123 45 67,,Nein
+,Arzt21,,c/o Muster,Bahnhofstrasse 10,80001,Bern,arzt.default@mailbucket.dvbern.ch,+41 79 123 45 67,,Nein
+,Arzt22,,,Bahnhofstrasse 10,80001,Bern,arzt.default@mailbucket.dvbern.ch,+41 79 123 45 67,,Nein
+,Arzt33,,c/o Muster,Bahnhofstrasse 10,80001,,arzt.default@mailbucket.dvbern.ch,+41 79 123 45 67,,Nein
+,Arzt34,,c/o Muster,Bahnhofstrasse 10,,Bern,arzt.default@mailbucket.dvbern.ch,+41 79 123 45 67,,Nein
+,Arzt3,,c/o Muster,Bahnhofstrasse 10,90001,Bern,arzt.default@mailbucket.dvbern.ch,+41 79 123 45 67,,Nein
+DR.,Max,Muster,c/o Muster,Bahnhofstrasse 10,3000,Bern,arzt.default@mailbucket.dvbern.ch,+41 79 123 45 67,,Nein

@@ -14,11 +14,13 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerFixtureBuilder;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -96,7 +98,8 @@ class AbstractEntityListenerTest {
 
     private final FixedClockProvider clockProvider = FixedClockProvider.now();
     private final AppClock appClock = new AppClock(clockProvider);
-    private final AbstractEntityListener sut = new AbstractEntityListener(appClock, currentUserStub);
+    private final ConfigService configService = Mockito.mock(ConfigService.class);
+    private final AbstractEntityListener sut = new AbstractEntityListener(appClock, currentUserStub, configService);
 
     private final TestEntity entity = new TestEntity();
 

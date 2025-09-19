@@ -87,4 +87,14 @@ class CleanFileNameTest {
         assertThat(actual)
             .isEqualTo("file.txt");
     }
+
+    @Test
+    void cleanFileName_removes_control_characters() {
+        var input = new CleanFileName("fi\tl\ne.txt");
+
+        var actual = input.toString();
+
+        assertThat(actual)
+            .isEqualTo("file.txt");
+    }
 }

@@ -1,7 +1,8 @@
 import {NonNullableFormBuilder} from '@angular/forms';
+import {AnlassFlagsJson, NachkontrolleSaveJson} from '@dvb/data-access-backend';
+import {globalConstants} from '@dvb/feat-shared';
 import {BaseForm} from '@dvb/util-angular';
-import {AnlassFlagsJson} from '@dvb/data-access-backend';
-import {ensureProps} from '@dvb/util-shared';
+import {ensureProps, Nullish} from '@dvb/util-shared';
 
 function makeForm(fb: NonNullableFormBuilder) {
   return fb.group({
@@ -10,25 +11,35 @@ function makeForm(fb: NonNullableFormBuilder) {
     nachkontrolleGroesseGewicht: fb.control<boolean>(false),
     nachkontrolleSprache: fb.control<boolean>(false),
     nachkontrolleMotorik: fb.control<boolean>(false),
-    nachkontrolleAnderes: fb.control<boolean>(false)
+    nachkontrolleAnderes: fb.control<boolean>(false),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 }
 
-export class KinderNachkontrolleForm extends BaseForm<ReturnType<typeof makeForm>, AnlassFlagsJson> {
+export class KinderNachkontrolleForm extends BaseForm<ReturnType<typeof makeForm>, NachkontrolleSaveJson> {
 
   constructor(fb: NonNullableFormBuilder) {
     super(() => makeForm(fb));
   }
 
-  override valueOnValid(): AnlassFlagsJson {
+  resetForm(einladung: NachkontrolleSaveJson): void {
+    this.group.reset(einladung.anlassFlags);
+    this.group.controls.version.reset(einladung.version);
+  }
+
+  override valueOnValid(): NachkontrolleSaveJson {
     const value = this.group.getRawValue();
-    return ensureProps<AnlassFlagsJson>({
+    const anlassFlags = ensureProps<AnlassFlagsJson>({
       nachkontrolleSehen: value.nachkontrolleSehen,
       nachkontrolleHoeren: value.nachkontrolleHoeren,
       nachkontrolleGroesseGewicht: value.nachkontrolleGroesseGewicht,
       nachkontrolleSprache: value.nachkontrolleSprache,
       nachkontrolleMotorik: value.nachkontrolleMotorik,
       nachkontrolleAnderes: value.nachkontrolleAnderes
+    });
+    return ensureProps<NachkontrolleSaveJson>({
+      anlassFlags: anlassFlags,
+      version: value.version ?? globalConstants.entityPrePersistVersion
     });
   }
 }

@@ -47,7 +47,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   AufgabeSaveJsonSpec.JSON_PROPERTY_KIND,
   AufgabeSaveJsonSpec.JSON_PROPERTY_ANLASS,
   AufgabeSaveJsonSpec.JSON_PROPERTY_FILES,
-  AufgabeSaveJsonSpec.JSON_PROPERTY_LINK
+  AufgabeSaveJsonSpec.JSON_PROPERTY_LINK,
+  AufgabeSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("AufgabeSaveJson")
 @lombok.AllArgsConstructor
@@ -96,6 +97,10 @@ public class AufgabeSaveJsonSpec {
   public static final String JSON_PROPERTY_LINK = "link";
   @jakarta.annotation.Nullable
   private String link;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public AufgabeSaveJsonSpec() {
   }
@@ -391,6 +396,31 @@ public class AufgabeSaveJsonSpec {
     this.link = link;
   }
 
+  public AufgabeSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -410,12 +440,13 @@ public class AufgabeSaveJsonSpec {
         Objects.equals(this.kind, aufgabeSaveJson.kind) &&
         Objects.equals(this.anlass, aufgabeSaveJson.anlass) &&
         Objects.equals(this.files, aufgabeSaveJson.files) &&
-        Objects.equals(this.link, aufgabeSaveJson.link);
+        Objects.equals(this.link, aufgabeSaveJson.link) &&
+        Objects.equals(this.version, aufgabeSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(titel, bemerkungen, status, faelligBis, empfaenger, userErfasst, labels, kind, anlass, files, link);
+    return Objects.hash(titel, bemerkungen, status, faelligBis, empfaenger, userErfasst, labels, kind, anlass, files, link, version);
   }
 
   @Override
@@ -433,6 +464,7 @@ public class AufgabeSaveJsonSpec {
     sb.append("    anlass: ").append(toIndentedString(anlass)).append("\n");
     sb.append("    files: ").append(toIndentedString(files)).append("\n");
     sb.append("    link: ").append(toIndentedString(link)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

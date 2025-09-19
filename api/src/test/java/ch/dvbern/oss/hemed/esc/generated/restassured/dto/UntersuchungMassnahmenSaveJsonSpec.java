@@ -50,7 +50,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   UntersuchungMassnahmenSaveJsonSpec.JSON_PROPERTY_UEBERWEISUNG_HAUSARZT,
   UntersuchungMassnahmenSaveJsonSpec.JSON_PROPERTY_UEBERWEISUNG_AUGENARZT,
   UntersuchungMassnahmenSaveJsonSpec.JSON_PROPERTY_NACHKONTROLLE,
-  UntersuchungMassnahmenSaveJsonSpec.JSON_PROPERTY_BEMERKUNGEN
+  UntersuchungMassnahmenSaveJsonSpec.JSON_PROPERTY_BEMERKUNGEN,
+  UntersuchungMassnahmenSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("UntersuchungMassnahmenSaveJson")
 @lombok.AllArgsConstructor
@@ -127,6 +128,10 @@ public class UntersuchungMassnahmenSaveJsonSpec {
   public static final String JSON_PROPERTY_BEMERKUNGEN = "bemerkungen";
   @jakarta.annotation.Nullable
   private String bemerkungen;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public UntersuchungMassnahmenSaveJsonSpec() {
   }
@@ -589,6 +594,31 @@ public class UntersuchungMassnahmenSaveJsonSpec {
     this.bemerkungen = bemerkungen;
   }
 
+  public UntersuchungMassnahmenSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -615,12 +645,13 @@ public class UntersuchungMassnahmenSaveJsonSpec {
         Objects.equals(this.ueberweisungHausarzt, untersuchungMassnahmenSaveJson.ueberweisungHausarzt) &&
         Objects.equals(this.ueberweisungAugenarzt, untersuchungMassnahmenSaveJson.ueberweisungAugenarzt) &&
         Objects.equals(this.nachkontrolle, untersuchungMassnahmenSaveJson.nachkontrolle) &&
-        Objects.equals(this.bemerkungen, untersuchungMassnahmenSaveJson.bemerkungen);
+        Objects.equals(this.bemerkungen, untersuchungMassnahmenSaveJson.bemerkungen) &&
+        Objects.equals(this.version, untersuchungMassnahmenSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(keineMassnahmen, beratungMPA, beratungSchulAerztin, anderes, anderesBemerkung, bereitsBehandeltSehen, bereitsBehandeltHoeren, bereitsBehandeltGroesseGewicht, bereitsBehandeltSprache, bereitsBehandeltMotorik, bereitsBehandeltAnderes, bereitsBehandeltAnderesBemerkung, abgegebenesInfomaterial, informationEltern, ueberweisungHausarzt, ueberweisungAugenarzt, nachkontrolle, bemerkungen);
+    return Objects.hash(keineMassnahmen, beratungMPA, beratungSchulAerztin, anderes, anderesBemerkung, bereitsBehandeltSehen, bereitsBehandeltHoeren, bereitsBehandeltGroesseGewicht, bereitsBehandeltSprache, bereitsBehandeltMotorik, bereitsBehandeltAnderes, bereitsBehandeltAnderesBemerkung, abgegebenesInfomaterial, informationEltern, ueberweisungHausarzt, ueberweisungAugenarzt, nachkontrolle, bemerkungen, version);
   }
 
   @Override
@@ -645,6 +676,7 @@ public class UntersuchungMassnahmenSaveJsonSpec {
     sb.append("    ueberweisungAugenarzt: ").append(toIndentedString(ueberweisungAugenarzt)).append("\n");
     sb.append("    nachkontrolle: ").append(toIndentedString(nachkontrolle)).append("\n");
     sb.append("    bemerkungen: ").append(toIndentedString(bemerkungen)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

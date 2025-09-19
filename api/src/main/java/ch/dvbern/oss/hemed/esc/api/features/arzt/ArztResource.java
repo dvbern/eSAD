@@ -1,15 +1,15 @@
 package ch.dvbern.oss.hemed.esc.api.features.arzt;
 
-import java.util.List;
-
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileDownloadUtil;
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.arzt.json.ArztIdListJson;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.json.ArztJson;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.json.ArztListJson;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.json.ArztSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.arzt.types.ExportMode;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import io.smallrye.common.constraint.NotNull;
@@ -25,7 +25,6 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -92,17 +91,17 @@ public class ArztResource {
         arztMapper.remove(arztId);
     }
 
-    @GET
-    @Path("/export")
+    @POST
+    @Path("/export/{mode}")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
     @RolesAllowed(BerechtigungName.AERZTE_LESEN)
-    @Consumes(MediaType.WILDCARD)
+    @Consumes(MediaType.APPLICATION_JSON)
     @APIResponse(content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM,
         schema = @Schema(type = SchemaType.STRING, format = "binary")), description = "OK", responseCode = "200")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Response exportAerzte(
-        @NotNull @NonNull @QueryParam("aerzteIds") List<ID<Arzt>> arztIds) {
-        PrintResultDTO printResultDTO = arztMapper.exportArztList(arztIds);
+    public Response exportAerzte(@NotNull @NonNull @Valid ArztIdListJson arztIdListjson, @PathParam("mode")
+    ExportMode exportMode) {
+        PrintResultDTO printResultDTO = arztMapper.exportArztList(arztIdListjson.getArztIdList(), exportMode);
 
         return FileDownloadUtil.buildFileResponse(
             "attachment",

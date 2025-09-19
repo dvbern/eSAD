@@ -9,8 +9,8 @@ import {
   RequirementSetting,
   UntersuchungGroesseGewichtDataJson,
   UntersuchungGroesseGewichtSaveJson,
-  UntersuchungSehenSaveJson,
 } from '@dvb/data-access-backend';
+import {globalConstants} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
 import {ensureProps, isNullish, Nullish, requireValue, trimToUndefined} from '@dvb/util-shared';
 import {PercentileChartData, PercentileMainDataPoint} from '@dvb/viz';
@@ -35,18 +35,20 @@ export function calculateBmi(groesse: number | undefined, gewicht: number | unde
 function makeForm(config: Config) {
   const fb = config.fb;
   const group = fb.group({
-    groesse: fb.control<number | undefined>(undefined),
+    groesse: fb.control<number | undefined>(undefined, AppValidators.zeroDecimalPlaces()),
     groessePerzentile: fb.control<PerzentileGroesse | undefined>(undefined),
-    gewicht: fb.control<number | undefined>(undefined),
+    gewicht: fb.control<number | undefined>(undefined, AppValidators.oneDecimalPlace()),
     gewichtPerzentile: fb.control<PerzentileGewicht | undefined>(undefined),
     bmi: fb.control<number | undefined>(undefined),
     bmiPerzentile: fb.control<PerzentileBmi | undefined>(undefined),
-    bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength()),
+    bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength2000()),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
   return group;
 }
 
-export class UntersuchungGroesseGewichtForm extends BaseForm<ReturnType<typeof makeForm>, UntersuchungSehenSaveJson> {
+export class UntersuchungGroesseGewichtForm
+  extends BaseForm<ReturnType<typeof makeForm>, UntersuchungGroesseGewichtSaveJson> {
 
   private readonly dataPointsGroesse: Map<number, PercentileMainDataPoint> = new Map<number, PercentileMainDataPoint>();
   private readonly dataPointsGewicht: Map<number, PercentileMainDataPoint> = new Map<number, PercentileMainDataPoint>();
@@ -81,7 +83,11 @@ export class UntersuchungGroesseGewichtForm extends BaseForm<ReturnType<typeof m
             this.group.controls.gewicht.value,
           );
           this.group.controls.bmi.setValue(bmi);
-          this.addPointsToDataset(this.alter, this.alterDuodezimal, this.group.value.groesse, this.group.value.gewicht, bmi);
+          this.addPointsToDataset(this.alter,
+            this.alterDuodezimal,
+            this.group.value.groesse,
+            this.group.value.gewicht,
+            bmi);
         },
         error: console.error,
       });
@@ -93,7 +99,11 @@ export class UntersuchungGroesseGewichtForm extends BaseForm<ReturnType<typeof m
             this.group.controls.gewicht.value,
           );
           this.group.controls.bmi.setValue(bmi);
-          this.addPointsToDataset(this.alter, this.alterDuodezimal, this.group.value.groesse, this.group.value.gewicht, bmi);
+          this.addPointsToDataset(this.alter,
+            this.alterDuodezimal,
+            this.group.value.groesse,
+            this.group.value.gewicht,
+            bmi);
         },
         error: console.error,
       });
@@ -123,7 +133,11 @@ export class UntersuchungGroesseGewichtForm extends BaseForm<ReturnType<typeof m
       });
   }
 
-  resetForm(value: UntersuchungGroesseGewichtDataJson | Nullish, alter: number | undefined, alterDuodezimal?: string): void {
+  resetForm(
+    value: UntersuchungGroesseGewichtDataJson | Nullish,
+    alter: number | undefined,
+    alterDuodezimal?: string,
+  ): void {
     this.alter = alter;
     this.alterDuodezimal = alterDuodezimal;
     const currentData: UntersuchungGroesseGewichtSaveJson | undefined = value?.untersuchungGroesseGewichtJson?.data;
@@ -151,6 +165,7 @@ export class UntersuchungGroesseGewichtForm extends BaseForm<ReturnType<typeof m
       gewichtPerzentile: value.gewichtPerzentile,
       bmiPerzentile: value.bmiPerzentile,
       bemerkungen: trimToUndefined(value.bemerkungen),
+      version: value.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 
@@ -175,7 +190,13 @@ export class UntersuchungGroesseGewichtForm extends BaseForm<ReturnType<typeof m
     }
   }
 
-  private addPointsToDataset(alter?: number, alterDuodezimal?: string, groesse?: number, gewicht?: number, bmi?: number): void {
+  private addPointsToDataset(
+    alter?: number,
+    alterDuodezimal?: string,
+    groesse?: number,
+    gewicht?: number,
+    bmi?: number,
+  ): void {
     if (alter && alterDuodezimal && groesse) {
       this.addGroessePoint(alter, alterDuodezimal, groesse);
       if (gewicht) {

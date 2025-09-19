@@ -31,7 +31,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonPropertyOrder({
   BriefvorlageSaveJsonSpec.JSON_PROPERTY_NAME,
   BriefvorlageSaveJsonSpec.JSON_PROPERTY_TYPE,
-  BriefvorlageSaveJsonSpec.JSON_PROPERTY_SPRACHE
+  BriefvorlageSaveJsonSpec.JSON_PROPERTY_SPRACHE,
+  BriefvorlageSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("BriefvorlageSaveJson")
 @lombok.AllArgsConstructor
@@ -48,6 +49,10 @@ public class BriefvorlageSaveJsonSpec {
   public static final String JSON_PROPERTY_SPRACHE = "sprache";
   @jakarta.annotation.Nonnull
   private AppLanguagesSpec sprache;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public BriefvorlageSaveJsonSpec() {
   }
@@ -127,6 +132,31 @@ public class BriefvorlageSaveJsonSpec {
     this.sprache = sprache;
   }
 
+  public BriefvorlageSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -138,12 +168,13 @@ public class BriefvorlageSaveJsonSpec {
     BriefvorlageSaveJsonSpec briefvorlageSaveJson = (BriefvorlageSaveJsonSpec) o;
     return Objects.equals(this.name, briefvorlageSaveJson.name) &&
         Objects.equals(this.type, briefvorlageSaveJson.type) &&
-        Objects.equals(this.sprache, briefvorlageSaveJson.sprache);
+        Objects.equals(this.sprache, briefvorlageSaveJson.sprache) &&
+        Objects.equals(this.version, briefvorlageSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, type, sprache);
+    return Objects.hash(name, type, sprache, version);
   }
 
   @Override
@@ -153,6 +184,7 @@ public class BriefvorlageSaveJsonSpec {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    sprache: ").append(toIndentedString(sprache)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

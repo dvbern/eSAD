@@ -1,12 +1,21 @@
 <feat-page [backLink]="{label: 'global.back' | transloco, routerLink: Path.RELATIVE_TWO_UP}"
            [heading]="'notizen.list.page.title' | transloco: {nameKind: dossierStore.nameKind()}">
 
+  <svui-page-header-list-summary [items]="summaryItems()"/>
+
+  <svui-page-header-buttons
+    [showFilterPopup]="false"
+    [activeFilterCount]="itemTable.numberOfFilters()"
+    (resetFilter)="itemTable.resetFilters(); tableFilterForm.reset();"/>
+
   @if (canEditNotiz()) {
     <svui-page-header-add-button
       [addRouterLink]="Path.RELATIVE_ONE_UP + '/' + Path.CREATE"/>
   }
 
   <feat-notiz-list
+    [itemTable]="itemTable"
+    [tableFilterForm]="tableFilterForm"
     (goToNotiz)="goToNotiz($event)"
     (removeNotiz)="removeNotiz($event)"
     [deleteLoading]="kinderNotizStore.deleteLoader.isLoading()"

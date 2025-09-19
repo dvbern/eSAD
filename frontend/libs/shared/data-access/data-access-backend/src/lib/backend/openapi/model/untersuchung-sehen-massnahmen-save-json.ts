@@ -12,12 +12,12 @@ import { InformationEltern } from './information-eltern';
 
 
 export interface UntersuchungSehenMassnahmenSaveJson { 
-    keineMassnahmen: boolean;
     bereitsBehandeltSehen: boolean;
     abgegebenesInfomaterial: Array<InfomaterialJson>;
     informationEltern?: InformationEltern;
     ueberweisungAugenarzt: boolean;
     nachkontrolleSehen: boolean;
+    version: number;
 }
 export namespace UntersuchungSehenMassnahmenSaveJson {
 }

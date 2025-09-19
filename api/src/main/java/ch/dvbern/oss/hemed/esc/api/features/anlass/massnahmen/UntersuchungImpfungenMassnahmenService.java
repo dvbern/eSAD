@@ -19,17 +19,31 @@ public class UntersuchungImpfungenMassnahmenService {
     private final EinladungService einladungService;
     private final UntersuchungImpfungenService untersuchungImpfungenService;
 
+
     @NonNull
     public UntersuchungImpfungenMassnahmen persist(@NonNull UntersuchungImpfungenMassnahmen massnahmen) {
         massnahmenRepo.persist(massnahmen);
+        return afterPersist(massnahmen);
+    }
+
+    @NonNull
+    public UntersuchungImpfungenMassnahmen persistWithOptimisticLocking(@NonNull UntersuchungImpfungenMassnahmen massnahmen, @NonNull Long versionFromFrontend) {
+        UntersuchungImpfungenMassnahmen persistedEntity = massnahmenRepo.persistWithOptimisticLocking(massnahmen, versionFromFrontend);
+        return afterPersist(persistedEntity);
+    }
+
+    @NonNull
+    private UntersuchungImpfungenMassnahmen afterPersist(@NonNull UntersuchungImpfungenMassnahmen massnahmen) {
         UntersuchungImpfungen impfungen =
             untersuchungImpfungenService.getById(massnahmen.getUntersuchungImpfungen().getId());
+        impfungen.disableOptimisticLockingCheck();
         impfungen.setUntersuchungImpfungenMassnahmen(massnahmen);
         createOrUpdateAufgaben(massnahmen);
         return massnahmen;
     }
 
     private void createOrUpdateAufgaben(@NonNull UntersuchungImpfungenMassnahmen massnahmen) {
+        massnahmen.disableOptimisticLockingCheck();
         Einladung einladung = massnahmen.getUntersuchungImpfungen().getUntersuchung().getEinladung();
         if (massnahmen.getInformationEltern() != null && massnahmen.getInformationEltern() != InformationEltern.KEINE) {
             autoAufgabeService.createOrUpdateAufgabeMassnahmeImpfenInformationEltern(massnahmen, einladung);

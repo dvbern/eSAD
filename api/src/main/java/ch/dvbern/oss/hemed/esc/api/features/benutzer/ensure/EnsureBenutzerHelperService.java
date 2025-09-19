@@ -92,7 +92,7 @@ public class EnsureBenutzerHelperService {
         @NonNull Benutzer benutzer,
         @NonNull JsonWebTokenDataDTO webTokenData
     ) {
-
+        benutzer.disableOptimisticLockingCheck();
         BenutzerLoginInfos loginInfos = benutzer.getLoginInfos() == null ? new BenutzerLoginInfos() : benutzer.getLoginInfos();
         benutzer.setLoginInfos(loginInfos);
         String session = webTokenData.getSession();

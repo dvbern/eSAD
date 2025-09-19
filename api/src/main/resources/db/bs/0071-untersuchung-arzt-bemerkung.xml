@@ -1,0 +1,108 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hefr (generated)" id="1755769925401-5">
+    <createTable tableName="untersuchungarztbemerkung">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungarztbemerkungPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1755769925401-6">
+    <createTable tableName="untersuchungarztbemerkung_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1755769925401-7">
+    <addColumn tableName="untersuchung">
+      <column name="untersuchungarztbemerkung_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1755769925401-8">
+    <addColumn tableName="untersuchung_aud">
+      <column name="untersuchungarztbemerkung_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1755769925401-9">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungarztbemerkung_audPK" tableName="untersuchungarztbemerkung_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1755769925401-10">
+    <addUniqueConstraint columnNames="untersuchungarztbemerkung_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGARZTBEMERKUNG_ID_COL" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1755769925401-12">
+    <createIndex indexName="ix_untersuchung_untersuchungarztbemerkung" tableName="untersuchung">
+      <column name="untersuchungarztbemerkung_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1755769925401-13">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungarztbemerkung_aud" constraintName="FKmp1mq0melkqsxds11msjgj8l7" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1755769925401-14">
+    <addForeignKeyConstraint baseColumnNames="untersuchungarztbemerkung_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchungarztbemerkung" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungarztbemerkung" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr" id="1755769925401-15">
+    <sql>
+      -- Pro UntersuchungArzt, wo es eine Bemerkung hat, ein UntersuchungArztBemerkung anlegen
+      INSERT INTO untersuchungarztbemerkung (
+        id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, bemerkungen
+      ) SELECT
+          id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, bemerkungen
+      FROM untersuchungarzt
+      WHERE bemerkungen IS NOT NULL AND bemerkungen != '';
+      -- Verlinkung auf der Untersuchung aktualisieren
+      UPDATE untersuchung SET untersuchungarztbemerkung_id = (
+        SELECT b.id FROM untersuchungarztbemerkung b WHERE b.id = untersuchungarzt_id
+      )
+      WHERE untersuchungarztbemerkung_id IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1755769925401-25">
+    <dropColumn columnName="bemerkungen" tableName="untersuchungarzt"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1755769925401-26">
+    <dropColumn columnName="bemerkungen" tableName="untersuchungarzt_aud"/>
+  </changeSet>
+  <changeSet author="hefr" id="1755769925401-27">
+    <renameTable oldTableName="untersuchungarzt" newTableName="untersuchungarztbeurteilung"/>
+    <renameTable oldTableName="untersuchungarzt_aud" newTableName="untersuchungarztbeurteilung_aud"/>
+    <renameColumn tableName="untersuchung" oldColumnName="untersuchungarzt_id" newColumnName="untersuchungarztbeurteilung_id"/>
+    <renameColumn tableName="untersuchung_aud" oldColumnName="untersuchungarzt_id" newColumnName="untersuchungarztbeurteilung_id"/>
+    <dropForeignKeyConstraint baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchungArzt"/>
+    <addForeignKeyConstraint baseTableName="untersuchung" baseColumnNames="untersuchungarztbeurteilung_id" constraintName="fk_untersuchung_untersuchungarztbeurteilung" referencedTableName="untersuchungarztbeurteilung" referencedColumnNames="id"/>
+    <dropIndex tableName="untersuchung" indexName="ix_untersuchung_untersuchungarzt"/>
+    <createIndex indexName="ix_untersuchung_untersuchungarztbeurteilung" tableName="untersuchung">
+      <column name="untersuchungarztbeurteilung_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+</databaseChangeLog>

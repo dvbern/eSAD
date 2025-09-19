@@ -1,0 +1,30 @@
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabUntersuchung) {
+
+  <form svuiFormLayout
+        [formType]="'kacheln'"
+        [mode]="'edit'"
+        [formGroup]="form.group"
+        (ngSubmit)="submitIfValid()">
+
+    <!-- Bemerkung -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.untersuchungBemerkungen !== RequirementSetting.NOT_VISIBLE) {
+      <svui-title [context]="'formSection'"
+                  class="mb-3">{{ 'untersuchung.tab.arzt.bemerkung' | transloco }}
+      </svui-title>
+      <svui-form-control
+        [label]="'untersuchung.tab.arzt.bemerkung' | transloco"
+        [topLabelVisibility]="'hidden'"
+        [viewValue]="form.group.controls.bemerkungen.value">
+        <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="150"></textarea>
+      </svui-form-control>
+    }
+
+    <!-- Save / Cancel Buttons -->
+    @if (canEdit()) {
+      <svui-save-cancel-buttons
+        [saving]="false"
+        [canEdit]="true"
+        (cancelClicked)="abbrechen()"/>
+    }
+  </form>
+}

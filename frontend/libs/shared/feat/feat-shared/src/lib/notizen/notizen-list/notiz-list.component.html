@@ -1,5 +1,5 @@
 <svui-card [innerSpacing]="'topBottom'">
-  @if (notizenTable !== undefined) {
+    @if (itemTable(); as notizenTable) {
     <table
       (pageChanged)="notizenTable.onPageChanged($event)"
       [loading]="loading()"
@@ -63,6 +63,7 @@
         <th scope="col"></th>
       </tr>
       <!-- Headers for filtering -->
+      @if (tableFilterForm(); as tableFilterForm) {
       <tr>
         <th class="col-date" scope="col">
           <svui-table-filter [columnHeader]="'notizen.list.erstelltAm' | transloco">
@@ -136,6 +137,7 @@
         </th>
         <th scope="col"></th>
       </tr>
+      }
       </thead>
 
       <tbody>
@@ -173,5 +175,5 @@
 
       </tbody>
     </table>
-  }
+    }
 </svui-card>

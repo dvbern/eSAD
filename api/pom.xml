@@ -43,7 +43,7 @@
 
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.20.1</quarkus.platform.version>
+        <quarkus.platform.version>3.20.2.2</quarkus.platform.version>
         <!-- keep in sync with quarkus! (exception: liquibase is currentyly ahead of quarkus internal version because mvn liquibase:diff will not generate output otherwise)-->
         <hibernate-jpamodelgen.version>6.6.5.Final</hibernate-jpamodelgen.version>
         <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
@@ -442,6 +442,7 @@
 
     </dependencies>
     <!-- </editor-fold> -->
+    
 
     <build>
         <plugins>
@@ -655,18 +656,18 @@
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>${liquibase-diff.liquibase.version}</version>
                 <configuration>
-                    <changeLogFile>src/main/resources/db/changeLog.xml</changeLogFile>
-                    <diffChangeLogFile>src/main/resources/db/XXXX-diffchange.xml</diffChangeLogFile>
-                    <outputChangeLogFile>src/main/resources/db/XXXX-genchange.xml</outputChangeLogFile>
+                    <changeLogFile>src/main/resources/db/changeLog_bs.xml</changeLogFile>
+                    <diffChangeLogFile>src/main/resources/db/XXXX-diffchange_all_tenants.xml</diffChangeLogFile>
+                    <outputChangeLogFile>src/main/resources/db/XXXX-genchange_all_tenants.xml</outputChangeLogFile>
 
                     <!-- old/reference state -->
                     <driver>org.postgresql.Driver</driver>
-                    <propertyFile>../developer-local-settings/config/liquibase/liquibase.properties</propertyFile>
+                    <propertyFile>../developer-local-settings/config/liquibase/liquibase_bs.properties</propertyFile>
 
                     <!-- target state -->
                     <referenceUrl>hibernate:ejb3:LiquibasePU</referenceUrl>
 
-                    <!-- <verbose>true</verbose> -->
+<!--                            <verbose>true</verbose>-->
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -714,6 +715,7 @@
             <build>
                 <defaultGoal>compile liquibase:diff</defaultGoal>
             </build>
+            
         </profile>
         <!-- </editor-fold> -->
         <!-- <editor-fold desc="native" defaultstate="collapsed"> -->

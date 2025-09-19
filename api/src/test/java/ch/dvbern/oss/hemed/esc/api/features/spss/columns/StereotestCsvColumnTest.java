@@ -2,7 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StereotestResultat;
 import org.junit.jupiter.api.Test;
 
@@ -23,21 +23,21 @@ class StereotestCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        UntersuchungSehen untersuchungSehen = new UntersuchungSehen();
-        untersuchung.setUntersuchungSehen(untersuchungSehen);
+        UntersuchungSehenBeurteilung untersuchungSehenBeurteilung = new UntersuchungSehenBeurteilung();
+        untersuchung.setUntersuchungSehenBeurteilung(untersuchungSehenBeurteilung);
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungSehen.setStereotest(StereotestResultat.NORMAL);
+        untersuchungSehenBeurteilung.setStereotest(StereotestResultat.NORMAL);
         assertThat(column.extract(einladung)).isEqualTo("1");
 
-        untersuchungSehen.setStereotest(StereotestResultat.PATHOLOGISCH);
+        untersuchungSehenBeurteilung.setStereotest(StereotestResultat.PATHOLOGISCH);
         assertThat(column.extract(einladung)).isEqualTo("2");
 
-        untersuchungSehen.setStereotest(StereotestResultat.UNSICHER);
+        untersuchungSehenBeurteilung.setStereotest(StereotestResultat.UNSICHER);
         assertThat(column.extract(einladung)).isEqualTo("3");
 
-        untersuchungSehen.setStereotest(StereotestResultat.NICHT_GEPRUEFT);
+        untersuchungSehenBeurteilung.setStereotest(StereotestResultat.NICHT_GEPRUEFT);
         assertThat(column.extract(einladung)).isEqualTo("4");
     }
 }

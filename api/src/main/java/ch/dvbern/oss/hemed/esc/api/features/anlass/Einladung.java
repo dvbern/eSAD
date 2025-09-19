@@ -10,6 +10,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.types.GrundAbmeldung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.NaechsteStation;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -50,7 +51,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Einladung extends AbstractTenantEntity<Einladung> {
+public class Einladung extends AbstractTenantEntity<Einladung> implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 5285023727443911252L;
@@ -89,7 +90,7 @@ public class Einladung extends AbstractTenantEntity<Einladung> {
     private ArtAbmeldung artAbmeldung;
 
     @Nullable
-    @Column(nullable = true, length = DbConst.DB_DEFAULT_MAX_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String bemerkungAbmeldung;
 
     @Nullable

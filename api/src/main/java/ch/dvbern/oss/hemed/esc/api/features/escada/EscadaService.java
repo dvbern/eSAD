@@ -18,25 +18,11 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.escada;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.Reader;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileNameUtil;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.runas.RunAs;
+import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.oss.hemed.esc.api.features.escada.csv.EscadaCSVMapperService;
 import ch.dvbern.oss.hemed.esc.api.features.escada.csv.EscadaCsvDTO;
 import ch.dvbern.oss.hemed.esc.api.features.escada.csv.EscadaCsvService;
@@ -62,16 +48,13 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.schulenexternal.SchuleExterna
 import ch.dvbern.oss.hemed.esc.api.features.schule.schulenexternal.SchuleExternalRepo;
 import ch.dvbern.oss.hemed.esc.api.features.schule.schulenexternal.SchuleExternalSyncService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.escada.ExternalSystemIdDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.escada.ImportPlanDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.escada.ItemSyncResultJson;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3Mapper;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileValidationService;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.*;
 import io.quarkus.vertx.ConsumeEvent;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.control.ActivateRequestContext;
@@ -84,6 +67,15 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.Reader;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil.createInputStreamFromPath;
 import static ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil.createReaderFromInputStream;
@@ -113,6 +105,7 @@ public class EscadaService {
     private final KontaktPersonKindExternalSyncService kontaktPersonKindExternalSyncService;
     private final KontaktPersonKindExternalRepo kontaktPersonKindExternalRepo;
     private final EscadaMailService escadaMailService;
+    private final TenantProducer tenantProducer;
 
 
     @NonNull
@@ -129,9 +122,10 @@ public class EscadaService {
     @ActivateRequestContext
     @ConsumeEvent(value = ESCADA_SYNC_EVENT_ADDRESS, blocking = true)
     @Transactional(TxType.NOT_SUPPORTED)
-    @RunAs(username = "dev-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
+    @RunAs(username = "dev-esc@dvbern.ch", roles = {BerechtigungName.SYSTEM_ADMIN})
     public void handleEscadaSyncEvent(@NonNull EscadaSyncEvent escadaSyncEvent) {
         try {
+            tenantProducer.setCurrentTenant(TenantEnum.BS); // Escada Import ist fix für BS
             var bytes = fileStoreService.getFileBytesSync(escadaSyncEvent.getFileData().getFileInfoBucket().getFileIdInBucket());
             if (bytes == null) {
                 String msg = "ESCADA: File not found in S3 bucket: " + escadaSyncEvent.getFileData().getFileInfoBucket().getFileIdInBucket();
@@ -353,7 +347,7 @@ public class EscadaService {
 
         LocalDate today = appClock.localDateTime().now().toLocalDate();
         final String originalFileName = fileInfoS3.getFileName().getFileName();
-        String calculatedFileName = FileNameUtil.calculateAutomaticFilename(
+        CleanFileName calculatedFileName = FileNameUtil.calculateAutomaticFilename(
             List.of(),
             today,
             "Escada-Sync",

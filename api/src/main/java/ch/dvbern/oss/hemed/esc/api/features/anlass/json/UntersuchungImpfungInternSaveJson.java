@@ -9,6 +9,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.json.ImpfstoffChargeJson;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.json.ImpfstoffJson;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Setter
 @AllArgsConstructor
 @JaxDTO
-public class UntersuchungImpfungInternSaveJson {
+public class UntersuchungImpfungInternSaveJson implements SaveJsonWithOptimisticLocking {
 
     @Valid
     @NonNull
@@ -58,5 +59,8 @@ public class UntersuchungImpfungInternSaveJson {
     @NotNull
     @Schema(required = true)
     private List<UntersuchungImpfungKrankheitImmunitaetJson> krankheitenImmunitaeten = new ArrayList<>();
+
+    @Schema(required = true)
+    private long version;
 
 }

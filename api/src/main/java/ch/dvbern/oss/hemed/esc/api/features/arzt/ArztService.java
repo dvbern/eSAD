@@ -19,6 +19,12 @@ public class ArztService {
         return arzt;
     }
 
+    @NonNull
+    public Arzt persistWithOptimisticLocking(@NonNull Arzt arzt, @NonNull Long versionFromFrontend) {
+        arztRepo.persistWithOptimisticLocking(arzt, versionFromFrontend);
+        return arzt;
+    }
+
     public void remove(@NonNull ID<Arzt> arztID) {
         arztRepo.remove(arztID);
     }

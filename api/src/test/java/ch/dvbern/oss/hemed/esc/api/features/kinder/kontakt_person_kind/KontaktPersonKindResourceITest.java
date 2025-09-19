@@ -9,14 +9,12 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
+import ch.dvbern.oss.hemed.esc.api.testutil.assertj.AppValidationErrorJsonSpecAssert;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.KontaktPersonKindBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.KontaktpersonKindApiSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KontaktPersonKindJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KontaktPersonKindListJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KontaktPersonKindOptionListJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KontaktPersonKindSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.*;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response.Status;
@@ -148,6 +146,33 @@ class KontaktPersonKindResourceITest extends AbstractITest {
             .anyMatch(element -> element.getNameVorname().equals(kind.getNameVorname()));
     }
 
+
+    @Test
+    @TestAsAdminBS
+    void createKontaktPersonKind_forInactiveKind_shouldThrow() {
+        // ARRANGE
+        Kind kind = fixtureService.createInactiveKind();
+        KontaktPersonKindSaveJsonSpec payload = KontaktPersonKindBuilder.createJaxSpec(
+            builder -> builder
+                .forKind(kind)).getData();
+
+        // ACT
+        AppValidationErrorJsonSpec error = api
+            .kontaktPersonKindResourceCreateKontaktPersonKind()
+            .kindIDPath(kind.getId().getId())
+            .body(payload)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract().as(AppValidationErrorJsonSpec.class);
+
+        // ASSERT
+        AppValidationErrorJsonSpecAssert.assertThatAppValidationErrorJsonSpec(error)
+            .extractingExactlyOneViolation()
+            .hasRawMessageContaining("Das Kind " + kind.getNameVorname() + " " +  kind.getId() + " ist inaktiv. Es kann keine KontaktPersonKind für ein inaktives Kind erstellt werden.");
+    }
+
     @Test
     @TestAsAdminBS
     void updateKontaktPersonKind() {
@@ -157,7 +182,8 @@ class KontaktPersonKindResourceITest extends AbstractITest {
         assertThat(savedVater).isNotNull();
         assertThat(savedVater.getId()).isNotNull();
         assertThat(savedVater.getExternalSystemIdOrNull()).isNull();
-        assertThat(savedVater.isManualOrAktivInExternalSystem()).isFalse();
+        assertThat(savedVater.isManualOrAktivInExternalSystem()).isTrue();
+        assertThat(savedVater.isAktivInExternalSystem()).isFalse();
         KontaktPersonKindSaveJsonSpec payload = KontaktPersonKindBuilder.createJaxSpec(
             builder -> builder
                 .forKontaktPersonKind(savedVater)

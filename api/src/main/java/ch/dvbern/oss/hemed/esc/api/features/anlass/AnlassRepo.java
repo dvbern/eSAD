@@ -1,5 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
+import java.util.List;
+import java.util.Optional;
+
 import ch.dvbern.dvbstarter.infrastructure.db.SmartJPAQuery;
 import ch.dvbern.dvbstarter.infrastructure.db.baserepo.BaseRepo;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
@@ -10,7 +13,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.QKind;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.QKlasse;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
-import java.util.List;
+import com.querydsl.core.types.dsl.Expressions;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -24,6 +27,13 @@ public class AnlassRepo extends BaseRepo<Anlass> {
     public List<Anlass> findAll() {
         return db.selectFrom(QAnlass.anlass)
             .orderBy(QAnlass.anlass.datum.asc())
+            .orderBy(
+                Expressions.cases()
+                    .when(QAnlass.anlass.zeitVonBis.von.isNull()).then(0)
+                    .otherwise(1)
+                    .asc()
+            )
+            .orderBy(QAnlass.anlass.zeitVonBis.von.asc())
             .fetch();
     }
 
@@ -53,11 +63,13 @@ public class AnlassRepo extends BaseRepo<Anlass> {
     @NonNull
     public Long getCountAllforUserInFuture(@NonNull ID<Benutzer> benutzerID) {
         SmartJPAQuery<?> basequery = createFutureAnlassBasequery(benutzerID);
-        return basequery
+        Optional<Long> count = basequery
             .select(QAnlass.anlass.count())
-            .fetchFirst();
+            .fetchOne();
+        return count.orElse(0L);
     }
 
+    @NonNull
     private SmartJPAQuery<?> createFutureAnlassBasequery(@NonNull ID<Benutzer> benutzerID) {
         return db
             .from(QAnlass.anlass)

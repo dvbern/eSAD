@@ -2,7 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewichtService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogrammService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopieService;
@@ -18,12 +18,12 @@ public class UntersuchungService {
     private final EinladungService einladungService;
     private final UntersuchungImpfungenService untersuchungImpfungenService;
     private final UntersuchungDurchfuehrungService untersuchungDurchfuehrungService;
-    private final UntersuchungSehenService untersuchungSehenService;
+    private final UntersuchungSehenBeurteilungService untersuchungSehenBeurteilungService;
     private final UntersuchungHoerenAudiogrammService untersuchungHoerenAudiogrammService;
     private final UntersuchungHoerenOtoskopieService untersuchungHoerenOtoskopieService;
     private final UntersuchungGroesseGewichtService untersuchungGroesseGewichtService;
     private final UntersuchungTriageService untersuchungTriageService;
-    private final UntersuchungArztService untersuchungArztService;
+    private final UntersuchungArztBeurteilungService untersuchungArztBeurteilungService;
     private final UntersuchungMassnahmenService untersuchungMassnahmenService;
 
     @NonNull
@@ -32,6 +32,7 @@ public class UntersuchungService {
         boolean loadSubuntersuchungenEager
     ) {
         Einladung einladung = einladungService.getByIdLockedQuery(einladungId);
+        einladung.disableOptimisticLockingCheck();
         Untersuchung untersuchung = einladung.getUntersuchung();
         if (einladung.getUntersuchung() == null) {
             untersuchung = Untersuchung.forEinladung(einladung);
@@ -57,12 +58,12 @@ public class UntersuchungService {
     public void untersuchungAbschliessen(@NonNull Untersuchung untersuchung) {
         untersuchungDurchfuehrungService.untersuchungAbschliessen(untersuchung);
         untersuchungImpfungenService.untersuchungAbschliessen(untersuchung);
-        untersuchungSehenService.untersuchungAbschliessen(untersuchung);
+        untersuchungSehenBeurteilungService.untersuchungAbschliessen(untersuchung);
         untersuchungHoerenAudiogrammService.untersuchungAbschliessen(untersuchung);
         untersuchungHoerenOtoskopieService.untersuchungAbschliessen(untersuchung);
         untersuchungGroesseGewichtService.untersuchungAbschliessen(untersuchung);
         untersuchungTriageService.untersuchungAbschliessen(untersuchung);
-        untersuchungArztService.untersuchungAbschliessen(untersuchung);
+        untersuchungArztBeurteilungService.untersuchungAbschliessen(untersuchung);
         untersuchungMassnahmenService.untersuchungAbschliessen(untersuchung);
     }
 }

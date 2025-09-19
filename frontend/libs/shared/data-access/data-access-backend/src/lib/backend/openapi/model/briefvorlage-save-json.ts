@@ -15,6 +15,7 @@ export interface BriefvorlageSaveJson {
     name: string;
     type: BriefvorlageType;
     sprache: AppLanguages;
+    version: number;
 }
 export namespace BriefvorlageSaveJson {
 }

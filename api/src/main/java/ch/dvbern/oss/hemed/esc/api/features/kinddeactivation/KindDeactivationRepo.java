@@ -34,14 +34,14 @@ public class KindDeactivationRepo {
      * OR <br/>
      * - are created through the external system (e.g. esacada) and are inactive there <br/>
      * Not used means: no Notiz created for the last 'monthsUnused' months and no Anlass later than 'monthsUnused'
-     * months ago
+     * months ago and last import of the external system is older than 'monthsUnused' months.
      */
-    public @NonNull List<ID<Kind>> findKinderToDeactivate(
+    @NonNull
+    public List<ID<Kind>> findKinderToDeactivate(
         int monthsUnused,
         int manualKinderDeactivationAge,
         int batchsize
     ) {
-
         OffsetDateTime cutoffDateTime = appClock.offsetDateTime().now().minusMonths(monthsUnused);
         LocalDate cutoffDate = appClock.offsetDateTime().now().minusMonths(monthsUnused).toLocalDate();
         LocalDate manuallyCreatedKindAgeCutoff =
@@ -55,9 +55,10 @@ public class KindDeactivationRepo {
                     (
                         QKind.kind.externalImportInfo.idInExternalSystem.isNotNull()
                             .and(QKind.kind.externalImportInfo.aktivInExternalSystem.eq(false))
+                            .and(QKind.kind.externalImportInfo.timestampLatestImport.lt(cutoffDateTime))
                     )
                         .or(
-                            QKind.kind.externalImportInfo.isNull()
+                            QKind.kind.externalImportInfo.idInExternalSystem.isNull()
                                 .and(QKind.kind.geburtsdatum.lt(manuallyCreatedKindAgeCutoff))
                         )
                 )

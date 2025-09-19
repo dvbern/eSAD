@@ -1,7 +1,8 @@
 import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {EntityAktivStatus, Klassenstufe, KlasseSaveJson, SchuleOptionJson} from '@dvb/data-access-backend';
+import {globalConstants} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensureProps, requireValue} from '@dvb/util-shared';
+import {ensureProps, Nullish, requireValue} from '@dvb/util-shared';
 
 type Config = {
   fb: NonNullableFormBuilder;
@@ -16,6 +17,7 @@ function makeForm(config: Config) {
     klassenstufe: fb.control<Klassenstufe | undefined>(undefined, Validators.required),
     klasseSchulart: fb.control<string | undefined>(undefined, Validators.required),
     klasseAktivStatus: fb.control<EntityAktivStatus>(EntityAktivStatus.AKTIV, Validators.required),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 }
 
@@ -32,6 +34,7 @@ export class KlassenDetailForm extends BaseForm<ReturnType<typeof makeForm>, Kla
       klassenstufe: requireValue(value.klassenstufe),
       klasseSchulart: requireValue(value.klasseSchulart),
       klasseAktivStatus: requireValue(value.klasseAktivStatus),
+      version: value.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 }

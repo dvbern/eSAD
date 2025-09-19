@@ -18,7 +18,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankheit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBemerkungFragebogen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.PerzentileBmi;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.PerzentileGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.PerzentileGroesse;
@@ -327,31 +328,32 @@ public final class MergeSourceDummyDataCreator {
     @NonNull
     public static Untersuchung getTestUntersuchung() {
         Untersuchung untersuchung = new Untersuchung();
-        UntersuchungSehen untersuchungSehen = new UntersuchungSehen();
-        untersuchungSehen.setBrilleLinsen(BrilleLinsenResultat.MIT);
-        untersuchungSehen.setStereotest(StereotestResultat.NORMAL);
-        untersuchungSehen.setFarbsehen(FarbsehenResultat.NORMAL);
-        untersuchungSehen.setVerwendeteTafel(VerwendetTafelResultat.E_TAFEL);
-        untersuchungSehen.setFernvisus(Arrays.asList(
+        UntersuchungSehenBeurteilung untersuchungSehenBeurteilung = new UntersuchungSehenBeurteilung();
+        untersuchungSehenBeurteilung.setBrilleLinsen(BrilleLinsenResultat.MIT);
+        untersuchungSehenBeurteilung.setStereotest(StereotestResultat.NORMAL);
+        untersuchungSehenBeurteilung.setFarbsehen(FarbsehenResultat.NORMAL);
+        untersuchungSehenBeurteilung.setVerwendeteTafel(VerwendetTafelResultat.E_TAFEL);
+        untersuchungSehenBeurteilung.setFernvisus(Arrays.asList(
             DistanzSehenResultat.NORMAL,
             DistanzSehenResultat.LINKS_REDUZIERT));
-        untersuchungSehen.setFernvisusRechts(BigDecimal.valueOf(100));
-        untersuchungSehen.setFernvisusLinks(BigDecimal.valueOf(200));
-        untersuchungSehen.setNahvisus(Arrays.asList(
+        untersuchungSehenBeurteilung.setFernvisusRechts(BigDecimal.valueOf(100));
+        untersuchungSehenBeurteilung.setFernvisusLinks(BigDecimal.valueOf(200));
+        untersuchungSehenBeurteilung.setNahvisus(Arrays.asList(
             DistanzSehenResultat.NORMAL,
             DistanzSehenResultat.RECHTS_REDUZIERT));
-        untersuchungSehen.setNahvisusRechts(BigDecimal.valueOf(300));
-        untersuchungSehen.setNahvisusLinks(BigDecimal.valueOf(400));
-        untersuchungSehen.setStrabismus(Arrays.asList(StrabismusResultat.ESO, StrabismusResultat.HYPER));
-        untersuchungSehen.setStrabismusAuspraegung(
+        untersuchungSehenBeurteilung.setNahvisusRechts(BigDecimal.valueOf(300));
+        untersuchungSehenBeurteilung.setNahvisusLinks(BigDecimal.valueOf(400));
+        untersuchungSehenBeurteilung.setStrabismus(Arrays.asList(StrabismusResultat.ESO, StrabismusResultat.HYPER));
+        untersuchungSehenBeurteilung.setStrabismusAuspraegung(
             StrabismusAuspraegungResultat.INTERMITTIEREND);
-        untersuchungSehen.setStrabismusAuftreten(
+        untersuchungSehenBeurteilung.setStrabismusAuftreten(
             StrabismusAuftretenResultat.RECHTS);
-        untersuchungSehen.setInspektion(InspektionKonvergenzResultat.AUFFAELLIG);
-        untersuchungSehen.setKonvergenz(InspektionKonvergenzResultat.NICHT_GEPRUEFT);
-        untersuchungSehen.setMotilitaet(MotilitaetResultat.NORMAL);
+        untersuchungSehenBeurteilung.setInspektion(InspektionKonvergenzResultat.AUFFAELLIG);
+        untersuchungSehenBeurteilung.setKonvergenz(InspektionKonvergenzResultat.NICHT_GEPRUEFT);
+        untersuchungSehenBeurteilung.setMotilitaet(MotilitaetResultat.NORMAL);
 
-        untersuchung.setUntersuchungSehen(untersuchungSehen);
+        untersuchung.setUntersuchungSehenBemerkungFragebogen(new UntersuchungSehenBemerkungFragebogen(untersuchung, "Meine Fragebon Bemerkung für sehen"));
+        untersuchung.setUntersuchungSehenBeurteilung(untersuchungSehenBeurteilung);
         untersuchung.setUntersuchungHoerenAudiogramm(getTestUntersuchungHoerenAudiogramm(untersuchung));
         untersuchung.setUntersuchungHoerenOtoskopie(getTestUntersuchungHoerenOtoskopie(untersuchung));
         untersuchung.setUntersuchungMassnahmen(new UntersuchungMassnahmen());
@@ -414,7 +416,7 @@ public final class MergeSourceDummyDataCreator {
     private static UntersuchungGroesseGewicht getTestUntersuchungGroesseGewicht() {
         UntersuchungGroesseGewicht untersuchungGroesseGewicht = new UntersuchungGroesseGewicht();
         untersuchungGroesseGewicht.setGroesse(150);
-        untersuchungGroesseGewicht.setGewicht(70);
+        untersuchungGroesseGewicht.setGewicht(BigDecimal.valueOf(70));
         untersuchungGroesseGewicht.setBmi(BigDecimal.valueOf(31.1));
         untersuchungGroesseGewicht.setGroessePerzentile(PerzentileGroesse.NORMAL);
         untersuchungGroesseGewicht.setGewichtPerzentile(PerzentileGewicht.PERZENTILE_HOCH);
@@ -448,6 +450,7 @@ public final class MergeSourceDummyDataCreator {
             true,
             true,
             true,
+            RequirementSetting.OPTIONAL,
             RequirementSetting.OPTIONAL,
             RequirementSetting.OPTIONAL,
             RequirementSetting.OPTIONAL,

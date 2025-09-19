@@ -1,6 +1,9 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht;
 
+import java.math.BigDecimal;
+
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -9,7 +12,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Value
 @AllArgsConstructor
 @JaxDTO
-public class UntersuchungGroesseGewichtSaveJson {
+public class UntersuchungGroesseGewichtSaveJson implements SaveJsonWithOptimisticLocking {
 
     @Nullable
     @Schema(required = false)
@@ -17,7 +20,7 @@ public class UntersuchungGroesseGewichtSaveJson {
 
     @Nullable
     @Schema(required = false)
-    private Integer gewicht;
+    private BigDecimal gewicht;
 
     @Nullable
     @Schema(required = false)
@@ -34,5 +37,8 @@ public class UntersuchungGroesseGewichtSaveJson {
     @Nullable
     @Schema(required = false)
     private String bemerkungen;
+
+    @Schema(required = true)
+    private long version;
 
 }

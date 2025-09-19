@@ -69,7 +69,9 @@ public class ImpfstoffChargeResource {
     @RolesAllowed(BerechtigungName.IMPFSTOFFE_SCHREIBEN)
     public void removeImpfstoffCharge(
         @NotNull @NonNull @PathParam("impfstoffId") ID<Impfstoff> impfstoffId,
-        @NotNull @NonNull @PathParam("impfstoffChargeId") ID<ImpfstoffCharge> impfstoffChargeId) {
+        @NotNull @NonNull @PathParam("impfstoffChargeId") ID<ImpfstoffCharge> impfstoffChargeId
+    ) {
+        impfstoffChargeMapper.requireConsistentPathParams(impfstoffChargeId, impfstoffId);
         impfstoffChargeMapper.remove(impfstoffChargeId);
     }
 
@@ -81,6 +83,7 @@ public class ImpfstoffChargeResource {
         @NotNull @NonNull @PathParam("impfstoffChargeId") ID<ImpfstoffCharge> impfstoffChargeID,
         @NotNull @NonNull @Valid ImpfstoffChargeSaveJson impfstoffChargeSaveJson
     ) {
+        impfstoffChargeMapper.requireConsistentPathParams(impfstoffChargeID, impfstoffId);
         return impfstoffChargeMapper.update(impfstoffChargeID, impfstoffChargeSaveJson);
     }
 }

@@ -30,6 +30,11 @@ public class UntersuchungImpfungenService {
     }
 
     @NonNull
+    public UntersuchungImpfungen persistWithOptimisticLocking(@NonNull UntersuchungImpfungen entity, @NonNull Long versionFromFrontend) {
+        return untersuchungImpfungenRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
+    }
+
+    @NonNull
     public UntersuchungImpfungen getById(@NonNull ID<UntersuchungImpfungen> impfungenID) {
         return untersuchungImpfungenRepo.getById(impfungenID);
     }
@@ -47,22 +52,24 @@ public class UntersuchungImpfungenService {
 
     @NonNull
     public UntersuchungImpfungen visierenDoppelkontrolleVisum1(
-        @NonNull UntersuchungImpfungen untersuchungImpfung
+        @NonNull UntersuchungImpfungen untersuchungImpfung,
+        @NonNull Long versionFromFrontend
     ) {
         Benutzer currentUser = benutzerService.getCurrentBenutzerOrThrowException();
         untersuchungImpfung.setVisum1(new Visum(currentUser, appClock.offsetDateTime().now().toLocalDate()));
-        untersuchungImpfungenRepo.persist(untersuchungImpfung);
+        untersuchungImpfungenRepo.persistWithOptimisticLocking(untersuchungImpfung, versionFromFrontend);
         return untersuchungImpfung;
     }
 
     @NonNull
     public UntersuchungImpfungen anfordernDoppelkontrolleVisum2(
         @NonNull UntersuchungImpfungen untersuchungImpfung,
+        @NonNull Long versionFromFrontend,
         @NonNull ID<Benutzer> id
     ) {
         Benutzer empfaenger = benutzerService.getById(id);
         untersuchungImpfung.setVisum2(new Visum(empfaenger, null));
-        untersuchungImpfungenRepo.persist(untersuchungImpfung);
+        untersuchungImpfungenRepo.persistWithOptimisticLocking(untersuchungImpfung, versionFromFrontend);
         autoAufgabeService.createAufgabeDoppelkontrolleImpfentscheid(
             untersuchungImpfung.getUntersuchung().getEinladung(),
             empfaenger
@@ -72,21 +79,23 @@ public class UntersuchungImpfungenService {
 
     @NonNull
     public UntersuchungImpfungen visierenDoppelkontrolleVisum2(
-        @NonNull UntersuchungImpfungen untersuchungImpfung
+        @NonNull UntersuchungImpfungen untersuchungImpfung,
+        @NonNull Long versionFromFrontend
     ) {
         Benutzer currentUser = benutzerService.getCurrentBenutzerOrThrowException();
         untersuchungImpfung.setVisum2(new Visum(currentUser, appClock.offsetDateTime().now().toLocalDate()));
-        untersuchungImpfungenRepo.persist(untersuchungImpfung);
+        untersuchungImpfungenRepo.persistWithOptimisticLocking(untersuchungImpfung, versionFromFrontend);
         return untersuchungImpfung;
     }
 
     @NonNull
     public UntersuchungImpfungen resetDoppelkontrolle(
-        @NonNull UntersuchungImpfungen untersuchungImpfung
+        @NonNull UntersuchungImpfungen untersuchungImpfung,
+        @NonNull Long versionFromFrontend
     ) {
         untersuchungImpfung.setVisum1(new Visum(null, null));
         untersuchungImpfung.setVisum2(new Visum(null, null));
-        untersuchungImpfungenRepo.persist(untersuchungImpfung);
+        untersuchungImpfungenRepo.persistWithOptimisticLocking(untersuchungImpfung, versionFromFrontend);
         return untersuchungImpfung;
     }
 

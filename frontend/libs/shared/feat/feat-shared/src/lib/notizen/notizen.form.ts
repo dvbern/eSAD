@@ -1,7 +1,8 @@
 import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {BenutzerOptionJson, FileDataJson, LabelJson, NotizSaveJson, NotizStatus} from '@dvb/data-access-backend';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensurePropsFlat, requireFilledIn, requireValue, trimToUndefined} from '@dvb/util-shared';
+import {ensurePropsFlat, Nullish, requireFilledIn, requireValue, trimToUndefined} from '@dvb/util-shared';
+import {globalConstants} from '../constants/global-constants';
 
 type Config = {
   fb: NonNullableFormBuilder;
@@ -11,11 +12,12 @@ type Config = {
 function makeForm(config: Config) {
   return config.fb.group({
     titel: config.fb.control<string>('', [Validators.required, AppValidators.dbMaxLength()]),
-    bemerkungen: config.fb.control<string>('', AppValidators.textareaMaxLength()),
+    bemerkungen: config.fb.control<string>('', AppValidators.textareaMaxLength5000()),
     status: config.fb.control<NotizStatus>(NotizStatus.ABGESCHLOSSEN, Validators.required),
     verantwortlicher: config.fb.control<BenutzerOptionJson | undefined>(config.currentBenutzer, Validators.required),
     labels: config.fb.control<LabelJson[]>([]),
     files: config.fb.control<FileDataJson[]>([]),
+    version: config.fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 }
 
@@ -34,6 +36,7 @@ export class NotizenForm extends BaseForm<ReturnType<typeof makeForm>, NotizSave
       verantwortlicher: requireValue(value.verantwortlicher),
       labels: value.labels,
       files: value.files,
+      version: value.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 }

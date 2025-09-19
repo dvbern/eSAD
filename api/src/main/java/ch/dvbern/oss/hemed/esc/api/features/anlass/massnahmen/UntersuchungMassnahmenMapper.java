@@ -20,8 +20,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class UntersuchungMassnahmenMapper {
 
     private final UntersuchungService untersuchungService;
-    private final UntersuchungMassnahmenService untersuchungMassnahmenService;
     private final InfomaterialMapper infomaterialMapper;
+    private final UntersuchungMassnahmenService untersuchungMassnahmenService;
 
     @Nullable
     public static UntersuchungMassnahmenJson toJson(@Nullable UntersuchungMassnahmen massnahmen) {
@@ -47,21 +47,9 @@ public class UntersuchungMassnahmenMapper {
             massnahmen.isUeberweisungHausarzt(),
             massnahmen.isUeberweisungAugenarzt(),
             AnlassFlagsMapper.toJson(massnahmen.getNachkontrolle()),
-            massnahmen.getBemerkungen()));
-    }
-
-    @Nullable
-    public static UntersuchungSehenMassnahmenSaveJson toSehenMassnahmenJson(@Nullable UntersuchungMassnahmen massnahmen) {
-        if (massnahmen == null) {
-            return null;
-        }
-        return new UntersuchungSehenMassnahmenSaveJson(
-            massnahmen.isKeineMassnahmen(),
-            massnahmen.isBereitsBehandeltSehen(),
-            massnahmen.getAbgegebenesInfomaterial().stream().map(InfomaterialMapper::toJson).toList(),
-            massnahmen.getInformationEltern(),
-            massnahmen.isUeberweisungAugenarzt(),
-            massnahmen.getNachkontrolle().isNachkontrolleSehen());
+            massnahmen.getBemerkungen(),
+            massnahmen.getVersion()
+        ));
     }
 
     @NonNull
@@ -106,31 +94,6 @@ public class UntersuchungMassnahmenMapper {
         return massnahmen;
     }
 
-    @NonNull
-    public UntersuchungMassnahmen toSehenMassnahmenEntity(
-        @NonNull Untersuchung untersuchung,
-        @Nullable UntersuchungMassnahmen massnahmen,
-        @NonNull UntersuchungSehenMassnahmenSaveJson saveJson
-    ) {
-        if (massnahmen == null) {
-            massnahmen = UntersuchungMassnahmen.forUntersuchung(untersuchung);
-        }
-        massnahmen.setKeineMassnahmen(saveJson.isKeineMassnahmen());
-        massnahmen.setBereitsBehandeltSehen(saveJson.isBereitsBehandeltSehen());
-
-        Set<Infomaterial> desiredInfomaterial = infomaterialMapper.toEntityList(saveJson.getAbgegebenesInfomaterial());
-        InfomaterialMapper.requireNoInactivInfomaterialAddedOrRemoved(
-            massnahmen.getAbgegebenesInfomaterial(),
-            desiredInfomaterial);
-        massnahmen.getAbgegebenesInfomaterial().clear();
-        massnahmen.getAbgegebenesInfomaterial().addAll(desiredInfomaterial);
-
-        massnahmen.setInformationEltern(saveJson.getInformationEltern());
-        massnahmen.setUeberweisungAugenarzt(saveJson.isUeberweisungAugenarzt());
-        massnahmen.getNachkontrolle().setNachkontrolleSehen(saveJson.isNachkontrolleSehen());
-        return massnahmen;
-    }
-
     @Nullable
     public UntersuchungMassnahmenJson getByEinladung(@NonNull ID<Einladung> einladungId) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
@@ -145,6 +108,7 @@ public class UntersuchungMassnahmenMapper {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
         UntersuchungMassnahmen massnahmen = untersuchung.getUntersuchungMassnahmen();
         UntersuchungMassnahmen entity = toEntity(untersuchung, massnahmen, saveJson);
-        return toJson(untersuchungMassnahmenService.persist(entity));
+        UntersuchungMassnahmen persistedEntity = untersuchungMassnahmenService.persistWithOptimisticLocking(entity, saveJson.getVersion());
+        return toJson(persistedEntity);
     }
 }

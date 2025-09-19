@@ -25,7 +25,7 @@ function makeForm(config: Config) {
     keineAuskunftAnDrittpersonen: fb.control<boolean>(false),
     sansPapier: fb.control<boolean>(false),
     andereZusatzinformation: fb.control<boolean>(false),
-    andereZusatzInformationText: fb.control<string>('', AppValidators.textareaMaxLength()),
+    andereZusatzInformationText: fb.control<string>('', AppValidators.textareaMaxLength2000()),
   });
 
   group.controls.andereZusatzinformation.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(destroyRef))

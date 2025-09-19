@@ -17,10 +17,12 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
+import { ArztIdListJson } from '../model/arzt-id-list-json';
 import { ArztJson } from '../model/arzt-json';
 import { ArztListJson } from '../model/arzt-list-json';
 import { ArztSaveJson } from '../model/arzt-save-json';
 import { BackendEntityId } from '@dvb/data-access-types';
+import { ExportMode } from '../model/export-mode';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -31,7 +33,8 @@ export interface AerzteServiceCreateArztRequestParams {
 }
 
 export interface AerzteServiceExportAerzteRequestParams {
-    aerzteIds?: Array<BackendEntityId>;
+    mode: ExportMode;
+    arztIdListJson: ArztIdListJson;
 }
 
 export interface AerzteServiceGetArztRequestParams {
@@ -203,14 +206,13 @@ export class AerzteService {
     public exportAerzte$(requestParameters?: AerzteServiceExportAerzteRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/octet-stream', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
     public exportAerzte$(requestParameters?: AerzteServiceExportAerzteRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/octet-stream', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
     public exportAerzte$(requestParameters?: AerzteServiceExportAerzteRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/octet-stream', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        const aerzteIds = requestParameters?.aerzteIds;
-
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (aerzteIds) {
-            aerzteIds.forEach((element) => {
-                localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-                  <any>element, 'aerzteIds');
-            })
+        const mode = requestParameters?.mode;
+        if (mode === null || mode === undefined) {
+            throw new Error('Required parameter mode was null or undefined when calling exportAerzte.');
+        }
+        const arztIdListJson = requestParameters?.arztIdListJson;
+        if (arztIdListJson === null || arztIdListJson === undefined) {
+            throw new Error('Required parameter arztIdListJson was null or undefined when calling exportAerzte.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -244,11 +246,20 @@ export class AerzteService {
         }
 
 
-        let localVarPath = `/api/aerzte/export`;
-        return this.httpClient.request('get', `${this.configuration.basePath}${localVarPath}`,
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let localVarPath = `/api/aerzte/export/${this.configuration.encodeParam({name: "mode", value: mode, in: "path", style: "simple", explode: false, dataType: "ExportMode", dataFormat: undefined})}`;
+        return this.httpClient.request('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                params: localVarQueryParameters,
+                body: arztIdListJson,
                 responseType: "blob",
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

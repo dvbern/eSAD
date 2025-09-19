@@ -9,6 +9,7 @@ import ch.dvbern.dvbstarter.shared.types.sozialversicherungsnummer.Sozialversich
 import ch.dvbern.oss.hemed.esc.api.features.schule.json.SchuleOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.json.KlasseOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.person.AdresseJson;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Land;
@@ -25,7 +26,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @AllArgsConstructor
 @JaxDTO
 @Schema(description = "Business data for a Kind")
-public class KindSaveJson {
+public class KindSaveJson implements SaveJsonWithOptimisticLocking {
     @Nullable
     @Schema(required = false)
     private SozialversicherungsNummer sozialversicherungsNummer;
@@ -97,4 +98,7 @@ public class KindSaveJson {
     @NotNull
     @Schema(required = true)
     private EntityAktivStatus kindAktivStatus;
+
+    @Schema(required = true)
+    private long version;
 }

@@ -72,6 +72,7 @@ public class KontaktPersonSchuleResource {
         @NotNull @NonNull @PathParam("schuleID") ID<Schule> schuleId,
         @NotNull @NonNull @PathParam("kontaktPersonSchuleID") ID<KontaktPersonSchule> kontaktPersonSchuleID
     ) {
+        kontaktPersonSchuleMapper.requireConsistentPathParams(kontaktPersonSchuleID, schuleId);
         return kontaktPersonSchuleMapper.getById(kontaktPersonSchuleID);
     }
 
@@ -95,6 +96,7 @@ public class KontaktPersonSchuleResource {
         @NotNull @NonNull @PathParam("kontaktPersonSchuleID") ID<KontaktPersonSchule> kontaktPersonSchuleID,
         @NotNull @NonNull @Valid KontaktPersonSchuleSaveJson kontaktPersonSchuleSaveJson
     ) {
+        kontaktPersonSchuleMapper.requireConsistentPathParams(kontaktPersonSchuleID, schuleId);
         return kontaktPersonSchuleMapper.update(kontaktPersonSchuleID, kontaktPersonSchuleSaveJson);
     }
 
@@ -105,6 +107,7 @@ public class KontaktPersonSchuleResource {
         @NotNull @NonNull @PathParam("schuleID") ID<Schule> schuleId,
         @NotNull @NonNull @PathParam("kontaktPersonSchuleID") ID<KontaktPersonSchule> kontaktPersonSchuleID
     ) {
+        kontaktPersonSchuleMapper.requireConsistentPathParams(kontaktPersonSchuleID, schuleId);
         kontaktPersonSchuleMapper.delete(kontaktPersonSchuleID);
     }
 
@@ -125,6 +128,7 @@ public class KontaktPersonSchuleResource {
         @NotNull @NonNull @PathParam("schuleID") ID<Schule> schuleId,
         @NotNull @NonNull @PathParam("kontaktPersonSchuleID") ID<KontaktPersonSchule> kontaktPersonSchuleID
     ) {
+        kontaktPersonSchuleMapper.requireConsistentPathParams(kontaktPersonSchuleID, schuleId);
         kontaktPersonSchuleMapper.removeFromSchule(schuleId, kontaktPersonSchuleID);
     }
 }

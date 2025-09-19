@@ -27,6 +27,7 @@ import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumberConver
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Fachrichtung;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.HpvTeilnahme;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Organisation;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
 import jakarta.persistence.Column;
@@ -54,7 +55,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Arzt extends AbstractTenantEntity<Arzt> {
+public class Arzt extends AbstractTenantEntity<Arzt> implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 7908264470040862763L;

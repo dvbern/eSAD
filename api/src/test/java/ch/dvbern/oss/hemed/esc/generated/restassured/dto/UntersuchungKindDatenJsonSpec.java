@@ -15,10 +15,9 @@ package ch.dvbern.oss.hemed.esc.generated.restassured.dto;
 
 import java.util.Objects;
 import java.util.Arrays;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.GeschlechtSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KlassenstufeSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EntityInfoJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LandCodeSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LandSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungKindDatenSaveJsonSpec;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -32,21 +31,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * UntersuchungKindDatenJsonSpec
  */
 @JsonPropertyOrder({
-  UntersuchungKindDatenJsonSpec.JSON_PROPERTY_NAME,
-  UntersuchungKindDatenJsonSpec.JSON_PROPERTY_VORNAME,
-  UntersuchungKindDatenJsonSpec.JSON_PROPERTY_GESCHLECHT,
+  UntersuchungKindDatenJsonSpec.JSON_PROPERTY_ID,
+  UntersuchungKindDatenJsonSpec.JSON_PROPERTY_ENTITY_INFO,
+  UntersuchungKindDatenJsonSpec.JSON_PROPERTY_DATA,
   UntersuchungKindDatenJsonSpec.JSON_PROPERTY_ESAD_ID,
-  UntersuchungKindDatenJsonSpec.JSON_PROPERTY_GEBURTSDATUM,
   UntersuchungKindDatenJsonSpec.JSON_PROPERTY_ALTER_DUODEZIMAL,
-  UntersuchungKindDatenJsonSpec.JSON_PROPERTY_NATIONALITAET,
   UntersuchungKindDatenJsonSpec.JSON_PROPERTY_LAND_CODE,
-  UntersuchungKindDatenJsonSpec.JSON_PROPERTY_SCHULHAUS,
-  UntersuchungKindDatenJsonSpec.JSON_PROPERTY_QUARTIER,
-  UntersuchungKindDatenJsonSpec.JSON_PROPERTY_SCHULKREIS,
-  UntersuchungKindDatenJsonSpec.JSON_PROPERTY_SCHULHAUSNUMMER,
-  UntersuchungKindDatenJsonSpec.JSON_PROPERTY_KLASSENSTUFE,
-  UntersuchungKindDatenJsonSpec.JSON_PROPERTY_KLASSENTYP,
-  UntersuchungKindDatenJsonSpec.JSON_PROPERTY_KLASSE,
   UntersuchungKindDatenJsonSpec.JSON_PROPERTY_KLASSE_ID,
   UntersuchungKindDatenJsonSpec.JSON_PROPERTY_ANLASS_DATUM
 })
@@ -54,65 +44,29 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @lombok.AllArgsConstructor
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class UntersuchungKindDatenJsonSpec {
-  public static final String JSON_PROPERTY_NAME = "name";
-  @jakarta.annotation.Nonnull
-  private String name;
+  public static final String JSON_PROPERTY_ID = "id";
+  @jakarta.annotation.Nullable
+  private String id;
 
-  public static final String JSON_PROPERTY_VORNAME = "vorname";
+  public static final String JSON_PROPERTY_ENTITY_INFO = "entityInfo";
   @jakarta.annotation.Nonnull
-  private String vorname;
+  private EntityInfoJsonSpec entityInfo;
 
-  public static final String JSON_PROPERTY_GESCHLECHT = "geschlecht";
+  public static final String JSON_PROPERTY_DATA = "data";
   @jakarta.annotation.Nonnull
-  private GeschlechtSpec geschlecht;
+  private UntersuchungKindDatenSaveJsonSpec data;
 
   public static final String JSON_PROPERTY_ESAD_ID = "esadId";
   @jakarta.annotation.Nullable
   private String esadId;
 
-  public static final String JSON_PROPERTY_GEBURTSDATUM = "geburtsdatum";
-  @jakarta.annotation.Nonnull
-  private LocalDate geburtsdatum;
-
   public static final String JSON_PROPERTY_ALTER_DUODEZIMAL = "alterDuodezimal";
   @jakarta.annotation.Nonnull
   private String alterDuodezimal;
 
-  public static final String JSON_PROPERTY_NATIONALITAET = "nationalitaet";
-  @jakarta.annotation.Nullable
-  private LandSpec nationalitaet;
-
   public static final String JSON_PROPERTY_LAND_CODE = "landCode";
   @jakarta.annotation.Nullable
   private LandCodeSpec landCode;
-
-  public static final String JSON_PROPERTY_SCHULHAUS = "schulhaus";
-  @jakarta.annotation.Nullable
-  private String schulhaus;
-
-  public static final String JSON_PROPERTY_QUARTIER = "quartier";
-  @jakarta.annotation.Nullable
-  private String quartier;
-
-  public static final String JSON_PROPERTY_SCHULKREIS = "schulkreis";
-  @jakarta.annotation.Nullable
-  private String schulkreis;
-
-  public static final String JSON_PROPERTY_SCHULHAUSNUMMER = "schulhausnummer";
-  @jakarta.annotation.Nullable
-  private String schulhausnummer;
-
-  public static final String JSON_PROPERTY_KLASSENSTUFE = "klassenstufe";
-  @jakarta.annotation.Nullable
-  private KlassenstufeSpec klassenstufe;
-
-  public static final String JSON_PROPERTY_KLASSENTYP = "klassentyp";
-  @jakarta.annotation.Nullable
-  private String klassentyp;
-
-  public static final String JSON_PROPERTY_KLASSE = "klasse";
-  @jakarta.annotation.Nullable
-  private String klasse;
 
   public static final String JSON_PROPERTY_KLASSE_ID = "klasseId";
   @jakarta.annotation.Nullable
@@ -125,79 +79,79 @@ public class UntersuchungKindDatenJsonSpec {
   public UntersuchungKindDatenJsonSpec() {
   }
 
-  public UntersuchungKindDatenJsonSpec name(@jakarta.annotation.Nonnull String name) {
+  public UntersuchungKindDatenJsonSpec id(@jakarta.annotation.Nullable String id) {
     
-    this.name = name;
+    this.id = id;
     return this;
   }
 
   /**
-   * Get name
-   * @return name
+   * Get id
+   * @return id
    */
-  @jakarta.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @jakarta.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getName() {
-    return name;
+  public String getId() {
+    return id;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setName(@jakarta.annotation.Nonnull String name) {
-    this.name = name;
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setId(@jakarta.annotation.Nullable String id) {
+    this.id = id;
   }
 
-  public UntersuchungKindDatenJsonSpec vorname(@jakarta.annotation.Nonnull String vorname) {
+  public UntersuchungKindDatenJsonSpec entityInfo(@jakarta.annotation.Nonnull EntityInfoJsonSpec entityInfo) {
     
-    this.vorname = vorname;
+    this.entityInfo = entityInfo;
     return this;
   }
 
   /**
-   * Get vorname
-   * @return vorname
+   * Get entityInfo
+   * @return entityInfo
    */
   @jakarta.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_VORNAME)
+  @JsonProperty(JSON_PROPERTY_ENTITY_INFO)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public String getVorname() {
-    return vorname;
+  public EntityInfoJsonSpec getEntityInfo() {
+    return entityInfo;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_VORNAME)
+  @JsonProperty(JSON_PROPERTY_ENTITY_INFO)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setVorname(@jakarta.annotation.Nonnull String vorname) {
-    this.vorname = vorname;
+  public void setEntityInfo(@jakarta.annotation.Nonnull EntityInfoJsonSpec entityInfo) {
+    this.entityInfo = entityInfo;
   }
 
-  public UntersuchungKindDatenJsonSpec geschlecht(@jakarta.annotation.Nonnull GeschlechtSpec geschlecht) {
+  public UntersuchungKindDatenJsonSpec data(@jakarta.annotation.Nonnull UntersuchungKindDatenSaveJsonSpec data) {
     
-    this.geschlecht = geschlecht;
+    this.data = data;
     return this;
   }
 
   /**
-   * Get geschlecht
-   * @return geschlecht
+   * Get data
+   * @return data
    */
   @jakarta.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_GESCHLECHT)
+  @JsonProperty(JSON_PROPERTY_DATA)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public GeschlechtSpec getGeschlecht() {
-    return geschlecht;
+  public UntersuchungKindDatenSaveJsonSpec getData() {
+    return data;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_GESCHLECHT)
+  @JsonProperty(JSON_PROPERTY_DATA)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setGeschlecht(@jakarta.annotation.Nonnull GeschlechtSpec geschlecht) {
-    this.geschlecht = geschlecht;
+  public void setData(@jakarta.annotation.Nonnull UntersuchungKindDatenSaveJsonSpec data) {
+    this.data = data;
   }
 
   public UntersuchungKindDatenJsonSpec esadId(@jakarta.annotation.Nullable String esadId) {
@@ -225,31 +179,6 @@ public class UntersuchungKindDatenJsonSpec {
     this.esadId = esadId;
   }
 
-  public UntersuchungKindDatenJsonSpec geburtsdatum(@jakarta.annotation.Nonnull LocalDate geburtsdatum) {
-    
-    this.geburtsdatum = geburtsdatum;
-    return this;
-  }
-
-  /**
-   * Get geburtsdatum
-   * @return geburtsdatum
-   */
-  @jakarta.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_GEBURTSDATUM)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public LocalDate getGeburtsdatum() {
-    return geburtsdatum;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_GEBURTSDATUM)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setGeburtsdatum(@jakarta.annotation.Nonnull LocalDate geburtsdatum) {
-    this.geburtsdatum = geburtsdatum;
-  }
-
   public UntersuchungKindDatenJsonSpec alterDuodezimal(@jakarta.annotation.Nonnull String alterDuodezimal) {
     
     this.alterDuodezimal = alterDuodezimal;
@@ -275,31 +204,6 @@ public class UntersuchungKindDatenJsonSpec {
     this.alterDuodezimal = alterDuodezimal;
   }
 
-  public UntersuchungKindDatenJsonSpec nationalitaet(@jakarta.annotation.Nullable LandSpec nationalitaet) {
-    
-    this.nationalitaet = nationalitaet;
-    return this;
-  }
-
-  /**
-   * Get nationalitaet
-   * @return nationalitaet
-   */
-  @jakarta.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_NATIONALITAET)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public LandSpec getNationalitaet() {
-    return nationalitaet;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_NATIONALITAET)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setNationalitaet(@jakarta.annotation.Nullable LandSpec nationalitaet) {
-    this.nationalitaet = nationalitaet;
-  }
-
   public UntersuchungKindDatenJsonSpec landCode(@jakarta.annotation.Nullable LandCodeSpec landCode) {
     
     this.landCode = landCode;
@@ -323,181 +227,6 @@ public class UntersuchungKindDatenJsonSpec {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLandCode(@jakarta.annotation.Nullable LandCodeSpec landCode) {
     this.landCode = landCode;
-  }
-
-  public UntersuchungKindDatenJsonSpec schulhaus(@jakarta.annotation.Nullable String schulhaus) {
-    
-    this.schulhaus = schulhaus;
-    return this;
-  }
-
-  /**
-   * Get schulhaus
-   * @return schulhaus
-   */
-  @jakarta.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_SCHULHAUS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getSchulhaus() {
-    return schulhaus;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_SCHULHAUS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSchulhaus(@jakarta.annotation.Nullable String schulhaus) {
-    this.schulhaus = schulhaus;
-  }
-
-  public UntersuchungKindDatenJsonSpec quartier(@jakarta.annotation.Nullable String quartier) {
-    
-    this.quartier = quartier;
-    return this;
-  }
-
-  /**
-   * Get quartier
-   * @return quartier
-   */
-  @jakarta.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_QUARTIER)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getQuartier() {
-    return quartier;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_QUARTIER)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setQuartier(@jakarta.annotation.Nullable String quartier) {
-    this.quartier = quartier;
-  }
-
-  public UntersuchungKindDatenJsonSpec schulkreis(@jakarta.annotation.Nullable String schulkreis) {
-    
-    this.schulkreis = schulkreis;
-    return this;
-  }
-
-  /**
-   * Get schulkreis
-   * @return schulkreis
-   */
-  @jakarta.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_SCHULKREIS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getSchulkreis() {
-    return schulkreis;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_SCHULKREIS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSchulkreis(@jakarta.annotation.Nullable String schulkreis) {
-    this.schulkreis = schulkreis;
-  }
-
-  public UntersuchungKindDatenJsonSpec schulhausnummer(@jakarta.annotation.Nullable String schulhausnummer) {
-    
-    this.schulhausnummer = schulhausnummer;
-    return this;
-  }
-
-  /**
-   * Get schulhausnummer
-   * @return schulhausnummer
-   */
-  @jakarta.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_SCHULHAUSNUMMER)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getSchulhausnummer() {
-    return schulhausnummer;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_SCHULHAUSNUMMER)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSchulhausnummer(@jakarta.annotation.Nullable String schulhausnummer) {
-    this.schulhausnummer = schulhausnummer;
-  }
-
-  public UntersuchungKindDatenJsonSpec klassenstufe(@jakarta.annotation.Nullable KlassenstufeSpec klassenstufe) {
-    
-    this.klassenstufe = klassenstufe;
-    return this;
-  }
-
-  /**
-   * Get klassenstufe
-   * @return klassenstufe
-   */
-  @jakarta.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_KLASSENSTUFE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public KlassenstufeSpec getKlassenstufe() {
-    return klassenstufe;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_KLASSENSTUFE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setKlassenstufe(@jakarta.annotation.Nullable KlassenstufeSpec klassenstufe) {
-    this.klassenstufe = klassenstufe;
-  }
-
-  public UntersuchungKindDatenJsonSpec klassentyp(@jakarta.annotation.Nullable String klassentyp) {
-    
-    this.klassentyp = klassentyp;
-    return this;
-  }
-
-  /**
-   * Get klassentyp
-   * @return klassentyp
-   */
-  @jakarta.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_KLASSENTYP)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getKlassentyp() {
-    return klassentyp;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_KLASSENTYP)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setKlassentyp(@jakarta.annotation.Nullable String klassentyp) {
-    this.klassentyp = klassentyp;
-  }
-
-  public UntersuchungKindDatenJsonSpec klasse(@jakarta.annotation.Nullable String klasse) {
-    
-    this.klasse = klasse;
-    return this;
-  }
-
-  /**
-   * Get klasse
-   * @return klasse
-   */
-  @jakarta.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_KLASSE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getKlasse() {
-    return klasse;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_KLASSE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setKlasse(@jakarta.annotation.Nullable String klasse) {
-    this.klasse = klasse;
   }
 
   public UntersuchungKindDatenJsonSpec klasseId(@jakarta.annotation.Nullable String klasseId) {
@@ -559,49 +288,31 @@ public class UntersuchungKindDatenJsonSpec {
       return false;
     }
     UntersuchungKindDatenJsonSpec untersuchungKindDatenJson = (UntersuchungKindDatenJsonSpec) o;
-    return Objects.equals(this.name, untersuchungKindDatenJson.name) &&
-        Objects.equals(this.vorname, untersuchungKindDatenJson.vorname) &&
-        Objects.equals(this.geschlecht, untersuchungKindDatenJson.geschlecht) &&
+    return Objects.equals(this.id, untersuchungKindDatenJson.id) &&
+        Objects.equals(this.entityInfo, untersuchungKindDatenJson.entityInfo) &&
+        Objects.equals(this.data, untersuchungKindDatenJson.data) &&
         Objects.equals(this.esadId, untersuchungKindDatenJson.esadId) &&
-        Objects.equals(this.geburtsdatum, untersuchungKindDatenJson.geburtsdatum) &&
         Objects.equals(this.alterDuodezimal, untersuchungKindDatenJson.alterDuodezimal) &&
-        Objects.equals(this.nationalitaet, untersuchungKindDatenJson.nationalitaet) &&
         Objects.equals(this.landCode, untersuchungKindDatenJson.landCode) &&
-        Objects.equals(this.schulhaus, untersuchungKindDatenJson.schulhaus) &&
-        Objects.equals(this.quartier, untersuchungKindDatenJson.quartier) &&
-        Objects.equals(this.schulkreis, untersuchungKindDatenJson.schulkreis) &&
-        Objects.equals(this.schulhausnummer, untersuchungKindDatenJson.schulhausnummer) &&
-        Objects.equals(this.klassenstufe, untersuchungKindDatenJson.klassenstufe) &&
-        Objects.equals(this.klassentyp, untersuchungKindDatenJson.klassentyp) &&
-        Objects.equals(this.klasse, untersuchungKindDatenJson.klasse) &&
         Objects.equals(this.klasseId, untersuchungKindDatenJson.klasseId) &&
         Objects.equals(this.anlassDatum, untersuchungKindDatenJson.anlassDatum);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, vorname, geschlecht, esadId, geburtsdatum, alterDuodezimal, nationalitaet, landCode, schulhaus, quartier, schulkreis, schulhausnummer, klassenstufe, klassentyp, klasse, klasseId, anlassDatum);
+    return Objects.hash(id, entityInfo, data, esadId, alterDuodezimal, landCode, klasseId, anlassDatum);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class UntersuchungKindDatenJsonSpec {\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    vorname: ").append(toIndentedString(vorname)).append("\n");
-    sb.append("    geschlecht: ").append(toIndentedString(geschlecht)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    entityInfo: ").append(toIndentedString(entityInfo)).append("\n");
+    sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("    esadId: ").append(toIndentedString(esadId)).append("\n");
-    sb.append("    geburtsdatum: ").append(toIndentedString(geburtsdatum)).append("\n");
     sb.append("    alterDuodezimal: ").append(toIndentedString(alterDuodezimal)).append("\n");
-    sb.append("    nationalitaet: ").append(toIndentedString(nationalitaet)).append("\n");
     sb.append("    landCode: ").append(toIndentedString(landCode)).append("\n");
-    sb.append("    schulhaus: ").append(toIndentedString(schulhaus)).append("\n");
-    sb.append("    quartier: ").append(toIndentedString(quartier)).append("\n");
-    sb.append("    schulkreis: ").append(toIndentedString(schulkreis)).append("\n");
-    sb.append("    schulhausnummer: ").append(toIndentedString(schulhausnummer)).append("\n");
-    sb.append("    klassenstufe: ").append(toIndentedString(klassenstufe)).append("\n");
-    sb.append("    klassentyp: ").append(toIndentedString(klassentyp)).append("\n");
-    sb.append("    klasse: ").append(toIndentedString(klasse)).append("\n");
     sb.append("    klasseId: ").append(toIndentedString(klasseId)).append("\n");
     sb.append("    anlassDatum: ").append(toIndentedString(anlassDatum)).append("\n");
     sb.append("}");

@@ -1,6 +1,6 @@
 import {NonNullableFormBuilder, ValidatorFn, Validators} from '@angular/forms';
 import {LabelSaveJson, LabelTyp} from '@dvb/data-access-backend';
-import {LabelsStore} from '@dvb/feat-shared';
+import {globalConstants, LabelsStore} from '@dvb/feat-shared';
 import {TenantSettingsStore} from '@dvb/feat-shared';
 import {AppValidatorKeys, AppValidators, BaseForm} from '@dvb/util-angular';
 import {ensureProps, isEqualCaseInsensitive, Nullish, requireValue} from '@dvb/util-shared';
@@ -54,7 +54,7 @@ export class LabelDetailForm extends BaseForm<ReturnType<typeof makeForm>, Label
       autoLabel: valuesFromForm.autoLabel,
       disabled: valuesFromForm.disabled,
       aktiv: valuesFromForm.aktiv,
-      version: valuesFromForm.version ?? 0,
+      version: valuesFromForm.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 }

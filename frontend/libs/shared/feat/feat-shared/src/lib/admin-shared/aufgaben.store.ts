@@ -1,10 +1,10 @@
 import {inject, Injectable} from '@angular/core';
-import {AufgabeJson, AufgabeSaveJson, AufgabeService} from '@dvb/data-access-backend';
-import {BackendEntityId} from '@dvb/data-access-types';
+import { AufgabeJson, AufgabeSaveJson, AufgabeService, AufgabeStatus } from '@dvb/data-access-backend';
+import { BackendEntityId, isISODateString } from '@dvb/data-access-types';
 import {AppErrorHandlerService, handleBlobResponseDownload, Loader, withSelectedEntity} from '@dvb/util-angular';
-import {isNotNullish, requireValue} from '@dvb/util-shared';
+import { ensurePropsFlat, isNotNullish, requireValue, toValidEnumList } from '@dvb/util-shared';
 import {tapResponse} from '@ngrx/operators';
-import {patchState, signalStore, withMethods, withState} from '@ngrx/signals';
+import {EmptyFeatureResult, patchState, signalStore, SignalStoreFeature, withMethods, withState} from '@ngrx/signals';
 import {
   addEntity,
   removeAllEntities,
@@ -15,6 +15,8 @@ import {
 } from '@ngrx/signals/entities';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {concatMap, exhaustMap, from, last, map, mergeMap, pipe, switchMap, tap} from 'rxjs';
+import { AufgabenListFilter } from '../aufgaben/aufgaben-list';
+import { withDevtools } from '@angular-architects/ngrx-toolkit';
 
 export interface AufgabeJsonEnhanced extends AufgabeJson {
   kindFullName?: string;
@@ -32,7 +34,7 @@ const initialState: AufgabeState = {
 @Injectable({ providedIn: 'root' })
 export class AufgabenStore extends signalStore(
   { protectedState: false },
-  // withDevtools('aufgaben'),
+  withDevtools('aufgaben') as SignalStoreFeature<EmptyFeatureResult, EmptyFeatureResult>,
   withEntities<AufgabeJsonEnhanced>(),
   withSelectedEntity<AufgabeJsonEnhanced>(),
   withState(initialState),
@@ -257,4 +259,25 @@ export function enhanceAufgabe(aufgabe: AufgabeJson): AufgabeJsonEnhanced {
       : '',
     labelIds: aufgabe.data.labels.map(each => each.id),
   };
+}
+
+
+export function mapSessionStorageStringToFilter(sessionStorageFilter: string): AufgabenListFilter | undefined {
+  try {
+    const parsed = JSON.parse(sessionStorageFilter) as AufgabenListFilter;
+
+    // Reconstruct the filter with proper data types and validation
+    return ensurePropsFlat<AufgabenListFilter>({
+      faelligBis: isISODateString(parsed.faelligBis) ? parsed.faelligBis : null,
+      aufgabeStatus: toValidEnumList(AufgabeStatus, parsed.aufgabeStatus),
+      label: Array.isArray(parsed.label) ? parsed.label : [],
+      titel: parsed.titel ?? '',
+      erstelltDurch: Array.isArray(parsed.erstelltDurch) ? parsed.erstelltDurch : [],
+      empfaenger: Array.isArray(parsed.empfaenger) ? parsed.empfaenger : [],
+      kind: parsed.kind ?? '',
+    });
+  } catch (error) {
+    console.warn('Failed to parse session storage filter:', error);
+    return undefined;
+  }
 }

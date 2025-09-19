@@ -73,6 +73,7 @@ public class LehrpersonResource {
         @NotNull @NonNull @PathParam("klasseID") ID<Klasse> klasseId,
         @NotNull @NonNull @PathParam("lehrpersonID") ID<Lehrperson> lehrpersonID
     ) {
+        lehrpersonMapper.requireConsistentPathParams(lehrpersonID, klasseId);
         return lehrpersonMapper.getById(lehrpersonID);
     }
 
@@ -96,6 +97,7 @@ public class LehrpersonResource {
         @NotNull @NonNull @PathParam("lehrpersonID") ID<Lehrperson> lehrpersonID,
         @NotNull @NonNull @Valid LehrpersonSaveJson lehrpersonSaveJson
     ) {
+        lehrpersonMapper.requireConsistentPathParams(lehrpersonID, klasseId);
         return lehrpersonMapper.update(lehrpersonID, lehrpersonSaveJson);
     }
 
@@ -106,6 +108,7 @@ public class LehrpersonResource {
         @NotNull @NonNull @PathParam("klasseID") ID<Klasse> klasseId,
         @NotNull @NonNull @PathParam("lehrpersonID") ID<Lehrperson> lehrpersonID
     ) {
+        lehrpersonMapper.requireConsistentPathParams(lehrpersonID, klasseId);
         lehrpersonMapper.delete(lehrpersonID);
     }
 
@@ -126,6 +129,7 @@ public class LehrpersonResource {
         @NotNull @NonNull @PathParam("klasseID") ID<Klasse> klasseId,
         @NotNull @NonNull @PathParam("lehrpersonID") ID<Lehrperson> lehrpersonID
     ) {
+        lehrpersonMapper.requireConsistentPathParams(lehrpersonID, klasseId);
         lehrpersonMapper.removeFromKlasse(klasseId, lehrpersonID);
     }
 }

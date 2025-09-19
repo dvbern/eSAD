@@ -1,10 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.config.service;
 
-import java.util.Optional;
-
 import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +18,6 @@ class ConfigServiceTest {
     @BeforeEach
     void setUp() {
         Mockito.reset(configService);
-        configService.tenantOverride = Optional.empty();
     }
 
     @Test
@@ -91,20 +87,6 @@ class ConfigServiceTest {
     }
 
     @Test
-    void getTenantOverride_returns_value_if_overridden() {
-        // Arrange
-        when(configService.getTenantOverride()).thenReturn(Optional.of(TenantEnum.BS));
-        // Act & Assert
-        Assertions.assertThat(configService.getTenantOverride()).isEqualTo(Optional.of(TenantEnum.BS));
-    }
-
-    @Test
-    void getTenantOverride_returns_empty_if_not_overridden() {
-        // Act & Assert
-        Assertions.assertThat(configService.getTenantOverride()).isEmpty();
-    }
-
-    @Test
     void isStufeProd_returns_true_when_environment_is_prod() {
         // Arrange
         when(configService.getEnvironment()).thenReturn(DeploymentEnvironment.PROD);
@@ -112,6 +94,7 @@ class ConfigServiceTest {
         Assertions.assertThat(configService.isStufeProd()).isTrue();
     }
 
+    @Test
     void isStufeProd_returns_false_when_environment_is_not_prod() {
         // Arrange
         when(configService.getEnvironment()).thenReturn(DeploymentEnvironment.DEV);

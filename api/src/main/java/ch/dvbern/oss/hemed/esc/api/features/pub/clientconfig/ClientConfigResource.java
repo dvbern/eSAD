@@ -41,7 +41,7 @@ public class ClientConfigResource {
                 configService.getClientAuthConfigClientId(),
                 configService.getClientAuthConfigRealm(),
                 configService.getClientAuthConfigAuthUrl(),
-                configService.getClientAuthConfigLogoutUrl()),
+                configService.getClientAuthConfigLogoutUrl().orElse(null)),
 
             new ClientFeatureConfigJson(
                 configService.isFeatureTimeTravelEndpointEnabled())

@@ -55,7 +55,7 @@
             <!-- Fileupload -->
             <feat-file-drop
               (filesToUpload)="onFilesSelected($event)"
-              [acceptedFiletypes]="this.acceptedFiletypes()"
+              [acceptedFiletypes]="acceptedFiletypes"
               [multiple]="false"
             />
 
@@ -74,11 +74,12 @@
 
     <svui-card aufgaben>
       <h3 svuiHeading="card" class="mb-3">{{ 'global.uploaded.files' | transloco }}</h3>
-      <feat-upload-table [uploadTable]="uploadTable"
-                         (fileView)="downloadBriefvorlageFile()"
-                         (fileDirectDownload)="downloadBriefvorlageFile()"
-                         [config]="{ showRemoveAction: false }"
-
+      <feat-upload-table
+        [accepted]="acceptedFiletypes"
+        [uploadTable]="uploadTable"
+        (fileView)="downloadBriefvorlageFile()"
+        (fileDirectDownload)="downloadBriefvorlageFile()"
+        [config]="{ showRemoveAction: false }"
       >
       </feat-upload-table>
     </svui-card>

@@ -18,16 +18,11 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.fileio;
 
-import java.io.Serial;
-
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
+import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
+import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileNameConverter;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -36,6 +31,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.hibernate.envers.Audited;
+
+import java.io.Serial;
 
 @Entity
 @Table
@@ -58,7 +55,8 @@ public class FileData extends AbstractTenantEntity<FileData> {
     @NotNull
     @NonNull
     @Column(nullable = false, length = DbConst.DB_DEFAULT_MAX_LENGTH)
-    private String calculatedFileName;
+    @Convert(converter = CleanFileNameConverter.class)
+    private CleanFileName calculatedFileName;
 
     @Valid
     @NotNull

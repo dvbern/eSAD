@@ -1,12 +1,15 @@
 package ch.dvbern.oss.hemed.esc.api.features.labels;
 
 import ch.dvbern.oss.hemed.esc.api.features.labels.types.LabelTyp;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.LabelBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminWIN;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminWIN;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminWithInvalidTenant;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.LabelsApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LabelJsonSpec;
@@ -32,11 +35,12 @@ import org.junit.jupiter.api.TestMethodOrder;
 class LabelResourceIMandantITest extends AbstractITest {
 
     private final LabelResourceHelper labelResourceHelper;
+    private final TenantProducer tenantProducer;
 
     private final LabelsApiSpec api = LabelsApiSpec.labels(RequestSpecUtil.quarkusSpec());
 
-    private LabelJsonSpec createdBaselLabel;
-    private LabelJsonSpec createdBernLabel;
+    private String createdLabelBaselId;
+    private String createdLabelBernId;
 
     @Override
     @BeforeEach
@@ -69,23 +73,27 @@ class LabelResourceIMandantITest extends AbstractITest {
     @TestAsAdminBS
     @Order(20)
     void create_label_as_admin_basel() {
-        createdBaselLabel = labelResourceHelper.createNewLabel("CreatedForBasel", LabelTyp.NOTIZEN);
-        Assertions.assertThat(createdBaselLabel).isNotNull();
-
+        LabelJsonSpec createdForBasel = labelResourceHelper.createNewLabel("CreatedForBasel", LabelTyp.NOTIZEN);
+        Assertions.assertThat(createdForBasel).isNotNull();
+        createdLabelBaselId = createdForBasel.getId();
     }
 
     @Test
-    @TestAsAdminBE
+    @TestAsAdminWIN
     @Order(30)
     void create_label_as_admin_bern() {
-        createdBernLabel = labelResourceHelper.createNewLabel("CreatedForBern", LabelTyp.NOTIZEN);
-        Assertions.assertThat(createdBernLabel).isNotNull();
+        tenantProducer.setCurrentTenant(TenantEnum.WIN);
+        LabelJsonSpec createdForBern = labelResourceHelper.createNewLabel("CreatedForBern", LabelTyp.NOTIZEN);
+        Assertions.assertThat(createdForBern).isNotNull();
+        createdLabelBernId = createdForBern.getId();
     }
 
     @Test
     @TestAsAdminBS
     @Order(40)
     void read_filtered_labels_as_admin_basel() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BS);
         // ACT
         var result = api
             .labelResourceFilterLabels()
@@ -101,14 +109,16 @@ class LabelResourceIMandantITest extends AbstractITest {
         Assertions.assertThat(result.getLabelList()).isNotNull()
             .asInstanceOf(InstanceOfAssertFactories.list(LabelJsonSpec.class))
             .extracting(LabelJsonSpec::getId)
-            .contains(createdBaselLabel.getId())
-            .doesNotContain(createdBernLabel.getId());
+            .contains(createdLabelBaselId)
+            .doesNotContain(createdLabelBernId);
     }
 
     @Test
     @TestAsAdminBS
     @Order(50)
     void read_all_labels_as_admin_basel() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BS);
         // ACT
         var result = api
             .labelResourceFindAllLabels()
@@ -123,7 +133,7 @@ class LabelResourceIMandantITest extends AbstractITest {
         Assertions.assertThat(result.getLabelList()).isNotNull()
             .asInstanceOf(InstanceOfAssertFactories.list(LabelJsonSpec.class))
             .extracting(LabelJsonSpec::getId)
-            .contains(createdBaselLabel.getId())
-            .doesNotContain(createdBernLabel.getId());
+            .contains(createdLabelBaselId)
+            .doesNotContain(createdLabelBernId);
     }
 }

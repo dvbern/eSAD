@@ -16,6 +16,7 @@ export interface LehrpersonSaveJson {
     vorname?: string;
     email?: string;
     telefon?: string;
+    version: number;
 }
 export namespace LehrpersonSaveJson {
 }

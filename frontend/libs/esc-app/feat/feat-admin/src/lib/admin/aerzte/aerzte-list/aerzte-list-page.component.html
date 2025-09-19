@@ -1,25 +1,40 @@
 <feat-page [heading]="'aerzte.list.page.title' | transloco"
            [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN}">
 
-  <svui-page-header-buttons>
+  <svui-page-header-list-summary [items]="summaryItems()"/>
+
+  <svui-page-header-buttons
+    [showFilterPopup]="false"
+    [activeFilterCount]="itemTable.numberOfFilters()"
+    (resetFilter)="itemTable.resetFilters(); tableFilterForm.reset();">
     <button svuiIconOnlyButton="primary"
             type="button"
-            [tooltip]="'aerzte.list.page.export' | transloco"
-            icon="herunterladen"
-            (click)="exportFilteredAerzte()"
+            [tooltip]="'aerzte.list.page.export.textdocument' | transloco"
+            icon="herunterladen_dokument"
+            (click)="exportFilteredAerzte(ExportMode.TEXTDOCUMENT)"
     >
     </button>
+  </svui-page-header-buttons>
+
+  <svui-page-header-buttons>
+  	<button svuiIconOnlyButton="primary"
+  			type="button"
+  			[tooltip]="'aerzte.list.page.export.spreadsheet' | transloco"
+  			icon="tabelle"
+  			(click)="exportFilteredAerzte(ExportMode.SPREADSHEET)"
+  	>
+  	</button>
   </svui-page-header-buttons>
 
   @if (canEditList()) {
     <svui-page-header-add-button [addRouterLink]="Path.CREATE"/>
   }
 
-  <svui-page-header-list-summary [items]="summaryItems()"/>
   <svui-card [innerSpacing]="'topBottom'">
-    <feat-aerzte-list [tableData]="arztList()"
-                      [canEditList]="canEditList()"
-                      (filteredArztIds)="filteredArztIds.set($event)"
-                      (removeArzt)="removeArzt($event)"></feat-aerzte-list>
+    <feat-aerzte-list
+      [itemTable]="itemTable"
+      [tableFilterForm]="tableFilterForm"
+      [canEditList]="canEditList()"
+      (removeArzt)="removeArzt($event)"></feat-aerzte-list>
   </svui-card>
 </feat-page>

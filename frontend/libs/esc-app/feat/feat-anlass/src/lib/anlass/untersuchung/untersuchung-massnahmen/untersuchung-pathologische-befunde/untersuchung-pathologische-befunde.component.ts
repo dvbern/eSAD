@@ -4,13 +4,14 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
   ImpfStatus,
   RequirementSetting,
-  UntersuchungArztSaveJson,
+  UntersuchungArztBemerkungSaveJson,
+  UntersuchungArztBeurteilungSaveJson,
   UntersuchungGroesseGewichtSaveJson,
   UntersuchungHoerenAudiogrammSaveJson,
   UntersuchungHoerenOtoskopieSaveJson,
   UntersuchungImpfstatusKrankheitSaveJson,
   UntersuchungImpfungInternJson,
-  UntersuchungSehenSaveJson,
+  UntersuchungSehenBeurteilungSaveJson,
 } from '@dvb/data-access-backend';
 import {BenutzerStore} from '@dvb/feat-shared';
 import {HeadingDirective} from '@dvb/ui-components';
@@ -81,7 +82,7 @@ export class UntersuchungPathologischeBefundeComponent {
   sehenMap = computed(() => {
     const sehenMap: Map<string, string> = new Map<string, string>();
 
-    const data: UntersuchungSehenSaveJson | undefined = this.sehenStore.sehen()?.data;
+    const data: UntersuchungSehenBeurteilungSaveJson | undefined = this.sehenStore.sehenBeurteilung()?.data;
 
     // Kovergenz
     this.addEnumValue(
@@ -272,85 +273,86 @@ export class UntersuchungPathologischeBefundeComponent {
 
   arztMap = computed(() => {
     const arztMap: Map<string, string> = new Map<string, string>();
-    const data: UntersuchungArztSaveJson | undefined = this.arztStore.untersuchungArzt()?.data;
+    const dataBeurteilung: UntersuchungArztBeurteilungSaveJson | undefined = this.arztStore.untersuchungArztBeurteilung()?.data;
+    const dataBemerkung: UntersuchungArztBemerkungSaveJson | undefined = this.arztStore.untersuchungArztBemerkung()?.data;
     // Bewegungsapparat
     this.addFilteredEnumListValue(arztMap,
       'untersuchung.pathologische.befunde.arzt.bewegungsapparat',
-      data?.bewegungsapparat,
+      dataBeurteilung?.bewegungsapparat,
       'Bewegungsapparat');
     this.addSimpleValue(arztMap,
       'untersuchung.pathologische.befunde.arzt.bewegungsapparat.bemerkung',
-      data?.bewegungsapparatBemerkung);
+      dataBeurteilung?.bewegungsapparatBemerkung);
     // Einbeinstand
     this.addEnumValue(arztMap,
       'untersuchung.pathologische.befunde.arzt.einbeinstand',
-      data?.einbeinstand,
+      dataBeurteilung?.einbeinstand,
       'Einbeinstand');
     this.addSimpleValue(arztMap,
       'untersuchung.pathologische.befunde.arzt.einbeinstand.bemerkung',
-      data?.einbeinstandBemerkung);
+      dataBeurteilung?.einbeinstandBemerkung);
     // Einbeinhuepfen
     this.addEnumValue(arztMap,
       'untersuchung.pathologische.befunde.arzt.einbeinhuepfen',
-      data?.einbeinhuepfen,
+      dataBeurteilung?.einbeinhuepfen,
       'Einbeinhuepfen');
     this.addSimpleValue(arztMap,
       'untersuchung.pathologische.befunde.arzt.einbeinhuepfen.bemerkung',
-      data?.einbeinhuepfenBemerkung);
+      dataBeurteilung?.einbeinhuepfenBemerkung);
     // Fingeropposition
     this.addFilteredEnumListValue(arztMap,
       'untersuchung.pathologische.befunde.arzt.fingeropposition',
-      data?.fingeropposition,
+      dataBeurteilung?.fingeropposition,
       'Fingeropposition');
     this.addSimpleValue(arztMap,
       'untersuchung.pathologische.befunde.arzt.fingeropposition.bemerkung',
-      data?.fingeroppositionBemerkung);
+      dataBeurteilung?.fingeroppositionBemerkung);
     // Motorik
-    this.addEnumValue(arztMap, 'untersuchung.pathologische.befunde.arzt.motorik', data?.motorik, 'Motorik');
+    this.addEnumValue(arztMap, 'untersuchung.pathologische.befunde.arzt.motorik', dataBeurteilung?.motorik, 'Motorik');
     // Verhalten
-    this.addEnumValue(arztMap, 'untersuchung.pathologische.befunde.arzt.verhalten', data?.verhalten, 'Verhalten');
+    this.addEnumValue(arztMap, 'untersuchung.pathologische.befunde.arzt.verhalten', dataBeurteilung?.verhalten, 'Verhalten');
     // Sprache
     this.addFilteredEnumListValue(arztMap,
       'untersuchung.pathologische.befunde.arzt.sprachfaehigkeit',
-      data?.sprachfaehigkeit,
+      dataBeurteilung?.sprachfaehigkeit,
       'Sprachfaehigkeit');
     this.addSimpleValue(arztMap,
       'untersuchung.pathologische.befunde.arzt.sprachfaehigkeit.bemerkung',
-      data?.sprachfaehigkeitBemerkung);
+      dataBeurteilung?.sprachfaehigkeitBemerkung);
     // Mund und Zähne
     this.addFilteredEnumListValue(arztMap,
       'untersuchung.pathologische.befunde.arzt.mundAndZaehne',
-      data?.mundAndZaehne,
+      dataBeurteilung?.mundAndZaehne,
       'MundAndZaehne');
     this.addSimpleValue(arztMap,
       'untersuchung.pathologische.befunde.arzt.mundAndZaehne.bemerkung',
-      data?.mundAndZaehneBemerkung);
+      dataBeurteilung?.mundAndZaehneBemerkung);
     // Haut
-    this.addEnumValue(arztMap, 'untersuchung.pathologische.befunde.arzt.haut', data?.haut, 'Haut');
-    this.addSimpleValue(arztMap, 'untersuchung.pathologische.befunde.arzt.haut.bemerkung', data?.hautBemerkung);
+    this.addEnumValue(arztMap, 'untersuchung.pathologische.befunde.arzt.haut', dataBeurteilung?.haut, 'Haut');
+    this.addSimpleValue(arztMap, 'untersuchung.pathologische.befunde.arzt.haut.bemerkung', dataBeurteilung?.hautBemerkung);
     // Herzauskultation
     this.addEnumValue(arztMap,
       'untersuchung.pathologische.befunde.arzt.herzauskultation',
-      data?.herzauskultation,
+      dataBeurteilung?.herzauskultation,
       'Herzauskultation');
     this.addSimpleValue(arztMap,
       'untersuchung.pathologische.befunde.arzt.herzauskultation.bemerkung',
-      data?.herzauskultationBemerkung);
+      dataBeurteilung?.herzauskultationBemerkung);
     // Blutdruck
     const blutdruck = this.addEnumValue(arztMap,
       'untersuchung.pathologische.befunde.arzt.blutdruck',
-      data?.blutdruck,
+      dataBeurteilung?.blutdruck,
       'Blutdruck');
     if (blutdruck) {
       this.addSimpleValue(arztMap,
         'untersuchung.pathologische.befunde.arzt.blutdruck.systolisch',
-        data?.blutdruckSystolisch);
+        dataBeurteilung?.blutdruckSystolisch);
       this.addSimpleValue(arztMap,
         'untersuchung.pathologische.befunde.arzt.blutdruck.diastolisch',
-        data?.blutdruckDiastolisch);
+        dataBeurteilung?.blutdruckDiastolisch);
     }
     // Bemerkungen
-    this.addSimpleValue(arztMap, 'untersuchung.pathologische.befunde.arzt.bemerkungen', data?.bemerkungen);
+    this.addSimpleValue(arztMap, 'untersuchung.pathologische.befunde.arzt.bemerkungen', dataBemerkung?.bemerkungen);
     return arztMap;
   });
 

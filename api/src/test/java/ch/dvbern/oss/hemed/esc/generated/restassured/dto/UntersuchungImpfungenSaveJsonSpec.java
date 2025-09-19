@@ -18,7 +18,6 @@ import java.util.Arrays;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenChecklisteSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenDoppelkontrolleSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenImpfausweisSaveJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenMassnahmenJsonSpec;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -32,9 +31,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  */
 @JsonPropertyOrder({
   UntersuchungImpfungenSaveJsonSpec.JSON_PROPERTY_IMPFAUSWEIS,
-  UntersuchungImpfungenSaveJsonSpec.JSON_PROPERTY_MASSNAHMEN,
   UntersuchungImpfungenSaveJsonSpec.JSON_PROPERTY_CHECKLISTE,
-  UntersuchungImpfungenSaveJsonSpec.JSON_PROPERTY_DOPPELKONTROLLE
+  UntersuchungImpfungenSaveJsonSpec.JSON_PROPERTY_DOPPELKONTROLLE,
+  UntersuchungImpfungenSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("UntersuchungImpfungenSaveJson")
 @lombok.AllArgsConstructor
@@ -44,10 +43,6 @@ public class UntersuchungImpfungenSaveJsonSpec {
   @jakarta.annotation.Nonnull
   private UntersuchungImpfungenImpfausweisSaveJsonSpec impfausweis;
 
-  public static final String JSON_PROPERTY_MASSNAHMEN = "massnahmen";
-  @jakarta.annotation.Nullable
-  private UntersuchungImpfungenMassnahmenJsonSpec massnahmen;
-
   public static final String JSON_PROPERTY_CHECKLISTE = "checkliste";
   @jakarta.annotation.Nonnull
   private UntersuchungImpfungenChecklisteSaveJsonSpec checkliste;
@@ -55,6 +50,10 @@ public class UntersuchungImpfungenSaveJsonSpec {
   public static final String JSON_PROPERTY_DOPPELKONTROLLE = "doppelkontrolle";
   @jakarta.annotation.Nonnull
   private UntersuchungImpfungenDoppelkontrolleSaveJsonSpec doppelkontrolle;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public UntersuchungImpfungenSaveJsonSpec() {
   }
@@ -82,31 +81,6 @@ public class UntersuchungImpfungenSaveJsonSpec {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setImpfausweis(@jakarta.annotation.Nonnull UntersuchungImpfungenImpfausweisSaveJsonSpec impfausweis) {
     this.impfausweis = impfausweis;
-  }
-
-  public UntersuchungImpfungenSaveJsonSpec massnahmen(@jakarta.annotation.Nullable UntersuchungImpfungenMassnahmenJsonSpec massnahmen) {
-    
-    this.massnahmen = massnahmen;
-    return this;
-  }
-
-  /**
-   * Get massnahmen
-   * @return massnahmen
-   */
-  @jakarta.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_MASSNAHMEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UntersuchungImpfungenMassnahmenJsonSpec getMassnahmen() {
-    return massnahmen;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_MASSNAHMEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setMassnahmen(@jakarta.annotation.Nullable UntersuchungImpfungenMassnahmenJsonSpec massnahmen) {
-    this.massnahmen = massnahmen;
   }
 
   public UntersuchungImpfungenSaveJsonSpec checkliste(@jakarta.annotation.Nonnull UntersuchungImpfungenChecklisteSaveJsonSpec checkliste) {
@@ -159,6 +133,31 @@ public class UntersuchungImpfungenSaveJsonSpec {
     this.doppelkontrolle = doppelkontrolle;
   }
 
+  public UntersuchungImpfungenSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -169,14 +168,14 @@ public class UntersuchungImpfungenSaveJsonSpec {
     }
     UntersuchungImpfungenSaveJsonSpec untersuchungImpfungenSaveJson = (UntersuchungImpfungenSaveJsonSpec) o;
     return Objects.equals(this.impfausweis, untersuchungImpfungenSaveJson.impfausweis) &&
-        Objects.equals(this.massnahmen, untersuchungImpfungenSaveJson.massnahmen) &&
         Objects.equals(this.checkliste, untersuchungImpfungenSaveJson.checkliste) &&
-        Objects.equals(this.doppelkontrolle, untersuchungImpfungenSaveJson.doppelkontrolle);
+        Objects.equals(this.doppelkontrolle, untersuchungImpfungenSaveJson.doppelkontrolle) &&
+        Objects.equals(this.version, untersuchungImpfungenSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(impfausweis, massnahmen, checkliste, doppelkontrolle);
+    return Objects.hash(impfausweis, checkliste, doppelkontrolle, version);
   }
 
   @Override
@@ -184,9 +183,9 @@ public class UntersuchungImpfungenSaveJsonSpec {
     StringBuilder sb = new StringBuilder();
     sb.append("class UntersuchungImpfungenSaveJsonSpec {\n");
     sb.append("    impfausweis: ").append(toIndentedString(impfausweis)).append("\n");
-    sb.append("    massnahmen: ").append(toIndentedString(massnahmen)).append("\n");
     sb.append("    checkliste: ").append(toIndentedString(checkliste)).append("\n");
     sb.append("    doppelkontrolle: ").append(toIndentedString(doppelkontrolle)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

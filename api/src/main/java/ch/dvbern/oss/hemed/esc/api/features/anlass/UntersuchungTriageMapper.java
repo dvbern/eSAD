@@ -38,7 +38,8 @@ public final class UntersuchungTriageMapper {
                 triage.getWunschSchuelerBemerkungen(),
                 triage.isVorinformationLehrperson(),
                 triage.getVorinformationLehrpersonBemerkungen(),
-                triage.getUntersuchung().getEinladung().getNaechsteStation()
+                triage.getUntersuchung().getEinladung().getNaechsteStation(),
+                triage.getVersion()
             )
         );
     }
@@ -98,6 +99,6 @@ public final class UntersuchungTriageMapper {
         UntersuchungTriage triage = untersuchung.getUntersuchungTriage();
         UntersuchungTriage entity = toEntity(untersuchung, triage, saveJson);
 
-        return toJson(untersuchungTriageService.persist(entity));
+        return toJson(untersuchungTriageService.persistWithOptimisticLocking(entity, saveJson.getVersion()));
     }
 }

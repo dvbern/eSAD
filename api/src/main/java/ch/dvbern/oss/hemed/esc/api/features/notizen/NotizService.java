@@ -1,22 +1,15 @@
 package ch.dvbern.oss.hemed.esc.api.features.notizen;
 
-import java.util.List;
-import java.util.Optional;
-
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileNameUtil;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
+import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3Mapper;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileValidationService;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.*;
 import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +17,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,11 +40,17 @@ public class NotizService {
     }
 
     @NonNull
+    public Notiz persistWithOptimisticLocking(@NonNull Notiz notiz, @NonNull Long versionFromFrontend) {
+        return notizRepo.persistWithOptimisticLocking(notiz, versionFromFrontend);
+    }
+
+    @NonNull
     public Notiz updateWithFiles(
         @NonNull Notiz notiz,
-        @NonNull List<FileUpload> fileUploads
+        @NonNull List<FileUpload> fileUploads,
+        @NonNull Long versionFromFrontend
     ) {
-        Notiz savedNotiz = this.persist(notiz);
+        Notiz savedNotiz = notizRepo.persistWithOptimisticLocking(notiz, versionFromFrontend);
         for (FileUpload fileUpload : fileUploads) {
             savedNotiz = this.addUploadedFile(savedNotiz.getId(), fileUpload);
         }
@@ -86,10 +88,11 @@ public class NotizService {
         fileValidationService.requireFiletypeIsAllowed(file, FileTyp.NOTIZUPLOAD);
         FileInfoS3 fileInfoS3 = saveNotizAttachmentInFilestorage(file);
         Notiz notiz = notizRepo.getById(notizID);
+        notiz.disableOptimisticLockingCheck();
         FileTyp fileTyp = FileNameUtil.getTypFromLabel(notiz.getLabels(), FileTyp.NOTIZUPLOAD);
         String nameVorname = notiz.getDossier().getKind().getNameVorname();
         String originalFileName = fileInfoS3.getFileName().getFileName();
-        String calculatedFileName = FileNameUtil.calculateAutomaticFilename(
+        CleanFileName calculatedFileName = FileNameUtil.calculateAutomaticFilename(
             notiz.getFiles(),
             appClock.localDateTime().now().toLocalDate(),
             nameVorname,
@@ -103,6 +106,7 @@ public class NotizService {
 
     public void removeUploadedFile(@NonNull Notiz loadedNotiz, @NonNull ID<FileData> fileId) {
         FileInfoS3 fileToRemove = findUploadedFileInfoS3(loadedNotiz.getId(), fileId);
+        loadedNotiz.disableOptimisticLockingCheck();
         boolean removedFromList = loadedNotiz.getFiles().removeIf(fileData -> fileId.equals(fileData.getId()));
         if (!removedFromList) {
             throw new AppFailureException(AppFailureMessage.entityNotFound(fileId, "File not found"));

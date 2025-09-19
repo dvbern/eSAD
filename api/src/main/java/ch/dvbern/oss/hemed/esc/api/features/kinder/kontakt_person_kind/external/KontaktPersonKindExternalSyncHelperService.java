@@ -220,6 +220,8 @@ public class KontaktPersonKindExternalSyncHelperService {
             appClock.offsetDateTime().now()
         );
 
+        updatedKontaktPerson.disableOptimisticLockingCheck();
+
         // update linked Kinder
         Set<Kind> kinder = loadLinkedKinder(updatedExternal);
         existingKontaktPerson.getKinder().clear(); // remove all existing without changing the list reference
@@ -252,9 +254,9 @@ public class KontaktPersonKindExternalSyncHelperService {
             externalToDelete.getExternalId(),
             kontaktPerson.getId());
 
-        if (kontaktPerson.getExternalImportInfo() != null && kontaktPerson.getExternalImportInfo()
-            .isAktivInExternalSystem()) {
+        if (kontaktPerson.getExternalImportInfo() != null && kontaktPerson.isAktivInExternalSystem()) {
             kontaktPerson.getExternalImportInfo().setAktivInExternalSystem(false);
+            kontaktPerson.disableOptimisticLockingCheck();
         }
 
         kontaktPersonKindExternalRepo.remove(externalToDelete.getId());

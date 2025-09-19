@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateUtil;
@@ -49,23 +50,29 @@ public final class UntersuchungKindDatenMapper {
     private static UntersuchungKindDatenJson toJson(
         @NonNull UntersuchungKindDaten daten,
         @NonNull Einladung einladung,
-        @NonNull LocalDate now) {
+        @NonNull LocalDate now
+    ) {
         return new UntersuchungKindDatenJson(
-            daten.getName(),
-            daten.getVorname(),
-            daten.getGeschlecht(),
+            daten.getId(),
+            EntityInfoJson.fromEntity(daten),
+            new UntersuchungKindDatenSaveJson(
+                daten.getName(),
+                daten.getVorname(),
+                daten.getGeschlecht(),
+                daten.getGeburtsdatum(),
+                daten.getNationalitaet(),
+                daten.getSchulhaus(),
+                daten.getQuartier(),
+                daten.getSchulkreis(),
+                daten.getSchulhausnummer(),
+                daten.getKlassenstufe(),
+                daten.getKlassentyp(),
+                daten.getKlasse(),
+                daten.getVersion()
+            ),
             einladung.getDossier().getKind().getEsadId(),
-            daten.getGeburtsdatum(),
             DateUtil.calculateAlterDuodezimal(daten.getGeburtsdatum(), now),
-            daten.getNationalitaet(),
             LandCode.getCode(daten.getNationalitaet()),
-            daten.getSchulhaus(),
-            daten.getQuartier(),
-            daten.getSchulkreis(),
-            daten.getSchulhausnummer(),
-            daten.getKlassenstufe(),
-            daten.getKlassentyp(),
-            daten.getKlasse(),
             daten.getKlasseId(),
             einladung.getAnlass().getDatum()
         );
@@ -73,8 +80,10 @@ public final class UntersuchungKindDatenMapper {
 
     @NonNull
     private static UntersuchungKindDatenJson toJson(
-        @NonNull Anlass anlass, @NonNull Kind kind,
-        @NonNull LocalDate now) {
+        @NonNull Anlass anlass,
+        @NonNull Kind kind,
+        @NonNull LocalDate now
+    ) {
         Klasse klasse = kind.getKlasse();
         Schule schule = kind.extractSchule();
         String klassenname = null;
@@ -98,21 +107,26 @@ public final class UntersuchungKindDatenMapper {
             schulhausnummer = schule.getSchulhausnummer();
         }
         return new UntersuchungKindDatenJson(
-            kind.getName(),
-            kind.getVorname(),
-            kind.getGeschlecht(),
+            null,
+            EntityInfoJson.fromEntity(kind),
+            new UntersuchungKindDatenSaveJson(
+                kind.getName(),
+                kind.getVorname(),
+                kind.getGeschlecht(),
+                kind.getGeburtsdatum(),
+                kind.getNationalitaet(),
+                schulhaus,
+                quartier,
+                schulkreis,
+                schulhausnummer,
+                klassenstufe,
+                klassentyp,
+                klassenname,
+                0L
+            ),
             kind.getEsadId(),
-            kind.getGeburtsdatum(),
             DateUtil.calculateAlterDuodezimal(kind.getGeburtsdatum(), now),
-            kind.getNationalitaet(),
             LandCode.getCode(kind.getNationalitaet()),
-            schulhaus,
-            quartier,
-            schulkreis,
-            schulhausnummer,
-            klassenstufe,
-            klassentyp,
-            klassenname,
             klasseId,
             anlass.getDatum()
         );
@@ -161,7 +175,7 @@ public final class UntersuchungKindDatenMapper {
         UntersuchungKindDaten entity = toEntity(kindDaten, saveJson);
 
         return toJson(
-            untersuchungKindDatenService.persist(entity),
+            untersuchungKindDatenService.persistWithOptimisticLocking(entity, saveJson.getVersion()),
             untersuchung.getEinladung(),
             appClock.offsetDateTime().now().toLocalDate()
         );

@@ -30,6 +30,7 @@ import ch.dvbern.oss.hemed.esc.api.features.labels.LabelService;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.types.AufgabeStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
@@ -53,6 +54,12 @@ public class AutoAufgabeService {
         @NonNull Benutzer empfaenger
     ) {
         Kind kind = einladung.getDossier().getKind();
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            kind,
+            AppValidationMessage.cannotCreateEntityForInactiveKind(
+                kind,
+                new Aufgabe()
+            ));
         Anlass anlass = einladung.getAnlass();
         String title = tl.translate(
             "aufgabe.doppelkontrolle.impfentscheid",
@@ -85,7 +92,7 @@ public class AutoAufgabeService {
         Aufgabe aufgabe;
         if (existing.size() == 1) {
             aufgabe = existing.getFirst();
-            updateAutomatischeAufgabe(aufgabe, titel, mpa, null);
+            updateAutomatischeAufgabe(aufgabe, titel, null);
         } else {
             createAutomatischeAufgabe(
                 titel,
@@ -116,7 +123,7 @@ public class AutoAufgabeService {
                 tl.translate("aufgabe.massnahme.information.eltern.key." + massnahmen.getInformationEltern()));
         }
         if (massnahmen.getAufgabeInformationEltern() != null) {
-            updateAutomatischeAufgabe(massnahmen.getAufgabeInformationEltern(), title, getCurrentBenutzer(), bemerkung);
+            updateAutomatischeAufgabe(massnahmen.getAufgabeInformationEltern(), title, bemerkung);
         } else {
             Aufgabe aufgabe =
                 createAutomatischeAufgabe(title, null, getCurrentBenutzer(), anlass, kind, bemerkung, null);
@@ -134,7 +141,7 @@ public class AutoAufgabeService {
             "kind", kind.getNameVorname(),
             "anlass", anlass.getFullAnlassTitel(tl));
         if (massnahmen.getAufgabeUeberweisungHausarzt() != null) {
-            updateAutomatischeAufgabe(massnahmen.getAufgabeUeberweisungHausarzt(), title, getCurrentBenutzer(), null);
+            updateAutomatischeAufgabe(massnahmen.getAufgabeUeberweisungHausarzt(), title, null);
         } else {
             Aufgabe aufgabe = createAutomatischeAufgabe(title, null, getCurrentBenutzer(), anlass, kind, null, null);
             massnahmen.setAufgabeUeberweisungHausarzt(aufgabe);
@@ -151,7 +158,7 @@ public class AutoAufgabeService {
             "kind", kind.getNameVorname(),
             "anlass", anlass.getFullAnlassTitel(tl));
         if (massnahmen.getAufgabeUeberweisungAugenarzt() != null) {
-            updateAutomatischeAufgabe(massnahmen.getAufgabeUeberweisungAugenarzt(), title, getCurrentBenutzer(), null);
+            updateAutomatischeAufgabe(massnahmen.getAufgabeUeberweisungAugenarzt(), title, null);
         } else {
             Aufgabe aufgabe = createAutomatischeAufgabe(title, null, getCurrentBenutzer(), anlass, kind, null, null);
             massnahmen.setAufgabeUeberweisungAugenarzt(aufgabe);
@@ -168,7 +175,7 @@ public class AutoAufgabeService {
             "kind", kind.getNameVorname(),
             "anlass", anlass.getFullAnlassTitel(tl));
         if (massnahmen.getAufgabeNachkontrolle() != null) {
-            updateAutomatischeAufgabe(massnahmen.getAufgabeNachkontrolle(), title, getCurrentBenutzer(), null);
+            updateAutomatischeAufgabe(massnahmen.getAufgabeNachkontrolle(), title, null);
         } else {
             Aufgabe aufgabe = createAutomatischeAufgabe(title, null, getCurrentBenutzer(), anlass, kind, null, null);
             massnahmen.setAufgabeNachkontrolle(aufgabe);
@@ -186,7 +193,7 @@ public class AutoAufgabeService {
             "kind", kind.getNameVorname(),
             "anlass", anlass.getFullAnlassTitel(tl));
         if (massnahmen.getAufgabeInformationEltern() != null) {
-            updateAutomatischeAufgabe(massnahmen.getAufgabeInformationEltern(), title, getCurrentBenutzer(), null);
+            updateAutomatischeAufgabe(massnahmen.getAufgabeInformationEltern(), title, null);
         } else {
             Aufgabe aufgabe = createAutomatischeAufgabe(
                 title, null, getCurrentBenutzer(), anlass, kind, null, buildAnlassUntersuchungUrl(
@@ -206,7 +213,7 @@ public class AutoAufgabeService {
             "kind", kind.getNameVorname(),
             "anlass", anlass.getFullAnlassTitel(tl));
         if (massnahmen.getAufgabeInformationHausarzt() != null) {
-            updateAutomatischeAufgabe(massnahmen.getAufgabeInformationHausarzt(), title, getCurrentBenutzer(), null);
+            updateAutomatischeAufgabe(massnahmen.getAufgabeInformationHausarzt(), title, null);
         } else {
             Aufgabe aufgabe = createAutomatischeAufgabe(
                 title, null, getCurrentBenutzer(), anlass, kind, null, buildAnlassUntersuchungUrl(
@@ -226,7 +233,7 @@ public class AutoAufgabeService {
             "kind", kind.getNameVorname(),
             "anlass", anlass.getFullAnlassTitel(tl));
         if (massnahmen.getAufgabeRueckfrageHausarzt() != null) {
-            updateAutomatischeAufgabe(massnahmen.getAufgabeRueckfrageHausarzt(), title, getCurrentBenutzer(), null);
+            updateAutomatischeAufgabe(massnahmen.getAufgabeRueckfrageHausarzt(), title, null);
         } else {
             Aufgabe aufgabe = createAutomatischeAufgabe(
                 title, null, getCurrentBenutzer(), anlass, kind, null, buildAnlassUntersuchungUrl(
@@ -262,7 +269,7 @@ public class AutoAufgabeService {
         Optional<Aufgabe> aufgabeOptional =
             aufgabeService.findSingleAufgabeForKindWithLabel(kind, Label.ID_LABEL_NACHZUEGLER);
         if (aufgabeOptional.isPresent()) {
-            updateAutomatischeAufgabe(aufgabeOptional.get(), title, getCurrentBenutzer(), null);
+            updateAutomatischeAufgabe(aufgabeOptional.get(), title, null);
         } else {
             createAutomatischeAufgabe(
                 title,
@@ -277,6 +284,7 @@ public class AutoAufgabeService {
 
     public void aufgabeAbschliessen(@Nullable Aufgabe aufgabe) {
         if (aufgabe != null) {
+            aufgabe.disableOptimisticLockingCheck();
             aufgabe.setAufgabeStatus(AufgabeStatus.ABGESCHLOSSEN);
             aufgabeService.persist(aufgabe);
         }
@@ -309,14 +317,13 @@ public class AutoAufgabeService {
     private void updateAutomatischeAufgabe(
         @NonNull Aufgabe aufgabe,
         @NonNull String titel,
-        @NonNull Benutzer empfaenger,
         @Nullable String bemerkung
     ) {
         aufgabe.setTitel(titel);
         aufgabe.setBemerkung(getAufgabeBemerkung(aufgabe.getBemerkung(), bemerkung));
         aufgabe.setAufgabeStatus(AufgabeStatus.OFFEN);
         aufgabe.setFaelligBis(today());
-        aufgabe.setEmpfaenger(empfaenger);
+        aufgabe.disableOptimisticLockingCheck();
         aufgabeService.persist(aufgabe);
     }
 

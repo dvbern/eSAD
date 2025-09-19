@@ -5,7 +5,6 @@ import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.hibernate.annotations.TenantId;
 
 @MappedSuperclass
 // Envers might interfere with liquibase diff: EJB3-Extension
@@ -14,9 +13,8 @@ public abstract class AbstractTenantEntity<T extends AbstractTenantEntity<T>> ex
 
     private static final long serialVersionUID = -7078681254391207481L;
 
-    @TenantId
     @Column(nullable = false, updatable = false)
-    private String tenant;
+    private String tenant = "DEFAULT"; // we switched to database multitenancy
 
 
     @Override

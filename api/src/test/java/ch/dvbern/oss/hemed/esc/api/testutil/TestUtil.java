@@ -1,13 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.testutil;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.time.OffsetDateTime;
-import java.util.Objects;
-
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil;
@@ -25,6 +17,14 @@ import org.apache.commons.text.RandomStringGenerator.Builder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.time.OffsetDateTime;
+import java.util.Objects;
 
 @UtilityClass
 public class TestUtil {
@@ -64,7 +64,7 @@ public class TestUtil {
 
     @NonNull
     public static String getRandomString(@NonNull String prefix) {
-        char[][] pairs = { { 'a', 'z' }, { 'A', 'Z' } };
+        char[][] pairs = {{'a', 'z'}, {'A', 'Z'}};
         RandomStringGenerator generator = new Builder()
             .withinRange(pairs)
             .get();
@@ -80,6 +80,12 @@ public class TestUtil {
 
     @NonNull
     public static File loadTestSimpleEscadaFile() {
+        String filePath = "/EscadaTest/testdata.csv";
+        return loadTestfile(filePath);
+    }
+
+    @NonNull
+    public static File loadShortEscadaFile() {
         String filePath = "/EscadaTest/testdata.csv";
         return loadTestfile(filePath);
     }
@@ -135,7 +141,7 @@ public class TestUtil {
 
     @NonNull
     public static File loadEmptyFile() {
-        return loadTestfile("/FileUtilTest/empty.csv");
+        return loadTestfile("/FileUtilTest/Empty.csv");
     }
 
     @NonNull

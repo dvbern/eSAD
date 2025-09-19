@@ -10,6 +10,7 @@ import {
   UntersuchungImpfungenImpfausweisSaveJson,
 } from '@dvb/data-access-backend';
 import {ISOYearMonthString} from '@dvb/data-access-types';
+import {globalConstants} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
 import {ensureProps, getDateFromISOYearMonthString, getYearMonthFromISODateString, Nullish} from '@dvb/util-shared';
 import {distinctUntilChanged} from 'rxjs';
@@ -43,6 +44,7 @@ function makeSubform(config: Config, krankheit: Krankheit): FormGroup {
     impfschutzGegeben: fb.control<boolean>(false),
     impfempfehlung: fb.control<boolean>(false),
     impfentscheid: fb.control<boolean>(false),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 
   // Eine Checkbox wählen soll die anderen abwählen:
@@ -125,9 +127,11 @@ export class UntersuchungImpfstatusListForm extends BaseForm<
         impfschutzGegeben: rawValue.impfschutzGegeben,
         impfempfehlung: rawValue.impfempfehlung,
         impfentscheid: rawValue.impfentscheid,
+        version: rawValue.version ?? globalConstants.entityPrePersistVersion,
       });
       newValue.impfstatusList.push(item);
     });
+
     return newValue;
   }
 

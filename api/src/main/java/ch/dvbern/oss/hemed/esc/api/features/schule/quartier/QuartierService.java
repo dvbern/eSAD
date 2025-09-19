@@ -35,6 +35,12 @@ public class QuartierService {
         return quartier;
     }
 
+    @NonNull
+    public Quartier persistWithOptimisticLocking(@NonNull Quartier quartier, @NonNull Long versionFromFrontend) {
+        quartierRepo.persistWithOptimisticLocking(quartier, versionFromFrontend);
+        return quartier;
+    }
+
     public void remove(@NonNull ID<Quartier> id) {
         quartierRepo.remove(id);
     }

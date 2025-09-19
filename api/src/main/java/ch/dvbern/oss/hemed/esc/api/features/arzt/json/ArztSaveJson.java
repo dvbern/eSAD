@@ -24,6 +24,7 @@ import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Fachrichtung;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.HpvTeilnahme;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Organisation;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.person.AdresseJson;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -36,7 +37,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Value
 @AllArgsConstructor
 @JaxDTO
-public class ArztSaveJson {
+public class ArztSaveJson implements SaveJsonWithOptimisticLocking {
 
     @Nullable
     @Schema(required = false)
@@ -82,5 +83,8 @@ public class ArztSaveJson {
     @NonNull
     @Schema(required = true)
     HpvTeilnahme hpvTeilnahme;
+
+    @Schema(required = true)
+    private long version;
 
 }

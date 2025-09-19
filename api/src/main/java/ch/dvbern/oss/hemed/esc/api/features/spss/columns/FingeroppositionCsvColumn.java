@@ -20,7 +20,7 @@ public class FingeroppositionCsvColumn extends AbstractCsvColumn {
     @Override
     @NonNull
     public String extract(@NonNull Einladung einladung) {
-        return ExtractorForCsvUtil.extractUntersuchungArzt(
+        return ExtractorForCsvUtil.extractUntersuchungArztBeurteilung(
             einladung,
             untersuchungArzt ->
                 untersuchungArzt.getFingeropposition().contains(fingeropposition) ? "1" : ""

@@ -1,8 +1,8 @@
 import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {BenutzerOptionJson, EntityAktivStatus, QuartierOptionJson, SchuleSaveJson} from '@dvb/data-access-backend';
-import {AdresseForm} from '@dvb/feat-shared';
+import {AdresseForm, globalConstants} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensurePropsFlat, requireValue, trimToUndefined} from '@dvb/util-shared';
+import {ensurePropsFlat, Nullish, requireValue, trimToUndefined} from '@dvb/util-shared';
 
 type Config = {
   fb: NonNullableFormBuilder;
@@ -29,6 +29,7 @@ function makeForm(config: Config) {
     zustaendigArzt: fb.control<BenutzerOptionJson | undefined>(undefined, []),
     zustaendigMPA: fb.control<BenutzerOptionJson | undefined>(undefined, []),
     schuleAktivStatus: fb.control<EntityAktivStatus>(EntityAktivStatus.AKTIV, Validators.required),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 }
 
@@ -56,6 +57,7 @@ export class SchulenStammdatenForm extends BaseForm<ReturnType<typeof makeForm>,
       zustaendigArzt: value.zustaendigArzt,
       zustaendigMPA: value.zustaendigMPA,
       schuleAktivStatus: requireValue(value.schuleAktivStatus),
+      version: value.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 }

@@ -26,6 +26,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EinladungUtil;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -49,7 +50,13 @@ public class AnlassPrintDTO {
         return EinladungUtil.extractSchulenCommaSeparated(einladungen);
     }
 
+    @NonNull
     public String getKlassenCommaSeparated() {
         return EinladungUtil.extracKlassenCommaSeparated(einladungen);
+    }
+
+    @NonNull
+    public String getLehrpersonenCommaSeparated(@NonNull BasePrinter basePrinter) {
+        return EinladungUtil.extracLehrpersonenCommaSeparated(einladungen, basePrinter);
     }
 }

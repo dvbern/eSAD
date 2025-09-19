@@ -18,7 +18,6 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 import { BackendEntityId } from '@dvb/data-access-types';
-import { BenutzerOptionJson } from '../model/benutzer-option-json';
 import { UntersuchungImpfstatusListSaveJson } from '../model/untersuchung-impfstatus-list-save-json';
 import { UntersuchungImpfungInternJson } from '../model/untersuchung-impfung-intern-json';
 import { UntersuchungImpfungInternSaveJson } from '../model/untersuchung-impfung-intern-save-json';
@@ -35,7 +34,7 @@ import { Configuration }                                     from '../configurat
 export interface UntersuchungImpfungenServiceAnfordernDoppelkontrolleVisum2RequestParams {
     anlassId: BackendEntityId;
     einladungId: BackendEntityId;
-    benutzerOptionJson: BenutzerOptionJson;
+    untersuchungImpfungenSaveJson: UntersuchungImpfungenSaveJson;
 }
 
 export interface UntersuchungImpfungenServiceCreateUntersuchungImpfungInternRequestParams {
@@ -63,6 +62,7 @@ export interface UntersuchungImpfungenServiceRemoveUntersuchungImpfungenInternRe
 export interface UntersuchungImpfungenServiceResetDoppelkontrolleRequestParams {
     anlassId: BackendEntityId;
     einladungId: BackendEntityId;
+    untersuchungImpfungenSaveJson: UntersuchungImpfungenSaveJson;
 }
 
 export interface UntersuchungImpfungenServiceSaveUntersuchungImpfungenRequestParams {
@@ -93,11 +93,13 @@ export interface UntersuchungImpfungenServiceUpdateUntersuchungImpfungenInternRe
 export interface UntersuchungImpfungenServiceVisierenDoppelkontrolleVisum1RequestParams {
     anlassId: BackendEntityId;
     einladungId: BackendEntityId;
+    untersuchungImpfungenSaveJson: UntersuchungImpfungenSaveJson;
 }
 
 export interface UntersuchungImpfungenServiceVisierenDoppelkontrolleVisum2RequestParams {
     anlassId: BackendEntityId;
     einladungId: BackendEntityId;
+    untersuchungImpfungenSaveJson: UntersuchungImpfungenSaveJson;
 }
 
 
@@ -183,9 +185,9 @@ export class UntersuchungImpfungenService {
         if (einladungId === null || einladungId === undefined) {
             throw new Error('Required parameter einladungId was null or undefined when calling anfordernDoppelkontrolleVisum2.');
         }
-        const benutzerOptionJson = requestParameters?.benutzerOptionJson;
-        if (benutzerOptionJson === null || benutzerOptionJson === undefined) {
-            throw new Error('Required parameter benutzerOptionJson was null or undefined when calling anfordernDoppelkontrolleVisum2.');
+        const untersuchungImpfungenSaveJson = requestParameters?.untersuchungImpfungenSaveJson;
+        if (untersuchungImpfungenSaveJson === null || untersuchungImpfungenSaveJson === undefined) {
+            throw new Error('Required parameter untersuchungImpfungenSaveJson was null or undefined when calling anfordernDoppelkontrolleVisum2.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -243,7 +245,7 @@ export class UntersuchungImpfungenService {
         return this.httpClient.request<UntersuchungImpfungenJson>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: benutzerOptionJson,
+                body: untersuchungImpfungenSaveJson,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -588,6 +590,10 @@ export class UntersuchungImpfungenService {
         if (einladungId === null || einladungId === undefined) {
             throw new Error('Required parameter einladungId was null or undefined when calling resetDoppelkontrolle.');
         }
+        const untersuchungImpfungenSaveJson = requestParameters?.untersuchungImpfungenSaveJson;
+        if (untersuchungImpfungenSaveJson === null || untersuchungImpfungenSaveJson === undefined) {
+            throw new Error('Required parameter untersuchungImpfungenSaveJson was null or undefined when calling resetDoppelkontrolle.');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -620,6 +626,15 @@ export class UntersuchungImpfungenService {
         }
 
 
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
         let responseType_: 'text' | 'json' | 'blob' = 'json';
         if (localVarHttpHeaderAcceptSelected) {
             if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
@@ -635,6 +650,7 @@ export class UntersuchungImpfungenService {
         return this.httpClient.request<UntersuchungImpfungenJson>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                body: untersuchungImpfungenSaveJson,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -1023,6 +1039,10 @@ export class UntersuchungImpfungenService {
         if (einladungId === null || einladungId === undefined) {
             throw new Error('Required parameter einladungId was null or undefined when calling visierenDoppelkontrolleVisum1.');
         }
+        const untersuchungImpfungenSaveJson = requestParameters?.untersuchungImpfungenSaveJson;
+        if (untersuchungImpfungenSaveJson === null || untersuchungImpfungenSaveJson === undefined) {
+            throw new Error('Required parameter untersuchungImpfungenSaveJson was null or undefined when calling visierenDoppelkontrolleVisum1.');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -1055,6 +1075,15 @@ export class UntersuchungImpfungenService {
         }
 
 
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
         let responseType_: 'text' | 'json' | 'blob' = 'json';
         if (localVarHttpHeaderAcceptSelected) {
             if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
@@ -1070,6 +1099,7 @@ export class UntersuchungImpfungenService {
         return this.httpClient.request<UntersuchungImpfungenJson>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                body: untersuchungImpfungenSaveJson,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -1098,6 +1128,10 @@ export class UntersuchungImpfungenService {
         if (einladungId === null || einladungId === undefined) {
             throw new Error('Required parameter einladungId was null or undefined when calling visierenDoppelkontrolleVisum2.');
         }
+        const untersuchungImpfungenSaveJson = requestParameters?.untersuchungImpfungenSaveJson;
+        if (untersuchungImpfungenSaveJson === null || untersuchungImpfungenSaveJson === undefined) {
+            throw new Error('Required parameter untersuchungImpfungenSaveJson was null or undefined when calling visierenDoppelkontrolleVisum2.');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -1130,6 +1164,15 @@ export class UntersuchungImpfungenService {
         }
 
 
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
         let responseType_: 'text' | 'json' | 'blob' = 'json';
         if (localVarHttpHeaderAcceptSelected) {
             if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
@@ -1145,6 +1188,7 @@ export class UntersuchungImpfungenService {
         return this.httpClient.request<UntersuchungImpfungenJson>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                body: untersuchungImpfungenSaveJson,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

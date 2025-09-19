@@ -15,13 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { inject, Injectable } from '@angular/core';
-import { AerzteService, ArztJson, ArztSaveJson } from '@dvb/data-access-backend';
-import { BackendEntityId } from '@dvb/data-access-types';
-import { AppErrorHandlerService, handleBlobResponseDownload, Loader, withSelectedEntity } from '@dvb/util-angular';
-import { requireValue } from '@dvb/util-shared';
-import { tapResponse } from '@ngrx/operators';
-import { patchState, signalStore } from '@ngrx/signals';
+import {inject, Injectable} from '@angular/core';
+import {AerzteService, ArztIdListJson, ArztJson, ArztSaveJson, ExportMode} from '@dvb/data-access-backend';
+import {BackendEntityId} from '@dvb/data-access-types';
+import {AppErrorHandlerService, handleBlobResponseDownload, Loader, withSelectedEntity} from '@dvb/util-angular';
+import {requireValue} from '@dvb/util-shared';
+import {tapResponse} from '@ngrx/operators';
+import {patchState, signalStore} from '@ngrx/signals';
 import {
   addEntity,
   removeAllEntities,
@@ -30,8 +30,8 @@ import {
   setEntity,
   withEntities,
 } from '@ngrx/signals/entities';
-import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { exhaustMap, pipe, switchMap, tap } from 'rxjs';
+import {rxMethod} from '@ngrx/signals/rxjs-interop';
+import {exhaustMap, pipe, switchMap, tap} from 'rxjs';
 
 @Injectable({providedIn: 'root'})
 export class AerzteStore extends signalStore(
@@ -133,25 +133,26 @@ export class AerzteStore extends signalStore(
 
   exportAerzteAsDoc = rxMethod<
     {
-      aerzteIds: BackendEntityId[],
+      arztIdListJson: ArztIdListJson,
+      mode: ExportMode
       onSuccess: () => void
     }
   >(
     pipe(
-      exhaustMap(({aerzteIds, onSuccess}) =>
-      this.exportLoader.tapLoading$(
-        this.#aerzteService.exportAerzte$({ aerzteIds }, 'response'), error =>
-          this.#appErrorHandlerService.handleError(error),
-      ).pipe(
-        tapResponse({
-            next: (result) => {
-              handleBlobResponseDownload(result, true);
-              onSuccess();
-            },
-            error: console.error,
-          }
+      exhaustMap(({arztIdListJson, onSuccess, mode}) =>
+        this.exportLoader.tapLoading$(
+          this.#aerzteService.exportAerzte$({arztIdListJson, mode}, 'response'), error =>
+            this.#appErrorHandlerService.handleError(error),
+        ).pipe(
+          tapResponse({
+              next: (result) => {
+                handleBlobResponseDownload(result, true);
+                onSuccess();
+              },
+              error: console.error,
+            }
+          )
         )
-      )
       )
     )
   )

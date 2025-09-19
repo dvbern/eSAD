@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input, OnInit, output} from '@angular/core';
-import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ArztJson, Fachrichtung, HpvTeilnahme} from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
 import {
@@ -29,12 +29,11 @@ import {
   TableLinkComponent,
   TextInputDirective,
 } from '@dvb/ui-components';
-import {FilterSessionStorage, TableModel} from '@dvb/util-angular';
-import {ensureProps, isValidEnumValue, toValidEnumList} from '@dvb/util-shared';
+import {TableModel} from '@dvb/util-angular';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {NgbDropdownItem} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
-import {AerzteListFilterForm, ArztFilterForm} from './aerzte-list-filter.form';
+import {AerzteListFilterForm} from './aerzte-list-filter.form';
 
 @Component({
   selector: 'feat-aerzte-list',
@@ -58,8 +57,9 @@ import {AerzteListFilterForm, ArztFilterForm} from './aerzte-list-filter.form';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AerzteListComponent extends FilterSessionStorage<ArztFilterForm> implements OnInit {
-  tableData = input.required<ArztJson[]>();
+export class AerzteListComponent {
+  itemTable = input.required<TableModel<ArztJson>>();
+  tableFilterForm = input.required<AerzteListFilterForm>();
   isLoading = input(false);
   isDeleteLoading = input(false);
   canEditList = input(false);
@@ -68,51 +68,4 @@ export class AerzteListComponent extends FilterSessionStorage<ArztFilterForm> im
 
   readonly fachrichtungen = Object.values(Fachrichtung);
   readonly hpvTeilnamen = Object.values(HpvTeilnahme);
-
-  readonly SESSIONSTORAGE_KEY = 'aerzteFilter';
-
-  itemTable = new TableModel<ArztJson>(
-    {
-      rawListSignal: this.tableData,
-      lazyLoadOnSortOrFilter: () => this.setSessionStorageFilter(this.tableFilterForm.valueOnValid()),
-    },
-    {frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll'},
-  );
-
-  constructor() {
-    super();
-    effect(() => {
-      this.filteredArztIds.emit(this.itemTable.filteredSortedList().map(({id}) => id));
-    });
-  }
-
-  ngOnInit() {
-    const filter = this.getSessionStorageFilter();
-    if (filter) {
-      this.tableFilterForm.reset(filter);
-    }
-  }
-
-  readonly tableFilterForm = new AerzteListFilterForm({
-    fb: inject(NonNullableFormBuilder),
-    destroyRef: inject(DestroyRef),
-    paginatedTable: this.itemTable,
-  });
-
-  mapSessionStorageStringToFilter(sessionStorageFilter: string): ArztFilterForm | undefined {
-    try {
-      const parsed = JSON.parse(sessionStorageFilter) as ArztFilterForm;
-
-      // Reconstruct the filter with proper data types and validation
-      return ensureProps<ArztFilterForm>({
-        fachrichtung: toValidEnumList(Fachrichtung, parsed.fachrichtung),
-        hpvTeilnahme: isValidEnumValue(HpvTeilnahme,parsed.hpvTeilnahme) ? parsed.hpvTeilnahme : undefined,
-        name: parsed.name ?? '',
-        vorname: parsed.vorname ?? '',
-      });
-    } catch (error) {
-      console.warn('Failed to parse session storage filter:', error);
-      return undefined;
-    }
-  }
 }

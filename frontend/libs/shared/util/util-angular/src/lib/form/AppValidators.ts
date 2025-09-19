@@ -1,6 +1,6 @@
 import {AbstractControl, FormArray, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
-import {ISOYearMonthString} from '@dvb/data-access-types';
-import {AhvNummerUtil, isFilledIn, isNotNullish, isNullish, toDateStr} from '@dvb/util-shared';
+import {isISOYearMonthString} from '@dvb/data-access-types';
+import {AhvNummerUtil, isFilledIn, isNullish, toDateStr} from '@dvb/util-shared';
 import {addYears, subYears} from 'date-fns';
 
 /**
@@ -11,29 +11,32 @@ type ValidatorKeyMap<Keys extends object> = {
 };
 
 // FIXME: used by the error control for translations
+// Sort Alphabetically
 export const AppValidatorKeys = {
+  ahvNummerInvalid: 'ahvNummerInvalid',
+  ahvNummerPattern: 'ahvNummerPattern',
+  atLeastOneRequired: 'atLeastOneRequired',
+  backend: 'backend',
   date: 'date',
   dateRange: 'dateRange',
   dbMaxLength: 'dbMaxLength',
-  textareaMaxLength: 'textareaMaxLength',
-  nonNegativeNumber: 'nonNegativeNumber',
-  numberOrNumericChars: 'numberOrNumericChars',
-  backend: 'backend',
-  unique: 'unique',
   email: 'email',
-  phone: 'phone',
-  nonFutureDates: 'nonFutureDates',
-  nonPastDates: 'nonPastDates',
-  zeitVonAfterZeitBis: 'zeitVonAfterZeitBis',
-  ahvNummerPattern: 'ahvNummerPattern',
-  ahvNummerInvalid: 'ahvNummerInvalid',
-  plz: 'plz',
-  ort: 'ort',
   equals: 'equals',
-  atLeastOneRequired: 'atLeastOneRequired',
-  publicUrl: 'publicUrl',
   esadId: 'esadId',
   minYear: 'minYear',
+  nonNegativeNumber: 'nonNegativeNumber',
+  nonFutureDates: 'nonFutureDates',
+  nonPastDates: 'nonPastDates',
+  numberOrNumericChars: 'numberOrNumericChars',
+  oneDecimalPlace: 'oneDecimalPlace',
+  ort: 'ort',
+  plz: 'plz',
+  phone: 'phone',
+  publicUrl: 'publicUrl',
+  textareaMaxLength: 'textareaMaxLength',
+  unique: 'unique',
+  zeitVonAfterZeitBis: 'zeitVonAfterZeitBis',
+  zeroDecimalPlaces: 'zeroDecimalPlaces',
 } as const satisfies ValidatorKeyMap<AppValidators>;
 
 const MIN_KIND_AGE = 3;
@@ -81,6 +84,32 @@ export class AppValidators {
         }
         : null;
     };
+  }
+
+  /**
+   * Number with 1 decimal place
+   */
+  static oneDecimalPlace(): ValidatorFn {
+    return control => {
+      const pattern = /^\d+(\.\d)?$/;
+      const errors = Validators.pattern(pattern)(control);
+      return errors ? {
+        [AppValidatorKeys.oneDecimalPlace]: {},
+      } : null;
+    }
+  }
+
+  /**
+   * Number with 0 decimal places
+   */
+  static zeroDecimalPlaces(): ValidatorFn {
+    return control => {
+      const pattern = /^\d+$/;
+      const errors = Validators.pattern(pattern)(control);
+      return errors ? {
+        [AppValidatorKeys.zeroDecimalPlaces]: {},
+      } : null;
+    }
   }
 
   /**
@@ -149,11 +178,23 @@ export class AppValidators {
     };
   }
 
-  static textareaMaxLength(): ValidatorFn {
-    const DB_TEXTAREA_MAX_LENGTH = 2000;
+  static textareaMaxLength2000(): ValidatorFn {
+    const DB_TEXTAREA_MAX_LENGTH_2000 = 2000;
 
     return control => {
-      const originalError = Validators.maxLength(DB_TEXTAREA_MAX_LENGTH)(control);
+      const originalError = Validators.maxLength(DB_TEXTAREA_MAX_LENGTH_2000)(control);
+      if (originalError) {
+        return {[AppValidatorKeys.textareaMaxLength]: originalError['maxlength']};
+      }
+      return null;
+    };
+  }
+
+  static textareaMaxLength5000(): ValidatorFn {
+    const DB_TEXTAREA_MAX_LENGTH_5000 = 5000;
+
+    return control => {
+      const originalError = Validators.maxLength(DB_TEXTAREA_MAX_LENGTH_5000)(control);
       if (originalError) {
         return {[AppValidatorKeys.textareaMaxLength]: originalError['maxlength']};
       }
@@ -350,13 +391,15 @@ export class AppValidators {
 
   static minYear(minYear: number): ValidatorFn {
     return control => {
-      if (isNotNullish(control.value)) {
-        const value: ISOYearMonthString = control.value;
-        const year = +value.split('-')[0];
-        if (year < minYear) {
-          return {[AppValidatorKeys.minYear]: {year: minYear} };
-        }
+      if (!isISOYearMonthString(control.value)) {
+        return null;
       }
+
+      const year = Number(control.value.split('-')[0]);
+      if (year < minYear) {
+        return {[AppValidatorKeys.minYear]: {year: minYear}};
+      }
+
       return null;
     };
   }

@@ -12,6 +12,7 @@ import { AnlassFlagsJson } from './anlass-flags-json';
 
 export interface NachkontrolleSaveJson { 
     anlassFlags: AnlassFlagsJson;
+    version: number;
 }
 
 

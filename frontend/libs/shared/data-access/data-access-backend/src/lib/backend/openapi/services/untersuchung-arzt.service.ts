@@ -18,27 +18,40 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 import { BackendEntityId } from '@dvb/data-access-types';
-import { UntersuchungArztJson } from '../model/untersuchung-arzt-json';
-import { UntersuchungArztSaveJson } from '../model/untersuchung-arzt-save-json';
+import { UntersuchungArztBemerkungJson } from '../model/untersuchung-arzt-bemerkung-json';
+import { UntersuchungArztBemerkungSaveJson } from '../model/untersuchung-arzt-bemerkung-save-json';
+import { UntersuchungArztBeurteilungJson } from '../model/untersuchung-arzt-beurteilung-json';
+import { UntersuchungArztBeurteilungSaveJson } from '../model/untersuchung-arzt-beurteilung-save-json';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 
 
-export interface UntersuchungArztServiceGetDefaultUntersuchungArztForAnlassConfigRequestParams {
+export interface UntersuchungArztServiceGetDefaultUntersuchungArztBeurteilungForAnlassConfigRequestParams {
     anlassId: BackendEntityId;
     einladungId: BackendEntityId;
 }
 
-export interface UntersuchungArztServiceGetUntersuchungArztRequestParams {
+export interface UntersuchungArztServiceGetUntersuchungArztBemerkungRequestParams {
     anlassId: BackendEntityId;
     einladungId: BackendEntityId;
 }
 
-export interface UntersuchungArztServiceSaveUntersuchungArztRequestParams {
+export interface UntersuchungArztServiceGetUntersuchungArztBeurteilungRequestParams {
     anlassId: BackendEntityId;
     einladungId: BackendEntityId;
-    untersuchungArztSaveJson: UntersuchungArztSaveJson;
+}
+
+export interface UntersuchungArztServiceSaveUntersuchungArztBemerkungRequestParams {
+    anlassId: BackendEntityId;
+    einladungId: BackendEntityId;
+    untersuchungArztBemerkungSaveJson: UntersuchungArztBemerkungSaveJson;
+}
+
+export interface UntersuchungArztServiceSaveUntersuchungArztBeurteilungRequestParams {
+    anlassId: BackendEntityId;
+    einladungId: BackendEntityId;
+    untersuchungArztBeurteilungSaveJson: UntersuchungArztBeurteilungSaveJson;
 }
 
 
@@ -107,22 +120,22 @@ export class UntersuchungArztService {
     }
 
     /**
-     * Get Default Untersuchung Arzt For Anlass Config
+     * Get Default Untersuchung Arzt Beurteilung For Anlass Config
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getDefaultUntersuchungArztForAnlassConfig$(requestParameters?: UntersuchungArztServiceGetDefaultUntersuchungArztForAnlassConfigRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<UntersuchungArztSaveJson>;
-    public getDefaultUntersuchungArztForAnlassConfig$(requestParameters?: UntersuchungArztServiceGetDefaultUntersuchungArztForAnlassConfigRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<UntersuchungArztSaveJson>>;
-    public getDefaultUntersuchungArztForAnlassConfig$(requestParameters?: UntersuchungArztServiceGetDefaultUntersuchungArztForAnlassConfigRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<UntersuchungArztSaveJson>>;
-    public getDefaultUntersuchungArztForAnlassConfig$(requestParameters?: UntersuchungArztServiceGetDefaultUntersuchungArztForAnlassConfigRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getDefaultUntersuchungArztBeurteilungForAnlassConfig$(requestParameters?: UntersuchungArztServiceGetDefaultUntersuchungArztBeurteilungForAnlassConfigRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<UntersuchungArztBeurteilungSaveJson>;
+    public getDefaultUntersuchungArztBeurteilungForAnlassConfig$(requestParameters?: UntersuchungArztServiceGetDefaultUntersuchungArztBeurteilungForAnlassConfigRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<UntersuchungArztBeurteilungSaveJson>>;
+    public getDefaultUntersuchungArztBeurteilungForAnlassConfig$(requestParameters?: UntersuchungArztServiceGetDefaultUntersuchungArztBeurteilungForAnlassConfigRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<UntersuchungArztBeurteilungSaveJson>>;
+    public getDefaultUntersuchungArztBeurteilungForAnlassConfig$(requestParameters?: UntersuchungArztServiceGetDefaultUntersuchungArztBeurteilungForAnlassConfigRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         const anlassId = requestParameters?.anlassId;
         if (anlassId === null || anlassId === undefined) {
-            throw new Error('Required parameter anlassId was null or undefined when calling getDefaultUntersuchungArztForAnlassConfig.');
+            throw new Error('Required parameter anlassId was null or undefined when calling getDefaultUntersuchungArztBeurteilungForAnlassConfig.');
         }
         const einladungId = requestParameters?.einladungId;
         if (einladungId === null || einladungId === undefined) {
-            throw new Error('Required parameter einladungId was null or undefined when calling getDefaultUntersuchungArztForAnlassConfig.');
+            throw new Error('Required parameter einladungId was null or undefined when calling getDefaultUntersuchungArztBeurteilungForAnlassConfig.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -167,8 +180,8 @@ export class UntersuchungArztService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/arzt/default`;
-        return this.httpClient.request<UntersuchungArztSaveJson>('get', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/arzt/beurteilung/default`;
+        return this.httpClient.request<UntersuchungArztBeurteilungSaveJson>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -182,22 +195,22 @@ export class UntersuchungArztService {
     }
 
     /**
-     * Get Untersuchung Arzt
+     * Get Untersuchung Arzt Bemerkung
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getUntersuchungArzt$(requestParameters?: UntersuchungArztServiceGetUntersuchungArztRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<UntersuchungArztJson>;
-    public getUntersuchungArzt$(requestParameters?: UntersuchungArztServiceGetUntersuchungArztRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<UntersuchungArztJson>>;
-    public getUntersuchungArzt$(requestParameters?: UntersuchungArztServiceGetUntersuchungArztRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<UntersuchungArztJson>>;
-    public getUntersuchungArzt$(requestParameters?: UntersuchungArztServiceGetUntersuchungArztRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getUntersuchungArztBemerkung$(requestParameters?: UntersuchungArztServiceGetUntersuchungArztBemerkungRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<UntersuchungArztBemerkungJson>;
+    public getUntersuchungArztBemerkung$(requestParameters?: UntersuchungArztServiceGetUntersuchungArztBemerkungRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<UntersuchungArztBemerkungJson>>;
+    public getUntersuchungArztBemerkung$(requestParameters?: UntersuchungArztServiceGetUntersuchungArztBemerkungRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<UntersuchungArztBemerkungJson>>;
+    public getUntersuchungArztBemerkung$(requestParameters?: UntersuchungArztServiceGetUntersuchungArztBemerkungRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         const anlassId = requestParameters?.anlassId;
         if (anlassId === null || anlassId === undefined) {
-            throw new Error('Required parameter anlassId was null or undefined when calling getUntersuchungArzt.');
+            throw new Error('Required parameter anlassId was null or undefined when calling getUntersuchungArztBemerkung.');
         }
         const einladungId = requestParameters?.einladungId;
         if (einladungId === null || einladungId === undefined) {
-            throw new Error('Required parameter einladungId was null or undefined when calling getUntersuchungArzt.');
+            throw new Error('Required parameter einladungId was null or undefined when calling getUntersuchungArztBemerkung.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -242,8 +255,8 @@ export class UntersuchungArztService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/arzt`;
-        return this.httpClient.request<UntersuchungArztJson>('get', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/arzt/bemerkung`;
+        return this.httpClient.request<UntersuchungArztBemerkungJson>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -257,26 +270,101 @@ export class UntersuchungArztService {
     }
 
     /**
-     * Save Untersuchung Arzt
+     * Get Untersuchung Arzt Beurteilung
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public saveUntersuchungArzt$(requestParameters?: UntersuchungArztServiceSaveUntersuchungArztRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<UntersuchungArztJson>;
-    public saveUntersuchungArzt$(requestParameters?: UntersuchungArztServiceSaveUntersuchungArztRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<UntersuchungArztJson>>;
-    public saveUntersuchungArzt$(requestParameters?: UntersuchungArztServiceSaveUntersuchungArztRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<UntersuchungArztJson>>;
-    public saveUntersuchungArzt$(requestParameters?: UntersuchungArztServiceSaveUntersuchungArztRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getUntersuchungArztBeurteilung$(requestParameters?: UntersuchungArztServiceGetUntersuchungArztBeurteilungRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<UntersuchungArztBeurteilungJson>;
+    public getUntersuchungArztBeurteilung$(requestParameters?: UntersuchungArztServiceGetUntersuchungArztBeurteilungRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<UntersuchungArztBeurteilungJson>>;
+    public getUntersuchungArztBeurteilung$(requestParameters?: UntersuchungArztServiceGetUntersuchungArztBeurteilungRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<UntersuchungArztBeurteilungJson>>;
+    public getUntersuchungArztBeurteilung$(requestParameters?: UntersuchungArztServiceGetUntersuchungArztBeurteilungRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         const anlassId = requestParameters?.anlassId;
         if (anlassId === null || anlassId === undefined) {
-            throw new Error('Required parameter anlassId was null or undefined when calling saveUntersuchungArzt.');
+            throw new Error('Required parameter anlassId was null or undefined when calling getUntersuchungArztBeurteilung.');
         }
         const einladungId = requestParameters?.einladungId;
         if (einladungId === null || einladungId === undefined) {
-            throw new Error('Required parameter einladungId was null or undefined when calling saveUntersuchungArzt.');
+            throw new Error('Required parameter einladungId was null or undefined when calling getUntersuchungArztBeurteilung.');
         }
-        const untersuchungArztSaveJson = requestParameters?.untersuchungArztSaveJson;
-        if (untersuchungArztSaveJson === null || untersuchungArztSaveJson === undefined) {
-            throw new Error('Required parameter untersuchungArztSaveJson was null or undefined when calling saveUntersuchungArzt.');
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (SecurityScheme) required
+        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
+        if (localVarCredential) {
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/arzt/beurteilung`;
+        return this.httpClient.request<UntersuchungArztBeurteilungJson>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Save Untersuchung Arzt Bemerkung
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public saveUntersuchungArztBemerkung$(requestParameters?: UntersuchungArztServiceSaveUntersuchungArztBemerkungRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<UntersuchungArztBemerkungJson>;
+    public saveUntersuchungArztBemerkung$(requestParameters?: UntersuchungArztServiceSaveUntersuchungArztBemerkungRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<UntersuchungArztBemerkungJson>>;
+    public saveUntersuchungArztBemerkung$(requestParameters?: UntersuchungArztServiceSaveUntersuchungArztBemerkungRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<UntersuchungArztBemerkungJson>>;
+    public saveUntersuchungArztBemerkung$(requestParameters?: UntersuchungArztServiceSaveUntersuchungArztBemerkungRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const anlassId = requestParameters?.anlassId;
+        if (anlassId === null || anlassId === undefined) {
+            throw new Error('Required parameter anlassId was null or undefined when calling saveUntersuchungArztBemerkung.');
+        }
+        const einladungId = requestParameters?.einladungId;
+        if (einladungId === null || einladungId === undefined) {
+            throw new Error('Required parameter einladungId was null or undefined when calling saveUntersuchungArztBemerkung.');
+        }
+        const untersuchungArztBemerkungSaveJson = requestParameters?.untersuchungArztBemerkungSaveJson;
+        if (untersuchungArztBemerkungSaveJson === null || untersuchungArztBemerkungSaveJson === undefined) {
+            throw new Error('Required parameter untersuchungArztBemerkungSaveJson was null or undefined when calling saveUntersuchungArztBemerkung.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -330,11 +418,100 @@ export class UntersuchungArztService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/arzt`;
-        return this.httpClient.request<UntersuchungArztJson>('put', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/arzt/bemerkung`;
+        return this.httpClient.request<UntersuchungArztBemerkungJson>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: untersuchungArztSaveJson,
+                body: untersuchungArztBemerkungSaveJson,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Save Untersuchung Arzt Beurteilung
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public saveUntersuchungArztBeurteilung$(requestParameters?: UntersuchungArztServiceSaveUntersuchungArztBeurteilungRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<UntersuchungArztBeurteilungJson>;
+    public saveUntersuchungArztBeurteilung$(requestParameters?: UntersuchungArztServiceSaveUntersuchungArztBeurteilungRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<UntersuchungArztBeurteilungJson>>;
+    public saveUntersuchungArztBeurteilung$(requestParameters?: UntersuchungArztServiceSaveUntersuchungArztBeurteilungRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<UntersuchungArztBeurteilungJson>>;
+    public saveUntersuchungArztBeurteilung$(requestParameters?: UntersuchungArztServiceSaveUntersuchungArztBeurteilungRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const anlassId = requestParameters?.anlassId;
+        if (anlassId === null || anlassId === undefined) {
+            throw new Error('Required parameter anlassId was null or undefined when calling saveUntersuchungArztBeurteilung.');
+        }
+        const einladungId = requestParameters?.einladungId;
+        if (einladungId === null || einladungId === undefined) {
+            throw new Error('Required parameter einladungId was null or undefined when calling saveUntersuchungArztBeurteilung.');
+        }
+        const untersuchungArztBeurteilungSaveJson = requestParameters?.untersuchungArztBeurteilungSaveJson;
+        if (untersuchungArztBeurteilungSaveJson === null || untersuchungArztBeurteilungSaveJson === undefined) {
+            throw new Error('Required parameter untersuchungArztBeurteilungSaveJson was null or undefined when calling saveUntersuchungArztBeurteilung.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (SecurityScheme) required
+        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
+        if (localVarCredential) {
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/arzt/beurteilung`;
+        return this.httpClient.request<UntersuchungArztBeurteilungJson>('put', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: untersuchungArztBeurteilungSaveJson,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

@@ -8,6 +8,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.types.EinladungStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.GrundAbmeldung;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizJson;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @AllArgsConstructor
 @JaxDTO
 @Schema(description = "Business data for a Einladung")
-public class EinladungSaveJson {
+public class EinladungSaveJson implements SaveJsonWithOptimisticLocking {
 
     @NotNull
     @NonNull
@@ -58,5 +59,11 @@ public class EinladungSaveJson {
     @Nullable
     @Schema(required = false)
     private final NotizJson fragebogen;
+
+    @Schema(required = true)
+    private long version;
+
+    @Schema(required = false)
+    private long versionAbmeldungsNotiz;
 
 }

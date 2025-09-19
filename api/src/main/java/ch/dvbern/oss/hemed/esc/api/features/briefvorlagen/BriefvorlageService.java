@@ -1,16 +1,10 @@
 package ch.dvbern.oss.hemed.esc.api.features.briefvorlagen;
 
-import java.util.List;
-
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
+import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3Mapper;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileValidationService;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.*;
 import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +12,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -41,8 +37,13 @@ public class BriefvorlageService {
 
     @NonNull
     public Briefvorlage persist(@NonNull Briefvorlage briefvorlage) {
-
         briefvorlageRepo.persist(briefvorlage);
+        return briefvorlage;
+    }
+
+    @NonNull
+    public Briefvorlage persistWithOptimisticLocking(@NonNull Briefvorlage briefvorlage, @NonNull Long versionFromFrontend) {
+        briefvorlageRepo.persistWithOptimisticLocking(briefvorlage, versionFromFrontend);
         return briefvorlage;
     }
 
@@ -61,7 +62,7 @@ public class BriefvorlageService {
         PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
         LOG.debug("Uploaded file to S3: {}", putObjectResponse);
 
-        return new FileData(FileTyp.BRIEFVORLAGE, fileUpload.fileName(), fileInfoS3);
+        return new FileData(FileTyp.BRIEFVORLAGE, new CleanFileName(fileUpload.fileName()), fileInfoS3);
     }
 
     public void removeBriefvorlageAttachmentInFilestorage(@NonNull FileData fileData) {

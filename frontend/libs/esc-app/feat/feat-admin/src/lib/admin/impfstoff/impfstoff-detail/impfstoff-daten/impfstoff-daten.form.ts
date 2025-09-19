@@ -1,8 +1,8 @@
 import {NonNullableFormBuilder, ValidatorFn, Validators} from '@angular/forms';
 import {EntityAktivStatus, ImpfstoffSaveJson, Krankheit} from '@dvb/data-access-backend';
-import {ImpfstoffeChargenStore} from '@dvb/feat-shared';
+import {globalConstants, ImpfstoffeChargenStore} from '@dvb/feat-shared';
 import {AppValidatorKeys, AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensureProps, requireValue} from '@dvb/util-shared';
+import {ensureProps, Nullish, requireValue} from '@dvb/util-shared';
 
 type Config = {
   fb: NonNullableFormBuilder;
@@ -17,6 +17,7 @@ function makeForm(config: Config) {
       [Validators.required, AppValidators.dbMaxLength(), uniqueImpfstoff(config.impfstoffeChargenStore)]),
     krankheiten: fb.control<Krankheit[]>([], [Validators.required]),
     impfstoffAktivStatus: fb.control<EntityAktivStatus>(EntityAktivStatus.AKTIV, Validators.required),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 }
 
@@ -33,6 +34,7 @@ export class ImpfstoffDatenForm extends BaseForm<ReturnType<typeof makeForm>, Im
       name: requireValue(name),
       krankheiten: value.krankheiten,
       impfstoffAktivStatus: requireValue(value.impfstoffAktivStatus),
+      version: value.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 }

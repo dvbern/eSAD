@@ -95,7 +95,7 @@ public class AnlassConfig extends AbstractTenantEntity<AnlassConfig> {
 
     @NotNull
     @Column(nullable = false)
-    private boolean impfungenMassnahmeInformationenAbgegeben;
+    private boolean impfungenMassnahmeInfomaterialAbgegeben;
 
     @NotNull
     @Column(nullable = false)
@@ -196,6 +196,12 @@ public class AnlassConfig extends AbstractTenantEntity<AnlassConfig> {
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
     private RequirementSetting sehenBemerkungen;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting sehenBemerkungenFragebogen;
 
     @NotNull
     @NonNull

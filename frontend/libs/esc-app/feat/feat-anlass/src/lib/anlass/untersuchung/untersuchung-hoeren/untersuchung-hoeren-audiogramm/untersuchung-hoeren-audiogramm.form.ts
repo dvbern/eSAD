@@ -4,11 +4,12 @@ import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {
   AnlassConfigJson,
   AudiogrammBeurteilung,
-  AudiogrammJson,
+  AudiogrammSaveJson,
   HoerenZusaetzlicheAngaben,
   RequirementSetting,
   UntersuchungHoerenAudiogrammSaveJson,
 } from '@dvb/data-access-backend';
+import {globalConstants} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
 import {ensureProps, isNotNullish, Nullish, requireValue, trimToUndefined} from '@dvb/util-shared';
 import {markAllMultiCheckboxesAsTouched} from '../../untersuchung.util';
@@ -24,6 +25,7 @@ function makeAudiogrammBeurteilungSubForm(fb: NonNullableFormBuilder, value: Aud
   return fb.group({
     resultat: fb.control<AudiogrammBeurteilung>({value, disabled: true}),
     isChecked: fb.control<boolean>(false),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   })
 }
 
@@ -43,7 +45,8 @@ function makeForm(config: Config) {
     audiogramm: config.audiogrammForm.group,
     audiogrammBeurteilungArray: fb.array<AudiogrammBeurteilungSubFormType>([]),
     zusaetzlicheAngabenArray: fb.array<ZusaetzlicheAngabenSubFormType>([]),
-    bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength()),
+    bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength2000()),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 
   // Multi-Checkboxen: Wenn eines touched ist aber keines ausgewählt, müssen alle rot werden
@@ -54,7 +57,7 @@ function makeForm(config: Config) {
 }
 
 export class UntersuchungHoerenAudiogrammForm
-    extends BaseForm<ReturnType<typeof makeForm>, UntersuchungHoerenAudiogrammSaveJson> {
+  extends BaseForm<ReturnType<typeof makeForm>, UntersuchungHoerenAudiogrammSaveJson> {
 
   constructor(protected config: Config) {
     super(() => makeForm(config));
@@ -65,7 +68,7 @@ export class UntersuchungHoerenAudiogrammForm
       const anlassConfig = config.audiogrammForm.config.anlassConfigSig();
       if (isNotNullish(anlassConfig)) {
         const nichtGeprueftIsCheckedControl = this.group.controls.audiogrammBeurteilungArray.controls.find(r =>
-            r.controls.resultat.value === AudiogrammBeurteilung.NICHT_GEPRUEFT && r.controls.isChecked.value);
+          r.controls.resultat.value === AudiogrammBeurteilung.NICHT_GEPRUEFT && r.controls.isChecked.value);
         this.config.audiogrammForm.setValidators(anlassConfig, !!nichtGeprueftIsCheckedControl);
       }
     })
@@ -101,7 +104,7 @@ export class UntersuchungHoerenAudiogrammForm
     const audiogrammRechts = this.config.audiogrammForm.valueOnValid().rechts;
     const audiogrammLinks = this.config.audiogrammForm.valueOnValid().links;
     return ensureProps<UntersuchungHoerenAudiogrammSaveJson>({
-      audiogrammRechts: audiogrammRechts ? ensureProps<AudiogrammJson>({
+      audiogrammRechts: audiogrammRechts ? ensureProps<AudiogrammSaveJson>({
         dbHz250: audiogrammRechts?.dbHz250 ?? undefined,
         dbHz500: audiogrammRechts?.dbHz500 ?? undefined,
         dbHz1000: audiogrammRechts?.dbHz1000 ?? undefined,
@@ -109,8 +112,9 @@ export class UntersuchungHoerenAudiogrammForm
         dbHz4000: audiogrammRechts?.dbHz4000 ?? undefined,
         dbHz6000: audiogrammRechts?.dbHz6000 ?? undefined,
         dbHz8000: audiogrammRechts?.dbHz8000 ?? undefined,
+        version: audiogrammRechts?.version ?? globalConstants.entityPrePersistVersion,
       }) : undefined,
-      audiogrammLinks: audiogrammLinks ? ensureProps<AudiogrammJson>({
+      audiogrammLinks: audiogrammLinks ? ensureProps<AudiogrammSaveJson>({
         dbHz250: audiogrammLinks?.dbHz250 ?? undefined,
         dbHz500: audiogrammLinks?.dbHz500 ?? undefined,
         dbHz1000: audiogrammLinks?.dbHz1000 ?? undefined,
@@ -118,18 +122,20 @@ export class UntersuchungHoerenAudiogrammForm
         dbHz4000: audiogrammLinks?.dbHz4000 ?? undefined,
         dbHz6000: audiogrammLinks?.dbHz6000 ?? undefined,
         dbHz8000: audiogrammLinks?.dbHz8000 ?? undefined,
+        version: audiogrammLinks?.version ?? globalConstants.entityPrePersistVersion,
       }) : undefined,
       audiogrammBeurteilung: value.audiogrammBeurteilungArray.filter(i => i.isChecked).map(i => i.resultat),
       zusaetzlicheAngaben: value.zusaetzlicheAngabenArray.filter(i => i.isChecked).map(i => i.resultat),
       bemerkungen: trimToUndefined(value.bemerkungen),
+      version: value.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 
   setValidators(config: AnlassConfigJson, data: UntersuchungHoerenAudiogrammSaveJson | undefined): void {
 
     const nichtGeprueftIsChecked = data?.audiogrammBeurteilung?.find(value => {
-          return value === AudiogrammBeurteilung.NICHT_GEPRUEFT;
-        },
+        return value === AudiogrammBeurteilung.NICHT_GEPRUEFT;
+      },
     );
     // Audiogramm
     this.config.audiogrammForm.setValidators(config, !!nichtGeprueftIsChecked);

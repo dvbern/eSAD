@@ -38,7 +38,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   EinladungSaveJsonSpec.JSON_PROPERTY_ART_ABMELDUNG,
   EinladungSaveJsonSpec.JSON_PROPERTY_BEMERKUNG_ABMELDUNG,
   EinladungSaveJsonSpec.JSON_PROPERTY_IMPFAUSWEIS,
-  EinladungSaveJsonSpec.JSON_PROPERTY_FRAGEBOGEN
+  EinladungSaveJsonSpec.JSON_PROPERTY_FRAGEBOGEN,
+  EinladungSaveJsonSpec.JSON_PROPERTY_VERSION,
+  EinladungSaveJsonSpec.JSON_PROPERTY_VERSION_ABMELDUNGS_NOTIZ
 })
 @JsonTypeName("EinladungSaveJson")
 @lombok.AllArgsConstructor
@@ -75,6 +77,14 @@ public class EinladungSaveJsonSpec {
   public static final String JSON_PROPERTY_FRAGEBOGEN = "fragebogen";
   @jakarta.annotation.Nullable
   private NotizJsonSpec fragebogen;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
+
+  public static final String JSON_PROPERTY_VERSION_ABMELDUNGS_NOTIZ = "versionAbmeldungsNotiz";
+  @jakarta.annotation.Nullable
+  private Long versionAbmeldungsNotiz;
 
   public EinladungSaveJsonSpec() {
   }
@@ -279,6 +289,56 @@ public class EinladungSaveJsonSpec {
     this.fragebogen = fragebogen;
   }
 
+  public EinladungSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
+  public EinladungSaveJsonSpec versionAbmeldungsNotiz(@jakarta.annotation.Nullable Long versionAbmeldungsNotiz) {
+    
+    this.versionAbmeldungsNotiz = versionAbmeldungsNotiz;
+    return this;
+  }
+
+  /**
+   * Get versionAbmeldungsNotiz
+   * @return versionAbmeldungsNotiz
+   */
+  @jakarta.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_VERSION_ABMELDUNGS_NOTIZ)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getVersionAbmeldungsNotiz() {
+    return versionAbmeldungsNotiz;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION_ABMELDUNGS_NOTIZ)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setVersionAbmeldungsNotiz(@jakarta.annotation.Nullable Long versionAbmeldungsNotiz) {
+    this.versionAbmeldungsNotiz = versionAbmeldungsNotiz;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -295,12 +355,14 @@ public class EinladungSaveJsonSpec {
         Objects.equals(this.artAbmeldung, einladungSaveJson.artAbmeldung) &&
         Objects.equals(this.bemerkungAbmeldung, einladungSaveJson.bemerkungAbmeldung) &&
         Objects.equals(this.impfausweis, einladungSaveJson.impfausweis) &&
-        Objects.equals(this.fragebogen, einladungSaveJson.fragebogen);
+        Objects.equals(this.fragebogen, einladungSaveJson.fragebogen) &&
+        Objects.equals(this.version, einladungSaveJson.version) &&
+        Objects.equals(this.versionAbmeldungsNotiz, einladungSaveJson.versionAbmeldungsNotiz);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(anlassId, kindId, einladungStatus, grundAbmeldung, artAbmeldung, bemerkungAbmeldung, impfausweis, fragebogen);
+    return Objects.hash(anlassId, kindId, einladungStatus, grundAbmeldung, artAbmeldung, bemerkungAbmeldung, impfausweis, fragebogen, version, versionAbmeldungsNotiz);
   }
 
   @Override
@@ -315,6 +377,8 @@ public class EinladungSaveJsonSpec {
     sb.append("    bemerkungAbmeldung: ").append(toIndentedString(bemerkungAbmeldung)).append("\n");
     sb.append("    impfausweis: ").append(toIndentedString(impfausweis)).append("\n");
     sb.append("    fragebogen: ").append(toIndentedString(fragebogen)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
+    sb.append("    versionAbmeldungsNotiz: ").append(toIndentedString(versionAbmeldungsNotiz)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -1,7 +1,10 @@
 <feat-page [heading]="'impfstoff.list.page.title' | transloco"
            [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN}">
+
   <svui-page-header-buttons
-    [showFilterPopup]="false"/>
+    [showFilterPopup]="false"
+    [activeFilterCount]="itemTable.numberOfFilters()"
+    (resetFilter)="itemTable.resetFilters(); tableFilterForm.reset()"/>
 
 
   @if (this.canEditImpfstoff()) {

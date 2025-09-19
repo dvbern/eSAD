@@ -2,7 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusAuftretenResultat;
 import org.junit.jupiter.api.Test;
 
@@ -23,24 +23,24 @@ class StrabismusAuftretenCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        UntersuchungSehen untersuchungSehen = new UntersuchungSehen();
-        untersuchung.setUntersuchungSehen(untersuchungSehen);
+        UntersuchungSehenBeurteilung untersuchungSehenBeurteilung = new UntersuchungSehenBeurteilung();
+        untersuchung.setUntersuchungSehenBeurteilung(untersuchungSehenBeurteilung);
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungSehen.setStrabismusAuftreten(StrabismusAuftretenResultat.KEIN_STRABISMUS);
+        untersuchungSehenBeurteilung.setStrabismusAuftreten(StrabismusAuftretenResultat.KEIN_STRABISMUS);
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungSehen.setStrabismusAuftreten(StrabismusAuftretenResultat.RECHTS);
+        untersuchungSehenBeurteilung.setStrabismusAuftreten(StrabismusAuftretenResultat.RECHTS);
         assertThat(column.extract(einladung)).isEqualTo("1");
 
-        untersuchungSehen.setStrabismusAuftreten(StrabismusAuftretenResultat.LINKS);
+        untersuchungSehenBeurteilung.setStrabismusAuftreten(StrabismusAuftretenResultat.LINKS);
         assertThat(column.extract(einladung)).isEqualTo("2");
 
-        untersuchungSehen.setStrabismusAuftreten(StrabismusAuftretenResultat.ALTERNNIEREND);
+        untersuchungSehenBeurteilung.setStrabismusAuftreten(StrabismusAuftretenResultat.ALTERNNIEREND);
         assertThat(column.extract(einladung)).isEqualTo("3");
 
-        untersuchungSehen.setStrabismusAuftreten(StrabismusAuftretenResultat.NICHT_GEPRUEFT);
+        untersuchungSehenBeurteilung.setStrabismusAuftreten(StrabismusAuftretenResultat.NICHT_GEPRUEFT);
         assertThat(column.extract(einladung)).isEqualTo("4");
 
     }

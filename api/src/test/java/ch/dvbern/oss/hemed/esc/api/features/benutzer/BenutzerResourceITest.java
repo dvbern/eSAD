@@ -1,21 +1,15 @@
 package ch.dvbern.oss.hemed.esc.api.features.benutzer;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.UUID;
-
+import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.BenutzerApiSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerListJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionListJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerSaveJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.PrincipalJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.*;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -29,6 +23,11 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -192,7 +191,7 @@ class BenutzerResourceITest {
 
         // ACT
         BenutzerJsonSpec result = api
-            .benutzerResourceUpdate()
+            .benutzerResourceUpdateBenutzerAktivStatus()
             .benutzerIDPath(id.getId())
             .body(saveJson)
             .execute(ResponseBody::prettyPeek)
@@ -213,4 +212,86 @@ class BenutzerResourceITest {
 
     }
 
+    @Test
+    @TestAsAdminBS
+    void updateBenutzerAsAdmin_only_allowed_fields_works() {
+        // ARRANGE
+        EmailAddress originalEmail = EmailAddress.fromString("original@mailbucket.dvbern.ch");
+        Benutzer benutzer = BenutzerBuilder.create(
+            builder -> builder
+                .withFachRolle(List.of(FachRolle.EMPFANG))
+                .withEmail(originalEmail)
+                .withActive(false));
+        benutzerRepo.persist(benutzer);
+
+        String updatedVorname = "NewVorname";
+        String updatedNachname = "NewNachname";
+        List<FachRolle> udpatedFachRollen = List.of(FachRolle.SCHULAERZTIN);
+        EmailAddress updatedEmail = EmailAddress.fromString("updated@mailbucket.dvbern.ch");
+        NormalizedPhoneNumber updatedTelefon = NormalizedPhoneNumber.parse("+41790000000");
+        boolean updatedActive = true;
+        BenutzerSaveJsonSpec saveJson = BenutzerBuilder.createJaxSpec(builder -> builder
+            .forBenutzer(benutzer)
+            .withVorname(updatedVorname)
+            .withNachname(updatedNachname)
+            .withEmail(updatedEmail)
+            .withTelefon(updatedTelefon)
+            .withFachRolle(udpatedFachRollen)
+            .withActive(updatedActive)).getData();
+
+        // ACT
+        BenutzerJsonSpec result = api.
+            benutzerResourceUpdate()
+            .benutzerIDPath(benutzer.getId().getId())
+            .body(saveJson)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(BenutzerJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getData().getVorname()).isEqualTo(updatedVorname);
+        assertThat(result.getData().getName()).isEqualTo(updatedNachname);
+        assertThat(result.getData().getEmail()).isNotEqualTo(updatedEmail.toString()).isEqualTo(originalEmail.toString());
+        assertThat(result.getData().getTelefon()).isEqualTo(updatedTelefon.getFormattedPhoneNumber());
+        List<FachRolle> fachRollen = result.getData().getFachRollen().stream()
+            .map(spec -> FachRolle.valueOf(spec.name()))
+            .toList();
+        assertThat(fachRollen).containsExactlyElementsOf(udpatedFachRollen);
+        assertThat(result.getData().getAktiv()).isEqualTo(updatedActive);
+    }
+
+
+    @Test
+    @TestAsAdminBS
+    void updateBenutzerAsAdmin_tryAssigningSystemAdminRole_doesnotUpdateRoles() {
+        // ARRANGE
+        List<FachRolle> originalFachRollen = List.of(FachRolle.SCHULAERZTIN);
+        Benutzer benutzer = BenutzerBuilder.create(
+            builder -> builder
+                .withFachRolle(originalFachRollen));
+        benutzerRepo.persist(benutzer);
+
+        List<FachRolle> udpatedFachRollen = List.of(FachRolle.SYSTEM_ADMIN);
+        BenutzerSaveJsonSpec saveJson = BenutzerBuilder.createJaxSpec(builder -> builder
+            .forBenutzer(benutzer)
+            .withFachRolle(udpatedFachRollen)).getData();
+
+        // ACT
+        AppFailureErrorJsonSpec error = api.
+            benutzerResourceUpdate()
+            .benutzerIDPath(benutzer.getId().getId())
+            .body(saveJson)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
+            .extract().as(AppFailureErrorJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(error).isNotNull();
+        Assertions.assertThat(error.getSummary()).contains("Aktualisieren der Fachrollen ist nicht erlaubt, der Benutzer hat nicht die entsprechende Berechtigung.");
+    }
 }

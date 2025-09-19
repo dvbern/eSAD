@@ -22,6 +22,7 @@ export interface UntersuchungTriageSaveJson {
     vorinformationLehrperson: boolean;
     vorinformationLehrpersonBemerkungen?: string;
     naechsteStation?: NaechsteStation;
+    version: number;
 }
 export namespace UntersuchungTriageSaveJson {
 }

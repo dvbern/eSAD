@@ -1,11 +1,12 @@
 import {FormGroup} from '@angular/forms';
-import {AudiogrammJson, Dezibel} from '@dvb/data-access-backend';
+import {AudiogrammSaveJson, Dezibel} from '@dvb/data-access-backend';
+import {globalConstants} from '@dvb/feat-shared';
 import {ensureProps, Nullish} from '@dvb/util-shared';
 
-export type AudiogrammKey = keyof AudiogrammJson;
+export type AudiogrammKey = keyof Omit<AudiogrammSaveJson, 'version'>;
 
 export function getAllAudiogrammKeys(): AudiogrammKey[] {
-  const audiogramm = ensureProps<AudiogrammJson>({
+  const audiogramm = ensureProps<AudiogrammSaveJson>({
     dbHz250: Dezibel.DB20,
     dbHz500: Dezibel.DB20,
     dbHz1000: Dezibel.DB20,
@@ -13,8 +14,12 @@ export function getAllAudiogrammKeys(): AudiogrammKey[] {
     dbHz4000: Dezibel.DB20,
     dbHz6000: Dezibel.DB20,
     dbHz8000: Dezibel.DB20,
+    version: 0, // Version is not part of the keys, but we need it for ensureProps. will be removed later
   });
-  return Object.keys(audiogramm) as AudiogrammKey[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const audiogrammWithoutVersion = audiogramm as any;
+  delete audiogrammWithoutVersion.version;
+  return Object.keys(audiogrammWithoutVersion) as AudiogrammKey[];
 }
 
 export function audiogrammKeyToFrequenz(key: AudiogrammKey): number {
@@ -25,12 +30,13 @@ export function audiogrammKeyToFrequenz(key: AudiogrammKey): number {
   return 0;
 }
 
-export function toAudiogrammJson(formGroup: FormGroup): AudiogrammJson | Nullish {
-  const audiogramm = {} as AudiogrammJson;
+export function toAudiogrammJson(formGroup: FormGroup): AudiogrammSaveJson | Nullish {
+  const audiogramm = {} as AudiogrammSaveJson;
   const keys = getAllAudiogrammKeys();
   for (const key of keys) {
     audiogramm[key] = formGroup.controls[key]?.value;
   }
+  audiogramm['version'] = formGroup.controls['version']?.value ?? globalConstants.entityPrePersistVersion;
   if (Object.keys(audiogramm).length > 0) {
     return audiogramm;
   }

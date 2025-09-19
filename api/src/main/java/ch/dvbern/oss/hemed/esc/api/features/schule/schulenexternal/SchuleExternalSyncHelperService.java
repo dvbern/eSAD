@@ -105,6 +105,7 @@ public class SchuleExternalSyncHelperService {
                 updatedSchuleExt,
                 appClock.offsetDateTime().now()
             );
+        updatedSchule.disableOptimisticLockingCheck();
         schuleService.persist(updatedSchule);
         return ItemSyncResultJson.createUpdateOkItem(idDTO, Schule.class, updatedSchule.getSchulhaus());
     }
@@ -157,8 +158,9 @@ public class SchuleExternalSyncHelperService {
             Objects.requireNonNull(schuleExternalToDelete).getExternalId().equals(externalSystemIdDTO.getExternalId()),
             "ExternalId mismatch, expected: '%s', actual: '%s' for schule", externalSystemIdDTO.getExternalId(),
             schuleExternalToDelete.getExternalId(), schule.getId());
-        if (schule.getExternalImportInfo() != null && schule.getExternalImportInfo().isAktivInExternalSystem()) {
+        if (schule.getExternalImportInfo() != null && schule.isAktivInExternalSystem()) {
             schule.getExternalImportInfo().setAktivInExternalSystem(false);
+            schule.disableOptimisticLockingCheck();
         }
         schuleExternalRepo.remove(schuleExternalToDelete.getId());
         if (schule.getSchuleAktivStatus() == EntityAktivStatus.AKTIV) {

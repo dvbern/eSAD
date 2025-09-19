@@ -1,19 +1,16 @@
 package ch.dvbern.oss.hemed.esc.api.shared.archunit;
 
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileUploadWrapper;
-import java.util.Calendar;
-import java.util.Date;
-
 import ch.dvbern.dvbstarter.infrastructure.db.baserepo.BaseRepo;
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntityListener;
 import ch.dvbern.oss.hemed.esc.api.shared.archunit.predicates.MethodPredicates;
-import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.OptimisticLockingService;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileUploadWrapper;
 import com.tngtech.archunit.library.GeneralCodingRules;
 import jakarta.inject.Inject;
 import jakarta.persistence.TypedQuery;
 import jakarta.ws.rs.ext.Provider;
-import org.jboss.resteasy.reactive.multipart.FileUpload;
+import java.util.Calendar;
+import java.util.Date;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;

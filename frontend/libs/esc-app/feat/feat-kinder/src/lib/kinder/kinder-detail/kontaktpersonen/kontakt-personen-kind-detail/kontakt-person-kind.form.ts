@@ -1,9 +1,9 @@
 import {DestroyRef} from '@angular/core';
 import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {Geschlecht, KontaktPersonKindBeziehung, KontaktPersonKindSaveJson} from '@dvb/data-access-backend';
-import {AdresseForm} from '@dvb/feat-shared';
+import {AdresseForm, globalConstants} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensurePropsFlat, requireValue} from '@dvb/util-shared';
+import {ensurePropsFlat, Nullish, requireValue} from '@dvb/util-shared';
 
 type Config = {
   fb: NonNullableFormBuilder;
@@ -24,6 +24,7 @@ function makeForm(config: Config) {
     telefon: fb.control<string | undefined>(undefined, [AppValidators.phoneValidator(), maxLength]),
     email: fb.control<string | undefined>(undefined, [AppValidators.emailValidator, maxLength]),
     korrespondenz: fb.control<boolean>(false, []),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 
   group.updateValueAndValidity();
@@ -49,6 +50,7 @@ export class KontaktPersonKindForm extends BaseForm<ReturnType<typeof makeForm>,
       email: value.email,
       telefon: value.telefon,
       korrespondenz: value.korrespondenz,
+      version: value.version ?? globalConstants.entityPrePersistVersion,
     })
   }
 }

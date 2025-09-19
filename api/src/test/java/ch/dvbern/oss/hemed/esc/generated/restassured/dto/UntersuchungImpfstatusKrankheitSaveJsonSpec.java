@@ -34,7 +34,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   UntersuchungImpfstatusKrankheitSaveJsonSpec.JSON_PROPERTY_DATUM_LETZTE_IMPFUNG,
   UntersuchungImpfstatusKrankheitSaveJsonSpec.JSON_PROPERTY_IMPFSCHUTZ_GEGEBEN,
   UntersuchungImpfstatusKrankheitSaveJsonSpec.JSON_PROPERTY_IMPFEMPFEHLUNG,
-  UntersuchungImpfstatusKrankheitSaveJsonSpec.JSON_PROPERTY_IMPFENTSCHEID
+  UntersuchungImpfstatusKrankheitSaveJsonSpec.JSON_PROPERTY_IMPFENTSCHEID,
+  UntersuchungImpfstatusKrankheitSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("UntersuchungImpfstatusKrankheitSaveJson")
 @lombok.AllArgsConstructor
@@ -63,6 +64,10 @@ public class UntersuchungImpfstatusKrankheitSaveJsonSpec {
   public static final String JSON_PROPERTY_IMPFENTSCHEID = "impfentscheid";
   @jakarta.annotation.Nullable
   private Boolean impfentscheid;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public UntersuchungImpfstatusKrankheitSaveJsonSpec() {
   }
@@ -217,6 +222,31 @@ public class UntersuchungImpfstatusKrankheitSaveJsonSpec {
     this.impfentscheid = impfentscheid;
   }
 
+  public UntersuchungImpfstatusKrankheitSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -231,12 +261,13 @@ public class UntersuchungImpfstatusKrankheitSaveJsonSpec {
         Objects.equals(this.datumLetzteImpfung, untersuchungImpfstatusKrankheitSaveJson.datumLetzteImpfung) &&
         Objects.equals(this.impfschutzGegeben, untersuchungImpfstatusKrankheitSaveJson.impfschutzGegeben) &&
         Objects.equals(this.impfempfehlung, untersuchungImpfstatusKrankheitSaveJson.impfempfehlung) &&
-        Objects.equals(this.impfentscheid, untersuchungImpfstatusKrankheitSaveJson.impfentscheid);
+        Objects.equals(this.impfentscheid, untersuchungImpfstatusKrankheitSaveJson.impfentscheid) &&
+        Objects.equals(this.version, untersuchungImpfstatusKrankheitSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(krankheit, anzahlImpfungen, datumLetzteImpfung, impfschutzGegeben, impfempfehlung, impfentscheid);
+    return Objects.hash(krankheit, anzahlImpfungen, datumLetzteImpfung, impfschutzGegeben, impfempfehlung, impfentscheid, version);
   }
 
   @Override
@@ -249,6 +280,7 @@ public class UntersuchungImpfstatusKrankheitSaveJsonSpec {
     sb.append("    impfschutzGegeben: ").append(toIndentedString(impfschutzGegeben)).append("\n");
     sb.append("    impfempfehlung: ").append(toIndentedString(impfempfehlung)).append("\n");
     sb.append("    impfentscheid: ").append(toIndentedString(impfentscheid)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

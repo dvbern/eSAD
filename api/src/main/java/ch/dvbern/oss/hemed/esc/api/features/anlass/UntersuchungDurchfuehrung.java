@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass;
 import java.io.Serial;
 
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungDurchfuehrungUtil;
@@ -37,7 +38,8 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckUntersuchungDurchfuehrungPresentIfReq
-public class UntersuchungDurchfuehrung extends AbstractTenantEntity<UntersuchungDurchfuehrung> {
+public class UntersuchungDurchfuehrung extends AbstractTenantEntity<UntersuchungDurchfuehrung>
+        implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 4719335518255035134L;

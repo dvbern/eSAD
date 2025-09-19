@@ -1,0 +1,16 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  
+  <changeSet author="hora (generated)" id="1755513868345-1">
+    <modifyDataType columnName="bemerkung" newDataType="varchar(5000)" tableName="aufgabe"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1755513868345-2">
+    <modifyDataType columnName="bemerkung" newDataType="varchar(5000)" tableName="aufgabe_aud"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1755513868345-3">
+    <modifyDataType columnName="bemerkungen" newDataType="varchar(5000)" tableName="notiz"/>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1755513868345-4">
+    <modifyDataType columnName="bemerkungen" newDataType="varchar(5000)" tableName="notiz_aud"/>
+  </changeSet>
+</databaseChangeLog>

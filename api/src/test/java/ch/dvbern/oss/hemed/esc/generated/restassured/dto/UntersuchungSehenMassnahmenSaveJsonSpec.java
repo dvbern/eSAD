@@ -32,21 +32,17 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * UntersuchungSehenMassnahmenSaveJsonSpec
  */
 @JsonPropertyOrder({
-  UntersuchungSehenMassnahmenSaveJsonSpec.JSON_PROPERTY_KEINE_MASSNAHMEN,
   UntersuchungSehenMassnahmenSaveJsonSpec.JSON_PROPERTY_BEREITS_BEHANDELT_SEHEN,
   UntersuchungSehenMassnahmenSaveJsonSpec.JSON_PROPERTY_ABGEGEBENES_INFOMATERIAL,
   UntersuchungSehenMassnahmenSaveJsonSpec.JSON_PROPERTY_INFORMATION_ELTERN,
   UntersuchungSehenMassnahmenSaveJsonSpec.JSON_PROPERTY_UEBERWEISUNG_AUGENARZT,
-  UntersuchungSehenMassnahmenSaveJsonSpec.JSON_PROPERTY_NACHKONTROLLE_SEHEN
+  UntersuchungSehenMassnahmenSaveJsonSpec.JSON_PROPERTY_NACHKONTROLLE_SEHEN,
+  UntersuchungSehenMassnahmenSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("UntersuchungSehenMassnahmenSaveJson")
 @lombok.AllArgsConstructor
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class UntersuchungSehenMassnahmenSaveJsonSpec {
-  public static final String JSON_PROPERTY_KEINE_MASSNAHMEN = "keineMassnahmen";
-  @jakarta.annotation.Nonnull
-  private Boolean keineMassnahmen;
-
   public static final String JSON_PROPERTY_BEREITS_BEHANDELT_SEHEN = "bereitsBehandeltSehen";
   @jakarta.annotation.Nonnull
   private Boolean bereitsBehandeltSehen;
@@ -67,32 +63,11 @@ public class UntersuchungSehenMassnahmenSaveJsonSpec {
   @jakarta.annotation.Nonnull
   private Boolean nachkontrolleSehen;
 
-  public UntersuchungSehenMassnahmenSaveJsonSpec() {
-  }
-
-  public UntersuchungSehenMassnahmenSaveJsonSpec keineMassnahmen(@jakarta.annotation.Nonnull Boolean keineMassnahmen) {
-    
-    this.keineMassnahmen = keineMassnahmen;
-    return this;
-  }
-
-  /**
-   * Get keineMassnahmen
-   * @return keineMassnahmen
-   */
+  public static final String JSON_PROPERTY_VERSION = "version";
   @jakarta.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_KEINE_MASSNAHMEN)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  private Long version;
 
-  public Boolean getKeineMassnahmen() {
-    return keineMassnahmen;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_KEINE_MASSNAHMEN)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setKeineMassnahmen(@jakarta.annotation.Nonnull Boolean keineMassnahmen) {
-    this.keineMassnahmen = keineMassnahmen;
+  public UntersuchungSehenMassnahmenSaveJsonSpec() {
   }
 
   public UntersuchungSehenMassnahmenSaveJsonSpec bereitsBehandeltSehen(@jakarta.annotation.Nonnull Boolean bereitsBehandeltSehen) {
@@ -228,6 +203,31 @@ public class UntersuchungSehenMassnahmenSaveJsonSpec {
     this.nachkontrolleSehen = nachkontrolleSehen;
   }
 
+  public UntersuchungSehenMassnahmenSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -237,29 +237,29 @@ public class UntersuchungSehenMassnahmenSaveJsonSpec {
       return false;
     }
     UntersuchungSehenMassnahmenSaveJsonSpec untersuchungSehenMassnahmenSaveJson = (UntersuchungSehenMassnahmenSaveJsonSpec) o;
-    return Objects.equals(this.keineMassnahmen, untersuchungSehenMassnahmenSaveJson.keineMassnahmen) &&
-        Objects.equals(this.bereitsBehandeltSehen, untersuchungSehenMassnahmenSaveJson.bereitsBehandeltSehen) &&
+    return Objects.equals(this.bereitsBehandeltSehen, untersuchungSehenMassnahmenSaveJson.bereitsBehandeltSehen) &&
         Objects.equals(this.abgegebenesInfomaterial, untersuchungSehenMassnahmenSaveJson.abgegebenesInfomaterial) &&
         Objects.equals(this.informationEltern, untersuchungSehenMassnahmenSaveJson.informationEltern) &&
         Objects.equals(this.ueberweisungAugenarzt, untersuchungSehenMassnahmenSaveJson.ueberweisungAugenarzt) &&
-        Objects.equals(this.nachkontrolleSehen, untersuchungSehenMassnahmenSaveJson.nachkontrolleSehen);
+        Objects.equals(this.nachkontrolleSehen, untersuchungSehenMassnahmenSaveJson.nachkontrolleSehen) &&
+        Objects.equals(this.version, untersuchungSehenMassnahmenSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(keineMassnahmen, bereitsBehandeltSehen, abgegebenesInfomaterial, informationEltern, ueberweisungAugenarzt, nachkontrolleSehen);
+    return Objects.hash(bereitsBehandeltSehen, abgegebenesInfomaterial, informationEltern, ueberweisungAugenarzt, nachkontrolleSehen, version);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class UntersuchungSehenMassnahmenSaveJsonSpec {\n");
-    sb.append("    keineMassnahmen: ").append(toIndentedString(keineMassnahmen)).append("\n");
     sb.append("    bereitsBehandeltSehen: ").append(toIndentedString(bereitsBehandeltSehen)).append("\n");
     sb.append("    abgegebenesInfomaterial: ").append(toIndentedString(abgegebenesInfomaterial)).append("\n");
     sb.append("    informationEltern: ").append(toIndentedString(informationEltern)).append("\n");
     sb.append("    ueberweisungAugenarzt: ").append(toIndentedString(ueberweisungAugenarzt)).append("\n");
     sb.append("    nachkontrolleSehen: ").append(toIndentedString(nachkontrolleSehen)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

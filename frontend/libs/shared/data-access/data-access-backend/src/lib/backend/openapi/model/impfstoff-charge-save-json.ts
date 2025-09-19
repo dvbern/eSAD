@@ -12,6 +12,7 @@
 export interface ImpfstoffChargeSaveJson { 
     name: string;
     aktiv: boolean;
+    version: number;
 }
 
 

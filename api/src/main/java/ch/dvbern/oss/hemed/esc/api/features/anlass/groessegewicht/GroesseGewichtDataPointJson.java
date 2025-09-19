@@ -19,7 +19,7 @@ public class GroesseGewichtDataPointJson {
 
     @Nullable
     @Schema(required = false)
-    private Integer gewicht;
+    private BigDecimal gewicht;
 
     @Nullable
     @Schema(required = false)

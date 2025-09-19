@@ -1,170 +1,174 @@
 <svui-card [innerSpacing]="'topBottom'">
-  <table
-    svuiTable
-    [loading]="klassenStore.loader.isLoading()"
-    [totalRows]="itemTable.filteredListSize()"
-    (pageChanged)="itemTable.onPageChanged($event)"
-    [pagination]="itemTable.pagination()"
-  >
-    <!-- col widths -->
-    <colgroup>
-      <col svuiColWidth [colWidth]="'text-medium'">
-      <col svuiColWidth [colWidth]="'text-medium'">
-      <col svuiColWidth [colWidth]="'select-medium'">
-      <col svuiColWidth [colWidth]="'select-medium'">
-      <col svuiColWidth [colWidth]="'text-medium'">
-      <col svuiColWidth [colWidth]="'text-medium'">
-      <col svuiColWidth [colWidth]="'options'">
-    </colgroup>
-    <thead>
-    <!-- Headers for sorting -->
-    <tr>
-      <th
-        scope="col"
-        svuiSortable
-        [sortState]="itemTable.findColSortDTO('data.schule.bezeichnung')"
-        (sort)="itemTable.onColSort($event, 'data.schule.bezeichnung')"
-      >
-        {{ 'klasse.schule' | transloco }}
-      </th>
-      <th
-        scope="col"
-        svuiSortable
-        [sortState]="itemTable.findColSortDTO('data.bezeichnung')"
-        (sort)="itemTable.onColSort($event, 'data.bezeichnung')"
-      >
-        {{ 'klasse.bezeichnung' | transloco }}
-      </th>
-      <th
-        scope="col"
-        svuiSortable
-        [sortState]="itemTable.findColSortDTO('data.klassenstufe')"
-        (sort)="itemTable.onColSort($event, 'data.klassenstufe')"
-      >
-        {{ 'klasse.klassenstufe' | transloco }}
-      </th>
-      <th
-        scope="col"
-        svuiSortable
-        [sortState]="itemTable.findColSortDTO('data.klasseSchulart')"
-        (sort)="itemTable.onColSort($event, 'data.klasseSchulart')"
-      >
-        {{ 'klasse.klasseSchulart' | transloco }}
-      </th>
-      <th
-        scope="col"
-        svuiSortable
-        [sortState]="itemTable.findColSortDTO('lehrpersonenName')"
-        (sort)="itemTable.onColSort($event, 'lehrpersonenName')"
-      >
-        {{ 'klasse.lehrperson' | transloco }}
-      </th>
-      <th
-        scope="col"
-        svuiSortable
-        [sortState]="itemTable.findColSortDTO('data.klasseAktivStatus')"
-        (sort)="itemTable.onColSort($event, 'data.klasseAktivStatus')"
-      >
-        {{ 'klasse.klasseAktivStatus' | transloco }}
-      </th>
-      <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
-    </tr>
-    <tr>
-      <!-- Headers for filtering-->
-      <th scope="col">
-        <svui-table-filter [columnHeader]="'klasse.schule' | transloco">
-          <input svuiTextInput [formControl]="tableFilterForm.group.controls.schule"/>
-        </svui-table-filter>
-      </th>
-      <th scope="col">
-        <svui-table-filter [columnHeader]="'klasse.bezeichnung' | transloco">
-          <input svuiTextInput [formControl]="tableFilterForm.group.controls.bezeichnung"/>
-        </svui-table-filter>
-      </th>
-      <th scope="col">
-        <svui-table-filter [columnHeader]="'klasse.klassenstufe' | transloco">
-          <input svuiTextInput [formControl]="tableFilterForm.group.controls.klassenstufe"/>
-        </svui-table-filter>
-      </th>
-      <th scope="col">
-        <svui-table-filter [columnHeader]="'klasse.klasseSchulart' | transloco">
-          <input svuiTextInput [formControl]="tableFilterForm.group.controls.klasseSchulart"/>
-        </svui-table-filter>
-      </th>
-      <th scope="col">
-        <svui-table-filter [columnHeader]="'klasse.lehrperson' | transloco">
-          <input svuiTextInput [formControl]="tableFilterForm.group.controls.lehrperson"/>
-        </svui-table-filter>
-      </th>
-      <th scope="col">
-        <svui-table-filter [columnHeader]="'klasse.klasseAktivStatus' | transloco">
-          <ng-select
-            svuiNgSelect
-            bindLabel='dummy'
-            appendTo="body"
-            [formControl]="tableFilterForm.group.controls.klasseAktivStatus"
-            [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-            [multiple]="false"
-          >
-            @for (status of klasseAktivStati; track status) {
-              <ng-option [value]="status">
-                {{ 'EntityAktivStatus.' + status | transloco }}
-              </ng-option>
-            }
-          </ng-select>
-        </svui-table-filter>
-      </th>
-    </tr>
-    </thead>
-    <tbody>
-      @if (!itemTable.displayedList()?.length && !klassenStore.loader.isLoading()) {
-        <tr svui-empty-table-message [message]="'klasse.list.empty' | transloco"></tr>
-      }
-      @for (item of itemTable.displayedList(); track item.id) {
-        <tr>
-          <td>{{ item.data.schule.bezeichnung }}</td>
-          <td>
-            <svui-table-link
-              type="text"
-              [myRouterLink]="[item.id]">
-              {{ item.data.bezeichnung }}
-            </svui-table-link>
-          </td>
-          <td>{{ 'Klassenstufe.' + item.data.klassenstufe  | transloco }}</td>
-          <td>{{ item.data.klasseSchulart | transloco }}</td>
-          <td>{{ item.lehrpersonenName }}</td>
-          <td>{{ 'EntityAktivStatus.' + item.data.klasseAktivStatus | transloco }}</td>
-          <td>
-            <svui-collapsible-menu
-              [loading]="klassenStore.deleteLoader.isLoading()"
-              label="{{ 'global.actionmenu.tooltip' | transloco }}">
-              @if (canEditList()) {
-                <button ngbDropdownItem
-                        [disabled]="isExternalKlasseAndActive(item)"
-                        (click)="changeKlasseAktivStatus(item)">
-                  {{
-                    isExternalKlasseAndActive(item) ?
-                      ('klasse.list.deactivate.impossible.tooltip' | transloco) :
-                      ('global.' + determineTextBasedOnStatus(item.data.klasseAktivStatus) |transloco)
-                  }}
-                </button>
-                <button
-                  ngbDropdownItem
-                  [disabled]="isExternalKlasseAndActive(item)"
-                  [title]="deleteTitleTextForKlasse(item) | transloco"
-                  (click)="removeKlasse(item)"
+  @if (itemTable(); as itemTable) {
+    <table
+      svuiTable
+      [loading]="klassenStore.loader.isLoading()"
+      [totalRows]="itemTable.filteredListSize()"
+      (pageChanged)="itemTable.onPageChanged($event)"
+      [pagination]="itemTable.pagination()"
+    >
+      <!-- col widths -->
+      <colgroup>
+        <col svuiColWidth [colWidth]="'text-medium'">
+        <col svuiColWidth [colWidth]="'text-medium'">
+        <col svuiColWidth [colWidth]="'select-medium'">
+        <col svuiColWidth [colWidth]="'select-medium'">
+        <col svuiColWidth [colWidth]="'text-medium'">
+        <col svuiColWidth [colWidth]="'text-medium'">
+        <col svuiColWidth [colWidth]="'options'">
+      </colgroup>
+      <thead>
+      <!-- Headers for sorting -->
+      <tr>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.schule.bezeichnung')"
+          (sort)="itemTable.onColSort($event, 'data.schule.bezeichnung')"
+        >
+          {{ 'klasse.schule' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.bezeichnung')"
+          (sort)="itemTable.onColSort($event, 'data.bezeichnung')"
+        >
+          {{ 'klasse.bezeichnung' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.klassenstufe')"
+          (sort)="itemTable.onColSort($event, 'data.klassenstufe')"
+        >
+          {{ 'klasse.klassenstufe' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.klasseSchulart')"
+          (sort)="itemTable.onColSort($event, 'data.klasseSchulart')"
+        >
+          {{ 'klasse.klasseSchulart' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('lehrpersonenName')"
+          (sort)="itemTable.onColSort($event, 'lehrpersonenName')"
+        >
+          {{ 'klasse.lehrperson' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.klasseAktivStatus')"
+          (sort)="itemTable.onColSort($event, 'data.klasseAktivStatus')"
+        >
+          {{ 'klasse.klasseAktivStatus' | transloco }}
+        </th>
+        <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
+      </tr>
+        @if (tableFilterForm(); as tableFilterForm) {
+          <tr>
+            <!-- Headers for filtering-->
+            <th scope="col">
+              <svui-table-filter [columnHeader]="'klasse.schule' | transloco">
+                <input svuiTextInput [formControl]="tableFilterForm.group.controls.schule"/>
+              </svui-table-filter>
+            </th>
+            <th scope="col">
+              <svui-table-filter [columnHeader]="'klasse.bezeichnung' | transloco">
+                <input svuiTextInput [formControl]="tableFilterForm.group.controls.bezeichnung"/>
+              </svui-table-filter>
+            </th>
+            <th scope="col">
+              <svui-table-filter [columnHeader]="'klasse.klassenstufe' | transloco">
+                <input svuiTextInput [formControl]="tableFilterForm.group.controls.klassenstufe"/>
+              </svui-table-filter>
+            </th>
+            <th scope="col">
+              <svui-table-filter [columnHeader]="'klasse.klasseSchulart' | transloco">
+                <input svuiTextInput [formControl]="tableFilterForm.group.controls.klasseSchulart"/>
+              </svui-table-filter>
+            </th>
+            <th scope="col">
+              <svui-table-filter [columnHeader]="'klasse.lehrperson' | transloco">
+                <input svuiTextInput [formControl]="tableFilterForm.group.controls.lehrperson"/>
+              </svui-table-filter>
+            </th>
+            <th scope="col">
+              <svui-table-filter [columnHeader]="'klasse.klasseAktivStatus' | transloco">
+                <ng-select
+                  svuiNgSelect
+                  bindLabel='dummy'
+                  appendTo="body"
+                  [formControl]="tableFilterForm.group.controls.klasseAktivStatus"
+                  [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+                  [multiple]="false"
                 >
-                  {{
-                    isExternalKlasseAndActive(item) ?
-                      ('klasse.list.delete.impossible.tooltip' | transloco) :
-                      ('global.remove' | transloco)
-                  }}
-                </button>
-              }
-            </svui-collapsible-menu>
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
+                  @for (status of klasseAktivStati; track status) {
+                    <ng-option [value]="status">
+                      {{ 'EntityAktivStatus.' + status | transloco }}
+                    </ng-option>
+                  }
+                </ng-select>
+              </svui-table-filter>
+            </th>
+          </tr>
+        }
+      </thead>
+      <tbody>
+        @if (!itemTable.displayedList()?.length && !klassenStore.loader.isLoading()) {
+          <tr svui-empty-table-message [message]="'klasse.list.empty' | transloco"></tr>
+        }
+        @for (item of itemTable.displayedList(); track item.id) {
+          <tr>
+            <td>{{ item.data.schule.bezeichnung }}</td>
+            <td>
+              <svui-table-link
+                type="text"
+                [myRouterLink]="[item.id]">
+                {{ item.data.bezeichnung }}
+              </svui-table-link>
+            </td>
+            <td>{{ 'Klassenstufe.' + item.data.klassenstufe  | transloco }}</td>
+            <td>{{ item.data.klasseSchulart }}</td>
+            <td>{{ item.lehrpersonenName }}</td>
+            <td>{{ 'EntityAktivStatus.' + item.data.klasseAktivStatus | transloco }}</td>
+            <td>
+              <svui-collapsible-menu
+                [loading]="klassenStore.deleteLoader.isLoading()"
+                label="{{ 'global.actionmenu.tooltip' | transloco }}">
+                @if (canEditList()) {
+                  <button ngbDropdownItem
+                          [disabled]="isExternalKlasseAndActive(item)"
+                          (click)="changeKlasseAktivStatus(item)">
+                    {{
+                      isExternalKlasseAndActive(item) ?
+                        ('klasse.list.deactivate.impossible.tooltip' | transloco) :
+                        ('global.' + determineTextBasedOnStatus(item.data.klasseAktivStatus) |transloco)
+                    }}
+                  </button>
+                  <button
+                    ngbDropdownItem
+                    [disabled]="isExternalKlasseAndActive(item)"
+                    [title]="deleteTitleTextForKlasse(item) | transloco"
+                    (click)="removeKlasse(item)"
+                  >
+                    {{
+                      isExternalKlasseAndActive(item) ?
+                        ('klasse.list.delete.impossible.tooltip' | transloco) :
+                        ('global.remove' | transloco)
+                    }}
+                  </button>
+                }
+              </svui-collapsible-menu>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
 </svui-card>

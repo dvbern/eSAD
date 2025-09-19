@@ -36,7 +36,7 @@ export class KinderNachkontrolleModalComponent {
     effect(() => {
       const data = this.dossierData();
       if (data?.nachkontrolle) {
-        this.form.reset(data.nachkontrolle.data.anlassFlags, DetailMode.EDIT);
+        this.form.resetForm(data.nachkontrolle.data);
       }
     });
   }

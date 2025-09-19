@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 class UntersuchungMassnahmenMapperTest {
 
     private final InfomaterialMapper infomaterialMapper = mock(InfomaterialMapper.class);
-    private final UntersuchungMassnahmenMapper mapper = new UntersuchungMassnahmenMapper(null, null, infomaterialMapper);
+    private final UntersuchungMassnahmenMapper mapper = new UntersuchungMassnahmenMapper(null, infomaterialMapper, null);
 
     @BeforeEach
     void setUp() {

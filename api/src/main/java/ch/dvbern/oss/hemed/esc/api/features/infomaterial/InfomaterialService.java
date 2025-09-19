@@ -20,6 +20,12 @@ public class InfomaterialService {
         return infomaterial;
     }
 
+    @NonNull
+    public Infomaterial persistWithOptimisticLocking(@NonNull Infomaterial infomaterial, @NonNull Long versionFromFrontend) {
+        infomaterialRepo.persistWithOptimisticLocking(infomaterial, versionFromFrontend);
+        return infomaterial;
+    }
+
     public void remove(@NonNull ID<Infomaterial> infomaterialID) {
         infomaterialRepo.remove(infomaterialID);
     }

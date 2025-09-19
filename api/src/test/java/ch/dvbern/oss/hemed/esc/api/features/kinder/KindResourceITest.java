@@ -19,9 +19,11 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseService;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
+import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
+import ch.dvbern.oss.hemed.esc.api.testutil.assertj.AppValidationErrorJsonSpecAssert;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.KindBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.KlasseBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.KontaktPersonKindBuilder;
@@ -61,6 +63,7 @@ class KindResourceITest extends AbstractITest {
 
     private final FixtureService fixtureService;
     private final KindService kindService;
+    private final DossierService dossierService;
     private final KontaktPersonKindService kontaktPersonKindService;
     private final SchuleService schuleService;
     private final KlasseService klasseService;
@@ -526,6 +529,45 @@ class KindResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
+    void updateKind_throws_if_kindIsInactive() {
+        // ARRANGE
+        Kind existingKind = fixtureService.createInactiveKind();
+        String updatedName = "Updated";
+        String updatedVorname = "Person";
+
+        assertThat(existingKind).isNotNull()
+            .returns("Emma", Kind::getVorname)
+            .returns("Gerber", Kind::getName)
+            .returns(null, Kind::getExternalSystemIdOrNull)
+            .returns(true, Kind::isManualOrAktivInExternalSystem);
+
+        KindJsonSpec updatedKindJson = KindBuilder.createJaxSpec(
+            builder -> builder
+                .withID(existingKind.getId())
+                .withName(updatedName, updatedVorname)
+                .withSozialversicherungsNummer(SozialversicherungsNummerTestGenerator.INSTANCE.getNextSozialversicherungsnummer()),
+            appClock.offsetDateTime().now().toLocalDate());
+
+        // ACT
+        AppValidationErrorJsonSpec error = api
+            .kindResourceUpdateKind()
+            .kindIdPath(existingKind.getId().getId())
+            .body(updatedKindJson.getData())
+            .kindSaveModeQuery(KindSaveModeDuplikatSpec.CHECK)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract().as(AppValidationErrorJsonSpec.class);
+
+        // ASSERT
+        AppValidationErrorJsonSpecAssert.assertThatAppValidationErrorJsonSpec(error)
+            .extractingExactlyOneViolation()
+            .hasRawMessageContaining("Das Kind " + existingKind.getNameVorname() + " " +  existingKind.getId() + " ist inaktiv. Es können keine Änderungen vorgenommen werden.");
+    }
+
+    @Test
+    @TestAsAdminBS
     void changeKindAktivStatus_should_work() {
         // ARRANGE
         Kind existingKind = fixtureService.createKind();
@@ -682,8 +724,39 @@ class KindResourceITest extends AbstractITest {
         // ASSERT
         Assertions.assertThat(result.getEsadId()).isNotNull()
             .matches(Pattern.compile(EDOKID_ID_NO_SCHOOL_REGEX_PATTERN));
-
     }
+
+    @Test
+    @TestAsAdminBS
+    void testCreationOfEdokidId_throws_if_kind_is_inactive() {
+        // ARRANGE
+        Kind kind = kindService.persistWithoutDuplicateCheck(
+            KindBuilder.create(builder -> builder
+                .withKindAktivStatus(EntityAktivStatus.INAKTIV)
+            ));
+
+        String expectedValidationErrorMessage = String.format(
+            "Das Kind %s %s ist inaktiv. Es können keine Änderungen vorgenommen werden.",
+            kind.getNameVorname(),
+            kind.getId()
+        );
+
+        // ACT
+        AppValidationErrorJsonSpec validationError = api.kindResourceGenerateEsadIdForKind()
+                .kindIdPath(kind.getId().getId())
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.BAD_REQUEST.getStatusCode())
+                .extract().as(AppValidationErrorJsonSpec.class);
+
+        assertThat(validationError.getViolations()).hasSize(1);
+        assertThat(validationError.getViolations().getFirst().getKey())
+            .isEqualTo("CannotEditInactiveKind");
+        assertThat(validationError.getViolations().getFirst().getMessage())
+            .isEqualTo(expectedValidationErrorMessage);
+    }
+
 
     @Test
     @TestAsAdminBS
@@ -750,6 +823,40 @@ class KindResourceITest extends AbstractITest {
             .isEqualTo("GenericMessage");
         assertThat(errResult.getViolations().getFirst().getMessage())
             .isEqualTo("ID Nr. muss einzigartig sein");
+    }
+
+    @Test
+    @TestAsAdminBS
+    void updateKind_set_esadId_throws_if_kind_is_inactive() {
+        // ARRANGE
+        Kind kind = fixtureService.createInactiveKind();
+
+        String newEsadId = "A54512378";
+
+        EsadIdJsonSpec updateEsadId = new EsadIdJsonSpec(newEsadId);
+
+        String expectedValidationErrorMessage = String.format(
+            "Das Kind %s %s ist inaktiv. Es können keine Änderungen vorgenommen werden.",
+            kind.getNameVorname(),
+            kind.getId());
+
+        // ACT
+        AppValidationErrorJsonSpec validationError = api
+                .kindResourceSetEsadIdForKind()
+                .kindIdPath(kind.getId().getId())
+                .body(updateEsadId)
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.BAD_REQUEST.getStatusCode())
+                .extract()
+                .as(AppValidationErrorJsonSpec.class);
+
+        assertThat(validationError.getViolations()).hasSize(1);
+        assertThat(validationError.getViolations().getFirst().getKey())
+            .isEqualTo("CannotEditInactiveKind");
+        assertThat(validationError.getViolations().getFirst().getMessage())
+            .isEqualTo(expectedValidationErrorMessage);
     }
 
     @Test

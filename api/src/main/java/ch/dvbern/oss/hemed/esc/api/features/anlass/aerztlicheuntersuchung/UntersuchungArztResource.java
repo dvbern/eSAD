@@ -6,6 +6,8 @@ import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.EinladungMapper;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.Nullable;
@@ -31,37 +33,72 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Timed(name = "UntersuchungArztResourceMS", unit = MetricUnits.MILLISECONDS)
 public class UntersuchungArztResource {
 
-    private final UntersuchungArztMapper untersuchungArztMapper;
+    private final UntersuchungArztBeurteilungMapper untersuchungArztBeurteilungMapper;
+    private final UntersuchungArztBemerkungMapper untersuchungArztBemerkungMapper;
+    private final EinladungMapper einladungMapper;
+    private final AuthorizerService authorizerService;
 
     @GET
+    @Path("/beurteilung")
     @RolesAllowed(BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_LESEN)
     @Nullable
-    public UntersuchungArztJson getUntersuchungArzt(
+    public UntersuchungArztBeurteilungJson getUntersuchungArztBeurteilung(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
     ) {
-        return untersuchungArztMapper.getByEinladung(einladungId);
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        return untersuchungArztBeurteilungMapper.getByEinladung(einladungId);
     }
 
     @GET
-    @Path("/default")
+    @Path("/beurteilung/default")
     @RolesAllowed(BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_LESEN)
     @Nullable
-    public UntersuchungArztSaveJson getDefaultUntersuchungArztForAnlassConfig(
+    public UntersuchungArztBeurteilungSaveJson getDefaultUntersuchungArztBeurteilungForAnlassConfig(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
     ) {
-        return untersuchungArztMapper.getDefaultUntersuchungArztForAnlassConfig(anlassId);
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        return untersuchungArztBeurteilungMapper.getDefaultUntersuchungArztForAnlassConfig(anlassId);
     }
 
     @PUT
+    @Path("/beurteilung")
     @NonNull
     @RolesAllowed(BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN)
-    public UntersuchungArztJson saveUntersuchungArzt(
+    public UntersuchungArztBeurteilungJson saveUntersuchungArztBeurteilung(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
-        @NonNull @NotNull @Valid UntersuchungArztSaveJson saveJson
+        @NonNull @NotNull @Valid UntersuchungArztBeurteilungSaveJson saveJson
     ) {
-        return untersuchungArztMapper.save(einladungId, saveJson);
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
+        return untersuchungArztBeurteilungMapper.save(einladungId, saveJson);
+    }
+
+    @GET
+    @Path("/bemerkung")
+    @RolesAllowed(BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_LESEN)
+    @Nullable
+    public UntersuchungArztBemerkungJson getUntersuchungArztBemerkung(
+        @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
+        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
+    ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        return untersuchungArztBemerkungMapper.getByEinladung(einladungId);
+    }
+
+    @PUT
+    @Path("/bemerkung")
+    @NonNull
+    @RolesAllowed(BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN)
+    public UntersuchungArztBemerkungJson saveUntersuchungArztBemerkung(
+        @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
+        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
+        @NonNull @NotNull @Valid UntersuchungArztBemerkungSaveJson saveJson
+    ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
+        return untersuchungArztBemerkungMapper.save(einladungId, saveJson);
     }
 }

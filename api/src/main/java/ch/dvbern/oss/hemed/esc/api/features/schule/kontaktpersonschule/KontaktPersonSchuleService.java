@@ -28,6 +28,12 @@ public class KontaktPersonSchuleService {
     }
 
     @NonNull
+    public KontaktPersonSchule persistWithOptimisticLocking(@NonNull KontaktPersonSchule kontaktPerson, @NonNull Long versionFromFrontend) {
+        kontaktPersonSchuleRepo.persistWithOptimisticLocking(kontaktPerson, versionFromFrontend);
+        return kontaktPerson;
+    }
+
+    @NonNull
     public List<KontaktPersonSchule> findAktivBySchule(@NonNull ID<Schule> schuleID) {
         return kontaktPersonSchuleRepo.findAktivBySchule(schuleID);
     }

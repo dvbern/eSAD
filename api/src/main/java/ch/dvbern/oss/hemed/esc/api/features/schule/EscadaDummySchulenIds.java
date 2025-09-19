@@ -92,4 +92,8 @@ public class EscadaDummySchulenIds {
         return DUMMY_SCHULE_NAME_TO_ID.get(schulkreisBezeichnung);
     }
 
+    public static boolean isDummySchule(@NonNull ID<Schule> schuleID) {
+        return DUMMY_SCHULE_NAME_TO_ID.containsValue(schuleID);
+    }
+
 }

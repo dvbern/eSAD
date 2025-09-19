@@ -32,7 +32,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   UntersuchungDurchfuehrungSaveJsonSpec.JSON_PROPERTY_MPA,
   UntersuchungDurchfuehrungSaveJsonSpec.JSON_PROPERTY_NACHKONTROLLE,
   UntersuchungDurchfuehrungSaveJsonSpec.JSON_PROPERTY_NACHZUEGLER,
-  UntersuchungDurchfuehrungSaveJsonSpec.JSON_PROPERTY_NEUEINTRITT
+  UntersuchungDurchfuehrungSaveJsonSpec.JSON_PROPERTY_NEUEINTRITT,
+  UntersuchungDurchfuehrungSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("UntersuchungDurchfuehrungSaveJson")
 @lombok.AllArgsConstructor
@@ -57,6 +58,10 @@ public class UntersuchungDurchfuehrungSaveJsonSpec {
   public static final String JSON_PROPERTY_NEUEINTRITT = "neueintritt";
   @jakarta.annotation.Nonnull
   private Boolean neueintritt;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public UntersuchungDurchfuehrungSaveJsonSpec() {
   }
@@ -186,6 +191,31 @@ public class UntersuchungDurchfuehrungSaveJsonSpec {
     this.neueintritt = neueintritt;
   }
 
+  public UntersuchungDurchfuehrungSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -199,12 +229,13 @@ public class UntersuchungDurchfuehrungSaveJsonSpec {
         Objects.equals(this.mpa, untersuchungDurchfuehrungSaveJson.mpa) &&
         Objects.equals(this.nachkontrolle, untersuchungDurchfuehrungSaveJson.nachkontrolle) &&
         Objects.equals(this.nachzuegler, untersuchungDurchfuehrungSaveJson.nachzuegler) &&
-        Objects.equals(this.neueintritt, untersuchungDurchfuehrungSaveJson.neueintritt);
+        Objects.equals(this.neueintritt, untersuchungDurchfuehrungSaveJson.neueintritt) &&
+        Objects.equals(this.version, untersuchungDurchfuehrungSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(arzt, mpa, nachkontrolle, nachzuegler, neueintritt);
+    return Objects.hash(arzt, mpa, nachkontrolle, nachzuegler, neueintritt, version);
   }
 
   @Override
@@ -216,6 +247,7 @@ public class UntersuchungDurchfuehrungSaveJsonSpec {
     sb.append("    nachkontrolle: ").append(toIndentedString(nachkontrolle)).append("\n");
     sb.append("    nachzuegler: ").append(toIndentedString(nachzuegler)).append("\n");
     sb.append("    neueintritt: ").append(toIndentedString(neueintritt)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

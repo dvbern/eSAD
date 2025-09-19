@@ -1,14 +1,11 @@
 package ch.dvbern.oss.hemed.esc.api.shared.aufgabe;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileNameUtil;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
+import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
@@ -17,12 +14,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3Mapper;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileValidationService;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.*;
 import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +22,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +43,12 @@ public class AufgabeService {
     @NonNull
     public Aufgabe persist(@NonNull Aufgabe aufgabe) {
         aufgabeRepo.persist(aufgabe);
+        return aufgabe;
+    }
+
+    @NonNull
+    public Aufgabe persistWithOptimisticLocking(@NonNull Aufgabe aufgabe, @NonNull Long versionFromFrontend) {
+        aufgabeRepo.persistWithOptimisticLocking(aufgabe, versionFromFrontend);
         return aufgabe;
     }
 
@@ -71,17 +73,12 @@ public class AufgabeService {
 
     @NonNull
     public List<Aufgabe> findAufgabenForAnlassAndLabel(@NonNull Anlass anlass, @NonNull ID<Label> labelId) {
-        return aufgabeRepo.findAufgabenForAnlassAndLabel(anlass, labelId);
-    }
-
-    @NonNull
-    public List<Aufgabe> findAufgabenForKindWithLabel(@NonNull Kind kind, @NonNull ID<Label> labelId) {
-        return aufgabeRepo.findAufgabenForKindWithLabel(kind, labelId);
+        return aufgabeRepo.findAufgabenForAnlassAndLabelNoOptimisticLockingCheck(anlass, labelId);
     }
 
     @NonNull
     public Optional<Aufgabe> findSingleAufgabeForKindWithLabel(@NonNull Kind kind, @NonNull ID<Label> labelId) {
-        List<Aufgabe> existing = aufgabeRepo.findAufgabenForKindWithLabel(kind, labelId);
+        List<Aufgabe> existing = aufgabeRepo.findAufgabenForKindWithLabelNoOptimisticLockingCheck(kind, labelId);
         if (existing.size() > 1) {
             throw new IllegalStateException("Es gibt mehr als eine Aufgabe mit Label " + labelId + " für das Kind " + kind.getId());
         }
@@ -98,11 +95,12 @@ public class AufgabeService {
         fileValidationService.requireFiletypeIsAllowed(file, FileTyp.AUFGABEUPLOAD);
         FileInfoS3 fileInfoS3 = saveAufgabeAttachmentInFilestorage(file);
         Aufgabe aufgabe = aufgabeRepo.getById(aufgabeID);
+        aufgabe.disableOptimisticLockingCheck();
         FileTyp fileTyp = FileNameUtil.getTypFromLabel(aufgabe.getLabels(), FileTyp.AUFGABEUPLOAD);
         String nameVorname = aufgabe.getKind() != null ? aufgabe.getKind().getNameVorname() : "Aufgabe";
         LocalDate today = appClock.localDateTime().now().toLocalDate();
         final String originalFileName = fileInfoS3.getFileName().getFileName();
-        String calculatedFileName = FileNameUtil.calculateAutomaticFilename(
+        CleanFileName calculatedFileName = FileNameUtil.calculateAutomaticFilename(
             aufgabe.getFiles(),
             today,
             nameVorname,
@@ -114,6 +112,7 @@ public class AufgabeService {
 
     public void removeUploadedFile(@NonNull Aufgabe loadedAufgabe, @NonNull ID<FileData> fileId) {
         FileInfoS3 fileToRemove = findUploadedFileInfoS3(loadedAufgabe.getId(), fileId);
+        loadedAufgabe.disableOptimisticLockingCheck();
         boolean removedFromList = loadedAufgabe.getFiles().removeIf(fileData -> fileId.equals(fileData.getId()));
         if (!removedFromList) {
             throw new AppFailureException(AppFailureMessage.entityNotFound(fileId, "File not found"));

@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.kinder;
 
 import java.io.Serial;
 
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.anlass.anlassflags.AnlassFlags;
 import jakarta.persistence.Embedded;
@@ -32,7 +33,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Nachkontrolle extends AbstractTenantEntity<Nachkontrolle> {
+public class Nachkontrolle extends AbstractTenantEntity<Nachkontrolle> implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = -8389886912784253120L;

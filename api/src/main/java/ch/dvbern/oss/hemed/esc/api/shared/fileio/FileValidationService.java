@@ -18,19 +18,18 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.fileio;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileUploadValidationUtil;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
-
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.mime.MediaType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This Service should be used to check if we can accept a fileupload
@@ -48,7 +47,7 @@ public class FileValidationService {
      * @throws AppValidationException if the file validation fails due to missing name or type or disallowed type
      */
     public void requireFiletypeIsAllowed(@NonNull FileUpload fileUpload, @NonNull FileTyp fileuploadType) {
-        Set<String> whitelist = configService.getFiletypeWhitelistedFileExtensionsForUploadType(fileuploadType);
+        Set<String> whitelist = configService.getFileTypeWhitelistedFileExtensionsForUploadType(fileuploadType);
         Set<MediaType> whitelistedTypes = whitelist.stream()
             .map(FileUtil::parseMediaTypeOrFileExtensionToMediaType)
             .collect(Collectors.toSet());

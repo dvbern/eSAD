@@ -20,7 +20,7 @@ public class MundAndZaehneCsvColumn extends AbstractCsvColumn {
     @Override
     @NonNull
     public String extract(@NonNull Einladung einladung) {
-        return ExtractorForCsvUtil.extractUntersuchungArzt(
+        return ExtractorForCsvUtil.extractUntersuchungArztBeurteilung(
             einladung,
             untersuchungArzt ->
                 untersuchungArzt.getMundAndZaehne().contains(mundAndZaehne) ? "1" : ""

@@ -29,6 +29,12 @@ public class LehrpersonService {
     }
 
     @NonNull
+    public Lehrperson persistWithOptimisticLocking(@NonNull Lehrperson lehrperson, @NonNull Long versionFromFrontend) {
+        lehrpersonRepo.persistWithOptimisticLocking(lehrperson, versionFromFrontend);
+        return lehrperson;
+    }
+
+    @NonNull
     public List<Lehrperson> findAktivByKlasse(@NonNull ID<Klasse> klasseId) {
         return lehrpersonRepo.findAktivByKlasse(klasseId);
     }
@@ -54,12 +60,17 @@ public class LehrpersonService {
 
     @NonNull
     public Lehrperson getByExternalId(@IgnoreForIdClassTest @NonNull String externalId) {
-        return lehrpersonRepo.getByExternalId(externalId);
+        Lehrperson lehrperson = lehrpersonRepo.getByExternalId(externalId);
+        lehrperson.disableOptimisticLockingCheck();
+        return lehrperson;
     }
 
     @NonNull
     public Optional<Lehrperson> findByExternalId(@IgnoreForIdClassTest @NonNull String externalId) {
-        return lehrpersonRepo.findByExternalId(externalId);
+        return lehrpersonRepo.findByExternalId(externalId).map(lehrperson -> {
+            lehrperson.disableOptimisticLockingCheck();
+            return lehrperson;
+        });
     }
 
     @NonNull

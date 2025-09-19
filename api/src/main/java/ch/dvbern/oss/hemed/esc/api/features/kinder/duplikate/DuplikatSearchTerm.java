@@ -1,13 +1,14 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder.duplikate;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.Util;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.util.StringNormalizerUtil;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -51,10 +52,8 @@ public class DuplikatSearchTerm {
 
     @NonNull
     private static List<String> splitSearchTermsAndRemoveEmpty(@NonNull String searchTerm) {
-        List<String> tokens = Util.tokenizeNames(searchTerm);
-        return tokens.stream()
-            .filter(s -> !s.isEmpty())
-            .map(String::trim)
+        return Util.tokenizeStringByWhiteSpacesOrHyphens(searchTerm)
+            .stream()
             .map(StringNormalizerUtil::normalizeAndStripDiarcritics)
             .toList();
     }

@@ -13,7 +13,7 @@ import {
   UntersuchungImpfungKrankheitImmunitaetJson,
 } from '@dvb/data-access-backend';
 import {ISODateString} from '@dvb/data-access-types';
-import {ImpfstoffeChargenStore, TimetravelStore} from '@dvb/feat-shared';
+import {globalConstants, ImpfstoffeChargenStore, TimetravelStore} from '@dvb/feat-shared';
 import {AppValidators, BaseForm, DetailMode} from '@dvb/util-angular';
 import {ensureProps, ensureType, requireValue, today, toISODateString} from '@dvb/util-shared';
 import {distinctUntilChanged} from 'rxjs';
@@ -36,6 +36,7 @@ function makeForm(config: Config) {
     impfStatus: fb.control<ImpfStatus | undefined>(undefined),
     grundNichtDurchfuehrung: fb.control<string | undefined>(undefined),
     krankheitsImmunitaeten: fb.array<ImmunitaetKrankheitSubFormType>([]),
+    version: fb.control<number | undefined>({value: undefined, disabled: true}),
   });
 }
 
@@ -157,6 +158,7 @@ export class UntersuchungImpfungenInternForm
       impfStatus: value.impfStatus ?? ImpfStatus.GEPLANT,
       grundNichtDurchfuehrung: value.grundNichtDurchfuehrung,
       krankheitenImmunitaeten: result,
+      version: value.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 

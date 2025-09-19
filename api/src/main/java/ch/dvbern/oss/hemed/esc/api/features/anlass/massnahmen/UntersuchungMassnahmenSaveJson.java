@@ -4,6 +4,7 @@ import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.oss.hemed.esc.api.features.infomaterial.json.InfomaterialJson;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.anlass.anlassflags.AnlassFlagsJson;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -16,7 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Value
 @AllArgsConstructor
 @JaxDTO
-public class UntersuchungMassnahmenSaveJson {
+public class UntersuchungMassnahmenSaveJson implements SaveJsonWithOptimisticLocking {
 
     @Schema(required = true)
     private boolean keineMassnahmen;
@@ -85,4 +86,7 @@ public class UntersuchungMassnahmenSaveJson {
     @Nullable
     @Schema(required = false)
     private String bemerkungen;
+
+    @Schema(required = true)
+    private long version;
 }

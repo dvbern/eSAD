@@ -2,7 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.MotilitaetResultat;
 import org.junit.jupiter.api.Test;
 
@@ -23,18 +23,18 @@ class MotilitaetCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        UntersuchungSehen untersuchungSehen = new UntersuchungSehen();
-        untersuchung.setUntersuchungSehen(untersuchungSehen);
+        UntersuchungSehenBeurteilung untersuchungSehenBeurteilung = new UntersuchungSehenBeurteilung();
+        untersuchung.setUntersuchungSehenBeurteilung(untersuchungSehenBeurteilung);
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungSehen.setMotilitaet(MotilitaetResultat.NORMAL);
+        untersuchungSehenBeurteilung.setMotilitaet(MotilitaetResultat.NORMAL);
         assertThat(column.extract(einladung)).isEqualTo("1");
 
-        untersuchungSehen.setMotilitaet(MotilitaetResultat.PATHOLOGISCH);
+        untersuchungSehenBeurteilung.setMotilitaet(MotilitaetResultat.PATHOLOGISCH);
         assertThat(column.extract(einladung)).isEqualTo("2");
 
-        untersuchungSehen.setMotilitaet(MotilitaetResultat.NICHT_GEPRUEFT);
+        untersuchungSehenBeurteilung.setMotilitaet(MotilitaetResultat.NICHT_GEPRUEFT);
         assertThat(column.extract(einladung)).isEqualTo("3");
     }
 }

@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
@@ -26,6 +27,15 @@ import static java.util.Objects.requireNonNull;
 
 @UtilityClass
 public final class Util {
+    /**
+     * Regex explained:
+     * - (\\s): Any Whitespace, tab, newline, linebreak, Unicode whitespace character
+     * - (-): a hyphen character
+     * - (+): One or more (eg. "Hans - Peter", the split is " - " and not " ", "-", " ")
+     * - (\\uFEFF): Zero-width space (Byte order mark), as it is not ecluded by \\s
+     * - (Pattern.UNICODE_CHARACTER_CLASS): Ensures that the regex works with Unicode whitespace characters
+     */
+    private static final Pattern PATTERN_WHITESPACES_HYPHENS = Pattern.compile("[\\s-\\uFEFF]+", Pattern.UNICODE_CHARACTER_CLASS);
 
     /**
      * Hilfsmethode fuer toString(): Wenn beim Debugging eine JPA-Referenz schon detached ist,
@@ -57,6 +67,13 @@ public final class Util {
                 .toURL();
         } catch (IllegalArgumentException | MalformedURLException e) {
             throw new IllegalArgumentException("Not a valid URL: " + url, e);
+        }
+    }
+    public static URL parseURI(URI uri) {
+        try {
+            return uri.toURL();
+        } catch (IllegalArgumentException | MalformedURLException e) {
+            throw new IllegalArgumentException("Not a valid URL: " + uri.toString(), e);
         }
     }
 
@@ -238,19 +255,13 @@ public final class Util {
     }
 
     @NonNull
-    public List<String> tokenizeNames(@NonNull String input) {
-        List<String> tokens = new ArrayList<>();
-        StringBuilder token = new StringBuilder();
-        for (char c : input.toCharArray()) {
-            if (c == ' ' || c == '-') {
-                tokens.add(token.toString());
-                token.setLength(0);
-            } else {
-                token.append(c);
-            }
+    public List<String> tokenizeStringByWhiteSpacesOrHyphens(@NonNull String input) {
+        if (input.isEmpty()) {
+            return List.of();
         }
-        tokens.add(token.toString()); // add the last token
-        return tokens;
+        return Arrays.stream(PATTERN_WHITESPACES_HYPHENS.split(input))
+            .filter(token -> !token.isEmpty())
+            .toList();
     }
 
     @NonNull

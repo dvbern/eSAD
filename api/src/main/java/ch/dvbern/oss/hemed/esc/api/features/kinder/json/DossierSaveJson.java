@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.kinder.json;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.types.PapierakteStatus;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @AllArgsConstructor
 @JaxDTO
 @Schema(description = "Business data for a Dossier")
-public class DossierSaveJson {
+public class DossierSaveJson implements SaveJsonWithOptimisticLocking {
 
     @NotNull
     @Schema(required = true)
@@ -61,4 +62,7 @@ public class DossierSaveJson {
     @Schema(required = true)
     @Valid
     private NachkontrolleJson nachkontrolle;
+
+    @Schema(required = true)
+    private long version;
 }

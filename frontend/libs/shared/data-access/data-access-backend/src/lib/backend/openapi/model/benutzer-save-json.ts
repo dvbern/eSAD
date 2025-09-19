@@ -20,6 +20,7 @@ export interface BenutzerSaveJson {
     telefon?: string;
     aktiv: boolean;
     fachRollen: Array<FachRolle>;
+    version: number;
 }
 
 

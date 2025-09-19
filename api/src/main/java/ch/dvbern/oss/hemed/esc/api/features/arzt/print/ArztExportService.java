@@ -17,6 +17,19 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.arzt.print;
 
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
+import ch.dvbern.dvbstarter.infrastructure.fileio.FileDownloadUtil;
+import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
+import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
+import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
+import ch.dvbern.oss.hemed.esc.api.features.arzt.Arzt;
+import ch.dvbern.oss.hemed.esc.api.features.arzt.types.ExportMode;
+import ch.dvbern.oss.hemed.esc.api.shared.docmerger.DocMergerUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -25,20 +38,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
-import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
-import ch.dvbern.dvbstarter.infrastructure.fileio.FileDownloadUtil;
-import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
-import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
-import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
-import ch.dvbern.oss.hemed.esc.api.features.arzt.Arzt;
-import ch.dvbern.oss.hemed.esc.api.shared.docmerger.DocMergerUtil;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
-import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
-import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
-import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
-import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -49,15 +48,29 @@ import static java.util.Objects.requireNonNull;
 public final class ArztExportService {
 
     private static final String AERZTE_EXPORT_TEMPLATE = "/print-vorlagen/aerzte-export.docx";
-    private static final String AERZTE_EXPORT_FILE_NAME = "export_aerzte_%s.docx";
-    private static final String MISSING_PLZ = "printer.arztliste.missing.plz";
-    private static final String MISSING_ORT = "printer.arztliste.missing.ort";
+    private static final String AERZTE_EXPORT_FILE_NAME = "export_aerzte_%s";
+    static final String TRANSLATION_PREFIX = "printer.arztliste.";
+    private static final String MISSING_PLZ = TRANSLATION_PREFIX + "missing.plz";
+    private static final String MISSING_ORT = TRANSLATION_PREFIX + "missing.ort";
 
     private ArztExportService() {
     }
 
     @NonNull
     public static PrintResultDTO generatAearzteExport(
+        @NonNull List<Arzt> aerzte,
+        @NonNull String fileTimeStamp,
+        @NonNull TL tl,
+        @NonNull ExportMode exportMode
+    ) {
+        if(exportMode == ExportMode.TEXTDOCUMENT) {
+            return  ArztExportService.generatAearzteExportDoc(aerzte, fileTimeStamp, tl);
+        }
+        return  ArztExportService.generatAearzteExportCsv(aerzte, fileTimeStamp, tl);
+    }
+
+    @NonNull
+    private static PrintResultDTO generatAearzteExportDoc(
         @NonNull List<Arzt> aerzte,
         @NonNull String fileTimeStamp,
         @NonNull TL tl
@@ -72,12 +85,24 @@ public final class ArztExportService {
             } else {
                 throw new AppFailureException(AppFailureMessage.internalError("Unable to load ressource : " + AERZTE_EXPORT_TEMPLATE));
             }
-            return new PrintResultDTO(result, ArztExportService.createFileInfo(result.length, fileTimeStamp));
+            String fileName = String.format(AERZTE_EXPORT_FILE_NAME, fileTimeStamp) + '.' + "docx";
+            return new PrintResultDTO(result, FileDownloadUtil.buildFileInfo(fileName, FileDownloadUtil.MIME_TYPE_DOCX, result.length));
         } catch (IOException e) {
             throw new AppFailureException(
                 AppFailureMessage.internalError("Unable to load ressource : "
                 + AERZTE_EXPORT_TEMPLATE), e);
         }
+    }
+
+    @NonNull
+    private static PrintResultDTO generatAearzteExportCsv(
+        @NonNull List<Arzt> aerzte,
+        @NonNull String fileTimeStamp,
+        @NonNull TL tl
+    ) {
+        byte[] bytes = ArztExportCSVUtil.generatAearzteExportCsv(aerzte, tl);
+        String fileName = String.format(AERZTE_EXPORT_FILE_NAME, fileTimeStamp) + '.' + "csv";
+        return new PrintResultDTO(bytes, FileDownloadUtil.buildFileInfo(fileName, "csv", bytes.length));
     }
 
     @NonNull
@@ -97,7 +122,7 @@ public final class ArztExportService {
     }
 
     @NonNull
-    public static ArztMergerDTO toArztMergerDTO(@NonNull Arzt arzt) {
+    private static ArztMergerDTO toArztMergerDTO(@NonNull Arzt arzt) {
         Optional<Arzt> arztOptional = Optional.of(arzt);
         String formattedPhone = (arzt.getTelefon() != null) ?  arzt.getTelefon().getFormattedPhoneNumber() : null;
 
@@ -112,19 +137,13 @@ public final class ArztExportService {
     }
 
     @NonNull
-    public static FileInfo createFileInfo(long size, @NonNull String fileTimeStamp) {
-        String fileName = String.format(AERZTE_EXPORT_FILE_NAME, fileTimeStamp);
-        return FileDownloadUtil.buildFileInfo(fileName, FileDownloadUtil.MIME_TYPE_DOCX, size);
-    }
-
-    @NonNull
-    static String formatFullName(@NonNull Arzt arzt) {
+    private static String formatFullName(@NonNull Arzt arzt) {
         String[] nameParts = { arzt.getAnrede(), arzt.getName(), arzt.getVorname() };
         return concatNonEmptyStrings(nameParts, " ");
     }
 
     @NonNull
-    static String formatAddressOneLine(@Nullable Adresse adresse) {
+    private static String formatAddressOneLine(@Nullable Adresse adresse) {
         if (adresse == null) {
             return PrintUtil.PLACEHOLDER;
         }
@@ -151,4 +170,7 @@ public final class ArztExportService {
             .filter(Predicate.not(String::isEmpty))
             .collect(Collectors.joining(delimiter));
     }
+
+
+
 }

@@ -10,8 +10,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StereotestResultat;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
-import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungMassnahmenBuilder;
-import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBemerkungFragebogenBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBeurteilungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.UntersuchungSehenApiSpec;
@@ -23,9 +23,10 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.StereotestResultatSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.StrabismusAuftretenResultatSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.StrabismusAuspraegungResultatSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.StrabismusResultatSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenMassnahmenSaveJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenBemerkungFragebogenJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenBemerkungFragebogenSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenBeurteilungJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenBeurteilungSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.VerwendetTafelResultatSpec;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
@@ -44,7 +45,8 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         UntersuchungSehenApiSpec.untersuchungSehen(RequestSpecUtil.quarkusSpec());
 
     private final UntersuchungService untersuchungService;
-    private final UntersuchungSehenService untersuchungSehenService;
+    private final UntersuchungSehenBeurteilungService untersuchungSehenBeurteilungService;
+    private final UntersuchungSehenBemerkungFragebogenService untersuchungSehenBemerkungFragebogenService;
     private final UntersuchungMassnahmenService untersuchungMassnahmenService;
     private final FixtureService fixtureService;
 
@@ -56,12 +58,12 @@ class UntersuchungSehenResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void getUntersuchungSehen_non_existing_should_not_create_data() {
+    void getUntersuchungSehenBeurteilung_non_existing_should_not_create_data() {
         // ARRANGE
         Einladung einladung = fixtureService.createEinladung();
         untersuchungService.getOrCreateUntersuchung(einladung.getId());
         // ACT / ASSERT
-        api.untersuchungSehenResourceGetUntersuchungSehen()
+        api.untersuchungSehenResourceGetUntersuchungSehenBeurteilung()
             .anlassIdPath(einladung.getAnlass().getId().getId())
             .einladungIdPath(einladung.getId().getId())
             .execute(ResponseBody::prettyPeek)
@@ -72,16 +74,17 @@ class UntersuchungSehenResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void getUntersuchungSehen_existing_should_return_existing() {
+    void getUntersuchungSehenBeurteilung_existing_should_return_existing() {
         // ARRANGE
         Untersuchung untersuchung = fixtureService.createUntersuchungWithSehen();
-        assertThat(untersuchung.getUntersuchungSehen()).isNotNull();
+        assertThat(untersuchung.getUntersuchungSehenBeurteilung()).isNotNull();
 
-        UntersuchungSehen existingSehen = untersuchungSehenService.getById(untersuchung.getUntersuchungSehen().getId());
+        UntersuchungSehenBeurteilung
+                existingSehen = untersuchungSehenBeurteilungService.getById(untersuchung.getUntersuchungSehenBeurteilung().getId());
         assertThat(existingSehen).isNotNull();
         assertThat(existingSehen.getBemerkungen()).isNotNull();
         // ACT
-        UntersuchungSehenJsonSpec result = api.untersuchungSehenResourceGetUntersuchungSehen()
+        UntersuchungSehenBeurteilungJsonSpec result = api.untersuchungSehenResourceGetUntersuchungSehenBeurteilung()
             .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
             .einladungIdPath(untersuchung.getEinladung().getId().getId())
             .execute(ResponseBody::prettyPeek)
@@ -89,7 +92,7 @@ class UntersuchungSehenResourceITest extends AbstractITest {
             .assertThat()
             .statusCode(Status.OK.getStatusCode())
             .extract()
-            .as(UntersuchungSehenJsonSpec.class);
+            .as(UntersuchungSehenBeurteilungJsonSpec.class);
         // ASSERT
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(existingSehen.getId().getId());
@@ -98,13 +101,14 @@ class UntersuchungSehenResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void getUntersuchungSehen_should_return_existing_massnahme() {
+    void getUntersuchungSehenBeurteilung_should_return_existing_massnahme() {
         // ARRANGE
         Untersuchung untersuchung = fixtureService.createUntersuchungWithSehenAndMassnahmen();
-        assertThat(untersuchung.getUntersuchungSehen()).isNotNull();
+        assertThat(untersuchung.getUntersuchungSehenBeurteilung()).isNotNull();
         assertThat(untersuchung.getUntersuchungMassnahmen()).isNotNull();
 
-        UntersuchungSehen existingSehen = untersuchungSehenService.getById(untersuchung.getUntersuchungSehen().getId());
+        UntersuchungSehenBeurteilung
+                existingSehen = untersuchungSehenBeurteilungService.getById(untersuchung.getUntersuchungSehenBeurteilung().getId());
         assertThat(existingSehen).isNotNull();
         assertThat(existingSehen.getBemerkungen()).isNotNull();
 
@@ -113,7 +117,7 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         assertThat(existingMassnahmen).isNotNull();
         assertThat(existingMassnahmen.getBemerkungen()).isNotNull();
         // ACT
-        UntersuchungSehenJsonSpec result = api.untersuchungSehenResourceGetUntersuchungSehen()
+        UntersuchungSehenBeurteilungJsonSpec result = api.untersuchungSehenResourceGetUntersuchungSehenBeurteilung()
             .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
             .einladungIdPath(untersuchung.getEinladung().getId().getId())
             .execute(ResponseBody::prettyPeek)
@@ -121,37 +125,31 @@ class UntersuchungSehenResourceITest extends AbstractITest {
             .assertThat()
             .statusCode(Status.OK.getStatusCode())
             .extract()
-            .as(UntersuchungSehenJsonSpec.class);
+            .as(UntersuchungSehenBeurteilungJsonSpec.class);
         // ASSERT
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(existingSehen.getId().getId());
-        assertThat(result.getData().getMassnahmen()).isNotNull();
-        assertThat(result.getData().getMassnahmen().getKeineMassnahmen()).isFalse();
     }
 
     @Test
     @TestAsAdminBS
-    void saveUntersuchungSehen() {
+    void saveUntersuchungSehenBeurteilung() {
         // ARRANGE
         Einladung einladung = fixtureService.createEinladung();
         Untersuchung untersuchung = fixtureService.createUntersuchungWithSehenAndMassnahmen();
-        assertThat(untersuchung.getUntersuchungSehen()).isNotNull();
-        UntersuchungSehen existingSehen = untersuchungSehenService.getById(untersuchung.getUntersuchungSehen().getId());
+        assertThat(untersuchung.getUntersuchungSehenBeurteilung()).isNotNull();
+        UntersuchungSehenBeurteilung
+                existingSehen = untersuchungSehenBeurteilungService.getById(untersuchung.getUntersuchungSehenBeurteilung().getId());
         assertThat(existingSehen).isNotNull();
         assertThat(existingSehen.getBemerkungen()).isNotNull().isEqualTo("Untersuchung Sehen Bemerkung");
 
         // ACT
-        UntersuchungSehenMassnahmenSaveJsonSpec sehenMassnahmenSaveJax =
-            UntersuchungMassnahmenBuilder.createSehenMassnahmenSaveJaxSpec(builder -> builder
-                .forUntersuchung(untersuchung)
-                .withKeineMassnahmen(true));
-        UntersuchungSehenSaveJsonSpec saveJsonSpec =
-            UntersuchungSehenBuilder.createJaxSpec(builder -> builder.forUntersuchungSehen(existingSehen)
+        UntersuchungSehenBeurteilungSaveJsonSpec saveJsonSpec =
+            UntersuchungSehenBeurteilungBuilder.createJaxSpec(builder -> builder.forUntersuchungSehen(existingSehen)
                 .withStereotest(StereotestResultat.UNSICHER)
                 .withBemerkung("Test updateUntersuchungSehen")).getData();
-        saveJsonSpec.setMassnahmen(sehenMassnahmenSaveJax);
 
-        UntersuchungSehenJsonSpec result = api.untersuchungSehenResourceSaveUntersuchungSehen()
+        UntersuchungSehenBeurteilungJsonSpec result = api.untersuchungSehenResourceSaveUntersuchungSehenBeurteilung()
             .anlassIdPath(einladung.getAnlass().getId().getId())
             .einladungIdPath(einladung.getId().getId())
             .body(saveJsonSpec)
@@ -160,26 +158,24 @@ class UntersuchungSehenResourceITest extends AbstractITest {
             .assertThat()
             .statusCode(Status.OK.getStatusCode())
             .extract()
-            .as(UntersuchungSehenJsonSpec.class);
+            .as(UntersuchungSehenBeurteilungJsonSpec.class);
 
         // ASSERT
         assertThat(result).isNotNull();
         assertThat(result.getId()).isNotNull();
         assertThat(result.getData().getBemerkungen()).isNotNull().isEqualTo("Test updateUntersuchungSehen");
         assertThat(result.getData().getStereotest()).isEqualTo(StereotestResultatSpec.UNSICHER);
-        assertThat(result.getData().getMassnahmen()).isNotNull();
-        assertThat(result.getData().getMassnahmen().getKeineMassnahmen()).isTrue();
     }
 
     @Test
     @TestAsAdminBS
-    void getDefaultUntersuchungSehenForAnlassConfig() {
+    void getDefaultUntersuchungSehenBeurteilungForAnlassConfig() {
         // ARRANGE
         Anlass anlass = fixtureService.createAnlass();
         Einladung einladung = fixtureService.createEinladung(anlass);
 
         // ACT
-        UntersuchungSehenSaveJsonSpec result = api.untersuchungSehenResourceGetDefaultUntersuchungSehenForAnlassConfig()
+        UntersuchungSehenBeurteilungSaveJsonSpec result = api.untersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfig()
             .anlassIdPath(einladung.getAnlass().getId().getId())
             .einladungIdPath(einladung.getId().getId())
             .execute(ResponseBody::prettyPeek)
@@ -187,7 +183,7 @@ class UntersuchungSehenResourceITest extends AbstractITest {
             .assertThat()
             .statusCode(Status.OK.getStatusCode())
             .extract()
-            .as(UntersuchungSehenSaveJsonSpec.class);
+            .as(UntersuchungSehenBeurteilungSaveJsonSpec.class);
 
         // ASSERT
         assertThat(result).isNotNull();
@@ -208,18 +204,17 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         assertThat(result.getInspektion()).isEqualTo(InspektionKonvergenzResultatSpec.UNAUFFAELLIG);
         assertThat(result.getKonvergenz()).isEqualTo(InspektionKonvergenzResultatSpec.UNAUFFAELLIG);
         assertThat(result.getBemerkungen()).isNull();
-        assertThat(result.getMassnahmen()).isNull();
     }
 
     @Test
     @TestAsAdminBS
-    void getDefaultUntersuchungSehenForAnlassConfigKindergarten() {
+    void getDefaultUntersuchungSehenBeurteilungForAnlassConfigKindergarten() {
         // ARRANGE
         Anlass anlass = fixtureService.createAnlass(AnlassTyp.KINDERGARTEN);
         Einladung einladung = fixtureService.createEinladung(anlass);
 
         // ACT
-        UntersuchungSehenSaveJsonSpec result = api.untersuchungSehenResourceGetDefaultUntersuchungSehenForAnlassConfig()
+        UntersuchungSehenBeurteilungSaveJsonSpec result = api.untersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfig()
             .anlassIdPath(einladung.getAnlass().getId().getId())
             .einladungIdPath(einladung.getId().getId())
             .execute(ResponseBody::prettyPeek)
@@ -227,7 +222,7 @@ class UntersuchungSehenResourceITest extends AbstractITest {
             .assertThat()
             .statusCode(Status.OK.getStatusCode())
             .extract()
-            .as(UntersuchungSehenSaveJsonSpec.class);
+            .as(UntersuchungSehenBeurteilungSaveJsonSpec.class);
 
         // ASSERT
         assertThat(result).isNotNull();
@@ -248,18 +243,17 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         assertThat(result.getInspektion()).isEqualTo(InspektionKonvergenzResultatSpec.UNAUFFAELLIG);
         assertThat(result.getKonvergenz()).isEqualTo(InspektionKonvergenzResultatSpec.UNAUFFAELLIG);
         assertThat(result.getBemerkungen()).isNull();
-        assertThat(result.getMassnahmen()).isNull();
     }
 
     @Test
     @TestAsAdminBS
-    void getDefaultUntersuchungSehenForAnlassConfigFremdsprachen() {
+    void getDefaultUntersuchungSehenBeurteilungForAnlassConfigFremdsprachen() {
         // ARRANGE
         Anlass anlass = fixtureService.createAnlass(AnlassTyp.FREMDSPRACHEN);
         Einladung einladung = fixtureService.createEinladung(anlass);
 
         // ACT
-        UntersuchungSehenSaveJsonSpec result = api.untersuchungSehenResourceGetDefaultUntersuchungSehenForAnlassConfig()
+        UntersuchungSehenBeurteilungSaveJsonSpec result = api.untersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfig()
             .anlassIdPath(einladung.getAnlass().getId().getId())
             .einladungIdPath(einladung.getId().getId())
             .execute(ResponseBody::prettyPeek)
@@ -267,7 +261,7 @@ class UntersuchungSehenResourceITest extends AbstractITest {
             .assertThat()
             .statusCode(Status.OK.getStatusCode())
             .extract()
-            .as(UntersuchungSehenSaveJsonSpec.class);
+            .as(UntersuchungSehenBeurteilungSaveJsonSpec.class);
 
         // ASSERT
         assertThat(result).isNotNull();
@@ -288,18 +282,17 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         assertThat(result.getInspektion()).isEqualTo(InspektionKonvergenzResultatSpec.UNAUFFAELLIG);
         assertThat(result.getKonvergenz()).isEqualTo(InspektionKonvergenzResultatSpec.UNAUFFAELLIG);
         assertThat(result.getBemerkungen()).isNull();
-        assertThat(result.getMassnahmen()).isNull();
     }
 
     @Test
     @TestAsAdminBS
-    void getDefaultUntersuchungSehenForAnlassConfig_NOT_VISIBLE() {
+    void getDefaultUntersuchungSehenBeurteilungForAnlassConfig_NOT_VISIBLE() {
         // ARRANGE
         Anlass anlass = fixtureService.createAnlassWithSameRequirementSettings(RequirementSetting.NOT_VISIBLE);
         Einladung einladung = fixtureService.createEinladung(anlass);
 
         // ACT
-        UntersuchungSehenSaveJsonSpec result = api.untersuchungSehenResourceGetDefaultUntersuchungSehenForAnlassConfig()
+        UntersuchungSehenBeurteilungSaveJsonSpec result = api.untersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfig()
             .anlassIdPath(einladung.getAnlass().getId().getId())
             .einladungIdPath(einladung.getId().getId())
             .execute(ResponseBody::prettyPeek)
@@ -307,7 +300,7 @@ class UntersuchungSehenResourceITest extends AbstractITest {
             .assertThat()
             .statusCode(Status.OK.getStatusCode())
             .extract()
-            .as(UntersuchungSehenSaveJsonSpec.class);
+            .as(UntersuchungSehenBeurteilungSaveJsonSpec.class);
 
         // ASSERT
         assertThat(result).isNotNull();
@@ -328,6 +321,82 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         assertThat(result.getInspektion()).isNull();
         assertThat(result.getKonvergenz()).isNull();
         assertThat(result.getBemerkungen()).isNull();
-        assertThat(result.getMassnahmen()).isNull();
+    }
+
+    @Test
+    @TestAsAdminBS
+    void getUntersuchungSehenBemerkungFragebogen_non_existing_should_not_create_data() {
+        // ARRANGE
+        Einladung einladung = fixtureService.createEinladung();
+        untersuchungService.getOrCreateUntersuchung(einladung.getId());
+        // ACT / ASSERT
+        api.untersuchungSehenResourceGetUntersuchungSehenBemerkungFragebogen()
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .einladungIdPath(einladung.getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.NO_CONTENT.getStatusCode());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void getUntersuchungSehenBemerkungFragebogen_existing_should_return_existing() {
+        // ARRANGE
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithSehen();
+        assertThat(untersuchung.getUntersuchungSehenBemerkungFragebogen()).isNotNull();
+
+        UntersuchungSehenBemerkungFragebogen
+            existingSehen = untersuchungSehenBemerkungFragebogenService.getById(untersuchung.getUntersuchungSehenBemerkungFragebogen().getId());
+        assertThat(existingSehen).isNotNull();
+        assertThat(existingSehen.getBemerkungenFragebogen()).isNotNull();
+        // ACT
+        UntersuchungSehenBemerkungFragebogenJsonSpec result = api.untersuchungSehenResourceGetUntersuchungSehenBemerkungFragebogen()
+            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungSehenBemerkungFragebogenJsonSpec.class);
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(existingSehen.getId().getId());
+        assertThat(result.getData().getBemerkungenFragebogen()).isNotNull().isEqualTo(existingSehen.getBemerkungenFragebogen());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void saveUntersuchungSehenBemerkungFragebogen() {
+        // ARRANGE
+        Einladung einladung = fixtureService.createEinladung();
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithSehen();
+        assertThat(untersuchung.getUntersuchungSehenBemerkungFragebogen()).isNotNull();
+        UntersuchungSehenBemerkungFragebogen
+            existingSehen = untersuchungSehenBemerkungFragebogenService.getById(untersuchung.getUntersuchungSehenBemerkungFragebogen().getId());
+        assertThat(existingSehen).isNotNull();
+        assertThat(existingSehen.getBemerkungenFragebogen()).isNotNull().isEqualTo("Untersuchung Sehen Fragebogen Bemerkung");
+
+        // ACT
+        UntersuchungSehenBemerkungFragebogenSaveJsonSpec saveJsonSpec =
+            UntersuchungSehenBemerkungFragebogenBuilder.createJaxSpec(builder -> builder.forUntersuchungSehenBemerkungFragebogen(existingSehen)
+                .withBemerkungFragebogen("Test updateUntersuchungSehenBemerkungFragebogen")).getData();
+
+        UntersuchungSehenBemerkungFragebogenJsonSpec result = api.untersuchungSehenResourceSaveUntersuchungSehenBemerkungFragebogen()
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .einladungIdPath(einladung.getId().getId())
+            .body(saveJsonSpec)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungSehenBemerkungFragebogenJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getData().getBemerkungenFragebogen()).isNotNull().isEqualTo("Test updateUntersuchungSehenBemerkungFragebogen");
     }
 }

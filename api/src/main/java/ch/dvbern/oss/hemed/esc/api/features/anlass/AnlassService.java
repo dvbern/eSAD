@@ -43,6 +43,11 @@ public class AnlassService {
         return anlass;
     }
 
+    @NonNull
+    public Anlass persistWithOptimisticLocking(@NonNull Anlass entity, @NonNull Long versionFromFrontend) {
+        return anlassRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
+    }
+
     public void remove(@NonNull ID<Anlass> anlassID) {
         List<Einladung> einladungen = einladungService.findByAnlass(anlassID);
         if (CollectionUtils.isNotEmpty(einladungen)) {
@@ -71,6 +76,7 @@ public class AnlassService {
     @NonNull
     public Anlass changeAnlassStatus(@NonNull ID<Anlass> anlassID, @NonNull AnlassStatus status) {
         Anlass anlass = getById(anlassID);
+        anlass.disableOptimisticLockingCheck();
         anlass.setAnlassStatus(status);
         if (status == AnlassStatus.DURCHGEFUEHRT) {
             onAnlassDurchgefuehrt(anlass);

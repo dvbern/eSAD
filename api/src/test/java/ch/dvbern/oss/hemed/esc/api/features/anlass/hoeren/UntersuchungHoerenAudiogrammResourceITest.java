@@ -14,7 +14,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.UntersuchungHoerenAudiogrammApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AudiogrammBeurteilungSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AudiogrammJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AudiogrammSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DezibelSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.HoerenZusaetzlicheAngabenSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungHoerenAudiogrammJsonSpec;
@@ -98,14 +98,15 @@ class UntersuchungHoerenAudiogrammResourceITest extends AbstractITest {
         Assertions.assertThat(existingHoeren.getAudiogrammLinks()).isNotNull();
         Assertions.assertThat(existingHoeren.getAudiogrammBeurteilung()).isNotNull();
         Assertions.assertThat(existingHoeren.getZusaetzlicheAngaben()).isNotNull();
-        AudiogrammJsonSpec expectedAudiogramm = new AudiogrammJsonSpec(
+        AudiogrammSaveJsonSpec expectedAudiogramm = new AudiogrammSaveJsonSpec(
             DezibelSpec.DB30,
             DezibelSpec.DB30,
             DezibelSpec.DB30,
             DezibelSpec.DB30,
             DezibelSpec.DB30,
             DezibelSpec.DB30,
-            DezibelSpec.DB30
+            DezibelSpec.DB30,
+            0L
         );
 
         // ACT
@@ -152,14 +153,15 @@ class UntersuchungHoerenAudiogrammResourceITest extends AbstractITest {
         // ARRANGE
         Anlass anlass = fixtureService.createAnlass();
         Einladung einladung = fixtureService.createEinladung(anlass);
-        AudiogrammJsonSpec defaultAudiogramm = new AudiogrammJsonSpec(
+        AudiogrammSaveJsonSpec defaultAudiogramm = new AudiogrammSaveJsonSpec(
             DezibelSpec.DB20,
             DezibelSpec.DB20,
             DezibelSpec.DB20,
             DezibelSpec.DB20,
             DezibelSpec.DB20,
             DezibelSpec.DB20,
-            DezibelSpec.DB20
+            DezibelSpec.DB20,
+            0L
         );
 
         // ACT

@@ -1,11 +1,11 @@
-import {DestroyRef} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {NonNullableFormBuilder} from '@angular/forms';
-import {BenutzerOptionJson, LabelJson, NotizStatus} from '@dvb/data-access-backend';
-import {ISODateString} from '@dvb/data-access-types';
+import { DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NonNullableFormBuilder } from '@angular/forms';
+import { BenutzerOptionJson, LabelJson, NotizStatus } from '@dvb/data-access-backend';
+import { ISODateString } from '@dvb/data-access-types';
 import {BaseForm, FilterCombinationMethod, FilterMethod, TableModel} from '@dvb/util-angular';
-import {distinctUntilChanged} from 'rxjs';
-import {NotizJsonEnhanced} from '../notiz-json-enhanced';
+import { distinctUntilChanged } from 'rxjs';
+import { NotizJsonEnhanced } from '../notiz-json-enhanced';
 
 export interface NotizFilterForm {
   erstelltAm: ISODateString | null,
@@ -33,68 +33,68 @@ function makeForm(config: Config) {
 
   group.controls.erstelltAm.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
     .subscribe({
-      next: datum => {
-        config.paginatedTable.onFilterChanged({
-          filterValue: datum ?? '',
-          filterMethod: FilterMethod.DATE,
-          filterCombinationMethod: FilterCombinationMethod.AND,
-          filterName: 'entityInfo.timestampErstellt',
-        });
-      },
-      error: console.error,
-    });
+    next: datum => {
+      config.paginatedTable.onFilterChanged({
+        filterValue: datum ?? '',
+        filterMethod: FilterMethod.DATE,
+        filterCombinationMethod: FilterCombinationMethod.AND,
+        filterName: 'entityInfo.timestampErstellt',
+      });
+    },
+    error: console.error,
+  });
 
   group.controls.titel.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
     .subscribe({
-      next: titel => {
-        config.paginatedTable.onFilterChanged({
-          filterValue: titel ?? '',
-          filterMethod: FilterMethod.SUBSTRING,
-          filterCombinationMethod: FilterCombinationMethod.AND,
-          filterName: 'data.titel',
-        });
-      },
-      error: console.error,
-    });
+    next: titel => {
+      config.paginatedTable.onFilterChanged({
+        filterValue: titel ?? '',
+        filterMethod: FilterMethod.SUBSTRING,
+        filterCombinationMethod: FilterCombinationMethod.AND,
+        filterName: 'data.titel',
+      });
+    },
+    error: console.error,
+  });
 
   group.controls.label.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
     .subscribe({
-      next: labels => {
-        config.paginatedTable.onFilterChanged({
-          filterValue: labels.map(label => label.id).join(' ') ?? '',
-          filterMethod: FilterMethod.ENUM,
-          filterCombinationMethod: FilterCombinationMethod.OR,
-          filterName: 'labelIds',
-        });
-      },
-      error: console.error,
-    });
+    next: labels => {
+      config.paginatedTable.onFilterChanged({
+        filterValue: labels.map(label => label.id).join(' ') ?? '',
+        filterMethod: FilterMethod.ENUM,
+        filterCombinationMethod: FilterCombinationMethod.OR,
+        filterName: 'labelIds',
+      });
+    },
+    error: console.error,
+  });
 
   group.controls.status.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
     .subscribe({
-      next: notizStatus => {
-        config.paginatedTable.onFilterChanged({
-          filterValue: notizStatus.map(status => status.toString()).join(' ') ?? '',
-          filterMethod: FilterMethod.ENUM,
-          filterCombinationMethod: FilterCombinationMethod.OR,
-          filterName: 'data.status',
-        });
-      },
-      error: console.error,
-    });
+    next: notizStatus => {
+      config.paginatedTable.onFilterChanged({
+        filterValue: notizStatus.map(status => status.toString()).join(' ') ?? '',
+        filterMethod: FilterMethod.ENUM,
+        filterCombinationMethod: FilterCombinationMethod.OR,
+        filterName: 'data.status',
+      });
+    },
+    error: console.error,
+  });
 
   group.controls.verantwortlichePerson.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
     .subscribe({
-      next: verantwortlicher => {
-        config.paginatedTable.onFilterChanged({
-          filterValue: verantwortlicher.map(verantwortlicher => verantwortlicher.id).join(' ') ?? '',
-          filterMethod: FilterMethod.SUBSTRING,
-          filterCombinationMethod: FilterCombinationMethod.OR,
-          filterName: 'data.verantwortlicher.id',
-        });
-      },
-      error: console.error,
-    });
+    next: verantwortlicher => {
+      config.paginatedTable.onFilterChanged({
+        filterValue: verantwortlicher.join(' ') ?? '',
+        filterMethod: FilterMethod.SUBSTRING,
+        filterCombinationMethod: FilterCombinationMethod.OR,
+        filterName: 'data.verantwortlicher.id',
+      });
+    },
+    error: console.error,
+  });
 
   group.updateValueAndValidity();
   return group;

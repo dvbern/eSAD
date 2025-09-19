@@ -28,7 +28,7 @@ export interface AnlassConfigJson {
     impfungenMassnahmeEinzelFolgetermin: boolean;
     impfungenMassnahmeInfoKinderarzt: boolean;
     impfungenMassnahmeBeratungMPA: boolean;
-    impfungenMassnahmeInformationenAbgegeben: boolean;
+    impfungenMassnahmeInfomaterialAbgegeben: boolean;
     impfungenMassnahmeInfoEltern: boolean;
     impfungenMassnahmeRueckfrageKinderarzt: boolean;
     showChecklist: boolean;
@@ -37,6 +37,7 @@ export interface AnlassConfigJson {
     checkDoppelkontrolleImpfentscheidDurchgefuehrt: RequirementSetting;
     untersuchungImpfungBemerkungen: RequirementSetting;
     showTabSehen: boolean;
+    showTabSehenBeurteilung: boolean;
     sehenBrilleLinsen: RequirementSetting;
     sehenFarbsehen: RequirementSetting;
     sehenTafel: RequirementSetting;
@@ -48,6 +49,9 @@ export interface AnlassConfigJson {
     sehenMotilitaet: RequirementSetting;
     sehenNahvisus: RequirementSetting;
     sehenBemerkungen: RequirementSetting;
+    showTabSehenBemerkungenFragenbogen: boolean;
+    sehenBemerkungenFragebogen: RequirementSetting;
+    showTabSehenMassnahmen: boolean;
     sehenMassnahmen: RequirementSetting;
     showTabHoeren: boolean;
     showTabHoerenAudiogramm: boolean;
@@ -72,6 +76,8 @@ export interface AnlassConfigJson {
     showTriageTriage: boolean;
     showTriageKindWeiterleiten: boolean;
     showTabUntersuchung: boolean;
+    showTabUntersuchungBeurteilung: boolean;
+    showTabUntersuchungBemerkung: boolean;
     untersuchungBewegungsapparat: RequirementSetting;
     untersuchungEinbeinstand: RequirementSetting;
     untersuchungEinbeinhuepfen: RequirementSetting;

@@ -57,6 +57,10 @@ public abstract class AbstractEntity<Entity extends AbstractEntity<Entity>> impl
     @Setter
     private Long versionFromFrontend;
 
+    @Transient
+    @Setter
+    private boolean optimisticLockingCheckDisabled = false;
+
     @Column(nullable = false, updatable = false)
     private OffsetDateTime timestampErstellt;
 
@@ -175,5 +179,9 @@ public abstract class AbstractEntity<Entity extends AbstractEntity<Entity>> impl
         @SuppressWarnings("unchecked")
         Entity result = (Entity) this;
         return result;
+    }
+
+    public void disableOptimisticLockingCheck() {
+        this.optimisticLockingCheckDisabled = true;
     }
 }

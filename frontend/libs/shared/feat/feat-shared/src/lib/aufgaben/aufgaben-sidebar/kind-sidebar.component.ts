@@ -35,6 +35,7 @@ import {TranslatedStringPipe} from '../../translated-strings/view/translated-str
 export class KindSidebarComponent {
 
   readonly benutzerStore = inject(BenutzerStore);
+  showCreateAufgabeButton = input.required<boolean>();
   routingPrefix = input.required<string>();
   aufgabenList = input<AufgabeJsonEnhanced[]>([]);
   loading = input(false);
@@ -43,7 +44,10 @@ export class KindSidebarComponent {
     .filter(a => [AufgabeStatus.OFFEN, AufgabeStatus.IN_BEARBEITUNG].includes(a.data.status))
     .slice(0, 5));
 
-  canEditAufgaben = this.benutzerStore.createHasRequiredRoleSig(hasAufgabenEditBerechtigungen());
+  canEditAufgaben = computed(() =>
+    this.benutzerStore.createHasRequiredRoleSig(hasAufgabenEditBerechtigungen()) &&
+    this.showCreateAufgabeButton()
+  );
 
   protected readonly Path = Path;
   protected readonly fromISODateString = fromISODateString;

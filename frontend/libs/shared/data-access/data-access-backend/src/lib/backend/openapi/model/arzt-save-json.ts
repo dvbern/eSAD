@@ -24,6 +24,7 @@ export interface ArztSaveJson {
     email?: string;
     bemerkungen?: string;
     hpvTeilnahme: HpvTeilnahme;
+    version: number;
 }
 export namespace ArztSaveJson {
 }

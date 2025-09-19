@@ -23,6 +23,7 @@ export interface UntersuchungImpfungInternSaveJson {
     impfStatus: ImpfStatus;
     grundNichtDurchfuehrung?: string;
     krankheitenImmunitaeten: Array<UntersuchungImpfungKrankheitImmunitaetJson>;
+    version: number;
 }
 export namespace UntersuchungImpfungInternSaveJson {
 }

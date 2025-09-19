@@ -1,6 +1,6 @@
 services:
   esc-keycloak:
-    image: docker-registry.dvbern.ch/quay/keycloak/keycloak:26.1.2
+    image: docker-registry.dvbern.ch/quay/keycloak/keycloak:26.3.3
     ports:
       - "8989:8443"
     volumes:
@@ -13,18 +13,35 @@ services:
       start-dev --import-realm
 
 
-  esc-oauthProxy:
+  esc-oauthProxy-bs:
     image: docker-registry.dvbern.ch/quay/oauth2-proxy/oauth2-proxy:v7.7.1
     #  entrypoint: "sh"
     command: --config /oauth2-proxy.cfg
     volumes:
-      - "./developer-local-settings/config/oauthproxy/oauth2-proxy.cfg:/oauth2-proxy.cfg"
+      - "./developer-local-settings/config/oauthproxy-bs/oauth2-proxy.cfg:/oauth2-proxy.cfg"
       - "./developer-local-settings/config/certs/:/var/run/secrets/serving-cert"
     ports:
       - "4443:443"
     restart: unless-stopped
     extra_hosts:
       - "local-esc-bs.localhost:host-gateway"
+    env_file:
+      - ./api/.env
+    depends_on:
+      - esc-keycloak
+
+  esc-oauthProxy-win:
+    image: docker-registry.dvbern.ch/quay/oauth2-proxy/oauth2-proxy:v7.7.1
+    #  entrypoint: "sh"
+    command: --config /oauth2-proxy.cfg
+    volumes:
+      - "./developer-local-settings/config/oauthproxy-win/oauth2-proxy.cfg:/oauth2-proxy.cfg"
+      - "./developer-local-settings/config/certs/:/var/run/secrets/serving-cert"
+    ports:
+      - "5443:443"
+    restart: unless-stopped
+    extra_hosts:
+      - "local-esc-win.localhost:host-gateway"
     env_file:
       - ./api/.env
     depends_on:

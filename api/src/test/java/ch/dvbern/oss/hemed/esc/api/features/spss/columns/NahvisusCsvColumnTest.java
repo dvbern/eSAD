@@ -4,7 +4,7 @@ import java.util.List;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.DistanzSehenResultat;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -27,21 +27,21 @@ class NahvisusCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        UntersuchungSehen untersuchungSehen = new UntersuchungSehen();
-        untersuchung.setUntersuchungSehen(untersuchungSehen);
+        UntersuchungSehenBeurteilung untersuchungSehenBeurteilung = new UntersuchungSehenBeurteilung();
+        untersuchung.setUntersuchungSehenBeurteilung(untersuchungSehenBeurteilung);
 
         assertThat(column.extract(einladung)).isEmpty();
 
         // Check that the contains works, by adding an incorrect element
         if (resultat == DistanzSehenResultat.NORMAL) {
-            untersuchungSehen.setNahvisus(List.of(DistanzSehenResultat.LINKS_REDUZIERT));
+            untersuchungSehenBeurteilung.setNahvisus(List.of(DistanzSehenResultat.LINKS_REDUZIERT));
             assertThat(column.extract(einladung)).isEmpty();
         } else {
-            untersuchungSehen.setNahvisus(List.of(DistanzSehenResultat.NORMAL));
+            untersuchungSehenBeurteilung.setNahvisus(List.of(DistanzSehenResultat.NORMAL));
             assertThat(column.extract(einladung)).isEmpty();
         }
 
-        untersuchungSehen.setNahvisus(List.of(resultat));
+        untersuchungSehenBeurteilung.setNahvisus(List.of(resultat));
         assertThat(column.extract(einladung)).isEqualTo("1");
     }
 }

@@ -1,7 +1,8 @@
 import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {AppLanguages, BriefvorlageSaveJson, BriefvorlageType} from '@dvb/data-access-backend';
+import {globalConstants} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensurePropsFlat, requireFilledIn, requireValue} from '@dvb/util-shared';
+import {ensurePropsFlat, Nullish, requireFilledIn, requireValue} from '@dvb/util-shared';
 
 type Config = {
   fb: NonNullableFormBuilder
@@ -14,6 +15,7 @@ function makeForm(config: Config) {
     name: fb.control<string>('', [Validators.required, AppValidators.dbMaxLength()]),
     type: fb.control<BriefvorlageType | undefined>(undefined, [Validators.required]),
     sprache: fb.control<AppLanguages>(AppLanguages.DE, [Validators.required]),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 }
 
@@ -29,6 +31,7 @@ export class BriefvorlageForm extends BaseForm<ReturnType<typeof makeForm>, Brie
       name: requireFilledIn(value.name),
       type: requireFilledIn(value.type),
       sprache: requireFilledIn(value.sprache),
+      version: value.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 }

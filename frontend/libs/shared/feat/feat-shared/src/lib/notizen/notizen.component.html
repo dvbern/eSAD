@@ -97,7 +97,7 @@
         <!-- Fileupload -->
         <feat-file-drop
           (filesToUpload)="onFilesSelected($event)"
-          [acceptedFiletypes]="this.acceptedFiletypes()"
+          [acceptedFiletypes]="acceptedFiletypes"
         />
 
         <!--messages for whole form -->
@@ -117,10 +117,12 @@
       <h3 svuiHeading="card" class="mb-3">{{ 'global.uploaded.files' | transloco }}</h3>
 
 
-      <feat-upload-table [uploadTable]="uploadTable"
-                         (fileRemove)="onFileDelete($event)"
-                         (fileView)="onFileView($event)"
-                         (fileDirectDownload)="onFileDirectDownload($event)"
+      <feat-upload-table
+        [accepted]="acceptedFiletypes"
+        [uploadTable]="uploadTable"
+        (fileRemove)="onFileDelete($event)"
+        (fileView)="onFileView($event)"
+        (fileDirectDownload)="onFileDirectDownload($event)"
       >
       </feat-upload-table>
     </svui-card>

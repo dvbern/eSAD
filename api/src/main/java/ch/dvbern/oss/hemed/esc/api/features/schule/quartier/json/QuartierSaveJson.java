@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.schule.quartier.json;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -10,10 +11,13 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Value
 @AllArgsConstructor
 @JaxDTO
-public class QuartierSaveJson {
+public class QuartierSaveJson implements SaveJsonWithOptimisticLocking {
 
     @NotNull
     @NonNull
     @Schema(required = true)
     private String quartierName;
+
+    @Schema(required = true)
+    private long version;
 }

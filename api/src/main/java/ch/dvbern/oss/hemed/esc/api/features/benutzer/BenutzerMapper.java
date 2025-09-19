@@ -1,24 +1,23 @@
 package ch.dvbern.oss.hemed.esc.api.features.benutzer;
 
-import java.util.List;
-
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerJson;
-import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
-import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerSaveJson;
-import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.PrincipalJson;
-import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.TestingResponseJson;
+import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.*;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerBerechtigung;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 @Slf4j
 @JaxMapper
@@ -53,13 +52,14 @@ public class BenutzerMapper {
     }
 
     @NonNull
+    @SuppressWarnings("java:S2583" /* isAllowedToUpdateFachRollen does not always return true*/)
     private Benutzer toEntity(
+        @NonNull Benutzer currentBenutzer,
         @NonNull Benutzer existingBenutzer,
         @NonNull BenutzerSaveJson saveJson
     ) {
         existingBenutzer.setNachname(saveJson.getName());
         existingBenutzer.setVorname(saveJson.getVorname());
-        existingBenutzer.setEmail(saveJson.getEmail());
         existingBenutzer.setTitel(saveJson.getTitel());
         existingBenutzer.setTelefon(saveJson.getTelefon());
         // ensure we only set the timestampManuallyActivated if it's being activated
@@ -67,7 +67,13 @@ public class BenutzerMapper {
             existingBenutzer.setTimestampLastManuallyActivated(appClock.offsetDateTime().now());
         }
         existingBenutzer.setAktiv(saveJson.isAktiv());
-        existingBenutzer.setFachRollen(saveJson.getFachRollen());
+
+        // Only System-Admin, Support and Admin roles can update roles
+        if (isAllowedToUpdateFachRollen(currentBenutzer, existingBenutzer, saveJson)) {
+            existingBenutzer.setFachRollen(saveJson.getFachRollen());
+        } else {
+            throw new AppFailureException(AppFailureMessage.updateFachRollenNotAllowed());
+        }
 
         return existingBenutzer;
     }
@@ -89,7 +95,8 @@ public class BenutzerMapper {
                 benutzer.getEmail(),
                 benutzer.getTelefon(),
                 benutzer.isAktiv(),
-                benutzer.getFachRollen()
+                benutzer.getFachRollen(),
+                benutzer.getVersion()
             )
         );
     }
@@ -124,11 +131,107 @@ public class BenutzerMapper {
 
     @NonNull
     public BenutzerJson update(
+        @NonNull ID<Benutzer> currentBenutzerID,
         @NonNull ID<Benutzer> benutzerID,
         @NonNull BenutzerSaveJson benutzerJson
     ) {
+        Benutzer currentBenutzer = this.benutzerService.getById(currentBenutzerID);
         Benutzer existingBenutzer = this.benutzerService.getById(benutzerID);
-        Benutzer entity = toEntity(existingBenutzer, benutzerJson);
-        return toJson(this.benutzerService.persist(entity));
+        Benutzer entity = toEntity(currentBenutzer, existingBenutzer, benutzerJson);
+        return toJson(this.benutzerService.persistWithOptimisticLocking(entity, benutzerJson.getVersion()));
+    }
+
+    @NonNull
+    public BenutzerJson updateBenutzerAktivStatus(
+        @NonNull ID<Benutzer> benutzerID,
+        boolean updateIsAktiv
+    ) {
+        Benutzer existingBenutzer = this.benutzerService.getById(benutzerID);
+        if (!existingBenutzer.isAktiv() && updateIsAktiv) {
+            existingBenutzer.setTimestampLastManuallyActivated(appClock.offsetDateTime().now());
+        }
+        existingBenutzer.setAktiv(updateIsAktiv);
+        existingBenutzer.disableOptimisticLockingCheck();
+        return toJson(this.benutzerService.persist(existingBenutzer));
+    }
+
+    @SuppressWarnings({
+        "java:S1126", /*Allows better readability*/
+        "java:S3516" /*Does not always return the same value*/
+    })
+    private boolean isAllowedToUpdateFachRollen(
+        @NonNull Benutzer currentBenutzer,
+        @NonNull Benutzer benutzerToUpdate,
+        @NonNull BenutzerSaveJson benutzerSaveJson
+    ) {
+        // Roles of currently logged-in user
+        List<FachRolle> userFachRollen = currentBenutzer.getFachRollen();
+        // Roles of the user to update
+        List<FachRolle> existingFachRollen = benutzerToUpdate.getFachRollen();
+        // Roles of the user after the update
+        List<FachRolle> updatedFachRollen = benutzerSaveJson.getFachRollen();
+        // Roles to add to the user
+        List<FachRolle> newRollen = updatedFachRollen.stream()
+            .filter(r -> !existingFachRollen.contains(r))
+            .toList();
+        // Roles to remove from the user
+        List<FachRolle> removeRollen = existingFachRollen.stream()
+            .filter(r -> !updatedFachRollen.contains(r))
+            .toList();
+        // Added and removed for easier checks
+        List<FachRolle> rollenDiff = Stream.concat(newRollen.stream(), removeRollen.stream()).toList();
+        // Required roles for update of role
+        List<RequiredEditRollen> requiredRollenToEditRolle = List.of(
+            new RequiredEditRollen(FachRolle.SUPPORT, List.of(FachRolle.SYSTEM_ADMIN, FachRolle.SUPPORT)),
+            new RequiredEditRollen(FachRolle.ADMIN, List.of(FachRolle.SYSTEM_ADMIN, FachRolle.SUPPORT, FachRolle.ADMIN))
+        );
+
+        // The System Admin, Support and Admin Role have the LISTEN_SCHREIBEN Berechtigung, without this it's not allowed to update
+        boolean hasListenSchreibenBerechtigung = userFachRollen.stream().anyMatch(f -> f.hasBerechtigung(Berechtigung.LISTEN_SCHREIBEN));
+
+        // System Admins are not Managed through this Endpoint, so we don't allow to update them
+        if (!hasListenSchreibenBerechtigung || rollenDiff.contains(FachRolle.SYSTEM_ADMIN)) {
+            logEditRollenNotAllowed(currentBenutzer, benutzerToUpdate, newRollen, removeRollen);
+            return false;
+        }
+        // Allow if nothing changed
+        if (rollenDiff.isEmpty()) {
+            return true;
+        }
+        // Allow to update roles if no SysAdmin/Support/Admin roles are added or removed
+        if (rollenDiff.stream().noneMatch(List.of(FachRolle.SYSTEM_ADMIN, FachRolle.ADMIN, FachRolle.SUPPORT)::contains)) {
+            return true;
+        }
+
+        // First filter out roles, which are not relevant to be checked
+        // Then check if the user has the required role for the update
+        boolean isAllowed = requiredRollenToEditRolle
+            .stream()
+            .filter(requiredEditRollen ->
+                rollenDiff.contains(requiredEditRollen.roleToUpdate()))
+            .allMatch(requiredEditRollen ->
+                userFachRollen.stream().anyMatch(requiredEditRollen.requiredRollen()::contains));
+
+        if (isAllowed) {
+            return true;
+        }
+
+        logEditRollenNotAllowed(currentBenutzer, benutzerToUpdate, newRollen, removeRollen);
+        return false;
+    }
+
+    private void logEditRollenNotAllowed(
+        @NonNull Benutzer currentBenutzer,
+        @NonNull Benutzer benutzerToUpdate,
+        @NonNull List<FachRolle> newRollen,
+        @NonNull List<FachRolle> removeRollen
+    ) {
+        LOG.warn("The logged in User {} with roles {} tried to assigning roles {} and removing roles {} to user {} with current roles {}. This is not allowed",
+            currentBenutzer.getId(),
+            currentBenutzer.getFachRollen(),
+            newRollen,
+            removeRollen,
+            benutzerToUpdate.getId(),
+            benutzerToUpdate.getFachRollen());
     }
 }

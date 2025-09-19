@@ -34,7 +34,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   KlasseSaveJsonSpec.JSON_PROPERTY_BEZEICHNUNG,
   KlasseSaveJsonSpec.JSON_PROPERTY_KLASSENSTUFE,
   KlasseSaveJsonSpec.JSON_PROPERTY_KLASSE_SCHULART,
-  KlasseSaveJsonSpec.JSON_PROPERTY_KLASSE_AKTIV_STATUS
+  KlasseSaveJsonSpec.JSON_PROPERTY_KLASSE_AKTIV_STATUS,
+  KlasseSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("KlasseSaveJson")
 @lombok.AllArgsConstructor
@@ -59,6 +60,10 @@ public class KlasseSaveJsonSpec {
   public static final String JSON_PROPERTY_KLASSE_AKTIV_STATUS = "klasseAktivStatus";
   @jakarta.annotation.Nonnull
   private EntityAktivStatusSpec klasseAktivStatus;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public KlasseSaveJsonSpec() {
   }
@@ -188,6 +193,31 @@ public class KlasseSaveJsonSpec {
     this.klasseAktivStatus = klasseAktivStatus;
   }
 
+  public KlasseSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -201,12 +231,13 @@ public class KlasseSaveJsonSpec {
         Objects.equals(this.bezeichnung, klasseSaveJson.bezeichnung) &&
         Objects.equals(this.klassenstufe, klasseSaveJson.klassenstufe) &&
         Objects.equals(this.klasseSchulart, klasseSaveJson.klasseSchulart) &&
-        Objects.equals(this.klasseAktivStatus, klasseSaveJson.klasseAktivStatus);
+        Objects.equals(this.klasseAktivStatus, klasseSaveJson.klasseAktivStatus) &&
+        Objects.equals(this.version, klasseSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(schule, bezeichnung, klassenstufe, klasseSchulart, klasseAktivStatus);
+    return Objects.hash(schule, bezeichnung, klassenstufe, klasseSchulart, klasseAktivStatus, version);
   }
 
   @Override
@@ -218,6 +249,7 @@ public class KlasseSaveJsonSpec {
     sb.append("    klassenstufe: ").append(toIndentedString(klassenstufe)).append("\n");
     sb.append("    klasseSchulart: ").append(toIndentedString(klasseSchulart)).append("\n");
     sb.append("    klasseAktivStatus: ").append(toIndentedString(klasseAktivStatus)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

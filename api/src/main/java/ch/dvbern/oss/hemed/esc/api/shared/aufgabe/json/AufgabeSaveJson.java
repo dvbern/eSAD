@@ -10,6 +10,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.labels.json.LabelJson;
 import ch.dvbern.oss.hemed.esc.api.features.search.json.KindSearchJson;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.types.AufgabeStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataJson;
 import jakarta.validation.Valid;
@@ -24,7 +25,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Value
 @AllArgsConstructor
 @JaxDTO
-public class AufgabeSaveJson {
+public class AufgabeSaveJson implements SaveJsonWithOptimisticLocking {
 
     @NotNull
     @NotEmpty
@@ -81,4 +82,8 @@ public class AufgabeSaveJson {
     @Nullable
     @Schema(required = false, implementation = URLSchema.class)
     private URL link;
+
+    @NotNull
+    @Schema(required = true)
+    private long version;
 }

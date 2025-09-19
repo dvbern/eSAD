@@ -1,13 +1,10 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren;
 
-import java.io.Serial;
-import java.util.List;
-import java.util.stream.Stream;
-
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.Util;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungHoerenUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungHoerenOtoskopiePresentIfReq;
@@ -17,15 +14,15 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
+
+import java.io.Serial;
+import java.util.List;
+import java.util.stream.Stream;
 
 @Entity
 @Table(
@@ -38,7 +35,8 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckUntersuchungHoerenOtoskopiePresentIfReq
-public class UntersuchungHoerenOtoskopie extends AbstractTenantEntity<UntersuchungHoerenOtoskopie> {
+public class UntersuchungHoerenOtoskopie extends AbstractTenantEntity<UntersuchungHoerenOtoskopie>
+        implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 1446398935944895849L;
@@ -56,8 +54,8 @@ public class UntersuchungHoerenOtoskopie extends AbstractTenantEntity<Untersuchu
     private String otoskopieRechts;
 
     @Nullable
-    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH)
-    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH)
+    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
+    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String otoskopieRechtsResultatAndere;
 
     @Nullable
@@ -68,13 +66,13 @@ public class UntersuchungHoerenOtoskopie extends AbstractTenantEntity<Untersuchu
     private String otoskopieLinks;
 
     @Nullable
-    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH)
-    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH)
+    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
+    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String otoskopieLinksResultatAndere;
 
     @Nullable
-    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH)
-    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH)
+    @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
+    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String bemerkungen;
 
     @NonNull

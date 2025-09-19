@@ -138,7 +138,7 @@ public class KindBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public KindBuilder withSozialversicherungsNummer(@NonNull SozialversicherungsNummer sozNummer) {
+    public KindBuilder withSozialversicherungsNummer(@Nullable SozialversicherungsNummer sozNummer) {
         this.kind.setSozialversicherungsNummer(sozNummer);
         return this;
     }
@@ -185,7 +185,18 @@ public class KindBuilder {
     @NonNull
     @CanIgnoreReturnValue
     public KindBuilder withExternalImportInfo(@NonNull String externalId, boolean aktiv, @NonNull OffsetDateTime now) {
-        ExternalImportInfo importInfo = new ExternalImportInfo(externalId, aktiv, now, now);
+        return withExternalImportInfo(externalId, aktiv, now, now);
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public KindBuilder withExternalImportInfo(
+        @NonNull String externalId,
+        boolean aktiv,
+        @NonNull OffsetDateTime now,
+        @Nullable OffsetDateTime lastImport
+    ) {
+        ExternalImportInfo importInfo = new ExternalImportInfo(externalId, aktiv, now, lastImport);
         this.kind.setExternalImportInfo(importInfo);
         return this;
     }

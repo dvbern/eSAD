@@ -20,6 +20,8 @@ import { Observable }                                        from 'rxjs';
 import { BackendEntityId } from '@dvb/data-access-types';
 import { UntersuchungMassnahmenJson } from '../model/untersuchung-massnahmen-json';
 import { UntersuchungMassnahmenSaveJson } from '../model/untersuchung-massnahmen-save-json';
+import { UntersuchungSehenMassnahmenJson } from '../model/untersuchung-sehen-massnahmen-json';
+import { UntersuchungSehenMassnahmenSaveJson } from '../model/untersuchung-sehen-massnahmen-save-json';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -30,10 +32,21 @@ export interface UntersuchungMassnahmenServiceGetUntersuchungMassnahmenRequestPa
     einladungId: BackendEntityId;
 }
 
+export interface UntersuchungMassnahmenServiceGetUntersuchungMassnahmenSehenRequestParams {
+    anlassId: BackendEntityId;
+    einladungId: BackendEntityId;
+}
+
 export interface UntersuchungMassnahmenServiceSaveUntersuchungMassnahmenRequestParams {
     anlassId: BackendEntityId;
     einladungId: BackendEntityId;
     untersuchungMassnahmenSaveJson: UntersuchungMassnahmenSaveJson;
+}
+
+export interface UntersuchungMassnahmenServiceSaveUntersuchungMassnahmenSehenRequestParams {
+    anlassId: BackendEntityId;
+    einladungId: BackendEntityId;
+    untersuchungSehenMassnahmenSaveJson: UntersuchungSehenMassnahmenSaveJson;
 }
 
 
@@ -177,6 +190,81 @@ export class UntersuchungMassnahmenService {
     }
 
     /**
+     * Get Untersuchung Massnahmen Sehen
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getUntersuchungMassnahmenSehen$(requestParameters?: UntersuchungMassnahmenServiceGetUntersuchungMassnahmenSehenRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<UntersuchungSehenMassnahmenJson>;
+    public getUntersuchungMassnahmenSehen$(requestParameters?: UntersuchungMassnahmenServiceGetUntersuchungMassnahmenSehenRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<UntersuchungSehenMassnahmenJson>>;
+    public getUntersuchungMassnahmenSehen$(requestParameters?: UntersuchungMassnahmenServiceGetUntersuchungMassnahmenSehenRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<UntersuchungSehenMassnahmenJson>>;
+    public getUntersuchungMassnahmenSehen$(requestParameters?: UntersuchungMassnahmenServiceGetUntersuchungMassnahmenSehenRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const anlassId = requestParameters?.anlassId;
+        if (anlassId === null || anlassId === undefined) {
+            throw new Error('Required parameter anlassId was null or undefined when calling getUntersuchungMassnahmenSehen.');
+        }
+        const einladungId = requestParameters?.einladungId;
+        if (einladungId === null || einladungId === undefined) {
+            throw new Error('Required parameter einladungId was null or undefined when calling getUntersuchungMassnahmenSehen.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (SecurityScheme) required
+        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
+        if (localVarCredential) {
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/massnahmen/sehen`;
+        return this.httpClient.request<UntersuchungSehenMassnahmenJson>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * Save Untersuchung Massnahmen
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -255,6 +343,95 @@ export class UntersuchungMassnahmenService {
             {
                 context: localVarHttpContext,
                 body: untersuchungMassnahmenSaveJson,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Save Untersuchung Massnahmen Sehen
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public saveUntersuchungMassnahmenSehen$(requestParameters?: UntersuchungMassnahmenServiceSaveUntersuchungMassnahmenSehenRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<UntersuchungSehenMassnahmenJson>;
+    public saveUntersuchungMassnahmenSehen$(requestParameters?: UntersuchungMassnahmenServiceSaveUntersuchungMassnahmenSehenRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<UntersuchungSehenMassnahmenJson>>;
+    public saveUntersuchungMassnahmenSehen$(requestParameters?: UntersuchungMassnahmenServiceSaveUntersuchungMassnahmenSehenRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<UntersuchungSehenMassnahmenJson>>;
+    public saveUntersuchungMassnahmenSehen$(requestParameters?: UntersuchungMassnahmenServiceSaveUntersuchungMassnahmenSehenRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const anlassId = requestParameters?.anlassId;
+        if (anlassId === null || anlassId === undefined) {
+            throw new Error('Required parameter anlassId was null or undefined when calling saveUntersuchungMassnahmenSehen.');
+        }
+        const einladungId = requestParameters?.einladungId;
+        if (einladungId === null || einladungId === undefined) {
+            throw new Error('Required parameter einladungId was null or undefined when calling saveUntersuchungMassnahmenSehen.');
+        }
+        const untersuchungSehenMassnahmenSaveJson = requestParameters?.untersuchungSehenMassnahmenSaveJson;
+        if (untersuchungSehenMassnahmenSaveJson === null || untersuchungSehenMassnahmenSaveJson === undefined) {
+            throw new Error('Required parameter untersuchungSehenMassnahmenSaveJson was null or undefined when calling saveUntersuchungMassnahmenSehen.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (SecurityScheme) required
+        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
+        if (localVarCredential) {
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/massnahmen/sehen`;
+        return this.httpClient.request<UntersuchungSehenMassnahmenJson>('put', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: untersuchungSehenMassnahmenSaveJson,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

@@ -22,12 +22,15 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.Arzt;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.docmerger.MergeSourceCreatorService;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.docmerger.RootMergeSource;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.ArztBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
@@ -36,9 +39,13 @@ import org.junit.jupiter.api.Test;
 class MergeSourceCreatorServiceITest {
 
     private final FixtureService fixtureService;
-
     private final MergeSourceCreatorService mergeSourceCreatorService;
+    private final TenantProducer tenantProducer;
 
+    @BeforeEach
+    void setUp() {
+        tenantProducer.setCurrentTenant(TenantEnum.BS);
+    }
 
     @Test
     @TestAsAdminBS

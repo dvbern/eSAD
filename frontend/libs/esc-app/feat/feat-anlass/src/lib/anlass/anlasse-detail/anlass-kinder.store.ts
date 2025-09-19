@@ -1,5 +1,5 @@
-import { withDevtools } from '@angular-architects/ngrx-toolkit';
-import { computed, inject, Injectable } from '@angular/core';
+import {withDevtools} from '@angular-architects/ngrx-toolkit';
+import {computed, inject, Injectable} from '@angular/core';
 import {
   AnlassFlagsJson,
   EinladungenService,
@@ -14,7 +14,7 @@ import {
   NotizSaveJson,
   PrinterService,
 } from '@dvb/data-access-backend';
-import { BackendEntityId } from '@dvb/data-access-types';
+import {BackendEntityId} from '@dvb/data-access-types';
 import {
   AppErrorHandlerService,
   AppNotificationStore,
@@ -22,9 +22,9 @@ import {
   Loader,
   rxMethod,
 } from '@dvb/util-angular';
-import { ensurePropsFlat, isNotNullish, requireValue } from '@dvb/util-shared';
-import { TranslocoService } from '@jsverse/transloco';
-import { tapResponse } from '@ngrx/operators';
+import {ensurePropsFlat, isNotNullish, requireValue} from '@dvb/util-shared';
+import {TranslocoService} from '@jsverse/transloco';
+import {tapResponse} from '@ngrx/operators';
 import {
   EmptyFeatureResult,
   patchState,
@@ -34,9 +34,9 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { catchError, concatMap, exhaustMap, filter, from, last, map, mergeMap, of, pipe, switchMap, tap } from 'rxjs';
-import { AnlassStore } from '../anlass.store';
-import { EinladungNotizTyp } from './anlass-planung/notizen/einladung-notiz.page.component';
+import {catchError, exhaustMap, filter, map, of, pipe, switchMap, tap} from 'rxjs';
+import {AnlassStore} from '../anlass.store';
+import {EinladungNotizTyp} from './anlass-planung/notizen/einladung-notiz.page.component';
 
 export interface EinladungJsonEnhanced extends EinladungJson {
   nachkontrolleString: string;
@@ -63,7 +63,7 @@ export class AnlassKinderStore extends signalStore(
   { protectedState: false },
   withDevtools('anlassKinder') as SignalStoreFeature<EmptyFeatureResult, EmptyFeatureResult>,
   withState(initialState),
-  withComputed(({ einladungen, alleKinder, selectedIdsForUntersuchung }) => ({
+  withComputed(({ einladungen, alleKinder, selectedIdsForUntersuchung, selectedEinladungId }) => ({
     selectedForUntersuchung: computed(() =>
       einladungen().filter((currentEinladung: EinladungJsonEnhanced) =>
         selectedIdsForUntersuchung().includes(currentEinladung.id),
@@ -78,6 +78,13 @@ export class AnlassKinderStore extends signalStore(
       ),
     ),
     countEinladungen: computed(() => einladungen().length),
+    selectedEinladung: computed( ():  EinladungJsonEnhanced | undefined  =>
+       einladungen().find(({id}) => id === selectedEinladungId())
+    ),
+    nameKind: computed(() : string => {
+      const kind = einladungen().find(({id}) => id === selectedEinladungId())?.kind;
+      return kind ? kind.data.vorname + ' ' + kind.data.name : '';
+    })
   })),
   withMethods((store, translateService = inject(TranslocoService)) => ({
     markEinladungForUntersuchung(id: BackendEntityId): void {
@@ -107,9 +114,6 @@ export class AnlassKinderStore extends signalStore(
     },
     setSelectedEinladungId(einladungId: BackendEntityId | undefined): void {
       patchState(store, { selectedEinladungId: einladungId });
-    },
-    getSelectedEinladung(): EinladungJsonEnhanced | undefined {
-      return store.einladungen().find((el: EinladungJsonEnhanced) => el.id === store.selectedEinladungId());
     },
     getSprachenMap(): Map<string, number> {
       const map = new Map();
@@ -275,7 +279,9 @@ export class AnlassKinderStore extends signalStore(
     ),
   );
 
-  einladungAbmelden = rxMethod<{ einladungId: BackendEntityId; einladungSaveJson: EinladungSaveJson }>(
+  einladungAbmelden = rxMethod<{
+    einladungId: BackendEntityId; einladungSaveJson: EinladungSaveJson; onSuccess: () => void
+  }>(
     pipe(
       exhaustMap(params =>
         this.saveLoader.tapLoading$(
@@ -285,22 +291,25 @@ export class AnlassKinderStore extends signalStore(
             einladungSaveJson: params.einladungSaveJson,
           }),
           error => this.#appErrorHandlerService.handleError(error),
+        ).pipe(
+          tapResponse({
+            next: result => {
+              patchState(this, {
+                einladungen: [...this.einladungen().map(el => (el.id === result.id ? this.enhanceEinladung(result) : el))],
+              });
+              this.#appNotficationService.addNotification({
+                alertType: 'success',
+                id: crypto.randomUUID(),
+                summary: this.transloco.translate('anlass.kinder.abmeldegrund.hinterlegen.success'),
+                autohide: true,
+              });
+              params.onSuccess();
+            },
+            error: console.error,
+          }),
         ),
       ),
-      tapResponse({
-        next: result => {
-          patchState(this, {
-            einladungen: [...this.einladungen().map(el => (el.id === result.id ? this.enhanceEinladung(result) : el))],
-          });
-          this.#appNotficationService.addNotification({
-            alertType: 'success',
-            id: crypto.randomUUID(),
-            summary: this.transloco.translate('anlass.kinder.abmeldegrund.hinterlegen.success'),
-            autohide: true,
-          });
-        },
-        error: console.error,
-      }),
+
     ),
   );
 

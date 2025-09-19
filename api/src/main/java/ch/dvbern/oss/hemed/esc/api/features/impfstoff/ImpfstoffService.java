@@ -21,6 +21,12 @@ public class ImpfstoffService {
     }
 
     @NonNull
+    public Impfstoff persistWithOptimisticLocking(@NonNull Impfstoff impfstoff, @NonNull Long versionFromFrontend) {
+        impfstoffRepo.persistWithOptimisticLocking(impfstoff, versionFromFrontend);
+        return impfstoff;
+    }
+
+    @NonNull
     public List<Impfstoff> findAll() {
         return impfstoffRepo.findAll();
     }

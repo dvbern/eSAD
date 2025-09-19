@@ -44,9 +44,12 @@ public class AppFailureMessage {
     }
 
     @NonNull
-    public static AppFailureMessage changedByOtherUser() {
+    public static AppFailureMessage changedByOtherUser(AbstractEntity<?> entity) {
         return build(I18nMessage.of(
-            "AppFailure.CHANGED_BY_OTHER_USER"
+            "AppFailure.CHANGED_BY_OTHER_USER",
+            ENTITY_NAME, entity.getClass().getSimpleName(),
+            "versionBackend", entity.getVersion(),
+            "versionFrontend", entity.getVersionFromFrontend()
         ));
     }
 
@@ -164,6 +167,13 @@ public class AppFailureMessage {
             "entity", entity.getSimpleName(),
             "id", id,
             "username", username));
+    }
+
+    @NonNull
+    public static AppFailureMessage updateFachRollenNotAllowed() {
+        return build(I18nMessage.of(
+            "AppFailure.UPDATE_FACHROLLEN_NOT_ALLOWED"
+        ));
     }
 
     private final I18nMessage i18nMessage;

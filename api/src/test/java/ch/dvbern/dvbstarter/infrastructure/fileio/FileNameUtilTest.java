@@ -10,6 +10,12 @@ import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.mandant.TranslatedString;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.tika.mime.MediaType;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -17,12 +23,6 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.tika.mime.MediaType;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 import static ch.dvbern.dvbstarter.shared.i18n.datetime.DateConst.ZONE_ID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,17 +48,17 @@ class FileNameUtilTest {
         List<FileData> files = List.of(
             new FileData(
                 FileTyp.IMPFAUSWEIS,
-                "12-03-2025_Max-Mustermann_Impfausweis.pdf",
+                new CleanFileName("12-03-2025_Max-Mustermann_Impfausweis.pdf"),
                 fileInfoS3).setTimestampErstellt(
                 OffsetDateTime.now(this.clockProvider.getClock()).minusMinutes(2)),
             new FileData(
                 FileTyp.IMPFAUSWEIS,
-                "12-03-2025_Max-Mustermann_Impfausweis_2.pdf",
+                new CleanFileName("12-03-2025_Max-Mustermann_Impfausweis_2.pdf"),
                 fileInfoS3).setTimestampErstellt(
                 OffsetDateTime.now(this.clockProvider.getClock()).minusMinutes(1)),
             new FileData(
                 FileTyp.IMPFAUSWEIS,
-                "12-03-2025_Max-Mustermann_Impfausweis_3.pdf",
+                new CleanFileName("12-03-2025_Max-Mustermann_Impfausweis_3.pdf"),
                 fileInfoS3).setTimestampErstellt(
                 OffsetDateTime.now(this.clockProvider.getClock())));
         String formattedName = "Max-Mustermann";
@@ -99,8 +99,13 @@ class FileNameUtilTest {
         assertThat(result.getPrefix()).isEqualTo(expectedTyp);
     }
 
-    @Test
-    void testGenerateFileWithCorrectNameForImpfausweis() {
+
+    @ParameterizedTest
+    @CsvSource({
+        "Mustermann Max, 11-04-2025_Mustermann-Max_Impfausweis_2.pdf",
+        "Tester Theophylus\tTab, 11-04-2025_Tester-TheophylusTab_Impfausweis_2.pdf"
+    })
+    void testGenerateFileWithCorrectNameForImpfausweis(@NonNull String formattedName, @NonNull String expectedCalculatedName) {
         // ARRANGE
         LocalDate today = this.appClock.localDateTime().now().toLocalDate();
 
@@ -109,14 +114,14 @@ class FileNameUtilTest {
         List<FileData> files = List.of(
             new FileData(
                 fileTyp,
-                "12-03-2025_Mustermann-Max_Impfausweis.pdf",
+                new CleanFileName("12-03-2025_Mustermann-Max_Impfausweis.pdf"),
                 fileInfoS3).setTimestampErstellt(
                 OffsetDateTime.now(this.clockProvider.getClock())));
-        String formattedName = "Mustermann Max";
+
 
         // ACT
         String originalFileName = fileInfoS3.getFileName().getFileName();
-        String calculatedFileName = FileNameUtil.calculateAutomaticFilename(
+        CleanFileName calculatedFileName = FileNameUtil.calculateAutomaticFilename(
             files,
             today,
             formattedName,
@@ -128,8 +133,8 @@ class FileNameUtilTest {
         assertThat(result.getFileTyp()).isEqualTo(fileTyp);
         assertThat(result.getFileInfoBucket().getFileName().getFileName()).isEqualTo("File.pdf");
 
-        String expectedCalculatedName = "11-04-2025_Mustermann-Max_Impfausweis_2.pdf";
-        assertThat(result.getCalculatedFileName()).isEqualTo(expectedCalculatedName);
+
+        assertThat(result.getCalculatedFileName()).hasToString(expectedCalculatedName);
     }
 
     @Test

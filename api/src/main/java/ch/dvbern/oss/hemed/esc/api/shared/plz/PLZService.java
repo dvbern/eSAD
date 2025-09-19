@@ -40,7 +40,12 @@ public class PLZService {
         if (plz == null) {
             return Collections.emptyList();
         }
-
+        List<PLZData> orteForPLZ = plzDataRepo.findOrteForPLZ(plz);
+        if (!orteForPLZ.isEmpty()) {
+            return orteForPLZ;
+        }
+        LOG.info("ESC-INFO: Could not find any imported PLZ Data, triggering import...");
+        importIntoDatabase();
         return plzDataRepo.findOrteForPLZ(plz);
     }
 }

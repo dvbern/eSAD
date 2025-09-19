@@ -18,6 +18,7 @@ export interface UntersuchungImpfstatusKrankheitSaveJson {
     impfschutzGegeben?: boolean;
     impfempfehlung?: boolean;
     impfentscheid?: boolean;
+    version: number;
 }
 export namespace UntersuchungImpfstatusKrankheitSaveJson {
 }

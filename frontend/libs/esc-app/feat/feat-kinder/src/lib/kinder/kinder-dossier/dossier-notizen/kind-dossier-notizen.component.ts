@@ -59,8 +59,10 @@ export class KindDossierNotizenComponent {
       .sort((a, b) => b.entityInfo.timestampErstellt.localeCompare(a.entityInfo.timestampErstellt)),
   );
 
-  canEditNotizen = this.benutzerStore.createHasRequiredRoleSig(hasNotizEditBerechtigung());
-
+  canEditNotizen = computed(() =>
+    this.benutzerStore.createHasRequiredRoleSig(hasNotizEditBerechtigung())() &&
+    this.dossierStore.isKindAktiv()
+  );
   protected readonly Path = Path;
   protected readonly fromISODateTimeString = fromISODateTimeString;
   protected readonly fromISODateString = fromISODateString;

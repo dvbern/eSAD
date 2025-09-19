@@ -108,10 +108,10 @@ FIELD_anlass.sehen.nahvisus: normal/rechts reduziert
 FIELD_anlass.sehen.nahvisusSehschaerfeRechts: 300
 FIELD_anlass.sehen.nahvisusSehschaerfeLinks: 400
 FIELD_anlass.sehen.strabismus: Eso, Hyper
-FIELD_anlass.sehen.strabismusAuspraegung: Intermittierend
-FIELD_anlass.sehen.strabismusAuftreten: Rechts
+FIELD_anlass.sehen.strabismusAuspraegung: intermittierend
+FIELD_anlass.sehen.strabismusAuftreten: rechts
 FIELD_anlass.sehen.inspektion: auffällig
-FIELD_anlass.sehen.konvergenz: nicht geprüft worden
+FIELD_anlass.sehen.konvergenz: nicht geprüft
 FIELD_anlass.sehen.beurteilung: siehe Begleitbrief
 FIELD_anlass.sehen.motilitaet: unauffällig
 
@@ -283,7 +283,7 @@ GROESSE GEWICHT
 
 FIELD_anlass.groesseGewicht.groesseWert: 150 cm
 FIELD_anlass.groesseGewicht.groesseBeurteilung: altersentsprechend
-FIELD_anlass.groesseGewicht.gewichtWert: 70 kg
+FIELD_anlass.groesseGewicht.gewichtWert: 70.0 kg
 FIELD_anlass.groesseGewicht.gewichtBeurteilung: starkes Übergewicht
 FIELD_anlass.groesseGewicht.bmiWert: 31.1
 FIELD_anlass.groesseGewicht.bmiBeurteilung: >95%ile

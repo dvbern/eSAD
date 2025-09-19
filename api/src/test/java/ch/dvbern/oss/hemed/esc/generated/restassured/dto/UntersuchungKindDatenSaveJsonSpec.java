@@ -42,7 +42,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   UntersuchungKindDatenSaveJsonSpec.JSON_PROPERTY_SCHULHAUSNUMMER,
   UntersuchungKindDatenSaveJsonSpec.JSON_PROPERTY_KLASSENSTUFE,
   UntersuchungKindDatenSaveJsonSpec.JSON_PROPERTY_KLASSENTYP,
-  UntersuchungKindDatenSaveJsonSpec.JSON_PROPERTY_KLASSE
+  UntersuchungKindDatenSaveJsonSpec.JSON_PROPERTY_KLASSE,
+  UntersuchungKindDatenSaveJsonSpec.JSON_PROPERTY_VERSION
 })
 @JsonTypeName("UntersuchungKindDatenSaveJson")
 @lombok.AllArgsConstructor
@@ -95,6 +96,10 @@ public class UntersuchungKindDatenSaveJsonSpec {
   public static final String JSON_PROPERTY_KLASSE = "klasse";
   @jakarta.annotation.Nullable
   private String klasse;
+
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @jakarta.annotation.Nonnull
+  private Long version;
 
   public UntersuchungKindDatenSaveJsonSpec() {
   }
@@ -399,6 +404,31 @@ public class UntersuchungKindDatenSaveJsonSpec {
     this.klasse = klasse;
   }
 
+  public UntersuchungKindDatenSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
+    
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Get version
+   * @return version
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getVersion() {
+    return version;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setVersion(@jakarta.annotation.Nonnull Long version) {
+    this.version = version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -419,12 +449,13 @@ public class UntersuchungKindDatenSaveJsonSpec {
         Objects.equals(this.schulhausnummer, untersuchungKindDatenSaveJson.schulhausnummer) &&
         Objects.equals(this.klassenstufe, untersuchungKindDatenSaveJson.klassenstufe) &&
         Objects.equals(this.klassentyp, untersuchungKindDatenSaveJson.klassentyp) &&
-        Objects.equals(this.klasse, untersuchungKindDatenSaveJson.klasse);
+        Objects.equals(this.klasse, untersuchungKindDatenSaveJson.klasse) &&
+        Objects.equals(this.version, untersuchungKindDatenSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, vorname, geschlecht, geburtsdatum, nationalitaet, schulhaus, quartier, schulkreis, schulhausnummer, klassenstufe, klassentyp, klasse);
+    return Objects.hash(name, vorname, geschlecht, geburtsdatum, nationalitaet, schulhaus, quartier, schulkreis, schulhausnummer, klassenstufe, klassentyp, klasse, version);
   }
 
   @Override
@@ -443,6 +474,7 @@ public class UntersuchungKindDatenSaveJsonSpec {
     sb.append("    klassenstufe: ").append(toIndentedString(klassenstufe)).append("\n");
     sb.append("    klassentyp: ").append(toIndentedString(klassentyp)).append("\n");
     sb.append("    klasse: ").append(toIndentedString(klasse)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
     return sb.toString();
   }

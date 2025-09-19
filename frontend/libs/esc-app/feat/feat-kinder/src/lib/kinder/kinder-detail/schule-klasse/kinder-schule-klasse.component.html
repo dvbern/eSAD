@@ -51,7 +51,7 @@
     [mode]="dossierStore.detailMode()"
     [isCreate]="false"
     [saving]="store.saveLoader.isLoading()"
-    [canEdit]="canEdit()"
+    [canEdit]="canEdit() && dossierStore.isKindAktiv()"
     routeToEdit="../edit"
     [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP]"
     [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"/>

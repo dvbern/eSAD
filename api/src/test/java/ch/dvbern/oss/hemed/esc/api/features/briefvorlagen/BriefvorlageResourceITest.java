@@ -1,12 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.features.briefvorlagen;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.function.Function;
-
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
@@ -36,6 +29,12 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,7 +93,7 @@ class BriefvorlageResourceITest extends AbstractITest {
         // ARRANGE
         File wordFile = TestUtil.loadTestWord();
         BriefvorlageSaveJson saveJson =
-            new BriefvorlageSaveJson("Meine vorlage", BriefvorlageType.ANLASS, AppLanguages.DE);
+            new BriefvorlageSaveJson("Meine vorlage", BriefvorlageType.ANLASS, AppLanguages.DE, 0L);
         String s = objectMapper.writeValueAsString(saveJson);
 
         // ACT
@@ -122,7 +121,7 @@ class BriefvorlageResourceITest extends AbstractITest {
 
         Briefvorlage originalBriefvorlage = briefvorlageService.persist(briefvorlage);
         BriefvorlageSaveJson updateSaveJson =
-            new BriefvorlageSaveJson("Neuer name!", originalBriefvorlage.getType(), originalBriefvorlage.getSprache());
+            new BriefvorlageSaveJson("Neuer name!", originalBriefvorlage.getType(), originalBriefvorlage.getSprache(), 0L);
         File newFile = TestUtil.loadTestWord();
 
         String updateSaveJsonString = objectMapper.writeValueAsString(updateSaveJson);
@@ -190,7 +189,8 @@ class BriefvorlageResourceITest extends AbstractITest {
             new BriefvorlageSaveJson(
                 "Neuer name can be set by superuser!",
                 originalBriefvorlage.getType(),
-                originalBriefvorlage.getSprache());
+                originalBriefvorlage.getSprache(),
+                0L);
         File newFile = TestUtil.loadTestWord();
 
         String updateSaveJsonString = objectMapper.writeValueAsString(updateSaveJson);
@@ -228,7 +228,8 @@ class BriefvorlageResourceITest extends AbstractITest {
             new BriefvorlageSaveJson(
                 "this should not work!",
                 originalBriefvorlage.getType(),
-                originalBriefvorlage.getSprache());
+                originalBriefvorlage.getSprache(),
+                0L);
         File newFile = TestUtil.loadTestWord();
 
         String updateSaveJsonString = objectMapper.writeValueAsString(updateSaveJson);
@@ -249,7 +250,7 @@ class BriefvorlageResourceITest extends AbstractITest {
         // ARRANGE
         File briefvorlageFile = TestUtil.loadBriefvorlageFile(BriefvorlageType.ANLASS);
         BriefvorlageSaveJson saveJson =
-            new BriefvorlageSaveJson("testbrief", BriefvorlageType.ANLASS, AppLanguages.DE);
+            new BriefvorlageSaveJson("testbrief", BriefvorlageType.ANLASS, AppLanguages.DE, 0L);
         String s = objectMapper.writeValueAsString(saveJson);
 
         BriefvorlageJsonSpec briefvorlageJsonSpec = api.briefvorlageResourceCreateBriefvorlage()
@@ -303,7 +304,7 @@ class BriefvorlageResourceITest extends AbstractITest {
         // ARRANGE
         File wordFile = TestUtil.loadTestWord();
         BriefvorlageSaveJson saveJson =
-            new BriefvorlageSaveJson("AnlassVorlage", BriefvorlageType.ANLASS, AppLanguages.DE);
+            new BriefvorlageSaveJson("AnlassVorlage", BriefvorlageType.ANLASS, AppLanguages.DE, 0L);
         String s = objectMapper.writeValueAsString(saveJson);
 
         BriefvorlageJsonSpec briefvorlage = api.briefvorlageResourceCreateBriefvorlage()
@@ -333,12 +334,12 @@ class BriefvorlageResourceITest extends AbstractITest {
         // ARRANGE
         File briefvorlageAnlassFile = TestUtil.loadBriefvorlageFile(BriefvorlageType.ANLASS);
         BriefvorlageSaveJson briefvorlageAnlass =
-            new BriefvorlageSaveJson("anlass-testbrief", BriefvorlageType.ANLASS, AppLanguages.DE);
+            new BriefvorlageSaveJson("anlass-testbrief", BriefvorlageType.ANLASS, AppLanguages.DE, 0L);
         String briefvolageAnlassString = objectMapper.writeValueAsString(briefvorlageAnlass);
 
         File briefvorlageKindFile = TestUtil.loadBriefvorlageFile(BriefvorlageType.KIND);
         BriefvorlageSaveJson briefvorlageKind =
-            new BriefvorlageSaveJson("kind-testbrief", BriefvorlageType.KIND, AppLanguages.DE);
+            new BriefvorlageSaveJson("kind-testbrief", BriefvorlageType.KIND, AppLanguages.DE, 0L);
         String briefvorlageKindString = objectMapper.writeValueAsString(briefvorlageKind);
 
         BriefvorlageJsonSpec briefvorlageAnlassResponse = api.briefvorlageResourceCreateBriefvorlage()
