@@ -62,20 +62,21 @@ export class UntersuchungImpfungenChecklistComponent implements DirtyMarker {
       nameCheckbox: 'checkEinwilligungVorhanden',
       label: 'untersuchung.impfungen.checklist.einverstandnis-vorhanden',
       isVisible:
-        this.anlassStore.selectedEntity()?.anlassConfig?.checkEinwilligungVorhanden !== RequirementSetting.NOT_VISIBLE,
+        this.anlassStore.selectedEntity()?.anlassConfig?.data?.checkEinwilligungVorhanden
+        !== RequirementSetting.NOT_VISIBLE,
     },
     {
       nameCheckbox: 'checkKontraindikationenAbgeklaert',
       label: 'untersuchung.impfungen.checklist.kontraindikationen-abgeklaert',
       isVisible:
-        this.anlassStore.selectedEntity()?.anlassConfig?.checkKontraindikationenAbgeklaert !==
+        this.anlassStore.selectedEntity()?.anlassConfig?.data?.checkKontraindikationenAbgeklaert !==
         RequirementSetting.NOT_VISIBLE,
     },
     {
       nameCheckbox: 'checkDoppelkontrolleImpfentscheidDurchgefuehrt',
       label: 'untersuchung.impfungen.checklist.doppelkontrolle-impfentscheid-gemacht',
       isVisible:
-        this.anlassStore.selectedEntity()?.anlassConfig?.checkDoppelkontrolleImpfentscheidDurchgefuehrt !==
+        this.anlassStore.selectedEntity()?.anlassConfig?.data?.checkDoppelkontrolleImpfentscheidDurchgefuehrt !==
         RequirementSetting.NOT_VISIBLE,
     },
   ];

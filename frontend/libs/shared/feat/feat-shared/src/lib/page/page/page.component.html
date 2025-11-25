@@ -20,14 +20,24 @@
       <!-- SUCHE -->
       <feat-page-global-search/>
 
-      <!-- AUFGABEN -->
+      <!-- NOTIZEN -->
       <button svuiIconOnlyButton="secondary"
               type="button"
-              [icon]="'aufgaben'"
-              [tooltip]="'global.tooltip.aufgaben' | transloco"
-              [badgeContent]="aufgabenStore.numOfOffeneFaelligeAufgaben()"
-              [routerLink]="'/' + Path.AUFGABEN">
+              [icon]="'document'"
+              [tooltip]="'global.tooltip.notizen' | transloco"
+              [routerLink]="'/' + Path.NOTIZEN">
       </button>
+
+      <!-- AUFGABEN -->
+      @if (canViewAufgaben()) {
+        <button svuiIconOnlyButton="secondary"
+                type="button"
+                [icon]="'aufgaben'"
+                [tooltip]="'global.tooltip.aufgaben' | transloco"
+                [badgeContent]="aufgabenStore.numOfOffeneFaelligeAufgaben()"
+                [routerLink]="'/' + Path.AUFGABEN">
+        </button>
+      }
 
       <!-- BENUTZER -->
       @if (benutzerStore.isLoggedIn()) {
@@ -180,6 +190,15 @@
          aria-current="page">{{ 'shared.header.menu.system' | transloco }}</a>
     </div>
   }
+  @if (canViewKonfiguration()) {
+    <div class="nav-item">
+      <a class="nav-link"
+         [routerLink]="'/config'"
+         [routerLinkActive]="'active'"
+         aria-current="page">{{ 'shared.header.menu.config' | transloco }}</a>
+    </div>
+  }
+
   @if (canViewPlayground()) {
     <div class="nav-item">
       <a class="nav-link" [routerLink]="'/playground'" [routerLinkActive]="'active'" aria-current="page"

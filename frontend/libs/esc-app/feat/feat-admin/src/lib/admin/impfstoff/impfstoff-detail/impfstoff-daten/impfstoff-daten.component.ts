@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -23,7 +23,6 @@ import {ImpfstoffDatenForm} from './impfstoff-daten.form';
 @Component({
   selector: 'feat-label-detail.page',
   imports: [
-    CommonModule,
     TranslocoPipe,
     ReactiveFormsModule,
     FormButtonsComponent,
@@ -33,8 +32,8 @@ import {ImpfstoffDatenForm} from './impfstoff-daten.form';
     FormLayoutComponent,
     NgSelectComponent,
     HeadingDirective,
-    TextInputDirective,
-  ],
+    TextInputDirective
+],
   templateUrl: './impfstoff-daten.component.html',
   styles: ':host { display:block;}',
   changeDetection: ChangeDetectionStrategy.OnPush,

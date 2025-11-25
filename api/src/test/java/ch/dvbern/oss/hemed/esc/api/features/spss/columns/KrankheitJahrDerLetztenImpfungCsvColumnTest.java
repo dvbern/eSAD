@@ -3,10 +3,10 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankheit;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfstatusKrankheitBuilder;
 import org.junit.jupiter.params.ParameterizedTest;

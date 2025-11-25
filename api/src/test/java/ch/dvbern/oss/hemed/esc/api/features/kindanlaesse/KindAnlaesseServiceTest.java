@@ -5,12 +5,13 @@ import java.util.List;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.EinladungService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankheitService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungInternService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
 import ch.dvbern.oss.hemed.esc.api.features.kindanlaesse.json.KindAnlassSummaryJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.EinladungBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,10 +25,12 @@ class KindAnlaesseServiceTest {
     private final KindAnlaesseRepo repo = Mockito.mock(KindAnlaesseRepo.class, Mockito.CALLS_REAL_METHODS);
     private final EinladungService einladungService = Mockito.mock(EinladungService.class);
     private final KindAnlaesseService service = new KindAnlaesseService(repo, einladungService);
+    private final AuthorizerService authorizerService = Mockito.mock(AuthorizerService.class);
     private final KindAnlaesseMapper mapper = new KindAnlaesseMapper(
         service,
         Mockito.mock(UntersuchungImpfstatusKrankheitService.class),
-        Mockito.mock(UntersuchungImpfungInternService.class));
+        Mockito.mock(UntersuchungImpfungInternService.class),
+        authorizerService);
 
     private final FixedClockProvider clockProvider = FixedClockProvider.now();
     private final AppClock appClock = new AppClock(clockProvider);
@@ -46,6 +49,8 @@ class KindAnlaesseServiceTest {
         // Arrange
         Mockito.doAnswer(invocation -> List.of(einladung1, einladung2))
             .when(repo).findAllEinladungForKind(ArgumentMatchers.any());
+        Mockito.doAnswer(invocation -> true)
+            .when(authorizerService).hasReadAuthorizationAnlassListe(ArgumentMatchers.any());
 
         // Act
         List<KindAnlassSummaryJson> mappedList = mapper.findAllForKind(ID.random(Kind.class));

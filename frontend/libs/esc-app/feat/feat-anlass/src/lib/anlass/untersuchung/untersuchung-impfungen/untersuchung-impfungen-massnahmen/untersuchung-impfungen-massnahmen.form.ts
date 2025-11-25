@@ -1,16 +1,32 @@
-import {DestroyRef} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {NonNullableFormBuilder} from '@angular/forms';
-import {InformationEltern, UntersuchungImpfungenMassnahmenSaveJson} from '@dvb/data-access-backend';
-import {globalConstants} from '@dvb/feat-shared';
-import {AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensureProps, Nullish, requireValue, trimToUndefined} from '@dvb/util-shared';
-import {distinctUntilChanged} from 'rxjs';
+import { DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NonNullableFormBuilder, Validators } from '@angular/forms';
+import {
+  AnlassConfigJson,
+  ImpfungenMassnahmenEmpfehlung,
+  InformationEltern,
+  RequirementSetting,
+  UntersuchungImpfungenMassnahmenSaveJson,
+} from '@dvb/data-access-backend';
+import { globalConstants } from '@dvb/feat-shared';
+import { AppValidators, BaseForm } from '@dvb/util-angular';
+import { ensureProps, Nullish, requireValue, trimToUndefined } from '@dvb/util-shared';
+import { distinctUntilChanged } from 'rxjs';
+import { markAllMultiCheckboxesAsTouched } from '../../untersuchung.util';
 
 type Config = {
-  fb: NonNullableFormBuilder,
-  destroyRef: DestroyRef,
+  fb: NonNullableFormBuilder;
+  destroyRef: DestroyRef;
+};
+
+function makeEmpfehlungSubForm(fb: NonNullableFormBuilder, value: ImpfungenMassnahmenEmpfehlung) {
+  return fb.group({
+    resultat: fb.control<ImpfungenMassnahmenEmpfehlung>({ value, disabled: true }),
+    isChecked: fb.control<boolean>(false),
+  });
 }
+
+export type EmpfehlungSubFormType = ReturnType<typeof makeEmpfehlungSubForm>;
 
 function makeForm(config: Config) {
   const fb = config.fb;
@@ -23,12 +39,14 @@ function makeForm(config: Config) {
     informationEltern: fb.control<InformationEltern | undefined>(undefined),
     informationHausarzt: fb.control<boolean>(false),
     rueckfrageHausarzt: fb.control<boolean>(false),
+    empfehlungArray: fb.array<EmpfehlungSubFormType>([]),
+    achtung: fb.control<string>('', AppValidators.textareaMaxLength2000()),
     bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength2000()),
-    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
+    version: fb.control<number | Nullish>({ value: undefined, disabled: true }),
   });
 
-  group.controls.impfberatungMpaDurchgefuehrt.valueChanges.pipe(distinctUntilChanged(),
-    takeUntilDestroyed(config.destroyRef))
+  group.controls.impfberatungMpaDurchgefuehrt.valueChanges
+    .pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
     .subscribe({
       next: value => {
         if (!value) {
@@ -38,18 +56,38 @@ function makeForm(config: Config) {
       error: console.error,
     });
 
+  // Multi-Checkboxen: Wenn eines touched ist aber keines ausgewählt, müssen alle rot werden
+  markAllMultiCheckboxesAsTouched(group.controls.empfehlungArray, config.destroyRef);
+
   return group;
 }
 
-export class UntersuchungImpfungenMassnahmenForm
-  extends BaseForm<ReturnType<typeof makeForm>, UntersuchungImpfungenMassnahmenSaveJson> {
-
+export class UntersuchungImpfungenMassnahmenForm extends BaseForm<
+  ReturnType<typeof makeForm>,
+  UntersuchungImpfungenMassnahmenSaveJson
+> {
   constructor(protected config: Config) {
     super(() => makeForm(config));
   }
 
   resetForm(value: UntersuchungImpfungenMassnahmenSaveJson | undefined): void {
     this.group.reset(value);
+    this.resetEmpfehlung(value);
+  }
+
+  private resetEmpfehlung(value: UntersuchungImpfungenMassnahmenSaveJson | Nullish): void {
+    this.group.controls.empfehlungArray.clear();
+    for (const resultat of Object.values(ImpfungenMassnahmenEmpfehlung)) {
+      const subForm = makeEmpfehlungSubForm(this.config.fb, resultat);
+      subForm.controls.isChecked.reset(!!value?.empfehlung?.find(fv => fv === resultat));
+      this.group.controls.empfehlungArray.push(subForm);
+    }
+  }
+
+  setValidatorsForAnlassConfig(config: AnlassConfigJson): void {
+    if (config.data.untersuchungImpfungAchtung === RequirementSetting.REQUIRED) {
+      this.group.controls.achtung.addValidators(Validators.required);
+    }
   }
 
   public override valueOnValid(): UntersuchungImpfungenMassnahmenSaveJson {
@@ -63,6 +101,8 @@ export class UntersuchungImpfungenMassnahmenForm
       informationEltern: value.informationEltern,
       informationHausarzt: value.informationHausarzt,
       rueckfrageHausarzt: value.rueckfrageHausarzt,
+      empfehlung: value.empfehlungArray.filter(i => i.isChecked).map(i => i.resultat),
+      achtung: trimToUndefined(value.achtung),
       bemerkungen: trimToUndefined(value.bemerkungen),
       version: value.version ?? globalConstants.entityPrePersistVersion,
     });

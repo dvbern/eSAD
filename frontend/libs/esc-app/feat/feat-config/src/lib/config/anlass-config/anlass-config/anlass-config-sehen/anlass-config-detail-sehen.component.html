@@ -1,0 +1,278 @@
+<form svuiFormLayout
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="store.detailMode()">
+  <h2 svuiHeading="formSection">{{ 'anlassconfig.detail.tab.sehen' | transloco }}</h2>
+
+
+  <!-- Sehen BrilleLinsen-->
+  <svui-form-control [label]="'anlassconfig.label.sehenBrilleLinsen' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenBrilleLinsen | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenBrilleLinsen"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Sehen Farbsehen-->
+  <svui-form-control [label]="'anlassconfig.label.sehenFarbsehen' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenFarbsehen | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenFarbsehen"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Sehen Tafel-->
+  <svui-form-control [label]="'anlassconfig.label.sehenTafel' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenTafel | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenTafel"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Sehen Fernvisus-->
+  <svui-form-control [label]="'anlassconfig.label.sehenFernvisus' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenFernvisus | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenFernvisus"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Sehen StereoTest-->
+  <svui-form-control [label]="'anlassconfig.label.sehenStereoTest' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenStereoTest | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenStereoTest"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Sehen Strabismus-->
+  <svui-form-control [label]="'anlassconfig.label.sehenStrabismus' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenStrabismus | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenStrabismus"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Sehen Inspektion-->
+  <svui-form-control [label]="'anlassconfig.label.sehenInspektion' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenInspektion | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenInspektion"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Sehen Konvergenz-->
+  <svui-form-control [label]="'anlassconfig.label.sehenKonvergenz' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenKonvergenz | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenKonvergenz"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Sehen Motilitaet-->
+  <svui-form-control [label]="'anlassconfig.label.sehenMotilitaet' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenMotilitaet | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenMotilitaet"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Sehen Nahvisus-->
+  <svui-form-control [label]="'anlassconfig.label.sehenNahvisus' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenNahvisus | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenNahvisus"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- sehenEmpfehlung-->
+  <svui-form-control [label]="'anlassconfig.label.sehenEmpfehlung' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenEmpfehlung | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenEmpfehlung"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Sehen Bemerkungen-->
+  <svui-form-control [label]="'anlassconfig.label.sehenBemerkungen' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenBemerkungen | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenBemerkungen"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Sehen BemerkungenFragebogen-->
+  <svui-form-control [label]="'anlassconfig.label.sehenBemerkungenFragebogen' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenBemerkungenFragebogen | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenBemerkungenFragebogen"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Sehen Massnahmen-->
+  <svui-form-control [label]="'anlassconfig.label.sehenMassnahmen' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenMassnahmen | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenMassnahmen"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+
+  <!--messages for whole form -->
+  <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="store.detailMode()"
+    [isCreate]="store.selectedIsNew()"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="anlassConfigHelperService.canEdit()"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+    [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"
+  />
+</form>

@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, effect, inject, untracked} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {ISODateString} from '@dvb/data-access-types';
@@ -22,16 +22,14 @@ import {TimetravelForm} from './timetravel-form';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     CardComponent,
     HeadingDirective,
     ReactiveFormsModule,
     TextInputDirective,
     ButtonComponent,
     TranslocoPipe,
-    StandaloneControlComponent,
-
-  ],
+    StandaloneControlComponent
+],
   templateUrl: './timetravel.component.html',
   styleUrl: './timetravel.component.scss',
 })

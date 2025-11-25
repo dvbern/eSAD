@@ -125,10 +125,13 @@
               [multiple]="true"
               [compareWith]="compareBenutzerFn"
             >
-              @for (benutzer of this.editBriefvorlagenBenutzerOptions(); track benutzer.id) {
-                <ng-option [value]="benutzer">
-                  {{ benutzer.fullName }}
-                </ng-option>
+              <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+              @if (this.editBriefvorlagenBenutzerOptions()) {
+                @for (benutzer of this.editBriefvorlagenBenutzerOptions(); track benutzer.id) {
+                  <ng-option [value]="benutzer">
+                    {{ benutzer.fullName }}
+                  </ng-option>
+                }
               }
             </ng-select>
           </svui-table-filter>

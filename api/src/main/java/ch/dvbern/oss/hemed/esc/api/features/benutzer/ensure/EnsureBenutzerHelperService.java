@@ -16,6 +16,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerBerechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerLoginInfos;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,7 +77,7 @@ public class EnsureBenutzerHelperService {
         existingUser.setVorname(webTokenData.getGivenName());
         existingUser.setNachname(webTokenData.getFamilyName());
         existingUser.setEmail(webTokenData.getEmail());
-        existingUser.setFachRollen(webTokenData.getFachRollen().stream().toList());
+        existingUser.setFachRollen(EnumSetUtil.toEnumSet(webTokenData.getFachRollen().stream().toList(), FachRolle.class));
         existingUser.setTitel(webTokenData.getTitleClaim());
         existingUser.setTelefon(NormalizedPhoneNumber.parse(webTokenData.getPhoneNumberClaim()));
 

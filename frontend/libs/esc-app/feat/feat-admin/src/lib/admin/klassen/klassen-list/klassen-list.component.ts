@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EntityAktivStatus, KlasseJson } from '@dvb/data-access-backend';
@@ -25,7 +25,6 @@ import { KlassenListFilterForm } from './klassen-list-filter.form';
 @Component({
   selector: 'feat-klassen-list',
   imports: [
-    CommonModule,
     TableComponent,
     SortableComponent,
     TableFilterComponent,
@@ -40,8 +39,8 @@ import { KlassenListFilterForm } from './klassen-list-filter.form';
     ColWidthComponent,
     NgOptionComponent,
     NgSelectComponent,
-    NgSelectDirective,
-  ],
+    NgSelectDirective
+],
   templateUrl: './klassen-list.component.html',
   styleUrl: './klassen-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

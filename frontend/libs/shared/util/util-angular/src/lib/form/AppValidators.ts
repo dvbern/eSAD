@@ -1,6 +1,6 @@
 import {AbstractControl, FormArray, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {isISOYearMonthString} from '@dvb/data-access-types';
-import {AhvNummerUtil, isFilledIn, isNullish, toDateStr} from '@dvb/util-shared';
+import {AhvNummerUtil, getSchoolYearFromISODateString, isFilledIn, isNullish, toDateStr} from '@dvb/util-shared';
 import {addYears, subYears} from 'date-fns';
 
 /**
@@ -37,6 +37,7 @@ export const AppValidatorKeys = {
   unique: 'unique',
   zeitVonAfterZeitBis: 'zeitVonAfterZeitBis',
   zeroDecimalPlaces: 'zeroDecimalPlaces',
+  changeSchuljahr: 'changeSchuljahr',
 } as const satisfies ValidatorKeyMap<AppValidators>;
 
 const MIN_KIND_AGE = 3;
@@ -164,6 +165,23 @@ export class AppValidators {
     const minDate: Date = subYears(currentDate, MAX_KIND_AGE);
     const maxDate: Date = subYears(currentDate, MIN_KIND_AGE);
     return this.dateRange(minDate, maxDate);
+  }
+
+  static minDate(currentDate: Date): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (isNullish(control.value)) {
+        return null;
+      }
+      const dateErrors = AppValidators.date()(control);
+      if (dateErrors) {
+        return dateErrors;
+      }
+      const inputDate = new Date(control.value);
+      if (inputDate.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0)) {
+        return {[AppValidatorKeys.dateRange]: {beforeDate: toDateStr(currentDate), afterDate: '31.12.9999'}};
+      }
+      return null;
+    }
   }
 
   static dbMaxLength(): ValidatorFn {
@@ -402,5 +420,35 @@ export class AppValidators {
 
       return null;
     };
+  }
+
+  static datumStaysInSameSchuljahr(isNew: boolean, nameDatumNeu: string, nameDatumOriginal: string): ValidatorFn {
+    return (group: AbstractControl) => {
+      if (isNew) {
+        return null;
+      }
+      const datumNew = group.get(nameDatumNeu);
+      const datumOriginal = group.get(nameDatumOriginal);
+
+      if (datumNew && datumOriginal) {
+
+        // Überprüfen ob es sich um ein valides Datum handelt.
+        const dateErrors = AppValidators.date()(datumNew);
+
+        if (!dateErrors && getSchoolYearFromISODateString(datumNew?.value) !== getSchoolYearFromISODateString(datumOriginal.value)) {
+          datumNew?.setErrors({changeSchuljahr: true});
+          return null;
+        } else {
+          const errors = {...datumNew?.errors};
+          delete errors['changeSchuljahr'];
+          if (Object.keys(errors).length === 0) {
+            datumNew?.setErrors(null);
+          } else {
+            datumNew?.setErrors(errors);
+          }
+        }
+      }
+      return null;
+    }
   }
 }

@@ -20,10 +20,10 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungIntern;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungKrankheitImmunitaet;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.ImpfStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungKrankheitImmunitaet;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.Impfstoff;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import org.checkerframework.checker.nullness.qual.NonNull;

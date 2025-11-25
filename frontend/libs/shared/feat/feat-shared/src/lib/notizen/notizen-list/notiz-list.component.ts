@@ -1,7 +1,7 @@
-import {DatePipe, NgIf } from '@angular/common';
+import {DatePipe} from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
-import {LabelJson, NotizStatus } from '@dvb/data-access-backend';
+import {BenutzerOptionJson, LabelJson, NotizStatus} from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
 import {
   BadgeComponent,
@@ -9,6 +9,7 @@ import {
   CollapsibleMenuComponent,
   ColWidthComponent,
   EmptyTableMessageComponent,
+  IconComponent,
   NgSelectDirective,
   SortableComponent,
   TableComponent,
@@ -49,6 +50,7 @@ import {NotizenListFilterForm} from './notizen-list-filter.form';
     TextInputDirective,
     TranslatedStringPipe,
     ColWidthComponent,
+    IconComponent,
   ],
   templateUrl: './notiz-list.component.html',
   styleUrl: './notiz-list.component.scss',
@@ -66,12 +68,15 @@ export class NotizListComponent {
   loading = input.required<boolean>();
   notizen = input.required<NotizJsonEnhanced[]>();
   deleteLoading = input.required<boolean>();
+  showKind = input.required<boolean>();
+
   readonly removeNotiz = output<BackendEntityId>();
   readonly goToNotiz = output<BackendEntityId>();
 
   readonly notizStatus = Object.values(NotizStatus);
   protected readonly Path = Path;
   protected readonly compareFnLabel = compareFn<LabelJson>;
+  protected readonly compareBenutzerFn = compareFn<BenutzerOptionJson>;
 
   // we need to create a new computed property to avoid errors that occur because the input is not set during
   // construction

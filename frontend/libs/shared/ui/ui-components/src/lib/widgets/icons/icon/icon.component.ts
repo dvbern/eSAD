@@ -31,6 +31,7 @@ import {
   heroClipboardSolid,
   heroClockSolid,
   heroDocumentArrowDownSolid,
+  heroDocumentTextSolid,
   heroEllipsisVerticalSolid,
   heroEyeSolid,
   heroFlagSolid,
@@ -40,6 +41,7 @@ import {
   heroMagnifyingGlassSolid,
   heroMapPinSolid,
   heroMicrophoneSolid,
+  heroPaperClipSolid,
   heroPencilSolid,
   heroPlusSolid,
   heroScaleSolid,
@@ -58,10 +60,12 @@ export const IconUseCases = [
   'aufgaben',
   'aufgeklappt',
   'birthdate',
+  'bueroklammer',
   'check',
   'check-circle',
   'close',
   'divers',
+  'document',
   'doctor',
   'edit',
   'escada_item',
@@ -148,11 +152,13 @@ export class IconComponent {
       case 'aufgaben': return null;
       case 'aufgeklappt': return heroChevronUpSolid;
       case 'birthdate': return heroCakeSolid;
+      case 'bueroklammer': return heroPaperClipSolid;
       case 'check': return heroCheckSolid;
       case 'check-circle': return heroCheckCircleSolid;
       case 'close': return heroXMarkSolid;
       case 'divers': return bootstrapGenderAmbiguous;
       case 'doctor': return null;
+      case 'document': return heroDocumentTextSolid;
       case 'edit': return heroPencilSolid;
       case 'escada_item' : return heroLinkSolid;
       case 'eye': return heroEyeSolid;

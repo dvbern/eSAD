@@ -153,7 +153,7 @@ public class DocumentQueueService {
     @Transactional(TxType.REQUIRES_NEW)
     public void storeResult(@NonNull ID<DocumentQueue> id, byte[] content) {
         DocumentQueue documentQueue = getById(id);
-        LocalDate today = appClock.localDateTime().now().toLocalDate();
+        LocalDate today = appClock.getToday();
         CleanFileName calculatedFileName = FileNameUtil.calculateAutomaticFilename(
             List.of(),
             today,

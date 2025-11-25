@@ -27,7 +27,6 @@ import { Configuration }                                     from '../configurat
 
 
 export interface NotizenServiceAddNotizFileRequestParams {
-    kindId: BackendEntityId;
     notizId: BackendEntityId;
     file?: Blob;
 }
@@ -42,19 +41,16 @@ export interface NotizenServiceCreateRequestParams {
 }
 
 export interface NotizenServiceDeleteNotizRequestParams {
-    kindId: BackendEntityId;
     notizId: BackendEntityId;
 }
 
 export interface NotizenServiceDownloadNotizFileRequestParams {
     fileId: BackendEntityId;
-    kindId: BackendEntityId;
     notizId: BackendEntityId;
 }
 
 export interface NotizenServiceDownloadNotizFileSyncRequestParams {
     fileId: BackendEntityId;
-    kindId: BackendEntityId;
     notizId: BackendEntityId;
 }
 
@@ -63,18 +59,15 @@ export interface NotizenServiceFindAllForKindRequestParams {
 }
 
 export interface NotizenServiceGetNotizRequestParams {
-    kindId: BackendEntityId;
     notizId: BackendEntityId;
 }
 
 export interface NotizenServiceRemoveNotizFileRequestParams {
     fileId: BackendEntityId;
-    kindId: BackendEntityId;
     notizId: BackendEntityId;
 }
 
 export interface NotizenServiceUpdateNotizRequestParams {
-    kindId: BackendEntityId;
     notizId: BackendEntityId;
     file?: Blob;
     file2?: Blob;
@@ -171,10 +164,6 @@ export class NotizenService {
     public addNotizFile$(requestParameters?: NotizenServiceAddNotizFileRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<NotizJson>>;
     public addNotizFile$(requestParameters?: NotizenServiceAddNotizFileRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<NotizJson>>;
     public addNotizFile$(requestParameters?: NotizenServiceAddNotizFileRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        const kindId = requestParameters?.kindId;
-        if (kindId === null || kindId === undefined) {
-            throw new Error('Required parameter kindId was null or undefined when calling addNotizFile.');
-        }
         const notizId = requestParameters?.notizId;
         if (notizId === null || notizId === undefined) {
             throw new Error('Required parameter notizId was null or undefined when calling addNotizFile.');
@@ -245,7 +234,7 @@ export class NotizenService {
             }
         }
 
-        let localVarPath = `/api/dossiers/${this.configuration.encodeParam({name: "kindId", value: kindId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/notizen/${this.configuration.encodeParam({name: "notizId", value: notizId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/file`;
+        let localVarPath = `/api/notizen/${this.configuration.encodeParam({name: "notizId", value: notizId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/file`;
         return this.httpClient.request<NotizJson>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -390,10 +379,6 @@ export class NotizenService {
     public deleteNotiz$(requestParameters?: NotizenServiceDeleteNotizRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
     public deleteNotiz$(requestParameters?: NotizenServiceDeleteNotizRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
     public deleteNotiz$(requestParameters?: NotizenServiceDeleteNotizRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        const kindId = requestParameters?.kindId;
-        if (kindId === null || kindId === undefined) {
-            throw new Error('Required parameter kindId was null or undefined when calling deleteNotiz.');
-        }
         const notizId = requestParameters?.notizId;
         if (notizId === null || notizId === undefined) {
             throw new Error('Required parameter notizId was null or undefined when calling deleteNotiz.');
@@ -440,7 +425,7 @@ export class NotizenService {
             }
         }
 
-        let localVarPath = `/api/dossiers/${this.configuration.encodeParam({name: "kindId", value: kindId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/notizen/${this.configuration.encodeParam({name: "notizId", value: notizId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
+        let localVarPath = `/api/notizen/${this.configuration.encodeParam({name: "notizId", value: notizId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
         return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -467,10 +452,6 @@ export class NotizenService {
         const fileId = requestParameters?.fileId;
         if (fileId === null || fileId === undefined) {
             throw new Error('Required parameter fileId was null or undefined when calling downloadNotizFile.');
-        }
-        const kindId = requestParameters?.kindId;
-        if (kindId === null || kindId === undefined) {
-            throw new Error('Required parameter kindId was null or undefined when calling downloadNotizFile.');
         }
         const notizId = requestParameters?.notizId;
         if (notizId === null || notizId === undefined) {
@@ -508,7 +489,7 @@ export class NotizenService {
         }
 
 
-        let localVarPath = `/api/dossiers/${this.configuration.encodeParam({name: "kindId", value: kindId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/notizen/${this.configuration.encodeParam({name: "notizId", value: notizId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/file/${this.configuration.encodeParam({name: "fileId", value: fileId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
+        let localVarPath = `/api/notizen/${this.configuration.encodeParam({name: "notizId", value: notizId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/file/${this.configuration.encodeParam({name: "fileId", value: fileId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
         return this.httpClient.request('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -535,10 +516,6 @@ export class NotizenService {
         const fileId = requestParameters?.fileId;
         if (fileId === null || fileId === undefined) {
             throw new Error('Required parameter fileId was null or undefined when calling downloadNotizFileSync.');
-        }
-        const kindId = requestParameters?.kindId;
-        if (kindId === null || kindId === undefined) {
-            throw new Error('Required parameter kindId was null or undefined when calling downloadNotizFileSync.');
         }
         const notizId = requestParameters?.notizId;
         if (notizId === null || notizId === undefined) {
@@ -576,11 +553,77 @@ export class NotizenService {
         }
 
 
-        let localVarPath = `/api/dossiers/${this.configuration.encodeParam({name: "kindId", value: kindId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/notizen/${this.configuration.encodeParam({name: "notizId", value: notizId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/file/${this.configuration.encodeParam({name: "fileId", value: fileId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/sync`;
+        let localVarPath = `/api/notizen/${this.configuration.encodeParam({name: "notizId", value: notizId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/file/${this.configuration.encodeParam({name: "fileId", value: fileId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/sync`;
         return this.httpClient.request('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: "blob",
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Find All
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public findAll$(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<NotizListJson>;
+    public findAll$(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<NotizListJson>>;
+    public findAll$(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<NotizListJson>>;
+    public findAll$(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (SecurityScheme) required
+        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
+        if (localVarCredential) {
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/notizen`;
+        return this.httpClient.request<NotizListJson>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
@@ -671,10 +714,6 @@ export class NotizenService {
     public getNotiz$(requestParameters?: NotizenServiceGetNotizRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<NotizJson>>;
     public getNotiz$(requestParameters?: NotizenServiceGetNotizRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<NotizJson>>;
     public getNotiz$(requestParameters?: NotizenServiceGetNotizRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        const kindId = requestParameters?.kindId;
-        if (kindId === null || kindId === undefined) {
-            throw new Error('Required parameter kindId was null or undefined when calling getNotiz.');
-        }
         const notizId = requestParameters?.notizId;
         if (notizId === null || notizId === undefined) {
             throw new Error('Required parameter notizId was null or undefined when calling getNotiz.');
@@ -722,7 +761,7 @@ export class NotizenService {
             }
         }
 
-        let localVarPath = `/api/dossiers/${this.configuration.encodeParam({name: "kindId", value: kindId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/notizen/${this.configuration.encodeParam({name: "notizId", value: notizId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
+        let localVarPath = `/api/notizen/${this.configuration.encodeParam({name: "notizId", value: notizId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
         return this.httpClient.request<NotizJson>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -749,10 +788,6 @@ export class NotizenService {
         const fileId = requestParameters?.fileId;
         if (fileId === null || fileId === undefined) {
             throw new Error('Required parameter fileId was null or undefined when calling removeNotizFile.');
-        }
-        const kindId = requestParameters?.kindId;
-        if (kindId === null || kindId === undefined) {
-            throw new Error('Required parameter kindId was null or undefined when calling removeNotizFile.');
         }
         const notizId = requestParameters?.notizId;
         if (notizId === null || notizId === undefined) {
@@ -801,7 +836,7 @@ export class NotizenService {
             }
         }
 
-        let localVarPath = `/api/dossiers/${this.configuration.encodeParam({name: "kindId", value: kindId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/notizen/${this.configuration.encodeParam({name: "notizId", value: notizId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/file/${this.configuration.encodeParam({name: "fileId", value: fileId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
+        let localVarPath = `/api/notizen/${this.configuration.encodeParam({name: "notizId", value: notizId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/file/${this.configuration.encodeParam({name: "fileId", value: fileId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
         return this.httpClient.request<NotizJson>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -825,10 +860,6 @@ export class NotizenService {
     public updateNotiz$(requestParameters?: NotizenServiceUpdateNotizRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<NotizJson>>;
     public updateNotiz$(requestParameters?: NotizenServiceUpdateNotizRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<NotizJson>>;
     public updateNotiz$(requestParameters?: NotizenServiceUpdateNotizRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        const kindId = requestParameters?.kindId;
-        if (kindId === null || kindId === undefined) {
-            throw new Error('Required parameter kindId was null or undefined when calling updateNotiz.');
-        }
         const notizId = requestParameters?.notizId;
         if (notizId === null || notizId === undefined) {
             throw new Error('Required parameter notizId was null or undefined when calling updateNotiz.');
@@ -924,7 +955,7 @@ export class NotizenService {
             }
         }
 
-        let localVarPath = `/api/dossiers/${this.configuration.encodeParam({name: "kindId", value: kindId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/notizen/${this.configuration.encodeParam({name: "notizId", value: notizId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
+        let localVarPath = `/api/notizen/${this.configuration.encodeParam({name: "notizId", value: notizId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
         return this.httpClient.request<NotizJson>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

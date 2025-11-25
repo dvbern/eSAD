@@ -2,11 +2,9 @@ package ch.dvbern.oss.hemed.esc.api.shared.benutzer;
 
 import java.io.Serial;
 import java.time.OffsetDateTime;
-import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
@@ -16,7 +14,9 @@ import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumberConver
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -35,7 +35,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
@@ -63,9 +62,6 @@ public class Benutzer extends AbstractTenantEntity<Benutzer> implements EntityWi
     @Serial
     private static final long serialVersionUID = -4471131500166716925L;
 
-    public static final ID<Benutzer> SYSTEM_ADMIN_ID =
-        ID.parse("11111111-1111-1111-1111-111111111111", Benutzer.class);
-    public static final EmailAddress SYSTEM_ADMIN_EMAIL = EmailAddress.fromString("dev-esc@dvbern.ch");
     public static final ID<Benutzer> SYSTEM_ADMIN_BS_ID =
         ID.parse("11111111-1111-1111-1111-111111111112", Benutzer.class);
     public static final ID<Benutzer> SYSTEM_ADMIN_BE_ID =
@@ -112,8 +108,8 @@ public class Benutzer extends AbstractTenantEntity<Benutzer> implements EntityWi
     private BenutzerLoginInfos loginInfos;
 
     @Nullable
-    @Size(max = DbConst.DB_DEFAULT_MAX_LENGTH)
-    @Column(nullable = true)
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private String fachRollen;
@@ -145,29 +141,22 @@ public class Benutzer extends AbstractTenantEntity<Benutzer> implements EntityWi
         return vorname + ' ' + nachname;
     }
 
-    public void setFachRollen(@NonNull List<FachRolle> fachRollen) {
-        this.fachRollen = mapRollenlistToString(fachRollen);
+    public void setFachRollen(@NonNull EnumSet<FachRolle> fachRollen) {
+        this.fachRollen = EnumSetUtil.toString(fachRollen);
     }
 
     @NonNull
-    public static String mapRollenlistToString(@NonNull Collection<FachRolle> fachRollen) {
-        return fachRollen.stream()
-            .sorted()
-            .map(FachRolle::name)
-            .reduce((a, b) -> a + ", " + b)
-            .orElse("");
+    public EnumSet<FachRolle> getFachRollen() {
+        return EnumSetUtil.fromString(FachRolle.class, fachRollen);
     }
 
     @NonNull
-    public List<FachRolle> getFachRollen() {
-        if (fachRollen == null) {
-            return List.of();
-        }
-        return Stream.of(fachRollen.split(","))
-            .map(StringUtils::trim)
-            .filter(StringUtils::isNotBlank)
-            .map(FachRolle::valueOf)
-            .toList();
+    public static ID<Benutzer> getSystemAdminId(@NonNull TenantEnum tenant) {
+        return switch (tenant) {
+            case BS -> SYSTEM_ADMIN_BS_ID;
+            case BE -> SYSTEM_ADMIN_BE_ID;
+            case WIN -> SYSTEM_ADMIN_WIN_ID;
+            default -> throw new IllegalArgumentException("Unknown tenant: " + tenant);
+        };
     }
-
 }

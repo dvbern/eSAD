@@ -44,6 +44,11 @@ public class EscadaCsvService {
             LOG.info("ESCADA-CSV-Import: Parsing CSV file");
             csvRows = csvFormat.parse(r);
             List<EscadaCsvDTO> result = new ArrayList<>();
+            if (!csvRows.iterator().hasNext()) {
+                LOG.warn("ESCADA-CSV-Import: The CSV File did not have any content rows. This is no longer allowed since it can lead to unintentional deactivations (see ESC-940)");
+                throw new AppValidationException(AppValidationMessage.invalidCSVFormat(2,0, EscadaCsvDTO.COLUMN_NAMES));
+            }
+
             for (CSVRecord csvRow : csvRows) {
                 EscadaCsvDTO dto = mapRecordToEscadaCsvDTO(csvRow);
                 result.add(dto);

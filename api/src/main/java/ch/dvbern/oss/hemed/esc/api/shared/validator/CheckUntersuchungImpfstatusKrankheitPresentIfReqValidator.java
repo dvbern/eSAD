@@ -17,8 +17,8 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.validator;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankheit;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.checkerframework.checker.nullness.qual.NonNull;
 

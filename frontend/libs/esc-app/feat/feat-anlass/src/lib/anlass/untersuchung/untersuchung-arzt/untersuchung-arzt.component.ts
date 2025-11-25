@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, inject, ViewChild} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {CardInCardComponent, IconComponent} from '@dvb/ui-components';
@@ -14,9 +14,13 @@ import {UntersuchungArztStore} from './untersuchung-arzt.store';
 @Component({
   selector: 'feat-untersuchung-arzt',
   imports: [
-    CommonModule, ReactiveFormsModule, CardInCardComponent, UntersuchungArztBeurteilungComponent,
-    UntersuchungArztBemerkungComponent, IconComponent, TranslocoPipe,
-  ],
+    ReactiveFormsModule,
+    CardInCardComponent,
+    UntersuchungArztBeurteilungComponent,
+    UntersuchungArztBemerkungComponent,
+    IconComponent,
+    TranslocoPipe
+],
   templateUrl: './untersuchung-arzt.component.html',
   styleUrl: './untersuchung-arzt.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

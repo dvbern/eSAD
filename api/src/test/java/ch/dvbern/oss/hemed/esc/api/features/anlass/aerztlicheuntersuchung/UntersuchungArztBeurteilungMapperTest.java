@@ -3,7 +3,8 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung;
 import java.time.LocalDate;
 import java.util.List;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.json.UntersuchungArztBeurteilungSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Blutdruck;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;

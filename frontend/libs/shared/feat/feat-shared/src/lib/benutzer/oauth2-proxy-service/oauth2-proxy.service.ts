@@ -16,10 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {HttpClient, HttpStatusCode} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {asyncScheduler, Observable, of, scheduled, timeout} from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
+import { HttpClient, HttpStatusCode } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { asyncScheduler, Observable, of, scheduled, timeout } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 export interface UserInfo {
   email: string;
@@ -39,10 +39,8 @@ const AUTH_CHECK_TIMEOUT_MS = 3000; // 3 seconds timeout for auth check
 export class OAuth2ProxyService {
 
   public readonly OAUTH2_PROXY_BASEURL = '/oauth2';
+  private http: HttpClient = inject(HttpClient);
 
-  constructor(
-    private http: HttpClient,
-  ) {}
 
   /**
    * Redirects user to the sign-in page (which doubles as sign-out by clearing cookies)

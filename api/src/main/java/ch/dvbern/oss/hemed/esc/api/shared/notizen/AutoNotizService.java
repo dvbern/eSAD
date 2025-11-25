@@ -1,11 +1,17 @@
 package ch.dvbern.oss.hemed.esc.api.shared.notizen;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
@@ -13,6 +19,7 @@ import ch.dvbern.oss.hemed.esc.api.features.labels.LabelService;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizService;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizStatus;
+import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
@@ -25,13 +32,9 @@ import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
-
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -63,6 +66,7 @@ public class AutoNotizService {
             tl.translate("notiz.duplikat.merge.titel"),
             null,
             NotizStatus.ABGESCHLOSSEN,
+            NotizTyp.DEFAULT,
             dossier,
             currentUserService.currentUser(),
             Collections.emptySet(),
@@ -86,7 +90,7 @@ public class AutoNotizService {
                 new Notiz()
             ));
 
-        Notiz impfausweis = einladungSource.getImpfausweis();
+        Notiz impfausweis = einladungSource.getImpfausweisNotiz().orElse(null);
         if (impfausweis != null) {
             String newTitle = tl.translate(
                 "einladung.impfausweis.notiz.title",
@@ -98,16 +102,20 @@ public class AutoNotizService {
             if (existingBemerkungen != null) {
                 sb.append(existingBemerkungen).append('\n');
             }
-            sb.append(tl.translate("einladung.impfausweis.notiz.bemerkung.nachzuegler",
+            sb.append(tl.translate(
+                "einladung.impfausweis.notiz.bemerkung.nachzuegler",
                 PARAM_ANLASSNAME, einladungSource.getAnlass().getFullAnlassTitel(tl)));
             String newBemerkungen = sb.toString();
 
             Notiz copyOfImpfausweis = Notiz.copyFromExisting(impfausweis, newTitle, newBemerkungen);
 
-            einladungSource.setImpfausweis(null);
+            einladungSource.getNotizen().remove(impfausweis);
             notizService.remove(impfausweis.getId());
-            einladungTarget.setImpfausweis(notizService.persist(copyOfImpfausweis));
 
+            List<Notiz> notizen = new ArrayList<>(einladungTarget.getNotizen().stream().toList());
+            Notiz notiz = notizService.persist(copyOfImpfausweis);
+            notizen.add(notiz);
+            einladungTarget.setNotizen(notizen);
         }
     }
 
@@ -122,7 +130,8 @@ public class AutoNotizService {
                 kind,
                 new Notiz()
             ));
-        Notiz fragebogen = einladungSource.getFragebogen();
+        Notiz fragebogen = einladungSource.getFragebogenNotiz().orElse(null);
+
         if (fragebogen != null) {
             String newTitle = tl.translate(
                 "einladung.fragebogen.notiz.title",
@@ -134,16 +143,61 @@ public class AutoNotizService {
             if (existingBemerkungen != null) {
                 sb.append(existingBemerkungen).append('\n');
             }
-            sb.append(tl.translate("einladung.fragebogen.notiz.bemerkung.nachzuegler",
+            sb.append(tl.translate(
+                "einladung.fragebogen.notiz.bemerkung.nachzuegler",
                 PARAM_ANLASSNAME, einladungSource.getAnlass().getFullAnlassTitel(tl)));
             String newBemerkung = sb.toString();
 
             Notiz copyOfFragebogen = Notiz.copyFromExisting(fragebogen, newTitle, newBemerkung);
 
-            einladungSource.setFragebogen(null);
+            einladungSource.getNotizen().remove(fragebogen);
             notizService.remove(fragebogen.getId());
-            einladungTarget.setFragebogen(notizService.persist(copyOfFragebogen));
 
+            List<Notiz> notizen = new ArrayList<>(einladungTarget.getNotizen().stream().toList());
+            Notiz notiz = notizService.persist(copyOfFragebogen);
+            notizen.add(notiz);
+            einladungTarget.setNotizen(notizen);
+        }
+    }
+
+    public void moveAnmeldungBestaetigungNotiz(
+        @NonNull Einladung einladungSource,
+        @NonNull Einladung einladungTarget
+    ) {
+        Kind kind = einladungTarget.getDossier().getKind();
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            kind,
+            AppValidationMessage.cannotEditEntityForInactiveKind(
+                kind,
+                new Notiz()
+            ));
+        Notiz anmeldungBestaetigung = einladungSource.getAnmeldungBestaetigungNotiz().orElse(null);
+
+        if (anmeldungBestaetigung != null) {
+            String newTitle = tl.translate(
+                "einladung.anmeldungBestaetigung.notiz.title",
+                PARAM_ANLASSNAME, einladungTarget.getAnlass().getFullAnlassTitel(tl));
+
+            // Add a note to the existing bemerkungen
+            StringBuilder sb = new StringBuilder();
+            String existingBemerkungen = anmeldungBestaetigung.getBemerkungen();
+            if (existingBemerkungen != null) {
+                sb.append(existingBemerkungen).append('\n');
+            }
+            sb.append(tl.translate(
+                "einladung.anmeldungBestaetigung.notiz.bemerkung.nachzuegler",
+                PARAM_ANLASSNAME, einladungSource.getAnlass().getFullAnlassTitel(tl)));
+            String newBemerkung = sb.toString();
+
+            Notiz copyOfAnmeldungBestaetigung = Notiz.copyFromExisting(anmeldungBestaetigung, newTitle, newBemerkung);
+
+            einladungSource.getNotizen().remove(anmeldungBestaetigung);
+            notizService.remove(anmeldungBestaetigung.getId());
+
+            List<Notiz> notizen = new ArrayList<>(einladungTarget.getNotizen().stream().toList());
+            Notiz notiz = notizService.persist(copyOfAnmeldungBestaetigung);
+            notizen.add(notiz);
+            einladungTarget.setNotizen(notizen);
         }
     }
 
@@ -153,51 +207,54 @@ public class AutoNotizService {
         CleanFileName cleanFileName = new CleanFileName(prefixFilename + '_' + exportKind.getFileInfo().getFileName());
         FileInfoS3 fileInfoS3 = FileInfoS3.of(exportKind.getFileInfo());
         fileInfoS3.setFileName(cleanFileName);
-        Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileInfoS3.getMediaType().toString(), exportKind.getContent(), fileInfoS3);
-        putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
+        Uni<PutObjectResponse> putObjectResponseUni =
+            fileStoreService.uploadToS3Async(fileInfoS3.getMediaType().toString(), exportKind.getContent(), fileInfoS3);
+        PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
+        LOG.info(
+            "Uploaded file to S3, fileIdInBucket: {}, putObjectResponse: {}",
+            fileInfoS3.getFileIdInBucket(),
+            putObjectResponse);
         return new FileData(FileTyp.KINDERDOSSIER, fileInfoS3.getFileName(), fileInfoS3);
     }
 
     @NonNull
     public Notiz createNotizWithLabel(
         @NonNull Notiz notiz,
-        @NonNull ID<Label> labelId
+        @Nullable ID<Label> labelId
     ) {
-        Label label = labelService.getById(labelId);
         Set<Label> desiredLabels = new LinkedHashSet<>(notiz.getLabels());
-        desiredLabels.add(label);
+        if (labelId != null) {
+            Label label = labelService.getById(labelId);
+            desiredLabels.add(label);
+        }
         notiz.setLabels(desiredLabels);
         notiz.setStatus(NotizStatus.ABGESCHLOSSEN);
         return notizService.persist(notiz);
     }
 
     @NonNull
-    public Notiz createImpfausweisNotiz(
+    public Notiz createEinladungNotiz(
         @NonNull Einladung einladung,
         @NonNull Notiz notiz,
         @NonNull List<FileUpload> fileUploads
     ) {
-        Notiz savedNotiz = this.createNotizWithLabel(notiz, Label.ID_LABEL_IMPFAUSWEIS);
+        Notiz savedNotiz = this.createNotizWithLabel(notiz, this.getAutoLabelId(notiz.getTyp()));
         savedNotiz.disableOptimisticLockingCheck();
         for (FileUpload fileUpload : fileUploads) {
             savedNotiz = notizService.addUploadedFile(savedNotiz.getId(), fileUpload);
         }
-        einladung.setImpfausweis(savedNotiz);
+        einladung.getNotizen().add(savedNotiz);
         return savedNotiz;
     }
 
-    @NonNull
-    public Notiz createFragebogenNotiz(
-        @NonNull Einladung einladung,
-        @NonNull Notiz notiz,
-        @NonNull List<FileUpload> fileUploads
-    ) {
-        Notiz savedNotiz = this.createNotizWithLabel(notiz, Label.ID_LABEL_FRAGEBOGEN);
-        savedNotiz.disableOptimisticLockingCheck();
-        for (FileUpload fileUpload : fileUploads) {
-            savedNotiz = notizService.addUploadedFile(savedNotiz.getId(), fileUpload);
-        }
-        einladung.setFragebogen(savedNotiz);
-        return savedNotiz;
+    @Nullable
+    private ID<Label> getAutoLabelId(@NonNull NotizTyp notizTyp) {
+        return switch (notizTyp) {
+            case NotizTyp.FRAGEBOGEN -> Label.ID_LABEL_FRAGEBOGEN;
+            case NotizTyp.ANMELDUNG_BESTAETIGUNG -> Label.ID_LABEL_ANMELDUNG_BESTAETIGUNG;
+            case NotizTyp.IMPFAUSWEIS -> Label.ID_LABEL_IMPFAUSWEIS;
+            case NotizTyp.ABMELDUNG -> Label.ID_LABEL_ABMELDUNGSGRUND;
+            case NotizTyp.DEFAULT -> null;
+        };
     }
 }

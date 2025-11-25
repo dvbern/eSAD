@@ -1,4 +1,4 @@
-import {CommonModule, DatePipe} from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {ImpfStatus, UntersuchungImpfungInternJson, UntersuchungImpfungInternSaveJson} from '@dvb/data-access-backend';

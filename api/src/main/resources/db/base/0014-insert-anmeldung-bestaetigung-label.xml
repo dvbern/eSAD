@@ -1,0 +1,8 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="dvbern" id="2025-11-10-14-40">
+    <sql>
+      INSERT INTO label (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, autolabel, disabled, labeltyp, namede, namefr, aktiv) VALUES ('e84f6525-0f70-4440-bb62-11fd25fea5b1', '2025-11-10 14:40:11.967103 +00:00', '2025-11-10 14:40:11.967103 +00:00', 'liquibase', 'liquibase', 0, 'DEFAULT', true, true, 'NOTIZEN', 'Anmeldung/Bestätigung', 'Anmeldung/Bestätigung', true);
+    </sql>
+  </changeSet>
+</databaseChangeLog>

@@ -15,7 +15,8 @@ package ch.dvbern.oss.hemed.esc.generated.restassured.dto;
 
 import java.util.Objects;
 import java.util.Arrays;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierMedizinischSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierNichtMedizinischSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EntityInfoJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindJsonSpec;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -32,7 +33,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonPropertyOrder({
   DossierJsonSpec.JSON_PROPERTY_ID,
   DossierJsonSpec.JSON_PROPERTY_ENTITY_INFO,
-  DossierJsonSpec.JSON_PROPERTY_DATA,
+  DossierJsonSpec.JSON_PROPERTY_DATA_MEDIZINISCH,
+  DossierJsonSpec.JSON_PROPERTY_DATA_NICHT_MEDIZINISCH,
   DossierJsonSpec.JSON_PROPERTY_KIND
 })
 @JsonTypeName("DossierJson")
@@ -47,9 +49,13 @@ public class DossierJsonSpec {
   @jakarta.annotation.Nonnull
   private EntityInfoJsonSpec entityInfo;
 
-  public static final String JSON_PROPERTY_DATA = "data";
+  public static final String JSON_PROPERTY_DATA_MEDIZINISCH = "dataMedizinisch";
+  @jakarta.annotation.Nullable
+  private DossierMedizinischSaveJsonSpec dataMedizinisch;
+
+  public static final String JSON_PROPERTY_DATA_NICHT_MEDIZINISCH = "dataNichtMedizinisch";
   @jakarta.annotation.Nonnull
-  private DossierSaveJsonSpec data;
+  private DossierNichtMedizinischSaveJsonSpec dataNichtMedizinisch;
 
   public static final String JSON_PROPERTY_KIND = "kind";
   @jakarta.annotation.Nonnull
@@ -108,29 +114,54 @@ public class DossierJsonSpec {
     this.entityInfo = entityInfo;
   }
 
-  public DossierJsonSpec data(@jakarta.annotation.Nonnull DossierSaveJsonSpec data) {
+  public DossierJsonSpec dataMedizinisch(@jakarta.annotation.Nullable DossierMedizinischSaveJsonSpec dataMedizinisch) {
     
-    this.data = data;
+    this.dataMedizinisch = dataMedizinisch;
     return this;
   }
 
   /**
-   * Get data
-   * @return data
+   * Get dataMedizinisch
+   * @return dataMedizinisch
    */
-  @jakarta.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_DATA)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @jakarta.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DATA_MEDIZINISCH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public DossierSaveJsonSpec getData() {
-    return data;
+  public DossierMedizinischSaveJsonSpec getDataMedizinisch() {
+    return dataMedizinisch;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_DATA)
+  @JsonProperty(JSON_PROPERTY_DATA_MEDIZINISCH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDataMedizinisch(@jakarta.annotation.Nullable DossierMedizinischSaveJsonSpec dataMedizinisch) {
+    this.dataMedizinisch = dataMedizinisch;
+  }
+
+  public DossierJsonSpec dataNichtMedizinisch(@jakarta.annotation.Nonnull DossierNichtMedizinischSaveJsonSpec dataNichtMedizinisch) {
+    
+    this.dataNichtMedizinisch = dataNichtMedizinisch;
+    return this;
+  }
+
+  /**
+   * Get dataNichtMedizinisch
+   * @return dataNichtMedizinisch
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_DATA_NICHT_MEDIZINISCH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setData(@jakarta.annotation.Nonnull DossierSaveJsonSpec data) {
-    this.data = data;
+
+  public DossierNichtMedizinischSaveJsonSpec getDataNichtMedizinisch() {
+    return dataNichtMedizinisch;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_DATA_NICHT_MEDIZINISCH)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setDataNichtMedizinisch(@jakarta.annotation.Nonnull DossierNichtMedizinischSaveJsonSpec dataNichtMedizinisch) {
+    this.dataNichtMedizinisch = dataNichtMedizinisch;
   }
 
   public DossierJsonSpec kind(@jakarta.annotation.Nonnull KindJsonSpec kind) {
@@ -169,13 +200,14 @@ public class DossierJsonSpec {
     DossierJsonSpec dossierJson = (DossierJsonSpec) o;
     return Objects.equals(this.id, dossierJson.id) &&
         Objects.equals(this.entityInfo, dossierJson.entityInfo) &&
-        Objects.equals(this.data, dossierJson.data) &&
+        Objects.equals(this.dataMedizinisch, dossierJson.dataMedizinisch) &&
+        Objects.equals(this.dataNichtMedizinisch, dossierJson.dataNichtMedizinisch) &&
         Objects.equals(this.kind, dossierJson.kind);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, entityInfo, data, kind);
+    return Objects.hash(id, entityInfo, dataMedizinisch, dataNichtMedizinisch, kind);
   }
 
   @Override
@@ -184,7 +216,8 @@ public class DossierJsonSpec {
     sb.append("class DossierJsonSpec {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    entityInfo: ").append(toIndentedString(entityInfo)).append("\n");
-    sb.append("    data: ").append(toIndentedString(data)).append("\n");
+    sb.append("    dataMedizinisch: ").append(toIndentedString(dataMedizinisch)).append("\n");
+    sb.append("    dataNichtMedizinisch: ").append(toIndentedString(dataNichtMedizinisch)).append("\n");
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("}");
     return sb.toString();

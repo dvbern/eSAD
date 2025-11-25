@@ -1,8 +1,25 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.shared.util;
 
-import java.util.List;
+import java.util.EnumSet;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Blutdruck;
@@ -15,6 +32,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.MundAndZaehne;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Verhalten;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -82,8 +100,8 @@ public class UntersuchungArztUtil {
         return null;
     }
 
-    @Nullable
-    public static List<MundAndZaehne> getMundAndZaehne(
+    @NonNull
+    public static EnumSet<MundAndZaehne> getMundAndZaehne(
         @NonNull AnlassConfig config,
         @Nullable UntersuchungArztBeurteilung arztBeurteilung,
         @NonNull MundAndZaehne defaultWert
@@ -92,13 +110,13 @@ public class UntersuchungArztUtil {
             if (arztBeurteilung != null && !arztBeurteilung.getMundAndZaehne().isEmpty()) {
                 return arztBeurteilung.getMundAndZaehne();
             }
-            return List.of(defaultWert);
+            return EnumSet.of(defaultWert);
         }
-        return null;
+        return EnumSet.noneOf(MundAndZaehne.class);
     }
 
-    @Nullable
-    public static List<Sprachfaehigkeit> getSprachfaehigkeit(
+    @NonNull
+    public static EnumSet<Sprachfaehigkeit> getSprachfaehigkeit(
         @NonNull AnlassConfig config,
         @Nullable UntersuchungArztBeurteilung arztBeurteilung,
         @NonNull Sprachfaehigkeit defaultWert
@@ -107,9 +125,9 @@ public class UntersuchungArztUtil {
             if (arztBeurteilung != null && !arztBeurteilung.getSprachfaehigkeit().isEmpty()) {
                 return arztBeurteilung.getSprachfaehigkeit();
             }
-            return List.of(defaultWert);
+            return EnumSet.of(defaultWert);
         }
-        return null;
+        return EnumSet.noneOf(Sprachfaehigkeit.class);
     }
 
     @Nullable
@@ -127,8 +145,8 @@ public class UntersuchungArztUtil {
         return null;
     }
 
-    @Nullable
-    public static List<Bewegungsapparat> getBewegungsapparat(
+    @NonNull
+    public static EnumSet<Bewegungsapparat> getBewegungsapparat(
         @NonNull AnlassConfig config,
         @Nullable UntersuchungArztBeurteilung arztBeurteilung,
         @NonNull Bewegungsapparat defaultWert
@@ -137,9 +155,9 @@ public class UntersuchungArztUtil {
             if (arztBeurteilung != null && !arztBeurteilung.getBewegungsapparat().isEmpty()) {
                 return arztBeurteilung.getBewegungsapparat();
             }
-            return List.of(defaultWert);
+            return EnumSet.of(defaultWert);
         }
-        return null;
+        return EnumSet.noneOf(Bewegungsapparat.class);
     }
 
     @Nullable
@@ -172,8 +190,8 @@ public class UntersuchungArztUtil {
         return null;
     }
 
-    @Nullable
-    public static List<Fingeropposition> getFingeropposition(
+    @NonNull
+    public static EnumSet<Fingeropposition> getFingeropposition(
         @NonNull AnlassConfig config,
         @Nullable UntersuchungArztBeurteilung arztBeurteilung,
         @NonNull Fingeropposition defaultWert
@@ -182,8 +200,8 @@ public class UntersuchungArztUtil {
             if (arztBeurteilung != null && !arztBeurteilung.getFingeropposition().isEmpty()) {
                 return arztBeurteilung.getFingeropposition();
             }
-            return List.of(defaultWert);
+            return EnumSet.of(defaultWert);
         }
-        return null;
+        return EnumSet.noneOf(Fingeropposition.class);
     }
 }

@@ -18,10 +18,7 @@ class DeploymentEnvironmentTest {
                 DeploymentEnvironment.LOCAL,
                 DeploymentEnvironment.UNIT_TEST,
                 DeploymentEnvironment.DEV,
-                DeploymentEnvironment.REVIEW,
-                DeploymentEnvironment.IAT,
                 DeploymentEnvironment.UAT,
-                DeploymentEnvironment.DEMO,
                 DeploymentEnvironment.PROD
             );
     }
@@ -31,10 +28,7 @@ class DeploymentEnvironmentTest {
         "LOCAL, false",
         "UNIT_TEST, false",
         "DEV, true",
-        "REVIEW, true",
-        "IAT, true",
         "UAT, true",
-        "DEMO, true",
         "PROD, true",
     })
     void version_filter_is_enabled_for_non_testing_environments_only(DeploymentEnvironment env, boolean expected) {

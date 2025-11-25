@@ -27,11 +27,13 @@ import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH;
+
 @Path("/kinder")
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = Tags.TAG_KINDER)
-@RolesAllowed(BerechtigungName.KINDER_SCHREIBEN)
+@RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed(name = "KindResourceMS", unit = MetricUnits.MILLISECONDS)
 public class KindResource {
@@ -44,7 +46,7 @@ public class KindResource {
 
     @POST
     @NonNull
-    @RolesAllowed(BerechtigungName.KINDER_SCHREIBEN)
+    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
     public KindSaveResultJson createKind(
         @NotNull @NonNull @Valid KindSaveJson kindJson,
         @NotNull @QueryParam("kindSaveMode") KindSaveModeDuplikat kindSaveMode
@@ -56,7 +58,7 @@ public class KindResource {
     @PUT
     @Path("/{kindId}")
     @NonNull
-    @RolesAllowed(BerechtigungName.KINDER_SCHREIBEN)
+    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
     public KindSaveResultJson updateKind(
         @NotNull @NonNull @PathParam("kindId") ID<Kind> kindID,
         @NotNull @NonNull @Valid KindSaveJson kindJson,
@@ -67,7 +69,7 @@ public class KindResource {
 
     @PUT
     @Path("/{kindId}/kindaktivstatus")
-    @RolesAllowed(BerechtigungName.KINDER_SCHREIBEN)
+    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
     public void updateKindAktivStatus(
         @NonNull @NotNull @PathParam("kindId") ID<Kind> kindId,
         @NotNull @NonNull @Valid EntityAktivStatusSaveJson saveJson
@@ -77,14 +79,14 @@ public class KindResource {
 
     @DELETE
     @Path("/{kindId}")
-    @RolesAllowed(BerechtigungName.KINDER_SCHREIBEN)
+    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
     public void removeKind(@NotNull @NonNull @PathParam("kindId") ID<Kind> kindID) {
         kindMapper.remove(kindID);
     }
 
     @GET
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.KINDER_LESEN)
+    @RolesAllowed({BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH})
     public KindListJson findAllKinder() {
         return new KindListJson(kindMapper.findAll());
     }
@@ -92,7 +94,7 @@ public class KindResource {
     @GET
     @Path("/options")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.KINDER_LESEN)
+    @RolesAllowed({BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH})
     public KindListJson findKinderBySchuleOrKlasse(
         @Nullable @QueryParam("schuleId") ID<Schule> schuleId,
         @Nullable @QueryParam("klasseId") ID<Klasse> klasseId
@@ -104,7 +106,7 @@ public class KindResource {
     @GET
     @Path("/{kindId}")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.KINDER_LESEN)
+    @RolesAllowed({BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH})
     public KindJson getKind(
         @NotNull @NonNull @PathParam("kindId") ID<Kind> kindId
     ) {
@@ -114,7 +116,7 @@ public class KindResource {
     @GET
     @Path("/{kindId}/kontaktpersonen")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.KINDER_LESEN)
+    @RolesAllowed({ BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH })
     public KontaktPersonKindListJson findAktivKindKontaktPersonen(
         @NotNull @NonNull @PathParam("kindId") ID<Kind> kindId
     ) {
@@ -124,7 +126,7 @@ public class KindResource {
     @PUT
     @Path("/{kindId}/esad-id-generated")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.KINDER_SCHREIBEN)
+    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
     public KindJson generateEsadIdForKind(
         @NotNull @NonNull @PathParam("kindId") ID<Kind> kindId
     ) {
@@ -134,7 +136,7 @@ public class KindResource {
     @PUT
     @Path("/{kindId}/esad-id-manual")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.KINDER_SCHREIBEN)
+    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
     public KindJson setEsadIdForKind(
         @NotNull @NonNull @PathParam("kindId") ID<Kind> kindId,
         @NotNull @NonNull @Valid EsadIdJson esadIdJson

@@ -5,7 +5,8 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierJson;
-import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierMedizinischSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierNichtMedizinischSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.security.RolesAllowed;
@@ -22,7 +23,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = Tags.TAG_DOSSIER)
-@RolesAllowed(BerechtigungName.KINDER_SCHREIBEN)
+@RolesAllowed(BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed(name = "DossierResourceMS", unit = MetricUnits.MILLISECONDS)
 public class DossierResource {
@@ -32,7 +33,7 @@ public class DossierResource {
     @POST
     @Path("/kind/{kindId}")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.KINDER_LESEN)
+    @RolesAllowed({ BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH })
     public DossierJson getOrCreateDossier(
         @NotNull @NonNull @PathParam("kindId") ID<Kind> kindID
     ) {
@@ -40,19 +41,30 @@ public class DossierResource {
     }
 
     @PUT
-    @Path("/{dossierId}")
+    @Path("/{dossierId}/medizinisch")
     @NonNull
-    @RolesAllowed(BerechtigungName.KINDER_SCHREIBEN)
-    public DossierJson updateDossier(
+    @RolesAllowed(BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH)
+    public DossierJson updateDossierMedizinisch(
         @NotNull @NonNull @PathParam("dossierId") ID<Dossier> dossierID,
-        @NotNull @NonNull @Valid DossierSaveJson dossierJson
+        @NotNull @NonNull @Valid DossierMedizinischSaveJson dossierJson
     ) {
-        return dossierMapper.update(dossierID, dossierJson);
+        return dossierMapper.updateMedizinisch(dossierID, dossierJson);
+    }
+
+    @PUT
+    @Path("/{dossierId}/nicht-medizinisch")
+    @NonNull
+    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
+    public DossierJson updateDossierNichtMedizinisch(
+        @NotNull @NonNull @PathParam("dossierId") ID<Dossier> dossierID,
+        @NotNull @NonNull @Valid DossierNichtMedizinischSaveJson dossierJson
+    ) {
+        return dossierMapper.updateNichtMedizinisch(dossierID, dossierJson);
     }
 
     @DELETE
     @Path("/{dossierId}")
-    @RolesAllowed(BerechtigungName.KINDER_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH)
     public void removeDossier(@NotNull @NonNull @PathParam("dossierId") ID<Dossier> dossierID) {
         dossierMapper.remove(dossierID);
     }

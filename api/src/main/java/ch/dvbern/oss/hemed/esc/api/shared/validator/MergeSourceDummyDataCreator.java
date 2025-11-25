@@ -1,51 +1,70 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.shared.validator;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankheit;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungIntern;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBemerkungFragebogen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.PerzentileBmi;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.PerzentileGewicht;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.PerzentileGroesse;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBemerkungFragebogen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Dezibel;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.HoerenZusaetzlicheAngaben;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassArt;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.BrilleLinsenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.DistanzSehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.FarbsehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.InspektionKonvergenzResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.MotilitaetResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.RequirementSetting;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StereotestResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusAuftretenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusAuspraegungResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.VerwendetTafelResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftretenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.Arzt;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Fachrichtung;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.HpvTeilnahme;
@@ -69,6 +88,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.person.Land;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateTimeRange;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import org.apache.commons.text.RandomStringGenerator;
 import org.apache.commons.text.RandomStringGenerator.Builder;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -92,7 +112,7 @@ public final class MergeSourceDummyDataCreator {
             "Julien",
             NormalizedPhoneNumber.parse("+41 76 123 45 67"),
             null,
-            FachRolle.SCHULAERZTIN.name(),
+            EnumSetUtil.toString(EnumSet.of(FachRolle.SCHULAERZTIN)),
             Collections.emptySet(),
             true,
             null
@@ -109,7 +129,7 @@ public final class MergeSourceDummyDataCreator {
             "Monika",
             NormalizedPhoneNumber.parse("+41 76 123 45 67"),
             null,
-            FachRolle.MPA.name(),
+            EnumSetUtil.toString(EnumSet.of(FachRolle.MPA)),
             Collections.emptySet(),
             true,
             null
@@ -333,17 +353,17 @@ public final class MergeSourceDummyDataCreator {
         untersuchungSehenBeurteilung.setStereotest(StereotestResultat.NORMAL);
         untersuchungSehenBeurteilung.setFarbsehen(FarbsehenResultat.NORMAL);
         untersuchungSehenBeurteilung.setVerwendeteTafel(VerwendetTafelResultat.E_TAFEL);
-        untersuchungSehenBeurteilung.setFernvisus(Arrays.asList(
+        untersuchungSehenBeurteilung.setFernvisus(EnumSet.of(
             DistanzSehenResultat.NORMAL,
             DistanzSehenResultat.LINKS_REDUZIERT));
         untersuchungSehenBeurteilung.setFernvisusRechts(BigDecimal.valueOf(100));
         untersuchungSehenBeurteilung.setFernvisusLinks(BigDecimal.valueOf(200));
-        untersuchungSehenBeurteilung.setNahvisus(Arrays.asList(
+        untersuchungSehenBeurteilung.setNahvisus(EnumSet.of(
             DistanzSehenResultat.NORMAL,
             DistanzSehenResultat.RECHTS_REDUZIERT));
         untersuchungSehenBeurteilung.setNahvisusRechts(BigDecimal.valueOf(300));
         untersuchungSehenBeurteilung.setNahvisusLinks(BigDecimal.valueOf(400));
-        untersuchungSehenBeurteilung.setStrabismus(Arrays.asList(StrabismusResultat.ESO, StrabismusResultat.HYPER));
+        untersuchungSehenBeurteilung.setStrabismus(EnumSet.of(StrabismusResultat.ESO, StrabismusResultat.HYPER));
         untersuchungSehenBeurteilung.setStrabismusAuspraegung(
             StrabismusAuspraegungResultat.INTERMITTIEREND);
         untersuchungSehenBeurteilung.setStrabismusAuftreten(
@@ -352,7 +372,9 @@ public final class MergeSourceDummyDataCreator {
         untersuchungSehenBeurteilung.setKonvergenz(InspektionKonvergenzResultat.NICHT_GEPRUEFT);
         untersuchungSehenBeurteilung.setMotilitaet(MotilitaetResultat.NORMAL);
 
-        untersuchung.setUntersuchungSehenBemerkungFragebogen(new UntersuchungSehenBemerkungFragebogen(untersuchung, "Meine Fragebon Bemerkung für sehen"));
+        untersuchung.setUntersuchungSehenBemerkungFragebogen(new UntersuchungSehenBemerkungFragebogen(
+            untersuchung,
+            "Meine Fragebon Bemerkung für sehen"));
         untersuchung.setUntersuchungSehenBeurteilung(untersuchungSehenBeurteilung);
         untersuchung.setUntersuchungHoerenAudiogramm(getTestUntersuchungHoerenAudiogramm(untersuchung));
         untersuchung.setUntersuchungHoerenOtoskopie(getTestUntersuchungHoerenOtoskopie(untersuchung));
@@ -363,7 +385,8 @@ public final class MergeSourceDummyDataCreator {
 
     @NonNull
     private static UntersuchungHoerenAudiogramm getTestUntersuchungHoerenAudiogramm(
-        @NonNull Untersuchung untersuchung) {
+        @NonNull Untersuchung untersuchung
+    ) {
         UntersuchungHoerenAudiogramm hoerenAudiogramm = new UntersuchungHoerenAudiogramm();
         Audiogramm audiogrammRechts = new Audiogramm(
             Dezibel.DB20,
@@ -384,14 +407,15 @@ public final class MergeSourceDummyDataCreator {
 
         hoerenAudiogramm.setAudiogrammRechts(audiogrammRechts);
         hoerenAudiogramm.setAudiogrammLinks(audiogrammLinks);
-        hoerenAudiogramm.setAudiogrammBeurteilung(Arrays.asList(
+        hoerenAudiogramm.setAudiogrammBeurteilung(EnumSet.of(
             AudiogrammBeurteilung.NORMAL,
             AudiogrammBeurteilung.LINKS_REDUZIERT,
-            AudiogrammBeurteilung.RECHTS_REDUZIERT
-        ));
-        hoerenAudiogramm.setZusaetzlicheAngaben(Arrays.asList(
+            AudiogrammBeurteilung.RECHTS_REDUZIERT));
+        hoerenAudiogramm.setZusaetzlicheAngaben(EnumSet.of(
             HoerenZusaetzlicheAngaben.ERKAELTUNG,
             HoerenZusaetzlicheAngaben.HOERHILFE));
+        hoerenAudiogramm.setEmpfehlung(EnumSet.of(
+            HoerenEmpfehlung.UEBERPRUEFUNG_ARZT));
         hoerenAudiogramm.setBemerkungen("Test Bemerkung für Audiogramm");
         hoerenAudiogramm.setUntersuchung(untersuchung);
         return hoerenAudiogramm;
@@ -400,10 +424,10 @@ public final class MergeSourceDummyDataCreator {
     @NonNull
     private static UntersuchungHoerenOtoskopie getTestUntersuchungHoerenOtoskopie(@NonNull Untersuchung untersuchung) {
         UntersuchungHoerenOtoskopie hoerenOtoskopie = new UntersuchungHoerenOtoskopie();
-        hoerenOtoskopie.setOtoskopieRechts(Arrays.asList(
+        hoerenOtoskopie.setOtoskopieRechts(EnumSet.of(
             OtoskopieResultat.NORMAL,
             OtoskopieResultat.SEROMUKOTYMPANON));
-        hoerenOtoskopie.setOtoskopieLinks(Arrays.asList(
+        hoerenOtoskopie.setOtoskopieLinks(EnumSet.of(
             OtoskopieResultat.ANDERES,
             OtoskopieResultat.TROMMELFELL_CERUMEN));
         hoerenOtoskopie.setBemerkungen("Test Bemerkung für Otoskopie");
@@ -438,75 +462,120 @@ public final class MergeSourceDummyDataCreator {
         return new AnlassConfig(
             AnlassTyp.KLASSE_4,
             DateRange.ofFullRange(),
-            true,
-            RequirementSetting.OPTIONAL,
-            true,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            true,
-            true,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true
+            "Default",
+            true,            // showImpfausweis
+            true,                           // showFragebogen
+            true,                           // showAnmeldungBestaetigung
+            true,                           // showDatenPersonendaten
+            true,                           // showDatenPersonendatenEsadId
+            RequirementSetting.OPTIONAL,    // datenUntersuchung
+            true,                           // showDatenSchule
+            RequirementSetting.OPTIONAL,    // datenBemerkung
+            RequirementSetting.OPTIONAL,    // impfungenUebersicht
+            RequirementSetting.OPTIONAL,    // impfungenListe
+            true,                           // showImpfungenDoppelkontrolle
+            true,                           // impfungenMassnahmeKeineMassnahmen
+            true,                           // impfungenMassnahmeGruppenFolgetermin
+            true,                           // impfungenMassnahmeImpfenFolgetermin
+            true,                           // impfungenMassnahmeEinzelFolgetermin
+            true,                           // impfungenMassnahmeInfoKinderarzt
+            true,                           // impfungenMassnahmeBeratungMPA
+            true,                           // impfungenMassnahmeInfomaterialAbgegeben
+            true,                           // impfungenMassnahmeInfoEltern
+            true,                           // impfungenMassnahmeRueckfrageKinderarzt
+            RequirementSetting.OPTIONAL,    // checkEinwilligungVorhanden
+            RequirementSetting.OPTIONAL,    // checkKontraindikationenAbgeklaert
+            RequirementSetting.OPTIONAL,    // checkDoppelkontrolleImpfentscheidDurchgefuehrt
+            RequirementSetting.OPTIONAL,    // untersuchungImpfungEmpfehlung
+            RequirementSetting.OPTIONAL,    // untersuchungImpfungAchtung
+            RequirementSetting.OPTIONAL,    // untersuchungImpfungBemerkungen
+            RequirementSetting.OPTIONAL,    // sehenBrilleLinsen
+            RequirementSetting.OPTIONAL,    // sehenFarbsehen
+            RequirementSetting.OPTIONAL,    // sehenTafel
+            RequirementSetting.OPTIONAL,    // sehenFernvisus
+            RequirementSetting.OPTIONAL,    // sehenStereoTest
+            RequirementSetting.OPTIONAL,    // sehenStrabismus
+            RequirementSetting.OPTIONAL,    // sehenInspektion
+            RequirementSetting.OPTIONAL,    // sehenKonvergenz
+            RequirementSetting.OPTIONAL,    // sehenMotilitaet
+            RequirementSetting.OPTIONAL,    // sehenNahvisus
+            RequirementSetting.OPTIONAL,    // sehenEmpfehlung
+            RequirementSetting.OPTIONAL,    // sehenBemerkungen
+            RequirementSetting.OPTIONAL,    // sehenBemerkungenFragebogen
+            RequirementSetting.OPTIONAL,    // sehenMassnahmen
+            RequirementSetting.OPTIONAL,    // hoerenAudiogramm
+            RequirementSetting.OPTIONAL,    // hoerenAudiogramm250Hz
+            RequirementSetting.OPTIONAL,    // hoerenAudiogramm8000Hz
+            RequirementSetting.OPTIONAL,    // hoerenAudiogrammBeurteilung
+            RequirementSetting.OPTIONAL,    // hoerenAudiogrammZusaetzlicheAngaben
+            RequirementSetting.OPTIONAL,    // hoerenAudiogrammEmpfehlung
+            RequirementSetting.OPTIONAL,    // hoerenAudiogrammBemerkungen
+            RequirementSetting.OPTIONAL,    // hoerenOtoskopie
+            RequirementSetting.OPTIONAL,    // hoerenOtoskopieBemerkungen
+            RequirementSetting.OPTIONAL,    // groesseGewichtGroesse
+            RequirementSetting.OPTIONAL,    // groesseGewichtGewicht
+            RequirementSetting.OPTIONAL,    // groesseGewichtBmi
+            RequirementSetting.OPTIONAL,    // groesseGewichtGroessePerzentile
+            RequirementSetting.OPTIONAL,    // groesseGewichtGewichtPerzentile
+            RequirementSetting.OPTIONAL,    // groesseGewichtBmiPerzentile
+            EnumSetUtil.toString(EnumSet.allOf(PerzentileBmi.class)),// groesseGewichtBmiPerzentileValues
+            RequirementSetting.OPTIONAL,    // groesseGewichtEmpfehlung
+            RequirementSetting.OPTIONAL,    // groesseGewichtBemerkungen
+            true,                           // showTriageTriage
+            true,                           // showTriageKindWeiterleiten
+            RequirementSetting.OPTIONAL,    // laeusekontrolleBeurteilung
+            RequirementSetting.OPTIONAL,    // laeusekontrolleEmpfehlung
+            RequirementSetting.OPTIONAL,    // laeusekontrolleBemerkungen
+            RequirementSetting.OPTIONAL,    // untersuchungBewegungsapparat
+            RequirementSetting.OPTIONAL,    // untersuchungEinbeinstand
+            RequirementSetting.OPTIONAL,    // untersuchungEinbeinstandRechts
+            RequirementSetting.OPTIONAL,    // untersuchungEinbeinstandLinks
+            RequirementSetting.OPTIONAL,    // untersuchungEinbeinhuepfen
+            RequirementSetting.OPTIONAL,    // untersuchungEinbeinhuepfenRechts
+            RequirementSetting.OPTIONAL,    // untersuchungEinbeinhuepfenLinks
+            RequirementSetting.OPTIONAL,    // untersuchungFingeropposition
+            RequirementSetting.OPTIONAL,    // untersuchungHampelmann
+            RequirementSetting.OPTIONAL,    // untersuchungBallFangen
+            RequirementSetting.OPTIONAL,    // untersuchungBallWerfen
+            RequirementSetting.OPTIONAL,    // untersuchungNameSchreiben
+            RequirementSetting.OPTIONAL,    // untersuchungFigurNachmalen
+            RequirementSetting.OPTIONAL,    // untersuchungStifthaltung
+            RequirementSetting.OPTIONAL,    // untersuchungAussprache
+            RequirementSetting.OPTIONAL,    // untersuchungLesefit
+            RequirementSetting.OPTIONAL,    // untersuchungLesefitPunkte
+            RequirementSetting.OPTIONAL,    // untersuchungZahlenNachsprechen4
+            RequirementSetting.OPTIONAL,    // untersuchungZahlenNachsprechen5
+            RequirementSetting.OPTIONAL,    // untersuchungZeichnenKreis
+            RequirementSetting.OPTIONAL,    // untersuchungZeichnenViereck
+            RequirementSetting.OPTIONAL,    // untersuchungZeichnenDreieck
+            RequirementSetting.OPTIONAL,    // untersuchungZeichnenMensch
+            RequirementSetting.OPTIONAL,    // untersuchungZeichnenMenschPunkte
+            RequirementSetting.OPTIONAL,    // untersuchungMotorik
+            RequirementSetting.OPTIONAL,    // untersuchungMotorikPunkte
+            RequirementSetting.OPTIONAL,    // untersuchungKognition
+            RequirementSetting.OPTIONAL,    // untersuchungKognitionPunkte
+            RequirementSetting.OPTIONAL,    // untersuchungSprache
+            RequirementSetting.OPTIONAL,    // untersuchungSprachePunkte
+            RequirementSetting.OPTIONAL,    // untersuchungMundZaehne
+            RequirementSetting.OPTIONAL,    // untersuchungHaut
+            RequirementSetting.OPTIONAL,    // untersuchungHerz
+            RequirementSetting.OPTIONAL,    // untersuchungBlutdruck
+            RequirementSetting.OPTIONAL,    // untersuchungVerhalten
+            RequirementSetting.OPTIONAL,    // unterlagenEinverstaendnis
+            RequirementSetting.OPTIONAL,    // unterlagenVerhaltensfragebogen
+            RequirementSetting.OPTIONAL,    // untersuchungEmpfehlung
+            RequirementSetting.OPTIONAL,    // untersuchungBemerkungen
+            true,                           // showMassnahmenPathologischeBefunde
+            true,                           // showMassnahmenKeine
+            true,                           // showMassnahmenBeratungMpa
+            true,                           // showMassnahmenBeratungSchulAerztin
+            true,                           // showMassnahmenBereitsBehandelt
+            true,                           // showMassnahmenInfomaterial
+            true,                           // showMassnahmenInfoEltern
+            true,                           // showMassnahmenUeberweisungHausarzt
+            true,                           // showMassnahmenUeberweisungAugenarzt
+            true,                           // showMassnahmenNachkontrolleSaed
+            true                            // showMassnahmenAnderes
         );
     }
 }

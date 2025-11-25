@@ -1,6 +1,6 @@
 @if (anlassStore.selectedEntity()?.anlassConfig?.showTabTriage) {
   <form [formGroup]="form.group" (ngSubmit)="submitIfValid()">
-    @if (anlassStore.selectedEntity()?.anlassConfig?.showTriageTriage) {
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showTriageTriage) {
       <h2 svuiHeading="formSection" class="mb-4">{{ 'untersuchung.tab.triage.titel' | transloco }}</h2>
 
       @for (pair of triagePairs; track pair) {
@@ -20,7 +20,7 @@
       }
     }
 
-    @if (anlassStore.selectedEntity()?.anlassConfig?.showTriageKindWeiterleiten) {
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showTriageKindWeiterleiten) {
       <svui-kachel-form-section [heading]=" 'untersuchung.tab.triage.naechsteStation' | transloco">
         @for (each of stationen; track each) {
           <svui-kachel-control [label]="'NaechsteStation.' + each |transloco">

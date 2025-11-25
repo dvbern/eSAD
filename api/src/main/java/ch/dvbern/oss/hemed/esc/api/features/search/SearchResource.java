@@ -27,11 +27,13 @@ import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH;
+
 @Path("/search")
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = Tags.TAG_SEARCH)
-@RolesAllowed(BerechtigungName.KINDER_SCHREIBEN)
+@RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed(name = "SearchResourceMS", unit = MetricUnits.MILLISECONDS)
 public class SearchResource {
@@ -43,7 +45,7 @@ public class SearchResource {
 
 	@GET
 	@RateLimit(RateLimitConst.DEFAULT_LIMIT)
-	@RolesAllowed(BerechtigungName.KINDER_LESEN)
+	@RolesAllowed({BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH})
 	@Path("summary")
 	public SearchSummaryListJson findAllKinderSummary() {
 		return new SearchSummaryListJson(searchMapper.findAllSummary());
@@ -52,7 +54,7 @@ public class SearchResource {
 	@POST
 	@Path("/paginated")
 	@RateLimit(RateLimitConst.DEFAULT_LIMIT)
-	@RolesAllowed(BerechtigungName.KINDER_LESEN)
+	@RolesAllowed({BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH})
 	@Schema(description = "[GET with body payload](https://opensource.admin.ch/restful-api-guidelines/#get-with-body)"
 			+ " - no resources created:")
 	public PageResultJson<SearchSummaryJson> findKinderPaginated(
@@ -64,7 +66,7 @@ public class SearchResource {
 	@GET
 	@Path("/search")
 	@RateLimit(RateLimitConst.DEFAULT_LIMIT)
-	@RolesAllowed(BerechtigungName.KINDER_LESEN)
+	@RolesAllowed({BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH})
 	public KindSearchListJson searchKinder(
 			@Nullable @QueryParam("searchTerm") String searchTerm
 	) {

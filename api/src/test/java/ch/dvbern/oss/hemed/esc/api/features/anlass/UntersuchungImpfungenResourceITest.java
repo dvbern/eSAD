@@ -1,10 +1,25 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.oss.hemed.esc.api.Util;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.InformationEltern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.ImpfStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.Impfstoff;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
@@ -39,11 +54,6 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenSa
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response.Status;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -690,6 +700,63 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 						impfstatus.getImpfschutzGegeben()))).isTrue();
 
 	}
+
+    @Test
+    @TestAsAdminBS
+    void getUntersuchungImpfungenDataImpfstatus_should_return_data_from_previous_impfliste_if_impfschutz_is_gegeben_and_anlass_durchgefuhert_in_previous_anlass() {
+        // ARRANGE
+        Dossier dossier = fixtureService.createDossier();
+
+        Anlass previousAnlass = fixtureService.createAnlass(LocalDate.of(2021, 1, 1));
+        Einladung previousEinladung = fixtureService.createEinladung(previousAnlass, dossier);
+        Untersuchung previousUntersuchung = fixtureService.createUntersuchungWithImpfungen(previousEinladung);
+        Impfstoff impfstoff = fixtureService.createImpfstoff();
+        Assertions.assertThat(previousUntersuchung.getUntersuchungImpfungen()).isNotNull();
+
+        Anlass differentAnlass = fixtureService.createAnlass(LocalDate.of(2021, 1, 1));
+
+        untersuchungImpfstatusKrankheitService.persist(UntersuchungImpfstatusKrankheitBuilder.create(builder -> builder.forUntersuchungImpfungen(
+                previousUntersuchung.getUntersuchungImpfungen())
+            .forKrankheit(Krankheit.MASERN)
+            .withImpfschutzGegeben(true)
+            .withDatumLetzteImpfung(LocalDate.of(2022, 2, 3))
+            .withAnzahlImpfungen(2)));
+
+        untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
+                previousUntersuchung.getUntersuchungImpfungen())
+            .withUserErfasst(fixtureService.createBenutzer())
+            .withImpfstoff(impfstoff)
+            .withImmunitaetForKrankheit(Krankheit.MASERN, true)
+            .withDatumImpfung(LocalDate.of(2023, 1, 27))
+            .withAnlassImpfungDurchgefuehrt(differentAnlass)));
+
+        Anlass newAnlass = fixtureService.createAnlass(LocalDate.of(2024, 1, 1));
+        Einladung newEinladung = fixtureService.createEinladung(newAnlass, dossier);
+        Untersuchung newUntersuchung = fixtureService.createUntersuchungWithImpfungen(newEinladung);
+        Assertions.assertThat(newUntersuchung.getUntersuchungImpfungen()).isNotNull();
+        untersuchungImpfstatusKrankheitMapper.getByUntersuchungImpfungen(newUntersuchung.getUntersuchungImpfungen());
+
+        // ACT
+        UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
+            .anlassIdPath(newEinladung.getAnlass().getId().getId())
+            .einladungIdPath(newEinladung.getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungImpfungenDataJsonSpec.class);
+        UntersuchungImpfstatusListSaveJsonSpec result = data.getImpfstatusList();
+
+        // ASSERT
+        Assertions.assertThat(result.getImpfstatusList()).isNotNull().hasSize(Krankheit.values().length);
+        Assertions.assertThat(result.getImpfstatusList()
+            .stream()
+            .anyMatch(impfstatus -> impfstatus.getKrankheit() == KrankheitSpec.MASERN
+                && Boolean.TRUE.equals(impfstatus.getImpfschutzGegeben())
+                && Integer.valueOf(2).equals(impfstatus.getAnzahlImpfungen())
+            )).isTrue();
+    }
 
 	@Test
 	@TestAsAdminBS

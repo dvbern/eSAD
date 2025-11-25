@@ -10,10 +10,13 @@ import {
 import {
   hasAdminPageViewBerechtiung,
   hasAnlassViewBerechtigung,
+  hasAufgabenViewBerechtigungen,
+  hasConfigViewBerechtigung,
   hasKindPageViewBerechtigung,
   hasPlaygroundViewBerechtigung,
   hasReportViewBerechtigung,
-  hasSystemPageViewBerechtiung, isNullish,
+  hasSystemPageViewBerechtiung,
+  isNullish,
 } from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {NgbDropdownItem, NgbOffcanvas, OffcanvasDismissReasons} from '@ng-bootstrap/ng-bootstrap';
@@ -60,6 +63,8 @@ export class PageComponent extends WithHeadingDirective implements OnInit {
   public canViewPlayground = this.benutzerStore.createHasRequiredRoleSig(hasPlaygroundViewBerechtigung());
   public canViewAdminPage = this.benutzerStore.createHasRequiredRoleSig(hasAdminPageViewBerechtiung());
   public canViewSystemPage = this.benutzerStore.createHasRequiredRoleSig(hasSystemPageViewBerechtiung());
+  public canViewAufgaben = this.benutzerStore.createHasRequiredRoleSig(hasAufgabenViewBerechtigungen());
+  public canViewKonfiguration = this.benutzerStore.createHasRequiredRoleSig(hasConfigViewBerechtigung());
   Path = Path;
   router = inject(Router);
   closeResult: WritableSignal<string> = signal('');

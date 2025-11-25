@@ -37,7 +37,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = Tags.TAG_ANLASS)
-@RolesAllowed(BerechtigungName.ANLASSLISTE_LESEN)
+@RolesAllowed({ BerechtigungName.ANLASSLISTE_LESEN, BerechtigungName.ANLASSLISTE_LESEN_LAEUSE })
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed(name = "AnlassResourceMS", unit = MetricUnits.MILLISECONDS)
 public class AnlassResource {
@@ -50,49 +50,54 @@ public class AnlassResource {
 
     @POST
     @NonNull
-    @RolesAllowed(BerechtigungName.ANLASSPLANUNG_SCHREIBEN)
+    @RolesAllowed({ BerechtigungName.ANLASSPLANUNG_SCHREIBEN, BerechtigungName.ANLASSPLANUNG_SCHREIBEN_LAEUSE })
     public AnlassJson createAnlass(
         @NotNull @NonNull @Valid AnlassSaveJson anlassJson
     ) {
+        AnlassJson newAnlassJson = anlassMapper.create(anlassJson);
+        authorizerService.requireWriteAuthorizationAnlassLaeuse(newAnlassJson.getId());
         response.setStatusCode(Status.CREATED.getStatusCode());
-        return anlassMapper.create(anlassJson);
+        return newAnlassJson;
     }
 
     @PUT
     @Path("/{anlassId}")
     @NonNull
-    @RolesAllowed(BerechtigungName.ANLASSPLANUNG_SCHREIBEN)
+    @RolesAllowed({ BerechtigungName.ANLASSPLANUNG_SCHREIBEN, BerechtigungName.ANLASSPLANUNG_SCHREIBEN_LAEUSE })
     public AnlassJson updateAnlass(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassID,
         @NotNull @NonNull @Valid AnlassSaveJson anlassJson
     ) {
         authorizerService.requireWriteAuthorizationAnlass(anlassID);
+        authorizerService.requireWriteAuthorizationAnlassLaeuse(anlassID);
         return anlassMapper.update(anlassID, anlassJson);
     }
 
     @PUT
     @Path("/{anlassId}/status/{status}")
     @NonNull
-    @RolesAllowed(BerechtigungName.ANLASSPLANUNG_SCHREIBEN)
+    @RolesAllowed({ BerechtigungName.ANLASSPLANUNG_SCHREIBEN, BerechtigungName.ANLASSPLANUNG_SCHREIBEN_LAEUSE })
     public AnlassJson changeAnlassStatus(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassID,
         @NotNull @NonNull @PathParam("status") AnlassStatus status
     ) {
         authorizerService.requireWriteAuthorizationAnlass(anlassID);
+        authorizerService.requireWriteAuthorizationAnlassLaeuse(anlassID);
         return anlassMapper.changeAnlassStatus(anlassID, status);
     }
 
     @DELETE
     @Path("/{anlassId}")
-    @RolesAllowed(BerechtigungName.ANLASSPLANUNG_SCHREIBEN)
+    @RolesAllowed({ BerechtigungName.ANLASSPLANUNG_SCHREIBEN, BerechtigungName.ANLASSPLANUNG_SCHREIBEN_LAEUSE })
     public void removeAnlass(@NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassID) {
         authorizerService.requireWriteAuthorizationAnlass(anlassID);
+        authorizerService.requireWriteAuthorizationAnlassLaeuse(anlassID);
         anlassMapper.remove(anlassID);
     }
 
     @GET
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.ANLASSLISTE_LESEN)
+    @RolesAllowed({ BerechtigungName.ANLASSLISTE_LESEN, BerechtigungName.ANLASSLISTE_LESEN_LAEUSE })
     public AnlassListJson findAllAnlaesse() {
         List<AnlassJson> anlassList = anlassMapper.findAll();
         return new AnlassListJson(anlassList, anlassList.size());
@@ -101,27 +106,29 @@ public class AnlassResource {
     @GET
     @Path("/{anlassId}")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.ANLASSPLANUNG_LESEN)
+    @RolesAllowed({ BerechtigungName.ANLASSPLANUNG_LESEN, BerechtigungName.ANLASSPLANUNG_LESEN_LAEUSE })
     public AnlassJson getAnlass(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassID
     ) {
+        authorizerService.requireReadAuthorizationAnlass(anlassID);
         return anlassMapper.getById(anlassID);
     }
 
     @GET
     @Path("/{anlassId}/klasse/lehrpersonen")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.ANLASSPLANUNG_LESEN)
+    @RolesAllowed({ BerechtigungName.ANLASSPLANUNG_LESEN, BerechtigungName.ANLASSPLANUNG_LESEN_LAEUSE })
     public SchulInformationenListJson getSchulInformationenForAnlass(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassID
     ) {
+        authorizerService.requireReadAuthorizationAnlass(anlassID);
         return new SchulInformationenListJson(anlassMapper.findSchulInformationen(anlassID));
     }
 
     @GET
     @Path("/benutzer/{benutzerID}")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.ANLASSLISTE_LESEN)
+    @RolesAllowed({ BerechtigungName.ANLASSLISTE_LESEN, BerechtigungName.ANLASSLISTE_LESEN_LAEUSE })
     public AnlassListJson findAllForUser(@NonNull @NotNull @PathParam("benutzerID") ID<Benutzer> benutzerID) {
         return anlassMapper.findAllForUser(benutzerID);
     }

@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
 import {EntityAktivStatus} from '@dvb/data-access-backend';
 import {BenutzerStore, KlasseJsonEnhanced, KlassenStore, Path} from '@dvb/feat-shared';
@@ -22,7 +22,6 @@ import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 @Component({
   selector: 'feat-schulen-detail-klassen-list',
   imports: [
-    CommonModule,
     CardComponent,
     EmptyTableMessageComponent,
     SortableComponent,
@@ -33,8 +32,8 @@ import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
     PageHeaderAddButtonComponent,
     PageHeaderListSummaryComponent,
     TableLinkComponent,
-    ColWidthComponent,
-  ],
+    ColWidthComponent
+],
   templateUrl: './schulen-detail-klassen-list.component.html',
   styleUrl: './schulen-detail-klassen-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

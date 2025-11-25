@@ -5,10 +5,10 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBemerkungFragebogen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBemerkungFragebogenMapper;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungSehenBemerkungFragebogenJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBemerkungFragebogen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBemerkungFragebogenMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.json.UntersuchungSehenBemerkungFragebogenJson;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungSehenBemerkungFragebogenJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenBemerkungFragebogenJsonSpec;

@@ -15,7 +15,7 @@
         (ngSubmit)="submitIfValid()">
 
     <!-- Groesse -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.groesseGewichtGroesse !== RequirementSetting.NOT_VISIBLE) {
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGroesse !== RequirementSetting.NOT_VISIBLE) {
       <svui-kachel-form-section [heading]=" 'untersuchung.tab.groessegewicht.groesse' | transloco">
         <svui-form-control
           class="textcontrol"
@@ -25,7 +25,7 @@
           <input [svuiTextInput]="'number'" [formControl]="form.group.controls.groesse"/>
           <span class="fs-6" control-message>{{ 'untersuchung.tab.groessegewicht.groesse.einheit' | transloco }}</span>
         </svui-form-control>
-        @if (anlassStore.selectedEntity()?.anlassConfig?.groesseGewichtGroessePerzentile
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGroessePerzentile
         !== RequirementSetting.NOT_VISIBLE) {
           @for (each of perzentileGroesse; track each) {
             <svui-kachel-control [label]="'PerzentileGroesse.' + each | transloco ">
@@ -42,7 +42,7 @@
     }
 
     <!-- Gewicht -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.groesseGewichtGewicht !== RequirementSetting.NOT_VISIBLE) {
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGewicht !== RequirementSetting.NOT_VISIBLE) {
       <svui-kachel-form-section [heading]=" 'untersuchung.tab.groessegewicht.gewicht' | transloco">
         <svui-form-control
           class="textcontrol"
@@ -52,7 +52,7 @@
           <input [svuiTextInput]="'number'" [formControl]="form.group.controls.gewicht"/>
           <span class="fs-6" control-message>{{ 'untersuchung.tab.groessegewicht.gewicht.einheit' | transloco }}</span>
         </svui-form-control>
-        @if (anlassStore.selectedEntity()?.anlassConfig?.groesseGewichtGewichtPerzentile
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGewichtPerzentile
         !== RequirementSetting.NOT_VISIBLE) {
           @for (each of perzentileGewicht; track each) {
             <svui-kachel-control [label]="'PerzentileGewicht.' + each | transloco ">
@@ -70,7 +70,7 @@
     }
 
     <!-- BMI -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.groesseGewichtBmi !== RequirementSetting.NOT_VISIBLE) {
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtBmi !== RequirementSetting.NOT_VISIBLE) {
       <svui-kachel-form-section [heading]=" 'untersuchung.tab.groessegewicht.bmi' | transloco">
         <svui-form-control
           class="textcontrol"
@@ -80,9 +80,9 @@
           <input svuiTextInput [formControl]="form.group.controls.bmi"/>
           <span class="fs-6" control-message>{{ 'untersuchung.tab.groessegewicht.bmi.einheit' | transloco }}</span>
         </svui-form-control>
-        @if (anlassStore.selectedEntity()?.anlassConfig?.groesseGewichtBmiPerzentile
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtBmiPerzentile
         !== RequirementSetting.NOT_VISIBLE) {
-          @for (each of perzentileBmi; track each) {
+          @for (each of anlassStore.groesseGewichtBmiPerzentileValues(); track each) {
             <svui-kachel-control [label]="'PerzentileBmi.' + each | transloco ">
               <input
                 svuiRadio
@@ -128,7 +128,7 @@
       </div>
     }
     <!-- Bemerkung -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.groesseGewichtBemerkungen !== RequirementSetting.NOT_VISIBLE) {
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtBemerkungen !== RequirementSetting.NOT_VISIBLE) {
       <svui-title [context]="'formSection'"
                   class="mb-3 mt-5">{{ 'untersuchung.tab.groessegewicht.bemerkung' | transloco }}
       </svui-title>

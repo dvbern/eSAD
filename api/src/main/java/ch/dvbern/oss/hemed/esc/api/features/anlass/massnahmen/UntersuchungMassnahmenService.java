@@ -5,7 +5,8 @@ import java.util.Optional;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AutoAufgabeService;
 import lombok.RequiredArgsConstructor;
@@ -71,6 +72,6 @@ public class UntersuchungMassnahmenService {
     public void untersuchungAbschliessen(@NonNull Untersuchung untersuchung) {
         UntersuchungMassnahmen massnahmen = UntersuchungMassnahmen.forUntersuchungAbschliessen(untersuchung);
         massnahmen.disableOptimisticLockingCheck();
-        persist(massnahmen);
+        massnahmenRepo.persist(massnahmen);
     }
 }

@@ -21,6 +21,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.auth;
 import java.net.URI;
 import java.util.Optional;
 
+import ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.JsonWebTokenClaims;
 import io.quarkus.security.identity.CurrentIdentityAssociation;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.ws.rs.container.ContainerRequestContext;
@@ -82,7 +83,7 @@ class TenantClaimMatchesUrlFilterTest {
         when(securityIdentity.getPrincipal()).thenReturn(jsonWebToken);
         when(jsonWebToken.getName()).thenReturn("testuser");
 
-        when(jsonWebToken.claim(TenantClaimUtil.TENANT)).thenReturn(Optional.empty());
+        when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.empty());
 
         // ACT
         filter.filter(requestContext);
@@ -100,7 +101,7 @@ class TenantClaimMatchesUrlFilterTest {
         when(securityIdentity.isAnonymous()).thenReturn(false);
         when(securityIdentity.getPrincipal()).thenReturn(jsonWebToken);
         when(uriInfo.getAbsolutePath()).thenReturn(absolutePath);
-        when(jsonWebToken.claim(TenantClaimUtil.TENANT)).thenReturn(Optional.of("bs"));
+        when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.of("bs"));
 
         // ACT
         filter.filter(requestContext);
@@ -118,7 +119,7 @@ class TenantClaimMatchesUrlFilterTest {
         when(securityIdentity.isAnonymous()).thenReturn(false);
         when(securityIdentity.getPrincipal()).thenReturn(jsonWebToken);
         when(uriInfo.getAbsolutePath()).thenReturn(absolutePath);
-        when(jsonWebToken.claim(TenantClaimUtil.TENANT)).thenReturn(Optional.of("invalid-tenant"));
+        when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.of("invalid-tenant"));
 
         // ACT
         filter.filter(requestContext);
@@ -137,7 +138,7 @@ class TenantClaimMatchesUrlFilterTest {
         when(securityIdentity.getPrincipal()).thenReturn(jsonWebToken);
         when(jsonWebToken.getName()).thenReturn("testuser");
         when(uriInfo.getAbsolutePath()).thenReturn(absolutePath);
-        when(jsonWebToken.claim(TenantClaimUtil.TENANT)).thenReturn(Optional.of("win"));
+        when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.of("win"));
 
         // ACT
         filter.filter(requestContext);
@@ -156,7 +157,7 @@ class TenantClaimMatchesUrlFilterTest {
         when(securityIdentity.isAnonymous()).thenReturn(false);
         when(securityIdentity.getPrincipal()).thenReturn(jsonWebToken);
         when(uriInfo.getAbsolutePath()).thenReturn(absolutePath);
-        when(jsonWebToken.claim(TenantClaimUtil.TENANT)).thenReturn(Optional.of(tenanturlPart.toUpperCase()));
+        when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.of(tenanturlPart.toUpperCase()));
 
         // ACT
         filter.filter(requestContext);
@@ -175,7 +176,7 @@ class TenantClaimMatchesUrlFilterTest {
         when(securityIdentity.getPrincipal()).thenReturn(jsonWebToken);
         when(jsonWebToken.getName()).thenReturn("testuser");
         when(uriInfo.getAbsolutePath()).thenReturn(absolutePath);
-        when(jsonWebToken.claim(TenantClaimUtil.TENANT)).thenReturn(Optional.of("win"));
+        when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.of("win"));
 
         // ACT & ASSERT
         assertThatCode(() -> filter.filter(requestContext))

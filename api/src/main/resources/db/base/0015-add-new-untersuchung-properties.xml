@@ -1,0 +1,164 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <!-- Laeusekontrolle -->
+  <changeSet author="hefr (generated)" id="1762854166824-5">
+    <createTable tableName="untersuchunglaeusekontrolle">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchunglaeusekontrollePK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tenant" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+      <column name="beurteilung" type="VARCHAR(2000)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762854166824-6">
+    <createTable tableName="untersuchunglaeusekontrolle_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+      <column name="beurteilung" type="VARCHAR(2000)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762854166824-7">
+    <addColumn tableName="untersuchung">
+      <column name="untersuchunglaeusekontrolle_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762854166824-8">
+    <addColumn tableName="untersuchung_aud">
+      <column name="untersuchunglaeusekontrolle_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762854166824-9">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchunglaeusekontrolle_audPK" tableName="untersuchunglaeusekontrolle_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762854166824-10">
+    <addUniqueConstraint columnNames="untersuchunglaeusekontrolle_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGLAEUSEKONTROLLE_ID_COL" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762854166824-12">
+    <createIndex indexName="ix_untersuchung_untersuchunglaeusekontrolle" tableName="untersuchung">
+      <column name="untersuchunglaeusekontrolle_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762854166824-13">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchunglaeusekontrolle_aud" constraintName="FK8ll1mj1isywk6x64wyejlqv3l" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762854166824-14">
+    <addForeignKeyConstraint baseColumnNames="untersuchunglaeusekontrolle_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchunglaeusekontrolle" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchunglaeusekontrolle" validate="true"/>
+  </changeSet>
+  <!-- KindDaten -->
+  <changeSet author="hefr (generated)" id="1762872711024-5">
+    <addColumn tableName="untersuchungdurchfuehrung">
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762872711024-6">
+    <addColumn tableName="untersuchungdurchfuehrung_aud">
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <!-- Sehen -->
+  <changeSet author="hefr (generated)" id="1762878926043-11">
+    <addColumn tableName="untersuchungsehenbeurteilung">
+      <column name="empfehlung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762878926043-12">
+    <addColumn tableName="untersuchungsehenbeurteilung_aud">
+      <column name="empfehlung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762878926043-1">
+    <modifyDataType columnName="fernvisus" newDataType="varchar(2000)" tableName="untersuchungsehenbeurteilung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762878926043-2">
+    <modifyDataType columnName="fernvisus" newDataType="varchar(2000)" tableName="untersuchungsehenbeurteilung_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762878926043-3">
+    <modifyDataType columnName="nahvisus" newDataType="varchar(2000)" tableName="untersuchungsehenbeurteilung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762878926043-4">
+    <modifyDataType columnName="nahvisus" newDataType="varchar(2000)" tableName="untersuchungsehenbeurteilung_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762878926043-5">
+    <modifyDataType columnName="strabismus" newDataType="varchar(2000)" tableName="untersuchungsehenbeurteilung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762878926043-6">
+    <modifyDataType columnName="strabismus" newDataType="varchar(2000)" tableName="untersuchungsehenbeurteilung_aud"/>
+  </changeSet>
+  <!-- Hoeren -->
+  <changeSet author="hefr (generated)" id="1762881506089-5">
+    <addColumn tableName="untersuchunghoerenaudiogramm">
+      <column name="empfehlung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762881506089-6">
+    <addColumn tableName="untersuchunghoerenaudiogramm_aud">
+      <column name="empfehlung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <!-- Impfungen -->
+  <changeSet author="hefr (generated)" id="1762938875475-5">
+    <addColumn tableName="untersuchungimpfungenmassnahmen">
+      <column name="achtung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762938875475-6">
+    <addColumn tableName="untersuchungimpfungenmassnahmen_aud">
+      <column name="achtung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762938875475-7">
+    <addColumn tableName="untersuchungimpfungenmassnahmen">
+      <column name="empfehlung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762938875475-8">
+    <addColumn tableName="untersuchungimpfungenmassnahmen_aud">
+      <column name="empfehlung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <!-- AnlassConfig -->
+  <changeSet author="hefr (generated)" id="1762938875475-9">
+    <addColumn tableName="anlassconfig">
+      <column name="showimpfungendoppelkontrolle" type="BOOLEAN"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET showimpfungendoppelkontrolle = false
+      WHERE showimpfungendoppelkontrolle IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="showimpfungendoppelkontrolle"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762938875475-10">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="showimpfungendoppelkontrolle" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+</databaseChangeLog>

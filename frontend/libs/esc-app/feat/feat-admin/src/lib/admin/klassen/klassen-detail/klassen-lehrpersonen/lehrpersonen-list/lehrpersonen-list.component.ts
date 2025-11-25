@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {LehrpersonJson} from '@dvb/data-access-backend';
@@ -34,7 +34,6 @@ import {LehrpersonenStore} from '../lehrpersonen.store';
   selector: 'feat-lehrpersonen-list',
   standalone: true,
   imports: [
-    CommonModule,
     TranslocoPipe,
     HeadingDirective,
     ReactiveFormsModule,
@@ -49,8 +48,8 @@ import {LehrpersonenStore} from '../lehrpersonen.store';
     EmptyTableMessageComponent,
     TableLinkComponent,
     ColWidthComponent,
-    ButtonComponent,
-  ],
+    ButtonComponent
+],
   templateUrl: './lehrpersonen-list.component.html',
   styleUrl: './lehrpersonen-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

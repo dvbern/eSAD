@@ -9,12 +9,7 @@ import org.junit.jupiter.api.Test;
 
 class ImpfstoffTest {
 
-    @Test
-    void setKrankheiten_is_empty_if_empty() {
-        var impfstoff = ImpfstoffBuilder.defaultImpfstoff();
-        impfstoff.setKrankheiten(List.of());
-        Assertions.assertThat(impfstoff.getKrankheiten()).isEmpty();
-    }
+
 
     @Test
     void setKrankheiten_is_set() {

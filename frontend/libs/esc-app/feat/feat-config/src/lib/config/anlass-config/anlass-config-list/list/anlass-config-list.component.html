@@ -1,0 +1,190 @@
+<svui-card [innerSpacing]="'topBottom'">
+  @if (itemTable(); as itemTable) {
+    <table
+      svuiTable
+      [loading]="loading()"
+      [totalRows]="itemTable.filteredListSize()"
+      (pageChanged)="itemTable.onPageChanged($event)"
+      [pagination]="itemTable.pagination()"
+      [tableConfig]="itemTable.tableConfig"
+      [loadedRowCount]="itemTable.displayedList()?.length"
+      [lastLoadedPage]="itemTable.lastLoadedPage()"
+    >
+      <colgroup>
+        <col svuiColWidth [colWidth]="'select-medium'">
+        <col svuiColWidth [colWidth]="'text-medium'">
+        <col svuiColWidth [colWidth]="'date'">
+        <col svuiColWidth [colWidth]="'select-medium'">
+        <col svuiColWidth [colWidth]="'select-medium'">
+        <col svuiColWidth [colWidth]="'options'">
+      </colgroup>
+      <thead>
+      <!--Headers for sorting-->
+      <tr>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.anlassTyp')"
+          (sort)="itemTable.onColSort($event, 'data.anlassTyp')"
+        >
+          {{ 'anlassconfig.label.anlasstyp' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.bezeichnung')"
+          (sort)="itemTable.onColSort($event, 'data.bezeichnung')"
+        >
+          {{ 'anlassconfig.label.bezeichnung' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.datumVon')"
+          (sort)="itemTable.onColSort($event, 'data.datumVon')"
+        >
+          {{ 'anlassconfig.label.datumvon' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.datumBis')"
+          (sort)="itemTable.onColSort($event, 'data.datumBis')"
+        >
+          {{ 'anlassconfig.label.datumbis' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('anlassConfigStatus')"
+          (sort)="itemTable.onColSort($event, 'anlassConfigStatus')"
+        >
+          {{ 'anlassconfig.label.status' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('anlassConfigVisible')"
+          (sort)="itemTable.onColSort($event, 'anlassConfigVisible')"
+        >
+          {{ 'anlassconfig.label.visible' | transloco }}
+        </th>
+        <th scope="col"></th>
+      </tr>
+        @if (tableFilterForm(); as tableFilterForm) {
+          <th scope="col" class="col-multiselect">
+            <svui-table-filter [columnHeader]="'anlassconfig.label.anlasstyp' | transloco">
+              <ng-select
+                svuiNgSelect
+                bindLabel='dummy'
+                appendTo="body"
+                [formControl]="tableFilterForm.group.controls.anlassTyp"
+                [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+                [multiple]="true"
+              >
+                @for (typ of anlassTypOptions; track typ) {
+                  <ng-option [value]="typ">
+                    {{ 'AnlassTyp.' + typ | transloco }}
+                  </ng-option>
+                }
+              </ng-select>
+            </svui-table-filter>
+          </th>
+          <th scope="col">
+            <svui-table-filter [columnHeader]="'anlassconfig.label.bezeichnung' | transloco">
+              <input svuiTextInput="text" [formControl]="tableFilterForm.group.controls.bezeichnung"/>
+            </svui-table-filter>
+          </th>
+          <th scope="col">
+            <svui-table-filter [columnHeader]="'anlassconfig.label.datumvon' | transloco">
+              <input svuiTextInput="date" [formControl]="tableFilterForm.group.controls.datumVon"/>
+            </svui-table-filter>
+          </th>
+
+          <th scope="col">
+            <svui-table-filter [columnHeader]="'anlassconfig.label.datumbis' | transloco">
+              <input svuiTextInput="date" [formControl]="tableFilterForm.group.controls.datumBis"/>
+            </svui-table-filter>
+          </th>
+
+          <th scope="col">
+            <svui-table-filter [columnHeader]="('anlassconfig.label.status' | transloco)">
+              <ng-select
+                svuiNgSelect
+                bindLabel='dummy'
+                appendTo="body"
+                [formControl]="tableFilterForm.group.controls.anlassConfigStatus"
+                [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+              >
+                @for (typ of anlassConfigStatusOptions; track typ) {
+                  <ng-option [value]="typ">
+                    {{ 'AnlassConfigStatus.' + typ | transloco }}
+                  </ng-option>
+                }
+              </ng-select>
+            </svui-table-filter>
+          </th>
+
+          <th scope="col">
+            <svui-table-filter [columnHeader]="('anlassconfig.label.visible' | transloco)">
+              <ng-select
+                svuiNgSelect
+                bindLabel='dummy'
+                appendTo="body"
+                [formControl]="tableFilterForm.group.controls.anlassConfigVisible"
+                [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+              >
+                <ng-option [value]="true">
+                  {{ 'global.ja' | transloco }}
+                </ng-option>
+                <ng-option [value]="false">
+                  {{ 'global.nein' | transloco }}
+                </ng-option>
+              </ng-select>
+            </svui-table-filter>
+          </th>
+          <th scope="col"></th>
+        }
+      </thead>
+      <tbody>
+        @if (!itemTable.displayedList()?.length && !loading()) {
+          <tr svui-empty-table-message [message]="'schule.list.empty' | transloco"></tr>
+        }
+        @for (item of itemTable.displayedList(); track item) {
+          <tr>
+            <td>
+              <svui-table-link
+                type="text"
+                [myRouterLink]="[item.id]">
+                {{ item.data.anlassTyp }}
+              </svui-table-link>
+            </td>
+            <td>{{ item.data.bezeichnung }}</td>
+            <td>{{ item.data.datumVon | date: 'dd.MM.yyyy' }}</td>
+            <td>{{ item.data.datumBis | date: 'dd.MM.yyyy' }}</td>
+            <td>{{ ('AnlassConfigStatus.' + item.anlassConfigStatus) | transloco }}</td>
+            <td>{{
+                item.anlassConfigVisible ?
+                  ('global.ja' | transloco) :
+                  ('global.nein' | transloco)
+              }}
+            </td>
+            <td>
+              <svui-collapsible-menu
+                [loading]="false"
+                label="{{ 'global.actionmenu.tooltip' | transloco }}">
+                  <button
+                    ngbDropdownItem
+                    [title]="'anlassconfig.download.scripts' | transloco"
+                    (click)="getSqlSkripts(item)"
+                  >
+                    {{ 'anlassconfig.download.scripts' | transloco }}
+                  </button>
+              </svui-collapsible-menu>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</svui-card>

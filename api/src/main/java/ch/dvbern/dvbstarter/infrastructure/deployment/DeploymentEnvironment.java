@@ -2,16 +2,13 @@ package ch.dvbern.dvbstarter.infrastructure.deployment;
 
 import lombok.RequiredArgsConstructor;
 
-// FIXME: starter: init: remove unused environments
+
 @RequiredArgsConstructor
 public enum DeploymentEnvironment {
     LOCAL,
     UNIT_TEST,
     DEV,
-    REVIEW,
-    IAT,
     UAT,
-    DEMO,
     PROD,
     ;
 
@@ -21,5 +18,13 @@ public enum DeploymentEnvironment {
 
     public boolean isProd(){
         return this == PROD;
+    }
+
+    public boolean isDev(){
+        return this == DEV;
+    }
+
+    public boolean isTesting(){
+        return this == LOCAL || this == UNIT_TEST || this == DEV || this == UAT;
     }
 }

@@ -1,8 +1,8 @@
 import {computed, Inject, inject, Injectable, Optional} from '@angular/core';
-import {AppValidationErrorJson} from '@dvb/data-access-backend';
-import {AbstractSignalStore, AppErrorHandlerService, Loader, rxMethod} from '@dvb/util-angular';
-import {pipe, switchMap, tap} from 'rxjs';
-import {FakeStammdatenService, MyStammdatenDTO} from './fake-stammdaten.service';
+import { AppValidationErrorJson } from '@dvb/data-access-backend';
+import { AbstractSignalStore, AppErrorHandlerService, Loader, rxMethod } from '@dvb/util-angular';
+import { pipe, switchMap, tap } from 'rxjs';
+import { FakeStammdatenService, MyStammdatenDTO } from './fake-stammdaten.service';
 
 interface StammdatenState {
   id: string | undefined;
@@ -25,10 +25,8 @@ export class StammdatenStore extends AbstractSignalStore<StammdatenState> {
 
   #loadStammdaten = rxMethod<{ id: string }>(
     pipe(
-      switchMap(({id}) => this.loader.tapLoading$(
-          this.#service.loadById$(id),
-          error => this.#globalErrorHandler.handleError(error),
-        ),
+      switchMap(({ id }) =>
+        this.loader.tapLoading$(this.#service.loadById$(id), error => this.#globalErrorHandler.handleError(error)),
       ),
       this.tapResponse(
         (draft, response) => {
@@ -50,16 +48,17 @@ export class StammdatenStore extends AbstractSignalStore<StammdatenState> {
         }),
       ),
       switchMap(stammdaten =>
-        this.saveLoader.tapLoading$(this.#service.update$(stammdaten),
-          error => this.#globalErrorHandler.handleError(error)).pipe(
-          this.tapResponse(
-            // FIXME: starter: decide: refresh store from response?
-            () => undefined,
-            (draft, error) => {
-              draft.backendErrors = error;
-            },
+        this.saveLoader
+          .tapLoading$(this.#service.update$(stammdaten), error => this.#globalErrorHandler.handleError(error))
+          .pipe(
+            this.tapResponse(
+              // FIXME: starter: decide: refresh store from response?
+              () => undefined,
+              (draft, error) => {
+                draft.backendErrors = error;
+              },
+            ),
           ),
-        ),
       ),
     ),
   );
@@ -67,6 +66,7 @@ export class StammdatenStore extends AbstractSignalStore<StammdatenState> {
   /**
    * @param testInit - for testing purposes only
    */
+  // eslint-disable-next-line @angular-eslint/prefer-inject
   constructor(@Inject('nothing') @Optional() testInit?: StammdatenState) {
     super(testInit ?? initialState);
   }
@@ -77,7 +77,7 @@ export class StammdatenStore extends AbstractSignalStore<StammdatenState> {
       draft.value = undefined;
     });
 
-    this.#loadStammdaten({id});
+    this.#loadStammdaten({ id });
   }
 
   isInitialized = computed(() => this.state().id !== undefined);

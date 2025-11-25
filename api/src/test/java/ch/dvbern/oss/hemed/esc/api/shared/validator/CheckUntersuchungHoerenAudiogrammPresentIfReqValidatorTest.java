@@ -2,11 +2,12 @@ package ch.dvbern.oss.hemed.esc.api.shared.validator;
 
 import java.util.List;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Dezibel;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.HoerenZusaetzlicheAngaben;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungHoerenAudiogrammBuilder;
 import org.assertj.core.api.Assertions;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -410,6 +411,36 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
             .getAnlass()
             .getAnlassConfig()
             .setHoerenAudiogrammZusaetzlicheAngaben(requirementSetting);
+        // ACT
+        CheckUntersuchungHoerenAudiogrammPresentIfReqValidator
+            validator = new CheckUntersuchungHoerenAudiogrammPresentIfReqValidator();
+        boolean result = validator.isEntityValid(hoeren);
+        // ASSERT
+        Assertions.assertThat(result).isEqualTo(expectedValid);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "REQUIRED   ,                      ,false",
+        "REQUIRED   ,UEBERPRUEFUNG_ARZT    ,true",
+        "OPTIONAL   ,                      ,true",
+        "OPTIONAL   ,UEBERPRUEFUNG_ARZT    ,true",
+        "NOT_VISIBLE,                      ,true",
+        "NOT_VISIBLE,UEBERPRUEFUNG_ARZT    ,true",
+    })
+    void validateHoerenEmpfehlung(
+        @NonNull RequirementSetting requirementSetting,
+        @Nullable HoerenEmpfehlung empfehlung,
+        boolean expectedValid
+    ) {
+        // ARRANGE
+        List<HoerenEmpfehlung> empfehlungList = empfehlung == null
+            ? null
+            : List.of(empfehlung);
+        UntersuchungHoerenAudiogramm hoeren = UntersuchungHoerenAudiogrammBuilder.create(
+            builder -> builder
+                .withEmpfehlung(empfehlungList));
+        hoeren.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setHoerenAudiogrammEmpfehlung(requirementSetting);
         // ACT
         CheckUntersuchungHoerenAudiogrammPresentIfReqValidator
             validator = new CheckUntersuchungHoerenAudiogrammPresentIfReqValidator();

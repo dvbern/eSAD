@@ -14,18 +14,19 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.BrilleLinsenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.DistanzSehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.FarbsehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.InspektionKonvergenzResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.MotilitaetResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.RequirementSetting;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StereotestResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusAuftretenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusAuspraegungResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.VerwendetTafelResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.SehenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftretenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBeurteilungBuilder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -399,6 +400,36 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
 				validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
+        boolean result = validator.isEntityValid(sehen);
+        // ASSERT
+        assertThat(result).isEqualTo(expectedValid);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "REQUIRED   ,                           ,false",
+        "REQUIRED   ,UEBERPRUEFUNG_AUGENARZT    ,true",
+        "OPTIONAL   ,                           ,true",
+        "OPTIONAL   ,UEBERPRUEFUNG_AUGENARZT    ,true",
+        "NOT_VISIBLE,                           ,true",
+        "NOT_VISIBLE,UEBERPRUEFUNG_AUGENARZT    ,true",
+    })
+    void validateSehenEmpfehlung(
+        @NonNull RequirementSetting requirementSetting,
+        @Nullable SehenEmpfehlung empfehlung,
+        boolean expectedValid
+    ) {
+        // ARRANGE
+        List<SehenEmpfehlung> empfehlungList = empfehlung == null
+            ? null
+            : List.of(empfehlung);
+        UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
+            builder -> builder
+                .withEmpfehlung(empfehlungList));
+        sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenEmpfehlung(requirementSetting);
+        // ACT
+        CheckUntersuchungSehenBeurteilungPresentIfReqValidator
+            validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
         boolean result = validator.isEntityValid(sehen);
         // ASSERT
         assertThat(result).isEqualTo(expectedValid);

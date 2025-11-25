@@ -14,6 +14,10 @@
         <col svuiColWidth colWidth="text-medium">
         <col svuiColWidth colWidth="text-medium">
         <col svuiColWidth colWidth="text-medium">
+        @if (showKind()) {
+          <col svuiColWidth colWidth="text-medium">
+        }
+        <col svuiColWidth colWidth="checkbox">
         <col svuiColWidth colWidth="options">
       </colgroup>
 
@@ -60,6 +64,24 @@
         >
           {{ 'notizen.list.verantwortlichePerson' | transloco }}
         </th>
+        @if (showKind()) {
+          <th
+            scope="col"
+            svuiSortable
+            [sortState]="notizenTable.findColSortDTO('kind.name')"
+            (sort)="notizenTable.onColSort($event, 'kind.name')"
+          >
+            {{ 'aufgaben.list.kind' | transloco }}
+          </th>
+        }
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="notizenTable.findColSortDTO('hasAnhang')"
+          (sort)="notizenTable.onColSort($event, 'hasAnhang')"
+        >
+          {{ 'notizen.list.hasAnhang' | transloco }}
+        </th>
         <th scope="col"></th>
       </tr>
       <!-- Headers for filtering -->
@@ -89,9 +111,12 @@
               [placeholder]="'global.select.bitte-auswaehlen' | transloco"
             >
               @for (label of labelStore.notizenLabelsSorted(); track label.id) {
-                <ng-option [value]="label">
-                  {{ label.data.name |translatedStringPipe }}
-                </ng-option>
+                <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+                @if (label.data.name | translatedStringPipe; as translatedLabel) {
+                  <ng-option [value]="label">
+                    {{ label.data.name |translatedStringPipe }}
+                  </ng-option>
+                }
               }
             </ng-select>
 
@@ -119,19 +144,45 @@
         <th class="col-multiselect" scope="col">
           <svui-table-filter [columnHeader]="'notizen.list.verantwortlichePerson' | transloco">
             <ng-select
-
               [formControl]="tableFilterForm.group.controls.verantwortlichePerson"
               [multiple]="true"
               [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+              [compareWith]="compareBenutzerFn"
+              [allowBadgesToWrap]="true"
               appendTo="body"
               bindLabel='dummy'
               svuiNgSelect
             >
               @for (each of benutzerOptionsStore.entities(); track each.id; let index = $index) {
-                <ng-option [value]="each.id">
+                <ng-option [value]="each">
                   {{ each.fullName }}
                 </ng-option>
               }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+        @if (showKind()) {
+          <th scope="col" class="col-text">
+            <svui-table-filter [columnHeader]="'aufgaben.list.kind' | transloco">
+              <input svuiTextInput [formControl]="tableFilterForm.group.controls.kindFullName"/>
+            </svui-table-filter>
+          </th>
+        }
+        <th scope="col">
+          <svui-table-filter [columnHeader]="('notizen.list.hasAnhang' | transloco)">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.hasAnhang"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+            >
+              <ng-option [value]="true">
+                {{ 'global.ja' | transloco }}
+              </ng-option>
+              <ng-option [value]="false">
+                {{ 'global.nein' | transloco }}
+              </ng-option>
             </ng-select>
           </svui-table-filter>
         </th>
@@ -157,6 +208,14 @@
             </td>
             <td>{{ 'NotizStatus.' + item.data.status | transloco }}</td>
             <td>{{ item.data.verantwortlicher.fullName }}</td>
+            @if (showKind()) {
+              <td>{{ item.kindFullName }}</td>
+            }
+            <td>
+              @if (item.hasAnhang) {
+                <svui-icon useCase="bueroklammer"/>
+              }
+            </td>
             <td>
               <svui-collapsible-menu
                 [loading]="deleteLoading()"

@@ -17,6 +17,8 @@ export abstract class AbstractSignalStore<State> {
   protected readonly state: Signal<State>;
 
   protected constructor(
+    // this is not actually injected
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     readonly initialState: State,
   ) {
     this.#state = signal(produce(undefined as State, () => initialState));

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 import {TranslocoPipe} from '@jsverse/transloco';
@@ -24,7 +24,7 @@ import {PageComponent} from '../page/page.component';
 
 @Component({
   selector: 'feat-infopage',
-  imports: [CommonModule, PageComponent, TranslocoPipe],
+  imports: [PageComponent, TranslocoPipe],
   templateUrl: './no-roles-page.component.html',
   styles: `
     :host {

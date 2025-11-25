@@ -1,19 +1,22 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Dezibel;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.HoerenZusaetzlicheAngaben;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogrammJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoerenAudiogrammJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogrammMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungHoerenAudiogrammJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungHoerenAudiogrammJsonSpec;
@@ -135,16 +138,33 @@ public class UntersuchungHoerenAudiogrammBuilder {
     @NonNull
     @CanIgnoreReturnValue
     public UntersuchungHoerenAudiogrammBuilder withAudiogrammBeurteilung(
-        @Nullable List<AudiogrammBeurteilung> beurteilungList) {
-        this.hoerenAudiogramm.setAudiogrammBeurteilung(beurteilungList);
+        @Nullable Collection<AudiogrammBeurteilung> beurteilungList
+    ) {
+        this.hoerenAudiogramm.setAudiogrammBeurteilung(EnumSetUtil.toEnumSet(beurteilungList, AudiogrammBeurteilung.class));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
     public UntersuchungHoerenAudiogrammBuilder withZusaetzlicheAngaben(
-        @Nullable List<HoerenZusaetzlicheAngaben> angabenList) {
-        this.hoerenAudiogramm.setZusaetzlicheAngaben(angabenList);
+        @Nullable Collection<HoerenZusaetzlicheAngaben> angabenList
+    ) {
+        this.hoerenAudiogramm.setZusaetzlicheAngaben(EnumSetUtil.toEnumSet(angabenList, HoerenZusaetzlicheAngaben.class));
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungHoerenAudiogrammBuilder withZusaetzlicheAngaben(
+        @NonNull HoerenZusaetzlicheAngaben... zusaetzlicheAngaben
+    ) {
+        return this.withZusaetzlicheAngaben(List.of(zusaetzlicheAngaben));
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungHoerenAudiogrammBuilder withEmpfehlung(@Nullable Collection<HoerenEmpfehlung> empfehlungList) {
+        this.hoerenAudiogramm.setEmpfehlung(EnumSetUtil.toEnumSet(empfehlungList, HoerenEmpfehlung.class));
         return this;
     }
 
@@ -156,14 +176,6 @@ public class UntersuchungHoerenAudiogrammBuilder {
     }
 
     @NonNull
-    @CanIgnoreReturnValue
-    public UntersuchungHoerenAudiogrammBuilder withZusaetzlicheAngaben(
-        @NonNull HoerenZusaetzlicheAngaben... zusaetzlicheAngaben) {
-        this.hoerenAudiogramm.setZusaetzlicheAngaben(List.of(zusaetzlicheAngaben));
-        return this;
-    }
-
-    @NonNull
     public static UntersuchungHoerenAudiogramm create(@NonNull Consumer<UntersuchungHoerenAudiogrammBuilder> block) {
         UntersuchungHoerenAudiogrammBuilder builder = new UntersuchungHoerenAudiogrammBuilder();
         block.accept(builder);
@@ -171,15 +183,13 @@ public class UntersuchungHoerenAudiogrammBuilder {
     }
 
     @NonNull
-    public static UntersuchungHoerenAudiogrammJson createJax(
-        @NonNull Consumer<UntersuchungHoerenAudiogrammBuilder> block) {
+    public static UntersuchungHoerenAudiogrammJson createJax(@NonNull Consumer<UntersuchungHoerenAudiogrammBuilder> block) {
         UntersuchungHoerenAudiogramm entity = create(block);
         return UntersuchungHoerenAudiogrammMapper.toJson(entity);
     }
 
     @NonNull
-    public static UntersuchungHoerenAudiogrammJsonSpec createJaxSpec(
-        @NonNull Consumer<UntersuchungHoerenAudiogrammBuilder> block) {
+    public static UntersuchungHoerenAudiogrammJsonSpec createJaxSpec(@NonNull Consumer<UntersuchungHoerenAudiogrammBuilder> block) {
         UntersuchungHoerenAudiogrammJson json = createJax(block);
         return UntersuchungHoerenAudiogrammJsonSpecMapper.INSTANCE.untersuchungHoerenAudiogrammJsonToUntersuchungHoerenAudiogrammJsonSpec(
             json);

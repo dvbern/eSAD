@@ -39,7 +39,11 @@ public class PageResultJson<T>{
 
     @Schema(required = false)
     @NonFinal
-    int totalItemCount = -1; // total item count, will be -1 if not available
+    int totalFilteredCount = -1; // total item count, will be -1 if not available
+
+    @Schema(required = false)
+    @NonFinal
+    int totalItemCount = -1;
 
     @Schema(required = true)
     @NonNull

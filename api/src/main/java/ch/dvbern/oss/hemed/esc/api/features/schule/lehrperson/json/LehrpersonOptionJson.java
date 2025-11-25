@@ -39,8 +39,4 @@ public class LehrpersonOptionJson {
     @NonNull
     @Schema(required = true)
     private String fullName;
-
-    @NotNull
-    @Schema(required = true)
-    private final boolean manualOrAktivInExternalSystem;
 }

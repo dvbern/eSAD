@@ -18,7 +18,13 @@ import {
   ListComponent,
   PageHeaderAddButtonComponent,
 } from '@dvb/ui-components';
-import {fromISODateString, fromISODateTimeString, hasNotizEditBerechtigung, isNullish} from '@dvb/util-shared';
+import {
+  compareByEntityInfoTimestampErstellt,
+  fromISODateString,
+  fromISODateTimeString,
+  hasNotizEditBerechtigung,
+  isNullish,
+} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {DossierStore} from '../../dossier.store';
 import {KinderNotizStore} from '../../kinder-notiz/kinder-notiz/kinder-notiz.store';
@@ -56,7 +62,7 @@ export class KindDossierNotizenComponent {
   adresse = computed(() => this.getAdresse(this.kind()?.data?.adresse));
   notizen = computed(
     () => this.notizenStore.entities()
-      .sort((a, b) => b.entityInfo.timestampErstellt.localeCompare(a.entityInfo.timestampErstellt)),
+      .sort(compareByEntityInfoTimestampErstellt),
   );
 
   canEditNotizen = computed(() =>

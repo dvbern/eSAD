@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {SystemAdminStore} from '@dvb/feat-shared';
 import {ButtonComponent, CardComponent, HeadingDirective} from '@dvb/ui-components';
@@ -24,7 +24,7 @@ import {TranslocoPipe} from '@jsverse/transloco';
 
 @Component({
   selector: 'feat-kind-namen-normalisierung',
-  imports: [CommonModule, TranslocoPipe, ButtonComponent, CardComponent, HeadingDirective],
+  imports: [TranslocoPipe, ButtonComponent, CardComponent, HeadingDirective],
   templateUrl: './kind-namen-normalisierung.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './kind-namen-normalisierung.component.scss',

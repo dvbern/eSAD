@@ -14,7 +14,7 @@
 </svui-card-in-card>
 
 <!-- Aktueller Impfstatus -->
-@if (anlassStore.selectedEntity()?.anlassConfig?.impfungenUebersicht !== RequirementSetting.NOT_VISIBLE) {
+@if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenUebersicht !== RequirementSetting.NOT_VISIBLE) {
   <svui-card-in-card class="mb-3">
     <feat-untersuchung-impfstatus
       #impfstatus
@@ -28,7 +28,7 @@
 }
 
 <!-- Geplante Impfungen -->
-@if (anlassStore.selectedEntity()?.anlassConfig?.impfungenListe !== RequirementSetting.NOT_VISIBLE) {
+@if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenListe !== RequirementSetting.NOT_VISIBLE) {
   <svui-card-in-card class="mb-3">
     <feat-untersuchung-impfungen-intern-list/>
   </svui-card-in-card>
@@ -44,13 +44,15 @@
   }
 
   <!-- Doppelkontrolle Impfentscheid -->
-  <svui-card-in-card left>
-    <feat-untersuchung-doppelkontrolle-impfentscheid #doppelkontrolle/>
-  </svui-card-in-card>
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showImpfungenDoppelkontrolle) {
+    <svui-card-in-card left>
+      <feat-untersuchung-doppelkontrolle-impfentscheid #doppelkontrolle/>
+    </svui-card-in-card>
+  }
 
   <!-- Massnahmen -->
   <svui-card-in-card right>
-    <feat-untersuchung-impfungen-massnahmen />
+    <feat-untersuchung-impfungen-massnahmen/>
   </svui-card-in-card>
 
 </svui-layout-two-columns>

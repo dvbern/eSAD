@@ -48,6 +48,8 @@ public class JsonWebTokenDataDTO {
     String phoneNumberClaim;
     @Nullable
     String titleClaim;
+    @NonNull
+    String tenantClaim;
 
     @NonNull
     private final Set<FachRolle> fachRollen;
@@ -72,6 +74,7 @@ public class JsonWebTokenDataDTO {
         mobileNummerClaim = (String) jsonWebToken.claim(JsonWebTokenClaims.MOBILE_NUMMER).orElse(null);
         titleClaim = (String) jsonWebToken.claim(JsonWebTokenClaims.TITLE_CLAIM).orElse(null);
         phoneNumberClaim = (String) jsonWebToken.claim(JsonWebTokenClaims.PHONE_CLAIM).orElse(null);
+        tenantClaim = jsonWebToken.getClaim(JsonWebTokenClaims.TENANT_CLAIM);
 
         // extract fachrollen in resource_access.esc.roles
         Optional<JsonArray> fachrolleClaim = extractFachrollen(jsonWebToken);

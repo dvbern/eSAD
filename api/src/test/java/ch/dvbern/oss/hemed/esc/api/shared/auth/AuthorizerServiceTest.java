@@ -4,12 +4,15 @@ import java.util.Set;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsEmpfang;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsEmpfang;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsLausbeauftragte;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsMpa;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsPfp;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupport;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
@@ -109,14 +112,33 @@ class AuthorizerServiceTest {
     }
 
     @Test
-    @TestAsEmpfang
-    void checkAuthorizationNotiz_Dispensationsgesuch_EMPFANG() {
+    @TestAsLausbeauftragte
+    void checkAuthorizationAnlass_Impftermin_Lausbeauftragte() {
         // ARRANGE
-        Notiz notiz = fixtureService.createNotiz(Set.of(Label.ID_LABEL_DISPENSATIONSGESUCH));
+        Anlass anlass = fixtureService.createAnlass(AnlassTyp.IMPFTERMIN);
         // ACT / ASSERT
-        assertThatCode(() -> authorizerService.requireReadAuthorizationNotiz(notiz.getId()))
+        assertThrows(Exception.class, () -> authorizerService.requireReadAuthorizationAnlass(anlass.getId()));
+        assertThrows(Exception.class, () -> authorizerService.requireWriteAuthorizationAnlassLaeuse(anlass.getId()));
+    }
+
+    @Test
+    @TestAsLausbeauftragte
+    void checkAuthorizationAnlass_Lauskontrolle_Lausbeauftragte() {
+        // ARRANGE
+        Anlass anlass = fixtureService.createAnlass(AnlassTyp.LAEUSEKONTROLLE);
+        // ACT / ASSERT
+        assertThatCode(() -> authorizerService.requireReadAuthorizationAnlass(anlass.getId()))
             .doesNotThrowAnyException();
-        assertThatCode(() -> authorizerService.requireWriteAuthorizationNotiz(notiz.getId()))
+        assertThatCode(() -> authorizerService.requireWriteAuthorizationAnlassLaeuse(anlass.getId()))
             .doesNotThrowAnyException();
+    }
+
+    @Test
+    @TestAsPfp
+    void checkWriteAuthorizationAnlass_anlass_abgeschlossen_PFP() {
+        // ARRANGE
+        Anlass anlass = fixtureService.createAnlass(AnlassStatus.ABGESCHLOSSEN);
+        // ACT / ASSERT
+        assertThrows(Exception.class, () -> authorizerService.requireWriteAuthorizationAnlass(anlass.getId()));
     }
 }

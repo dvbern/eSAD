@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, inject, ViewChild} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {LabelJson, NotizSaveJson, NotizStatus} from '@dvb/data-access-backend';
+import {LabelJson, NotizSaveJson, NotizStatus, NotizTyp} from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
 import {
   BenutzerOptionsStore,
@@ -50,11 +50,8 @@ export class KinderNotizPageComponent implements DirtyMarker {
   protected readonly requireValue = requireValue;
 
   pageTitle = computed(() => {
-    if (this.kinderNotizStore.selectedIsNew()) {
-      return 'notizen.detail.create.titel';
-    } else {
-      return 'notizen.detail.edit.titel';
-    }
+    const mode = this.kinderNotizStore.selectedIsNew() ? 'create' : 'edit';
+    return `notizen.detail.${mode}.titel`;
   });
 
   isDirty(): boolean {
@@ -75,6 +72,7 @@ export class KinderNotizPageComponent implements DirtyMarker {
           titel: this.#transloco.translate('notiz.dispensationsgesuch.title'),
           bemerkungen: undefined,
           status: NotizStatus.ABGESCHLOSSEN,
+          typ: NotizTyp.DEFAULT,
           verantwortlicher: requireValue(currentUser),
           labels: labels,
           files: [],
@@ -91,7 +89,7 @@ export class KinderNotizPageComponent implements DirtyMarker {
     if (!kindIdOrUndefined) {
       return;
     }
-    if (isNotNullish(payload.fileUploads) && payload.fileUploads.length > 4) {
+    if (isNotNullish(payload.fileUploads) && payload.fileUploads.length > globalConstants.notizen.uploadFilesMax) {
       this.#notificationService.addDangerNotification(this.#transloco.translate('ui.validation-error.max-files'));
       return;
     }

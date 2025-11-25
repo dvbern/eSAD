@@ -98,9 +98,12 @@
             [placeholder]="'global.select.bitte-auswaehlen' | transloco"
           >
             @for (label of labelsStore.aufgabenLabelsEnabledSorted(); track label.id) {
-              <ng-option [value]="label" [disabled]="label.data.disabled">
-                {{ label.data.name | translatedStringPipe }}
-              </ng-option>
+              <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+              @if (label) {
+                <ng-option [value]="label" [disabled]="label.data.disabled">
+                  {{ label.data.name | translatedStringPipe }}
+                </ng-option>
+              }
             }
           </ng-select>
         </svui-form-control>
@@ -143,7 +146,7 @@
           >
             <div class="subBadges">
               @for (label of inaktivLabels(); track label.id) {
-                <svui-badge>{{ label.data.name | translatedStringPipe }}</svui-badge>
+                  <svui-badge>{{ label.data.name | translatedStringPipe }}</svui-badge>
               }
             </div>
           </svui-form-control>

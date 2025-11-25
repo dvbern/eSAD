@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {BenutzerStore} from '@dvb/feat-shared';
@@ -26,15 +26,14 @@ import {TranslocoPipe} from '@jsverse/transloco';
   selector: 'feat-admin',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     PageComponent,
     ListComponent,
     ListItemComponent,
     ListItemTitleDirective,
     ListItemSecondaryDirective,
     TranslocoPipe,
-    RouterLink,
-  ],
+    RouterLink
+],
   templateUrl: './admin-page.component.html',
   styleUrl: './admin-page.component.scss',
 })

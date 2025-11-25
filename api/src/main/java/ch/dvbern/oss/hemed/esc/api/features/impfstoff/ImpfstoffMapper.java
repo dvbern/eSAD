@@ -8,8 +8,10 @@ import ch.dvbern.oss.hemed.esc.api.features.impfstoff.json.ImpfstoffChargeJson;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.json.ImpfstoffImpfstoffChargeDataJson;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.json.ImpfstoffJson;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.json.ImpfstoffSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatusSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -27,7 +29,7 @@ public final class ImpfstoffMapper {
             impfstoff.getId(),
             new ImpfstoffSaveJson(
                 impfstoff.getName(),
-                impfstoff.getKrankheiten(),
+                EnumSetUtil.toList(impfstoff.getKrankheiten()),
                 impfstoff.getImpfstoffAktivStatus(),
                 impfstoff.getVersion()
             )

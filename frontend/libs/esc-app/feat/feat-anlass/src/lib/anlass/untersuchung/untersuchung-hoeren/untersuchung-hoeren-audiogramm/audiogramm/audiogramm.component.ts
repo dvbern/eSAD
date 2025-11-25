@@ -24,20 +24,20 @@ export class AudiogrammComponent {
     let frequenzen = this.form().config.frequenzenKeys;
     const anlassConfig = this.form().config.anlassConfigSig();
 
-    if (anlassConfig?.hoerenAudiogramm250Hz === RequirementSetting.NOT_VISIBLE) {
+    if (anlassConfig?.data.hoerenAudiogramm250Hz === RequirementSetting.NOT_VISIBLE) {
       frequenzen = frequenzen.filter(freq => freq !== 'dbHz250');
     }
-    if (anlassConfig?.hoerenAudiogramm === RequirementSetting.NOT_VISIBLE) {
+    if (anlassConfig?.data.hoerenAudiogramm === RequirementSetting.NOT_VISIBLE) {
       frequenzen =
-          frequenzen.filter(freq => ![
-            'dbHz500',
-            'dbHz1000',
-            'dbHz2000',
-            'dbHz4000',
-            'dbHz6000',
-          ].includes(freq));
+        frequenzen.filter(freq => ![
+          'dbHz500',
+          'dbHz1000',
+          'dbHz2000',
+          'dbHz4000',
+          'dbHz6000',
+        ].includes(freq));
     }
-    if (anlassConfig?.hoerenAudiogramm8000Hz === RequirementSetting.NOT_VISIBLE) {
+    if (anlassConfig?.data.hoerenAudiogramm8000Hz === RequirementSetting.NOT_VISIBLE) {
       frequenzen = frequenzen.filter(freq => freq !== 'dbHz8000');
     }
     return frequenzen;

@@ -20,6 +20,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DistanzSehenResultatSpe
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FarbsehenResultatSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.InspektionKonvergenzResultatSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.MotilitaetResultatSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SehenEmpfehlungSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.StereotestResultatSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.StrabismusAuftretenResultatSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.StrabismusAuspraegungResultatSpec;
@@ -57,6 +58,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   UntersuchungSehenBeurteilungSaveJsonSpec.JSON_PROPERTY_STRABISMUS_AUFTRETEN,
   UntersuchungSehenBeurteilungSaveJsonSpec.JSON_PROPERTY_INSPEKTION,
   UntersuchungSehenBeurteilungSaveJsonSpec.JSON_PROPERTY_KONVERGENZ,
+  UntersuchungSehenBeurteilungSaveJsonSpec.JSON_PROPERTY_EMPFEHLUNG,
   UntersuchungSehenBeurteilungSaveJsonSpec.JSON_PROPERTY_BEMERKUNGEN,
   UntersuchungSehenBeurteilungSaveJsonSpec.JSON_PROPERTY_VERSION
 })
@@ -127,6 +129,10 @@ public class UntersuchungSehenBeurteilungSaveJsonSpec {
   public static final String JSON_PROPERTY_KONVERGENZ = "konvergenz";
   @jakarta.annotation.Nullable
   private InspektionKonvergenzResultatSpec konvergenz;
+
+  public static final String JSON_PROPERTY_EMPFEHLUNG = "empfehlung";
+  @jakarta.annotation.Nullable
+  private List<SehenEmpfehlungSpec> empfehlung;
 
   public static final String JSON_PROPERTY_BEMERKUNGEN = "bemerkungen";
   @jakarta.annotation.Nullable
@@ -563,6 +569,39 @@ public class UntersuchungSehenBeurteilungSaveJsonSpec {
     this.konvergenz = konvergenz;
   }
 
+  public UntersuchungSehenBeurteilungSaveJsonSpec empfehlung(@jakarta.annotation.Nullable List<SehenEmpfehlungSpec> empfehlung) {
+    
+    this.empfehlung = empfehlung;
+    return this;
+  }
+
+  public UntersuchungSehenBeurteilungSaveJsonSpec addEmpfehlungItem(SehenEmpfehlungSpec empfehlungItem) {
+    if (this.empfehlung == null) {
+      this.empfehlung = new ArrayList<>();
+    }
+    this.empfehlung.add(empfehlungItem);
+    return this;
+  }
+
+  /**
+   * Get empfehlung
+   * @return empfehlung
+   */
+  @jakarta.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_EMPFEHLUNG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<SehenEmpfehlungSpec> getEmpfehlung() {
+    return empfehlung;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_EMPFEHLUNG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEmpfehlung(@jakarta.annotation.Nullable List<SehenEmpfehlungSpec> empfehlung) {
+    this.empfehlung = empfehlung;
+  }
+
   public UntersuchungSehenBeurteilungSaveJsonSpec bemerkungen(@jakarta.annotation.Nullable String bemerkungen) {
     
     this.bemerkungen = bemerkungen;
@@ -638,13 +677,14 @@ public class UntersuchungSehenBeurteilungSaveJsonSpec {
         Objects.equals(this.strabismusAuftreten, untersuchungSehenBeurteilungSaveJson.strabismusAuftreten) &&
         Objects.equals(this.inspektion, untersuchungSehenBeurteilungSaveJson.inspektion) &&
         Objects.equals(this.konvergenz, untersuchungSehenBeurteilungSaveJson.konvergenz) &&
+        Objects.equals(this.empfehlung, untersuchungSehenBeurteilungSaveJson.empfehlung) &&
         Objects.equals(this.bemerkungen, untersuchungSehenBeurteilungSaveJson.bemerkungen) &&
         Objects.equals(this.version, untersuchungSehenBeurteilungSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(brilleLinsen, stereotest, farbsehen, verwendeteTafel, fernvisus, fernvisusRechts, fernvisusLinks, nahvisus, nahvisusRechts, nahvisusLinks, motilitaet, strabismus, strabismusAuspraegung, strabismusAuftreten, inspektion, konvergenz, bemerkungen, version);
+    return Objects.hash(brilleLinsen, stereotest, farbsehen, verwendeteTafel, fernvisus, fernvisusRechts, fernvisusLinks, nahvisus, nahvisusRechts, nahvisusLinks, motilitaet, strabismus, strabismusAuspraegung, strabismusAuftreten, inspektion, konvergenz, empfehlung, bemerkungen, version);
   }
 
   @Override
@@ -667,6 +707,7 @@ public class UntersuchungSehenBeurteilungSaveJsonSpec {
     sb.append("    strabismusAuftreten: ").append(toIndentedString(strabismusAuftreten)).append("\n");
     sb.append("    inspektion: ").append(toIndentedString(inspektion)).append("\n");
     sb.append("    konvergenz: ").append(toIndentedString(konvergenz)).append("\n");
+    sb.append("    empfehlung: ").append(toIndentedString(empfehlung)).append("\n");
     sb.append("    bemerkungen: ").append(toIndentedString(bemerkungen)).append("\n");
     sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");

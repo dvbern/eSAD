@@ -1,5 +1,5 @@
 import {ISODateString, ISODateTimeString, ISOYearMonthString} from '@dvb/data-access-types';
-import {format, isValid, parse, setHours, setMinutes, toDate} from 'date-fns';
+import {addDays, addYears, format, isValid, parse, setHours, setMinutes, toDate} from 'date-fns';
 import {isNullish} from '../nullish';
 
 export type ISOTime = `${string}:${string}`;
@@ -86,5 +86,38 @@ export function getSchoolYearFromISODateString(
   return date.getFullYear();
 }
 
+export function addYearsToISODateString(
+  isoDateString: ISODateString | undefined,
+  yearsToAdd: number,
+): ISODateString | undefined {
+  const date = parseISODateString(isoDateString);
+  return date ? toISODateString(addYears(date, yearsToAdd)) : undefined;
+}
 
+export function addDaysToISODateString(
+  isoDateString: ISODateString | undefined,
+  daysToAdd: number
+): ISODateString | undefined {
+  const date = parseISODateString(isoDateString);
+  return date ? toISODateString(addDays(date, daysToAdd)) : undefined;
+}
+
+function toISODateString(  date: Date | undefined) {
+  if(!date){
+    return undefined;
+  }
+  return format(date, 'yyyy-MM-dd') as ISODateString;
+}
+
+function parseISODateString(  isoDateString: ISODateString | undefined){
+  if (isNullish(isoDateString)) {
+    return undefined;
+  }
+  // Parse the ISO string into a Date
+  const date = new Date(isoDateString);
+  if (isNaN(date.valueOf())) {
+    return undefined;
+  }
+  return date;
+}
 

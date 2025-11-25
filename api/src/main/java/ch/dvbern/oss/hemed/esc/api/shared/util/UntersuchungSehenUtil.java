@@ -1,21 +1,40 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.shared.util;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.EnumSet;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.BrilleLinsenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.DistanzSehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.FarbsehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.InspektionKonvergenzResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.MotilitaetResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StereotestResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusAuftretenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusAuspraegungResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.VerwendetTafelResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftretenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.collections4.CollectionUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -82,19 +101,19 @@ public class UntersuchungSehenUtil {
         return null;
     }
 
-    @Nullable
-    public static List<DistanzSehenResultat> getFernvisus(
+    @NonNull
+    public static EnumSet<DistanzSehenResultat> getFernvisus(
         @NonNull AnlassConfig config,
         @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull DistanzSehenResultat defaultWert
     ) {
         if (config.getSehenFernvisus().isVisible()) {
-            if (sehen != null && !sehen.getFernvisus().isEmpty()) {
+            if (sehen != null && CollectionUtils.isNotEmpty(sehen.getFernvisus())) {
                 return sehen.getFernvisus();
             }
-            return List.of(defaultWert);
+            return EnumSet.of(defaultWert);
         }
-        return null;
+        return EnumSet.noneOf(DistanzSehenResultat.class);
     }
 
     @Nullable
@@ -104,7 +123,7 @@ public class UntersuchungSehenUtil {
         @NonNull BigDecimal defaultWert
     ) {
         if (config.getSehenFernvisus().isVisible()) {
-            if (sehen != null && !sehen.getFernvisus().isEmpty()) {
+            if (sehen != null && CollectionUtils.isNotEmpty(sehen.getFernvisus())) {
                 return sehen.getFernvisusRechts();
             }
             return defaultWert;
@@ -119,7 +138,7 @@ public class UntersuchungSehenUtil {
         @NonNull BigDecimal defaultWert
     ) {
         if (config.getSehenFernvisus().isVisible()) {
-            if (sehen != null && !sehen.getFernvisus().isEmpty()) {
+            if (sehen != null && CollectionUtils.isNotEmpty(sehen.getFernvisus())) {
                 return sehen.getFernvisusLinks();
             }
             return defaultWert;
@@ -127,18 +146,18 @@ public class UntersuchungSehenUtil {
         return null;
     }
 
-    @Nullable
-    public static List<DistanzSehenResultat> getNahvisus(
+    @NonNull
+    public static EnumSet<DistanzSehenResultat> getNahvisus(
         @NonNull AnlassConfig config,
         @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull DistanzSehenResultat defaultWert) {
         if (config.getSehenNahvisus().isVisible()) {
-            if (sehen != null && !sehen.getNahvisus().isEmpty()) {
+            if (sehen != null && CollectionUtils.isNotEmpty(sehen.getNahvisus())) {
                 return sehen.getNahvisus();
             }
-            return List.of(defaultWert);
+            return EnumSet.of(defaultWert);
         }
-        return null;
+        return EnumSet.noneOf(DistanzSehenResultat.class);
     }
 
     @Nullable
@@ -156,18 +175,18 @@ public class UntersuchungSehenUtil {
         return null;
     }
 
-    @Nullable
-    public static List<StrabismusResultat> getStrabismus(
+    @NonNull
+    public static EnumSet<StrabismusResultat> getStrabismus(
         @NonNull AnlassConfig config,
         @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull StrabismusResultat defaultWert) {
         if (config.getSehenStrabismus().isVisible()) {
-            if (sehen != null && !sehen.getStrabismus().isEmpty()) {
+            if (sehen != null && CollectionUtils.isNotEmpty(sehen.getStrabismus())) {
                 return sehen.getStrabismus();
             }
-            return List.of(defaultWert);
+            return EnumSet.of(defaultWert);
         }
-        return null;
+        return EnumSet.noneOf(StrabismusResultat.class);
     }
 
     @Nullable

@@ -6,10 +6,11 @@ import java.util.Set;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.EinladungService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.infomaterial.Infomaterial;
 import ch.dvbern.oss.hemed.esc.api.features.infomaterial.InfomaterialService;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;

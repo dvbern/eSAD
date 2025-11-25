@@ -21,6 +21,7 @@ export interface UntersuchungTabsSavedJson {
     triageTabSaved: boolean;
     aerzlicheUnteruchungTabSaved: boolean;
     massnahmenTabSaved: boolean;
+    laeusekontrolleTabSaved: boolean;
 }
 
 

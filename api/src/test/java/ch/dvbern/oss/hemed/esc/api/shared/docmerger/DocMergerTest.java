@@ -1,3 +1,21 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.shared.docmerger;
 
 import java.io.File;
@@ -20,27 +38,27 @@ import ch.dvbern.dvbstarter.shared.i18n.translations.TLProducer;
 import ch.dvbern.lib.doctemplate.common.DocTemplateException;
 import ch.dvbern.lib.doctemplate.common.MergeContext;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankheit;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungIntern;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Dezibel;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.HoerenZusaetzlicheAngaben;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.BrilleLinsenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.DistanzSehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.FarbsehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.InspektionKonvergenzResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.MotilitaetResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.RequirementSetting;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StereotestResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.Arzt;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.docmerger.MergeSourceCreatorService;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.docmerger.RootMergeSource;
@@ -248,7 +266,7 @@ class DocMergerTest {
             "anlass.sehen.beurteilung",
             expectedValue,
             untersuchungMassnahmen,
-				untersuchungSehenBeurteilung,
+            untersuchungSehenBeurteilung,
             null,
             null,
             anlassConfig);
@@ -265,7 +283,7 @@ class DocMergerTest {
             "anlass.sehen.farbsehen",
             expectedValue,
             untersuchungMassnahmen,
-				untersuchungSehenBeurteilung,
+            untersuchungSehenBeurteilung,
             null,
             null,
             AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL));
@@ -468,12 +486,12 @@ class DocMergerTest {
                 "unklar und muss daher von einem Augenarzt/ einer Augenärztin überprüft werden.",
                 UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.UNSICHER)),
                 UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now())
-                ),
+            ),
             Arguments.of(
                 "unklar und muss daher von einem Augenarzt/ einer Augenärztin überprüft werden.",
                 UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.UNSICHER)),
                 null
-                ),
+            ),
             Arguments.of(
                 "unklar und muss daher von einem Augenarzt/ einer Augenärztin überprüft werden.",
                 UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.UNSICHER)),
@@ -580,10 +598,10 @@ class DocMergerTest {
                     AudiogrammBeurteilung.LINKS_REDUZIERT)))
             ),
             Arguments.of(
-                    "unaufällig, rechts vermindert",
-                    UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(List.of(
-                        AudiogrammBeurteilung.NORMAL,
-                        AudiogrammBeurteilung.RECHTS_REDUZIERT)))
+                "unaufällig, rechts vermindert",
+                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(List.of(
+                    AudiogrammBeurteilung.NORMAL,
+                    AudiogrammBeurteilung.RECHTS_REDUZIERT)))
             )
         );
     }
@@ -628,34 +646,40 @@ class DocMergerTest {
 
     @NonNull
     private static Stream<Arguments> beurteilungOhrenResultsOtoskopie() {
-         Stream<Arguments> testsDefinedResults = Map.of(
-            OtoskopieResultat.NORMAL, "hat keine Auffälligkeiten gezeigt",
-            OtoskopieResultat.TROMMELFELL_CERUMEN, "hat ergeben, dass das Trommelfell aufgrund von Ohrenschmalz nicht einsehbar war.",
-            OtoskopieResultat.NICHT_EINSEHBAR, "hat ergeben, dass das Trommelfell nicht einsehbar war.",
-            OtoskopieResultat.TROMMELFELL_PERFORATION,"hat eine Trommelfellperforation gezeigt.",
-            OtoskopieResultat.SEROMUKOTYMPANON, "hat ein Seromukotympanon gezeigt.",
-            OtoskopieResultat.NICHT_GEPRUEFT, "wurde nicht durchgeführt."
+        Stream<Arguments> testsDefinedResults = Map.of(
+            OtoskopieResultat.NORMAL,
+            "hat keine Auffälligkeiten gezeigt",
+            OtoskopieResultat.TROMMELFELL_CERUMEN,
+            "hat ergeben, dass das Trommelfell aufgrund von Ohrenschmalz nicht einsehbar war.",
+            OtoskopieResultat.NICHT_EINSEHBAR,
+            "hat ergeben, dass das Trommelfell nicht einsehbar war.",
+            OtoskopieResultat.TROMMELFELL_PERFORATION,
+            "hat eine Trommelfellperforation gezeigt.",
+            OtoskopieResultat.SEROMUKOTYMPANON,
+            "hat ein Seromukotympanon gezeigt.",
+            OtoskopieResultat.NICHT_GEPRUEFT,
+            "wurde nicht durchgeführt."
         ).entrySet().stream().flatMap(
             entry ->
                 Stream.of(
-					Arguments.of(
-						entry.getValue(),
-						entry.getValue(),
-						UntersuchungHoerenOtoskopieBuilder.create(builder -> builder
-							.withOtoskopieLinks(List.of(entry.getKey()))
-							.withOtoskopieLinksResultatAndere("Bemerkung Links")
-							.withOtoskopieRechts(List.of(entry.getKey()))
-							.withOtoskopieRechtsResultatAndere("Bemerkung Rechts")
-						)
-					),
-					Arguments.of(
-						entry.getValue(),
-						entry.getValue(),
-						UntersuchungHoerenOtoskopieBuilder.create(builder -> builder
-							.withOtoskopieLinks(List.of(entry.getKey()))
-							.withOtoskopieRechts(List.of(entry.getKey()))
-						)
-					))
+                    Arguments.of(
+                        entry.getValue(),
+                        entry.getValue(),
+                        UntersuchungHoerenOtoskopieBuilder.create(builder -> builder
+                            .withOtoskopieLinks(List.of(entry.getKey()))
+                            .withOtoskopieLinksResultatAndere("Bemerkung Links")
+                            .withOtoskopieRechts(List.of(entry.getKey()))
+                            .withOtoskopieRechtsResultatAndere("Bemerkung Rechts")
+                        )
+                    ),
+                    Arguments.of(
+                        entry.getValue(),
+                        entry.getValue(),
+                        UntersuchungHoerenOtoskopieBuilder.create(builder -> builder
+                            .withOtoskopieLinks(List.of(entry.getKey()))
+                            .withOtoskopieRechts(List.of(entry.getKey()))
+                        )
+                    ))
 
         );
 
@@ -680,6 +704,6 @@ class DocMergerTest {
             )
         );
 
-        return Stream.concat(testsDefinedResults, testsAnderes );
+        return Stream.concat(testsDefinedResults, testsAnderes);
     }
 }

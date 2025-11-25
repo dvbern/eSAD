@@ -5,7 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.infomaterial.Infomaterial;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;

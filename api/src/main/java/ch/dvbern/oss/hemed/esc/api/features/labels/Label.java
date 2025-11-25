@@ -63,6 +63,8 @@ public class Label extends AbstractTenantEntity<Label> implements EntityWithOpti
         ID_LABEL_GRUPPEN_FOLGETERMIN = ID.of(UUID.fromString("5d6870a9-50f5-466b-aee6-8810bfcf3f0d"), Label.class);
     public static final ID<Label> ID_LABEL_NACHZUEGLER =
         ID.of(UUID.fromString("4db33316-7779-4c2e-851a-139e18458e7c"), Label.class);
+    public static final ID<Label> ID_LABEL_ANMELDUNG_BESTAETIGUNG =
+        ID.of(UUID.fromString("e84f6525-0f70-4440-bb62-11fd25fea5b1"), Label.class);
 
     @NonNull
     @NotNull

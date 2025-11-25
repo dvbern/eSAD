@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, model} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
-import {DossierSaveJson} from '@dvb/data-access-backend';
+import {DossierMedizinischSaveJson} from '@dvb/data-access-backend';
 import {ModalDialogComponent} from '@dvb/feat-shared';
 import {
   CheckboxDirective,
@@ -31,7 +31,7 @@ import {KinderZusatzinformationenForm, KinderZusatzinformationenJson} from './ki
 export class KinderZusatzinformationenModalComponent {
   readonly activeModal = inject(NgbActiveModal);
 
-  dossierData = model<DossierSaveJson>();
+  dossierData = model<DossierMedizinischSaveJson>();
 
   form = new KinderZusatzinformationenForm({fb: inject(NonNullableFormBuilder), destroyRef: inject(DestroyRef)});
 

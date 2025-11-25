@@ -1,9 +1,15 @@
 package ch.dvbern.oss.hemed.esc.api.shared.mandant;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
-import ch.dvbern.oss.hemed.esc.api.features.pub.settings.TenantSetting;
-import ch.dvbern.oss.hemed.esc.api.features.pub.settings.TenantSettingsService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSetting;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.features.FeatureEnabledSetting;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.features.TenantSettingFeatures;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import org.assertj.core.api.Assertions;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.Test;
@@ -57,7 +63,12 @@ class TranslatedStringMapperTest {
         Mockito.when(tenantSettingsServiceMock.getTenantSetting())
             .thenReturn(new TenantSetting(
                 defaultLanguage,
-                supportedLanguages
+                supportedLanguages,
+                    new TenantSettingFeatures(
+                        FeatureEnabledSetting.ENABLED,
+                        FeatureEnabledSetting.ENABLED
+                    ),
+                EnumSetUtil.toString(List.of(EinladungStatus.TEILNAHME_ABGESAGT, EinladungStatus.TEILNAHME_ABGESAGT))
                 )
             );
     }

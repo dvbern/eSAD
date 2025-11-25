@@ -24,10 +24,14 @@
 </div>
 
 <div class="sub">
-  <div class="subText" *ngIf="subText()">
-    {{ subText() }}
-  </div>
-  <div class="subBadges" *ngIf="!subText()">
-    <ng-content select="[subBadges]"/>
-  </div>
+  @if (subText()) {
+    <div class="subText">
+      {{ subText() }}
+    </div>
+  }
+  @if (!subText()) {
+    <div class="subBadges">
+      <ng-content select="[subBadges]"/>
+    </div>
+  }
 </div>

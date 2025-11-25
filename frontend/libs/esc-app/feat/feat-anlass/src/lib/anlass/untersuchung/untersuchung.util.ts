@@ -1,6 +1,7 @@
 import {DestroyRef} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
+import {isNotNullish} from '@dvb/util-shared';
 import {distinctUntilChanged} from 'rxjs';
 
 export function markAllMultiCheckboxesAsTouched(formArray: FormArray<FormGroup>, destroyRef: DestroyRef) {
@@ -21,4 +22,15 @@ export function checkIfArrayContainsCheckedValue<T>(controls: FormGroup<{ result
     const isChecked = group.controls.isChecked?.value;
     return isChecked && filterValues.includes(resultat);
   });
+}
+
+
+/**
+ * because version is always set and is never nullish but rather 0 we have to ignore it when checking if the
+ * config has a value that is different from nullish
+ */
+export function hasSomeNotNullishValueIgnoringVersion(defaultUntersuchungsValues: { version: number }): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { version, ...defaultProperties } = defaultUntersuchungsValues;
+  return Object.values(defaultProperties).some(isNotNullish);
 }

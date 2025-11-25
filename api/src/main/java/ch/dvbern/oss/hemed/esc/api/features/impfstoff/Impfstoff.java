@@ -1,14 +1,16 @@
 package ch.dvbern.oss.hemed.esc.api.features.impfstoff;
 
 import java.io.Serial;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Objects;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -23,7 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.hibernate.envers.Audited;
 
@@ -51,7 +53,7 @@ public class Impfstoff extends AbstractTenantEntity<Impfstoff> implements Entity
     @NotNull
     @NonNull
     @Size(max = DbConst.DB_DEFAULT_MAX_LENGTH)
-    @Column(nullable = false)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LIST_LENGTH)
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private String krankheiten;
@@ -66,18 +68,12 @@ public class Impfstoff extends AbstractTenantEntity<Impfstoff> implements Entity
     private EntityAktivStatus impfstoffAktivStatus = EntityAktivStatus.AKTIV;
 
     public void setKrankheiten(@NonNull List<Krankheit> krankheiten) {
-        this.krankheiten = krankheiten.stream()
-            .map(Krankheit::name)
-            .reduce((a, b) -> a + ", " + b)
-            .orElse("");
+        Validate.notEmpty(krankheiten, "krankheiten list for Impfstoff must not be empty");
+        this.krankheiten = Objects.requireNonNull(EnumSetUtil.toString(krankheiten));
     }
 
     @NonNull
-    public List<Krankheit> getKrankheiten() {
-        return Stream.of(krankheiten.split(","))
-            .map(StringUtils::trim)
-            .filter(StringUtils::isNotBlank)
-            .map(Krankheit::valueOf)
-            .toList();
+    public EnumSet<Krankheit> getKrankheiten() {
+        return EnumSetUtil.fromString(Krankheit.class, krankheiten);
     }
 }

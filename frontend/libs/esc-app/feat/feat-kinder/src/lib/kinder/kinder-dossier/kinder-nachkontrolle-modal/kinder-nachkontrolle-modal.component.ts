@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, effect, inject, model} from '@angular/core';
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {DossierMedizinischSaveJson} from '@dvb/data-access-backend';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {DossierSaveJson} from '@dvb/data-access-backend';
 import {KinderNachkontrolleForm} from './kinder-nachkontrolle.form';
 import {DetailMode} from '@dvb/util-angular';
 import {CheckboxDirective, SaveCancelButtonsComponent, StandaloneControlComponent} from '@dvb/ui-components';
@@ -26,7 +26,7 @@ export class KinderNachkontrolleModalComponent {
 
   readonly activeModal = inject(NgbActiveModal);
 
-  dossierData = model<DossierSaveJson>();
+  dossierData = model<DossierMedizinischSaveJson>();
 
   form = new KinderNachkontrolleForm(inject(NonNullableFormBuilder));
 

@@ -1,11 +1,33 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren;
 
+import java.io.Serial;
+import java.util.EnumSet;
+
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
-import ch.dvbern.oss.hemed.esc.api.Util;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungHoerenUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungHoerenOtoskopiePresentIfReq;
 import jakarta.persistence.Column;
@@ -14,15 +36,14 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
-import org.apache.commons.lang3.StringUtils;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
-
-import java.io.Serial;
-import java.util.List;
-import java.util.stream.Stream;
 
 @Entity
 @Table(
@@ -36,7 +57,7 @@ import java.util.stream.Stream;
 @NoArgsConstructor
 @CheckUntersuchungHoerenOtoskopiePresentIfReq
 public class UntersuchungHoerenOtoskopie extends AbstractTenantEntity<UntersuchungHoerenOtoskopie>
-        implements EntityWithOptimisticLocking {
+    implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 1446398935944895849L;
@@ -47,8 +68,8 @@ public class UntersuchungHoerenOtoskopie extends AbstractTenantEntity<Untersuchu
     private Untersuchung untersuchung;
 
     @Nullable
-    @Size(max = DbConst.DB_DEFAULT_MAX_LENGTH)
-    @Column(nullable = true)
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private String otoskopieRechts;
@@ -59,8 +80,8 @@ public class UntersuchungHoerenOtoskopie extends AbstractTenantEntity<Untersuchu
     private String otoskopieRechtsResultatAndere;
 
     @Nullable
-    @Size(max = DbConst.DB_DEFAULT_MAX_LENGTH)
-    @Column(nullable = true)
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private String otoskopieLinks;
@@ -94,45 +115,31 @@ public class UntersuchungHoerenOtoskopie extends AbstractTenantEntity<Untersuchu
         AnlassConfig config = untersuchung.getEinladung().getAnlass().getAnlassConfig();
 
         hoerenOtoskopie.setOtoskopieRechts(UntersuchungHoerenUtil.getOtoskopieRechts(
-            config, hoerenOtoskopie, OtoskopieResultat.NICHT_GEPRUEFT));
+            config.getHoerenOtoskopie(), hoerenOtoskopie, OtoskopieResultat.NICHT_GEPRUEFT));
         hoerenOtoskopie.setOtoskopieLinks(UntersuchungHoerenUtil.getOtoskopieLinks(
-            config, hoerenOtoskopie, OtoskopieResultat.NICHT_GEPRUEFT));
+            config.getHoerenOtoskopie(), hoerenOtoskopie, OtoskopieResultat.NICHT_GEPRUEFT));
 
         return hoerenOtoskopie;
     }
 
     // Otoskopie Rechts
-    public void setOtoskopieRechts(@Nullable List<OtoskopieResultat> otoskopieResultatList) {
-        this.otoskopieRechts = Util.mapEnumListToString(otoskopieResultatList);
+    public void setOtoskopieRechts(@Nullable EnumSet<OtoskopieResultat> otoskopieResultatList) {
+        this.otoskopieRechts = EnumSetUtil.toString(otoskopieResultatList);
     }
 
     @NonNull
-    public List<OtoskopieResultat> getOtoskopieRechts() {
-        if (otoskopieRechts == null) {
-            return List.of();
-        }
-        return Stream.of(otoskopieRechts.split(","))
-            .map(StringUtils::trim)
-            .filter(StringUtils::isNotBlank)
-            .map(OtoskopieResultat::valueOf)
-            .toList();
+    public EnumSet<OtoskopieResultat> getOtoskopieRechts() {
+        return EnumSetUtil.fromString(OtoskopieResultat.class, otoskopieRechts);
     }
 
     // Otoskopie Links
-    public void setOtoskopieLinks(@Nullable List<OtoskopieResultat> otoskopieResultatList) {
-        this.otoskopieLinks = Util.mapEnumListToString(otoskopieResultatList);
+    public void setOtoskopieLinks(@Nullable EnumSet<OtoskopieResultat> otoskopieResultatList) {
+        this.otoskopieLinks = EnumSetUtil.toString(otoskopieResultatList);
     }
 
     @NonNull
-    public List<OtoskopieResultat> getOtoskopieLinks() {
-        if (otoskopieLinks == null) {
-            return List.of();
-        }
-        return Stream.of(otoskopieLinks.split(","))
-            .map(StringUtils::trim)
-            .filter(StringUtils::isNotBlank)
-            .map(OtoskopieResultat::valueOf)
-            .toList();
+    public EnumSet<OtoskopieResultat> getOtoskopieLinks() {
+        return EnumSetUtil.fromString(OtoskopieResultat.class, otoskopieLinks);
     }
 }
 

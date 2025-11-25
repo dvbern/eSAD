@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {ReactiveFormsModule} from '@angular/forms';
@@ -20,7 +20,7 @@ import {
   TableLinkComponent,
 } from '@dvb/ui-components';
 import {TableModel} from '@dvb/util-angular';
-import {hasListEditBerechtigung, requireValue} from '@dvb/util-shared';
+import {hasKindEditBerechtigung, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbDropdownItem, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {firstValueFrom} from 'rxjs';
@@ -33,7 +33,6 @@ import {KontaktPersonKindAddComponent} from '../kontakt-personen-kind-add/kontak
   selector: 'feat-kontakt-personen-kind-list',
   standalone: true,
   imports: [
-    CommonModule,
     TranslocoPipe,
     HeadingDirective,
     ReactiveFormsModule,
@@ -50,7 +49,7 @@ import {KontaktPersonKindAddComponent} from '../kontakt-personen-kind-add/kontak
     ColWidthComponent,
     ButtonComponent,
     BooleanPipe
-  ],
+],
   templateUrl: './kontakt-personen-kind-list.component.html',
   styleUrl: './kontakt-personen-kind-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -68,7 +67,7 @@ export class KontaktPersonenKindListComponent {
   protected readonly Path = Path;
   protected readonly getAdresse = getAdresse;
 
-  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
+  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung());
 
   itemTable = new TableModel<KontaktPersonKindJson>(
     {rawListSignal: this.store.entities},

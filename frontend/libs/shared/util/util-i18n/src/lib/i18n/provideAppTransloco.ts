@@ -1,7 +1,6 @@
-import { Type } from '@angular/core';
-import { provideTransloco } from '@jsverse/transloco';
-import { TranslocoLoader } from '@jsverse/transloco/lib/transloco.loader';
-import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES } from './Language';
+import {Type} from '@angular/core';
+import {provideTransloco, TranslocoLoader} from '@jsverse/transloco';
+import {DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES} from './Language';
 
 export function provideAppTransloco(loader: Type<TranslocoLoader>) {
   return [

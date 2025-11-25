@@ -1,15 +1,40 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren;
+
+import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfigMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoerenOtoskopieJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoerenOtoskopieSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungHoerenUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -31,9 +56,9 @@ public class UntersuchungHoerenOtoskopieMapper {
             hoeren.getId(),
             EntityInfoJson.fromEntity(hoeren),
             new UntersuchungHoerenOtoskopieSaveJson(
-                hoeren.getOtoskopieRechts(),
+                EnumSetUtil.toList(hoeren.getOtoskopieRechts()),
                 hoeren.getOtoskopieRechtsResultatAndere(),
-                hoeren.getOtoskopieLinks(),
+                EnumSetUtil.toList(hoeren.getOtoskopieLinks()),
                 hoeren.getOtoskopieLinksResultatAndere(),
                 hoeren.getBemerkungen(),
                 hoeren.getVersion()
@@ -56,13 +81,13 @@ public class UntersuchungHoerenOtoskopieMapper {
         if (hoeren == null) {
             hoeren = UntersuchungHoerenOtoskopie.forUntersuchung(untersuchung);
         }
-        hoeren.setOtoskopieRechts(saveJson.getOtoskopieRechts());
+        hoeren.setOtoskopieRechts(EnumSetUtil.toEnumSet(saveJson.getOtoskopieRechts(), OtoskopieResultat.class));
         hoeren.setOtoskopieRechtsResultatAndere(
             saveJson.getOtoskopieRechts() != null && saveJson.getOtoskopieRechts().contains(OtoskopieResultat.ANDERES)
                 ? saveJson.getOtoskopieRechtsResultatAndere()
                 : null
         );
-        hoeren.setOtoskopieLinks(saveJson.getOtoskopieLinks());
+        hoeren.setOtoskopieLinks(EnumSetUtil.toEnumSet(saveJson.getOtoskopieLinks(), OtoskopieResultat.class));
         hoeren.setOtoskopieLinksResultatAndere(
             saveJson.getOtoskopieLinks() != null && saveJson.getOtoskopieLinks().contains(OtoskopieResultat.ANDERES)
                 ? saveJson.getOtoskopieLinksResultatAndere()
@@ -88,7 +113,27 @@ public class UntersuchungHoerenOtoskopieMapper {
         @NonNull ID<Anlass> anlassID
     ) {
         AnlassConfig anlassConfig = anlassService.getById(anlassID).getAnlassConfig();
-        return UntersuchungHoerenOtoskopieSaveJson
-            .defaultOtoskopieValuesForAnlassConfig(AnlassConfigMapper.toJson(anlassConfig));
+        OtoskopieResultat defaultOtoskopieResultat = null;
+        if (List.of(AnlassTyp.KLASSE_8, AnlassTyp.KLASSE_9, AnlassTyp.KLASSE_4, AnlassTyp.FREMDSPRACHEN)
+            .contains(anlassConfig.getAnlassTyp())) {
+            defaultOtoskopieResultat = OtoskopieResultat.NICHT_GEPRUEFT;
+        }
+        return new UntersuchungHoerenOtoskopieSaveJson(
+            EnumSetUtil.toList(
+                UntersuchungHoerenUtil.getOtoskopieRechts(
+                    anlassConfig.getHoerenOtoskopie(),
+                    null,
+                    defaultOtoskopieResultat)
+            ),
+            null,
+            EnumSetUtil.toList(
+                UntersuchungHoerenUtil.getOtoskopieLinks(
+                    anlassConfig.getHoerenOtoskopie(),
+                    null,
+                    defaultOtoskopieResultat)),
+            null,
+            null,
+            0L
+        );
     }
 }

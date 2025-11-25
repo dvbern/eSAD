@@ -160,10 +160,12 @@
               [multiple]="true"
               [placeholder]="'global.select.bitte-auswaehlen' | transloco"
             >
-              @for (schule of schuleOptions(); track schule.id) {
-                <ng-option [value]="schule.id">
-                  <a [title]="schule.bezeichnung">{{ schule.bezeichnung }}</a>
-                </ng-option>
+              @if (schuleOptions()) {
+                @for (schule of schuleOptions(); track schule.id) {
+                  <ng-option [value]="schule.id">
+                    <a [title]="schule.bezeichnung">{{ schule.bezeichnung }}</a>
+                  </ng-option>
+                }
               }
             </ng-select>
           </svui-table-filter>

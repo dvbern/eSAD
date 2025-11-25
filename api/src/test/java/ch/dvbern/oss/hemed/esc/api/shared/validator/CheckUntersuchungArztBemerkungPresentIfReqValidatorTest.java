@@ -1,7 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.validator;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungArztBemerkungBuilder;
 import org.assertj.core.api.Assertions;
 import org.checkerframework.checker.nullness.qual.NonNull;

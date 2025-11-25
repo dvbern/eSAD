@@ -24,11 +24,11 @@ import java.util.function.Consumer;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungenMapper;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Visum;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungImpfungenJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.Visum;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungenJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
@@ -51,9 +51,9 @@ public class UntersuchungImpfungenBuilder {
     }
 
     @NonNull
-    public static UntersuchungImpfungen defaultUntersuchungImpfungen(
-        @NonNull LocalDate now) {
+    public static UntersuchungImpfungen defaultUntersuchungImpfungen(@NonNull LocalDate now) {
         UntersuchungImpfungen entity = new UntersuchungImpfungen();
+        entity.setVersion(1L); // Weil bei der Validierung erst ab Version 1 geprüft wird
         entity.setUntersuchung(UntersuchungBuilder.defaultUntersuchung(now));
         return entity;
     }
@@ -95,7 +95,28 @@ public class UntersuchungImpfungenBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungImpfungenBuilder withBemerkungen(@NonNull String bemerkungen) {
+    public UntersuchungImpfungenBuilder withCheckEinwilligungVorhanden(boolean check) {
+        this.impfungen.setCheckEinwilligungVorhanden(check);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungImpfungenBuilder withCheckKontraindikationenAbgeklaert(boolean check) {
+        this.impfungen.setCheckKontraindikationenAbgeklaert(check);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungImpfungenBuilder withCheckDoppelkontrolleImpfentscheidDurchgefuehrt(boolean check) {
+        this.impfungen.setCheckDoppelkontrolleImpfentscheidDurchgefuehrt(check);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungImpfungenBuilder withBemerkungen(@Nullable String bemerkungen) {
         this.impfungen.setBemerkungen(bemerkungen);
         return this;
     }

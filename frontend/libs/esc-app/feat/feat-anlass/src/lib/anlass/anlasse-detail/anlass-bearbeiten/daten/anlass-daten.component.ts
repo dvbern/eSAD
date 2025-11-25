@@ -1,9 +1,13 @@
 import {DatePipe} from '@angular/common';
-import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {AnlassArt, AnlassTyp, BenutzerOptionJson} from '@dvb/data-access-backend';
-import {BenutzerOptionsStore, KlassenOptionsStore, Path, TimetravelStore} from '@dvb/feat-shared';
+import {AnlassArt, AnlassConfigOptionJson, AnlassTyp, BenutzerOptionJson} from '@dvb/data-access-backend';
+import {
+  AnlassConfigOptionsStore,BenutzerOptionsStore, BenutzerStore, KlassenOptionsStore,
+  Path,
+  TimetravelStore,
+} from '@dvb/feat-shared';
 import {
   FormButtonsComponent,
   FormControlComponent,
@@ -14,7 +18,14 @@ import {
   TextareaDirective,
   TextInputDirective,
 } from '@dvb/ui-components';
-import {compareFn, fromISODateString, isNullish, requireValue} from '@dvb/util-shared';
+import {
+  compareFn,
+  fromISODateString,
+  hasAlleAnlaesseBerechtigungen,
+  hasLaeuseAnlassBerechtigungen,
+  isNullish,
+  requireValue,
+} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {AnlassStore} from '../../../anlass.store';
@@ -44,6 +55,7 @@ import {AnlassDatenForm} from './anlass-daten-form';
   ],
 })
 export class AnlassDatenComponent {
+
   readonly store = inject(AnlassStore);
   readonly benutzerOptionsStore = inject(BenutzerOptionsStore);
   readonly anlassKinderStore = inject(AnlassKinderStore);
@@ -51,6 +63,8 @@ export class AnlassDatenComponent {
   readonly #activatedRoute = inject(ActivatedRoute);
   readonly transloco = inject(TranslocoService);
   readonly timetravelStore = inject(TimetravelStore);
+  readonly benutzerStore = inject(BenutzerStore);
+  readonly anlassConfigOptionsStore = inject(AnlassConfigOptionsStore);
 
   public form = new AnlassDatenForm({
     fb: inject(NonNullableFormBuilder),
@@ -59,13 +73,27 @@ export class AnlassDatenComponent {
     anlassKinderStore: this.anlassKinderStore,
     anlassConfig: this.store.selectedEntity()?.anlassConfig,
     timetravelStore: inject(TimetravelStore),
+    anlassConfigOptionsStore: this.anlassConfigOptionsStore,
+    isNew: this.store.selectedIsNew()
   });
 
   anlassArten = Object.values(AnlassArt);
-  anlassTypen = Object.values(AnlassTyp);
+
+  #showLaeuseAnlass = this.benutzerStore.createHasRequiredRoleSig(hasLaeuseAnlassBerechtigungen());
+  #showAlleAnlaesse = this.benutzerStore.createHasRequiredRoleSig(hasAlleAnlaesseBerechtigungen());
+  anlassTypen = computed(() => {
+    if(this.#showAlleAnlaesse()){
+      return Object.values(this.anlassConfigOptionsStore.getVisibleAnlassTypen());
+    }
+    if(this.#showLaeuseAnlass()){
+      return [ AnlassTyp.LAEUSEKONTROLLE ];
+    }
+    return [];
+  });
 
   protected readonly Path = Path;
   protected readonly compareFnBenutzer = compareFn<BenutzerOptionJson>;
+  protected readonly compareFnAnlassConfig = compareFn<AnlassConfigOptionJson>;
 
   anlassTitlePrefix = anlassTitlePrefix;
 

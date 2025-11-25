@@ -52,7 +52,7 @@ public class EdokidIdGeneratorService {
 
     // Return Eintrittsjahr in the format of the EdokidId (e.g. 24, not 2024)
     public int getEintrittsJahr() {
-        LocalDate currentDate = appClock.localDateTime().now().toLocalDate();
+        LocalDate currentDate = appClock.getToday();
         return calculateEintrittsJahr(currentDate);
     }
 

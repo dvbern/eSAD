@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {NaechsteStation, UntersuchungTriageSaveJson} from '@dvb/data-access-backend';
@@ -23,10 +23,17 @@ import {UntersuchungTriageStore} from './untersuchung-triage.store';
 @Component({
   selector: 'feat-untersuchung-triage',
   imports: [
-    CommonModule, CheckboxDirective, ReactiveFormsModule, StandaloneControlComponent,
-    TextareaDirective, TranslocoPipe, HeadingDirective, SaveCancelButtonsComponent, KachelControlComponent,
-    RadioDirective, KachelFormSectionComponent,
-  ],
+    CheckboxDirective,
+    ReactiveFormsModule,
+    StandaloneControlComponent,
+    TextareaDirective,
+    TranslocoPipe,
+    HeadingDirective,
+    SaveCancelButtonsComponent,
+    KachelControlComponent,
+    RadioDirective,
+    KachelFormSectionComponent
+],
   templateUrl: './untersuchung-triage.component.html',
   styleUrl: './untersuchung-triage.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -16,13 +16,15 @@
         [placeholder]="'global.select.bitte-auswaehlen' | transloco"
         [compareWith]="compareFnSchule"
         [searchable]="true">
-
-        @for (item of schuleOptions(); track item.id; let index = $index) {
-          <ng-option [value]="item">
-            <span class="w-100 d-flex justify-content-between">
-              <span>{{ item.bezeichnung }}</span>
-            </span>
-          </ng-option>
+        <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+        @if (schuleOptions()) {
+          @for (item of schuleOptions(); track item.id; let index = $index) {
+            <ng-option [value]="item">
+              <span class="w-100 d-flex justify-content-between">
+                <span>{{ item.bezeichnung }}</span>
+              </span>
+            </ng-option>
+          }
         }
       </ng-select>
     </svui-form-control>
@@ -39,12 +41,15 @@
         [placeholder]="'global.select.bitte-auswaehlen' | transloco"
         [compareWith]="compareFnKlasse"
         [searchable]="true">
-        @for (item of klassenOptions(); track item.id; let index = $index) {
-          <ng-option [value]="item">
-            <span class="w-100 d-flex justify-content-between">
-              <span>{{ item.bezeichnung }}</span>
-            </span>
-          </ng-option>
+        <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+        @if (klassenOptions()) {
+          @for (item of klassenOptions(); track item.id; let index = $index) {
+            <ng-option [value]="item">
+              <span class="w-100 d-flex justify-content-between">
+                <span>{{ item.bezeichnung }}</span>
+              </span>
+            </ng-option>
+          }
         }
       </ng-select>
     </svui-form-control>
@@ -146,9 +151,12 @@
               [placeholder]="'global.select.bitte-auswaehlen' | transloco"
             >
               @for (klassenstufe of klassenstufen; track klassenstufe) {
-                <ng-option [value]="klassenstufe">
-                  {{ 'Klassenstufe.' + klassenstufe | transloco }}
-                </ng-option>
+                <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+                @if ('Klassenstufe.' + klassenstufe | transloco; as translated) {
+                  <ng-option [value]="klassenstufe">
+                    {{ 'Klassenstufe.' + klassenstufe | transloco }}
+                  </ng-option>
+                }
               }
             </ng-select>
           </svui-table-filter>
@@ -174,9 +182,12 @@
               [placeholder]="'global.select.bitte-auswaehlen' | transloco"
             >
               @for (geschlecht of geschlechter; track geschlecht) {
-                <ng-option [value]="geschlecht">
-                  {{ 'Geschlecht.' + geschlecht | transloco }}
-                </ng-option>
+                <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+                @if ('Geschlecht.' + geschlecht | transloco; as translated) {
+                  <ng-option [value]="geschlecht">
+                    {{ 'Geschlecht.' + geschlecht | transloco }}
+                  </ng-option>
+                }
               }
             </ng-select>
           </svui-table-filter>

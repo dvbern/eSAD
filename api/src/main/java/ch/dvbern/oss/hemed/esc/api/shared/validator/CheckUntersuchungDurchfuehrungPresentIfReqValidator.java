@@ -17,9 +17,10 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.validator;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungDurchfuehrung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @ApplicationScoped
@@ -31,6 +32,9 @@ public class CheckUntersuchungDurchfuehrungPresentIfReqValidator
         AnlassConfig anlassConfig = durchfuehrung.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
         if (anlassConfig.getDatenUntersuchung().isRequired()) {
             return durchfuehrung.getArzt() != null && durchfuehrung.getMpa() != null;
+        }
+        if (anlassConfig.getDatenBemerkung().isRequired()) {
+            return StringUtils.isNotEmpty(durchfuehrung.getBemerkungen());
         }
         return true;
     }

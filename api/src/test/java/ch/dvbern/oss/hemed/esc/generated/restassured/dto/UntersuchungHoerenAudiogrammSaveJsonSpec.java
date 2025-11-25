@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.Arrays;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AudiogrammBeurteilungSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AudiogrammSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.HoerenEmpfehlungSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.HoerenZusaetzlicheAngabenSpec;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -37,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   UntersuchungHoerenAudiogrammSaveJsonSpec.JSON_PROPERTY_AUDIOGRAMM_LINKS,
   UntersuchungHoerenAudiogrammSaveJsonSpec.JSON_PROPERTY_AUDIOGRAMM_BEURTEILUNG,
   UntersuchungHoerenAudiogrammSaveJsonSpec.JSON_PROPERTY_ZUSAETZLICHE_ANGABEN,
+  UntersuchungHoerenAudiogrammSaveJsonSpec.JSON_PROPERTY_EMPFEHLUNG,
   UntersuchungHoerenAudiogrammSaveJsonSpec.JSON_PROPERTY_BEMERKUNGEN,
   UntersuchungHoerenAudiogrammSaveJsonSpec.JSON_PROPERTY_VERSION
 })
@@ -59,6 +61,10 @@ public class UntersuchungHoerenAudiogrammSaveJsonSpec {
   public static final String JSON_PROPERTY_ZUSAETZLICHE_ANGABEN = "zusaetzlicheAngaben";
   @jakarta.annotation.Nullable
   private List<HoerenZusaetzlicheAngabenSpec> zusaetzlicheAngaben;
+
+  public static final String JSON_PROPERTY_EMPFEHLUNG = "empfehlung";
+  @jakarta.annotation.Nullable
+  private List<HoerenEmpfehlungSpec> empfehlung;
 
   public static final String JSON_PROPERTY_BEMERKUNGEN = "bemerkungen";
   @jakarta.annotation.Nullable
@@ -187,6 +193,39 @@ public class UntersuchungHoerenAudiogrammSaveJsonSpec {
     this.zusaetzlicheAngaben = zusaetzlicheAngaben;
   }
 
+  public UntersuchungHoerenAudiogrammSaveJsonSpec empfehlung(@jakarta.annotation.Nullable List<HoerenEmpfehlungSpec> empfehlung) {
+    
+    this.empfehlung = empfehlung;
+    return this;
+  }
+
+  public UntersuchungHoerenAudiogrammSaveJsonSpec addEmpfehlungItem(HoerenEmpfehlungSpec empfehlungItem) {
+    if (this.empfehlung == null) {
+      this.empfehlung = new ArrayList<>();
+    }
+    this.empfehlung.add(empfehlungItem);
+    return this;
+  }
+
+  /**
+   * Get empfehlung
+   * @return empfehlung
+   */
+  @jakarta.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_EMPFEHLUNG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<HoerenEmpfehlungSpec> getEmpfehlung() {
+    return empfehlung;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_EMPFEHLUNG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEmpfehlung(@jakarta.annotation.Nullable List<HoerenEmpfehlungSpec> empfehlung) {
+    this.empfehlung = empfehlung;
+  }
+
   public UntersuchungHoerenAudiogrammSaveJsonSpec bemerkungen(@jakarta.annotation.Nullable String bemerkungen) {
     
     this.bemerkungen = bemerkungen;
@@ -250,13 +289,14 @@ public class UntersuchungHoerenAudiogrammSaveJsonSpec {
         Objects.equals(this.audiogrammLinks, untersuchungHoerenAudiogrammSaveJson.audiogrammLinks) &&
         Objects.equals(this.audiogrammBeurteilung, untersuchungHoerenAudiogrammSaveJson.audiogrammBeurteilung) &&
         Objects.equals(this.zusaetzlicheAngaben, untersuchungHoerenAudiogrammSaveJson.zusaetzlicheAngaben) &&
+        Objects.equals(this.empfehlung, untersuchungHoerenAudiogrammSaveJson.empfehlung) &&
         Objects.equals(this.bemerkungen, untersuchungHoerenAudiogrammSaveJson.bemerkungen) &&
         Objects.equals(this.version, untersuchungHoerenAudiogrammSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(audiogrammRechts, audiogrammLinks, audiogrammBeurteilung, zusaetzlicheAngaben, bemerkungen, version);
+    return Objects.hash(audiogrammRechts, audiogrammLinks, audiogrammBeurteilung, zusaetzlicheAngaben, empfehlung, bemerkungen, version);
   }
 
   @Override
@@ -267,6 +307,7 @@ public class UntersuchungHoerenAudiogrammSaveJsonSpec {
     sb.append("    audiogrammLinks: ").append(toIndentedString(audiogrammLinks)).append("\n");
     sb.append("    audiogrammBeurteilung: ").append(toIndentedString(audiogrammBeurteilung)).append("\n");
     sb.append("    zusaetzlicheAngaben: ").append(toIndentedString(zusaetzlicheAngaben)).append("\n");
+    sb.append("    empfehlung: ").append(toIndentedString(empfehlung)).append("\n");
     sb.append("    bemerkungen: ").append(toIndentedString(bemerkungen)).append("\n");
     sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");

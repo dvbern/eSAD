@@ -1,5 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.mapper;
 
+import ch.dvbern.oss.hemed.esc.api.shared.mapper.BaseMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.person.AdresseJson;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AdresseJsonSpec;
 import org.checkerframework.checker.nullness.qual.NonNull;

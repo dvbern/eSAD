@@ -1,4 +1,4 @@
-import {DatePipe, NgIf} from '@angular/common';
+import { DatePipe } from '@angular/common';
 import {ChangeDetectionStrategy, Component, HostBinding, input} from '@angular/core';
 import {Params} from '@angular/router';
 import {TableLinkComponent} from '../../tables';
@@ -10,9 +10,8 @@ import {TableLinkComponent} from '../../tables';
     changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
-    NgIf,
-    TableLinkComponent,
-  ],
+    TableLinkComponent
+],
 })
 export class FancyListItemComponent {
   mainText = input.required<string>();

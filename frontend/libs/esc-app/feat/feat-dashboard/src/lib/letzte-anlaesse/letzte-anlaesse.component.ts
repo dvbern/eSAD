@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
 import {AnlassSaveJson} from '@dvb/data-access-backend';
 import {ISODateTimeString} from '@dvb/data-access-types';
@@ -13,13 +13,12 @@ import {DashboardStore} from '../dashboard.store';
     changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'feat-dashboard-letze-anlaesse',
     imports: [
-        CommonModule,
-        EmptyTableMessageComponent,
-        ListComponent,
-        TableComponent,
-        TableLinkComponent,
-        TranslocoPipe,
-    ],
+    EmptyTableMessageComponent,
+    ListComponent,
+    TableComponent,
+    TableLinkComponent,
+    TranslocoPipe
+],
     templateUrl: './letzte-anlaesse.component.html',
 })
 export class LetzteAnlaesseComponent {

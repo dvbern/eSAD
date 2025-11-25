@@ -14,10 +14,13 @@
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
       [compareWith]="compareSchule"
     >
-      @for (each of schuleOptions(); track each) {
-        <ng-option [value]="each" [disabled]="each.aktivStatus === 'INAKTIV'">
-          {{ each.bezeichnung }}
-        </ng-option>
+      <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+      @if (schuleOptions()) {
+        @for (each of schuleOptions(); track each) {
+          <ng-option [value]="each" [disabled]="each.aktivStatus === 'INAKTIV'">
+            {{ each.bezeichnung }}
+          </ng-option>
+        }
       }
     </ng-select>
   </svui-form-control>
@@ -34,10 +37,13 @@
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
       [compareWith]="compareKlasse"
     >
-      @for (each of klasseOptions(); track each) {
-        <ng-option [value]="each">
-          {{ each.bezeichnung }}
-        </ng-option>
+      <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+      @if (klasseOptions()) {
+        @for (each of klasseOptions(); track each) {
+          <ng-option [value]="each">
+            {{ each.bezeichnung }}
+          </ng-option>
+        }
       }
     </ng-select>
   </svui-form-control>

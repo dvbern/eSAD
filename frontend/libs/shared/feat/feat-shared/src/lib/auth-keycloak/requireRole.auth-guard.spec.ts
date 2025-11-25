@@ -31,9 +31,9 @@ describe('RequireRoleAuthGuard', () => {
     describe('withAnyBerechtigung', () => {
       it.each(ensureType<Berechtigung[][]>([
         [],
-        [Berechtigung.KINDER_SCHREIBEN],
-        [Berechtigung.KINDER_LESEN],
-        [Berechtigung.KINDER_SCHREIBEN, Berechtigung.KINDER_LESEN],
+        [Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH],
+        [Berechtigung.KINDER_LESEN_MEDIZINISCH],
+        [Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_MEDIZINISCH],
       ]))('returns true for any berechtigung: %p', (...actualRoles) => {
         const actual = withAnyBerechtigung()(actualRoles);
 
@@ -43,8 +43,8 @@ describe('RequireRoleAuthGuard', () => {
 
     describe('withAllOfBerechtigungen', () => {
       it.each(ensureType<[AtLeastOneBerechtigung, Berechtigung[]][]>([
-        [[Berechtigung.KINDER_SCHREIBEN], [Berechtigung.KINDER_SCHREIBEN, Berechtigung.KINDER_LESEN]],
-        [[Berechtigung.KINDER_SCHREIBEN, Berechtigung.KINDER_LESEN], [Berechtigung.KINDER_SCHREIBEN, Berechtigung.KINDER_LESEN]],
+        [[Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH], [Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_MEDIZINISCH]],
+        [[Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_MEDIZINISCH], [Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_MEDIZINISCH]],
       ]))('returns true if user has all berechtigungen: %p (actualRoles: %p)', (requiredRoles, actualRoles) => {
         const actual = withAllOfBerechtigungen(...requiredRoles)(actualRoles);
 
@@ -52,11 +52,11 @@ describe('RequireRoleAuthGuard', () => {
       });
 
       it.each(ensureType<[AtLeastOneBerechtigung, Berechtigung[]][]>([
-        [[Berechtigung.KINDER_SCHREIBEN], []],
-        [[Berechtigung.KINDER_SCHREIBEN], [Berechtigung.KINDER_LESEN]],
-        [[Berechtigung.KINDER_SCHREIBEN, Berechtigung.KINDER_LESEN], []],
-        [[Berechtigung.KINDER_SCHREIBEN, Berechtigung.KINDER_LESEN], [Berechtigung.KINDER_LESEN]],
-        [[Berechtigung.KINDER_SCHREIBEN, Berechtigung.KINDER_LESEN], [Berechtigung.KINDER_SCHREIBEN]],
+        [[Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH], []],
+        [[Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH], [Berechtigung.KINDER_LESEN_MEDIZINISCH]],
+        [[Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_MEDIZINISCH], []],
+        [[Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_MEDIZINISCH], [Berechtigung.KINDER_LESEN_MEDIZINISCH]],
+        [[Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_MEDIZINISCH], [Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH]],
       ]))('returns false if user does not have all berechtigungen: %p (actualRoles: %p)', (requiredRoles, actualRoles) => {
         const actual = withAllOfBerechtigungen(...requiredRoles)(actualRoles);
 
@@ -66,11 +66,11 @@ describe('RequireRoleAuthGuard', () => {
 
     describe('withOneOfBerechtigungen', () => {
       it.each(ensureType<[AtLeastOneBerechtigung, Berechtigung[]][]>([
-        [[Berechtigung.KINDER_SCHREIBEN], [Berechtigung.KINDER_SCHREIBEN, Berechtigung.KINDER_LESEN]],
-        [[Berechtigung.KINDER_SCHREIBEN, Berechtigung.KINDER_LESEN], [Berechtigung.KINDER_SCHREIBEN, Berechtigung.KINDER_LESEN]],
-        [[Berechtigung.KINDER_SCHREIBEN], [Berechtigung.KINDER_SCHREIBEN]],
-        [[Berechtigung.KINDER_SCHREIBEN, Berechtigung.KINDER_LESEN], [Berechtigung.KINDER_SCHREIBEN]],
-        [[Berechtigung.KINDER_SCHREIBEN, Berechtigung.KINDER_LESEN], [Berechtigung.KINDER_LESEN]],
+        [[Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH], [Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_MEDIZINISCH]],
+        [[Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_MEDIZINISCH], [Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_MEDIZINISCH]],
+        [[Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH], [Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH]],
+        [[Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_MEDIZINISCH], [Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH]],
+        [[Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_MEDIZINISCH], [Berechtigung.KINDER_LESEN_MEDIZINISCH]],
       ]))('returns true if user has at least one berechtigung: %p (actualRoles: %p)', (requiredRoles, actualRoles) => {
         const actual = withOneOfBerechtigungen(...requiredRoles)(actualRoles);
 
@@ -78,8 +78,8 @@ describe('RequireRoleAuthGuard', () => {
       });
 
       it.each(ensureType<[AtLeastOneBerechtigung, Berechtigung[]][]>([
-        [[Berechtigung.KINDER_SCHREIBEN], []],
-        [[Berechtigung.KINDER_SCHREIBEN, Berechtigung.KINDER_LESEN], []],
+        [[Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH], []],
+        [[Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_MEDIZINISCH], []],
       ]))('returns false if user does not have any berechtigung: %p (actualRoles: %p)', (requiredRoles, actualRoles) => {
         const actual = withOneOfBerechtigungen(...requiredRoles)(actualRoles);
 

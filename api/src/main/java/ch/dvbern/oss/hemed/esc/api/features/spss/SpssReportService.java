@@ -4,8 +4,8 @@ import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankheitService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungInternService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseService;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.AbstractCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.CsvColumnConfig;

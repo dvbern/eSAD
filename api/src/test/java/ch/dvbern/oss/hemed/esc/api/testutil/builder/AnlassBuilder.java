@@ -26,8 +26,8 @@ import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassArt;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
@@ -51,7 +51,6 @@ public class AnlassBuilder {
         this.anlass = defaultAnlass(appClock.offsetDateTime().now().toLocalDate());
         TestUtil.setEntityInfo(anlass);
     }
-
 
     @NonNull
     public static Anlass defaultAnlass(

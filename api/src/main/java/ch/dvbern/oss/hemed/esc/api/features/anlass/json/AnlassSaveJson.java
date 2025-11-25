@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.json.AnlassConfigOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassArt;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
@@ -27,6 +28,12 @@ public class AnlassSaveJson implements SaveJsonWithOptimisticLocking {
     @NonNull
     @Schema(required = true)
     private final AnlassTyp anlassTyp;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private final AnlassConfigOptionJson anlassConfigOption;
 
     @NotNull
     @NonNull

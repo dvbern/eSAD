@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.mapper;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungDurchfuehrungJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.json.UntersuchungDurchfuehrungJson;
+import ch.dvbern.oss.hemed.esc.api.shared.mapper.BaseMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungDurchfuehrungJsonSpec;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.mapstruct.Mapper;

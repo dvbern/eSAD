@@ -1,9 +1,9 @@
-import {computed, Inject, inject, Injectable, Optional} from '@angular/core';
-import {ClientConfigService, ConfigJson} from '@dvb/data-access-backend';
-import {AbstractSignalStore} from '@dvb/util-angular';
-import {requireValue} from '@dvb/util-shared';
+import { computed, inject, Injectable } from '@angular/core';
+import { ClientConfigService, ConfigJson } from '@dvb/data-access-backend';
+import { AbstractSignalStore } from '@dvb/util-angular';
+import { requireValue } from '@dvb/util-shared';
 import * as Sentry from '@sentry/browser';
-import {firstValueFrom} from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 type DeploymentState = {
   config: ConfigJson | undefined;
@@ -13,12 +13,14 @@ const initialState: DeploymentState = {
   config: undefined,
 };
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class DeploymentStore extends AbstractSignalStore<DeploymentState> {
   /**
    * @param testInit - for testing purposes only
    */
-  constructor(@Inject('nothing') @Optional() testInit?: DeploymentState) {
+  constructor() {
+    const testInit = inject<DeploymentState>('nothing' as never, { optional: true });
+
     super(testInit ?? initialState);
   }
 

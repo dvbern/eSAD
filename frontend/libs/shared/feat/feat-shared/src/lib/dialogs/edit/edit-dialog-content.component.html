@@ -1,7 +1,9 @@
 <form [formGroup]="config.form.group">
   <div class="modal-content">
     <div class="modal-header">
-      <h2 class="modal-title" *ngIf="config.heading">{{ config.heading }}</h2>
+      @if (config.heading) {
+        <h2 class="modal-title">{{ config.heading }}</h2>
+      }
       <button type="button" class="btn-close" aria-label="Close" (click)="dismiss.emit()"></button>
     </div>
     <div class="modal-body">

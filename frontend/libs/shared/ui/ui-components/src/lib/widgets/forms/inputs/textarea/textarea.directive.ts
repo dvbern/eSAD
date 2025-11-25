@@ -11,14 +11,12 @@ import {
   input,
   model,
   OnInit,
-  Optional,
-  Self,
   ViewContainerRef,
 } from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {NgControl} from '@angular/forms';
-import {ControlType, ValidatedInputWithIdDirective} from '../validated-input-with-id.directive';
-import {CharacterCountComponent} from './textarea-counter/textarea-counter.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NgControl } from '@angular/forms';
+import { ControlType, ValidatedInputWithIdDirective } from '../validated-input-with-id.directive';
+import { CharacterCountComponent } from './textarea-counter/textarea-counter.component';
 
 @Directive({
   selector: 'textarea[svuiTextarea]',
@@ -50,18 +48,18 @@ export class TextareaDirective extends ValidatedInputWithIdDirective implements 
     return this.charCountMax();
   }
 
-  constructor(
-    @Optional() @Self() public override ngControl: NgControl,
-    private readonly viewContainerRef: ViewContainerRef,
-    private readonly elementRef: ElementRef<HTMLTextAreaElement>,
-  ) {
-    super(ngControl);
-    this.nativeElement = elementRef.nativeElement;
+  readonly #viewContainerRef = inject(ViewContainerRef);
+  readonly #elementRef = inject<ElementRef<HTMLTextAreaElement>>(ElementRef);
+
+  constructor() {
+    const ngCtrl = inject(NgControl, { optional: true, self: true });
+    super(ngCtrl);
+    this.nativeElement = this.#elementRef.nativeElement;
     this.addMessage();
     this.passInputSignals();
   }
 
-  private passInputSignals(){
+  private passInputSignals() {
     // pass on our input signals
     effect(() => {
       const maxCharacters = this.charCountMax();
@@ -85,19 +83,19 @@ export class TextareaDirective extends ValidatedInputWithIdDirective implements 
     return true;
   }
 
-  private addMessage(){
-    this.counterComponent = this.viewContainerRef.createComponent(CharacterCountComponent);;
+  private addMessage() {
+    this.counterComponent = this.#viewContainerRef.createComponent(CharacterCountComponent);
     // do not pass the inputs here directly because it does not work properly -> use effect
   }
 
   @HostListener('keyup', ['$event. target'])
   @HostListener('input', ['$event. target'])
   @HostListener('change', ['$event. target'])
-  onKeyup(target: HTMLTextAreaElement){
+  onKeyup(target: HTMLTextAreaElement) {
     this.characterCount$.set(target.value.length);
   }
 
-  ngOnInit(){
+  ngOnInit() {
     // subscribe to value changes
     if (this.ngControl?.valueChanges) {
       this.ngControl.valueChanges.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe({
@@ -120,16 +118,16 @@ export class TextareaDirective extends ValidatedInputWithIdDirective implements 
   }
 
   @HostListener(':input')
-  resizeOnInput(){
+  resizeOnInput() {
     this.resize();
   }
 
-  resize(){
-    this.elementRef.nativeElement.style.height = '0';
+  resize() {
+    this.#elementRef.nativeElement.style.height = '0';
     const measuredHeight = Math.min(
-      Math.max(this.elementRef.nativeElement.scrollHeight, this.minHeightPx()),
+      Math.max(this.#elementRef.nativeElement.scrollHeight, this.minHeightPx()),
       this.maxHeightPx(),
     );
-    this.elementRef.nativeElement.style.height = '' + (measuredHeight + 6) + 'px';
+    this.#elementRef.nativeElement.style.height = '' + (measuredHeight + 6) + 'px';
   }
 }

@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, inject, Input} from '@angular/core';
 import {BaseForm} from '@dvb/util-angular';
 import {NgbActiveModal, NgbModalModule} from '@ng-bootstrap/ng-bootstrap';
@@ -9,10 +9,9 @@ import {EditDialogConfig} from './edit-dialog.service';
     selector: 'feat-dialogs-edit',
     templateUrl: './edit-dialog.component.html',
     imports: [
-        CommonModule,
-        NgbModalModule,
-        EditDialogContentComponent,
-    ],
+    NgbModalModule,
+    EditDialogContentComponent
+],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditDialogComponent<F extends BaseForm<any, any>> {

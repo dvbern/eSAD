@@ -3,7 +3,8 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen;
 import java.time.LocalDate;
 import java.util.Collections;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.json.UntersuchungMassnahmenSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.infomaterial.InfomaterialMapper;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungMassnahmenBuilder;

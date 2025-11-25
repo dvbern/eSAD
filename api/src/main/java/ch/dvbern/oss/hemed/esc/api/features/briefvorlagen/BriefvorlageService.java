@@ -60,7 +60,7 @@ public class BriefvorlageService {
         // upload the file to S3
         Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileUpload, fileInfoS3);
         PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
-        LOG.debug("Uploaded file to S3: {}", putObjectResponse);
+        LOG.info("Uploaded file to S3, fileIdInBucket: {}, putObjectResponse: {}", fileInfoS3.getFileIdInBucket(), putObjectResponse);
 
         return new FileData(FileTyp.BRIEFVORLAGE, new CleanFileName(fileUpload.fileName()), fileInfoS3);
     }

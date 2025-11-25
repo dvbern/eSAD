@@ -11,6 +11,7 @@ import com.tngtech.archunit.core.domain.JavaField;
 import com.tngtech.archunit.core.domain.JavaMember.Predicates;
 import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
@@ -291,6 +292,8 @@ class JpaTest {
             .that(are(persistedFields()))
             .and()
             .areAnnotatedWith(columnAnnotationThatMarksTheColumnNullable())
+            .and()
+            .areNotAnnotatedWith(Convert.class)
             .should()
             .beAnnotatedWith(Nullable.class)
             .orShould(have(AnnotationPredicates.typeAnnotation(Nullable.class)))

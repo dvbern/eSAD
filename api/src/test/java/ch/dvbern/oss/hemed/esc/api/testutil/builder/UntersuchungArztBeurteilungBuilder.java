@@ -1,14 +1,14 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Collection;
 import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilungJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.json.UntersuchungArztBeurteilungJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilungMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Blutdruck;
@@ -21,6 +21,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.MundAndZaehne;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Verhalten;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungArztBeurteilungJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungArztBeurteilungJsonSpec;
@@ -105,30 +106,30 @@ public class UntersuchungArztBeurteilungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungArztBeurteilungBuilder withMundAndZaehne(@Nullable List<MundAndZaehne> mundAndZaehne) {
-        this.untersuchungArzt.setMundAndZaehne(mundAndZaehne);
+    public UntersuchungArztBeurteilungBuilder withMundAndZaehne(@Nullable Collection<MundAndZaehne> mundAndZaehne) {
+        this.untersuchungArzt.setMundAndZaehne(EnumSetUtil.toEnumSet(mundAndZaehne, MundAndZaehne.class));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungArztBeurteilungBuilder withMundAndZaehne(@Nullable List<MundAndZaehne> mundAndZaehne, @Nullable String bemerkung) {
-        this.untersuchungArzt.setMundAndZaehne(mundAndZaehne);
+    public UntersuchungArztBeurteilungBuilder withMundAndZaehne(@Nullable Collection<MundAndZaehne> mundAndZaehne, @Nullable String bemerkung) {
+        this.untersuchungArzt.setMundAndZaehne(EnumSetUtil.toEnumSet(mundAndZaehne, MundAndZaehne.class));
         this.untersuchungArzt.setMundAndZaehneBemerkung(bemerkung);
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungArztBeurteilungBuilder withSprachfaehigkeit(@Nullable List<Sprachfaehigkeit> sprachfaehigkeit) {
-        this.untersuchungArzt.setSprachfaehigkeit(sprachfaehigkeit);
+    public UntersuchungArztBeurteilungBuilder withSprachfaehigkeit(@Nullable Collection<Sprachfaehigkeit> sprachfaehigkeit) {
+        this.untersuchungArzt.setSprachfaehigkeit(EnumSetUtil.toEnumSet(sprachfaehigkeit, Sprachfaehigkeit.class));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungArztBeurteilungBuilder withSprachfaehigkeit(@Nullable List<Sprachfaehigkeit> sprachfaehigkeit, @Nullable String bemerkung) {
-        this.untersuchungArzt.setSprachfaehigkeit(sprachfaehigkeit);
+    public UntersuchungArztBeurteilungBuilder withSprachfaehigkeit(@Nullable Collection<Sprachfaehigkeit> sprachfaehigkeit, @Nullable String bemerkung) {
+        this.untersuchungArzt.setSprachfaehigkeit(EnumSetUtil.toEnumSet(sprachfaehigkeit, Sprachfaehigkeit.class));
         this.untersuchungArzt.setSprachfaehigkeitBemerkung(bemerkung);
         return this;
     }
@@ -142,15 +143,18 @@ public class UntersuchungArztBeurteilungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungArztBeurteilungBuilder withBewegungsapparat(@Nullable List<Bewegungsapparat> bewegungsapparat) {
-        this.untersuchungArzt.setBewegungsapparat(bewegungsapparat);
+    public UntersuchungArztBeurteilungBuilder withBewegungsapparat(@Nullable Collection<Bewegungsapparat> bewegungsapparat) {
+        this.untersuchungArzt.setBewegungsapparat(EnumSetUtil.toEnumSet(bewegungsapparat, Bewegungsapparat.class));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungArztBeurteilungBuilder withBewegungsapparat(@Nullable List<Bewegungsapparat> bewegungsapparat, @Nullable String bemerkung) {
-        this.untersuchungArzt.setBewegungsapparat(bewegungsapparat);
+    public UntersuchungArztBeurteilungBuilder withBewegungsapparat(
+        @Nullable Collection<Bewegungsapparat> bewegungsapparat,
+        @Nullable String bemerkung
+    ) {
+        this.untersuchungArzt.setBewegungsapparat(EnumSetUtil.toEnumSet(bewegungsapparat, Bewegungsapparat.class));
         this.untersuchungArzt.setBewegungsapparatBemerkung(bemerkung);
         return this;
     }
@@ -187,15 +191,15 @@ public class UntersuchungArztBeurteilungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungArztBeurteilungBuilder withFingeropposition(@Nullable List<Fingeropposition> fingeropposition) {
-        this.untersuchungArzt.setFingeropposition(fingeropposition);
+    public UntersuchungArztBeurteilungBuilder withFingeropposition(@Nullable Collection<Fingeropposition> fingeropposition) {
+        this.untersuchungArzt.setFingeropposition(EnumSetUtil.toEnumSet(fingeropposition, Fingeropposition.class));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungArztBeurteilungBuilder withFingeropposition(@Nullable List<Fingeropposition> fingeropposition, @Nullable String bemerkung) {
-        this.untersuchungArzt.setFingeropposition(fingeropposition);
+    public UntersuchungArztBeurteilungBuilder withFingeropposition(@Nullable Collection<Fingeropposition> fingeropposition, @Nullable String bemerkung) {
+        this.untersuchungArzt.setFingeropposition(EnumSetUtil.toEnumSet(fingeropposition, Fingeropposition.class));
         this.untersuchungArzt.setFingeroppositionBemerkung(bemerkung);
         return this;
     }

@@ -3,12 +3,11 @@ import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/cor
 import {FormsModule} from '@angular/forms';
 import {RouterLink} from '@angular/router';
 import {
-  AnlassFlagsJson,
-  BenutzerOptionJson,
-  DossierSaveJson,
+  BenutzerOptionJson, DossierMedizinischSaveJson, DossierNichtMedizinischSaveJson,
   EntityAktivStatus,
   EsadIdJson,
-  Geschlecht, NachkontrolleSaveJson,
+  Geschlecht,
+  NachkontrolleSaveJson,
   PapierakteStatus,
 } from '@dvb/data-access-backend';
 import {randomEntityId, requireValidBackendEntityId} from '@dvb/data-access-types';
@@ -38,7 +37,8 @@ import {
   fromISODateString,
   hasAnlassEditBerechtigungForAbgeschlossen,
   hasDownloadDossierBerechtigung,
-  hasKindEditBerechtigung,
+  hasKindEditBerechtigung, hasKinderMedizinischeDatenEditBerechtigung, hasKinderMedizinischeDatenViewBerechtigung,
+  hasKindVorlagenViewBerechtigung,
   isNotNullish,
   isNullish,
 } from '@dvb/util-shared';
@@ -106,29 +106,31 @@ export class KindDossierMainComponent {
   idNr = computed(() => this.dossier()?.kind?.esadId ?? '');
   adresse = computed(() => getAdresse(this.kind()?.data?.adresse));
 
-  zustaendigArzt = computed(() => this.dossier()?.data?.zustaendigArzt);
-  zustaendigMPA = computed(() => this.dossier()?.data?.zustaendigMPA);
+  zustaendigArzt = computed(() => this.dossier()?.dataNichtMedizinisch?.zustaendigArzt);
+  zustaendigMPA = computed(() => this.dossier()?.dataNichtMedizinisch?.zustaendigMPA);
 
   canActivateKind = this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung());
+  canReadMedizinischeDaten = this.benutzerStore.createHasRequiredRoleSig(hasKinderMedizinischeDatenViewBerechtigung());
+  canWriteMedizinischeDaten = this.benutzerStore.createHasRequiredRoleSig(hasKinderMedizinischeDatenEditBerechtigung());
 
   canEditKind = computed(() =>
-    this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung()) &&
-    this.dossierStore.isKindAktiv()
+    this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung())() && this.dossierStore.isKindAktiv()
   );
   canDownloadDossierExport = this.benutzerStore.createHasRequiredRoleSig(hasDownloadDossierBerechtigung());
 
   canEditAfterAbgeschlossen = this.benutzerStore.createHasRequiredRoleSig(hasAnlassEditBerechtigungForAbgeschlossen());
 
+  canViewBriefvorlagen = this.benutzerStore.createHasRequiredRoleSig(hasKindVorlagenViewBerechtigung());
+
   canChangeIdNr = computed(() => {
     if (this.kindAnlassStore.isKindInAnyAbgeschlossenAnlass()) {
       return this.canEditKind() && this.canEditAfterAbgeschlossen();
-    } else {
-      return this.canEditKind();
     }
+    return this.canEditKind();
   });
 
   papierakteStatusOptions = Object.values(PapierakteStatus);
-  papierakteStatus = computed(() => this.dossier()?.data?.papierakteStatus);
+  papierakteStatus = computed(() => this.dossier()?.dataNichtMedizinisch?.papierakteStatus);
 
   protected readonly Path = Path;
   protected readonly fromISODateString = fromISODateString;
@@ -227,10 +229,10 @@ export class KindDossierMainComponent {
   }
 
   onArztChange(arzt: BenutzerOptionJson): void {
-    const dossier = this.dossier()?.data;
+    const dossier = this.dossier()?.dataNichtMedizinisch;
     if (isNotNullish(arzt) && isNotNullish(dossier)) {
-      const payload: DossierSaveJson = {...dossier, zustaendigArzt: arzt};
-      this.dossierStore.updateDossier({
+      const payload: DossierNichtMedizinischSaveJson = {...dossier, zustaendigArzt: arzt};
+      this.dossierStore.updateDossierNichtMedizinisch({
         dossier: payload,
         onSuccess: () => console.log('Updated Kind, set Zuständig Arzt -> ', arzt.fullName),
       });
@@ -238,10 +240,10 @@ export class KindDossierMainComponent {
   }
 
   onMPAChange(mpa: BenutzerOptionJson): void {
-    const dossier = this.dossier()?.data;
+    const dossier = this.dossier()?.dataNichtMedizinisch;
     if (isNotNullish(mpa) && isNotNullish(dossier)) {
-      const payload: DossierSaveJson = {...dossier, zustaendigMPA: mpa};
-      this.dossierStore.updateDossier({
+      const payload: DossierNichtMedizinischSaveJson = {...dossier, zustaendigMPA: mpa};
+      this.dossierStore.updateDossierNichtMedizinisch({
         dossier: payload,
         onSuccess: () => console.log('Updated Kind, set Zuständig MPA -> ', mpa.fullName),
       });
@@ -250,22 +252,23 @@ export class KindDossierMainComponent {
 
   async editZusatzinformationen(): Promise<void> {
     const dossier = this.dossier();
-    if (dossier && this.canEditKind()) {
+    if (dossier && this.canEditKind() && dossier.dataMedizinisch) {
       const ngbModalRef = this.#ngbModal.open(KinderZusatzinformationenModalComponent, {size: 'lg'});
-      ngbModalRef.componentInstance.dossierData.set(dossier.data);
+      ngbModalRef.componentInstance.dossierData.set(dossier.dataMedizinisch);
       const result: KinderZusatzinformationenJson | undefined = await firstValueFrom(ngbModalRef.closed,
         {defaultValue: undefined});
       if (result) {
-        const requestObject: DossierSaveJson = {
-          ...dossier.data,
+        const requestObject: DossierMedizinischSaveJson = {
+          ...dossier.dataMedizinisch,
           kinderschutzfall: result.kinderschutzfall,
           keineAuskunftAnDrittpersonen: result.keineAuskunftAnDrittpersonen,
           sansPapier: result.sansPapier,
           andereZusatzinformation: result.andereZusatzinformation,
           andereZusatzInformationText: result.andereZusatzInformationText,
+
         };
 
-        this.dossierStore.updateDossier({
+        this.dossierStore.updateDossierMedizinisch({
           dossier: requestObject,
           onSuccess: () => this.appNotificationStore.addSuccessNotification(this.transloco.translate(
             'kind.dossier.zusatzinformationen.sucess')),
@@ -276,19 +279,19 @@ export class KindDossierMainComponent {
 
   async editImmunisierungen(): Promise<void> {
     const dossier = this.dossier();
-    if (dossier && this.canEditKind()) {
+    if (dossier && this.canEditKind() && dossier.dataMedizinisch) {
       const ngbModalRef = this.#ngbModal.open(KinderImmunitaetModalComponent, {size: 'lg'});
-      ngbModalRef.componentInstance.dossierData.set(dossier.data);
+      ngbModalRef.componentInstance.dossierData.set(dossier.dataMedizinisch);
       const result: KinderImmunitaetJson | undefined = await firstValueFrom(ngbModalRef.closed,
         {defaultValue: undefined});
       if (result) {
-        const requestObject: DossierSaveJson = {
-          ...dossier.data,
+        const requestObject: DossierMedizinischSaveJson = {
+          ...dossier.dataMedizinisch,
           immunitaetMasern: result.immunitaetMasern,
           immunitaetVarizellen: result.immunitaetVarizellen,
         };
 
-        this.dossierStore.updateDossier({
+        this.dossierStore.updateDossierMedizinisch({
           dossier: requestObject,
           onSuccess: () => this.appNotificationStore.addSuccessNotification(this.transloco.translate(
             'kind.dossier.immunisierung.sucess')),
@@ -299,20 +302,20 @@ export class KindDossierMainComponent {
 
   async editNachkontrolle(): Promise<void> {
     const dossier = this.dossier();
-    if (dossier && this.canEditKind()) {
+    if (dossier && this.canEditKind() && dossier.dataMedizinisch) {
       const ngbModalRef = this.#ngbModal.open(KinderNachkontrolleModalComponent, {size: 'lg'});
-      ngbModalRef.componentInstance.dossierData.set(dossier.data);
+      ngbModalRef.componentInstance.dossierData.set(dossier.dataMedizinisch);
       const result: NachkontrolleSaveJson | undefined =
         await firstValueFrom(ngbModalRef.closed, {defaultValue: undefined});
       if (result) {
-        const requestObject: DossierSaveJson = {
-          ...dossier.data,
+        const requestObject: DossierMedizinischSaveJson = {
+          ...dossier.dataMedizinisch,
           nachkontrolle: {
-            ...dossier.data.nachkontrolle,
+            ...dossier.dataMedizinisch.nachkontrolle,
             data: result,
           },
         };
-        this.dossierStore.updateDossier({
+        this.dossierStore.updateDossierMedizinisch({
           dossier: requestObject,
           onSuccess: () => this.appNotificationStore.addSuccessNotification(this.transloco.translate(
             'kind.dossier.nachkontrolle.success')),
@@ -344,10 +347,10 @@ export class KindDossierMainComponent {
   }
 
   onPapierakteStatusChanged(papierakteStatus: PapierakteStatus): void {
-    const dossier = this.dossier()?.data;
+    const dossier = this.dossier()?.dataNichtMedizinisch;
     if (isNotNullish(dossier)) {
-      const payload: DossierSaveJson = {...dossier, papierakteStatus};
-      this.dossierStore.updateDossier({
+      const payload: DossierNichtMedizinischSaveJson = {...dossier, papierakteStatus};
+      this.dossierStore.updateDossierNichtMedizinisch({
         dossier: payload,
         onSuccess: () => this.appNotificationStore.addSuccessNotification(this.transloco.translate(
           'global.data.saved')),

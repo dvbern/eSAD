@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {SystemAdminStore} from '@dvb/feat-shared';
 import {Path} from '@dvb/feat-shared';
@@ -25,7 +25,7 @@ import {TranslocoPipe} from '@jsverse/transloco';
 
 @Component({
   selector: 'feat-system-plzimport',
-  imports: [CommonModule, TranslocoPipe, ButtonComponent, CardComponent, HeadingDirective],
+  imports: [TranslocoPipe, ButtonComponent, CardComponent, HeadingDirective],
   templateUrl: './plzimport.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './plzimport.component.scss',

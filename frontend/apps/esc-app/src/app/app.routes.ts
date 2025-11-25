@@ -1,10 +1,12 @@
 import {inject} from '@angular/core';
 import {Route} from '@angular/router';
-import {AufgabenStore, NoRolesPageComponent, Path, requireRole} from '@dvb/feat-shared';
+import {AufgabenStore, BenutzerStore, NoRolesPageComponent, Path, requireRole} from '@dvb/feat-shared';
 import {
   hasAdminPageViewBerechtiung,
+  hasAllNotizenEditBerechtigung,
   hasAnlassViewBerechtigung,
   hasAufgabenViewBerechtigungen,
+  hasConfigViewBerechtigung,
   hasKindPageViewBerechtigung,
   hasPlaygroundViewBerechtigung,
   hasReportsViewBerechtigung,
@@ -16,7 +18,10 @@ export const appRoutes: Route[] = [
     path: '',
     resolve: {
       aufgaben: () => {
-        inject(AufgabenStore).getNumOfFaelligeAufgabenForCurrentUser();
+        const benutzerStore = inject(BenutzerStore);
+        if (benutzerStore.createHasRequiredRoleSig(hasAufgabenViewBerechtigungen())()) {
+          inject(AufgabenStore).getNumOfFaelligeAufgabenForCurrentUser();
+        }
       },
     },
     children: [
@@ -73,11 +78,25 @@ export const appRoutes: Route[] = [
         loadChildren: () => import('@dvb/feat-system').then(c => c.systemRoutes),
       },
       {
+        path: Path.NOTIZEN,
+        canActivate: [
+          requireRole(hasAllNotizenEditBerechtigung()),
+        ],
+        loadChildren: () => import('@dvb/feat-notizen').then(c => c.notizenListRoutes),
+      },
+      {
         path: Path.AUFGABEN,
         canActivate: [
           requireRole(hasAufgabenViewBerechtigungen()),
         ],
         loadChildren: () => import('@dvb/feat-aufgaben').then(c => c.aufgabenRoutes),
+      },
+      {
+        path: Path.CONFIG,
+        canActivate: [
+          requireRole(hasConfigViewBerechtigung()),
+        ],
+        loadChildren: () => import('@dvb/feat-config').then(c => c.configRoutes),
       },
       {
         path: Path.PLAYGROUND,
@@ -86,7 +105,7 @@ export const appRoutes: Route[] = [
         ],
         loadChildren: () => import('@dvb/feat-playground').then(c => c.playgroundRoutes),
       },
-      { path: '**', redirectTo: 'dummy' },
+      {path: '**', redirectTo: 'dummy'},
     ],
   },
 ];

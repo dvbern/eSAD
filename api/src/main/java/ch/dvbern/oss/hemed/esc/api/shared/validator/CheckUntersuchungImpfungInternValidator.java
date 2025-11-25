@@ -17,13 +17,14 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.validator;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungIntern;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.ImpfStatus;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public class CheckUntersuchungImpfungInternValidator extends AbstractValidator<CheckUntersuchungImpfungIntern, UntersuchungImpfungIntern> {
+public class CheckUntersuchungImpfungInternValidator
+    extends AbstractValidator<CheckUntersuchungImpfungIntern, UntersuchungImpfungIntern> {
 
     @Override
     public boolean isEntityValid(@NonNull UntersuchungImpfungIntern instance) {

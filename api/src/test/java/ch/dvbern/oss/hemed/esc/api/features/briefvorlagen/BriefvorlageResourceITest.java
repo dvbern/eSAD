@@ -4,7 +4,7 @@ import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.json.BriefvorlageSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;

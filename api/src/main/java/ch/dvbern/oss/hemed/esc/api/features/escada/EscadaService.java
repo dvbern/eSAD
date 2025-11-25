@@ -345,7 +345,7 @@ public class EscadaService {
         PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
         LOG.info("Uploaded escada csv file  to S3: {}", putObjectResponse);
 
-        LocalDate today = appClock.localDateTime().now().toLocalDate();
+        LocalDate today = appClock.getToday();
         final String originalFileName = fileInfoS3.getFileName().getFileName();
         CleanFileName calculatedFileName = FileNameUtil.calculateAutomaticFilename(
             List.of(),

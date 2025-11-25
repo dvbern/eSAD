@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {KontaktPersonSchuleJson} from '@dvb/data-access-backend';
@@ -33,7 +33,6 @@ import {
 @Component({
   selector: 'feat-schulen-detail-kontaktpersonen-list',
   imports: [
-    CommonModule,
     TranslocoPipe,
     HeadingDirective,
     ReactiveFormsModule,
@@ -48,8 +47,8 @@ import {
     EmptyTableMessageComponent,
     TableLinkComponent,
     ColWidthComponent,
-    ButtonComponent,
-  ],
+    ButtonComponent
+],
   templateUrl: './schulen-detail-kontaktpersonen-list.component.html',
   styles: ':host { display:block;}',
   changeDetection: ChangeDetectionStrategy.OnPush,

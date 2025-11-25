@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {FormArray, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {
@@ -30,21 +30,33 @@ import {TranslocoPipe} from '@jsverse/transloco';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {AnlassStore} from '../../../anlass.store';
 import {UntersuchungStore} from '../../untersuchung.store';
+import {hasSomeNotNullishValueIgnoringVersion} from '../../untersuchung.util';
 import {UntersuchungSehenStore} from './../untersuchung-sehen.store';
 import {
   DistanzSehenSubFormType,
+  EmpfehlungSubFormType,
   StrabismusSubFormType,
-  UntersuchungSehenBeurteilungForm
-} from "./untersuchung-sehen-beurteilung.form";
+  UntersuchungSehenBeurteilungForm,
+} from './untersuchung-sehen-beurteilung.form';
 
 @Component({
   selector: 'feat-untersuchung-sehen-beurteilung',
   imports: [
-    CommonModule, ReactiveFormsModule, SaveCancelButtonsComponent,
-    TranslocoPipe, FormLayoutComponent, KachelFormSectionComponent,
-    KachelControlComponent, RadioDirective, FormControlComponent, CheckboxDirective,
-    TextareaDirective, TitleComponent, NgOptionComponent, NgSelectComponent, NgSelectDirective,
-  ],
+    ReactiveFormsModule,
+    SaveCancelButtonsComponent,
+    TranslocoPipe,
+    FormLayoutComponent,
+    KachelFormSectionComponent,
+    KachelControlComponent,
+    RadioDirective,
+    FormControlComponent,
+    CheckboxDirective,
+    TextareaDirective,
+    TitleComponent,
+    NgOptionComponent,
+    NgSelectComponent,
+    NgSelectDirective
+],
   templateUrl: './untersuchung-sehen-beurteilung.component.html',
   styleUrl: './untersuchung-sehen-beurteilung.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -88,7 +100,7 @@ export class UntersuchungSehenBeurteilungComponent implements DirtyMarker {
       // Wenn die Default-Values zu applyen markiert sind, dann das Formular mit den neuen Werten laden
       const defaultSehen = this.store.defaultSehenBeurteilungToApply();
       if (isNotNullish(defaultSehen)) {
-        const hasAnyValue = Object.values(defaultSehen).some(isNotNullish);
+        const hasAnyValue = hasSomeNotNullishValueIgnoringVersion(defaultSehen);
         if (hasAnyValue) {
           this.form.resetForm(defaultSehen);
           this.form.group.markAsDirty();
@@ -137,5 +149,9 @@ export class UntersuchungSehenBeurteilungComponent implements DirtyMarker {
 
   getStrabismusFormArray(): FormArray<StrabismusSubFormType> {
     return this.form.group.controls.strabismusArray;
+  }
+
+  getEmpfehlungFormArray(): FormArray<EmpfehlungSubFormType> {
+    return this.form.group.controls.empfehlungArray;
   }
 }

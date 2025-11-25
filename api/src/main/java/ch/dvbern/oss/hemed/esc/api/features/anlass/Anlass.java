@@ -1,3 +1,21 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
 import java.io.Serial;
@@ -5,14 +23,14 @@ import java.time.LocalDate;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassArt;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
-import ch.dvbern.oss.hemed.esc.api.shared.util.AnlassTitelUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateTimeRange;
-import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckAnlassConfigZeitraum;
+import ch.dvbern.oss.hemed.esc.api.shared.util.AnlassTitelUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -50,7 +68,6 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@CheckAnlassConfigZeitraum
 public class Anlass extends AbstractTenantEntity<Anlass> implements EntityWithOptimisticLocking {
 
     @Serial
@@ -124,7 +141,6 @@ public class Anlass extends AbstractTenantEntity<Anlass> implements EntityWithOp
     @Nullable
     @Column(nullable = true, length = DbConst.DB_DEFAULT_MAX_LENGTH)
     private String weiterePersonInfo;
-
 
     @NonNull
     public String getFullAnlassTitel(@NonNull TL tl) {

@@ -7,6 +7,7 @@ describe('whenFormValid', () => {
   let fb: NonNullableFormBuilder;
   const fakeDestroyRef: DestroyRef = {
     onDestroy: jest.fn(),
+    destroyed: false,
   };
 
   function makeGroup(): FormGroup {

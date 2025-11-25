@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.mapper;
 
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindJson;
+import ch.dvbern.oss.hemed.esc.api.shared.mapper.BaseMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindJsonSpec;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.mapstruct.Mapper;

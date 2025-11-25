@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { LabelJson, LabelTyp } from '@dvb/data-access-backend';
@@ -40,7 +40,6 @@ import { LabelFilterForm, LabelListFilterForm } from './label-list-filter.form';
   selector: 'feat-label-list.page',
   providers: [TranslatedStringPipe],
   imports: [
-    CommonModule,
     PageComponent,
     FormsModule,
     SortableComponent,
@@ -61,8 +60,8 @@ import { LabelFilterForm, LabelListFilterForm } from './label-list-filter.form';
     EmptyTableMessageComponent,
     TableLinkComponent,
     ColWidthComponent,
-    BooleanPipe,
-  ],
+    BooleanPipe
+],
   templateUrl: './label-list.page.component.html',
   styleUrl: './label-list.page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -56,16 +56,19 @@
             <td>{{ item.fileTyp }}</td>
           }
           <!--          Filename-->
-          <td>
-            <button class="svui_upload-table--name-as-link svui_upload-table--maxlength text-start" type="button"
-                    (click)="fileView.emit(item)"
-                    [title]="('ui.upload.table.action.view' | transloco)+ ' ' + item.fileName"
-            >
-              {{ item.calculatedFileName }}
-            </button>
+          <td class="{{ item.deletedInBucket ? 'text-deleted-in-bucket' : '' }}">
+            @if (item.deletedInBucket) {
+                {{ item.calculatedFileName }}
+            } @else {
+              <button class="svui_upload-table--name-as-link svui_upload-table--maxlength text-start" type="button"
+                      (click)="fileView.emit(item)"
+                      [title]="('ui.upload.table.action.view' | transloco)+ ' ' + item.fileName">
+                {{ item.calculatedFileName }}
+              </button>
+            }
           </td>
           <!--          Uploaddatum -->
-          <td>
+          <td class="{{ item.deletedInBucket ? 'text-deleted-in-bucket' : '' }}">
             <span>{{ 'ui.upload.table.column.upload-datum-at' | transloco }}</span>
             {{ item.entityInfo.timestampErstellt | date: 'dd.MM.yyyy' }}
           </td>
@@ -82,7 +85,7 @@
                           (click)="fileRemove.emit(item)">
                   </button>
                 }
-                @if (tableConfig().showDirectDownloadAction) {
+                @if (tableConfig().showDirectDownloadAction && !item.deletedInBucket) {
                   <button svuiIconOnlyButton="secondary"
                           type="button"
                           [tooltip]="'global.tooltip.icon.herunterladen' | transloco"
@@ -90,7 +93,7 @@
                           (click)="fileDirectDownload.emit(item)">
                   </button>
                 }
-                @if (tableConfig().showViewAction) {
+                @if (tableConfig().showViewAction && !item.deletedInBucket) {
                   <button svuiIconOnlyButton="primary"
                           type="button"
                           [tooltip]="'global.tooltip.icon.eye' | transloco"

@@ -29,14 +29,16 @@ import {
 } from './kinder-pagination-util/kinder-pagination-mapping-functions';
 
 type KindSummmaryState = {
-  totalKinder: number | undefined;
+  totalFilteredKinderCount: number | undefined;
+  totalKinderCount: number | undefined;
   backendFilteredListSize: number;
   currentLoadedPage: PaginationDTO | undefined;
   erweiterteFilterValues: ErweiterteFilterJson | undefined;
 };
 
 const initialState: KindSummmaryState = {
-  totalKinder: undefined,
+  totalFilteredKinderCount: undefined,
+  totalKinderCount: undefined,
   backendFilteredListSize: 0,
   currentLoadedPage: undefined,
   erweiterteFilterValues: DEFAULT_AKTIVE_ONLY_FILTER,
@@ -113,7 +115,8 @@ export class KinderSummaryStore extends signalStore(
         next: ({result, replaceList}) => {
           // backendFilteredListSize: required for infinite scroll, but only loaded once on first request
           patchState(this, {
-            backendFilteredListSize: replaceList ? result.totalItemCount : this.backendFilteredListSize(),
+            totalKinderCount : replaceList ? result.totalItemCount : this.totalKinderCount(),
+            backendFilteredListSize: replaceList ? result.totalFilteredCount : this.backendFilteredListSize(),
             currentLoadedPage: {
               pageNr: result.page,
               pageSize: result.data.length,
@@ -191,7 +194,7 @@ export class KinderSummaryStore extends signalStore(
           .pipe(
             tapResponse({
               next: () => {
-                // sicne we 'removed' an element we have to also remove it from the filtered list size if we dont reload
+                // since we 'removed' an element we have to also remove it from the filtered list size if we dont reload
                 // the total size from the backend (which we currently do not)
                 if(isNotNullish(this.backendFilteredListSize()) && this.backendFilteredListSize() > 0) {
                   patchState(this, {backendFilteredListSize: this.backendFilteredListSize() - 1});

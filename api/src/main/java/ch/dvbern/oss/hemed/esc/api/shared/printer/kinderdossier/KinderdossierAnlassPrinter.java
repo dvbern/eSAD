@@ -1,3 +1,21 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier;
 
 import java.util.Comparator;
@@ -6,25 +24,25 @@ import java.util.stream.Collectors;
 
 import ch.dvbern.oss.commons.i18nl10n.I18nMessage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungDurchfuehrung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankheit;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungIntern;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungKindDaten;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungTriage;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDaten;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.EinladungStatus;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.ImpfStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.anlass.anlassflags.AnlassFlags;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PDFAPrintUtil;

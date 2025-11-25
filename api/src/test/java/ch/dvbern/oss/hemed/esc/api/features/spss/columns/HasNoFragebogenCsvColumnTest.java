@@ -1,7 +1,10 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import java.util.List;
+
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
+import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,7 +21,9 @@ class HasNoFragebogenCsvColumnTest extends AbstractBaseColumnTest {
         assertThat(column.extract(einladung)).isEqualTo("1");
 
         // Fragebogen is not null
-        einladung.setFragebogen(new Notiz());
+        Notiz fragebogenNotiz = new Notiz();
+        fragebogenNotiz.setTyp(NotizTyp.FRAGEBOGEN);
+        einladung.setNotizen(List.of(fragebogenNotiz));
         assertThat(column.extract(einladung)).isEmpty();
     }
 }

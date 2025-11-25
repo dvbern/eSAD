@@ -2,8 +2,8 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import java.util.List;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungKrankheitImmunitaet;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungKrankheitImmunitaet;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;

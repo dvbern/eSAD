@@ -494,8 +494,7 @@ class KindResourceITest extends AbstractITest {
         assertThat(existingKind).isNotNull()
             .returns("Emma", Kind::getVorname)
             .returns("Gerber", Kind::getName)
-            .returns(null, Kind::getExternalSystemIdOrNull)
-            .returns(true, Kind::isManualOrAktivInExternalSystem);
+            .returns(null, Kind::getExternalSystemIdOrNull);
 
         KindJsonSpec updatedKindJson = KindBuilder.createJaxSpec(
             builder -> builder
@@ -538,8 +537,7 @@ class KindResourceITest extends AbstractITest {
         assertThat(existingKind).isNotNull()
             .returns("Emma", Kind::getVorname)
             .returns("Gerber", Kind::getName)
-            .returns(null, Kind::getExternalSystemIdOrNull)
-            .returns(true, Kind::isManualOrAktivInExternalSystem);
+            .returns(null, Kind::getExternalSystemIdOrNull);
 
         KindJsonSpec updatedKindJson = KindBuilder.createJaxSpec(
             builder -> builder

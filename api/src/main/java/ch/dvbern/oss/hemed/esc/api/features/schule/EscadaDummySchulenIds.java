@@ -93,7 +93,8 @@ public class EscadaDummySchulenIds {
     }
 
     public static boolean isDummySchule(@NonNull ID<Schule> schuleID) {
-        return DUMMY_SCHULE_NAME_TO_ID.containsValue(schuleID);
+        // the Schulen in the map are the 'actual' dummy schulen from escada, the DUMMY_SCHULE_ID is our fallback
+        return DUMMY_SCHULE_NAME_TO_ID.containsValue(schuleID) || schuleID.equals(DUMMY_SCHULE_ID) ;
     }
 
 }

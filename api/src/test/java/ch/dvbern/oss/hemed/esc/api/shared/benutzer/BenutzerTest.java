@@ -1,7 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.shared.benutzer;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.EnumSet;
 
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerFixtureBuilder;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
@@ -16,7 +15,7 @@ class BenutzerTest {
     @Test
     void fach_rollen_can_be_empty() {
         Benutzer benutzer = BenutzerFixtureBuilder.validBenutzer().build();
-        benutzer.setFachRollen(Collections.emptyList());
+        benutzer.setFachRollen(EnumSet.noneOf(FachRolle.class));
         assertTrue(benutzer.getFachRollen().isEmpty());
 
     }
@@ -25,16 +24,16 @@ class BenutzerTest {
     void fach_rollen_should_be_read_and_writable() {
         Benutzer benutzer = BenutzerFixtureBuilder.validBenutzer().build();
 
-        benutzer.setFachRollen(Collections.singletonList(FachRolle.ADMIN));
+        benutzer.setFachRollen(EnumSet.of(FachRolle.ADMIN));
         assertEquals(1, benutzer.getFachRollen().size());
-        assertEquals(FachRolle.ADMIN, benutzer.getFachRollen().getFirst());
+        assertEquals(FachRolle.ADMIN, benutzer.getFachRollen().stream().findFirst().orElseThrow());
     }
 
     @Test
     void fach_rollen_are_returned_in_ordinal_order() {
         Benutzer benutzer = BenutzerFixtureBuilder.validBenutzer().build();
 
-        benutzer.setFachRollen(List.of(
+        benutzer.setFachRollen(EnumSet.of(
             FachRolle.SCHULAERZTIN,
             FachRolle.MPA,
             FachRolle.ADMIN,

@@ -21,6 +21,7 @@ import { withDevtools } from '@angular-architects/ngrx-toolkit';
 export interface AufgabeJsonEnhanced extends AufgabeJson {
   kindFullName?: string;
   labelIds: Array<BackendEntityId>;
+  hasAnhang: boolean;
 }
 
 type AufgabeState = {
@@ -258,6 +259,7 @@ export function enhanceAufgabe(aufgabe: AufgabeJson): AufgabeJsonEnhanced {
       ? aufgabe.data.kind?.vorname + ' ' + aufgabe.data.kind?.name
       : '',
     labelIds: aufgabe.data.labels.map(each => each.id),
+    hasAnhang: aufgabe.data.files.length > 0,
   };
 }
 
@@ -275,6 +277,7 @@ export function mapSessionStorageStringToFilter(sessionStorageFilter: string): A
       erstelltDurch: Array.isArray(parsed.erstelltDurch) ? parsed.erstelltDurch : [],
       empfaenger: Array.isArray(parsed.empfaenger) ? parsed.empfaenger : [],
       kind: parsed.kind ?? '',
+      hasAnhang: parsed.hasAnhang
     });
   } catch (error) {
     console.warn('Failed to parse session storage filter:', error);

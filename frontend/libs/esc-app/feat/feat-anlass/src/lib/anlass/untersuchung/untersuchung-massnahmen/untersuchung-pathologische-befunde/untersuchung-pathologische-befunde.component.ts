@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
@@ -36,12 +36,11 @@ import {UntersuchungSehenStore} from '../../untersuchung-sehen/untersuchung-sehe
   styleUrl: './untersuchung-pathologische-befunde.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     FormsModule,
     TranslocoPipe,
     ReactiveFormsModule,
-    HeadingDirective,
-  ],
+    HeadingDirective
+],
 })
 export class UntersuchungPathologischeBefundeComponent {
 

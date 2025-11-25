@@ -1,11 +1,15 @@
 <div class="modal-content">
   <div class="modal-header">
-    <h2 class="modal-title" *ngIf="config.question">{{ config.question }}</h2>
+    @if (config.question) {
+      <h2 class="modal-title">{{ config.question }}</h2>
+    }
     <button type="button" class="btn-close" aria-label="Close" (click)="dismiss.emit()"></button>
   </div>
-  <div class="modal-body" *ngIf="config.consequence">
-    {{ config.consequence }}
-  </div>
+  @if (config.consequence) {
+    <div class="modal-body">
+      {{ config.consequence }}
+    </div>
+  }
   <div class="modal-footer">
     <!-- cancel tut dasselbe wie esc, ein Klick ausserhalb oder der close-Button -->
     <!-- FIXME ngbAutofocus fokussiert zwar, aber nicht sichtbar -->

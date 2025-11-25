@@ -19,22 +19,30 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
 import java.time.LocalDate;
+import java.util.EnumSet;
 import java.util.function.Consumer;
 
+import ch.dvbern.dvbstarter.shared.clock.AppClock;
+import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.json.AnlassConfigJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
-import lombok.RequiredArgsConstructor;
+import ch.dvbern.oss.hemed.esc.api.testutil.mapper.AnlassConfigJsonSpecMapper;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassConfigJsonSpec;
 import org.assertj.core.util.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-@RequiredArgsConstructor
 public class AnlassConfigBuilder {
 
-    private final AnlassConfig anlassConfig;
+    private AnlassConfig anlassConfig;
 
     private AnlassConfigBuilder() {
         this.anlassConfig = defaultAnlassConfig();
@@ -45,76 +53,121 @@ public class AnlassConfigBuilder {
     public static AnlassConfig defaultAnlassConfig() {
         return new AnlassConfig(
             AnlassTyp.KLASSE_4,
-            DateRange.ofFullRange(),
-            true,
-            RequirementSetting.OPTIONAL,
-            true,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            true,
-            true,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            RequirementSetting.OPTIONAL,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true
+            DateRange.ofYearContaining(LocalDate.now()),
+            TestUtil.getRandomString("Default"),
+            true,            // showImpfausweis
+            true,                           // showFragebogen
+            true,                           // showAnmeldungBestaetigung
+            true,                           // showDatenPersonendaten
+            true,                           // showDatenPersonendatenEsadId
+            RequirementSetting.OPTIONAL,    // datenUntersuchung
+            true,                           // showDatenSchule
+            RequirementSetting.OPTIONAL,    // datenBemerkung
+            RequirementSetting.OPTIONAL,    // impfungenUebersicht
+            RequirementSetting.OPTIONAL,    // impfungenListe
+            true,                           // showImpfungenDoppelkontrolle
+            true,                           // impfungenMassnahmeKeineMassnahmen
+            true,                           // impfungenMassnahmeGruppenFolgetermin
+            true,                           // impfungenMassnahmeImpfenFolgetermin
+            true,                           // impfungenMassnahmeEinzelFolgetermin
+            true,                           // impfungenMassnahmeInfoKinderarzt
+            true,                           // impfungenMassnahmeBeratungMPA
+            true,                           // impfungenMassnahmeInfomaterialAbgegeben
+            true,                           // impfungenMassnahmeInfoEltern
+            true,                           // impfungenMassnahmeRueckfrageKinderarzt
+            RequirementSetting.OPTIONAL,    // checkEinwilligungVorhanden
+            RequirementSetting.OPTIONAL,    // checkKontraindikationenAbgeklaert
+            RequirementSetting.OPTIONAL,    // checkDoppelkontrolleImpfentscheidDurchgefuehrt
+            RequirementSetting.OPTIONAL,    // untersuchungImpfungEmpfehlung
+            RequirementSetting.OPTIONAL,    // untersuchungImpfungAchtung
+            RequirementSetting.OPTIONAL,    // untersuchungImpfungBemerkungen
+            RequirementSetting.OPTIONAL,    // sehenBrilleLinsen
+            RequirementSetting.OPTIONAL,    // sehenFarbsehen
+            RequirementSetting.OPTIONAL,    // sehenTafel
+            RequirementSetting.OPTIONAL,    // sehenFernvisus
+            RequirementSetting.OPTIONAL,    // sehenStereoTest
+            RequirementSetting.OPTIONAL,    // sehenStrabismus
+            RequirementSetting.OPTIONAL,    // sehenInspektion
+            RequirementSetting.OPTIONAL,    // sehenKonvergenz
+            RequirementSetting.OPTIONAL,    // sehenMotilitaet
+            RequirementSetting.OPTIONAL,    // sehenNahvisus
+            RequirementSetting.OPTIONAL,    // sehenEmpfehlung
+            RequirementSetting.OPTIONAL,    // sehenBemerkungen
+            RequirementSetting.OPTIONAL,    // sehenBemerkungenFragebogen
+            RequirementSetting.OPTIONAL,    // sehenMassnahmen
+            RequirementSetting.OPTIONAL,    // hoerenAudiogramm
+            RequirementSetting.OPTIONAL,    // hoerenAudiogramm250Hz
+            RequirementSetting.OPTIONAL,    // hoerenAudiogramm8000Hz
+            RequirementSetting.OPTIONAL,    // hoerenAudiogrammBeurteilung
+            RequirementSetting.OPTIONAL,    // hoerenAudiogrammZusaetzlicheAngaben
+            RequirementSetting.OPTIONAL,    // hoerenAudiogrammEmpfehlung
+            RequirementSetting.OPTIONAL,    // hoerenAudiogrammBemerkungen
+            RequirementSetting.OPTIONAL,    // hoerenOtoskopie
+            RequirementSetting.OPTIONAL,    // hoerenOtoskopieBemerkungen
+            RequirementSetting.OPTIONAL,    // groesseGewichtGroesse
+            RequirementSetting.OPTIONAL,    // groesseGewichtGewicht
+            RequirementSetting.OPTIONAL,    // groesseGewichtBmi
+            RequirementSetting.OPTIONAL,    // groesseGewichtGroessePerzentile
+            RequirementSetting.OPTIONAL,    // groesseGewichtGewichtPerzentile
+            RequirementSetting.OPTIONAL,    // groesseGewichtBmiPerzentile
+            EnumSetUtil.toString(EnumSet.allOf(PerzentileBmi.class)),// groesseGewichtBmiPerzentileValues
+            RequirementSetting.OPTIONAL,    // groesseGewichtEmpfehlung
+            RequirementSetting.OPTIONAL,    // groesseGewichtBemerkungen
+            true,                           // showTriageTriage
+            true,                           // showTriageKindWeiterleiten
+            RequirementSetting.OPTIONAL,    // laeusekontrolleBeurteilung
+            RequirementSetting.OPTIONAL,    // laeusekontrolleEmpfehlung
+            RequirementSetting.OPTIONAL,    // laeusekontrolleBemerkungen
+            RequirementSetting.OPTIONAL,    // untersuchungBewegungsapparat
+            RequirementSetting.OPTIONAL,    // untersuchungEinbeinstand
+            RequirementSetting.OPTIONAL,    // untersuchungEinbeinstandRechts
+            RequirementSetting.OPTIONAL,    // untersuchungEinbeinstandLinks
+            RequirementSetting.OPTIONAL,    // untersuchungEinbeinhuepfen
+            RequirementSetting.OPTIONAL,    // untersuchungEinbeinhuepfenRechts
+            RequirementSetting.OPTIONAL,    // untersuchungEinbeinhuepfenLinks
+            RequirementSetting.OPTIONAL,    // untersuchungFingeropposition
+            RequirementSetting.OPTIONAL,    // untersuchungHampelmann
+            RequirementSetting.OPTIONAL,    // untersuchungBallFangen
+            RequirementSetting.OPTIONAL,    // untersuchungBallWerfen
+            RequirementSetting.OPTIONAL,    // untersuchungNameSchreiben
+            RequirementSetting.OPTIONAL,    // untersuchungFigurNachmalen
+            RequirementSetting.OPTIONAL,    // untersuchungStifthaltung
+            RequirementSetting.OPTIONAL,    // untersuchungAussprache
+            RequirementSetting.OPTIONAL,    // untersuchungLesefit
+            RequirementSetting.OPTIONAL,    // untersuchungLesefitPunkte
+            RequirementSetting.OPTIONAL,    // untersuchungZahlenNachsprechen4
+            RequirementSetting.OPTIONAL,    // untersuchungZahlenNachsprechen5
+            RequirementSetting.OPTIONAL,    // untersuchungZeichnenKreis
+            RequirementSetting.OPTIONAL,    // untersuchungZeichnenViereck
+            RequirementSetting.OPTIONAL,    // untersuchungZeichnenDreieck
+            RequirementSetting.OPTIONAL,    // untersuchungZeichnenMensch
+            RequirementSetting.OPTIONAL,    // untersuchungZeichnenMenschPunkte
+            RequirementSetting.OPTIONAL,    // untersuchungMotorik
+            RequirementSetting.OPTIONAL,    // untersuchungMotorikPunkte
+            RequirementSetting.OPTIONAL,    // untersuchungKognition
+            RequirementSetting.OPTIONAL,    // untersuchungKognitionPunkte
+            RequirementSetting.OPTIONAL,    // untersuchungSprache
+            RequirementSetting.OPTIONAL,    // untersuchungSprachePunkte
+            RequirementSetting.OPTIONAL,    // untersuchungMundZaehne
+            RequirementSetting.OPTIONAL,    // untersuchungHaut
+            RequirementSetting.OPTIONAL,    // untersuchungHerz
+            RequirementSetting.OPTIONAL,    // untersuchungBlutdruck
+            RequirementSetting.OPTIONAL,    // untersuchungVerhalten
+            RequirementSetting.OPTIONAL,    // unterlagenEinverstaendnis
+            RequirementSetting.OPTIONAL,    // unterlagenVerhaltensfragebogen
+            RequirementSetting.OPTIONAL,    // untersuchungEmpfehlung
+            RequirementSetting.OPTIONAL,    // untersuchungBemerkungen
+            true,                           // showMassnahmenPathologischeBefunde
+            true,                           // showMassnahmenKeine
+            true,                           // showMassnahmenBeratungMpa
+            true,                           // showMassnahmenBeratungSchulAerztin
+            true,                           // showMassnahmenBereitsBehandelt
+            true,                           // showMassnahmenInfomaterial
+            true,                           // showMassnahmenInfoEltern
+            true,                           // showMassnahmenUeberweisungHausarzt
+            true,                           // showMassnahmenUeberweisungAugenarzt
+            true,                           // showMassnahmenNachkontrolleSaed
+            true                            // showMassnahmenAnderes
         );
     }
 
@@ -123,77 +176,129 @@ public class AnlassConfigBuilder {
         boolean showBooleans = requirementSetting != RequirementSetting.NOT_VISIBLE;
         return new AnlassConfig(
             AnlassTyp.KLASSE_4,
-            DateRange.ofFullRange(),
-            showBooleans,
-            requirementSetting,
-            showBooleans,
-            requirementSetting,
-            requirementSetting,
-            showBooleans,
-            showBooleans,
-            showBooleans,
-            showBooleans,
-            showBooleans,
-            showBooleans,
-            showBooleans,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            showBooleans,
-            showBooleans,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            requirementSetting,
-            showBooleans,
-            showBooleans,
-            showBooleans,
-            showBooleans,
-            showBooleans,
-            showBooleans,
-            showBooleans,
-            showBooleans,
-            showBooleans,
-            showBooleans,
-            showBooleans
+            DateRange.ofYearContaining(LocalDate.now()),
+            TestUtil.getRandomString("Default"),
+            showBooleans,                   // showImpfausweis
+            showBooleans,                   // showFragebogen
+            showBooleans,                   // showAnmeldungBestaetigung
+            showBooleans,                   // showDatenPersonendaten
+            showBooleans,                   // showDatenPersonendatenEsadId
+            requirementSetting,             // datenUntersuchung
+            showBooleans,                   // showDatenSchule
+            requirementSetting,             // datenBemerkung
+            requirementSetting,             // impfungenUebersicht
+            requirementSetting,             // impfungenListe
+            showBooleans,                   // showImpfungenDoppelkontrolle
+            showBooleans,                   // impfungenMassnahmeKeineMassnahmen
+            showBooleans,                   // impfungenMassnahmeGruppenFolgetermin
+            showBooleans,                   // impfungenMassnahmeImpfenFolgetermin
+            showBooleans,                   // impfungenMassnahmeEinzelFolgetermin
+            showBooleans,                   // impfungenMassnahmeInfoKinderarzt
+            showBooleans,                   // impfungenMassnahmeBeratungMPA
+            showBooleans,                   // impfungenMassnahmeInfomaterialAbgegeben
+            showBooleans,                   // impfungenMassnahmeInfoEltern
+            showBooleans,                   // impfungenMassnahmeRueckfrageKinderarzt
+            requirementSetting,             // checkEinwilligungVorhanden
+            requirementSetting,             // checkKontraindikationenAbgeklaert
+            requirementSetting,             // checkDoppelkontrolleImpfentscheidDurchgefuehrt
+            requirementSetting,             // untersuchungImpfungEmpfehlung
+            requirementSetting,             // untersuchungImpfungAchtung
+            requirementSetting,             // untersuchungImpfungBemerkungen
+            requirementSetting,             // sehenBrilleLinsen
+            requirementSetting,             // sehenFarbsehen
+            requirementSetting,             // sehenTafel
+            requirementSetting,             // sehenFernvisus
+            requirementSetting,             // sehenStereoTest
+            requirementSetting,             // sehenStrabismus
+            requirementSetting,             // sehenInspektion
+            requirementSetting,             // sehenKonvergenz
+            requirementSetting,             // sehenMotilitaet
+            requirementSetting,             // sehenNahvisus
+            requirementSetting,             // sehenEmpfehlung
+            requirementSetting,             // sehenBemerkungen
+            requirementSetting,             // sehenBemerkungenFragebogen
+            requirementSetting,             // sehenMassnahmen
+            requirementSetting,             // hoerenAudiogramm
+            requirementSetting,             // hoerenAudiogramm250Hz
+            requirementSetting,             // hoerenAudiogramm8000Hz
+            requirementSetting,             // hoerenAudiogrammBeurteilung
+            requirementSetting,             // hoerenAudiogrammZusaetzlicheAngaben
+            requirementSetting,             // hoerenAudiogrammEmpfehlung
+            requirementSetting,             // hoerenAudiogrammBemerkungen
+            requirementSetting,             // hoerenOtoskopie
+            requirementSetting,             // hoerenOtoskopieBemerkungen
+            requirementSetting,             // groesseGewichtGroesse
+            requirementSetting,             // groesseGewichtGewicht
+            requirementSetting,             // groesseGewichtBmi
+            requirementSetting,             // groesseGewichtGroessePerzentile
+            requirementSetting,             // groesseGewichtGewichtPerzentile
+            requirementSetting,             // groesseGewichtBmiPerzentile
+            EnumSetUtil.toString(EnumSet.allOf(PerzentileBmi.class)),// groesseGewichtBmiPerzentileValues
+            requirementSetting,             // groesseGewichtEmpfehlung
+            requirementSetting,             // groesseGewichtBemerkungen
+            showBooleans,                   // showTriageTriage
+            showBooleans,                   // showTriageKindWeiterleiten
+            requirementSetting,             // laeusekontrolleBeurteilung
+            requirementSetting,             // laeusekontrolleEmpfehlung
+            requirementSetting,             // laeusekontrolleBemerkungen
+            requirementSetting,             // untersuchungBewegungsapparat
+            requirementSetting,             // untersuchungEinbeinstand
+            requirementSetting,             // untersuchungEinbeinstandRechts
+            requirementSetting,             // untersuchungEinbeinstandLinks
+            requirementSetting,             // untersuchungEinbeinhuepfen
+            requirementSetting,             // untersuchungEinbeinhuepfenRechts
+            requirementSetting,             // untersuchungEinbeinhuepfenLinks
+            requirementSetting,             // untersuchungFingeropposition
+            requirementSetting,             // untersuchungHampelmann
+            requirementSetting,             // untersuchungBallFangen
+            requirementSetting,             // untersuchungBallWerfen
+            requirementSetting,             // untersuchungNameSchreiben
+            requirementSetting,             // untersuchungFigurNachmalen
+            requirementSetting,             // untersuchungStifthaltung
+            requirementSetting,             // untersuchungAussprache
+            requirementSetting,             // untersuchungLesefit
+            requirementSetting,             // untersuchungLesefitPunkte
+            requirementSetting,             // untersuchungZahlenNachsprechen4
+            requirementSetting,             // untersuchungZahlenNachsprechen5
+            requirementSetting,             // untersuchungZeichnenKreis
+            requirementSetting,             // untersuchungZeichnenViereck
+            requirementSetting,             // untersuchungZeichnenDreieck
+            requirementSetting,             // untersuchungZeichnenMensch
+            requirementSetting,             // untersuchungZeichnenMenschPunkte
+            requirementSetting,             // untersuchungMotorik
+            requirementSetting,             // untersuchungMotorikPunkte
+            requirementSetting,             // untersuchungKognition
+            requirementSetting,             // untersuchungKognitionPunkte
+            requirementSetting,             // untersuchungSprache
+            requirementSetting,             // untersuchungSprachePunkte
+            requirementSetting,             // untersuchungMundZaehne
+            requirementSetting,             // untersuchungHaut
+            requirementSetting,             // untersuchungHerz
+            requirementSetting,             // untersuchungBlutdruck
+            requirementSetting,             // untersuchungVerhalten
+            requirementSetting,             // unterlagenEinverstaendnis
+            requirementSetting,             // unterlagenVerhaltensfragebogen
+            requirementSetting,             // untersuchungEmpfehlung
+            requirementSetting,             // untersuchungBemerkungen
+            showBooleans,                   // showMassnahmenPathologischeBefunde
+            showBooleans,                   // showMassnahmenKeine
+            showBooleans,                   // showMassnahmenBeratungMpa
+            showBooleans,                   // showMassnahmenBeratungSchulAerztin
+            showBooleans,                   // showMassnahmenBereitsBehandelt
+            showBooleans,                   // showMassnahmenInfomaterial
+            showBooleans,                   // showMassnahmenInfoEltern
+            showBooleans,                   // showMassnahmenUeberweisungHausarzt
+            showBooleans,                   // showMassnahmenUeberweisungAugenarzt
+            showBooleans,                   // showMassnahmenNachkontrolleSaed
+            showBooleans                   // showMassnahmenAnderes
         );
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public AnlassConfigBuilder forAnlassConfig(@NonNull AnlassConfig existingAnlassConfig) {
+        this.anlassConfig = existingAnlassConfig;
+        return this;
     }
 
     @NonNull
@@ -218,9 +323,35 @@ public class AnlassConfigBuilder {
     }
 
     @NonNull
+    @CanIgnoreReturnValue
+    public AnlassConfigBuilder withGroesseGewichtBmiPerzentileValues(
+        @Nullable EnumSet<PerzentileBmi> values
+    ) {
+        this.anlassConfig.setGroesseGewichtBmiPerzentileValues(values);
+        return this;
+    }
+
+
+    @NonNull
     public static AnlassConfig create(@NonNull Consumer<AnlassConfigBuilder> block) {
         AnlassConfigBuilder builder = new AnlassConfigBuilder();
         block.accept(builder);
         return builder.anlassConfig;
     }
+
+    @NonNull
+    public static AnlassConfigJson createJax(@NonNull Consumer<AnlassConfigBuilder> block) {
+        AnlassConfig anlassConfig = create(block);
+        final FixedClockProvider clockProvider = FixedClockProvider.now();
+        final AppClock appClock = new AppClock(clockProvider);
+        LocalDate date = appClock.getToday();
+        return AnlassConfigMapper.toJson(anlassConfig, false, date);
+    }
+
+    @NonNull
+    public static AnlassConfigJsonSpec createJaxSpec(@NonNull Consumer<AnlassConfigBuilder> block) {
+        AnlassConfigJson json = createJax(block);
+        return AnlassConfigJsonSpecMapper.INSTANCE.anlassConfigJsonToAnlassConfigJsonSpec(json);
+    }
 }
+

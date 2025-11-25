@@ -16,7 +16,6 @@ import { KontaktPersonKindSaveJson } from './kontakt-person-kind-save-json';
 export interface KontaktPersonKindJson { 
     id: BackendEntityId;
     externalImportInfoJson?: ExternalImportInfoJson;
-    manualOrAktivInExternalSystem: boolean;
     entityInfo: EntityInfoJson;
     data: KontaktPersonKindSaveJson;
 }

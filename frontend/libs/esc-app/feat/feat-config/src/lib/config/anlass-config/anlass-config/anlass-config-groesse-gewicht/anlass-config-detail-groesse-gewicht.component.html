@@ -1,0 +1,191 @@
+<form svuiFormLayout
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="store.detailMode()">
+  <h2 svuiHeading="formSection">{{ 'anlassconfig.detail.tab.groessegewicht' | transloco }}</h2>
+
+
+  <!-- Grösse -->
+  <svui-form-control [label]="'anlassconfig.label.groesseGewichtGroesse' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().groesseGewichtGroesse | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.groesseGewichtGroesse"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Gewicht -->
+  <svui-form-control [label]="'anlassconfig.label.groesseGewichtGewicht' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().groesseGewichtGewicht | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.groesseGewichtGewicht"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- BMI -->
+  <svui-form-control [label]="'anlassconfig.label.groesseGewichtBmi' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().groesseGewichtBmi | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.groesseGewichtBmi"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Grösse Perzentile -->
+  <svui-form-control [label]="'anlassconfig.label.groesseGewichtGroessePerzentile' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().groesseGewichtGroessePerzentile | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.groesseGewichtGroessePerzentile"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Gewicht Perzentile -->
+  <svui-form-control [label]="'anlassconfig.label.groesseGewichtGewichtPerzentile' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().groesseGewichtGewichtPerzentile | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.groesseGewichtGewichtPerzentile"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- BMI Perzentile -->
+  <svui-form-control [label]="'anlassconfig.label.groesseGewichtBmiPerzentile' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().groesseGewichtBmiPerzentile | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.groesseGewichtBmiPerzentile"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- BmiPerzentile Values -->
+  <svui-form-control [label]="'anlassconfig.label.groesseGewichtBmiPerzentileValues' | transloco"
+                     [viewValue]="form.group.getRawValue().groesseGewichtBmiPerzentileValues | translatedEnumViewValuePipe:'PerzentileBmi'"
+  >
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.groesseGewichtBmiPerzentileValues"
+      [allowBadgesToWrap]="true"
+      [multiple]="true"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+    >
+      @for (value of groesseGewichtBmiPerzentileValues; track value) {
+        <ng-option [value]="value">
+          {{ 'PerzentileBmi.' + value | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- groesseGewichtEmpfehlung-->
+  <svui-form-control [label]="'anlassconfig.label.groesseGewichtEmpfehlung' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().groesseGewichtEmpfehlung | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.groesseGewichtEmpfehlung"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+
+  <!-- Bemerkungen -->
+  <svui-form-control [label]="'anlassconfig.label.groesseGewichtBemerkungen' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().groesseGewichtBemerkungen | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.groesseGewichtBemerkungen"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+
+  <!--messages for whole form -->
+  <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="store.detailMode()"
+    [isCreate]="store.selectedIsNew()"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="anlassConfigHelperService.canEdit()"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+    [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"
+  />
+</form>

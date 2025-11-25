@@ -14,7 +14,8 @@
 package ch.dvbern.oss.hemed.esc.generated.restassured.api;
 
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierMedizinischSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierNichtMedizinischSaveJsonSpec;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,7 +61,8 @@ public class DossierApiSpec {
         return Arrays.asList(
                 dossierResourceGetOrCreateDossier(),
                 dossierResourceRemoveDossier(),
-                dossierResourceUpdateDossier()
+                dossierResourceUpdateDossierMedizinisch(),
+                dossierResourceUpdateDossierNichtMedizinisch()
         );
     }
 
@@ -72,8 +74,12 @@ public class DossierApiSpec {
         return new DossierResourceRemoveDossierOper(createReqSpec());
     }
 
-    public DossierResourceUpdateDossierOper dossierResourceUpdateDossier() {
-        return new DossierResourceUpdateDossierOper(createReqSpec());
+    public DossierResourceUpdateDossierMedizinischOper dossierResourceUpdateDossierMedizinisch() {
+        return new DossierResourceUpdateDossierMedizinischOper(createReqSpec());
+    }
+
+    public DossierResourceUpdateDossierNichtMedizinischOper dossierResourceUpdateDossierNichtMedizinisch() {
+        return new DossierResourceUpdateDossierNichtMedizinischOper(createReqSpec());
     }
 
     /**
@@ -222,22 +228,22 @@ public class DossierApiSpec {
         }
     }
     /**
-     * Update Dossier
+     * Update Dossier Medizinisch
      * 
      *
      * @see #dossierIdPath  (required)
      * @see #body  (required)
      * return DossierJsonSpec
      */
-    public static class DossierResourceUpdateDossierOper implements Oper {
+    public static class DossierResourceUpdateDossierMedizinischOper implements Oper {
 
         public static final Method REQ_METHOD = PUT;
-        public static final String REQ_URI = "/api/dossiers/{dossierId}";
+        public static final String REQ_URI = "/api/dossiers/{dossierId}/medizinisch";
 
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
 
-        public DossierResourceUpdateDossierOper(RequestSpecBuilder reqSpec) {
+        public DossierResourceUpdateDossierMedizinischOper(RequestSpecBuilder reqSpec) {
             this.reqSpec = reqSpec;
             reqSpec.setContentType("application/json");
             reqSpec.setAccept("application/json");
@@ -245,7 +251,7 @@ public class DossierApiSpec {
         }
 
         /**
-         * PUT /api/dossiers/{dossierId}
+         * PUT /api/dossiers/{dossierId}/medizinisch
          * @param handler handler
          * @param <T> type
          * @return type
@@ -256,7 +262,7 @@ public class DossierApiSpec {
         }
 
         /**
-         * PUT /api/dossiers/{dossierId}
+         * PUT /api/dossiers/{dossierId}/medizinisch
          * @param handler handler
          * @return DossierJsonSpec
          */
@@ -266,11 +272,11 @@ public class DossierApiSpec {
         }
 
          /**
-         * @param dossierSaveJsonSpec (DossierSaveJsonSpec)  (required)
+         * @param dossierMedizinischSaveJsonSpec (DossierMedizinischSaveJsonSpec)  (required)
          * @return operation
          */
-        public DossierResourceUpdateDossierOper body(DossierSaveJsonSpec dossierSaveJsonSpec) {
-            reqSpec.setBody(dossierSaveJsonSpec);
+        public DossierResourceUpdateDossierMedizinischOper body(DossierMedizinischSaveJsonSpec dossierMedizinischSaveJsonSpec) {
+            reqSpec.setBody(dossierMedizinischSaveJsonSpec);
             return this;
         }
 
@@ -280,7 +286,7 @@ public class DossierApiSpec {
          * @param dossierId (String)  (required)
          * @return operation
          */
-        public DossierResourceUpdateDossierOper dossierIdPath(Object dossierId) {
+        public DossierResourceUpdateDossierMedizinischOper dossierIdPath(Object dossierId) {
             reqSpec.addPathParam(DOSSIER_ID_PATH, dossierId);
             return this;
         }
@@ -290,7 +296,7 @@ public class DossierApiSpec {
          * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
          * @return operation
          */
-        public DossierResourceUpdateDossierOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+        public DossierResourceUpdateDossierMedizinischOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
             reqSpecCustomizer.accept(reqSpec);
             return this;
         }
@@ -300,7 +306,91 @@ public class DossierApiSpec {
          * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
          * @return operation
          */
-        public DossierResourceUpdateDossierOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+        public DossierResourceUpdateDossierMedizinischOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+            respSpecCustomizer.accept(respSpec);
+            return this;
+        }
+    }
+    /**
+     * Update Dossier Nicht Medizinisch
+     * 
+     *
+     * @see #dossierIdPath  (required)
+     * @see #body  (required)
+     * return DossierJsonSpec
+     */
+    public static class DossierResourceUpdateDossierNichtMedizinischOper implements Oper {
+
+        public static final Method REQ_METHOD = PUT;
+        public static final String REQ_URI = "/api/dossiers/{dossierId}/nicht-medizinisch";
+
+        private RequestSpecBuilder reqSpec;
+        private ResponseSpecBuilder respSpec;
+
+        public DossierResourceUpdateDossierNichtMedizinischOper(RequestSpecBuilder reqSpec) {
+            this.reqSpec = reqSpec;
+            reqSpec.setContentType("application/json");
+            reqSpec.setAccept("application/json");
+            this.respSpec = new ResponseSpecBuilder();
+        }
+
+        /**
+         * PUT /api/dossiers/{dossierId}/nicht-medizinisch
+         * @param handler handler
+         * @param <T> type
+         * @return type
+         */
+        @Override
+        public <T> T execute(Function<Response, T> handler) {
+            return handler.apply(RestAssured.given().spec(reqSpec.build()).expect().spec(respSpec.build()).when().request(REQ_METHOD, REQ_URI));
+        }
+
+        /**
+         * PUT /api/dossiers/{dossierId}/nicht-medizinisch
+         * @param handler handler
+         * @return DossierJsonSpec
+         */
+        public DossierJsonSpec executeAs(Function<Response, Response> handler) {
+            TypeRef<DossierJsonSpec> type = new TypeRef<DossierJsonSpec>(){};
+            return execute(handler).as(type);
+        }
+
+         /**
+         * @param dossierNichtMedizinischSaveJsonSpec (DossierNichtMedizinischSaveJsonSpec)  (required)
+         * @return operation
+         */
+        public DossierResourceUpdateDossierNichtMedizinischOper body(DossierNichtMedizinischSaveJsonSpec dossierNichtMedizinischSaveJsonSpec) {
+            reqSpec.setBody(dossierNichtMedizinischSaveJsonSpec);
+            return this;
+        }
+
+        public static final String DOSSIER_ID_PATH = "dossierId";
+
+        /**
+         * @param dossierId (String)  (required)
+         * @return operation
+         */
+        public DossierResourceUpdateDossierNichtMedizinischOper dossierIdPath(Object dossierId) {
+            reqSpec.addPathParam(DOSSIER_ID_PATH, dossierId);
+            return this;
+        }
+
+        /**
+         * Customize request specification
+         * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
+         * @return operation
+         */
+        public DossierResourceUpdateDossierNichtMedizinischOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+            reqSpecCustomizer.accept(reqSpec);
+            return this;
+        }
+
+        /**
+         * Customize response specification
+         * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
+         * @return operation
+         */
+        public DossierResourceUpdateDossierNichtMedizinischOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
             respSpecCustomizer.accept(respSpec);
             return this;
         }

@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, inject, ViewChild} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
@@ -13,12 +13,11 @@ import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
   selector: 'feat-aufgabe-details',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     PageComponent,
     TranslocoPipe,
     ReactiveFormsModule,
-    AufgabeDetailsComponent,
-  ],
+    AufgabeDetailsComponent
+],
   templateUrl: './aufgabe-details.page.component.html',
   styles: `
     :host {

@@ -1,0 +1,34 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="1762154194127-1">
+    <sql>
+      -- Add ANLASSLISTE_LESEN_LAEUSE to ESC-WINTERTHUR-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, berechtigung, benutzer_id)
+      VALUES ('fb245b47-6664-4525-a13f-cee220487884', '2025-11-03 08:45:50.889111 +00:00', '2025-03-28 08:45:50.889111 +00:00', '11111111-1111-1111-1111-111111111114', '11111111-1111-1111-1111-111111111114', 0, 'WIN', 'ANLASSLISTE_LESEN_LAEUSE', '11111111-1111-1111-1111-111111111114');
+
+      -- Add ANLASSPLANUNG_LESEN_LAEUSE to ESC-WINTERTHUR-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, berechtigung, benutzer_id)
+      VALUES ('1f138cbf-258f-4a7d-a3e3-d1c9ef73543a', '2025-11-03 08:45:50.889111 +00:00', '2025-03-28 08:45:50.889111 +00:00', '11111111-1111-1111-1111-111111111114', '11111111-1111-1111-1111-111111111114', 0, 'WIN', 'ANLASSPLANUNG_LESEN_LAEUSE', '11111111-1111-1111-1111-111111111114');
+
+      -- Add ANLASSPLANUNG_SCHREIBEN_LAEUSE to ESC-WINTERTHUR-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, berechtigung, benutzer_id)
+      VALUES ('1fe36cf4-0de8-4363-8fe3-476bab2a4583', '2025-11-03 08:45:50.889111 +00:00', '2025-03-28 08:45:50.889111 +00:00', '11111111-1111-1111-1111-111111111114', '11111111-1111-1111-1111-111111111114', 0, 'WIN', 'ANLASSPLANUNG_SCHREIBEN_LAEUSE', '11111111-1111-1111-1111-111111111114');
+
+      -- Add SU_LAEUSE_LESEN to ESC-WINTERTHUR-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, berechtigung, benutzer_id)
+      VALUES ('6000936b-6b9b-4980-be1d-f367534ac12d', '2025-11-03 08:45:50.889111 +00:00', '2025-03-28 08:45:50.889111 +00:00', '11111111-1111-1111-1111-111111111114', '11111111-1111-1111-1111-111111111114', 0, 'WIN', 'SU_LAEUSE_LESEN', '11111111-1111-1111-1111-111111111114');
+
+      -- Add SU_LAEUSE_SCHREIBEN to ESC-WINTERTHUR-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, berechtigung, benutzer_id)
+      VALUES ('14404fcd-772c-4b7a-9098-78ea8ad36ef5', '2025-11-03 08:45:50.889111 +00:00', '2025-03-28 08:45:50.889111 +00:00', '11111111-1111-1111-1111-111111111114', '11111111-1111-1111-1111-111111111114', 0, 'WIN', 'SU_LAEUSE_SCHREIBEN', '11111111-1111-1111-1111-111111111114');
+
+      UPDATE benutzerberechtigung
+      SET berechtigung = 'LISTEN_ADMIN_LESEN'
+      WHERE berechtigung = 'LISTEN_LESEN';
+
+      -- Add LISTEN_LESEN to ESC-WINTERTHUR-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, berechtigung, benutzer_id)
+      VALUES ('75a18616-3caf-4290-bc3c-834c92af3905', '2025-11-03 08:45:50.889111 +00:00', '2025-03-28 08:45:50.889111 +00:00', '11111111-1111-1111-1111-111111111114', '11111111-1111-1111-1111-111111111114', 0, 'WIN', 'LISTEN_LESEN', '11111111-1111-1111-1111-111111111114');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

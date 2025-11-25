@@ -46,7 +46,7 @@ public class KontaktPersonSchuleResource {
 
     @GET
     @NonNull
-    @RolesAllowed(BerechtigungName.LISTEN_LESEN)
+    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
     public KontaktPersonSchuleListJson findAllAktivBySchule(
         @NotNull @NonNull @PathParam("schuleID") ID<Schule> schuleId) {
         return new KontaktPersonSchuleListJson(kontaktPersonSchuleMapper.findAllAktivBySchule(schuleId));
@@ -55,7 +55,7 @@ public class KontaktPersonSchuleResource {
     @GET
     @Path("/options")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.LISTEN_LESEN)
+    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
     public KontaktPersonSchuleOptionListJson findAllOptionsActive(
         @NotNull @NonNull @PathParam("schuleID") ID<Schule> schuleId,
         @NotNull @QueryParam("excludeSchule") boolean excludeSchule
@@ -67,7 +67,7 @@ public class KontaktPersonSchuleResource {
     @GET
     @NonNull
     @Path("/{kontaktPersonSchuleID}")
-    @RolesAllowed(BerechtigungName.LISTEN_LESEN)
+    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
     public KontaktPersonSchuleJson getKontaktPersonSchule(
         @NotNull @NonNull @PathParam("schuleID") ID<Schule> schuleId,
         @NotNull @NonNull @PathParam("kontaktPersonSchuleID") ID<KontaktPersonSchule> kontaktPersonSchuleID

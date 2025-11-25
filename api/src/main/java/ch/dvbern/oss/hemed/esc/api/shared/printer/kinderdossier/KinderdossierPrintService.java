@@ -11,6 +11,14 @@ import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.*;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.DossierService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
@@ -102,7 +110,7 @@ public class KinderdossierPrintService {
                 kontaktPersonKindList,
                 anlassDTOList,
                 notizList,
-                appClock.localDateTime().now().toLocalDate(),
+                appClock.getToday(),
                 TenantEnum.BS, // Use tenant resolver once we found a way around SonarCube's parameter limitation //
                 (AppLanguages) appLanguageProvider.current(),
                 variation
@@ -166,7 +174,7 @@ public class KinderdossierPrintService {
             "nameVorname",
             PrintUtil.WHITESPACE.matcher(kind.getNameVorname()).replaceAll("-"),
             "now",
-            appClock.localDateTime().now().toLocalDate().format(DATE_FORMATTER_FOR_FILENAME),
+            appClock.getToday().format(DATE_FORMATTER_FOR_FILENAME),
             "fileExtension",
             fileExtension);
 

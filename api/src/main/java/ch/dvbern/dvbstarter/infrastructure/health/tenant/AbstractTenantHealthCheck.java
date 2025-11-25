@@ -18,13 +18,19 @@
 
 package ch.dvbern.dvbstarter.infrastructure.health.tenant;
 
+import java.io.InputStream;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 import ch.dvbern.dvbstarter.infrastructure.health.tenant.TenantHealthCheck.TenantInfos;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfigService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerRepo;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
-import ch.dvbern.oss.hemed.esc.api.features.pub.settings.TenantSettingsService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
@@ -34,11 +40,6 @@ import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.scheduler.SchedulerConfig;
 import ch.dvbern.oss.hemed.esc.api.shared.scheduler.SchedulerConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.scheduler.SchedulerTyp;
-import java.io.InputStream;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Validate;
@@ -80,7 +81,6 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
     private SchedulerConfigService schedulerConfigService = null;
     private ConfigService configService = null;
 
-
     protected AbstractTenantHealthCheck(
         @NonNull TenantProducer tenantProducer,
         @NonNull TenantSettingsService tenantSettingsService,
@@ -113,7 +113,6 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
             isS3EncryptionKeyPresent(currentTenantInfos)
         );
     }
-
 
     private boolean areTenantSettingsPresent(@NonNull TenantEnum tenantEnum) {
         try {

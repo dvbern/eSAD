@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.mapper;
 
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.json.LehrpersonJson;
+import ch.dvbern.oss.hemed.esc.api.shared.mapper.BaseMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LehrpersonJsonSpec;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.mapstruct.Mapper;

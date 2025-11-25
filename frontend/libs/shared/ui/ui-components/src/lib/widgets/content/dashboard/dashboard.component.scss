@@ -6,7 +6,7 @@
 
 .svui_dashboard {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, 1fr);
   grid-template-rows: auto 1fr;
   gap: spacing.$layout-outer spacing.$gutter-width;
   grid-auto-flow: row;
@@ -28,5 +28,16 @@
 
   &__kinder {
     grid-area: kinder;
+  }
+
+  // If aufgaben area is empty, adjust layout
+  &:has(&__aufgaben:empty) {
+    grid-template-areas:
+      'termine termine'
+      'recent kinder';
+  }
+
+  .svui_dashboard__aufgaben:empty {
+    display: none;
   }
 }

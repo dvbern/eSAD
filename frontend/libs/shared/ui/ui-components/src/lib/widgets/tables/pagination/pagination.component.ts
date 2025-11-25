@@ -1,7 +1,7 @@
-import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
-import {PageChanged, PaginationDTO} from '@dvb/util-angular';
-import {NgbPaginationConfig, NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
-import {IconComponent} from '../../icons/icon';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
+import { PageChanged, PaginationDTO } from '@dvb/util-angular';
+import { NgbPaginationConfig, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { IconComponent } from '../../icons/icon';
 
 @Component({
   selector: 'svui-pagination',
@@ -19,7 +19,8 @@ export class PaginationComponent {
 
   readonly pageChanged = output<PageChanged>();
 
-  constructor(config: NgbPaginationConfig) {
+  constructor() {
+    const config = inject(NgbPaginationConfig);
     config.boundaryLinks = true;
     config.pageSize = this.pageSize();
     // maximum number of pages to display

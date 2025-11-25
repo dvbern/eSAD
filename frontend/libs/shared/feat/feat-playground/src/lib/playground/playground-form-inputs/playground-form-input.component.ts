@@ -1,4 +1,4 @@
-import {DatePipe, JsonPipe, NgIf} from '@angular/common';
+import { DatePipe, JsonPipe } from '@angular/common';
 import {ChangeDetectionStrategy, Component, output} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Geschlecht} from '@dvb/data-access-backend';
@@ -58,7 +58,6 @@ import {PlaygroundDemoStates, PlaygroundFormOutputType} from './playground-form.
     JsonPipe,
     NgSelectComponent,
     NgOptionComponent,
-    NgIf,
     NgSelectDirective,
     DatePipe,
     SingleRadioWrapperComponent,
@@ -69,8 +68,8 @@ import {PlaygroundDemoStates, PlaygroundFormOutputType} from './playground-form.
     FormUploadOneComponent,
     IconOnlyButtonComponent,
     CardInCardComponent,
-    KindSearchComponent,
-  ]
+    KindSearchComponent
+]
 })
 export class PlaygroundFormInputComponent {
   file: string | undefined = 'Datei.pdf';

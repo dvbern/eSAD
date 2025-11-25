@@ -197,7 +197,6 @@ class LehrpersonResourceITest extends AbstractITest {
         assertThat(savedLehrperson).isNotNull();
         assertThat(savedLehrperson.getId()).isNotNull();
         assertThat(savedLehrperson.getExternalSystemIdOrNull()).isNull();
-        assertThat(savedLehrperson.isManualOrAktivInExternalSystem()).isTrue();
         LehrpersonSaveJsonSpec payload = LehrpersonBuilder.createSaveJsonSpec(
             builder -> builder
                 .forLehrperson(savedLehrperson)

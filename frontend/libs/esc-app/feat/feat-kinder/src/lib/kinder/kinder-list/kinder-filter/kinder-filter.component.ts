@@ -12,11 +12,12 @@ import {
 } from '@dvb/data-access-backend';
 import {BackendEntityId, isISODateString, ISODateString, isValidBackendEntityId} from '@dvb/data-access-types';
 import {
+  AnlassConfigOptionsStore,
   BenutzerOptionsStore,
   BenutzerStore,
   ImpfstoffeChargenStore,
   LabelsStore,
-  ModalDialogComponent,
+  ModalDialogComponent, TenantSettingsStore,
   TimetravelStore,
   TranslatedStringPipe,
 } from '@dvb/feat-shared';
@@ -79,6 +80,8 @@ export class KinderFilterComponent extends FilterSessionStorage<ErweiterteFilter
   readonly benutzerStore = inject(BenutzerStore);
   readonly labelsStore = inject(LabelsStore);
   readonly impfstoffeChargenStore = inject(ImpfstoffeChargenStore);
+  readonly anlassConfigOptionsStore = inject(AnlassConfigOptionsStore);
+  readonly tenantSettingsStore = inject(TenantSettingsStore);
 
   readonly chargenList = computed(() => this.impfstoffeChargenStore.chargenList()
     .filter(charge => charge.data.aktiv));
@@ -91,8 +94,8 @@ export class KinderFilterComponent extends FilterSessionStorage<ErweiterteFilter
   krankheitTypes = Object.values(Krankheit);
   anlassStatus = Object.values(AnlassStatus);
   anlassArt = Object.values(AnlassArt);
-  anlassTyp = Object.values(AnlassTyp);
-  einladungStatus = Object.values(EinladungStatus);
+  anlassTyp = Object.values(this.anlassConfigOptionsStore.getVisibleAnlassTypen());
+  einladungStatus = Object.values(this.tenantSettingsStore.availableEinladungStatus());
 
   protected readonly compareFn = compareFn<LabelJson>;
   protected readonly DetailMode = DetailMode;

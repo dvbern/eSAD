@@ -12,12 +12,12 @@
 
     <svui-card-in-card class="mb-3">
       <!-- Massnahmen -->
-      @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenKeine
-      || anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenBeratungMpa
-      || anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenAnderes) {
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showMassnahmenKeine
+      || anlassStore.selectedEntity()?.anlassConfig?.data?.showMassnahmenBeratungMpa
+      || anlassStore.selectedEntity()?.anlassConfig?.data?.showMassnahmenAnderes) {
         <svui-kachel-form-section [heading]=" 'untersuchung.tab.massnahmen.massnahmen' | transloco">
 
-          @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenKeine) {
+          @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showMassnahmenKeine) {
             <svui-kachel-control [label]="'untersuchung.tab.massnahmen.keine.massnahmen' |transloco">
               <input svuiCheckbox
                      type="checkbox"
@@ -27,7 +27,7 @@
             </svui-kachel-control>
           }
 
-          @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenBeratungMpa) {
+          @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showMassnahmenBeratungMpa) {
             <svui-kachel-control [label]="'untersuchung.tab.massnahmen.beratung.mpa' |transloco">
               <input svuiCheckbox
                      type="checkbox"
@@ -37,7 +37,7 @@
             </svui-kachel-control>
           }
 
-          @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenBeratungSchulAerztin) {
+          @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showMassnahmenBeratungSchulAerztin) {
             <svui-kachel-control [label]="'untersuchung.tab.massnahmen.beratung.schulaerztin' |transloco">
               <input svuiCheckbox
                      type="checkbox"
@@ -47,7 +47,7 @@
             </svui-kachel-control>
           }
 
-          @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenAnderes) {
+          @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showMassnahmenAnderes) {
             <svui-kachel-control [label]="'untersuchung.tab.massnahmen.anderes' |transloco">
               <input svuiCheckbox
                      type="checkbox"
@@ -67,7 +67,7 @@
         }
       }
 
-      @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenBereitsBehandelt) {
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showMassnahmenBereitsBehandelt) {
         <svui-kachel-form-section [heading]=" 'untersuchung.tab.massnahmen.bereits.behandelt' | transloco">
 
           <svui-kachel-control [label]="'untersuchung.tab.sehen.massnahmen.bereits.behandelt.sehen' |transloco">
@@ -130,7 +130,7 @@
         }
       }
 
-      @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenInfoEltern) {
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showMassnahmenInfoEltern) {
         <svui-title class="mb-3"
                     [context]="'formSection'">{{ 'untersuchung.tab.massnahmen.information.eltern' |transloco }}
         </svui-title>
@@ -147,15 +147,18 @@
             [placeholder]="'global.select.bitte-auswaehlen' | transloco"
           >
             @for (each of informationEltern; track each) {
-              <ng-option [value]="each">
-                {{ 'InformationEltern.' + each | transloco }}
-              </ng-option>
+              <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+              @if ('InformationEltern.' + each | transloco; as translatedInfo) {
+                <ng-option [value]="each">
+                  {{ 'InformationEltern.' + each | transloco }}
+                </ng-option>
+              }
             }
           </ng-select>
         </svui-form-control>
       }
 
-      @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenInfomaterial) {
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showMassnahmenInfomaterial) {
         <svui-title class="mb-3"
                     [context]="'formSection'">{{ 'untersuchung.tab.massnahmen.infomaterial' |transloco }}
         </svui-title>
@@ -174,38 +177,41 @@
             [multiple]="true"
           >
             @for (each of infomaterialOptions; track each.id) {
-              <ng-option [value]="each" [disabled]="!each.data.aktiv">
-                {{ each.data.name | translatedStringPipe }}
-                @if (!each.data.aktiv) {
-                  {{ 'gloabl.suffixInaktiv' | transloco }}
-                }
-              </ng-option>
+              <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+              @if ('gloabl.suffixInaktiv' | transloco; as translatedInfo) {
+                <ng-option [value]="each" [disabled]="!each.data.aktiv">
+                  {{ each.data.name | translatedStringPipe }}
+                  @if (!each.data.aktiv) {
+                    {{ 'gloabl.suffixInaktiv' | transloco }}
+                  }
+                </ng-option>
+              }
             }
           </ng-select>
         </svui-form-control>
       }
 
-      @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenUeberweisungHausarzt
-      || anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenUeberweisungAugenarzt) {
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showMassnahmenUeberweisungHausarzt
+      || anlassStore.selectedEntity()?.anlassConfig?.data?.showMassnahmenUeberweisungAugenarzt) {
         <svui-title class="mb-3"
                     [context]="'formSection'">{{ 'untersuchung.tab.sehen.massnahmen.ueberweisungen' |transloco }}
         </svui-title>
       }
 
-      @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenUeberweisungHausarzt) {
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showMassnahmenUeberweisungHausarzt) {
         <svui-standalone-control [label]="'untersuchung.tab.massnahmen.ueberweisung.hausarzt' | transloco">
           <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.ueberweisungHausarzt ">
         </svui-standalone-control>
       }
 
-      @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenUeberweisungAugenarzt) {
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showMassnahmenUeberweisungAugenarzt) {
         <svui-standalone-control [label]="'untersuchung.tab.massnahmen.ueberweisung.augenarzt' | transloco">
           <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.ueberweisungAugenarzt ">
         </svui-standalone-control>
       }
 
 
-      @if (anlassStore.selectedEntity()?.anlassConfig?.showMassnahmenNachkontrolleSaed) {
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showMassnahmenNachkontrolleSaed) {
         <svui-kachel-form-section class="mt-3" [heading]=" 'untersuchung.tab.massnahmen.nachkontrollen' | transloco">
 
           <svui-kachel-control [label]="'untersuchung.tab.sehen.massnahmen.nachkontrolle.sehen' |transloco">

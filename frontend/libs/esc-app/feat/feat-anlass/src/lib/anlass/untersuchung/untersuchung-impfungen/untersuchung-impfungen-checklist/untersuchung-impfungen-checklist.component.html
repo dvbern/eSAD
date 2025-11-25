@@ -15,7 +15,7 @@
     }
   }
 
-  @if (anlassStore.selectedEntity()?.anlassConfig?.untersuchungImpfungBemerkungen !== RequirementSetting.NOT_VISIBLE) {
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungImpfungBemerkungen !== RequirementSetting.NOT_VISIBLE) {
     <svui-standalone-control [label]="'untersuchung.impfungen.checklist.bemerkung' | transloco">
       <textarea svuiTextarea [formControl]="form.controlAt('bemerkungen')"></textarea>
     </svui-standalone-control>

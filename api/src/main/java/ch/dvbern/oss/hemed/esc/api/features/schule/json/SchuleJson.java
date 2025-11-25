@@ -32,10 +32,6 @@ public class SchuleJson {
     private final ExternalImportInfoJson externalImportInfoJson;
 
     @NotNull
-    @Schema(required = true)
-    private final boolean manualOrAktivInExternalSystem;
-
-    @NotNull
     @NonNull
     @Schema(required = true)
     @Valid

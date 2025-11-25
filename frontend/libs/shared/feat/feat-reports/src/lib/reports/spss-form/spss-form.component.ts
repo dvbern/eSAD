@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, DestroyRef, inject} from '@angular/core';
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {SpssReportType} from '@dvb/data-access-backend';
@@ -19,10 +19,16 @@ import {SpssForm} from './spss.form';
   selector: 'feat-spss-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule, CardComponent, CheckboxDirective,
-    FormLayoutComponent, FormsModule, HeadingDirective, StandaloneControlComponent,
-    TranslocoPipe, ReactiveFormsModule, ButtonComponent,
-  ],
+    CardComponent,
+    CheckboxDirective,
+    FormLayoutComponent,
+    FormsModule,
+    HeadingDirective,
+    StandaloneControlComponent,
+    TranslocoPipe,
+    ReactiveFormsModule,
+    ButtonComponent
+],
   templateUrl: './spss-form.component.html',
 })
 export class SpssFormComponent {

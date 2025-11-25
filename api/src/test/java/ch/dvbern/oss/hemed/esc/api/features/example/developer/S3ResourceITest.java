@@ -46,7 +46,6 @@ class S3ResourceITest {
 
         File testfile = TestUtil.loadTestImage();
         NotizJsonSpec notizJsonSpec = notizenApi.notizResourceAddNotizFile()
-            .kindIdPath(storedNotiz.getDossier().getKind().getId().getId())
             .notizIdPath(storedNotiz.getId().getId())
             ._fileMultiPart(testfile)
             .execute(ResponseBody::prettyPeek)
@@ -83,7 +82,6 @@ class S3ResourceITest {
 
         File testfile = TestUtil.loadTestProblematicFilename();
         NotizJsonSpec notizJsonSpec = notizenApi.notizResourceAddNotizFile()
-            .kindIdPath(storedNotiz.getDossier().getKind().getId().getId())
             .notizIdPath(storedNotiz.getId().getId())
             ._fileMultiPart(testfile)
             .execute(ResponseBody::prettyPeek)

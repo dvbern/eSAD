@@ -1,0 +1,124 @@
+<feat-page [heading]="'config.tenant.title' | transloco"
+           [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN + '/' + Path.CONFIG}">
+  <svui-card>
+    <form svuiFormLayout
+          [formGroup]="form.group"
+          (ngSubmit)="submitIfValid()"
+          [mode]="detailMode">
+
+      <h2 svuiHeading="formSection">{{ 'config.tenant.section.general' | transloco }}</h2>
+
+      <!-- Default language -->
+      <svui-form-control [label]="'config.tenant.defaultLanguage' | transloco"
+                         [viewValue]="form.group.controls.defaultLanguage.value">
+        <ng-select
+          svuiNgSelect
+          bindLabel="dummy"
+          appendTo="body"
+          [formControl]="form.group.controls.defaultLanguage"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          [multiple]="false">
+          @for (lang of appLanguageOptions; track lang) {
+            <ng-option [value]="lang">
+              {{ 'AppLanguage.' + lang | transloco }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+      <!-- Supported languages -->
+      <svui-form-control [label]="'config.tenant.supportedLanguages' | transloco"
+                         [viewValue]="(form.group.controls.supportedLanguages.value || []) | translatedEnumViewValuePipe:'AppLanguage'">
+        <ng-select
+          svuiNgSelect
+          bindLabel="dummy"
+          appendTo="body"
+          [formControl]="form.group.controls.supportedLanguages"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          [multiple]="true">
+          @for (lang of appLanguageOptions; track lang) {
+            <ng-option [value]="lang">
+              {{ 'AppLanguage.' + lang | transloco }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+      <h2 svuiHeading="formSection">{{ 'config.tenant.section.features' | transloco }}</h2>
+
+      <!-- ESAD ID Feature: Enabled setting -->
+      <svui-form-control [label]="'config.tenant.features.esadId' | transloco"
+                         [viewValue]="form.group.controls.features.controls.esadIdFeature.controls.featureEnabled.value">
+        <ng-select
+          svuiNgSelect
+          bindLabel="dummy"
+          appendTo="body"
+          [formControl]="form.group.controls.features.controls.esadIdFeature.controls.featureEnabled"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          [multiple]="false">
+          @for (opt of featureSettingOptions; track opt) {
+            <ng-option [value]="opt">
+              {{ 'FeatureEnabledSetting.' + opt | transloco }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+
+
+      <!-- Länder Code Feature: Enabled setting -->
+      <svui-form-control [label]="'config.tenant.features.laenderCode' | transloco"
+                         [viewValue]="form.group.controls.features.controls.laenderCodeFeature.controls.featureEnabled.value">
+        <ng-select
+          svuiNgSelect
+          bindLabel="dummy"
+          appendTo="body"
+          [formControl]="form.group.controls.features.controls.laenderCodeFeature.controls.featureEnabled"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          [multiple]="false">
+          @for (opt of featureSettingOptions; track opt) {
+            <ng-option [value]="opt">
+              {{ 'FeatureEnabledSetting.' + opt | transloco }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+      <h2 svuiHeading="formSection">{{ 'config.tenant.section.enums' | transloco }}</h2>
+
+      <!-- Einladungs Status -->
+      <svui-form-control [label]="'config.tenant.einladungStatus' | transloco"
+                         [viewValue]="(form.group.controls.einladungStatusValues.value || []) | translatedEnumViewValuePipe:'EinladungStatus'"
+      >
+        <ng-select
+          svuiNgSelect
+          bindLabel="dummy"
+          appendTo="body"
+          [formControl]="form.group.controls.einladungStatusValues"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          [multiple]="true">
+          @for (einladungStatus of einladungStatusOptions; track einladungStatus) {
+            <ng-option [value]="einladungStatus">
+              {{ 'EinladungStatus.' + einladungStatus | transloco }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+
+      <!--messages for whole form -->
+      <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+      <!-- BUTTONS -->
+      <svui-form-buttons
+        [mode]="detailMode"
+        [isCreate]="isCreate"
+        [saving]="false"
+        [canEdit]="canEdit"
+        routeToEdit="../edit"
+        [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP]"
+        [routeOnCancelCreate]="[Path.RELATIVE_ONE_UP]"
+      />
+    </form>
+  </svui-card>
+</feat-page>

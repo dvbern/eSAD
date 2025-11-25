@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {SchulenStore} from '@dvb/feat-shared';
@@ -11,9 +11,15 @@ import {NgbNav, NgbNavItem} from '@ng-bootstrap/ng-bootstrap';
 @Component({
     selector: 'feat-schulen-detail.page',
     imports: [
-        CommonModule, RouterOutlet, RouterLink, RouterLinkActive, TranslocoPipe,
-        NgbNav, NgbNavItem, CardComponent, PageComponent,
-    ],
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    TranslocoPipe,
+    NgbNav,
+    NgbNavItem,
+    CardComponent,
+    PageComponent
+],
     templateUrl: './schulen-detail.page.component.html',
     styleUrl: './schulen-detail.page.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush

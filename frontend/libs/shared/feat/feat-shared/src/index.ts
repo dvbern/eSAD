@@ -25,6 +25,7 @@ export * from './lib/admin-shared/aufgaben.store';
 export * from './lib/admin-shared/system-admin.store';
 export * from './lib/admin-shared/briefvorlagen.store';
 export * from './lib/admin-shared/aerzte.store';
+export * from './lib/admin-shared/anlass-config-options.store';
 export * from './lib/admin-shared/inactive-options.util';
 export * from './lib/core/provideCore';
 export * from './lib/core/path';
@@ -49,7 +50,8 @@ export * from './lib/aufgaben/aufgaben-sidebar';
 export * from './lib/tenant/tenant-settings.store';
 export * from './lib/translated-strings/edit/translated-string-edit.component';
 export * from './lib/translated-strings/view/translated-string.pipe';
+export * from './lib/translated-strings/view/translated-enum-view-value.pipe';
 export * from './lib/upload/upload-table/upload-table.component';
 export * from './lib/upload/file-drop/file-drop.component';
 export * from './lib/constants/global-constants';
-
+export * from './lib/upload/qr-code-upload/qr-code-upload.component';

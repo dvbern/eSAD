@@ -10,7 +10,10 @@ import java.util.stream.Stream;
 
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
@@ -53,6 +56,8 @@ class SearchResourceSpezialsucheITest extends AbstractITest {
 
     private final FixtureService fixtureService;
     private final KindService kindService;
+    private final AnlassConfigService anlassConfigService;
+    private final AnlassService anlassService;
 
     private static final String KIND_NAME_UUID = "13c5e319-0ba8-4695-9bb2-81401189c78d";
     private static final ID<Kind>
@@ -339,8 +344,10 @@ class SearchResourceSpezialsucheITest extends AbstractITest {
                 .withKlasse(klasse)));
         Dossier dossier = fixtureService.createDossier(kindWithAnlass);
         if (anlassTyp != null && anlassDatum != null) {
-            final Anlass anlass = fixtureService.persistAnlass(
+            AnlassConfig config = anlassConfigService.getByAnlassTypAndStichtag(anlassTyp, anlassDatum);
+            final Anlass anlass = anlassService.persist(
                 AnlassBuilder.create(builder -> builder
+                    .withAnlassConfig(config)
                     .withDatumSetSchuljahr(anlassDatum)
                     .withAnlassTyp(anlassTyp)));
             Einladung previousEinladung = fixtureService.createEinladung(anlass, dossier);

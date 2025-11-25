@@ -26,7 +26,7 @@ public record BenutzerFixtureBuilder(
 
     public static BenutzerFixtureBuilder admin() {
         return validBenutzer()
-            .withId(Benutzer.SYSTEM_ADMIN_ID)
+            .withId(Benutzer.SYSTEM_ADMIN_BS_ID)
             .withEmailString("admin@somewhere.org");
     }
 

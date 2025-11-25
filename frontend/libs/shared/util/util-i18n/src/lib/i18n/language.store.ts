@@ -1,4 +1,4 @@
-import { Inject, inject, Injectable, Optional } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { AbstractSignalStore } from '@dvb/util-angular';
 import { TranslocoService } from '@jsverse/transloco';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, Language } from './Language';
@@ -19,7 +19,9 @@ export class LanguageStore extends AbstractSignalStore<LanguageState> {
   /**
    * @param testInit - for testing purposes only
    */
-  constructor(@Inject('nothing') @Optional() testInit?: LanguageState) {
+  constructor() {
+    const testInit = inject<LanguageState>('nothing' as never, { optional: true });
+
     super(testInit ?? languageStateInitialState);
   }
 

@@ -37,7 +37,8 @@ function makeForm(config: Config) {
   return group;
 }
 
-export class UntersuchungArztBemerkungForm extends BaseForm<ReturnType<typeof makeForm>, UntersuchungArztBemerkungSaveJson> {
+export class UntersuchungArztBemerkungForm
+  extends BaseForm<ReturnType<typeof makeForm>, UntersuchungArztBemerkungSaveJson> {
 
   constructor(protected config: Config) {
     super(() => makeForm(config));
@@ -58,7 +59,7 @@ export class UntersuchungArztBemerkungForm extends BaseForm<ReturnType<typeof ma
   }
 
   public setValidatorsForAnlassConfig(anlassConfig: AnlassConfigJson): void {
-    if (anlassConfig.untersuchungBemerkungen === RequirementSetting.REQUIRED) {
+    if (anlassConfig.data.untersuchungBemerkungen === RequirementSetting.REQUIRED) {
       this.group.controls.bemerkungen.addValidators(Validators.required);
     }
   }

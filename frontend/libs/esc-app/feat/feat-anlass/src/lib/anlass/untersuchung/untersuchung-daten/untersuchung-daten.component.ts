@@ -1,9 +1,9 @@
-import {CommonModule} from '@angular/common';
-import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
-import {BenutzerOptionJson, Geschlecht, Klassenstufe, Land} from '@dvb/data-access-backend';
-import {BenutzerOptionsStore, BenutzerStore, EventBusStore} from '@dvb/feat-shared';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { BenutzerOptionJson, Geschlecht, Klassenstufe, Land, RequirementSetting } from '@dvb/data-access-backend';
+import { BenutzerOptionsStore, BenutzerStore, EventBusStore } from '@dvb/feat-shared';
 import {
   CheckboxDirective,
   FormControlComponent,
@@ -15,16 +15,18 @@ import {
   SaveCancelButtonsComponent,
   SingleCheckboxWrapperComponent,
   SingleRadioWrapperComponent,
+  TextareaDirective,
   TextInputDirective,
+  TitleComponent,
 } from '@dvb/ui-components';
-import {DetailMode, DirtyMarker} from '@dvb/util-angular';
-import {hasUntersuchungKindDatenEditBerechtigung, requireValue} from '@dvb/util-shared';
-import {TranslocoPipe} from '@jsverse/transloco';
-import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
-import {AnlassStore} from '../../anlass.store';
-import {UntersuchungStore} from '../untersuchung.store';
-import {UntersuchungDatenForm} from './untersuchung-daten.form';
-import {UntersuchungDatenStore} from './untersuchung-daten.store';
+import { DetailMode, DirtyMarker } from '@dvb/util-angular';
+import { hasUntersuchungKindDatenEditBerechtigung, requireValue } from '@dvb/util-shared';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
+import { AnlassStore } from '../../anlass.store';
+import { UntersuchungStore } from '../untersuchung.store';
+import { UntersuchungDatenForm } from './untersuchung-daten.form';
+import { UntersuchungDatenStore } from './untersuchung-daten.store';
 
 @Component({
   selector: 'feat-untersuchung-daten',
@@ -32,10 +34,24 @@ import {UntersuchungDatenStore} from './untersuchung-daten.store';
   styleUrl: './untersuchung-daten.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule, FormLayoutComponent, FormControlComponent,
-    HeadingDirective, TranslocoPipe, TextInputDirective, ReactiveFormsModule, SingleRadioWrapperComponent,
-    RadioDirective, FormGroupComponent, NgOptionComponent, NgSelectComponent, NgSelectDirective, CheckboxDirective,
-    SingleCheckboxWrapperComponent, SaveCancelButtonsComponent,
+    CommonModule,
+    FormLayoutComponent,
+    FormControlComponent,
+    HeadingDirective,
+    TranslocoPipe,
+    TextInputDirective,
+    ReactiveFormsModule,
+    SingleRadioWrapperComponent,
+    RadioDirective,
+    FormGroupComponent,
+    NgOptionComponent,
+    NgSelectComponent,
+    NgSelectDirective,
+    CheckboxDirective,
+    SingleCheckboxWrapperComponent,
+    SaveCancelButtonsComponent,
+    TextareaDirective,
+    TitleComponent,
   ],
 })
 export class UntersuchungDatenComponent implements DirtyMarker {
@@ -46,8 +62,13 @@ export class UntersuchungDatenComponent implements DirtyMarker {
   readonly destroyRef = inject(DestroyRef);
   readonly benutzerStore = inject(BenutzerStore);
 
-  canEdit = computed(() => this.benutzerStore.createHasRequiredRoleSig(hasUntersuchungKindDatenEditBerechtigung())()
-    && this.anlassStore.canUserEditAnlassInCurrentState());
+  protected readonly RequirementSetting = RequirementSetting;
+
+  canEdit = computed(
+    () =>
+      this.benutzerStore.createHasRequiredRoleSig(hasUntersuchungKindDatenEditBerechtigung())() &&
+      this.anlassStore.canUserEditAnlassInCurrentState(),
+  );
 
   protected readonly DetailMode = DetailMode;
   protected readonly Geschlecht = Geschlecht;
@@ -73,9 +94,7 @@ export class UntersuchungDatenComponent implements DirtyMarker {
         this.form.setValidators(anlassConfig);
       }
       // Falls Anlass Fertig können auch die Kind Daten bearbeitet werden.
-      this.form.setDisabledForm(
-        !this.canEdit(),
-        this.anlassStore.isAbgeschlossen());
+      this.form.setDisabledForm(!this.canEdit(), this.anlassStore.isAbgeschlossen());
     });
 
     // Subscribe to untersuchung abschliessen events
@@ -113,7 +132,7 @@ export class UntersuchungDatenComponent implements DirtyMarker {
           anlassId: requireValue(this.anlassStore.selectedEntity()).id,
           einladungId: requireValue(this.untersuchungStore.currentTab()).einladungID,
           untersuchungDurchfuehrungDataSaveJson: this.form.valueOnValidDurchfuehrungKind(),
-        })
+        });
       } else {
         this.datenStore.saveDurchfuehrungDaten({
           anlassId: requireValue(this.anlassStore.selectedEntity()).id,

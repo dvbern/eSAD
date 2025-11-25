@@ -13,6 +13,7 @@ import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.QBenutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.QBenutzerBerechtigung;
@@ -86,7 +87,6 @@ public class BenutzerRepo extends BaseRepo<Benutzer> {
     public List<Benutzer> findAll() {
         // Unsere Systemadmins nicht anzeigen
         List<UUID> systemAdmins = List.of(
-            Benutzer.SYSTEM_ADMIN_ID.getUUID(),
             Benutzer.SYSTEM_ADMIN_BS_ID.getUUID(),
             Benutzer.SYSTEM_ADMIN_BE_ID.getUUID(),
             Benutzer.SYSTEM_ADMIN_WIN_ID.getUUID());
@@ -138,6 +138,7 @@ public class BenutzerRepo extends BaseRepo<Benutzer> {
                         .and(QBenutzer.benutzer.aktiv.isTrue())
                         .and(QBenutzer.benutzer.fachRollen.contains(FachRolle.SYSTEM_ADMIN.name()).not())
                 );
+
         List<UUID> resultList;
         if (limit != null) {
             resultList = query.limit(limit).fetch();
@@ -153,5 +154,16 @@ public class BenutzerRepo extends BaseRepo<Benutzer> {
             .set(QBenutzer.benutzer.aktiv, false)
             .where(QBenutzer.benutzer.id.in(uuidList))
             .execute();
+    }
+
+    @NonNull
+    public Benutzer getSystemAdmin(@NonNull TenantEnum tenant) {
+        Benutzer benutzer = db.selectFrom(QBenutzer.benutzer)
+            .where(QBenutzer.benutzer.id.eq(Benutzer.getSystemAdminId(tenant).getUUID()))
+            .fetchFirst();
+        if (benutzer == null) {
+            throw new IllegalStateException("System admin not found for tenant: " + tenant);
+        }
+        return benutzer;
     }
 }

@@ -3,7 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassBuilder;
 import org.junit.jupiter.api.Test;
 

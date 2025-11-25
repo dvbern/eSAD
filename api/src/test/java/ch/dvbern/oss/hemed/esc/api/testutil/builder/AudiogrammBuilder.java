@@ -3,9 +3,9 @@ package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 import java.util.function.Consumer;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.AudiogrammSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammMapper;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Dezibel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.AudiogrammJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AudiogrammSaveJsonSpec;

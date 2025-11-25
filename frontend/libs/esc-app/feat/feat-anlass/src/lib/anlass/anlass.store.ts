@@ -22,6 +22,7 @@ import {addEntity, removeEntity, setAllEntities, setEntity, withEntities} from '
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, pipe, switchMap} from 'rxjs';
 import {AnlassJsonEnhanced, enhanceAnlass} from './anlass.util';
+import { withDevtools } from '@angular-architects/ngrx-toolkit';
 
 type AnlassState = {
   schulInformationen: SchulInformationenJson[],
@@ -40,7 +41,7 @@ const initialState: AnlassState = {
 @Injectable()
 export class AnlassStore extends signalStore(
   {protectedState: false},
-  // withDevtools('anlass'),
+  withDevtools('anlass'),
   withEntities<AnlassJsonEnhanced>(),
   withState(initialState),
   withSelectedEntity<AnlassJsonEnhanced>(),
@@ -65,6 +66,18 @@ export class AnlassStore extends signalStore(
       weiterePersonOfCurrentAnlass: computed(() => {
         return selectedEntity()?.data?.weiterePerson;
       }),
+      groesseGewichtBmiPerzentileValues: computed(() => {
+        return selectedEntity()?.anlassConfig.data.groesseGewichtBmiPerzentileValues;
+      }),
+      showFragebogen: computed(() => {
+        return selectedEntity()?.anlassConfig.data.showFragebogen;
+      }),
+      showImpfausweis: computed(() => {
+        return selectedEntity()?.anlassConfig.data.showImpfausweis;
+      }),
+      showAnmeldungBestaetigung: computed(() => {
+        return selectedEntity()?.anlassConfig.data.showAnmeldungBestaetigung;
+      })
     };
   }),
 

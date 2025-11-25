@@ -37,17 +37,7 @@ export interface EinladungenServiceCreateEinladungenForAnlassRequestParams {
     kindIdListJson: KindIdListJson;
 }
 
-export interface EinladungenServiceCreateFragebogenNotizRequestParams {
-    anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
-    file?: Blob;
-    file2?: Blob;
-    file3?: Blob;
-    file4?: Blob;
-    notizCreateJson?: NotizSaveJson;
-}
-
-export interface EinladungenServiceCreateImpfausweisNotizRequestParams {
+export interface EinladungenServiceCreateNotizRequestParams {
     anlassId: BackendEntityId;
     einladungId: BackendEntityId;
     file?: Blob;
@@ -266,22 +256,22 @@ export class EinladungenService {
     }
 
     /**
-     * Create Fragebogen Notiz
+     * Create Notiz
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createFragebogenNotiz$(requestParameters?: EinladungenServiceCreateFragebogenNotizRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<NotizJson>;
-    public createFragebogenNotiz$(requestParameters?: EinladungenServiceCreateFragebogenNotizRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<NotizJson>>;
-    public createFragebogenNotiz$(requestParameters?: EinladungenServiceCreateFragebogenNotizRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<NotizJson>>;
-    public createFragebogenNotiz$(requestParameters?: EinladungenServiceCreateFragebogenNotizRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public createNotiz$(requestParameters?: EinladungenServiceCreateNotizRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<NotizJson>;
+    public createNotiz$(requestParameters?: EinladungenServiceCreateNotizRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<NotizJson>>;
+    public createNotiz$(requestParameters?: EinladungenServiceCreateNotizRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<NotizJson>>;
+    public createNotiz$(requestParameters?: EinladungenServiceCreateNotizRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         const anlassId = requestParameters?.anlassId;
         if (anlassId === null || anlassId === undefined) {
-            throw new Error('Required parameter anlassId was null or undefined when calling createFragebogenNotiz.');
+            throw new Error('Required parameter anlassId was null or undefined when calling createNotiz.');
         }
         const einladungId = requestParameters?.einladungId;
         if (einladungId === null || einladungId === undefined) {
-            throw new Error('Required parameter einladungId was null or undefined when calling createFragebogenNotiz.');
+            throw new Error('Required parameter einladungId was null or undefined when calling createNotiz.');
         }
         const file = requestParameters?.file;
         const file2 = requestParameters?.file2;
@@ -374,131 +364,7 @@ export class EinladungenService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/fragebogen`;
-        return this.httpClient.request<NotizJson>('post', `${this.configuration.basePath}${localVarPath}`,
-            {
-                context: localVarHttpContext,
-                body: localVarConvertFormParamsToString ? localVarFormParams.toString() : localVarFormParams,
-                responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
-                headers: localVarHeaders,
-                observe: observe,
-                transferCache: localVarTransferCache,
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * Create Impfausweis Notiz
-     * @param requestParameters
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public createImpfausweisNotiz$(requestParameters?: EinladungenServiceCreateImpfausweisNotizRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<NotizJson>;
-    public createImpfausweisNotiz$(requestParameters?: EinladungenServiceCreateImpfausweisNotizRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<NotizJson>>;
-    public createImpfausweisNotiz$(requestParameters?: EinladungenServiceCreateImpfausweisNotizRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<NotizJson>>;
-    public createImpfausweisNotiz$(requestParameters?: EinladungenServiceCreateImpfausweisNotizRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        const anlassId = requestParameters?.anlassId;
-        if (anlassId === null || anlassId === undefined) {
-            throw new Error('Required parameter anlassId was null or undefined when calling createImpfausweisNotiz.');
-        }
-        const einladungId = requestParameters?.einladungId;
-        if (einladungId === null || einladungId === undefined) {
-            throw new Error('Required parameter einladungId was null or undefined when calling createImpfausweisNotiz.');
-        }
-        const file = requestParameters?.file;
-        const file2 = requestParameters?.file2;
-        const file3 = requestParameters?.file3;
-        const file4 = requestParameters?.file4;
-        const notizCreateJson = requestParameters?.notizCreateJson;
-
-        let localVarHeaders = this.defaultHeaders;
-
-        let localVarCredential: string | undefined;
-        // authentication (SecurityScheme) required
-        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
-        if (localVarCredential) {
-        }
-
-        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (localVarHttpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (localVarHttpHeaderAcceptSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-        }
-
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
-
-        let localVarTransferCache: boolean | undefined = options && options.transferCache;
-        if (localVarTransferCache === undefined) {
-            localVarTransferCache = true;
-        }
-
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'multipart/form-data'
-        ];
-
-        const canConsumeForm = this.canConsumeForm(consumes);
-
-        let localVarFormParams: { append(param: string, value: any): any; };
-        let localVarUseForm = false;
-        let localVarConvertFormParamsToString = false;
-        // use FormData to transmit files using content-type "multipart/form-data"
-        // see https://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data
-        localVarUseForm = canConsumeForm;
-        // use FormData to transmit files using content-type "multipart/form-data"
-        // see https://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data
-        localVarUseForm = canConsumeForm;
-        // use FormData to transmit files using content-type "multipart/form-data"
-        // see https://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data
-        localVarUseForm = canConsumeForm;
-        // use FormData to transmit files using content-type "multipart/form-data"
-        // see https://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data
-        localVarUseForm = canConsumeForm;
-        if (localVarUseForm) {
-            localVarFormParams = new FormData();
-        } else {
-            localVarFormParams = new HttpParams({encoder: this.encoder});
-        }
-
-        if (file !== undefined) {
-            localVarFormParams = localVarFormParams.append('file', <any>file) as any || localVarFormParams;
-        }
-        if (file2 !== undefined) {
-            localVarFormParams = localVarFormParams.append('file2', <any>file2) as any || localVarFormParams;
-        }
-        if (file3 !== undefined) {
-            localVarFormParams = localVarFormParams.append('file3', <any>file3) as any || localVarFormParams;
-        }
-        if (file4 !== undefined) {
-            localVarFormParams = localVarFormParams.append('file4', <any>file4) as any || localVarFormParams;
-        }
-        if (notizCreateJson !== undefined) {
-            localVarFormParams = localVarFormParams.append('notizCreateJson', localVarUseForm ? new Blob([JSON.stringify(notizCreateJson)], {type: 'application/json'}) : <any>notizCreateJson) as any || localVarFormParams;
-        }
-
-        let responseType_: 'text' | 'json' | 'blob' = 'json';
-        if (localVarHttpHeaderAcceptSelected) {
-            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-                responseType_ = 'text';
-            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-                responseType_ = 'json';
-            } else {
-                responseType_ = 'blob';
-            }
-        }
-
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/impfausweis`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/notiz`;
         return this.httpClient.request<NotizJson>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

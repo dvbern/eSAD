@@ -34,7 +34,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   KindJsonSpec.JSON_PROPERTY_ID,
   KindJsonSpec.JSON_PROPERTY_ESAD_ID,
   KindJsonSpec.JSON_PROPERTY_EXTERNAL_IMPORT_INFO_JSON,
-  KindJsonSpec.JSON_PROPERTY_MANUAL_OR_AKTIV_IN_EXTERNAL_SYSTEM,
   KindJsonSpec.JSON_PROPERTY_ENTITY_INFO,
   KindJsonSpec.JSON_PROPERTY_DATA,
   KindJsonSpec.JSON_PROPERTY_LAND_CODE
@@ -54,10 +53,6 @@ public class KindJsonSpec {
   public static final String JSON_PROPERTY_EXTERNAL_IMPORT_INFO_JSON = "externalImportInfoJson";
   @jakarta.annotation.Nullable
   private ExternalImportInfoJsonSpec externalImportInfoJson;
-
-  public static final String JSON_PROPERTY_MANUAL_OR_AKTIV_IN_EXTERNAL_SYSTEM = "manualOrAktivInExternalSystem";
-  @jakarta.annotation.Nonnull
-  private Boolean manualOrAktivInExternalSystem;
 
   public static final String JSON_PROPERTY_ENTITY_INFO = "entityInfo";
   @jakarta.annotation.Nonnull
@@ -149,31 +144,6 @@ public class KindJsonSpec {
     this.externalImportInfoJson = externalImportInfoJson;
   }
 
-  public KindJsonSpec manualOrAktivInExternalSystem(@jakarta.annotation.Nonnull Boolean manualOrAktivInExternalSystem) {
-    
-    this.manualOrAktivInExternalSystem = manualOrAktivInExternalSystem;
-    return this;
-  }
-
-  /**
-   * Get manualOrAktivInExternalSystem
-   * @return manualOrAktivInExternalSystem
-   */
-  @jakarta.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_MANUAL_OR_AKTIV_IN_EXTERNAL_SYSTEM)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public Boolean getManualOrAktivInExternalSystem() {
-    return manualOrAktivInExternalSystem;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_MANUAL_OR_AKTIV_IN_EXTERNAL_SYSTEM)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setManualOrAktivInExternalSystem(@jakarta.annotation.Nonnull Boolean manualOrAktivInExternalSystem) {
-    this.manualOrAktivInExternalSystem = manualOrAktivInExternalSystem;
-  }
-
   public KindJsonSpec entityInfo(@jakarta.annotation.Nonnull EntityInfoJsonSpec entityInfo) {
     
     this.entityInfo = entityInfo;
@@ -261,7 +231,6 @@ public class KindJsonSpec {
     return Objects.equals(this.id, kindJson.id) &&
         Objects.equals(this.esadId, kindJson.esadId) &&
         Objects.equals(this.externalImportInfoJson, kindJson.externalImportInfoJson) &&
-        Objects.equals(this.manualOrAktivInExternalSystem, kindJson.manualOrAktivInExternalSystem) &&
         Objects.equals(this.entityInfo, kindJson.entityInfo) &&
         Objects.equals(this.data, kindJson.data) &&
         Objects.equals(this.landCode, kindJson.landCode);
@@ -269,7 +238,7 @@ public class KindJsonSpec {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, esadId, externalImportInfoJson, manualOrAktivInExternalSystem, entityInfo, data, landCode);
+    return Objects.hash(id, esadId, externalImportInfoJson, entityInfo, data, landCode);
   }
 
   @Override
@@ -279,7 +248,6 @@ public class KindJsonSpec {
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    esadId: ").append(toIndentedString(esadId)).append("\n");
     sb.append("    externalImportInfoJson: ").append(toIndentedString(externalImportInfoJson)).append("\n");
-    sb.append("    manualOrAktivInExternalSystem: ").append(toIndentedString(manualOrAktivInExternalSystem)).append("\n");
     sb.append("    entityInfo: ").append(toIndentedString(entityInfo)).append("\n");
     sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("    landCode: ").append(toIndentedString(landCode)).append("\n");

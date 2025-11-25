@@ -5,11 +5,10 @@ import {
   effect,
   HostBinding,
   HostListener,
+  inject,
   input,
   model,
   OnInit,
-  Optional,
-  Self,
   ViewContainerRef,
 } from '@angular/core';
 import { NgControl, ReactiveFormsModule } from '@angular/forms';
@@ -29,20 +28,20 @@ import { ControlType, ValidatedInputWithIdDirective } from '../validated-input-w
 import { TypeaheadNoResultsComponent } from './typeahead-no-results/typeahead-no-results.component';
 
 @Component({
-    // eslint-disable-next-line @angular-eslint/component-selector
-    selector: 'input[svuiTypeahead]',
-    templateUrl: './typeahead.component.html',
-    styleUrl: 'typeahead.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    hostDirectives: [NgbTypeahead],
-    providers: [
-        {
-            // See comment on ValidatedInputWithIdDirective for reasons
-            provide: ValidatedInputWithIdDirective,
-            useExisting: TypeaheadComponent,
-        },
-    ],
-    imports: [ReactiveFormsModule]
+  // eslint-disable-next-line @angular-eslint/component-selector
+  selector: 'input[svuiTypeahead]',
+  templateUrl: './typeahead.component.html',
+  styleUrl: 'typeahead.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  hostDirectives: [NgbTypeahead],
+  providers: [
+    {
+      // See comment on ValidatedInputWithIdDirective for reasons
+      provide: ValidatedInputWithIdDirective,
+      useExisting: TypeaheadComponent,
+    },
+  ],
+  imports: [ReactiveFormsModule],
 })
 export class TypeaheadComponent<T> extends ValidatedInputWithIdDirective implements OnInit {
   // type must be specified in caller explicitly, else Angular won't get it
@@ -85,12 +84,12 @@ export class TypeaheadComponent<T> extends ValidatedInputWithIdDirective impleme
     return true;
   }
 
-  constructor(
-    @Optional() @Self() public override ngControl: NgControl,
-    @Optional() @Self() public ngbTypaheadInst: NgbTypeahead,
-    private readonly viewContainerRef: ViewContainerRef,
-  ) {
-    super(ngControl);
+  public ngbTypaheadInst = inject(NgbTypeahead, { optional: false, self: true });
+  private readonly viewContainerRef = inject(ViewContainerRef);
+
+  constructor() {
+    const ngCtrl = inject(NgControl, { optional: true, self: true });
+    super(ngCtrl);
     this.configureTypeahead();
     this.passInputSignals();
   }

@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -30,7 +30,6 @@ import {LabelDetailForm} from './label-detail.form';
 @Component({
   selector: 'feat-label-detail.page',
   imports: [
-    CommonModule,
     PageComponent,
     TranslocoPipe,
     ReactiveFormsModule,
@@ -43,8 +42,8 @@ import {LabelDetailForm} from './label-detail.form';
     NgSelectDirective,
     FormErrorMessageComponent,
     ChildFormLayoutDirective,
-    FormButtonsComponent,
-  ],
+    FormButtonsComponent
+],
   templateUrl: './label-detail.page.component.html',
   styleUrl: './label-detail.page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

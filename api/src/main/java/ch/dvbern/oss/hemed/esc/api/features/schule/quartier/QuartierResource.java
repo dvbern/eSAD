@@ -28,7 +28,7 @@ public class QuartierResource {
 
     @GET
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.LISTEN_LESEN)
+    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
     public QuartierListJson findAllQuartiere() {
         return new QuartierListJson(quartierMapper.findAll());
     }
@@ -36,7 +36,7 @@ public class QuartierResource {
     @GET
     @Path("/options")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.LISTEN_LESEN)
+    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
     public QuartierOptionListJson findAllQuartierOptions() {
         return new QuartierOptionListJson(quartierMapper.findAllOptions());
     }

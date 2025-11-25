@@ -11,6 +11,7 @@ import { ISODateTimeString } from '@dvb/data-access-types';
 import { AnlassArt } from './anlass-art';
 import { AnlassStatus } from './anlass-status';
 import { ISODateString } from '@dvb/data-access-types';
+import { AnlassConfigOptionJson } from './anlass-config-option-json';
 import { BenutzerOptionJson } from './benutzer-option-json';
 import { AnlassTyp } from './anlass-typ';
 
@@ -20,6 +21,7 @@ import { AnlassTyp } from './anlass-typ';
  */
 export interface AnlassSaveJson { 
     anlassTyp: AnlassTyp;
+    anlassConfigOption: AnlassConfigOptionJson;
     titel: string;
     anlassStatus: AnlassStatus;
     datum: ISODateString;

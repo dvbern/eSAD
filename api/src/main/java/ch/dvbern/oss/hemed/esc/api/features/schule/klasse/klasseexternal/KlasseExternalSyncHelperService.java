@@ -130,6 +130,7 @@ public class KlasseExternalSyncHelperService {
             updatedKlasseExt,
             appClock.offsetDateTime().now()
         );
+        ensureKlasseAktivStatus(updatedKlasse);
         updatedKlasse.disableOptimisticLockingCheck();
         updatedKlasse = klasseService.persist(updatedKlasse);
 
@@ -142,11 +143,15 @@ public class KlasseExternalSyncHelperService {
         Schule schuleToConnect = getSchuleByExternalIdOrDummy(klasseExternalToAdd);
         Optional<Klasse> preexistingKlasseOpt = findPreexistingKlasse(klasseExternalToAdd);
         Klasse internalKlasseToStore = preexistingKlasseOpt
-            .map(klasse -> updateKlasseBasedOnKlasseExternal(
-                klasse,
-                klasseExternalToAdd,
-                appClock.offsetDateTime().now()
-            ))
+            .map(klasse -> {
+                var updatedKlasse = updateKlasseBasedOnKlasseExternal(
+                    klasse,
+                    klasseExternalToAdd,
+                    appClock.offsetDateTime().now()
+                );
+                ensureKlasseAktivStatus(updatedKlasse);
+                return updatedKlasse;
+            })
             .orElseGet(() -> toEntityForCreate(
                 schuleToConnect,
                 klasseExternalToAdd,
@@ -169,6 +174,16 @@ public class KlasseExternalSyncHelperService {
             result.getExternalId()
         );
         return result;
+    }
+
+    private static void ensureKlasseAktivStatus(@NonNull Klasse updatedKlasse) {
+        if (updatedKlasse.getKlasseAktivStatus() == EntityAktivStatus.INAKTIV) {
+            LOG.info(
+                "ESCADA: Klasse with UUID {} and ExternalID {} was INAKTIV, resetting to AKTIV",
+                updatedKlasse.getId().getUUID(),
+                updatedKlasse.getExternalSystemIdOrNull());
+            updatedKlasse.setKlasseAktivStatus(EntityAktivStatus.AKTIV);
+        }
     }
 
     private Optional<Klasse> findPreexistingKlasse(@NonNull KlasseExternal klasseExternalToAdd) {

@@ -1,8 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankheitService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungInternService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
 import org.mockito.Mockito;
 
 public abstract class AbstractBaseColumnTest {

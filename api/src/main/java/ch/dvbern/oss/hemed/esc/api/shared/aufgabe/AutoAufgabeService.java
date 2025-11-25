@@ -3,7 +3,6 @@ package ch.dvbern.oss.hemed.esc.api.shared.aufgabe;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,8 +18,8 @@ import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.InformationEltern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
@@ -303,7 +302,7 @@ public class AutoAufgabeService {
             titel,
             bemerkung,
             AufgabeStatus.OFFEN,
-            today(),
+            appClock.getToday(),
             getCurrentBenutzer(),
             empfaenger,
             labelID != null ? Set.of(labelService.getById(labelID)) : Collections.emptySet(),
@@ -322,7 +321,7 @@ public class AutoAufgabeService {
         aufgabe.setTitel(titel);
         aufgabe.setBemerkung(getAufgabeBemerkung(aufgabe.getBemerkung(), bemerkung));
         aufgabe.setAufgabeStatus(AufgabeStatus.OFFEN);
-        aufgabe.setFaelligBis(today());
+        aufgabe.setFaelligBis(appClock.getToday());
         aufgabe.disableOptimisticLockingCheck();
         aufgabeService.persist(aufgabe);
     }
@@ -339,11 +338,6 @@ public class AutoAufgabeService {
             return newBemerkung;
         }
         return oldBemerkung + '\n' + newBemerkung;
-    }
-
-    @NonNull
-    private LocalDate today() {
-        return appClock.localDateTime().now().toLocalDate();
     }
 
     @NonNull

@@ -1,10 +1,10 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
-import java.util.List;
+import java.util.EnumSet;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -32,7 +32,7 @@ class HoerenAudiogrammBeurteilungCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungHoeren.setAudiogrammBeurteilung(List.of(AudiogrammBeurteilung.values()));
+        untersuchungHoeren.setAudiogrammBeurteilung(EnumSet.allOf(AudiogrammBeurteilung.class));
 
         assertThat(column.extract(einladung)).isEqualTo("1");
     }

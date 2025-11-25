@@ -4,37 +4,29 @@
   "sourceRoot": "libs/shared/feat/feat-playground/src",
   "prefix": "feat",
   "projectType": "library",
-  "tags": [
-    "type:feat",
-    "scope:shared",
-    "access:public"
-  ],
+  "tags": ["type:feat", "scope:shared", "access:public"],
   "targets": {
     "build": {
       "executor": "@nx/angular:ng-packagr-lite",
-      "outputs": [
-        "{workspaceRoot}/dist/{projectRoot}"
-      ],
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
       "options": {
-        "project": "libs/shared/feat/feat-playground/ng-package.json"
+        "project": "libs/shared/feat/feat-playground/ng-package.json",
+        "tsConfig": "libs/shared/feat/feat-playground/tsconfig.lib.json"
       },
       "configurations": {
         "production": {
           "tsConfig": "libs/shared/feat/feat-playground/tsconfig.lib.prod.json"
         },
-        "development": {
-          "tsConfig": "libs/shared/feat/feat-playground/tsconfig.lib.json"
-        }
+        "development": {}
       },
       "defaultConfiguration": "production"
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "libs/shared/feat/feat-playground/jest.config.ts"
+        "jestConfig": "libs/shared/feat/feat-playground/jest.config.ts",
+        "tsConfig": "libs/shared/feat/feat-playground/tsconfig.spec.json"
       }
     },
     "lint": {

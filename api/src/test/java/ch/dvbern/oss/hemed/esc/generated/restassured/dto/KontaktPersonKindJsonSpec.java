@@ -32,7 +32,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonPropertyOrder({
   KontaktPersonKindJsonSpec.JSON_PROPERTY_ID,
   KontaktPersonKindJsonSpec.JSON_PROPERTY_EXTERNAL_IMPORT_INFO_JSON,
-  KontaktPersonKindJsonSpec.JSON_PROPERTY_MANUAL_OR_AKTIV_IN_EXTERNAL_SYSTEM,
   KontaktPersonKindJsonSpec.JSON_PROPERTY_ENTITY_INFO,
   KontaktPersonKindJsonSpec.JSON_PROPERTY_DATA
 })
@@ -47,10 +46,6 @@ public class KontaktPersonKindJsonSpec {
   public static final String JSON_PROPERTY_EXTERNAL_IMPORT_INFO_JSON = "externalImportInfoJson";
   @jakarta.annotation.Nullable
   private ExternalImportInfoJsonSpec externalImportInfoJson;
-
-  public static final String JSON_PROPERTY_MANUAL_OR_AKTIV_IN_EXTERNAL_SYSTEM = "manualOrAktivInExternalSystem";
-  @jakarta.annotation.Nonnull
-  private Boolean manualOrAktivInExternalSystem;
 
   public static final String JSON_PROPERTY_ENTITY_INFO = "entityInfo";
   @jakarta.annotation.Nonnull
@@ -111,31 +106,6 @@ public class KontaktPersonKindJsonSpec {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExternalImportInfoJson(@jakarta.annotation.Nullable ExternalImportInfoJsonSpec externalImportInfoJson) {
     this.externalImportInfoJson = externalImportInfoJson;
-  }
-
-  public KontaktPersonKindJsonSpec manualOrAktivInExternalSystem(@jakarta.annotation.Nonnull Boolean manualOrAktivInExternalSystem) {
-    
-    this.manualOrAktivInExternalSystem = manualOrAktivInExternalSystem;
-    return this;
-  }
-
-  /**
-   * Get manualOrAktivInExternalSystem
-   * @return manualOrAktivInExternalSystem
-   */
-  @jakarta.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_MANUAL_OR_AKTIV_IN_EXTERNAL_SYSTEM)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public Boolean getManualOrAktivInExternalSystem() {
-    return manualOrAktivInExternalSystem;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_MANUAL_OR_AKTIV_IN_EXTERNAL_SYSTEM)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setManualOrAktivInExternalSystem(@jakarta.annotation.Nonnull Boolean manualOrAktivInExternalSystem) {
-    this.manualOrAktivInExternalSystem = manualOrAktivInExternalSystem;
   }
 
   public KontaktPersonKindJsonSpec entityInfo(@jakarta.annotation.Nonnull EntityInfoJsonSpec entityInfo) {
@@ -199,14 +169,13 @@ public class KontaktPersonKindJsonSpec {
     KontaktPersonKindJsonSpec kontaktPersonKindJson = (KontaktPersonKindJsonSpec) o;
     return Objects.equals(this.id, kontaktPersonKindJson.id) &&
         Objects.equals(this.externalImportInfoJson, kontaktPersonKindJson.externalImportInfoJson) &&
-        Objects.equals(this.manualOrAktivInExternalSystem, kontaktPersonKindJson.manualOrAktivInExternalSystem) &&
         Objects.equals(this.entityInfo, kontaktPersonKindJson.entityInfo) &&
         Objects.equals(this.data, kontaktPersonKindJson.data);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, externalImportInfoJson, manualOrAktivInExternalSystem, entityInfo, data);
+    return Objects.hash(id, externalImportInfoJson, entityInfo, data);
   }
 
   @Override
@@ -215,7 +184,6 @@ public class KontaktPersonKindJsonSpec {
     sb.append("class KontaktPersonKindJsonSpec {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    externalImportInfoJson: ").append(toIndentedString(externalImportInfoJson)).append("\n");
-    sb.append("    manualOrAktivInExternalSystem: ").append(toIndentedString(manualOrAktivInExternalSystem)).append("\n");
     sb.append("    entityInfo: ").append(toIndentedString(entityInfo)).append("\n");
     sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("}");

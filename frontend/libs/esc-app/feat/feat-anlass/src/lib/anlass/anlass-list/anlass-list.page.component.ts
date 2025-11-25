@@ -15,7 +15,6 @@ import {
   PageHeaderButtonsComponent,
   PageHeaderListSummaryComponent,
   SortableComponent,
-  SummaryListItem,
   TableComponent,
   TableFilterComponent,
   TableLinkComponent,
@@ -90,33 +89,30 @@ export class AnlassListPageComponent extends FilterSessionStorage<AnlassFilterFo
     paginatedTable: this.itemTable,
   });
 
-  anlassInPlanung = computed(() =>
-    this.itemTable.filteredSortedList().filter(item => item.data.anlassStatus == AnlassStatus.IN_PLANUNG),
-  );
-
-  anlassInBereit = computed(() =>
-    this.itemTable.filteredSortedList().filter(item => item.data.anlassStatus == AnlassStatus.BEREIT),
-  );
-
   summaryItems = computed(() => {
-    const items: SummaryListItem[] = [
+    const allItems = this.anlassStore.entities();
+    const filteredItems = this.itemTable.filteredSortedList();
+
+    const countByStatus = (list: any[], status: AnlassStatus) =>
+      list.filter(item => item.data.anlassStatus === status).length;
+
+    return [
       {
         name: this.#transloco.translate('anlass.list.summary.anzahl.total'),
-        totalCount: this.itemTable.filteredSortedList().length,
-        filteredCount: this.itemTable.filteredSortedList().length,
+        totalCount: allItems.length,
+        filteredCount: filteredItems.length,
       },
       {
         name: this.#transloco.translate('anlass.list.summary.anzahl.planung'),
-        totalCount: this.anlassInPlanung().length,
-        filteredCount: this.anlassInPlanung().length,
+        totalCount: countByStatus(allItems, AnlassStatus.IN_PLANUNG),
+        filteredCount: countByStatus(filteredItems, AnlassStatus.IN_PLANUNG),
       },
       {
         name: this.#transloco.translate('anlass.list.summary.anzahl.bereit'),
-        totalCount: this.anlassInBereit().length,
-        filteredCount: this.anlassInBereit().length,
+        totalCount: countByStatus(allItems, AnlassStatus.BEREIT),
+        filteredCount: countByStatus(filteredItems, AnlassStatus.BEREIT),
       },
     ];
-    return items;
   });
 
   canCreateAnlass = this.benutzerStore.createHasRequiredRoleSig(hasAnlassCreateBerechtigung());

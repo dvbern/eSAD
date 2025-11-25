@@ -21,7 +21,6 @@ export class NotizenStore extends signalStore(
   readonly loader = new Loader();
 
   downloadNotizFile = rxMethod<{
-    kindId: BackendEntityId,
     notizId: BackendEntityId,
     fileId: BackendEntityId,
     downloadDirectly?: boolean,
@@ -29,10 +28,9 @@ export class NotizenStore extends signalStore(
   }>(
     pipe(
       exhaustMap(
-        ({kindId, notizId, fileId, downloadDirectly, onSuccess}) => this.loader.tapLoading$(
+        ({notizId, fileId, downloadDirectly, onSuccess}) => this.loader.tapLoading$(
           this.#notizenService.downloadNotizFileSync$(
             {
-              kindId: kindId,
               notizId: notizId,
               fileId: fileId,
             }, 'response'),

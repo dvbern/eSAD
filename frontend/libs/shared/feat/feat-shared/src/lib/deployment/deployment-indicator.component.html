@@ -1,5 +1,7 @@
-<ng-container *ngIf="store.environment() as environment">
-  <div [class]="environment" *ngIf="environment !== 'PROD'">
-    <div>{{ environment }}</div>
-  </div>
-</ng-container>
+@if (store.environment(); as environment) {
+  @if (environment !== 'PROD') {
+    <div [class]="environment">
+      <div>{{ environment }}</div>
+    </div>
+  }
+}

@@ -13,6 +13,7 @@ import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizMapper;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizStatus;
+import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizJson;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
@@ -45,6 +46,7 @@ public class NotizBuilder {
             "My Default Notiz",
             "My Default Notiz Bemerkungen",
             NotizStatus.AKTIV,
+            NotizTyp.DEFAULT,
             defaultDossier,
             defaultVerantwortlicher,
             defaultLabels,
@@ -122,6 +124,13 @@ public class NotizBuilder {
     @CanIgnoreReturnValue
     public NotizBuilder withTimestampErstellt(@NonNull OffsetDateTime dateTime) {
         this.notiz.setTimestampErstellt(dateTime);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public NotizBuilder withNotizTyp(@NonNull NotizTyp typ) {
+        this.notiz.setTyp(typ);
         return this;
     }
 

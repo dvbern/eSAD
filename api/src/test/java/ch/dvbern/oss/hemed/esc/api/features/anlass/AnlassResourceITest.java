@@ -1,8 +1,34 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.util.UUID;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
@@ -14,7 +40,6 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.Lehrperson;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateTimeRange;
-import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckAnlassConfigZeitraum;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.assertj.AppValidationErrorJsonSpecAssert;
@@ -34,11 +59,6 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SchulInformationenListJ
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response.Status;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Month;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -152,8 +172,11 @@ class AnlassResourceITest extends AbstractITest {
     @TestAsAdminBS
     void createAnlass() {
         // ARRANGE
+        AnlassConfig config =
+            anlassConfigService.getByAnlassTypAndStichtag(AnlassTyp.KLASSE_8, appClock.getToday().plusMonths(1));
         AnlassSaveJsonSpec saveAnlassJson = AnlassBuilder.createJaxSpec(builder -> builder
             .withAnlassTyp(AnlassTyp.KLASSE_8)
+            .withAnlassConfig(config)
             .withTitle("Mein Anlass")).getData();
 
         // ACT
@@ -170,7 +193,7 @@ class AnlassResourceITest extends AbstractITest {
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getId()).isNotNull();
         Assertions.assertThat(result.getData().getTitel()).isEqualTo("Mein Anlass");
-        Assertions.assertThat(result.getAnlassConfig().getAnlassTyp()).isEqualTo(AnlassTypSpec.KLASSE_8);
+        Assertions.assertThat(result.getAnlassConfig().getData().getAnlassTyp()).isEqualTo(AnlassTypSpec.KLASSE_8);
     }
 
     @Test
@@ -186,8 +209,11 @@ class AnlassResourceITest extends AbstractITest {
         );
         Benutzer benutzer = benutzerService.getById(benutzerService.createBenutzer(createDto));
 
+        AnlassConfig config =
+            anlassConfigService.getByAnlassTypAndStichtag(AnlassTyp.KLASSE_8, appClock.getToday().plusMonths(1));
         AnlassSaveJsonSpec saveAnlassJson = AnlassBuilder.createJaxSpec(builder -> builder
             .withAnlassTyp(AnlassTyp.KLASSE_8)
+            .withAnlassConfig(config)
             .withArzt(benutzer)
             .withMPA(benutzer)
             .withWeiterePerson(benutzer)
@@ -207,7 +233,7 @@ class AnlassResourceITest extends AbstractITest {
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getId()).isNotNull();
         Assertions.assertThat(result.getData().getTitel()).isEqualTo("Mein Anlass");
-        Assertions.assertThat(result.getAnlassConfig().getAnlassTyp()).isEqualTo(AnlassTypSpec.KLASSE_8);
+        Assertions.assertThat(result.getAnlassConfig().getData().getAnlassTyp()).isEqualTo(AnlassTypSpec.KLASSE_8);
         Assertions.assertThat(result.getData().getArzt())
             .isNotNull()
             .extracting(BenutzerOptionJsonSpec::getId).isEqualTo(benutzer.getId().getId());
@@ -333,7 +359,7 @@ class AnlassResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void updateAnlass_datum_ausserhalb_config_should_fail() {
+    void updateAnlass_datum_ausserhalb_config_should_succeed() {
         // ARRANGE
         AnlassConfig config = anlassConfigService.getByAnlassTypAndStichtag(
             AnlassTyp.KLASSE_8,
@@ -346,29 +372,28 @@ class AnlassResourceITest extends AbstractITest {
         Assertions.assertThat(config.getGueltigkeitsZeitraum().getDatumVon())
             .isEqualTo(LocalDate.of(2000, Month.JANUARY, 1));
         Assertions.assertThat(config.getGueltigkeitsZeitraum().getDatumBis())
-            .isEqualTo(LocalDate.of(2999, Month.DECEMBER, 31));
+            .isEqualTo(LocalDate.of(9999, Month.DECEMBER, 31));
 
         // ACT
+        LocalDate datumNeu = LocalDate.of(1998, Month.DECEMBER, 31);
         AnlassJsonSpec updatedAnlassJson = AnlassBuilder.createJaxSpec(builder -> builder
             .forAnlass(existingAnlass)
-            .withDatumSetSchuljahr(LocalDate.of(1998, Month.DECEMBER, 31)));
-        AppValidationErrorJsonSpec result = api
+            .withDatumSetSchuljahr(datumNeu));
+        AnlassJsonSpec result = api
             .anlassResourceUpdateAnlass()
             .anlassIdPath(existingAnlass.getId().getId())
             .body(updatedAnlassJson.getData())
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
-            .statusCode(Status.BAD_REQUEST.getStatusCode())
-            .extract().as(AppValidationErrorJsonSpec.class);
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(AnlassJsonSpec.class);
 
         // ASSERT
-
-        AppValidationErrorJsonSpecAssert.assertThatAppValidationErrorJsonSpec(result)
-            .extractingExactlyOneViolation()
-            .hasClientKey(CheckAnlassConfigZeitraum.class.getSimpleName())
-            .hasRawMessageContaining("Das Datum des Anlasses muss innerhalb des Zeitraums seiner Konfiguration liegen");
-
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getId()).isEqualTo(existingAnlass.getId().getId());
+        Assertions.assertThat(result.getData().getDatum()).isEqualTo(datumNeu);
+        Assertions.assertThat(result.getAnlassConfig().getId()).isEqualTo(config.getId().getId());
     }
 
     @Test
@@ -383,11 +408,13 @@ class AnlassResourceITest extends AbstractITest {
                 .withAnlassConfig(config))
         );
 
-        var anlassWithHistEntry = anlassMapper.getById(anlassToDelete.getId()); // this creates an aktivitaet history entry
+        var anlassWithHistEntry =
+            anlassMapper.getById(anlassToDelete.getId()); // this creates an aktivitaet history entry
         var anlassHistory = aktivitaetHistoryService.findAllAnlassAktivitaetenForBenutzer(ID.of(
             UUID.fromString(TestAsAdminBS.BENUTZER_ID),
             Benutzer.class));
-        Assertions.assertThat(anlassHistory).anyMatch(hist -> hist.getAnlass().getId().equals(anlassWithHistEntry.getId()));
+        Assertions.assertThat(anlassHistory)
+            .anyMatch(hist -> hist.getAnlass().getId().equals(anlassWithHistEntry.getId()));
 
         // ACT
         ID<Anlass> anlassID = anlassToDelete.getId();
@@ -493,8 +520,11 @@ class AnlassResourceITest extends AbstractITest {
         LocalDateTime zeitVon = LocalDateTime.of(now, LocalTime.of(12, 30));
         LocalDateTime zeitBis = LocalDateTime.of(now, LocalTime.of(16, 0));
 
+        AnlassConfig config =
+            anlassConfigService.getByAnlassTypAndStichtag(AnlassTyp.KLASSE_8, zeitVon.toLocalDate());
         AnlassSaveJsonSpec saveAnlassJson = AnlassBuilder.createJaxSpec(builder -> builder
             .withAnlassTyp(AnlassTyp.KLASSE_8)
+            .withAnlassConfig(config)
             .withTitle("Mein Anlass")
             .withZeitVonBis(new DateTimeRange(
                 zeitVon,
@@ -515,7 +545,7 @@ class AnlassResourceITest extends AbstractITest {
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getId()).isNotNull();
         Assertions.assertThat(result.getData().getTitel()).isEqualTo("Mein Anlass");
-        Assertions.assertThat(result.getAnlassConfig().getAnlassTyp()).isEqualTo(AnlassTypSpec.KLASSE_8);
+        Assertions.assertThat(result.getAnlassConfig().getData().getAnlassTyp()).isEqualTo(AnlassTypSpec.KLASSE_8);
         Assertions.assertThat(result.getData().getZeitVon()).isEqualTo(zeitVon);
         Assertions.assertThat(result.getData().getZeitBis()).isEqualTo(zeitBis);
     }
@@ -528,8 +558,11 @@ class AnlassResourceITest extends AbstractITest {
         LocalDateTime zeitVon = LocalDateTime.of(2002, 12, 1, 12, 30);
         LocalDateTime zeitBis = LocalDateTime.of(2002, 12, 1, 16, 0);
 
+        AnlassConfig config =
+            anlassConfigService.getByAnlassTypAndStichtag(AnlassTyp.KLASSE_8, zeitVon.toLocalDate());
         AnlassSaveJsonSpec saveAnlassJson = AnlassBuilder.createJaxSpec(builder -> builder
             .withAnlassTyp(AnlassTyp.KLASSE_8)
+            .withAnlassConfig(config)
             .withTitle("Mein Anlass")
             .withZeitVonBis(new DateTimeRange(
                 zeitVon,
@@ -553,7 +586,7 @@ class AnlassResourceITest extends AbstractITest {
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getId()).isNotNull();
         Assertions.assertThat(result.getData().getTitel()).isEqualTo("Mein Anlass");
-        Assertions.assertThat(result.getAnlassConfig().getAnlassTyp()).isEqualTo(AnlassTypSpec.KLASSE_8);
+        Assertions.assertThat(result.getAnlassConfig().getData().getAnlassTyp()).isEqualTo(AnlassTypSpec.KLASSE_8);
         Assertions.assertThat(result.getData().getZeitVon()).isEqualTo(expectedTimeVon);
         Assertions.assertThat(result.getData().getZeitBis()).isEqualTo(expectedTimeBis);
     }

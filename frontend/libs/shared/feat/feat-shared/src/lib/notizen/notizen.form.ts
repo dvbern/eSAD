@@ -1,5 +1,12 @@
 import {NonNullableFormBuilder, Validators} from '@angular/forms';
-import {BenutzerOptionJson, FileDataJson, LabelJson, NotizSaveJson, NotizStatus} from '@dvb/data-access-backend';
+import {
+  BenutzerOptionJson,
+  FileDataJson,
+  LabelJson,
+  NotizSaveJson,
+  NotizStatus,
+  NotizTyp,
+} from '@dvb/data-access-backend';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
 import {ensurePropsFlat, Nullish, requireFilledIn, requireValue, trimToUndefined} from '@dvb/util-shared';
 import {globalConstants} from '../constants/global-constants';
@@ -18,6 +25,7 @@ function makeForm(config: Config) {
     labels: config.fb.control<LabelJson[]>([]),
     files: config.fb.control<FileDataJson[]>([]),
     version: config.fb.control<number | Nullish>({value: undefined, disabled: true}),
+    typ: config.fb.control<NotizTyp>({value: NotizTyp.DEFAULT, disabled: true}, Validators.required),
   });
 }
 
@@ -37,6 +45,7 @@ export class NotizenForm extends BaseForm<ReturnType<typeof makeForm>, NotizSave
       labels: value.labels,
       files: value.files,
       version: value.version ?? globalConstants.entityPrePersistVersion,
+      typ: value.typ,
     });
   }
 }

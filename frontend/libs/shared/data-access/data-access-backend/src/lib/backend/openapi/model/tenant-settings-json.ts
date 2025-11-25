@@ -7,14 +7,17 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { AppLanguages } from './app-languages';
+import { TenantEnum } from './tenant-enum';
+import { TenantSettingSaveJson } from './tenant-setting-save-json';
+import { EntityInfoJson } from './entity-info-json';
 import { BackendEntityId } from '@dvb/data-access-types';
 
 
 export interface TenantSettingsJson { 
     id: BackendEntityId;
-    defaultLanguage: AppLanguages;
-    supportedLanguages: Array<AppLanguages>;
+    tenant: TenantEnum;
+    entityInfo: EntityInfoJson;
+    data: TenantSettingSaveJson;
 }
 export namespace TenantSettingsJson {
 }

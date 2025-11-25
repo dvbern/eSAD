@@ -1,8 +1,12 @@
 import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
 import {RouterLink} from '@angular/router';
-import {Path} from '@dvb/feat-shared';
+import {BenutzerStore, Path} from '@dvb/feat-shared';
 import {ButtonComponent, ListComponent, PageHeaderButtonsComponent} from '@dvb/ui-components';
-import {formatDateStr} from '@dvb/util-shared';
+import {
+  formatDateStr,
+  hasKinderMedizinischeDatenEditBerechtigung,
+  hasKinderMedizinischeDatenViewBerechtigung,
+} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {DossierStore} from '../../dossier.store';
 
@@ -26,8 +30,11 @@ import {DossierStore} from '../../dossier.store';
 export class KindDossierImpfungenComponent {
   readonly transloco = inject(TranslocoService);
   readonly dossierStore = inject(DossierStore);
+  readonly benutzerStore = inject(BenutzerStore);
   protected readonly formatDateStr = formatDateStr;
   protected readonly Path = Path;
+
+  canEditMedizinischeDaten = this.benutzerStore.createHasRequiredRoleSig(hasKinderMedizinischeDatenEditBerechtigung());
 
   lastImpfung = computed(() => this.dossierStore.lastImpfung());
 }

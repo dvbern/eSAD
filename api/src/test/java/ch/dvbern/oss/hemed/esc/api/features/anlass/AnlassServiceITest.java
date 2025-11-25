@@ -2,9 +2,14 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.EinladungStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
@@ -52,6 +57,7 @@ class AnlassServiceITest extends AbstractITest {
 
     private final FixtureService fixtureService;
     private final AnlassService anlassService;
+    private final AnlassConfigService anlassConfigService;
     private final AufgabeService aufgabeService;
     private final LabelService labelService;
     private final UntersuchungService untersuchungService;
@@ -371,18 +377,22 @@ class AnlassServiceITest extends AbstractITest {
             .forDossier(dossier)
             .withNachkontrolleSehen(true)
             .withNachkontrolleHoeren(true)));
-        final Anlass anlassNichtTeilgenommen = fixtureService.persistAnlass(
+        AnlassConfig config =
+            anlassConfigService.getByAnlassTypAndStichtag(AnlassTyp.KLASSE_4, LocalDate.of(2025, Month.JANUARY, 1));
+        final Anlass anlassNichtTeilgenommen = anlassService.persist(
             AnlassBuilder.create(builder -> builder
+                .withAnlassConfig(config)
                 .withDatumSetSchuljahr(LocalDate.of(2025, Month.JANUARY, 1))
                 .withAnlassTyp(AnlassTyp.KLASSE_4)));
         fixtureService.createEinladung(anlassNichtTeilgenommen, dossier, EinladungStatus.NACHZUEGLER);
 
         Benutzer mpa = benutzerService.getById(TestAsMpa.BENUTZER_ID_ID);
         Benutzer arzt = benutzerService.getById(TestAsSchularzt.BENUTZER_ID_ID);
-        final Anlass anlass = fixtureService.persistAnlass(
+        final Anlass anlass = anlassService.persist(
             AnlassBuilder.create(builder -> builder
                 .withDatumSetSchuljahr(LocalDate.of(2025, Month.FEBRUARY, 1))
                 .withAnlassTyp(AnlassTyp.KLASSE_4)
+                .withAnlassConfig(config)
                 .withArzt(arzt)
                 .withMPA(mpa)));
 

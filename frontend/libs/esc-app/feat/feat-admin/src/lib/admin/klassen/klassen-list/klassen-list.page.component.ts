@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit } from '@angular/core';
 import { KlasseJsonEnhanced, KlassenStore } from '@dvb/feat-shared';
 import { BenutzerStore } from '@dvb/feat-shared';
@@ -21,14 +21,13 @@ import { EntityAktivStatus } from '@dvb/data-access-backend';
 @Component({
   selector: 'feat-klassen-list.page',
   imports: [
-    CommonModule,
     PageComponent,
     KlassenListComponent,
     TranslocoPipe,
     PageHeaderButtonsComponent,
     PageHeaderAddButtonComponent,
-    PageHeaderListSummaryComponent,
-  ],
+    PageHeaderListSummaryComponent
+],
   templateUrl: './klassen-list.page.component.html',
   styleUrl: './klassen-list.page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

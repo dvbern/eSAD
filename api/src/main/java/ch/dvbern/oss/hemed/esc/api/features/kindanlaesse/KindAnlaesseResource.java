@@ -5,8 +5,8 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.kindanlaesse.json.KindAnlassListJson;
-import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kindanlaesse.json.LastImpfungJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.security.RolesAllowed;
@@ -24,7 +24,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = Tags.TAG_KINDANLAESSE)
-@RolesAllowed(BerechtigungName.ANLASSLISTE_LESEN)
+@RolesAllowed({ BerechtigungName.ANLASSLISTE_LESEN, BerechtigungName.ANLASSLISTE_LESEN_LAEUSE })
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed(name = "KindAnlaesseResourceMS", unit = MetricUnits.MILLISECONDS)
 public class KindAnlaesseResource {
@@ -34,7 +34,7 @@ public class KindAnlaesseResource {
     @GET
     @Path("/kind/{kindId}/anlaesse")
     @NonNull
-    @RolesAllowed({ BerechtigungName.ANLASSLISTE_LESEN })
+    @RolesAllowed({ BerechtigungName.ANLASSLISTE_LESEN, BerechtigungName.ANLASSLISTE_LESEN_LAEUSE })
     public KindAnlassListJson findAnlaesseForKind(
         @PathParam("kindId") @NotNull @NonNull ID<Kind> kindId
     ) {
@@ -44,7 +44,7 @@ public class KindAnlaesseResource {
     @GET
     @Path("/kind/{kindId}/latest-impfung")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.KINDER_LESEN)
+    @RolesAllowed(BerechtigungName.KINDER_LESEN_MEDIZINISCH)
     public LastImpfungJson getLatestImpfung(@NotNull @NonNull @PathParam("kindId") ID<Kind> kindId) {
         return kindAnlaesseMapper.getLatestManuallyChangedImpfungByDossierId(kindId);
     }

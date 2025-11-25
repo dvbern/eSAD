@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output} from '@angular/core';
 import {ButtonComponent} from '@dvb/ui-components';
 import {TranslocoService} from '@jsverse/transloco';
@@ -9,10 +9,9 @@ import {ConfirmConfig} from './confirm.service';
     selector: 'feat-dialogs-confirm-content',
     templateUrl: './confirm-dialog-content.component.html',
     imports: [
-        CommonModule,
-        NgbModalModule,
-        ButtonComponent,
-    ],
+    NgbModalModule,
+    ButtonComponent
+],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfirmDialogContentComponent {

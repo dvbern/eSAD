@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {RequirementSetting} from '@dvb/data-access-backend';
@@ -21,15 +21,14 @@ import {UntersuchungArztBemerkungForm} from './untersuchung-arzt-bemerkung.form'
 @Component({
   selector: 'feat-untersuchung-arzt-bemerkung',
   imports: [
-    CommonModule,
     FormLayoutComponent,
     ReactiveFormsModule,
     SaveCancelButtonsComponent,
     TranslocoPipe,
     FormControlComponent,
     TextareaDirective,
-    TitleComponent,
-  ],
+    TitleComponent
+],
   templateUrl: './untersuchung-arzt-bemerkung.component.html',
   styleUrl: './untersuchung-arzt-bemerkung.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

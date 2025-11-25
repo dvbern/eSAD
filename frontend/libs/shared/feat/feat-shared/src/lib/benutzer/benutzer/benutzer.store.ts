@@ -1,10 +1,10 @@
-import {computed, inject, Inject, Injectable, Optional} from '@angular/core';
-import {BenutzerService, Berechtigung, FachRolle} from '@dvb/data-access-backend';
+import {computed, Inject, inject, Injectable, Optional} from '@angular/core';
+import { BenutzerService, Berechtigung, FachRolle } from '@dvb/data-access-backend';
 
-import {AbstractSignalStore} from '@dvb/util-angular';
-import {requireValue, RoleMatcher} from '@dvb/util-shared';
+import { AbstractSignalStore } from '@dvb/util-angular';
+import { requireValue, RoleMatcher } from '@dvb/util-shared';
 import * as Sentry from '@sentry/browser';
-import {firstValueFrom} from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 export interface AppUser {
   id: string;
@@ -28,14 +28,14 @@ const initialState: BenutzerState = {
   errorMessage: undefined,
 };
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
-
   readonly benutzerService = inject(BenutzerService);
 
   /**
    * @param testInit - for testing purposes only
    */
+  // eslint-disable-next-line @angular-eslint/prefer-inject
   constructor(@Inject('nothing') @Optional() testInit?: BenutzerState) {
     super(testInit ?? initialState);
   }
@@ -43,7 +43,7 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
   async init(): Promise<void> {
     // nothing to do here
     return firstValueFrom(this.benutzerService.getMyBenutzerData$())
-      .then((principal) => {
+      .then(principal => {
         console.log('handleAuthSuccess', principal);
 
         this.onUserAuthenticated(
@@ -56,13 +56,12 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
           requireValue(principal.berechtigungen),
         );
       })
-      .catch((err) => {
+      .catch(err => {
         // todo ESC-143 decide how to handle errors here, if the user is not logged in what do we do? it should not
         //  happen since we always have a user logged in
 
         this.onUserAuthenticationError(err instanceof Error ? err.message : JSON.stringify(err));
       });
-
   }
 
   onUserAuthenticated(
@@ -91,20 +90,17 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
       };
       console.debug('BenutzerStore.onUserAuthenticated: user', user);
 
-      Sentry.setUser(
-        {email: user.email, id: user.id, username: user.username},
-      );
+      Sentry.setUser({ email: user.email, id: user.id, username: user.username });
 
       return {
         user,
         errorMessage: undefined,
-      }
+      };
     });
   }
 
   private buildKuerzel(firstName: string, lastName: string): string {
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`
-      .toUpperCase();
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   }
 
   onUserAuthenticationError(errorMessage: string) {
@@ -112,7 +108,7 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
       return {
         user: undefined,
         errorMessage,
-      }
+      };
     });
   }
 
@@ -125,7 +121,7 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
       return {
         user: undefined,
         errorMessage: undefined,
-      }
+      };
     });
   }
 
@@ -139,9 +135,9 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
   requireBenutzer = computed(() => requireValue(this.state().user));
 
   // Factory-Function that returns a computed signal based on the passed argument
-  createHasRequiredRoleSig = (matcher: RoleMatcher) => computed(() => {
+  createHasRequiredRoleSig = (matcher: RoleMatcher) =>
+    computed(() => {
       const berechtigungen = this.state().user?.berechtigungen ?? [];
       return matcher(berechtigungen);
-    },
-  );
+    });
 }

@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {InfomaterialJson} from '@dvb/data-access-backend';
@@ -38,7 +38,6 @@ import {InfomaterialListFilterForm} from './infomaterial-list-filter.form';
   selector: 'feat-infomaterial-list.page',
   providers: [TranslatedStringPipe],
   imports: [
-    CommonModule,
     PageComponent,
     TableComponent,
     SortableComponent,
@@ -57,8 +56,8 @@ import {InfomaterialListFilterForm} from './infomaterial-list-filter.form';
     CardComponent,
     EmptyTableMessageComponent,
     TableLinkComponent,
-    ColWidthComponent,
-  ],
+    ColWidthComponent
+],
   templateUrl: './infomaterial-list.page.component.html',
   styleUrl: './infomaterial-list.page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

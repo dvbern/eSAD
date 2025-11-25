@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BenutzerOptionJson, BriefvorlageJson, BriefvorlageType } from '@dvb/data-access-backend';
@@ -34,7 +34,6 @@ import { BriefvorlagenListFilterForm } from './briefvorlagen-list-filter.form';
 @Component({
   selector: 'feat-briefvorlagen-list.page',
   imports: [
-    CommonModule,
     CardComponent,
     ColWidthComponent,
     CollapsibleMenuComponent,
@@ -53,8 +52,8 @@ import { BriefvorlagenListFilterForm } from './briefvorlagen-list-filter.form';
     TableFilterComponent,
     TableLinkComponent,
     TextInputDirective,
-    TranslocoPipe,
-  ],
+    TranslocoPipe
+],
   templateUrl: './briefvorlagen-list-page.component.html',
   styles: ':host { display:block;}',
   changeDetection: ChangeDetectionStrategy.OnPush,

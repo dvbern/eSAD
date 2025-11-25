@@ -1,12 +1,17 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen;
 
 import java.io.Serial;
+import java.util.EnumSet;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.ImpfungenMassnahmenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungImpfungenMassnahmenPresentIfReq;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,6 +25,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,6 +50,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@CheckUntersuchungImpfungenMassnahmenPresentIfReq
 public class UntersuchungImpfungenMassnahmen extends AbstractTenantEntity<UntersuchungImpfungenMassnahmen>
     implements EntityWithOptimisticLocking {
 
@@ -90,6 +97,17 @@ public class UntersuchungImpfungenMassnahmen extends AbstractTenantEntity<Unters
     private boolean rueckfrageHausarzt = false;
 
     @Nullable
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private String empfehlung;
+
+    @Nullable
+    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
+    private String achtung;
+
+    @Nullable
     @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String bemerkungen;
@@ -115,4 +133,14 @@ public class UntersuchungImpfungenMassnahmen extends AbstractTenantEntity<Unters
         updatable = true)
     private Aufgabe aufgabeRueckfrageHausarzt;
 
+
+    // Empfehlung
+    public void setEmpfehlung(@Nullable EnumSet<ImpfungenMassnahmenEmpfehlung> empfehlungList) {
+        this.empfehlung = EnumSetUtil.toString(empfehlungList);
+    }
+
+    @NonNull
+    public EnumSet<ImpfungenMassnahmenEmpfehlung> getEmpfehlung() {
+        return EnumSetUtil.fromString(ImpfungenMassnahmenEmpfehlung.class, empfehlung);
+    }
 }

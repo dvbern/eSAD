@@ -114,7 +114,7 @@ export class KinderListPageComponent extends FilterSessionStorage<KinderFilterFo
     const items: SummaryListItem[] = [
       {
         name: this.#transloco.translate('kinder.list.page.title'),
-        totalCount: this.kinderSummaryStore.backendFilteredListSize(), // we don't know the total count
+        totalCount: this.kinderSummaryStore.totalKinderCount() ?? 0,
         filteredCount: this.kinderSummaryStore.backendFilteredListSize(),
       },
     ];

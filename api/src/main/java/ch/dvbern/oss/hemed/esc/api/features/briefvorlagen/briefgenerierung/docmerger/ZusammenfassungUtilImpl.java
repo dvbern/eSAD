@@ -1,22 +1,40 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.docmerger;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Dezibel;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.HoerenZusaetzlicheAngaben;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.BrilleLinsenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.DistanzSehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.FarbsehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.InspektionKonvergenzResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.MotilitaetResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StereotestResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -43,7 +61,8 @@ public final class ZusammenfassungUtilImpl {
     }
 
     public boolean isStereotest(@NonNull StereotestResultat resultat) {
-        return !anlassConfig.getSehenStereoTest().isVisible() || untersuchungSehenBeurteilung.getStereotest() == resultat;
+        return !anlassConfig.getSehenStereoTest().isVisible()
+            || untersuchungSehenBeurteilung.getStereotest() == resultat;
     }
 
     public boolean isFarbsehen(@NonNull FarbsehenResultat resultat) {
@@ -69,11 +88,13 @@ public final class ZusammenfassungUtilImpl {
     }
 
     public boolean isInspektion(@NonNull InspektionKonvergenzResultat resultat) {
-        return !anlassConfig.getSehenInspektion().isVisible() || untersuchungSehenBeurteilung.getInspektion() == resultat;
+        return !anlassConfig.getSehenInspektion().isVisible()
+            || untersuchungSehenBeurteilung.getInspektion() == resultat;
     }
 
     public boolean isKonvergenz(@NonNull InspektionKonvergenzResultat resultat) {
-        return !anlassConfig.getSehenKonvergenz().isVisible() || untersuchungSehenBeurteilung.getKonvergenz() == resultat;
+        return !anlassConfig.getSehenKonvergenz().isVisible()
+            || untersuchungSehenBeurteilung.getKonvergenz() == resultat;
     }
 
     public boolean isAudiogramBeurteilung(@NonNull AudiogrammBeurteilung resultat) {
@@ -116,10 +137,12 @@ public final class ZusammenfassungUtilImpl {
     }
 
     public boolean isBrilleLinsen(@NonNull BrilleLinsenResultat resultat) {
-        return !anlassConfig.getSehenBrilleLinsen().isVisible() || untersuchungSehenBeurteilung.getBrilleLinsen() == resultat;
+        return !anlassConfig.getSehenBrilleLinsen().isVisible()
+            || untersuchungSehenBeurteilung.getBrilleLinsen() == resultat;
     }
 
     public boolean isMotilitaet(@NonNull MotilitaetResultat resultat) {
-        return !anlassConfig.getSehenMotilitaet().isVisible() || untersuchungSehenBeurteilung.getMotilitaet() == resultat;
+        return !anlassConfig.getSehenMotilitaet().isVisible()
+            || untersuchungSehenBeurteilung.getMotilitaet() == resultat;
     }
 }

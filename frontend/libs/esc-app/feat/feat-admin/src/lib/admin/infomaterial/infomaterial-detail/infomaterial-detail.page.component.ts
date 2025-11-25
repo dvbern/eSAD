@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -27,7 +27,6 @@ import {InfomaterialForm} from './infomaterial-detail.form';
 @Component({
   selector: 'feat-infomaterial-detail.page',
   imports: [
-    CommonModule,
     PageComponent,
     CardComponent,
     FormLayoutComponent,
@@ -36,8 +35,8 @@ import {InfomaterialForm} from './infomaterial-detail.form';
     TranslatedStringEditComponent,
     TranslocoPipe,
     ChildFormLayoutDirective,
-    FormButtonsComponent,
-  ],
+    FormButtonsComponent
+],
   templateUrl: './infomaterial-detail.page.component.html',
   styleUrl: './infomaterial-detail.page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,11 +1,7 @@
-import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ImpfstoffChargeJson} from '@dvb/data-access-backend';
-import {ImpfstoffeChargenStore} from '@dvb/feat-shared';
-import {BenutzerStore} from '@dvb/feat-shared';
-import {Path} from '@dvb/feat-shared';
-import {ConfirmService} from '@dvb/feat-shared';
+import {BenutzerStore, ConfirmService, ImpfstoffeChargenStore, Path} from '@dvb/feat-shared';
 import {
   ButtonsRightContainerComponent,
   CardComponent,
@@ -34,7 +30,6 @@ import {ChargeListFilterForm} from './chargen-list-filter.form';
   selector: 'feat-lehrpersonen-list',
   standalone: true,
   imports: [
-    CommonModule,
     TranslocoPipe,
     HeadingDirective,
     ReactiveFormsModule,
@@ -52,8 +47,8 @@ import {ChargeListFilterForm} from './chargen-list-filter.form';
     NgSelectComponent,
     NgSelectDirective,
     TableFilterComponent,
-    TextInputDirective,
-  ],
+    TextInputDirective
+],
   templateUrl: './chargen-list.component.html',
   styles: ':host { display:block;}',
   changeDetection: ChangeDetectionStrategy.OnPush,

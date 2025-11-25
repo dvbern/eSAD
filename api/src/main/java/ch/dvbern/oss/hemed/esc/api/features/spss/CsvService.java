@@ -6,8 +6,8 @@ import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.EinladungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.AbstractCsvColumn;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;

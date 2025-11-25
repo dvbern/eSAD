@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {FormArray, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {
@@ -27,6 +27,7 @@ import {hasAerztlicheUntersuchungEditBerechtigung, isNotNullish, requireValue} f
 import {TranslocoPipe} from '@jsverse/transloco';
 import {AnlassStore} from '../../../anlass.store';
 import {UntersuchungStore} from '../../untersuchung.store';
+import {hasSomeNotNullishValueIgnoringVersion} from '../../untersuchung.util';
 import {UntersuchungArztStore} from '../untersuchung-arzt.store';
 import {
   BewegungsapparatSubFormType,
@@ -39,10 +40,18 @@ import {
 @Component({
   selector: 'feat-untersuchung-arzt-beurteilung',
   imports: [
-    CommonModule, FormLayoutComponent, KachelControlComponent, KachelFormSectionComponent, RadioDirective,
-    ReactiveFormsModule, SaveCancelButtonsComponent, TranslocoPipe, FormControlComponent, TextareaDirective,
-    CheckboxDirective, TextInputDirective,
-  ],
+    FormLayoutComponent,
+    KachelControlComponent,
+    KachelFormSectionComponent,
+    RadioDirective,
+    ReactiveFormsModule,
+    SaveCancelButtonsComponent,
+    TranslocoPipe,
+    FormControlComponent,
+    TextareaDirective,
+    CheckboxDirective,
+    TextInputDirective
+],
   templateUrl: './untersuchung-arzt-beurteilung.component.html',
   styleUrl: './untersuchung-arzt-beurteilung.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -89,7 +98,7 @@ export class UntersuchungArztBeurteilungComponent implements DirtyMarker {
       // Wenn die Default-Values zu applyen markiert sind, dann das Formular mit den neuen Werten laden
       const defaultArzt = this.store.defaultArztToApply();
       if (isNotNullish(defaultArzt)) {
-        const hasAnyValue = Object.values(defaultArzt).some(isNotNullish);
+        const hasAnyValue = hasSomeNotNullishValueIgnoringVersion(defaultArzt);
         if (hasAnyValue) {
           this.form.resetForm(defaultArzt);
           this.form.group.markAsDirty();

@@ -1,3 +1,21 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.testutil;
 
 import java.io.File;
@@ -6,6 +24,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -19,30 +38,28 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.dvbstarter.shared.types.sozialversicherungsnummer.SozialversicherungsNummer;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfigRepo;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.EinladungService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungDurchfuehrung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungDurchfuehrungService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankheit;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankheitService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungIntern;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungInternService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungenService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungKindDaten;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungKindDatenService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungRepo;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBemerkungFragebogen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBemerkungFragebogenService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilungService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungTriage;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungTriageService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDaten;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDatenService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBemerkungFragebogen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBemerkungFragebogenService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriageService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
@@ -52,38 +69,43 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinstand;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Motorik;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.PerzentileBmi;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.PerzentileGewicht;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.PerzentileGroesse;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewichtService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Dezibel;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.HoerenZusaetzlicheAngaben;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogrammService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopieService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.InformationEltern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.types.LaeusekontrolleBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.UntersuchungLaeusekontrolle;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.UntersuchungLaeusekontrolleService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmenService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmenService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.ArtAbmeldung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.BrilleLinsenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.EinladungStatus;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.FarbsehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.GrundAbmeldung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.InspektionKonvergenzResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.MotilitaetResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.RequirementSetting;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StereotestResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusAuftretenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusAuspraegungResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.ArtAbmeldung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.GrundAbmeldung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftretenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.Briefvorlage;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.BriefvorlageService;
@@ -105,6 +127,7 @@ import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.labels.LabelService;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizService;
+import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
@@ -125,7 +148,6 @@ import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileUploadWrapper;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassBuilder;
-import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassConfigBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AufgabeBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.BriefvorlageBuilder;
@@ -152,6 +174,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfstatusKrankh
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungInternBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenMassnahmenBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungLaeusekontrolleBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungMassnahmenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBemerkungFragebogenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBeurteilungBuilder;
@@ -186,6 +209,7 @@ public class FixtureService {
     private final UntersuchungService untersuchungService;
     private final UntersuchungDurchfuehrungService untersuchungDurchfuehrungService;
     private final UntersuchungTriageService untersuchungTriageService;
+    private final UntersuchungLaeusekontrolleService untersuchungLaeusekontrolleService;
     private final UntersuchungImpfungenService untersuchungImpfungenService;
     private final ImpfstoffService impfstoffService;
     private final ImpfstoffChargeService impfstoffChargeService;
@@ -250,12 +274,6 @@ public class FixtureService {
     }
 
     @NonNull
-    public Anlass persistAnlass(@NonNull Anlass anlass) {
-        anlassConfigRepo.persist(anlass.getAnlassConfig());
-        return anlassService.persist(anlass);
-    }
-
-    @NonNull
     public Anlass createAnlass() {
         return createAnlass(AnlassStatus.IN_PLANUNG);
     }
@@ -274,14 +292,111 @@ public class FixtureService {
 
     @NonNull
     public Anlass createAnlassWithSameRequirementSettings(@NonNull RequirementSetting requirementSetting) {
-        AnlassConfig config = createAnlassConfigAllSameRequirementSetting(requirementSetting);
+        LocalDate anlassDatum = LocalDate.of(2023, 5, 5);
+        AnlassConfig config = anlassConfigRepo.getByAnlassTypAndStichtag(AnlassTyp.KLASSE_4, anlassDatum);//createAnlassConfigAllSameRequirementSetting(requirementSetting);
+        updateAnlassConfigWithRequirementSettings(config, requirementSetting);
         return anlassService.persist(
             AnlassBuilder.create(builder -> builder
                 .withTitle("Test getAnlass")
                 .withAnlassStatus(AnlassStatus.IN_PLANUNG)
-                .withDatumSetSchuljahr(LocalDate.of(2023, 5, 5))
+                .withDatumSetSchuljahr(anlassDatum)
                 .withAnlassConfig(config))
         );
+    }
+
+    public void updateAnlassConfigWithRequirementSettings(@NonNull AnlassConfig existingConfig, @NonNull RequirementSetting requirementSetting) {
+        boolean show = requirementSetting != RequirementSetting.NOT_VISIBLE;
+        // Daten
+        existingConfig.setShowDatenPersonendaten(show);
+        existingConfig.setDatenUntersuchung(requirementSetting);
+        existingConfig.setShowDatenSchule(show);
+        existingConfig.setDatenBemerkung(requirementSetting);
+        // Impfungen
+        existingConfig.setImpfungenUebersicht(requirementSetting);
+        existingConfig.setImpfungenListe(requirementSetting);
+        existingConfig.setImpfungenMassnahmeGruppenFolgetermin(show);
+        existingConfig.setImpfungenMassnahmeEinzelFolgetermin(show);
+        existingConfig.setImpfungenMassnahmeInfoKinderarzt(show);
+        existingConfig.setImpfungenMassnahmeBeratungMPA(show);
+        existingConfig.setImpfungenMassnahmeInfomaterialAbgegeben(show);
+        existingConfig.setImpfungenMassnahmeInfoEltern(show);
+        existingConfig.setImpfungenMassnahmeRueckfrageKinderarzt(show);
+        existingConfig.setCheckEinwilligungVorhanden(requirementSetting);
+        existingConfig.setCheckKontraindikationenAbgeklaert(requirementSetting);
+        existingConfig.setCheckDoppelkontrolleImpfentscheidDurchgefuehrt(requirementSetting);
+        existingConfig.setUntersuchungImpfungEmpfehlung(requirementSetting);
+        existingConfig.setUntersuchungImpfungAchtung(requirementSetting);
+        existingConfig.setUntersuchungImpfungBemerkungen(requirementSetting);
+        // Sehen
+        existingConfig.setSehenBrilleLinsen(requirementSetting);
+        existingConfig.setSehenFarbsehen(requirementSetting);
+        existingConfig.setSehenTafel(requirementSetting);
+        existingConfig.setSehenFernvisus(requirementSetting);
+        existingConfig.setSehenStereoTest(requirementSetting);
+        existingConfig.setSehenStrabismus(requirementSetting);
+        existingConfig.setSehenInspektion(requirementSetting);
+        existingConfig.setSehenKonvergenz(requirementSetting);
+        existingConfig.setSehenMotilitaet(requirementSetting);
+        existingConfig.setSehenNahvisus(requirementSetting);
+        existingConfig.setSehenBemerkungen(requirementSetting);
+        existingConfig.setSehenBemerkungenFragebogen(requirementSetting);
+        existingConfig.setSehenMassnahmen(requirementSetting);
+        existingConfig.setSehenEmpfehlung(requirementSetting);
+        // Hoeren - Audiogramm
+        existingConfig.setHoerenAudiogramm(requirementSetting);
+        existingConfig.setHoerenAudiogramm250Hz(requirementSetting);
+        existingConfig.setHoerenAudiogramm8000Hz(requirementSetting);
+        existingConfig.setHoerenAudiogrammBeurteilung(requirementSetting);
+        existingConfig.setHoerenAudiogrammZusaetzlicheAngaben(requirementSetting);
+        existingConfig.setHoerenAudiogrammEmpfehlung(requirementSetting);
+        existingConfig.setHoerenAudiogrammBemerkungen(requirementSetting);
+        // Hoeren - Otoskopie
+        existingConfig.setHoerenOtoskopie(requirementSetting);
+        existingConfig.setHoerenOtoskopieBemerkungen(requirementSetting);
+        // Groesse & Gewicht
+        existingConfig.setGroesseGewichtGroesse(requirementSetting);
+        existingConfig.setGroesseGewichtGewicht(requirementSetting);
+        existingConfig.setGroesseGewichtBmi(requirementSetting);
+        existingConfig.setGroesseGewichtGroessePerzentile(requirementSetting);
+        existingConfig.setGroesseGewichtGewichtPerzentile(requirementSetting);
+        existingConfig.setGroesseGewichtBmiPerzentile(requirementSetting);
+        existingConfig.setGroesseGewichtBmiPerzentileValues(EnumSet.of(PerzentileBmi.PERZENTILE_HOCH));
+        existingConfig.setGroesseGewichtBemerkungen(requirementSetting);
+        // Triage
+        existingConfig.setShowTriageTriage(show);
+        existingConfig.setShowTriageKindWeiterleiten(show);
+        // Aerztliche Untersuchung
+        existingConfig.setUntersuchungBewegungsapparat(requirementSetting);
+        existingConfig.setUntersuchungEinbeinstand(requirementSetting);
+        existingConfig.setUntersuchungEinbeinstandRechts(requirementSetting);
+        existingConfig.setUntersuchungEinbeinstandLinks(requirementSetting);
+        existingConfig.setUntersuchungEinbeinhuepfen(requirementSetting);
+        existingConfig.setUntersuchungEinbeinhuepfenRechts(requirementSetting);
+        existingConfig.setUntersuchungEinbeinhuepfenLinks(requirementSetting);
+        existingConfig.setUntersuchungFingeropposition(requirementSetting);
+        existingConfig.setUntersuchungMotorik(requirementSetting);
+        existingConfig.setUntersuchungSprache(requirementSetting);
+        existingConfig.setUntersuchungMundZaehne(requirementSetting);
+        existingConfig.setUntersuchungHaut(requirementSetting);
+        existingConfig.setUntersuchungHerz(requirementSetting);
+        existingConfig.setUntersuchungBlutdruck(requirementSetting);
+        existingConfig.setUntersuchungVerhalten(requirementSetting);
+        existingConfig.setUntersuchungEmpfehlung(requirementSetting);
+        existingConfig.setUntersuchungBemerkungen(requirementSetting);
+        // Massnahmen
+        existingConfig.setShowMassnahmenPathologischeBefunde(show);
+        existingConfig.setShowMassnahmenKeine(show);
+        existingConfig.setShowMassnahmenBeratungMpa(show);
+        existingConfig.setShowMassnahmenBeratungSchulAerztin(show);
+        existingConfig.setShowMassnahmenBereitsBehandelt(show);
+        existingConfig.setShowMassnahmenInfomaterial(show);
+        existingConfig.setShowMassnahmenInfoEltern(show);
+        existingConfig.setShowMassnahmenUeberweisungHausarzt(show);
+        existingConfig.setShowMassnahmenUeberweisungAugenarzt(show);
+        existingConfig.setShowMassnahmenNachkontrolleSaed(show);
+        existingConfig.setShowMassnahmenAnderes(show);
+
+        anlassConfigRepo.persist(existingConfig);
     }
 
     @NonNull
@@ -330,21 +445,9 @@ public class FixtureService {
 
     @NonNull
     public AnlassConfig createAnlassConfigAllOptional(int configYear, AnlassTyp anlassTyp) {
-        AnlassConfig configAllOptional = AnlassConfigBuilder.create(builder -> builder
-            .withID(ID.random(AnlassConfig.class))
-            .withGueltigkeitsZeitraum(
-                LocalDate.of(configYear, 1, 1),
-                LocalDate.of(configYear, 12, 31))
-            .withAnlassTyp(anlassTyp));
-        anlassConfigRepo.persist(configAllOptional);
-        return configAllOptional;
-    }
-
-    @NonNull
-    public AnlassConfig createAnlassConfigAllSameRequirementSetting(@NonNull RequirementSetting requirementSetting) {
-        AnlassConfig configAllSame = AnlassConfigBuilder.allSameRequirementSetting(requirementSetting);
-        anlassConfigRepo.persist(configAllSame);
-        return configAllSame;
+        AnlassConfig config = anlassConfigRepo.getByAnlassTypAndStichtag(anlassTyp, LocalDate.of(configYear, 1, 1));
+        updateAnlassConfigWithRequirementSettings(config, RequirementSetting.OPTIONAL);
+        return config;
     }
 
     @NonNull
@@ -457,7 +560,10 @@ public class FixtureService {
             .withGeburtsdatum(geburtsdatum)
             .withGeschlecht(geschlecht)
             .withSozialversicherungsNummer(vnr)
-            .withExternalImportInfo(UUID.randomUUID().toString(), aktivInExternalSystem, appClock.offsetDateTime().now()));
+            .withExternalImportInfo(
+                UUID.randomUUID().toString(),
+                aktivInExternalSystem,
+                appClock.offsetDateTime().now()));
         return kindService.persistWithoutDuplicateCheck(kind);
     }
 
@@ -598,11 +704,11 @@ public class FixtureService {
         Kind kind = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
         Dossier dossier = dossierService.persist(
             DossierBuilder.create(builder -> builder.forKind(kind)));
-        return createNotiz(dossier, labelIDs);
+        return createNotiz(dossier, labelIDs, NotizTyp.DEFAULT);
     }
 
     @NonNull
-    public Notiz createNotiz(@NonNull Dossier dossier, @NonNull Set<ID<Label>> labelIDs) {
+    public Notiz createNotiz(@NonNull Dossier dossier, @NonNull Set<ID<Label>> labelIDs, @NonNull NotizTyp notizTyp) {
         var dossierId = dossier.getId();
 
         var createDto = BenutzerBuilder.createCreateDTO(
@@ -624,6 +730,7 @@ public class FixtureService {
                 .withID(ID.random(Notiz.class))
                 .withTitel("Base Notiz")
                 .withLabels(labels)
+                .withNotizTyp(notizTyp)
                 .withVerantwortlicher(verantwortlicher)
                 .withDossier(dossierService.getById(dossierId)));
 
@@ -642,21 +749,28 @@ public class FixtureService {
     public void createImpfausweisNotiz(@NonNull ID<Einladung> einladungID) {
         Einladung einladung = einladungService.getById(einladungID);
         einladung.disableOptimisticLockingCheck();
-        Notiz notiz = createNotiz(einladung.getDossier(), Set.of(Label.ID_LABEL_IMPFAUSWEIS));
-        einladung.setImpfausweis(notiz);
+        Notiz notiz = createNotiz(einladung.getDossier(), Set.of(Label.ID_LABEL_IMPFAUSWEIS), NotizTyp.IMPFAUSWEIS);
+        einladung.getNotizen().add(notiz);
     }
 
     public void createFragebogenNotiz(@NonNull ID<Einladung> einladungID) {
         Einladung einladung = einladungService.getById(einladungID);
         einladung.disableOptimisticLockingCheck();
-        Notiz notiz = createNotiz(einladung.getDossier(), Set.of(Label.ID_LABEL_FRAGEBOGEN));
-        einladung.setFragebogen(notiz);
+        Notiz notiz = createNotiz(einladung.getDossier(), Set.of(Label.ID_LABEL_FRAGEBOGEN), NotizTyp.FRAGEBOGEN);
+        einladung.getNotizen().add(notiz);
+    }
+
+    public void createAnmeldungBestaetigungNotiz(@NonNull ID<Einladung> einladungID) {
+        Einladung einladung = einladungService.getById(einladungID);
+        einladung.disableOptimisticLockingCheck();
+        Notiz notiz = createNotiz(einladung.getDossier(), Set.of(Label.ID_LABEL_ANMELDUNG_BESTAETIGUNG), NotizTyp.ANMELDUNG_BESTAETIGUNG);
+        einladung.getNotizen().add(notiz);
     }
 
     public void createAbmeldungsgrundNotiz(@NonNull ID<Einladung> einladungID) {
         Einladung einladung = einladungService.getById(einladungID);
         einladung.disableOptimisticLockingCheck();
-        Notiz notiz = createNotiz(einladung.getDossier(), Set.of(Label.ID_LABEL_ABMELDUNGSGRUND));
+        Notiz notiz = createNotiz(einladung.getDossier(), Set.of(Label.ID_LABEL_ABMELDUNGSGRUND), NotizTyp.ABMELDUNG);
         einladung.setAbmeldungsNotiz(notiz);
     }
 
@@ -847,6 +961,25 @@ public class FixtureService {
     }
 
     @NonNull
+    public Untersuchung createUntersuchungWithLaeusekontrolle() {
+        Einladung einladung = createEinladung();
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladung.getId());
+        return createUntersuchungWithLaeusekontrolle(untersuchung);
+    }
+
+    @NonNull
+    public Untersuchung createUntersuchungWithLaeusekontrolle(@NonNull Untersuchung untersuchung) {
+        UntersuchungLaeusekontrolle laeusekontrolle = untersuchungLaeusekontrolleService.persist(
+            UntersuchungLaeusekontrolleBuilder.create(builder -> builder
+                .forUntersuchung(untersuchung)
+                .withBeurteilung(List.of(LaeusekontrolleBeurteilung.LAEUSE_VORHANDEN))
+                .withBemerkung("Läuse Bemerkungen SU")));
+        untersuchung.setUntersuchungLaeusekontrolle(laeusekontrolle);
+        untersuchungRepo.persist(untersuchung);
+        return untersuchung;
+    }
+
+    @NonNull
     public Untersuchung createUntersuchungWithSehen() {
         Einladung einladung = createEinladung();
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladung.getId());
@@ -869,10 +1002,11 @@ public class FixtureService {
                 .withStrabismusAuspraegung(StrabismusAuspraegungResultat.KEIN_STRABISMUS)
                 .withBemerkung("Untersuchung Sehen Bemerkung")));
         untersuchung.setUntersuchungSehenBeurteilung(existingSehen);
-        UntersuchungSehenBemerkungFragebogen existingSehenFragebogen = untersuchungSehenBemerkungFragebogenService.persist(
-            UntersuchungSehenBemerkungFragebogenBuilder.create(builder -> builder
-                .forUntersuchung(untersuchung)
-                .withBemerkungFragebogen("Untersuchung Sehen Fragebogen Bemerkung")));
+        UntersuchungSehenBemerkungFragebogen existingSehenFragebogen =
+            untersuchungSehenBemerkungFragebogenService.persist(
+                UntersuchungSehenBemerkungFragebogenBuilder.create(builder -> builder
+                    .forUntersuchung(untersuchung)
+                    .withBemerkungFragebogen("Untersuchung Sehen Fragebogen Bemerkung")));
         untersuchung.setUntersuchungSehenBemerkungFragebogen(existingSehenFragebogen);
         untersuchungRepo.persist(untersuchung);
         return untersuchung;
@@ -1127,6 +1261,7 @@ public class FixtureService {
         untersuchung = createUntersuchungWithMassnahmen(untersuchung);
         untersuchung = createUntersuchungWithGroesseGewicht(untersuchung);
         untersuchung = createUntersuchungWithArztuntersuchung(untersuchung);
+        untersuchung = createUntersuchungWithLaeusekontrolle(untersuchung);
         anlassService.changeAnlassStatus(einladung.getAnlass().getId(), AnlassStatus.ABGESCHLOSSEN);
         return untersuchung;
     }
@@ -1239,6 +1374,16 @@ public class FixtureService {
     public Schule setTimestampFirstImportOfSchule(@NonNull ID<Schule> schuleID, @Nullable OffsetDateTime timestamp) {
         Schule schule = schuleService.getById(schuleID);
         Objects.requireNonNull(schule.getExternalImportInfo()).setTimestampFirstImport(timestamp);
+        schule.disableOptimisticLockingCheck();
+        return schuleService.persist(schule);
+    }
+
+    @NonNull
+    @Transactional(TxType.REQUIRED)
+    @CanIgnoreReturnValue
+    public Schule setSchuleAktivStatus(@NonNull ID<Schule> schuleID, @NonNull EntityAktivStatus aktivStatus) {
+        Schule schule = schuleService.getById(schuleID);
+        schule.setSchuleAktivStatus(aktivStatus);
         schule.disableOptimisticLockingCheck();
         return schuleService.persist(schule);
     }

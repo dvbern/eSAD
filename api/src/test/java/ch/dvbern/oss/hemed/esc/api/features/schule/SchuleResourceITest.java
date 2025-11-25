@@ -411,7 +411,6 @@ class SchuleResourceITest extends AbstractITest {
         Assertions.assertThat(schule.getSchulstandort()).isEqualTo(schulStandort);
         Assertions.assertThat(schule.getEmail()).isEqualTo(emailBefore);
         Assertions.assertThat(schule.getExternalSystemIdOrNull()).isNull();
-        Assertions.assertThat(schule.isManualOrAktivInExternalSystem()).isTrue();
         Assertions.assertThat(schule.getSchuleAktivStatus()).isEqualTo(EntityAktivStatus.AKTIV);
         schuleService.persist(schule);
 

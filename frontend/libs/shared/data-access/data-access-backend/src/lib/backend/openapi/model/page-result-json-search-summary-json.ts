@@ -13,6 +13,7 @@ import { SearchSummaryJson } from './search-summary-json';
 export interface PageResultJsonSearchSummaryJson { 
     page: number;
     maxPageSize: number;
+    totalFilteredCount?: number;
     totalItemCount?: number;
     data: Array<SearchSummaryJson>;
 }

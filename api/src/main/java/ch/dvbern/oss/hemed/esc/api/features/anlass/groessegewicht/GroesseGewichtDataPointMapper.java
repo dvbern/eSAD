@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.json.GroesseGewichtDataPointJson;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 @JaxMapper

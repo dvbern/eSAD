@@ -105,9 +105,9 @@ export class UntersuchungImpfungenInternForm
           immunitaetForm.patchValue(immunitaetKrankheit);
         }
       }
-  }
+    }
     // Validationen anhand der AnlassConfig setzen
-    if (anlassConfig.impfungenListe === RequirementSetting.REQUIRED) {
+    if (anlassConfig.data.impfungenListe === RequirementSetting.REQUIRED) {
       this.group.controls.datumImpfung.addValidators(AppValidators.nonFutureDates(
         () => this.group.controls.impfStatus.value !== ImpfStatus.GEPLANT,
         timetravelStore.currentDate()));

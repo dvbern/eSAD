@@ -36,7 +36,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonPropertyOrder({
   SchuleJsonSpec.JSON_PROPERTY_ID,
   SchuleJsonSpec.JSON_PROPERTY_EXTERNAL_IMPORT_INFO_JSON,
-  SchuleJsonSpec.JSON_PROPERTY_MANUAL_OR_AKTIV_IN_EXTERNAL_SYSTEM,
   SchuleJsonSpec.JSON_PROPERTY_ENTITY_INFO,
   SchuleJsonSpec.JSON_PROPERTY_DATA,
   SchuleJsonSpec.JSON_PROPERTY_KLASSENSTUFEN
@@ -52,10 +51,6 @@ public class SchuleJsonSpec {
   public static final String JSON_PROPERTY_EXTERNAL_IMPORT_INFO_JSON = "externalImportInfoJson";
   @jakarta.annotation.Nullable
   private ExternalImportInfoJsonSpec externalImportInfoJson;
-
-  public static final String JSON_PROPERTY_MANUAL_OR_AKTIV_IN_EXTERNAL_SYSTEM = "manualOrAktivInExternalSystem";
-  @jakarta.annotation.Nonnull
-  private Boolean manualOrAktivInExternalSystem;
 
   public static final String JSON_PROPERTY_ENTITY_INFO = "entityInfo";
   @jakarta.annotation.Nonnull
@@ -120,31 +115,6 @@ public class SchuleJsonSpec {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExternalImportInfoJson(@jakarta.annotation.Nullable ExternalImportInfoJsonSpec externalImportInfoJson) {
     this.externalImportInfoJson = externalImportInfoJson;
-  }
-
-  public SchuleJsonSpec manualOrAktivInExternalSystem(@jakarta.annotation.Nonnull Boolean manualOrAktivInExternalSystem) {
-    
-    this.manualOrAktivInExternalSystem = manualOrAktivInExternalSystem;
-    return this;
-  }
-
-  /**
-   * Get manualOrAktivInExternalSystem
-   * @return manualOrAktivInExternalSystem
-   */
-  @jakarta.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_MANUAL_OR_AKTIV_IN_EXTERNAL_SYSTEM)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public Boolean getManualOrAktivInExternalSystem() {
-    return manualOrAktivInExternalSystem;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_MANUAL_OR_AKTIV_IN_EXTERNAL_SYSTEM)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setManualOrAktivInExternalSystem(@jakarta.annotation.Nonnull Boolean manualOrAktivInExternalSystem) {
-    this.manualOrAktivInExternalSystem = manualOrAktivInExternalSystem;
   }
 
   public SchuleJsonSpec entityInfo(@jakarta.annotation.Nonnull EntityInfoJsonSpec entityInfo) {
@@ -241,7 +211,6 @@ public class SchuleJsonSpec {
     SchuleJsonSpec schuleJson = (SchuleJsonSpec) o;
     return Objects.equals(this.id, schuleJson.id) &&
         Objects.equals(this.externalImportInfoJson, schuleJson.externalImportInfoJson) &&
-        Objects.equals(this.manualOrAktivInExternalSystem, schuleJson.manualOrAktivInExternalSystem) &&
         Objects.equals(this.entityInfo, schuleJson.entityInfo) &&
         Objects.equals(this.data, schuleJson.data) &&
         Objects.equals(this.klassenstufen, schuleJson.klassenstufen);
@@ -249,7 +218,7 @@ public class SchuleJsonSpec {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, externalImportInfoJson, manualOrAktivInExternalSystem, entityInfo, data, klassenstufen);
+    return Objects.hash(id, externalImportInfoJson, entityInfo, data, klassenstufen);
   }
 
   @Override
@@ -258,7 +227,6 @@ public class SchuleJsonSpec {
     sb.append("class SchuleJsonSpec {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    externalImportInfoJson: ").append(toIndentedString(externalImportInfoJson)).append("\n");
-    sb.append("    manualOrAktivInExternalSystem: ").append(toIndentedString(manualOrAktivInExternalSystem)).append("\n");
     sb.append("    entityInfo: ").append(toIndentedString(entityInfo)).append("\n");
     sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("    klassenstufen: ").append(toIndentedString(klassenstufen)).append("\n");

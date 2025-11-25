@@ -33,6 +33,7 @@ public enum FileTyp {
     FRAGEBOGEN("fragebogen"),
     KINDERDOSSIER("kinderdossier"),
     BRIEFVORLAGE("briefvorlage"),
+    ANMELDUNG_BESTAETIGUNG("anmeldung-bestaetigung"),
 
     // Types to test DocumentQueue
     PLAYGROUND("playground"),

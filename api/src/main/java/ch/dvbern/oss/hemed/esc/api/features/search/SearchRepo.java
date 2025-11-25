@@ -1,3 +1,21 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.features.search;
 
 import java.time.LocalDate;
@@ -11,11 +29,11 @@ import ch.dvbern.dvbstarter.infrastructure.db.Db;
 import ch.dvbern.dvbstarter.infrastructure.db.SmartJPAQuery;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.QAnlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.QAnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.QEinladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.QUntersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.QUntersuchungImpfungIntern;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.QUntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.QEinladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.QUntersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.QUntersuchungImpfungIntern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.QUntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.QAnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.QUntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.QImpfstoff;
@@ -137,13 +155,16 @@ public class SearchRepo {
         SmartJPAQuery<SearchSummaryJson> limitedQuery =
             query.offset(pageRequest.calculateOffset()).limit(pageRequest.getMaxPageSize());
 
-        int totalItemCount = kindSearchJson.getPaginationRequest().isRequestTotal() ?
-            runTotalCountQuery(kindSearchJson) :
+        int totalItemCount = pageRequest.isRequestTotal() ? runTotalCountQuery() : -1 ;
+
+        int totalFilteredItemCount = kindSearchJson.getPaginationRequest().isRequestTotal() ?
+            runTotalFilteredItemCountQuery(kindSearchJson) :
             -1;
 
         return new PageResultJson<>(
             (int) pageRequest.getPageNr(),
             pageRequest.getMaxPageSize(),
+            totalFilteredItemCount,
             totalItemCount,
             limitedQuery.fetch());
     }
@@ -171,7 +192,7 @@ public class SearchRepo {
         return filteredQuery.orderBy(uniqueOrder);
     }
 
-    private int runTotalCountQuery(@NonNull SearchJson searchJson) {
+    private int runTotalFilteredItemCountQuery(@NonNull SearchJson searchJson) {
         SmartJPAQuery<Long> baseQuery = db.select(QKind.kind.id.countDistinct())
             .from(QKind.kind)
             .leftJoin(QKind.kind.schule, QSchule.schule)
@@ -200,6 +221,14 @@ public class SearchRepo {
 
         SmartJPAQuery<Long> query = baseQuery.where(createKindSearchWhere(searchJson));
         Optional<Long> countOpt = query.fetchOne();
+        return countOpt.map(Long::intValue).orElse(0);
+    }
+
+    private int runTotalCountQuery() {
+        SmartJPAQuery<Long> baseQuery = db.select(QKind.kind.id.count())
+            .from(QKind.kind);
+
+        Optional<Long> countOpt = baseQuery.fetchOne();
         return countOpt.map(Long::intValue).orElse(0);
     }
 

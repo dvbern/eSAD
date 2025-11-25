@@ -1,0 +1,64 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  
+    <changeSet author="dvbern (generated)" id="1763545145860-1">
+        <modifyDataType columnName="audiogrammbeurteilung" newDataType="varchar(2000)" tableName="untersuchunghoerenaudiogramm"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763545145860-2">
+        <modifyDataType columnName="audiogrammbeurteilung" newDataType="varchar(2000)" tableName="untersuchunghoerenaudiogramm_aud"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763545145860-3">
+        <modifyDataType columnName="bewegungsapparat" newDataType="varchar(2000)" tableName="untersuchungarztbeurteilung"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763545145860-4">
+        <modifyDataType columnName="bewegungsapparat" newDataType="varchar(2000)" tableName="untersuchungarztbeurteilung_aud"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763545145860-5">
+        <modifyDataType columnName="fachrollen" newDataType="varchar(2000)" tableName="benutzer"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763545145860-6">
+        <modifyDataType columnName="fachrollen" newDataType="varchar(2000)" tableName="benutzer_aud"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763545145860-7">
+        <modifyDataType columnName="fingeropposition" newDataType="varchar(2000)" tableName="untersuchungarztbeurteilung"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763545145860-8">
+        <modifyDataType columnName="fingeropposition" newDataType="varchar(2000)" tableName="untersuchungarztbeurteilung_aud"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763545145860-9">
+        <modifyDataType columnName="mundandzaehne" newDataType="varchar(2000)" tableName="untersuchungarztbeurteilung"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763545145860-10">
+        <modifyDataType columnName="mundandzaehne" newDataType="varchar(2000)" tableName="untersuchungarztbeurteilung_aud"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763545145860-11">
+        <modifyDataType columnName="otoskopielinks" newDataType="varchar(2000)" tableName="untersuchunghoerenotoskopie"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763545145860-12">
+        <modifyDataType columnName="otoskopielinks" newDataType="varchar(2000)" tableName="untersuchunghoerenotoskopie_aud"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763545145860-13">
+        <modifyDataType columnName="otoskopierechts" newDataType="varchar(2000)" tableName="untersuchunghoerenotoskopie"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763545145860-14">
+        <modifyDataType columnName="otoskopierechts" newDataType="varchar(2000)" tableName="untersuchunghoerenotoskopie_aud"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763545145860-15">
+        <modifyDataType columnName="sprachfaehigkeit" newDataType="varchar(2000)" tableName="untersuchungarztbeurteilung"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763545145860-16">
+        <modifyDataType columnName="sprachfaehigkeit" newDataType="varchar(2000)" tableName="untersuchungarztbeurteilung_aud"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763545145860-17">
+        <modifyDataType columnName="zusaetzlicheangaben" newDataType="varchar(2000)" tableName="untersuchunghoerenaudiogramm"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763545145860-18">
+        <modifyDataType columnName="zusaetzlicheangaben" newDataType="varchar(2000)" tableName="untersuchunghoerenaudiogramm_aud"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763575849379-1">
+      <modifyDataType columnName="krankheiten" newDataType="varchar(2000)" tableName="impfstoff"/>
+    </changeSet>
+    <changeSet author="dvbern (generated)" id="1763575849379-2">
+      <modifyDataType columnName="krankheiten" newDataType="varchar(2000)" tableName="impfstoff_aud"/>
+    </changeSet>
+</databaseChangeLog>

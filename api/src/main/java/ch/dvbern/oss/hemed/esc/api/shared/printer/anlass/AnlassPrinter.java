@@ -28,7 +28,7 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.NoTransactionService;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TLProducer;
 import ch.dvbern.oss.commons.i18nl10n.I18nMessage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
@@ -224,8 +224,8 @@ public final class AnlassPrinter {
             row.add(basePrinter.translateValue(nachkontrolle));
             row.add(basePrinter.translateValue(einladung.getEinladungStatus()));
             row.add(basePrinter.translateValue(einladung.getGrundAbmeldung()));
-            row.add(basePrinter.translateValue(isNotizWithFiles(einladung.getImpfausweis())));
-            row.add(basePrinter.translateValue(isNotizWithFiles(einladung.getFragebogen())));
+            row.add(basePrinter.translateValue(isNotizWithFiles(einladung.getImpfausweisNotiz().orElse(null))));
+            row.add(basePrinter.translateValue(isNotizWithFiles(einladung.getFragebogenNotiz().orElse(null))));
             rows.add(row);
         }
 

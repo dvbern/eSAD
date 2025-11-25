@@ -19,13 +19,10 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.stream.Stream;
+import java.util.EnumSet;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
-import ch.dvbern.oss.hemed.esc.api.Util;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Blutdruck;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
@@ -37,8 +34,10 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.MundAndZaehne;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Verhalten;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungArztUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungArztBeurteilungPresentIfReq;
 import jakarta.persistence.Column;
@@ -54,7 +53,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
@@ -67,7 +65,8 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckUntersuchungArztBeurteilungPresentIfReq
-public class UntersuchungArztBeurteilung extends AbstractTenantEntity<UntersuchungArztBeurteilung> implements EntityWithOptimisticLocking {
+public class UntersuchungArztBeurteilung extends AbstractTenantEntity<UntersuchungArztBeurteilung>
+    implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 1446398935944895850L;
@@ -95,7 +94,6 @@ public class UntersuchungArztBeurteilung extends AbstractTenantEntity<Untersuchu
     @Column(nullable = true)
     private Integer blutdruckDiastolisch;
 
-
     @Nullable
     @Enumerated(EnumType.STRING)
     @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
@@ -111,15 +109,14 @@ public class UntersuchungArztBeurteilung extends AbstractTenantEntity<Untersuchu
     @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
     private Haut haut;
 
-
     @Nullable
     @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String hautBemerkung;
 
     @Nullable
-    @Size(max = DbConst.DB_DEFAULT_MAX_LENGTH)
-    @Column(nullable = true)
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private String mundAndZaehne;
@@ -130,12 +127,11 @@ public class UntersuchungArztBeurteilung extends AbstractTenantEntity<Untersuchu
     private String mundAndZaehneBemerkung;
 
     @Nullable
-    @Size(max = DbConst.DB_DEFAULT_MAX_LENGTH)
-    @Column(nullable = true)
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private String sprachfaehigkeit;
-
 
     @Nullable
     @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
@@ -148,8 +144,8 @@ public class UntersuchungArztBeurteilung extends AbstractTenantEntity<Untersuchu
     private Motorik motorik;
 
     @Nullable
-    @Size(max = DbConst.DB_DEFAULT_MAX_LENGTH)
-    @Column(nullable = true)
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private String bewegungsapparat;
@@ -164,7 +160,6 @@ public class UntersuchungArztBeurteilung extends AbstractTenantEntity<Untersuchu
     @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
     private Einbeinstand einbeinstand;
 
-
     @Nullable
     @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
@@ -175,15 +170,14 @@ public class UntersuchungArztBeurteilung extends AbstractTenantEntity<Untersuchu
     @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
     private Einbeinhuepfen einbeinhuepfen;
 
-
     @Nullable
     @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String einbeinhuepfenBemerkung;
 
     @Nullable
-    @Size(max = DbConst.DB_DEFAULT_MAX_LENGTH)
-    @Column(nullable = true)
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private String fingeropposition;
@@ -193,75 +187,44 @@ public class UntersuchungArztBeurteilung extends AbstractTenantEntity<Untersuchu
     @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String fingeroppositionBemerkung;
 
-
     // MundAndZaehne
-    public void setMundAndZaehne(@Nullable List<MundAndZaehne> mundAndZaehneList) {
-        this.mundAndZaehne = Util.mapEnumListToString(mundAndZaehneList);
+    public void setMundAndZaehne(@Nullable EnumSet<MundAndZaehne> mundAndZaehneList) {
+        this.mundAndZaehne = EnumSetUtil.toString(mundAndZaehneList);
     }
 
     @NonNull
-    public List<MundAndZaehne> getMundAndZaehne() {
-        if (mundAndZaehne == null) {
-            return List.of();
-        }
-        return Stream.of(mundAndZaehne.split(","))
-            .map(StringUtils::trim)
-            .filter(StringUtils::isNotBlank)
-            .map(MundAndZaehne::valueOf)
-            .toList();
+    public EnumSet<MundAndZaehne> getMundAndZaehne() {
+        return EnumSetUtil.fromString(MundAndZaehne.class, mundAndZaehne);
     }
 
     // Sprachfaehigkeit
-    public void setSprachfaehigkeit(@Nullable List<Sprachfaehigkeit> sprachfaehigkeitList) {
-        this.sprachfaehigkeit = Util.mapEnumListToString(sprachfaehigkeitList);
+    public void setSprachfaehigkeit(@Nullable EnumSet<Sprachfaehigkeit> sprachfaehigkeitList) {
+        this.sprachfaehigkeit = EnumSetUtil.toString(sprachfaehigkeitList);
     }
 
     @NonNull
-    public List<Sprachfaehigkeit> getSprachfaehigkeit() {
-        if (sprachfaehigkeit == null) {
-            return List.of();
-        }
-        return Stream.of(sprachfaehigkeit.split(","))
-            .map(StringUtils::trim)
-            .filter(StringUtils::isNotBlank)
-            .map(Sprachfaehigkeit::valueOf)
-            .toList();
+    public EnumSet<Sprachfaehigkeit> getSprachfaehigkeit() {
+        return EnumSetUtil.fromString(Sprachfaehigkeit.class, sprachfaehigkeit);
     }
-
 
     // Bewegungsapparat
-    public void setBewegungsapparat(@Nullable List<Bewegungsapparat> bewegungsapparatList) {
-        this.bewegungsapparat = Util.mapEnumListToString(bewegungsapparatList);
+    public void setBewegungsapparat(@Nullable EnumSet<Bewegungsapparat> bewegungsapparatList) {
+        this.bewegungsapparat = EnumSetUtil.toString(bewegungsapparatList);
     }
 
     @NonNull
-    public List<Bewegungsapparat> getBewegungsapparat() {
-        if (bewegungsapparat == null) {
-            return List.of();
-        }
-        return Stream.of(bewegungsapparat.split(","))
-            .map(StringUtils::trim)
-            .filter(StringUtils::isNotBlank)
-            .map(Bewegungsapparat::valueOf)
-            .toList();
+    public EnumSet<Bewegungsapparat> getBewegungsapparat() {
+        return EnumSetUtil.fromString(Bewegungsapparat.class, bewegungsapparat);
     }
-
 
     // Fingeropposition
-    public void setFingeropposition(@Nullable List<Fingeropposition> fingeroppositionList) {
-        this.fingeropposition = Util.mapEnumListToString(fingeroppositionList);
+    public void setFingeropposition(@Nullable EnumSet<Fingeropposition> fingeroppositionList) {
+        this.fingeropposition = EnumSetUtil.toString(fingeroppositionList);
     }
 
     @NonNull
-    public List<Fingeropposition> getFingeropposition() {
-        if (fingeropposition == null) {
-            return List.of();
-        }
-        return Stream.of(fingeropposition.split(","))
-            .map(StringUtils::trim)
-            .filter(StringUtils::isNotBlank)
-            .map(Fingeropposition::valueOf)
-            .toList();
+    public EnumSet<Fingeropposition> getFingeropposition() {
+        return EnumSetUtil.fromString(Fingeropposition.class, fingeropposition);
     }
 
     @NonNull

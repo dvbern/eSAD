@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
@@ -8,7 +8,7 @@ import {DirtyGuardService} from './dirty-guard.service';
 @Component({
   selector: 'util-dirty-guard',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [],
   providers: [NgbModal],
   templateUrl: './dirty-guard.component.html',
   styles: `

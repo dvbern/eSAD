@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SystemAdminStore} from '@dvb/feat-shared';
@@ -16,9 +16,15 @@ import {S3FileDownloadForm} from './s3-file-download-form';
 @Component({
   selector: 'feat-system-s3-file-download',
   imports: [
-    CommonModule, TranslocoPipe, ButtonComponent, CardComponent, HeadingDirective, FormsModule,
-    StandaloneControlComponent, TextInputDirective, ReactiveFormsModule,
-  ],
+    TranslocoPipe,
+    ButtonComponent,
+    CardComponent,
+    HeadingDirective,
+    FormsModule,
+    StandaloneControlComponent,
+    TextInputDirective,
+    ReactiveFormsModule
+],
   templateUrl: './s3-file-download.component.html',
   styles: ':host { display:block;}',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -17,7 +17,6 @@ import { BackendEntityId } from '@dvb/data-access-types';
 export interface SchuleJson { 
     id: BackendEntityId;
     externalImportInfoJson?: ExternalImportInfoJson;
-    manualOrAktivInExternalSystem: boolean;
     entityInfo: EntityInfoJson;
     data: SchuleSaveJson;
     klassenstufen: Array<EscadaKlasseStufe>;

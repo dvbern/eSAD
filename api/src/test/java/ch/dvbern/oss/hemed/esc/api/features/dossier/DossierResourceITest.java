@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.FailureType;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerRepo;
@@ -12,6 +13,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.DossierService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierNichtMedizinischSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
@@ -31,17 +33,19 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.api.DossierApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.KinderApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.SchulenApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassFlagsJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppFailureErrorJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppValidationErrorJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierNichtMedizinischSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EntityAktivStatusSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EntityAktivStatusSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FailureTypeSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindSaveModeDuplikatSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindSaveResultJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SchuleJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SchuleSaveJsonSpec;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response.Status;
@@ -52,6 +56,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
@@ -115,7 +120,7 @@ class DossierResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void updateDossier() {
+    void updateDossierMedizinisch() {
         // ARRANGE
         Kind kind = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
         Dossier existingDossier = dossierService.persist(
@@ -133,25 +138,24 @@ class DossierResourceITest extends AbstractITest {
                 .withKeycloakId(UUID.randomUUID().toString())
         );
         benutzerRepo.persist(createDto);
-        Benutzer zustaendigArztMPA = benutzerService.getById(createDto.getId());
+//        Benutzer zustaendigArztMPA = benutzerService.getById(createDto.getId());
 
         DossierJsonSpec updatedDossierJson = DossierBuilder.createJaxSpec(
             builder -> builder
                 .forDossier(existingDossier)
-                .withAndereZusatzinformation(true, zusatzinformation)
-                .withZustaendigMPA(zustaendigArztMPA)
-                .withZustaendigArzt(zustaendigArztMPA),
+                .withAndereZusatzinformation(true, zusatzinformation),
             appClock.offsetDateTime().now().toLocalDate());
 
-        updatedDossierJson.getData().setNachkontrolle(NachkontrolleBuilder.createJaxSpec(builder ->
+        assertNotNull(updatedDossierJson.getDataMedizinisch());
+        updatedDossierJson.getDataMedizinisch().setNachkontrolle(NachkontrolleBuilder.createJaxSpec(builder ->
             builder.
                 withNachkontrolleSehen(true)));
 
         // ACT
         DossierJsonSpec result = api
-            .dossierResourceUpdateDossier()
+            .dossierResourceUpdateDossierMedizinisch()
             .dossierIdPath(existingDossier.getId().getId())
-            .body(updatedDossierJson.getData())
+            .body(updatedDossierJson.getDataMedizinisch())
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -161,22 +165,17 @@ class DossierResourceITest extends AbstractITest {
         // ASSERT
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getId()).isEqualTo(existingDossier.getId().getId());
-        Assertions.assertThat(result.getData().getAndereZusatzinformation()).isTrue();
-        Assertions.assertThat(result.getData().getAndereZusatzInformationText()).isEqualTo(zusatzinformation);
-        Assertions.assertThat(result.getData().getZustaendigArzt())
-            .isNotNull()
-            .extracting(BenutzerOptionJsonSpec::getId).isEqualTo(zustaendigArztMPA.getId().getId());
-        Assertions.assertThat(result.getData().getZustaendigMPA())
-            .isNotNull()
-            .extracting(BenutzerOptionJsonSpec::getId).isEqualTo(zustaendigArztMPA.getId().getId());
-        AnlassFlagsJsonSpec anlassFlags = result.getData().getNachkontrolle().getData().getAnlassFlags();
+        Assertions.assertThat(result.getDataMedizinisch()).isNotNull();
+        Assertions.assertThat(result.getDataMedizinisch().getAndereZusatzinformation()).isTrue();
+        Assertions.assertThat(result.getDataMedizinisch().getAndereZusatzInformationText()).isEqualTo(zusatzinformation);
+        AnlassFlagsJsonSpec anlassFlags = result.getDataMedizinisch().getNachkontrolle().getData().getAnlassFlags();
         Assertions.assertThat(anlassFlags)
             .extracting(AnlassFlagsJsonSpec::getNachkontrolleSehen).isEqualTo(true);
     }
 
     @Test
     @TestAsAdminBS
-    void updateDossier_throws_if_Kind_is_inactive() {
+    void updateDossier_Medizinisch_throws_if_Kind_is_inactive() {
         // ARRANGE
         Kind kind = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
         Dossier existingDossier = dossierService.persist(
@@ -204,17 +203,16 @@ class DossierResourceITest extends AbstractITest {
             .assertThat()
             .statusCode(Status.NO_CONTENT.getStatusCode());
 
-        Benutzer zustaendigArztMPA = benutzerService.getById(createDto.getId());
+//        Benutzer zustaendigArztMPA = benutzerService.getById(createDto.getId());
 
         DossierJsonSpec updatedDossierJson = DossierBuilder.createJaxSpec(
             builder -> builder
                 .forDossier(existingDossier)
-                .withAndereZusatzinformation(true, zusatzinformation)
-                .withZustaendigMPA(zustaendigArztMPA)
-                .withZustaendigArzt(zustaendigArztMPA),
+                .withAndereZusatzinformation(true, zusatzinformation),
             appClock.offsetDateTime().now().toLocalDate());
 
-        updatedDossierJson.getData().setNachkontrolle(NachkontrolleBuilder.createJaxSpec(builder ->
+        assertThat(updatedDossierJson.getDataMedizinisch()).isNotNull();
+        updatedDossierJson.getDataMedizinisch().setNachkontrolle(NachkontrolleBuilder.createJaxSpec(builder ->
             builder.
                 withNachkontrolleSehen(true)));
 
@@ -226,9 +224,9 @@ class DossierResourceITest extends AbstractITest {
 
         // ACT
         AppValidationErrorJsonSpec validationError = api
-                .dossierResourceUpdateDossier()
+                .dossierResourceUpdateDossierMedizinisch()
                 .dossierIdPath(existingDossier.getId().getId())
-                .body(updatedDossierJson.getData())
+                .body(updatedDossierJson.getDataMedizinisch())
                 .execute(ResponseBody::prettyPeek)
                 .then()
                 .assertThat()
@@ -244,7 +242,7 @@ class DossierResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void updateDossier_throws_if_benutzer_does_not_have_fachrolle() {
+    void updateDossier_Medizinisch_throws_if_benutzer_does_not_have_fachrolle() {
         // ARRANGE
         Kind kind = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
         Dossier existingDossier = dossierService.persist(
@@ -268,22 +266,19 @@ class DossierResourceITest extends AbstractITest {
 
         // ACT
         String dossierId = existingDossier.getId().getId();
-        DossierSaveJsonSpec data = updatedDossierJson.getData();
-        AppValidationErrorJsonSpec validationError = api
-                .dossierResourceUpdateDossier()
-                .dossierIdPath(dossierId)
-                .body(data)
-                .execute(ResponseBody::prettyPeek)
-                .then()
-                .assertThat()
-                .statusCode(Status.BAD_REQUEST.getStatusCode())
-                .extract().as(AppValidationErrorJsonSpec.class);
+        DossierNichtMedizinischSaveJsonSpec data = updatedDossierJson.getDataNichtMedizinisch();
+        AppFailureErrorJsonSpec error = api
+            .dossierResourceUpdateDossierNichtMedizinisch()
+            .dossierIdPath(existingDossier.getId().getId())
+            .body(data)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
+            .extract().as(AppFailureErrorJsonSpec.class);
 
-        assertThat(validationError.getViolations()).hasSize(1);
-        assertThat(validationError.getViolations().getFirst().getKey())
-            .isEqualTo("NotNull");
-        assertThat(validationError.getViolations().getFirst().getMessage())
-            .isEqualTo("darf nicht null sein");
+        assertThat(error).isNotNull();
+        assertThat(error.getType()).isEqualTo(FailureTypeSpec.FAILURE);
     }
 
     @Test
@@ -331,8 +326,8 @@ class DossierResourceITest extends AbstractITest {
         assertThat(result).isNotNull();
         assertThat(result.getKind().getData().getSchule()).isNull();
         assertThat(result.getKind().getData().getKlasse()).isNull();
-        assertThat(result.getData().getZustaendigArzt()).isNull();
-        assertThat(result.getData().getZustaendigMPA()).isNull();
+        assertThat(result.getDataNichtMedizinisch().getZustaendigArzt()).isNull();
+        assertThat(result.getDataNichtMedizinisch().getZustaendigMPA()).isNull();
 
         assertThat(result.getKind().getId()).isEqualTo(kind.getId().getId());
 
@@ -361,13 +356,13 @@ class DossierResourceITest extends AbstractITest {
         assertThat(result).isNotNull();
         assertThat(result.getKind().getData().getSchule()).isNotNull();
         assertThat(result.getKind().getData().getKlasse()).isNotNull();
-        assertThat(result.getData().getZustaendigMPA()).isNotNull();
-        assertThat(result.getData().getZustaendigArzt()).isNull();
+        assertThat(result.getDataNichtMedizinisch().getZustaendigMPA()).isNotNull();
+        assertThat(result.getDataNichtMedizinisch().getZustaendigArzt()).isNull();
         // ASSERT ID's
         assertThat(result.getKind().getId()).isEqualTo(kind.getId().getId());
         assertThat(result.getKind().getData().getSchule().getId()).isEqualTo(schule.getId().getId());
         assertThat(result.getKind().getData().getKlasse().getId()).isEqualTo(klasse.getId().getId());
-        assertThat(result.getData().getZustaendigMPA().getId()).isEqualTo(mpa.getId().getId());
+        assertThat(result.getDataNichtMedizinisch().getZustaendigMPA().getId()).isEqualTo(mpa.getId().getId());
     }
 
     @Test
@@ -409,15 +404,15 @@ class DossierResourceITest extends AbstractITest {
         assertThat(result).isNotNull();
         assertThat(result.getKind().getData().getSchule()).isNotNull();
         assertThat(result.getKind().getData().getKlasse()).isNotNull();
-        assertThat(result.getData().getZustaendigArzt()).isNotNull();
-        assertThat(result.getData().getZustaendigMPA()).isNotNull();
+        assertThat(result.getDataNichtMedizinisch().getZustaendigArzt()).isNotNull();
+        assertThat(result.getDataNichtMedizinisch().getZustaendigMPA()).isNotNull();
 
         // Assert ID's
         assertThat(result.getKind().getId()).isEqualTo(kind.getId().getId());
         assertThat(result.getKind().getData().getSchule().getId()).isEqualTo(schule.getId().getId());
         assertThat(result.getKind().getData().getKlasse().getId()).isEqualTo(klasse.getId().getId());
-        assertThat(result.getData().getZustaendigArzt().getId()).isEqualTo(arztMpa.getId().getId());
-        assertThat(result.getData().getZustaendigMPA().getId()).isEqualTo(arztMpa.getId().getId());
+        assertThat(result.getDataNichtMedizinisch().getZustaendigArzt().getId()).isEqualTo(arztMpa.getId().getId());
+        assertThat(result.getDataNichtMedizinisch().getZustaendigMPA().getId()).isEqualTo(arztMpa.getId().getId());
 
         // ACT - change Klasse
         kindAPI
@@ -443,14 +438,14 @@ class DossierResourceITest extends AbstractITest {
         assertThat(updatedResult).isNotNull();
         assertThat(updatedResult.getKind().getData().getSchule()).isNotNull();
         assertThat(updatedResult.getKind().getData().getKlasse()).isNotNull();
-        assertThat(updatedResult.getData().getZustaendigArzt()).isNotNull();
-        assertThat(updatedResult.getData().getZustaendigMPA()).isNotNull();
+        assertThat(updatedResult.getDataNichtMedizinisch().getZustaendigArzt()).isNotNull();
+        assertThat(updatedResult.getDataNichtMedizinisch().getZustaendigMPA()).isNotNull();
 
         // Assert ID's
         assertThat(updatedResult.getKind().getId()).isEqualTo(kind.getId().getId());
         assertThat(updatedResult.getKind().getData().getSchule().getId()).isEqualTo(newSchule.getId().getId());
-        assertThat(updatedResult.getData().getZustaendigMPA().getId()).isEqualTo(newArztMpa.getId().getId());
-        assertThat(updatedResult.getData().getZustaendigMPA().getId()).isEqualTo(newArztMpa.getId().getId());
+        assertThat(updatedResult.getDataNichtMedizinisch().getZustaendigMPA().getId()).isEqualTo(newArztMpa.getId().getId());
+        assertThat(updatedResult.getDataNichtMedizinisch().getZustaendigMPA().getId()).isEqualTo(newArztMpa.getId().getId());
     }
 
     @Test
@@ -491,25 +486,25 @@ class DossierResourceITest extends AbstractITest {
         // ASSERT
         assertThat(dossier1.getKind().getData().getSchule()).isNotNull();
         assertThat(dossier1.getKind().getData().getKlasse()).isNotNull();
-        assertThat(dossier1.getData().getZustaendigArzt()).isNotNull();
-        assertThat(dossier1.getData().getZustaendigMPA()).isNotNull();
+        assertThat(dossier1.getDataNichtMedizinisch().getZustaendigArzt()).isNotNull();
+        assertThat(dossier1.getDataNichtMedizinisch().getZustaendigMPA()).isNotNull();
 
         assertThat(dossier2.getKind().getData().getSchule()).isNotNull();
         assertThat(dossier2.getKind().getData().getKlasse()).isNotNull();
-        assertThat(dossier2.getData().getZustaendigArzt()).isNotNull();
-        assertThat(dossier2.getData().getZustaendigMPA()).isNotNull();
+        assertThat(dossier2.getDataNichtMedizinisch().getZustaendigArzt()).isNotNull();
+        assertThat(dossier2.getDataNichtMedizinisch().getZustaendigMPA()).isNotNull();
 
         assertThat(dossier1.getKind().getId()).isEqualTo(kind1.getId().getId());
         assertThat(dossier1.getKind().getData().getSchule().getId()).isEqualTo(schule.getId().getId());
         assertThat(dossier1.getKind().getData().getKlasse().getId()).isEqualTo(klasse.getId().getId());
-        assertThat(dossier1.getData().getZustaendigArzt().getId()).isEqualTo(arztMpa.getId().getId());
-        assertThat(dossier1.getData().getZustaendigMPA().getId()).isEqualTo(arztMpa.getId().getId());
+        assertThat(dossier1.getDataNichtMedizinisch().getZustaendigArzt().getId()).isEqualTo(arztMpa.getId().getId());
+        assertThat(dossier1.getDataNichtMedizinisch().getZustaendigMPA().getId()).isEqualTo(arztMpa.getId().getId());
 
         assertThat(dossier2.getKind().getId()).isEqualTo(kind2.getId().getId());
         assertThat(dossier2.getKind().getData().getSchule().getId()).isEqualTo(schule.getId().getId());
         assertThat(dossier2.getKind().getData().getKlasse().getId()).isEqualTo(klasse.getId().getId());
-        assertThat(dossier2.getData().getZustaendigArzt().getId()).isEqualTo(arztMpa.getId().getId());
-        assertThat(dossier2.getData().getZustaendigMPA().getId()).isEqualTo(arztMpa.getId().getId());
+        assertThat(dossier2.getDataNichtMedizinisch().getZustaendigArzt().getId()).isEqualTo(arztMpa.getId().getId());
+        assertThat(dossier2.getDataNichtMedizinisch().getZustaendigMPA().getId()).isEqualTo(arztMpa.getId().getId());
 
         // ACT - Update Arzt and MPA on Schule
         schule.setZustaendigArzt(arztMpa2);
@@ -545,17 +540,17 @@ class DossierResourceITest extends AbstractITest {
         assertThat(schuleResult).isNotNull();
         assertThat(schuleResult.getData().getZustaendigArzt()).isNotNull();
         assertThat(schuleResult.getData().getZustaendigMPA()).isNotNull();
-        assertThat(updatedDossier1.getData().getZustaendigArzt()).isNotNull();
-        assertThat(updatedDossier1.getData().getZustaendigMPA()).isNotNull();
-        assertThat(updatedDossier2.getData().getZustaendigArzt()).isNotNull();
-        assertThat(updatedDossier2.getData().getZustaendigMPA()).isNotNull();
+        assertThat(updatedDossier1.getDataNichtMedizinisch().getZustaendigArzt()).isNotNull();
+        assertThat(updatedDossier1.getDataNichtMedizinisch().getZustaendigMPA()).isNotNull();
+        assertThat(updatedDossier2.getDataNichtMedizinisch().getZustaendigArzt()).isNotNull();
+        assertThat(updatedDossier2.getDataNichtMedizinisch().getZustaendigMPA()).isNotNull();
 
         assertThat(schuleResult.getData().getZustaendigArzt().getId()).isEqualTo(arztMpa2.getId().getId());
         assertThat(schuleResult.getData().getZustaendigMPA().getId()).isEqualTo(arztMpa2.getId().getId());
-        assertThat(updatedDossier1.getData().getZustaendigArzt().getId()).isEqualTo(arztMpa2.getId().getId());
-        assertThat(updatedDossier1.getData().getZustaendigMPA().getId()).isEqualTo(arztMpa2.getId().getId());
-        assertThat(updatedDossier2.getData().getZustaendigArzt().getId()).isEqualTo(arztMpa2.getId().getId());
-        assertThat(updatedDossier2.getData().getZustaendigMPA().getId()).isEqualTo(arztMpa2.getId().getId());
+        assertThat(updatedDossier1.getDataNichtMedizinisch().getZustaendigArzt().getId()).isEqualTo(arztMpa2.getId().getId());
+        assertThat(updatedDossier1.getDataNichtMedizinisch().getZustaendigMPA().getId()).isEqualTo(arztMpa2.getId().getId());
+        assertThat(updatedDossier2.getDataNichtMedizinisch().getZustaendigArzt().getId()).isEqualTo(arztMpa2.getId().getId());
+        assertThat(updatedDossier2.getDataNichtMedizinisch().getZustaendigMPA().getId()).isEqualTo(arztMpa2.getId().getId());
 
     }
 }

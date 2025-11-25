@@ -7,7 +7,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -262,19 +261,5 @@ public final class Util {
         return Arrays.stream(PATTERN_WHITESPACES_HYPHENS.split(input))
             .filter(token -> !token.isEmpty())
             .toList();
-    }
-
-    @NonNull
-    public static String mapEnumListToString(
-        @Nullable Collection<? extends Enum<?>> resultatList
-    ) {
-        if (resultatList == null) {
-            return "";
-        }
-        return resultatList.stream()
-            .sorted()
-            .map(Enum::name)
-            .reduce((a, b) -> a + ", " + b)
-            .orElse("");
     }
 }

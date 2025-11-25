@@ -93,6 +93,7 @@ import static ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil.createReaderFr
 import static ch.dvbern.oss.hemed.esc.api.features.escada.json.EscadaImportMode.CREATE;
 import static ch.dvbern.oss.hemed.esc.api.features.escada.json.EscadaImportMode.DELETE;
 import static ch.dvbern.oss.hemed.esc.api.features.escada.json.EscadaImportMode.UPDATE;
+import static ch.dvbern.oss.hemed.esc.api.features.schule.EscadaDummySchulenIds.isDummySchule;
 
 @QuarkusTest
 @RequiredArgsConstructor
@@ -170,6 +171,7 @@ class EscadaServiceITest extends AbstractITest {
             .returns("Volksschulen", Schule::getSchulkreis)
             .returns("57", Schule::getExternalSystemIdOrNull);
         assertExternalImportInfo(schuleBeforeUpdate, "57", true, this.getAppClock().offsetDateTime().now());
+        fixtureService.setSchuleAktivStatus(schuleBeforeUpdate.getId(), EntityAktivStatus.INAKTIV); // set inaktiv to test if update will activate it again
 
         // ACT
         resetTime();
@@ -197,6 +199,7 @@ class EscadaServiceITest extends AbstractITest {
             .returns("57", Schule::getExternalSystemIdOrNull)
             .returns(schuleBeforeUpdate.getId(), Schule::getId);
         assertExternalImportInfo(schuleAfterUpdate, "57", false, this.getAppClock().offsetDateTime().now());
+        Assertions.assertThat(schuleAfterUpdate.getSchuleAktivStatus()).isEqualTo(EntityAktivStatus.AKTIV);
 
         // check that for deleted Schulen the SchuleExternal is removed and the Schule is set to INAKTIV
         Optional<Schule> psBurgerstrasse = schuleService.findByExternalId("444");
@@ -527,7 +530,6 @@ class EscadaServiceITest extends AbstractITest {
             .returns(NormalizedPhoneNumber.parse("075 430 88 77"), Kind::getTelefon)
             .returns(null, Kind::getEmail)
             .returns(new SozialversicherungsNummer("756.7301.4699.72"), Kind::getSozialversicherungsNummer)
-            .returns(true, Kind::isManualOrAktivInExternalSystem)
             .returns("Italienisch", Kind::getErstsprache)
             .returns(Geschlecht.MAENNLICH, Kind::getGeschlecht)
             .returns("222538", Kind::getExternalSystemIdOrNull)
@@ -582,7 +584,6 @@ class EscadaServiceITest extends AbstractITest {
             .returns(NormalizedPhoneNumber.parse("075 430 88 66"), Kind::getTelefon)
             .returns(EmailAddress.fromString("newmail@mailbucket.dvbern.ch"), Kind::getEmail)
             .returns(new SozialversicherungsNummer("756.7836.9843.84"), Kind::getSozialversicherungsNummer)
-            .returns(true, Kind::isManualOrAktivInExternalSystem)
             .returns("Französisch", Kind::getErstsprache)
             .returns(Geschlecht.WEIBLICH, Kind::getGeschlecht)
             .returns("222538", Kind::getExternalSystemIdOrNull)
@@ -623,7 +624,6 @@ class EscadaServiceITest extends AbstractITest {
         Kind kindNotAktiv = kindService.getByExternalId("509389");
         Assertions.assertThat(kindNotAktiv)
             .isNotNull()
-            .returns(false, Kind::isManualOrAktivInExternalSystem)
             .returns("509389", Kind::getExternalSystemIdOrNull);
 
         // check that the manually changed field was not updated
@@ -825,10 +825,10 @@ class EscadaServiceITest extends AbstractITest {
             "/EscadaTest/kontaktpersonkind/csv_kontaktpersonkind_1.csv");
 
         // ACT IMPORT EMPTY
-        FileUpload emptyCsv = TestUtil.fileToFileUpload(TestUtil.loadEmptyFile(), "empty-csv.csv");
+        FileUpload minimalCSV = TestUtil.fileToFileUpload(TestUtil.loadTestfile("/EscadaTest/csv_escada_minimal.csv"), "minimal-csv.csv");
 
         // import a completly empty csv
-        EscadaImportResultJson escadaImportResultJson = escadaService.processEscadaCsvUpload(emptyCsv);
+        EscadaImportResultJson escadaImportResultJson = escadaService.processEscadaCsvUpload(minimalCSV);
         // ASSERT
         Assertions.assertThat(escadaImportResultJson).isNotNull();
         assertAllItemsHaveMode(escadaImportResultJson.getSchuleImportResultJsons(), schulenRes, DELETE);
@@ -841,8 +841,7 @@ class EscadaServiceITest extends AbstractITest {
         escadaImportResultJson.getKindImportResultJsons().stream().map(ItemSyncResultJson::getExternalId)
             .forEach(externalId -> {
                 Kind kind = kindService.getByExternalId(externalId);
-                Assertions.assertThat(kind).isNotNull()
-                    .returns(false, Kind::isManualOrAktivInExternalSystem);
+                Assertions.assertThat(kind).isNotNull();
                 // Beim Deaktivieren sollten die Kinder keine Klasse und keine Schule mehr haben
                 Assertions.assertThat(kind.getKlasse()).isNull();
                 // if schule is not dummy schule
@@ -854,6 +853,14 @@ class EscadaServiceITest extends AbstractITest {
                         .isNull()
                 );
             });
+
+        // check that non-dummy-Schulen and Klassen are deactivated
+        var deactSchulen = schuleService.findAll().stream().filter(s -> !isDummySchule(s.getId()));
+        Assertions.assertThat(deactSchulen).isNotEmpty()
+            .allMatch(schule -> schule.getSchuleAktivStatus() == EntityAktivStatus.INAKTIV);
+        var deactKlassen = klasseService.findAll();
+        Assertions.assertThat(deactKlassen).isNotEmpty()
+            .allMatch(klasse -> klasse.getKlasseAktivStatus() == EntityAktivStatus.INAKTIV);
 
         // REIMPORT
         // import a full csv, should reactivate disabled entities
@@ -881,15 +888,16 @@ class EscadaServiceITest extends AbstractITest {
                 .filter(schule -> schule.getSchulhaus().equals("Erlenmatt")))
             .hasSize(1)
             .first()
-            .returns(true, Schule::isManualOrAktivInExternalSystem)
+            .returns(EntityAktivStatus.AKTIV, Schule::getSchuleAktivStatus)
             .returns("Upd Primarstufe Erlenmatt", Schule::getSchulstandort);
-        // check that klasse exists only once
 
+        // check that klasse exists only once
         Assertions.assertThat(klasseService.findAll()
                 .stream()
                 .filter(klasse -> klasse.getBezeichnung().equals("Sek DW DEWET 1l")))
             .hasSize(1)
-            .first().returns(true, Klasse::isManualOrAktivInExternalSystem)
+            .first()
+            .returns(EntityAktivStatus.AKTIV, Klasse::getKlasseAktivStatus)
             .returns("Upd SEKE", Klasse::getKlasseSchulart);
         // check that lehrperson exists only once because the old one was reactivated and reused
         Assertions.assertThat(lehrpersonService.findAll()
@@ -897,7 +905,6 @@ class EscadaServiceITest extends AbstractITest {
                 .filter(lehrperson -> lehrperson.getName().equals("Yesilyayla")))
             .hasSize(1)
             .first()
-            .returns(true, Lehrperson::isManualOrAktivInExternalSystem)
             .returns("Upd Astrid", Lehrperson::getVorname);
 
         // check that Kind exists only once because the old one was reactivated and reused
@@ -906,7 +913,6 @@ class EscadaServiceITest extends AbstractITest {
                 .filter(kind -> kind.getName().equals("Muliqi")))
             .hasSize(1)
             .first()
-            .returns(true, Kind::isManualOrAktivInExternalSystem)
             .as("Kind Data should not be updated since we could have changed it manually")
             .returns("Beat", Kind::getVorname)
             .doesNotReturn(null, Kind::getSchule)
@@ -918,7 +924,6 @@ class EscadaServiceITest extends AbstractITest {
                 .filter(kontaktPersonKind -> kontaktPersonKind.getName().equals("Roth")))
             .hasSize(1)
             .first()
-            .returns(true, KontaktPersonKind::isManualOrAktivInExternalSystem)
             .returns("Upd Wilhelmus", KontaktPersonKind::getVorname);
 
     }

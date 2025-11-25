@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Berechtigung } from '@dvb/data-access-backend';
+import {Berechtigung} from '@dvb/data-access-backend';
 
 export type RoleMatcher = (roles: Berechtigung[]) => boolean;
 
@@ -51,17 +51,25 @@ export function withOneOfMatchers(...matchers: [RoleMatcher, ...RoleMatcher[]]):
 }
 
 // -- specific role mapper helper functions ---------
+export function hasLaeuseAnlassBerechtigungen(): RoleMatcher {
+  return withOneOfBerechtigungen(Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE, Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE);
+}
+
+export function hasAlleAnlaesseBerechtigungen(): RoleMatcher {
+  return withOneOfBerechtigungen(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN);
+}
 
 export function hasAnlassCreateBerechtigung(): RoleMatcher {
   return withOneOfMatchers(
-    withAllOfBerechtigungen(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN),
-    withOneOfBerechtigungen(Berechtigung.SUPPORT, Berechtigung.SYSTEM_ADMIN),
-  );
+      withAllOfBerechtigungen(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN),
+      withAllOfBerechtigungen(Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE, Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE),
+      withOneOfBerechtigungen(Berechtigung.SUPPORT, Berechtigung.SYSTEM_ADMIN),
+    );
 }
 
 export function hasAnlassViewBerechtigung(): RoleMatcher {
   return withOneOfMatchers(
-    withAllOfBerechtigungen(Berechtigung.ANLASSPLANUNG_LESEN),
+    withOneOfBerechtigungen(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE),
     withOneOfBerechtigungen(Berechtigung.SUPPORT, Berechtigung.SYSTEM_ADMIN),
   );
 }
@@ -69,20 +77,32 @@ export function hasAnlassViewBerechtigung(): RoleMatcher {
 export function hasAnlassEditBerechtigungForAbgeschlossen(): RoleMatcher {
   return withOneOfMatchers(
     withAllOfBerechtigungen(Berechtigung.VERANDERUNGEN_NACH_ABSCHLUSS),
-      withOneOfBerechtigungen(Berechtigung.SUPPORT, Berechtigung.SYSTEM_ADMIN),
+    withOneOfBerechtigungen(Berechtigung.SUPPORT, Berechtigung.SYSTEM_ADMIN),
   );
 }
 
 export function hasAnlassEditBerechtigungForNotAbgeschlossen(): RoleMatcher {
   return withOneOfMatchers(
-    withAllOfBerechtigungen(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN),
-    withOneOfBerechtigungen(Berechtigung.SUPPORT, Berechtigung.SYSTEM_ADMIN),
+      withAllOfBerechtigungen(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN),
+      withAllOfBerechtigungen(Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE, Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE),
+      withOneOfBerechtigungen(Berechtigung.SUPPORT, Berechtigung.SYSTEM_ADMIN),
   );
 }
 
 export function hasKindEditBerechtigung(): RoleMatcher {
   return withOneOfMatchers(
-    withAllOfBerechtigungen(Berechtigung.KINDER_LESEN, Berechtigung.KINDER_SCHREIBEN),
+    withAllOfBerechtigungen(Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH, Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH),
+    withOneOfBerechtigungen(Berechtigung.SUPPORT),
+  );
+}
+
+export function hasKinderMedizinischeDatenViewBerechtigung(): RoleMatcher {
+  return withOneOfBerechtigungen(Berechtigung.KINDER_LESEN_MEDIZINISCH, Berechtigung.SUPPORT);
+}
+
+export function hasKinderMedizinischeDatenEditBerechtigung(): RoleMatcher {
+  return withOneOfMatchers(
+    withAllOfBerechtigungen(Berechtigung.KINDER_LESEN_MEDIZINISCH, Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH),
     withOneOfBerechtigungen(Berechtigung.SUPPORT),
   );
 }
@@ -96,8 +116,10 @@ export function hasDownloadDossierBerechtigung(): RoleMatcher {
 
 export function hasExportAnlassPlanungBerechtigung(): RoleMatcher {
   return withOneOfMatchers(
-    withOneOfBerechtigungen(Berechtigung.ANLASSPLANUNG_SCHREIBEN, Berechtigung.KOMPLETTER_EXPORT),
-    withOneOfBerechtigungen(Berechtigung.SUPPORT)
+    withOneOfBerechtigungen(Berechtigung.ANLASSPLANUNG_SCHREIBEN,
+      Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE,
+      Berechtigung.KOMPLETTER_EXPORT),
+    withOneOfBerechtigungen(Berechtigung.SUPPORT),
   );
 }
 
@@ -126,7 +148,7 @@ export function hasListEditBerechtigung(): RoleMatcher {
 }
 
 export function hasListViewBerechtigung(): RoleMatcher {
-  return withOneOfBerechtigungen(Berechtigung.LISTEN_LESEN, Berechtigung.SUPPORT);
+  return withOneOfBerechtigungen(Berechtigung.LISTEN_LESEN, Berechtigung.LISTEN_ADMIN_LESEN, Berechtigung.SUPPORT);
 }
 
 export function hasLabelEditBerechtigung(): RoleMatcher {
@@ -196,10 +218,10 @@ export function hasSystemAdminViewBerechtigung(): RoleMatcher {
 
 export function hasAdminPageViewBerechtiung(): RoleMatcher {
   return withOneOfBerechtigungen(
-    Berechtigung.LISTEN_LESEN,
+    Berechtigung.LISTEN_ADMIN_LESEN,
     Berechtigung.IMPFSTOFFE_LESEN,
-    Berechtigung.LABELS_LESEN,
-    Berechtigung.VORLAGEN_LESEN,
+    Berechtigung.LABELS_ADMIN_LESEN,
+    Berechtigung.VORLAGEN_ADMIN_LESEN,
     Berechtigung.SUPPORT,
   );
 }
@@ -210,12 +232,41 @@ export function hasSystemPageViewBerechtiung(): RoleMatcher {
 
 export function hasKindPageViewBerechtigung(): RoleMatcher {
   return withOneOfBerechtigungen(
-    Berechtigung.KINDER_LESEN,
+    Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
+    Berechtigung.KINDER_LESEN_MEDIZINISCH,
     Berechtigung.KINDER_ALLE_NOTIZEN_LESEN,
     Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
     Berechtigung.DUBLETTEN_ZUSAMMENFUHREN,
     Berechtigung.SUPPORT,
   );
+}
+
+export function hasConfigViewBerechtigung(): RoleMatcher {
+  return withOneOfBerechtigungen(
+    Berechtigung.SUPPORT,
+    // May be different than edit in future, but currently the same
+  );
+}
+
+export function hasConfigEditBerechtigung(): RoleMatcher {
+  return withOneOfBerechtigungen(
+    Berechtigung.SUPPORT,
+  )
+}
+
+export function hasKindNotizViewBerechtigung(): RoleMatcher {
+  return withOneOfBerechtigungen(
+    Berechtigung.KINDER_ALLE_NOTIZEN_LESEN,
+    Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
+    Berechtigung.SUPPORT,
+  )
+}
+
+export function hasKindVorlagenViewBerechtigung(): RoleMatcher {
+  return withOneOfBerechtigungen(
+    Berechtigung.VORLAGEN_LESEN,
+    Berechtigung.SUPPORT,
+  )
 }
 
 export function hasUntersuchungKindDatenViewBerechtigung(): RoleMatcher {
@@ -300,6 +351,23 @@ export function hasAerztlicheUntersuchungEditBerechtigung(): RoleMatcher {
     withAllOfBerechtigungen(
       Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN,
       Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN,
+    ),
+    withOneOfBerechtigungen(Berechtigung.SUPPORT),
+  );
+}
+
+export function hasLaeusekontrolleViewBerechtigung(): RoleMatcher {
+  return withOneOfMatchers(
+    withAllOfBerechtigungen(Berechtigung.SU_LAEUSE_LESEN),
+    withOneOfBerechtigungen(Berechtigung.SUPPORT),
+  );
+}
+
+export function hasLaeusekontrolleEditBerechtigung(): RoleMatcher {
+  return withOneOfMatchers(
+    withAllOfBerechtigungen(
+      Berechtigung.SU_LAEUSE_LESEN,
+      Berechtigung.SU_LAEUSE_SCHREIBEN,
     ),
     withOneOfBerechtigungen(Berechtigung.SUPPORT),
   );

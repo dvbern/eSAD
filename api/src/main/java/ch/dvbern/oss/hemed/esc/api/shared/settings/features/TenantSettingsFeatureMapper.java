@@ -1,0 +1,64 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package ch.dvbern.oss.hemed.esc.api.shared.settings.features;
+
+import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+@JaxMapper
+@RequiredArgsConstructor
+public class TenantSettingsFeatureMapper {
+
+    private final ConfigService configService;
+
+    @NonNull
+    public TenantSettingFeaturesJson toJson(@NonNull TenantSettingFeatures featureSettings) {
+
+        return new TenantSettingFeaturesJson(
+            toTenantSettingFeatureState(featureSettings.getEsadIdFeature()),
+            toTenantSettingFeatureState(featureSettings.getLaenderCodeFeature())
+        );
+
+    }
+
+    /**
+     * this calculates the State to transfer to the client for a specific feature, to make it easier
+     * for the client we already calculated if the feature should be enabled for this stage or not and store that
+     * info in the TenantSettingFeatureStateJson#enabledForState field.*
+     */
+    private TenantSettingFeatureStateJson toTenantSettingFeatureState(@NonNull FeatureEnabledSetting featureSetting) {
+        return new TenantSettingFeatureStateJson(
+            featureSetting,
+            featureSetting.isEnabledForDeploymentEnvironment(configService.getEnvironment())
+        );
+    }
+
+    public void toEntity(
+        @Valid @NotNull @NonNull TenantSettingFeatures existingFeatures,
+        @NotNull @NonNull @Valid TenantSettingFeaturesJson features)
+    {
+        existingFeatures.setEsadIdFeature(features.getEsadIdFeature().getFeatureEnabled());
+        existingFeatures.setLaenderCodeFeature(features.getLaenderCodeFeature().getFeatureEnabled());
+
+    }
+}

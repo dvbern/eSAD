@@ -76,7 +76,7 @@ public class ImpfstoffResource {
     @PUT
     @Path("/{impfstoffId}/impfstoffaktivstatus")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.IMPFSTOFFE_SCHREIBEN)
     public ImpfstoffJson updateImpfstoffAktivStatus(
         @NotNull @NonNull @PathParam("impfstoffId") ID<Impfstoff> impfstoffId,
         @NotNull @NonNull @Valid EntityAktivStatusSaveJson saveJson

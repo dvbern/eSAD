@@ -3,12 +3,14 @@
 
     <feat-anlass-termine termine/>
 
-    <feat-aufgaben-sidebar aufgaben
-                           [showCreateAufgabeButton]="true"
-                           [aufgabenList]="dashboardStore.aufgabenList()"
-                           [loading]="dashboardStore.loader.isLoading()"
-                           [routingPrefix]="'/' + Path.AUFGABEN"/>
+    @if (canViewAufgaben()) {
+      <feat-aufgaben-sidebar aufgaben
+                             [showCreateAufgabeButton]="true"
+                             [aufgabenList]="dashboardStore.aufgabenList()"
+                             [loading]="dashboardStore.loader.isLoading()"
+                             [routingPrefix]="'/' + Path.AUFGABEN"/>
 
+    }
     <feat-dashboard-letze-anlaesse recent/>
 
     <feat-dashboard-letze-kinder kinder/>

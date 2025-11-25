@@ -1,8 +1,8 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject } from '@angular/core';
-import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked } from '@angular/core';
+import { FormArray, FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router, UrlTree } from '@angular/router';
-import { AnlassArt, AnlassSaveJson, AnlassTyp, InformationEltern } from '@dvb/data-access-backend';
+import { AnlassArt, AnlassSaveJson, AnlassTyp, InformationEltern, RequirementSetting } from '@dvb/data-access-backend';
 import { BenutzerStore, Path } from '@dvb/feat-shared';
 import {
   ButtonComponent,
@@ -10,11 +10,11 @@ import {
   CheckboxDirective,
   FormControlComponent,
   FormLayoutComponent,
-  HeadingDirective,
+  HeadingDirective, KachelControlComponent, KachelFormSectionComponent,
   NgSelectDirective,
   SaveCancelButtonsComponent,
   StandaloneControlComponent,
-  TextareaDirective,
+  TextareaDirective, TitleComponent,
 } from '@dvb/ui-components';
 import { DirtyMarker } from '@dvb/util-angular';
 import { hasImpfungenEditBerechtigung, requireValue } from '@dvb/util-shared';
@@ -23,12 +23,11 @@ import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
 import { AnlassStore } from '../../../anlass.store';
 import { UntersuchungStore } from '../../untersuchung.store';
 import { UntersuchungImpfungenStore } from '../untersuchung-impfungen.store';
-import { UntersuchungImpfungenMassnahmenForm } from './untersuchung-impfungen-massnahmen.form';
+import { EmpfehlungSubFormType, UntersuchungImpfungenMassnahmenForm } from './untersuchung-impfungen-massnahmen.form';
 
 @Component({
   selector: 'feat-untersuchung-impfungen-massnahmen',
   imports: [
-    CommonModule,
     FormLayoutComponent,
     ReactiveFormsModule,
     CheckboxDirective,
@@ -44,6 +43,9 @@ import { UntersuchungImpfungenMassnahmenForm } from './untersuchung-impfungen-ma
     ButtonsRightContainerComponent,
     TextareaDirective,
     FormsModule,
+    KachelControlComponent,
+    KachelFormSectionComponent,
+    TitleComponent,
   ],
   templateUrl: './untersuchung-impfungen-massnahmen.component.html',
   styleUrl: './untersuchung-impfungen-massnahmen.component.scss',
@@ -59,6 +61,7 @@ export class UntersuchungImpfungenMassnahmenComponent implements DirtyMarker {
   readonly #translocoService = inject(TranslocoService);
 
   informationEltern = Object.values(InformationEltern);
+  protected readonly RequirementSetting = RequirementSetting;
 
   canEdit = computed(
     () =>
@@ -75,6 +78,12 @@ export class UntersuchungImpfungenMassnahmenComponent implements DirtyMarker {
     effect(() => {
       const massnahmen = this.impfungenStore.massnahmen();
       this.form.resetForm(massnahmen?.data);
+      const anlassConfig = this.anlassStore.selectedEntity()?.anlassConfig;
+      if (anlassConfig) {
+        untracked(() => {
+          this.form.setValidatorsForAnlassConfig(anlassConfig);
+        });
+      }
       this.form.setDisabled(!this.canEdit());
     });
   }
@@ -123,5 +132,9 @@ export class UntersuchungImpfungenMassnahmenComponent implements DirtyMarker {
         window.open(url.toString(), '_blank');
       },
     });
+  }
+
+  getEmpfehlungFormArray(): FormArray<EmpfehlungSubFormType> {
+    return this.form.group.controls.empfehlungArray;
   }
 }

@@ -25,6 +25,10 @@ class DateRangeTest {
         LocalDate.of(2015, 1, 1),
         LocalDate.of(2015, 12, 31)
     );
+    private final DateRange year2016 = DateRange.of(
+        LocalDate.of(2016, 1, 1),
+        LocalDate.of(2016, 12, 31)
+    );
 
     @Nested
     class HasValidRangeTest {
@@ -163,6 +167,34 @@ class DateRangeTest {
 
             assertThat(year2015.getOverlap(DateRange.of(stichtag, stichtag)))
                 .hasValue(expected);
+        }
+    }
+
+    @Nested
+    class GapTest {
+        @Test
+        void testGetGap_shouldBeNullForIdenticalRanges() {
+            assertThat(year2015.getGap(DateRange.of(year2015))).isEmpty();
+        }
+
+        @Test
+        void testGetGap_shouldBeEmptyForSuccessiveRanges() {
+            assertThat(year2015.getGap(year2016)).isEmpty();
+            assertThat(year2016.getGap(year2015)).isEmpty();
+        }
+
+        @Test
+        void testGetGap_shouldReturnGap() {
+            DateRange firstHalfYear2015 = DateRange.of(
+                LocalDate.of(2015, 1, 1),
+                LocalDate.of(2015, 6, 30)
+            );
+            DateRange secondHalfYear2015 = DateRange.of(
+                LocalDate.of(2015, 7, 1),
+                LocalDate.of(2015, 12, 31)
+            );
+            assertThat(firstHalfYear2015.getGap(year2016)).hasValue(secondHalfYear2015);
+            assertThat(year2016.getGap(firstHalfYear2015)).hasValue(secondHalfYear2015);
         }
     }
 

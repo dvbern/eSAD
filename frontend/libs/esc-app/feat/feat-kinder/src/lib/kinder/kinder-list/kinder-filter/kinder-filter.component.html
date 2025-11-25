@@ -90,11 +90,13 @@
           <ng-option [value]="NOT_ASSIGNED">
             {{ 'kinder.filter.erweitert.verantwortliche.mpa.unassigned' | transloco }}
           </ng-option>
-
-          @for (each of benutzerOptionsStore.mpaOptions(); track each) {
-            <ng-option [value]="each.id">
-              {{ each.fullName }}
-            </ng-option>
+          <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+          @if (benutzerOptionsStore.mpaOptions()) {
+            @for (each of benutzerOptionsStore.mpaOptions(); track each) {
+              <ng-option [value]="each.id">
+                {{ each.fullName }}
+              </ng-option>
+            }
           }
         </ng-select>
       </svui-form-control>
@@ -113,11 +115,13 @@
           <ng-option [value]="NOT_ASSIGNED">
             {{ 'kinder.filter.erweitert.verantwortliche.arzt.unassigned' | transloco }}
           </ng-option>
-
-          @for (each of benutzerOptionsStore.arztOptions(); track each) {
-            <ng-option [value]="each.id">
-              {{ each.fullName }}
-            </ng-option>
+          <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+          @if (benutzerOptionsStore.arztOptions()) {
+            @for (each of benutzerOptionsStore.arztOptions(); track each) {
+              <ng-option [value]="each.id">
+                {{ each.fullName }}
+              </ng-option>
+            }
           }
         </ng-select>
       </svui-form-control>
@@ -388,10 +392,13 @@
           [clearable]="true"
           [placeholder]="'global.select.bitte-auswaehlen' | transloco"
         >
-          @for (each of benutzerOptionsStore.mpaOptions(); track each.id) {
-            <ng-option [value]="each.id">
-              {{ each.fullName }}
-            </ng-option>
+          <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+          @if (benutzerOptionsStore.mpaOptions()) {
+            @for (each of benutzerOptionsStore.mpaOptions(); track each.id) {
+              <ng-option [value]="each.id">
+                {{ each.fullName }}
+              </ng-option>
+            }
           }
         </ng-select>
       </svui-form-control>
@@ -407,10 +414,13 @@
           [clearable]="true"
           [placeholder]="'global.select.bitte-auswaehlen' | transloco"
         >
-          @for (each of benutzerOptionsStore.arztOptions(); track each.id) {
-            <ng-option [value]="each.id">
-              {{ each.fullName }}
-            </ng-option>
+          <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+          @if (benutzerOptionsStore.arztOptions()) {
+            @for (each of benutzerOptionsStore.arztOptions(); track each.id) {
+              <ng-option [value]="each.id">
+                {{ each.fullName }}
+              </ng-option>
+            }
           }
         </ng-select>
       </svui-form-control>

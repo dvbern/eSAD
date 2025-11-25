@@ -2,10 +2,11 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.EinladungService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungenService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AutoAufgabeService;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;

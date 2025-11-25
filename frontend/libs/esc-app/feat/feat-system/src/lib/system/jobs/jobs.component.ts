@@ -1,11 +1,11 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {SystemAdminStore} from '@dvb/feat-shared';
 import {ButtonComponent, HeadingDirective} from '@dvb/ui-components';
 
 @Component({
   selector: 'feat-jobs',
-  imports: [CommonModule, HeadingDirective, ButtonComponent],
+  imports: [HeadingDirective, ButtonComponent],
   templateUrl: './jobs.component.html',
   styles: ':host { display:block;}',
   changeDetection: ChangeDetectionStrategy.OnPush,

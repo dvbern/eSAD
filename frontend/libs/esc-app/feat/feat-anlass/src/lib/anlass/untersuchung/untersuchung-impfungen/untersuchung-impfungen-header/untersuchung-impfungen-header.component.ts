@@ -1,7 +1,7 @@
-import {CommonModule, DatePipe} from '@angular/common';
-import {ChangeDetectionStrategy, Component, inject, input, model, output} from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
+import {ChangeDetectionStrategy, Component, computed, inject, input, model, output} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {EinladungJson} from '@dvb/data-access-backend';
+import {EinladungJson, NotizTyp} from '@dvb/data-access-backend';
 import {AnlassStore} from '../../../anlass.store';
 import {BenutzerStore} from '@dvb/feat-shared';
 import {CheckboxDirective, IconOnlyButtonComponent} from '@dvb/ui-components';
@@ -30,12 +30,15 @@ export class UntersuchungImpfungenHeaderComponent {
   readonly benutzerStore = inject(BenutzerStore);
   readonly anlassStore = inject(AnlassStore);
 
+  protected readonly NotizTyp = NotizTyp;
   protected readonly DetailMode = DetailMode;
 
   einladung = input<EinladungJson>();
   impfausweisUnvollstaendig = model.required<boolean>();
   impfausweisNichtVorhanden = model<boolean>(false);
   impfausweisZweiPlusEinsSchema = model<boolean>(false);
+
+  hasImpfausweisFile = computed(() => !!this.einladung()?.data.notizen.find(n => n.data.typ === NotizTyp.IMPFAUSWEIS));
 
   hasImpfungenEditBerechtigung = this.benutzerStore.createHasRequiredRoleSig(hasImpfungenEditBerechtigung());
 

@@ -1,0 +1,24 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="gema (generated)" id="1762439594452-6">
+      <sql>
+        UPDATE benutzerberechtigung
+        SET berechtigung = 'KINDER_LESEN_MEDIZINISCH'
+        WHERE berechtigung = 'KINDER_LESEN';
+
+        UPDATE benutzerberechtigung
+        SET berechtigung = 'KINDER_SCHREIBEN_MEDIZINISCH'
+        WHERE berechtigung = 'KINDER_SCHREIBEN';
+
+        -- Add KINDER_LESEN_NICHT_MEDIZINISCH to ESC-WINTERTHUR-SYSADM
+        INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, benutzer_id, berechtigung)
+        VALUES ('17a226a6-40cd-4015-a7bb-5cc7661c56ed', '2025-11-06 12:00:00.118393', '2025-11-06 12:00:00.202890', '11111111-1111-1111-1111-111111111114', '11111111-1111-1111-1111-111111111114', 0, 'WIN', '11111111-1111-1111-1111-111111111114', 'KINDER_LESEN_NICHT_MEDIZINISCH');
+
+        -- Add KINDER_SCHREIBEN_NICHT_MEDIZINISCH to ESC-WINTERTHUR-SYSADM
+        INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, benutzer_id, berechtigung)
+        VALUES ('cd8977ad-be31-4db7-bdd7-67018ed0d6c8', '2025-11-06 12:00:00.118393', '2025-11-06 12:00:00.202890', '11111111-1111-1111-1111-111111111114', '11111111-1111-1111-1111-111111111114', 0, 'WIN', '11111111-1111-1111-1111-111111111114', 'KINDER_SCHREIBEN_NICHT_MEDIZINISCH');
+
+      </sql>
+
+    </changeSet>
+</databaseChangeLog>

@@ -14,23 +14,23 @@
       <div class="d-flex gap-3 mb-2">
         <svui-single-radio-wrapper label="Edit Mode">
           <input svuiRadio type="radio" name="mode"
-                 [checked]="mode === DetailMode.EDIT"
-                 (click)="mode = DetailMode.EDIT"/>
+            [checked]="mode === DetailMode.EDIT"
+            (click)="mode = DetailMode.EDIT"/>
         </svui-single-radio-wrapper>
         <svui-single-radio-wrapper label="View Mode">
           <input svuiRadio
-                 type="radio"
-                 name="mode"
-                 [checked]="mode === DetailMode.VIEW"
-                 (click)="mode = DetailMode.VIEW"/>
+            type="radio"
+            name="mode"
+            [checked]="mode === DetailMode.VIEW"
+            (click)="mode = DetailMode.VIEW"/>
         </svui-single-radio-wrapper>
       </div>
 
       <div>
         <input svuiCheckbox
-               type="checkbox" id="disabledcheck"
-               [checked]="form.group.disabled"
-               (click)="form.group.disabled ? form.group.enable() : form.group.disable()"/>
+          type="checkbox" id="disabledcheck"
+          [checked]="form.group.disabled"
+          (click)="form.group.disabled ? form.group.enable() : form.group.disable()"/>
         <label for="disabledcheck">disabled</label>
 
         <pre>disabled: {{ form.group.disabled }}</pre>
@@ -51,18 +51,18 @@
 
 
     <svui-form-control label="email"
-                       [viewValue]="form.controlAt('email').value"
-                       [iconTopRight]="{icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco}">
+      [viewValue]="form.controlAt('email').value"
+      [iconTopRight]="{icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco}">
       <input svuiTextInput="email" [formControl]="form.controlAt('email')"/>
     </svui-form-control>
 
     <svui-form-control label="date"
-                       [viewValue]="fromISODateString(form.controlAt('date').value) | date: 'dd.MM.yyyy'">
+      [viewValue]="fromISODateString(form.controlAt('date').value) | date: 'dd.MM.yyyy'">
       <input svuiTextInput="date" [formControl]="form.controlAt('date')"/>
     </svui-form-control>
 
     <svui-form-control label="time"
-                       [viewValue]="form.controlAt('time').value">
+      [viewValue]="form.controlAt('time').value">
       <input svuiTextInput="time" [formControl]="form.controlAt('time')"/>
     </svui-form-control>
 
@@ -86,20 +86,20 @@
 
 
     <svui-form-group label="radios horizontal" [viewValue]="form.controlAt('radios').value | transloco"
-                     direction="horizontal">
+      direction="horizontal">
       @for (each of selectItems; track each) {
         <svui-single-radio-wrapper [label]="each.label">
           <input svuiRadio
-                 type="radio"
-                 name="radios"
-                 [formControl]="form.controlAt('radios')"
-                 [value]="each.value"/>
+            type="radio"
+            name="radios"
+            [formControl]="form.controlAt('radios')"
+            [value]="each.value"/>
         </svui-single-radio-wrapper>
       }
     </svui-form-group>
 
     <svui-form-group label="radios vertical" [viewValue]="form.controlAt('radios2').value"
-                     direction="vertical">
+      direction="vertical">
       <svui-single-radio-wrapper label="red">
         <input
           svuiRadio
@@ -107,7 +107,7 @@
           name="radios2"
           [formControl]="form.controlAt('radios2')"
           value="RED"
-        />
+          />
       </svui-single-radio-wrapper>
       <svui-single-radio-wrapper label="blue">
         <input
@@ -116,7 +116,7 @@
           name="radios2"
           [formControl]="form.controlAt('radios2')"
           value="BLUE"
-        />
+          />
       </svui-single-radio-wrapper>
       <svui-single-radio-wrapper label="yellow">
         <input
@@ -125,7 +125,7 @@
           name="radios2"
           [formControl]="form.controlAt('radios2')"
           value="YELLOW"
-        />
+          />
       </svui-single-radio-wrapper>
     </svui-form-group>
 
@@ -136,10 +136,10 @@
       <svui-file-upload-button [accepted]="acceptedFileEndings" (fileUploaded)="onFileSelected($event)"/>
 
       <button svuiIconOnlyButton="primary"
-              type="button"
-              [tooltip]="'global.tooltip.icon.loeschen' | transloco"
-              [icon]="'loeschen'"
-              (click)="removeFileFromUpload()">
+        type="button"
+        [tooltip]="'global.tooltip.icon.loeschen' | transloco"
+        [icon]="'loeschen'"
+        (click)="removeFileFromUpload()">
       </button>
     </svui-form-upload-one>
 
@@ -152,7 +152,7 @@
         appendTo="body"
         [formControl]="form.controlAt('select')"
         [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      >
+        >
         @for (item of selectItems; track item.value) {
           <ng-option [value]="item.value">
             {{ item.label }}
@@ -161,111 +161,117 @@
       </ng-select>
     </svui-form-control>
 
-    <svui-form-control
-      label="Multiselect einzeilig"
-      *ngIf="form.group.controls.multiSelect as control"
-      [viewValue]="form.controlAt('multiSelect').value.join(', ')">
-      <!-- multiselect mit ng-select -->
-      <ng-select
-        svuiNgSelect
-        bindLabel='dummy'
-        appendTo="body"
-        [formControl]="control"
-        [searchable]="true"
-        [multiple]="true"
-        [placeholder]="'global.select.bitte-auswaehlen' | transloco">
-        @for (item of selectItems; track item.value; let index = $index) {
-          <ng-option [value]="item.value">
-            <span class="w-100 d-flex justify-content-between">
-              <span>{{ item.label }}</span>
-            </span>
-          </ng-option>
-        }
-      </ng-select>
-    </svui-form-control>
+    @if (form.group.controls.multiSelect; as control) {
+      <svui-form-control
+        label="Multiselect einzeilig"
+        [viewValue]="form.controlAt('multiSelect').value.join(', ')">
+        <!-- multiselect mit ng-select -->
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="control"
+          [searchable]="true"
+          [multiple]="true"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco">
+          @for (item of selectItems; track item.value; let index = $index) {
+            <ng-option [value]="item.value">
+              <span class="w-100 d-flex justify-content-between">
+                <span>{{ item.label }}</span>
+              </span>
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+    }
 
-    <svui-form-control
-      label="Multiselect mehrzeilig"
-      *ngIf="form.group.controls.multiSelect as control"
-      [viewValue]="form.controlAt('multiSelect').value.join(', ')">
-      <!-- multiselect mit ng-select -->
-      <ng-select
-        svuiNgSelect
-        bindLabel='dummy'
-        appendTo="body"
-        [formControl]="control"
-        [searchable]="true"
-        [multiple]="true"
-        [allowBadgesToWrap]="true"
-        [placeholder]="'global.select.bitte-auswaehlen' | transloco">
-        @for (item of selectItems; track item.value; let index = $index) {
-          <ng-option [value]="item.value">
-            <span class="w-100 d-flex justify-content-between">
-              <span>{{ item.label }}</span>
-            </span>
-          </ng-option>
-        }
-      </ng-select>
-    </svui-form-control>
+    @if (form.group.controls.multiSelect; as control) {
+      <svui-form-control
+        label="Multiselect mehrzeilig"
+        [viewValue]="form.controlAt('multiSelect').value.join(', ')">
+        <!-- multiselect mit ng-select -->
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="control"
+          [searchable]="true"
+          [multiple]="true"
+          [allowBadgesToWrap]="true"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco">
+          @for (item of selectItems; track item.value; let index = $index) {
+            <ng-option [value]="item.value">
+              <span class="w-100 d-flex justify-content-between">
+                <span>{{ item.label }}</span>
+              </span>
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+    }
 
-    <svui-form-control label="Typeahead" *ngIf="form.group.controls.select2 as control"
-                       [viewValue]="form.controlAt('select2').value">
-      <!-- typeahead mit ng-select -->
-      <ng-select
-        svuiNgSelect
-        bindLabel='dummy'
-        appendTo="body"
-        [formControl]="control" [searchable]="true"
-        [placeholder]="'global.select.bitte-tippen' | transloco">
-        @for (item of selectItems; track item.value; let index = $index) {
-          <ng-option [value]="item.value">
-            <span class="w-100 d-flex justify-content-between">
-              <span>{{ item.label }}</span>
-            </span>
-          </ng-option>
-        }
-      </ng-select>
-    </svui-form-control>
+    @if (form.group.controls.select2; as control) {
+      <svui-form-control label="Typeahead"
+        [viewValue]="form.controlAt('select2').value">
+        <!-- typeahead mit ng-select -->
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="control" [searchable]="true"
+          [placeholder]="'global.select.bitte-tippen' | transloco">
+          @for (item of selectItems; track item.value; let index = $index) {
+            <ng-option [value]="item.value">
+              <span class="w-100 d-flex justify-content-between">
+                <span>{{ item.label }}</span>
+              </span>
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+    }
 
 
-    <svui-form-control
-      label="Kind"
-      *ngIf="form.group.controls.kind as control"
-      [viewValue]="form.group.controls.kind.value?.name">
-      <feat-kind-search
-        [placeholder]="'shared.suche.placeholder' | transloco"
-        [myFormControl]="control"/>
-    </svui-form-control>
+    @if (form.group.controls.kind; as control) {
+      <svui-form-control
+        label="Kind"
+        [viewValue]="form.group.controls.kind.value?.name">
+        <feat-kind-search
+          [placeholder]="'shared.suche.placeholder' | transloco"
+          [myFormControl]="control"/>
+      </svui-form-control>
+    }
 
-    <svui-form-control
-      label="Kind (roundedVariant)"
-      *ngIf="form.group.controls.kind as control"
-      [viewValue]="form.group.controls.kind.value?.name">
-      <feat-kind-search
-        styleVariant="rounded"
-        [clearable]="false"
-        [placeholder]="'shared.suche.placeholder' | transloco"
-        [myFormControl]="control"/>
-    </svui-form-control>
+    @if (form.group.controls.kind; as control) {
+      <svui-form-control
+        label="Kind (roundedVariant)"
+        [viewValue]="form.group.controls.kind.value?.name">
+        <feat-kind-search
+          styleVariant="rounded"
+          [clearable]="false"
+          [placeholder]="'shared.suche.placeholder' | transloco"
+          [myFormControl]="control"/>
+      </svui-form-control>
+    }
 
 
     <h2 svuiHeading="formSection">Typeahead deprecated</h2>
     <svui-form-control label="Typeahead (Normalverhalten)"
-                       [viewValue]="form.controlAt('typeahead').value">
+      [viewValue]="form.controlAt('typeahead').value">
       <input
         svuiTypeahead
         [filterFn]="getResultsForTerm$"
         [formatter]="formatter"
         noResultsMessage="Kein Resultat gefunden"
         [formControl]="form.controlAt('typeahead')"
-      />
+        />
     </svui-form-control>
 
     <svui-form-control
       size="double"
       label="Typeahead, das automatisch aufgeht (nur sinnvoll, wenn Liste im Frontend vorhanden)"
       [viewValue]="form.controlAt('typeahead2').value"
-    >
+      >
       <input
         svuiTypeahead
         [filterFn]="getResultsForTerm$"
@@ -273,30 +279,30 @@
         [openOnFocus]="true"
         noResultsMessage="Kein Resultat gefunden"
         [formControl]="form.controlAt('typeahead2')"
-      />
+        />
     </svui-form-control>
 
 
     <h2 svuiHeading="formSection">Textarea</h2>
     <svui-form-control label="textarea" size="full"
-                       [viewValue]="form.controlAt('textarea').value">
+      [viewValue]="form.controlAt('textarea').value">
       <textarea svuiTextarea [formControl]="form.controlAt('textarea')" placeholder="width full"></textarea>
     </svui-form-control>
 
 
     <h2 svuiHeading="formSection">Breite manuell</h2>
     <svui-form-control label="width half" size="half"
-                       [viewValue]="form.controlAt('text2').value">
+      [viewValue]="form.controlAt('text2').value">
       <input svuiTextInput [formControl]="form.controlAt('text2')"/>
     </svui-form-control>
 
     <svui-form-control label="width double" size="double"
-                       [viewValue]="form.controlAt('text3').value">
+      [viewValue]="form.controlAt('text3').value">
       <input svuiTextInput [formControl]="form.controlAt('text3')"/>
     </svui-form-control>
 
     <svui-form-control label="width half" size="half"
-                       [viewValue]="form.controlAt('text4').value">
+      [viewValue]="form.controlAt('text4').value">
       <input svuiTextInput [formControl]="form.controlAt('text4')"/>
     </svui-form-control>
 

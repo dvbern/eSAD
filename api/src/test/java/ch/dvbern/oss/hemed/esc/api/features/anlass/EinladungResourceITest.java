@@ -1,4 +1,29 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
@@ -6,29 +31,48 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilungRepo;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.PerzentileGroesse;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrungRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewichtRepo;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogrammRepo;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopieRepo;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungTabsSavedJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.UntersuchungTabsSavedJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDatenRepo;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmenRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilungRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriageRepo;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.ArtAbmeldung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.BrilleLinsenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.EinladungStatus;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.GrundAbmeldung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.NaechsteStation;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.ArtAbmeldung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.GrundAbmeldung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.NaechsteStation;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungRepo;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizService;
+import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.KindAktivitaetHistoryRepo;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AufgabeService;
@@ -37,6 +81,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
+import ch.dvbern.oss.hemed.esc.api.testutil.assertj.AppValidationErrorJsonSpecAssert;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.EinladungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.NotizBuilder;
@@ -60,12 +105,6 @@ import io.quarkus.arc.ArcUndeclaredThrowableException;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response.Status;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -418,10 +457,11 @@ class EinladungResourceITest extends AbstractITest {
         // ACT
         NotizSaveJsonSpec saveNotizJson = NotizBuilder.createJaxSpec(builder -> builder
             .withTitel("Impfausweis")
+            .withNotizTyp(NotizTyp.IMPFAUSWEIS)
             .withVerantwortlicher(fixtureService.createBenutzer())
             .withDossier(einladung.getDossier())).getData();
         String saveNotizJsonString = objectMapper.writeValueAsString(saveNotizJson);
-        NotizJsonSpec result = api.einladungResourceCreateImpfausweisNotiz()
+        NotizJsonSpec result = api.einladungResourceCreateNotiz()
             .anlassIdPath(einladung.getAnlass().getId().getId())
             .einladungIdPath(einladung.getId().getId())
             .reqSpec(spec -> {
@@ -439,7 +479,7 @@ class EinladungResourceITest extends AbstractITest {
             .extracting(LabelJsonSpec::getId)
             .contains(Label.ID_LABEL_IMPFAUSWEIS.getId());
         Einladung einladungChanged = einladungService.getById(einladung.getId());
-        assertThat(einladungChanged.getImpfausweis()).isNotNull();
+        assertThat(einladungChanged.getImpfausweisNotiz()).isPresent();
     }
 
     @Test
@@ -453,12 +493,13 @@ class EinladungResourceITest extends AbstractITest {
         // ACT
         NotizSaveJsonSpec saveNotizJson = NotizBuilder.createJaxSpec(builder -> builder
             .withTitel("Impfausweis with File")
+            .withNotizTyp(NotizTyp.IMPFAUSWEIS)
             .withVerantwortlicher(fixtureService.createBenutzer())
             .withDossier(einladung.getDossier())).getData();
 
         String saveNotizJsonString = objectMapper.writeValueAsString(saveNotizJson);
 
-        NotizJsonSpec result = api.einladungResourceCreateImpfausweisNotiz()
+        NotizJsonSpec result = api.einladungResourceCreateNotiz()
             .anlassIdPath(einladung.getAnlass().getId().getId())
             .einladungIdPath(einladung.getId().getId())
             .reqSpec(spec -> {
@@ -495,7 +536,7 @@ class EinladungResourceITest extends AbstractITest {
             .hasSize(4);
 
         Einladung einladungChanged = einladungService.getById(einladung.getId());
-        assertThat(einladungChanged.getImpfausweis()).isNotNull();
+        assertThat(einladungChanged.getImpfausweisNotiz()).isPresent();
     }
 
     @Test
@@ -506,10 +547,11 @@ class EinladungResourceITest extends AbstractITest {
         // ACT
         NotizSaveJsonSpec saveNotizJson = NotizBuilder.createJaxSpec(builder -> builder
             .withTitel("Fragebogen")
+            .withNotizTyp(NotizTyp.FRAGEBOGEN)
             .withVerantwortlicher(fixtureService.createBenutzer())
             .withDossier(einladung.getDossier())).getData();
         String saveNotizJsonString = objectMapper.writeValueAsString(saveNotizJson);
-        NotizJsonSpec result = api.einladungResourceCreateFragebogenNotiz()
+        NotizJsonSpec result = api.einladungResourceCreateNotiz()
             .anlassIdPath(einladung.getAnlass().getId().getId())
             .einladungIdPath(einladung.getId().getId())
             .reqSpec(spec -> {
@@ -527,7 +569,7 @@ class EinladungResourceITest extends AbstractITest {
             .extracting(LabelJsonSpec::getId)
             .contains(Label.ID_LABEL_FRAGEBOGEN.getId());
         Einladung einladungChanged = einladungService.getById(einladung.getId());
-        assertThat(einladungChanged.getFragebogen()).isNotNull();
+        assertThat(einladungChanged.getFragebogenNotiz()).isPresent();
     }
 
     @Test
@@ -540,13 +582,14 @@ class EinladungResourceITest extends AbstractITest {
         // ACT
         NotizSaveJsonSpec saveNotizJson = NotizBuilder.createJaxSpec(builder -> builder
             .withTitel("Fragebogen with File")
+            .withNotizTyp(NotizTyp.FRAGEBOGEN)
             .withVerantwortlicher(fixtureService.createBenutzer())
             .withDossier(einladung.getDossier())).getData();
 
         try {
             String saveNotizJsonString = objectMapper.writeValueAsString(saveNotizJson);
 
-            NotizJsonSpec result = api.einladungResourceCreateFragebogenNotiz()
+            NotizJsonSpec result = api.einladungResourceCreateNotiz()
                 .anlassIdPath(einladung.getAnlass().getId().getId())
                 .einladungIdPath(einladung.getId().getId())
                 .reqSpec(spec -> {
@@ -570,10 +613,100 @@ class EinladungResourceITest extends AbstractITest {
                 .hasSize(1);
 
             Einladung einladungChanged = einladungService.getById(einladung.getId());
-            assertThat(einladungChanged.getFragebogen()).isNotNull();
+            assertThat(einladungChanged.getFragebogenNotiz()).isPresent();
         } catch (Exception e) {
             throw new RuntimeException("Error converting NotizSaveJsonSpec to JSON", e);
         }
+    }
+
+    @Test
+    @TestAsAdminBS
+    void createAnmeldungBestaetigungNotiz() throws JsonProcessingException {
+        // ARRANGE
+        Einladung einladung = fixtureService.createEinladung();
+        // ACT
+        NotizSaveJsonSpec saveNotizJson = NotizBuilder.createJaxSpec(builder -> builder
+            .withTitel("Anmeldung / Bestatigung")
+            .withNotizTyp(NotizTyp.ANMELDUNG_BESTAETIGUNG)
+            .withVerantwortlicher(fixtureService.createBenutzer())
+            .withDossier(einladung.getDossier())).getData();
+        String saveNotizJsonString = objectMapper.writeValueAsString(saveNotizJson);
+        NotizJsonSpec result = api.einladungResourceCreateNotiz()
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .einladungIdPath(einladung.getId().getId())
+            .reqSpec(spec -> {
+                spec.setContentType("multipart/form-data");
+                spec.addMultiPart("notizCreateJson", saveNotizJsonString, "application/json");
+            })
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.CREATED.getStatusCode())
+            .extract().as(NotizJsonSpec.class);
+        // ASSERT
+        assertThat(result.getData().getTitel()).isEqualTo("Anmeldung / Bestatigung");
+        assertThat(result.getData().getLabels())
+            .extracting(LabelJsonSpec::getId)
+            .contains(Label.ID_LABEL_ANMELDUNG_BESTAETIGUNG.getId());
+        Einladung einladungChanged = einladungService.getById(einladung.getId());
+        assertThat(einladungChanged.getAnmeldungBestaetigungNotiz()).isPresent();
+    }
+
+    @Test
+    @TestAsAdminBS
+    void createAnmeldungBestaetigungNotizWithFiles() throws IOException {
+        // ARRANGE
+        Einladung einladung = fixtureService.createEinladung();
+        File testFile = TestUtil.loadTestImage();
+        byte[] testFileBytes = Files.readAllBytes(TestUtil.loadTestPDF().toPath());
+
+        // ACT
+        NotizSaveJsonSpec saveNotizJson = NotizBuilder.createJaxSpec(builder -> builder
+            .withTitel("Anmeldung / Bestatigung with File")
+            .withNotizTyp(NotizTyp.ANMELDUNG_BESTAETIGUNG)
+            .withVerantwortlicher(fixtureService.createBenutzer())
+            .withDossier(einladung.getDossier())).getData();
+
+        String saveNotizJsonString = objectMapper.writeValueAsString(saveNotizJson);
+
+        NotizJsonSpec result = api.einladungResourceCreateNotiz()
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .einladungIdPath(einladung.getId().getId())
+            .reqSpec(spec -> {
+                spec.setContentType("multipart/form-data");
+                spec.addMultiPart("notizCreateJson", saveNotizJsonString, "application/json");
+            })
+            ._fileMultiPart(testFile)
+            // using the generated file2 method does not work, it seems to be using the 'file' name as form name
+            .reqSpec(spec -> {
+                spec.setContentType("multipart/form-data");
+                spec.addMultiPart("file2", "terstfile2name.pdf", testFileBytes);
+            })
+            .reqSpec(spec -> {
+                spec.setContentType("multipart/form-data");
+                spec.addMultiPart("file3", "terstfile3name.pdf", testFileBytes);
+            })
+            .reqSpec(spec -> {
+                spec.setContentType("multipart/form-data");
+                spec.addMultiPart("file4", "terstfile4name.pdf", testFileBytes);
+            })
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.CREATED.getStatusCode())
+            .extract().as(NotizJsonSpec.class);
+
+        // ASSERT
+        assertThat(result.getData().getTitel()).isEqualTo("Anmeldung / Bestatigung with File");
+        assertThat(result.getData().getLabels())
+            .extracting(LabelJsonSpec::getId)
+            .contains(Label.ID_LABEL_ANMELDUNG_BESTAETIGUNG.getId());
+        assertThat(result.getData().getFiles())
+            .isNotEmpty()
+            .hasSize(4);
+
+        Einladung einladungChanged = einladungService.getById(einladung.getId());
+        assertThat(einladungChanged.getAnmeldungBestaetigungNotiz()).isPresent();
     }
 
     @Test
@@ -781,7 +914,8 @@ class EinladungResourceITest extends AbstractITest {
         );
 
         String expectedValidationErrorMessage = String.format(
-            "Die Einladung für den Anlass %s konnte nicht erstellt werden, da das Kind %s %s inaktiv ist. Inaktive Kinder können nicht hinzugefügt werden.",
+            "Die Einladung für den Anlass %s konnte nicht erstellt werden, da das Kind %s %s inaktiv ist. Inaktive "
+                + "Kinder können nicht hinzugefügt werden.",
             anlass.getId(),
             kind.getNameVorname(),
             kind.getId());
@@ -804,7 +938,6 @@ class EinladungResourceITest extends AbstractITest {
             .isEqualTo(expectedValidationErrorMessage);
     }
 
-
     @Test
     @TestAsAdminBS
     void createEinladungNachzuegler_should_move_impfausweis_to_new_einladung() {
@@ -819,12 +952,17 @@ class EinladungResourceITest extends AbstractITest {
                 .withAnlassTyp(AnlassTyp.KLASSE_4))
         );
         Dossier dossier = fixtureService.createDossier();
-        Einladung einladungNichtTeilgenommen = fixtureService.createEinladung(anlassNichtTeilgenommen, dossier, EinladungStatus.NACHZUEGLER);
+        Einladung einladungNichtTeilgenommen =
+            fixtureService.createEinladung(anlassNichtTeilgenommen, dossier, EinladungStatus.NACHZUEGLER);
+
         fixtureService.createImpfausweisNotiz(einladungNichtTeilgenommen.getId());
         fixtureService.createFragebogenNotiz(einladungNichtTeilgenommen.getId());
+        fixtureService.createAnmeldungBestaetigungNotiz(einladungNichtTeilgenommen.getId());
+
         einladungNichtTeilgenommen = einladungService.getById(einladungNichtTeilgenommen.getId());
-        assertThat(einladungNichtTeilgenommen.getImpfausweis()).isNotNull();
-        assertThat(einladungNichtTeilgenommen.getFragebogen()).isNotNull();
+        assertThat(einladungNichtTeilgenommen.getImpfausweisNotiz()).isPresent();
+        assertThat(einladungNichtTeilgenommen.getFragebogenNotiz()).isPresent();
+        assertThat(einladungNichtTeilgenommen.getAnmeldungBestaetigungNotiz()).isPresent();
 
         // ACT
         String titleAnlassAlsNachzuegler = "Mein Anlass Nachzügler";
@@ -854,26 +992,39 @@ class EinladungResourceITest extends AbstractITest {
             .anyMatch(jsonSpec -> dossier.getKind().getId().getId().equals(jsonSpec.getKind().getId()));
         // Reload Data
         Einladung einladungNichtTeilgenommenReloaded = einladungService.getById(einladungNichtTeilgenommen.getId());
-        ID<Einladung> einladungAlsNachzueglerID = ID.of(UUID.fromString(result.getEinladungList().getFirst().getId()), Einladung.class);
+        ID<Einladung> einladungAlsNachzueglerID =
+            ID.of(UUID.fromString(result.getEinladungList().getFirst().getId()), Einladung.class);
         Einladung einladungAlsNachzuegler = einladungService.getById(einladungAlsNachzueglerID);
         assertThat(einladungNichtTeilgenommenReloaded.getEinladungStatus()).isEqualTo(EinladungStatus.NACHZUEGLER);
         assertThat(einladungAlsNachzuegler.getEinladungStatus()).isEqualTo(EinladungStatus.TEILNAHME_BESTAETIGT);
         // Die Notizen wurden von der alten Einladung auf die neue Einladung verschoben
-        assertThat(einladungNichtTeilgenommenReloaded.getImpfausweis()).isNull();
-        assertThat(einladungNichtTeilgenommenReloaded.getFragebogen()).isNull();
-        assertThat(einladungAlsNachzuegler.getImpfausweis()).isNotNull();
-        assertThat(einladungAlsNachzuegler.getFragebogen()).isNotNull();
+        assertThat(einladungNichtTeilgenommenReloaded.getImpfausweisNotiz()).isEmpty();
+        assertThat(einladungNichtTeilgenommenReloaded.getFragebogenNotiz()).isEmpty();
+        assertThat(einladungNichtTeilgenommenReloaded.getAnmeldungBestaetigungNotiz()).isEmpty();
+        assertThat(einladungAlsNachzuegler.getImpfausweisNotiz()).isPresent();
+        assertThat(einladungAlsNachzuegler.getFragebogenNotiz()).isPresent();
+        assertThat(einladungAlsNachzuegler.getAnmeldungBestaetigungNotiz()).isPresent();
 
-        assertThat(einladungAlsNachzuegler.getImpfausweis().getDossier()).isEqualTo(einladungNichtTeilgenommen.getImpfausweis().getDossier());
-        assertThat(einladungAlsNachzuegler.getFragebogen().getDossier()).isEqualTo(einladungNichtTeilgenommen.getFragebogen().getDossier());
-        assertThat(einladungAlsNachzuegler.getImpfausweis().getStatus()).isEqualTo(einladungNichtTeilgenommen.getImpfausweis().getStatus());
-        assertThat(einladungAlsNachzuegler.getFragebogen().getStatus()).isEqualTo(einladungNichtTeilgenommen.getFragebogen().getStatus());
-        // Im Titel steht der Name des neuen Anlasses
-        assertThat(einladungAlsNachzuegler.getImpfausweis().getTitel()).contains(titleAnlassAlsNachzuegler);
-        assertThat(einladungAlsNachzuegler.getFragebogen().getTitel()).contains(titleAnlassAlsNachzuegler);
-        // In der Bemerkung steht der Titel des Anlasses, der nicht besucht wurde
-        assertThat(einladungAlsNachzuegler.getImpfausweis().getBemerkungen()).contains(titleAnlassNichtTeilgenommen);
-        assertThat(einladungAlsNachzuegler.getFragebogen().getBemerkungen()).contains(titleAnlassNichtTeilgenommen);
+        Notiz nachzueglerEinladungImpfausweis = einladungAlsNachzuegler.getImpfausweisNotiz().get();
+        Notiz nichtTeilgenommenEinladungImpfausweis = einladungNichtTeilgenommen.getImpfausweisNotiz().get();
+        assertThat(nachzueglerEinladungImpfausweis.getDossier()).isEqualTo(nichtTeilgenommenEinladungImpfausweis.getDossier());
+        assertThat(nachzueglerEinladungImpfausweis.getStatus()).isEqualTo(nichtTeilgenommenEinladungImpfausweis.getStatus());
+        assertThat(nachzueglerEinladungImpfausweis.getTitel()).contains(titleAnlassAlsNachzuegler);
+        assertThat(nachzueglerEinladungImpfausweis.getBemerkungen()).contains(titleAnlassNichtTeilgenommen);
+
+        Notiz nachzueglerEinladungFragebogen = einladungAlsNachzuegler.getFragebogenNotiz().get();
+        Notiz nichtTeilgenommenEinladungFragebogen = einladungNichtTeilgenommen.getFragebogenNotiz().get();
+        assertThat(nachzueglerEinladungFragebogen.getDossier()).isEqualTo(nichtTeilgenommenEinladungFragebogen.getDossier());
+        assertThat(nachzueglerEinladungFragebogen.getStatus()).isEqualTo(nichtTeilgenommenEinladungFragebogen.getStatus());
+        assertThat(nachzueglerEinladungFragebogen.getTitel()).contains(titleAnlassAlsNachzuegler);
+        assertThat(nachzueglerEinladungFragebogen.getBemerkungen()).contains(titleAnlassNichtTeilgenommen);
+
+        Notiz nachzueglerEinladungAnmeldung = einladungAlsNachzuegler.getAnmeldungBestaetigungNotiz().get();
+        Notiz nichtTeilgenommenEinladungAnmeldung = einladungNichtTeilgenommen.getAnmeldungBestaetigungNotiz().get();
+        assertThat(nachzueglerEinladungAnmeldung.getDossier()).isEqualTo(nichtTeilgenommenEinladungAnmeldung.getDossier());
+        assertThat(nachzueglerEinladungAnmeldung.getStatus()).isEqualTo(nichtTeilgenommenEinladungAnmeldung.getStatus());
+        assertThat(nachzueglerEinladungAnmeldung.getTitel()).contains(titleAnlassAlsNachzuegler);
+        assertThat(nachzueglerEinladungAnmeldung.getBemerkungen()).contains(titleAnlassNichtTeilgenommen);
     }
 
     @Test
@@ -916,6 +1067,7 @@ class EinladungResourceITest extends AbstractITest {
         fixtureService.createUntersuchungImpfstatusKrankheit(untersuchung.getUntersuchungImpfungen());
         fixtureService.createImpfausweisNotiz(untersuchung.getEinladung().getId());
         fixtureService.createFragebogenNotiz(untersuchung.getEinladung().getId());
+        fixtureService.createAnmeldungBestaetigungNotiz(untersuchung.getEinladung().getId());
         fixtureService.createAbmeldungsgrundNotiz(untersuchung.getEinladung().getId());
 
         untersuchung = untersuchungRepo.getById(untersuchung.getId());
@@ -932,15 +1084,25 @@ class EinladungResourceITest extends AbstractITest {
         assertThat(untersuchung.getUntersuchungTriage()).isNotNull();
         assertThat(untersuchung.getUntersuchungGroesseGewicht()).isNotNull();
         assertThat(untersuchung.getUntersuchungArztBeurteilung()).isNotNull();
-        assertThat(untersuchung.getEinladung().getImpfausweis()).isNotNull();
-        ID<Notiz> notizImpfausweisId = untersuchung.getEinladung().getImpfausweis().getId();
+
+        Einladung einladung = einladungService.getById(untersuchung.getEinladung().getId());
+
+        assertThat(einladung.getImpfausweisNotiz()).isPresent();
+        ID<Notiz> notizImpfausweisId = einladung.getImpfausweisNotiz().get().getId();
         assertThat(notizService.getById(notizImpfausweisId)).isNotNull();
-        assertThat(untersuchung.getEinladung().getFragebogen()).isNotNull();
-        ID<Notiz> notizFragebogenId = untersuchung.getEinladung().getFragebogen().getId();
+
+        assertThat(einladung.getFragebogenNotiz()).isPresent();
+        ID<Notiz> notizFragebogenId = einladung.getFragebogenNotiz().get().getId();
         assertThat(notizService.getById(notizFragebogenId)).isNotNull();
+
+        assertThat(einladung.getAnmeldungBestaetigungNotiz()).isPresent();
+        ID<Notiz> notizAnmeldungBestaetigungId = einladung.getAnmeldungBestaetigungNotiz().get().getId();
+        assertThat(notizService.getById(notizAnmeldungBestaetigungId)).isNotNull();
+
         assertThat(untersuchung.getEinladung().getAbmeldungsNotiz()).isNotNull();
         ID<Notiz> notizAbmeldungsgrundId = untersuchung.getEinladung().getAbmeldungsNotiz().getId();
         assertThat(notizService.getById(notizAbmeldungsgrundId)).isNotNull();
+
         // ACT
         List<ID<Einladung>> einladungIdList = List.of(untersuchung.getEinladung().getId());
         einladungService.removeEinladungen(einladungIdList);
@@ -955,7 +1117,8 @@ class EinladungResourceITest extends AbstractITest {
             .getId())).isEmpty();
         assertThat(untersuchungHoerenOtoskopieRepo.findById(untersuchung.getUntersuchungHoerenOtoskopie()
             .getId())).isEmpty();
-        assertThat(untersuchungSehenBeurteilungRepo.findById(untersuchung.getUntersuchungSehenBeurteilung().getId())).isEmpty();
+        assertThat(untersuchungSehenBeurteilungRepo.findById(untersuchung.getUntersuchungSehenBeurteilung()
+            .getId())).isEmpty();
         assertThat(untersuchungTriageRepo.findById(untersuchung.getUntersuchungTriage().getId())).isEmpty();
         assertThat(untersuchungGroesseGewichtRepo.findById(untersuchung.getUntersuchungGroesseGewicht()
             .getId())).isEmpty();
@@ -964,7 +1127,8 @@ class EinladungResourceITest extends AbstractITest {
         assertThat(notizService.findById(notizFragebogenId)).isEmpty();
         assertThat(notizService.findById(notizAbmeldungsgrundId)).isEmpty();
         assertThat(untersuchungMassnahmenRepo.findById(untersuchung.getUntersuchungMassnahmen().getId())).isEmpty();
-        assertThat(untersuchungArztBeurteilungRepo.findById(untersuchung.getUntersuchungArztBeurteilung().getId())).isEmpty();
+        assertThat(untersuchungArztBeurteilungRepo.findById(untersuchung.getUntersuchungArztBeurteilung()
+            .getId())).isEmpty();
     }
 
     @Test
@@ -1183,4 +1347,41 @@ class EinladungResourceITest extends AbstractITest {
             .statusCode(Status.OK.getStatusCode())
             .extract().as(EinladungJsonSpec.class);
     }
+
+    @Test
+    @TestAsAdminBS
+    void createMultiple_FragebogenNotizen_throws_error() throws JsonProcessingException {
+        // ARRANGE
+        Einladung einladung = fixtureService.createEinladung();
+        fixtureService.createFragebogenNotiz(einladung.getId());
+
+        // ACT
+        NotizSaveJsonSpec saveNotizJson = NotizBuilder.createJaxSpec(builder -> builder
+            .withTitel("Fragebogen")
+            .withNotizTyp(NotizTyp.FRAGEBOGEN)
+            .withVerantwortlicher(fixtureService.createBenutzer())
+            .withDossier(einladung.getDossier())).getData();
+        String saveNotizJsonString = objectMapper.writeValueAsString(saveNotizJson);
+
+        AppValidationErrorJsonSpec violation = api.einladungResourceCreateNotiz()
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .einladungIdPath(einladung.getId().getId())
+            .reqSpec(spec -> {
+                spec.setContentType("multipart/form-data");
+                spec.addMultiPart("notizCreateJson", saveNotizJsonString, "application/json");
+            })
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract().as(AppValidationErrorJsonSpec.class);
+
+        // ASSERT
+        AppValidationErrorJsonSpecAssert.assertThatAppValidationErrorJsonSpec(violation)
+            .extractingExactlyOneViolation()
+            .hasClientKey("CheckEinladungNotizUniqueness")
+            .hasRawMessageContaining("Der angegebene Notiz Typ darf nur einmal pro Einladung erstellt werden.");
+
+    }
+
 }

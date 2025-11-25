@@ -67,7 +67,8 @@ export abstract class ValidatedInputWithIdDirective implements AfterViewInit {
 
   abstract get isLabelFloatable(): boolean;
 
-  constructor(@Optional() @Self() public ngControl: NgControl) {}
+  // eslint-disable-next-line @angular-eslint/prefer-inject
+  constructor(@Optional() @Self() public ngControl: NgControl | null) {}
 
   ngAfterViewInit(): void {
     // change detection when form control was touched programmatically

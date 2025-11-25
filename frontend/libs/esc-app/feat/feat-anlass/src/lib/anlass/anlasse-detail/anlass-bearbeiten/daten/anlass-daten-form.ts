@@ -1,18 +1,19 @@
-import {DestroyRef} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {NonNullableFormBuilder, Validators} from '@angular/forms';
+import { DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NonNullableFormBuilder, Validators } from '@angular/forms';
 import {
   AnlassArt,
   AnlassConfigJson,
+  AnlassConfigOptionJson,
   AnlassJson,
   AnlassSaveJson,
   AnlassStatus,
   AnlassTyp,
   BenutzerOptionJson,
 } from '@dvb/data-access-backend';
-import {ISODateString} from '@dvb/data-access-types';
-import {globalConstants, KlassenOptionsStore, TimetravelStore} from '@dvb/feat-shared';
-import {AppValidators, BaseForm, DetailMode} from '@dvb/util-angular';
+import { ISODateString } from '@dvb/data-access-types';
+import { AnlassConfigOptionsStore, globalConstants, KlassenOptionsStore, TimetravelStore } from '@dvb/feat-shared';
+import { AppValidators, BaseForm, DetailMode } from '@dvb/util-angular';
 import {
   ensureProps,
   getDateTimeFromDateAndTime,
@@ -25,74 +26,106 @@ import {
   requireValue,
   trimToUndefined,
 } from '@dvb/util-shared';
-import {toDate} from 'date-fns';
-import {distinctUntilChanged} from 'rxjs';
-import {AnlassKinderStore} from '../../anlass-kinder.store';
+import { toDate } from 'date-fns';
+import { combineLatest, distinctUntilChanged, filter, map } from 'rxjs';
+import { AnlassKinderStore } from '../../anlass-kinder.store';
 
 type Config = {
-  fb: NonNullableFormBuilder,
-  destroyRef: DestroyRef,
-  klassenOptionsStore: KlassenOptionsStore,
-  anlassKinderStore: AnlassKinderStore,
-  anlassConfig: AnlassConfigJson | Nullish,
-  timetravelStore: TimetravelStore
-}
+  fb: NonNullableFormBuilder;
+  destroyRef: DestroyRef;
+  klassenOptionsStore: KlassenOptionsStore;
+  anlassKinderStore: AnlassKinderStore;
+  anlassConfig: AnlassConfigJson | Nullish;
+  timetravelStore: TimetravelStore;
+  anlassConfigOptionsStore: AnlassConfigOptionsStore;
+  isNew: boolean;
+};
 
 function makeForm(config: Config) {
   const fb = config.fb;
 
-  const group = fb.group({
-    titel: fb.control<string>('', [Validators.required, AppValidators.dbMaxLength()]),
-    datum: fb.control<ISODateString | undefined>(undefined, [Validators.required]),
-    schuljahr: fb.control<number | undefined>(undefined, [Validators.required]),
-    anlassArt: fb.control<AnlassArt | undefined>(undefined, Validators.required),
-    anlassTyp: fb.control<AnlassTyp | undefined>(undefined, Validators.required),
-    zeitVon: fb.control<ISOTime | undefined>(undefined),
-    zeitBis: fb.control<ISOTime | undefined>(undefined),
-    arzt: fb.control<BenutzerOptionJson | undefined>(undefined),
-    mpa: fb.control<BenutzerOptionJson | undefined>(undefined),
-    weiterePerson: fb.control<BenutzerOptionJson | undefined>(undefined),
-    anlassStatus: fb.control<AnlassStatus>(AnlassStatus.IN_PLANUNG, Validators.required),
-    arztInfo: fb.control<string>('', AppValidators.dbMaxLength()),
-    mpaInfo: fb.control<string>('', AppValidators.dbMaxLength()),
-    weiterePersonInfo: fb.control<string>('', AppValidators.dbMaxLength()),
-    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
-  }, {
-    validators: [AppValidators.zeitBisIsAfterZeitVon('zeitVon', 'zeitBis')],
-  });
+  const group = fb.group(
+    {
+      titel: fb.control<string>('', [Validators.required, AppValidators.dbMaxLength()]),
+      datum: fb.control<ISODateString | undefined>(undefined, [Validators.required]),
+      // Wird benötigt zum sicherstellen, dass beim Datumswechsel nicht in ein anderes Schuljahr gewechselt wird. Da
+      // Schuljahr individuell wechselbar ist können wir uns nicht darauf verlassen.
+      originalDatum: fb.control<ISODateString | undefined>({ value: undefined, disabled: true }),
+      schuljahr: fb.control<number | undefined>(undefined, [Validators.required]),
+      anlassConfigOption: fb.control<AnlassConfigOptionJson | undefined>(undefined, Validators.required),
+      anlassArt: fb.control<AnlassArt | undefined>(undefined, Validators.required),
+      anlassTyp: fb.control<AnlassTyp | undefined>(undefined, Validators.required),
+      zeitVon: fb.control<ISOTime | undefined>(undefined),
+      zeitBis: fb.control<ISOTime | undefined>(undefined),
+      arzt: fb.control<BenutzerOptionJson | undefined>(undefined),
+      mpa: fb.control<BenutzerOptionJson | undefined>(undefined),
+      weiterePerson: fb.control<BenutzerOptionJson | undefined>(undefined),
+      anlassStatus: fb.control<AnlassStatus>(AnlassStatus.IN_PLANUNG, Validators.required),
+      arztInfo: fb.control<string>('', AppValidators.dbMaxLength()),
+      mpaInfo: fb.control<string>('', AppValidators.dbMaxLength()),
+      weiterePersonInfo: fb.control<string>('', AppValidators.dbMaxLength()),
+      version: fb.control<number | Nullish>({ value: undefined, disabled: true }),
+    },
+    {
+      validators: [
+        AppValidators.zeitBisIsAfterZeitVon('zeitVon', 'zeitBis'),
+        AppValidators.datumStaysInSameSchuljahr(config.isNew, 'datum', 'originalDatum'),
+      ],
+    },
+  );
 
-  // Times must be set in tandem
-  const handleTimeInputsEmpty = () => {
-    if (group.controls.zeitVon.value?.length === 0 && group.controls.zeitBis.value?.length === 0) {
-      group.controls.zeitVon.updateValueAndValidity();
-      group.controls.zeitBis.updateValueAndValidity();
-    }
-  };
+  group.controls.zeitVon.setValidators([AppValidators.requiredIfValidator(() => !!group.controls.zeitBis.value)]);
+  group.controls.zeitBis.setValidators([AppValidators.requiredIfValidator(() => !!group.controls.zeitVon.value)]);
 
-  group.controls.datum.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef)).subscribe({
-    next: datum => {
-      const year = getSchoolYearFromISODateString(datum);
-      if (isNotNullish(year)) {
+  subscribeToFormChanges(group, config);
+
+  return group;
+}
+
+function subscribeToFormChanges(group: ReturnType<typeof makeForm>, config: Config) {
+  if (config.isNew) {
+    combineLatest([
+      group.controls.anlassTyp.valueChanges.pipe(distinctUntilChanged()),
+      group.controls.datum.valueChanges.pipe(distinctUntilChanged(), map(getSchoolYearFromISODateString)),
+    ])
+      .pipe(takeUntilDestroyed(config.destroyRef), filter(isNotNullish))
+      .subscribe({
+        next: () => {
+          const datum = group.controls.datum.value;
+          const anlassTyp = group.controls.anlassTyp.value;
+          const option = config.anlassConfigOptionsStore.getDefaultOptionForAnlassTyp(anlassTyp, datum);
+          group.controls.anlassConfigOption.setValue(option);
+        },
+        error: console.error,
+      });
+  }
+
+  group.controls.datum.valueChanges
+    .pipe(
+      distinctUntilChanged(),
+      map(getSchoolYearFromISODateString),
+      filter(isNotNullish),
+      takeUntilDestroyed(config.destroyRef),
+    )
+    .subscribe({
+      next: year => {
         group.controls.schuljahr.setValue(year);
+      },
+      error: console.error,
+    });
+
+  combineLatest([
+    group.controls.zeitVon.valueChanges.pipe(distinctUntilChanged()),
+    group.controls.zeitBis.valueChanges.pipe(distinctUntilChanged()),
+  ]).subscribe({
+    next: () => {
+      if (group.controls.zeitVon.value?.length === 0 && group.controls.zeitBis.value?.length === 0) {
+        group.controls.zeitVon.updateValueAndValidity();
+        group.controls.zeitBis.updateValueAndValidity();
       }
     },
     error: console.error,
   });
-
-  group.controls.zeitVon.setValidators([AppValidators.requiredIfValidator(() => !!group.controls.zeitBis.value)]);
-  group.controls.zeitBis.setValidators([AppValidators.requiredIfValidator(() => !!group.controls.zeitVon.value)]);
-  group.controls.zeitVon
-    .valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef)).subscribe({
-    next: () => handleTimeInputsEmpty(),
-    error: console.error,
-  });
-  group.controls.zeitBis
-    .valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef)).subscribe({
-    next: () => handleTimeInputsEmpty(),
-    error: console.error,
-  });
-
-  return group;
 }
 
 export class AnlassDatenForm extends BaseForm<ReturnType<typeof makeForm>, AnlassSaveJson> {
@@ -107,6 +140,7 @@ export class AnlassDatenForm extends BaseForm<ReturnType<typeof makeForm>, Anlas
       ...anlass?.data,
       zeitVon: getTimeFromISODateTimeString(anlass?.data.zeitVon),
       zeitBis: getTimeFromISODateTimeString(anlass?.data.zeitBis),
+      originalDatum: anlass?.data.datum,
     });
     if (!anlass) {
       // Bei neuen Anlaessen muss das Datum in der Zukunft liegen
@@ -115,8 +149,8 @@ export class AnlassDatenForm extends BaseForm<ReturnType<typeof makeForm>, Anlas
     // Validation of anlassdatum according to config
     if (anlass) {
       const anlassConfig = anlass.anlassConfig;
-      const von = toDate(anlassConfig.gueltigkeitsZeitraum.datumVon);
-      const bis = toDate(anlassConfig.gueltigkeitsZeitraum.datumBis);
+      const von = toDate(anlassConfig.data.datumVon);
+      const bis = toDate(anlassConfig.data.datumBis);
       this.group.controls.datum.addValidators([AppValidators.dateRange(von, bis)]);
     }
   }
@@ -129,6 +163,7 @@ export class AnlassDatenForm extends BaseForm<ReturnType<typeof makeForm>, Anlas
       anlassStatus: requireFilledIn(value.anlassStatus),
       datum: requireFilledIn(value.datum),
       schuljahr: requireFilledIn(value.schuljahr),
+      anlassConfigOption: requireFilledIn(value.anlassConfigOption),
       zeitVon: getDateTimeFromDateAndTime(requireFilledIn(value.datum), value.zeitVon),
       zeitBis: getDateTimeFromDateAndTime(requireFilledIn(value.datum), value.zeitBis),
       anlassArt: requireFilledIn(value.anlassArt),

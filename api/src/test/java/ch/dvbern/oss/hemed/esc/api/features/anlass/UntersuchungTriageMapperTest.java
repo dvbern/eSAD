@@ -2,7 +2,10 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
 import java.time.LocalDate;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungTriageSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.json.UntersuchungTriageSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriageMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungTriageBuilder;
 import org.assertj.core.api.Assertions;

@@ -24,15 +24,17 @@
     <svui-collapsible-menu [loading]="false" label="{{ 'global.actionmenu.tooltip' | transloco }}">
       <a ngbDropdownItem routerLink="{{Path.PROFIL}}">{{ 'kind.dossier.link.einstellungen' | transloco }}</a>
       @if (canEditKind()) {
-        <button ngbDropdownItem (click)="editZusatzinformationen()">
-          {{ 'kind.dossier.link.zusatzinformationen' | transloco }}
-        </button>
-        <button ngbDropdownItem (click)="editImmunisierungen()">
-          {{ 'kind.dossier.link.immunisierung' | transloco }}
-        </button>
-        <button ngbDropdownItem (click)="editNachkontrolle()">
-          {{ 'kind.dossier.link.nachkontrolle' | transloco }}
-        </button>
+        @if (canWriteMedizinischeDaten()) {
+          <button ngbDropdownItem (click)="editZusatzinformationen()">
+            {{ 'kind.dossier.link.zusatzinformationen' | transloco }}
+          </button>
+          <button ngbDropdownItem (click)="editImmunisierungen()">
+            {{ 'kind.dossier.link.immunisierung' | transloco }}
+          </button>
+          <button ngbDropdownItem (click)="editNachkontrolle()">
+            {{ 'kind.dossier.link.nachkontrolle' | transloco }}
+          </button>
+        }
         @if (canDownloadDossierExport()) {
           <button ngbDropdownItem (click)="exportDossier()">
             {{ 'kind.dossier.link.exportieren' | transloco }}
@@ -46,9 +48,11 @@
                 [disabled]="!canChangeIdNr()"
                 (click)="setIdForKind()">{{ 'kind.dossier.id.setzen' | transloco }}
         </button>
-        <button ngbDropdownItem
-                (click)="briefGenerieren()">{{ 'kind.dossier.link.briefgenerieren' | transloco }}
-        </button>
+        @if (canViewBriefvorlagen()) {
+          <button ngbDropdownItem
+                  (click)="briefGenerieren()">{{ 'kind.dossier.link.briefgenerieren' | transloco }}
+          </button>
+        }
       }
     </svui-collapsible-menu>
   </svui-card-header>
@@ -78,9 +82,11 @@
     </ng-select>
 
     <!-- Nachkontrolle -->
-    @if (dossierStore.hasNachkontrolle()) {
-      <svui-status-text icon="flag" class="pt-3"
-                        (clickAction)="editNachkontrolle()" [hasClickOutput]="true"
+    @if (dossierStore.hasNachkontrolle() && canReadMedizinischeDaten()) {
+      <svui-status-text icon="flag"
+                        class="pt-3"
+                        (clickAction)="editNachkontrolle()"
+                        [hasClickOutput]="canWriteMedizinischeDaten()"
                         statusColor="info">{{ 'kind.dossier.nachkontrolle' |transloco }}
       </svui-status-text>
     }
@@ -88,25 +94,29 @@
 
   <hr>
 
-  <div class="p-3">
-    <!-- Zusatzinformationen -->
-    @if (dossierStore.hasZusatzinformationen()) {
-      <svui-status-text icon="information" [statusColor]="'danger'"
-                        (clickAction)="editZusatzinformationen()" [hasClickOutput]="true">
-        {{ 'kind.dossier.zusatzinformationen.banner' | transloco }}
-      </svui-status-text>
-    }
-    @if (dossier()?.data?.immunitaetMasern) {
-      <svui-status-text icon="vaccinated"
-                        statusColor="success">{{ 'kind.dossier.masern.immunitaet' | transloco }}
-      </svui-status-text>
-    }
-    @if (dossier()?.data?.immunitaetVarizellen) {
-      <svui-status-text icon="vaccinated"
-                        statusColor="success">{{ 'kind.dossier.varizellen.immunitaet' |transloco }}
-      </svui-status-text>
-    }
-  </div>
+  @if (canReadMedizinischeDaten()) {
+    <div class="p-3">
+      <!-- Zusatzinformationen -->
+      @if (dossierStore.hasZusatzinformationen()) {
+        <svui-status-text icon="information"
+                          [statusColor]="'danger'"
+                          (clickAction)="editZusatzinformationen()"
+                          [hasClickOutput]="canWriteMedizinischeDaten()">
+          {{ 'kind.dossier.zusatzinformationen.banner' | transloco }}
+        </svui-status-text>
+      }
+      @if (dossier()?.dataMedizinisch?.immunitaetMasern) {
+        <svui-status-text icon="vaccinated"
+                          statusColor="success">{{ 'kind.dossier.masern.immunitaet' | transloco }}
+        </svui-status-text>
+      }
+      @if (dossier()?.dataMedizinisch?.immunitaetVarizellen) {
+        <svui-status-text icon="vaccinated"
+                          statusColor="success">{{ 'kind.dossier.varizellen.immunitaet' |transloco }}
+        </svui-status-text>
+      }
+    </div>
+  }
 
   <hr>
 
@@ -153,10 +163,13 @@
         [clearable]="false"
         [disabled]="!canEditKind()"
       >
-        @for (each of benutzerOptionsStore.arztOptionsIncluding(zustaendigArzt()); track each; ) {
-          <ng-option [value]="each" [disabled]="!each.aktiv">
-            {{ each.fullName }}
-          </ng-option>
+        <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+        @if (benutzerOptionsStore.arztOptionsIncluding(zustaendigArzt()); as zustaendigArztOptions) {
+          @for (each of zustaendigArztOptions; track each; ) {
+            <ng-option [value]="each" [disabled]="!each.aktiv">
+              {{ each.fullName }}
+            </ng-option>
+          }
         }
       </ng-select>
     </svui-tile>
@@ -176,10 +189,13 @@
         [clearable]="false"
         [disabled]="!canEditKind()"
       >
-        @for (each of benutzerOptionsStore.mpaOptionsIncluding(zustaendigMPA()); track each; ) {
-          <ng-option [value]="each" [disabled]="!each.aktiv">
-            {{ each.fullName }}
-          </ng-option>
+        <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+        @if (benutzerOptionsStore.mpaOptionsIncluding(zustaendigMPA()); as zustaendigMPAOptions) {
+          @for (each of zustaendigMPAOptions; track each; ) {
+            <ng-option [value]="each" [disabled]="!each.aktiv">
+              {{ each.fullName }}
+            </ng-option>
+          }
         }
       </ng-select>
     </svui-tile>

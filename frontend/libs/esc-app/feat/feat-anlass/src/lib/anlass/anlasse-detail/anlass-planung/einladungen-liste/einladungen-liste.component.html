@@ -107,10 +107,18 @@
         >{{ 'anlass.kinder.naechstestationseit' | transloco }}
         </th>
       }
-      <th scope="col">{{ 'anlass.kinder.impfausweis' | transloco }}
-      </th>
-      <th scope="col">{{ 'anlass.kinder.fragebogen' | transloco }}
-      </th>
+      @if (anlassStore.showImpfausweis()) {
+        <th scope="col">{{ 'anlass.kinder.impfausweis' | transloco }}
+        </th>
+      }
+      @if (anlassStore.showFragebogen()) {
+        <th scope="col">{{ 'anlass.kinder.fragebogen' | transloco }}
+        </th>
+      }
+      @if (anlassStore.showAnmeldungBestaetigung()) {
+        <th scope="col">{{ 'anlass.kinder.anmeldungBestaetigung' | transloco }}
+        </th>
+      }
       <th scope="col">{{ 'global.actionmenu.col' | transloco }}
       </th>
     </tr>
@@ -148,11 +156,16 @@
             [formControl]="tableFilterForm.group.controls.geschlecht"
             [placeholder]="'global.select.bitte-auswaehlen' | transloco"
           >
+
             @for (geschlecht of geschlechter; track geschlecht) {
-              <ng-option [value]="geschlecht">
-                {{ 'Geschlecht.' + geschlecht | transloco }}
-              </ng-option>
+              <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+              @if ('Geschlecht.' + geschlecht | transloco; as translated) {
+                <ng-option [value]="geschlecht">
+                  {{ 'Geschlecht.' + geschlecht | transloco }}
+                </ng-option>
+              }
             }
+
           </ng-select>
         </svui-table-filter>
       </th>
@@ -186,9 +199,12 @@
             [placeholder]="'global.select.bitte-auswaehlen' | transloco"
           >
             @for (stufe of klassenStufeValues; track stufe) {
-              <ng-option [value]="stufe">
-                {{ 'Klassenstufe.' + stufe | transloco }}
-              </ng-option>
+              <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+              @if ('Klassenstufe.' + stufe | transloco; as translated) {
+                <ng-option [value]="stufe">
+                  {{ 'Klassenstufe.' + stufe | transloco }}
+                </ng-option>
+              }
             }
           </ng-select>
         </svui-table-filter>
@@ -205,9 +221,12 @@
               [multiple]="true"
             >
               @for (flag of anlassFlags; track flag) {
-                <ng-option [value]="flag">
-                  {{ 'Nachkontrolle.' + flag | transloco }}
-                </ng-option>
+                <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+                @if ('Nachkontrolle.' + flag | transloco; as translated) {
+                  <ng-option [value]="flag">
+                    {{ 'Nachkontrolle.' + flag | transloco }}
+                  </ng-option>
+                }
               }
             </ng-select>
           </svui-table-filter>
@@ -223,9 +242,12 @@
             [placeholder]="'global.select.bitte-auswaehlen' | transloco"
           >
             @for (status of einladungStatusValues; track status) {
-              <ng-option [value]="status">
-                {{ 'EinladungStatus.' + status | transloco }}
-              </ng-option>
+              <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+              @if ('EinladungStatus.' + status | transloco; as translated) {
+                <ng-option [value]="status">
+                  {{ 'EinladungStatus.' + status | transloco }}
+                </ng-option>
+              }
             }
           </ng-select>
         </svui-table-filter>
@@ -241,17 +263,27 @@
               [placeholder]="'global.select.bitte-auswaehlen' | transloco"
             >
               @for (station of naechsteStationValues; track station) {
-                <ng-option [value]="station">
-                  {{ 'NaechsteStation.' + station | transloco }}
-                </ng-option>
+                <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+                @if ('NaechsteStation.' + station | transloco; as translated) {
+                  <ng-option [value]="station">
+                    {{ 'NaechsteStation.' + station | transloco }}
+                  </ng-option>
+                }
               }
             </ng-select>
           </svui-table-filter>
         </th>
         <th scope="col"></th>
       }
-      <th scope="col"></th>
-      <th scope="col"></th>
+      @if (anlassStore.showImpfausweis()) {
+        <th scope="col"></th>
+      }
+      @if (anlassStore.showFragebogen()) {
+        <th scope="col"></th>
+      }
+      @if (anlassStore.showAnmeldungBestaetigung()) {
+        <th scope="col"></th>
+      }
       <th scope="col"></th>
     </tr>
     </thead>
@@ -328,7 +360,7 @@
                 bindLabel='dummy'
                 appendTo="body"
                 [clearable]="false"
-				[formControl]="einladungStatusForm.controls[item.id]"
+                [formControl]="einladungStatusForm.controls[item.id]"
                 (change)="einladungsstatusChanged(item, $event)"
                 [disabled]="store.loader.isLoading() || !anlassStore.canUserEditAnlassInCurrentState()"
                 [placeholder]="'global.select.bitte-auswaehlen' | transloco ">
@@ -352,46 +384,69 @@
               }}
             </td>
           }
-          <td>
-            @let hasImpfausweisFile = (item.data.impfausweis?.data?.files?.length ?? 0) > 0;
-            @if (hasImpfausweisFile) {
-              <button svuiIconOnlyButton="success"
-                      type="button"
-                      [tooltip]="'global.tooltip.impfausweis' | transloco"
-                      [icon]="'check'"
-                      [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
-                      (click)="gotoImpfausweis(item)">
-              </button>
-            } @else {
-              <button svuiIconOnlyButton="primary"
-                      type="button"
-                      [tooltip]="'global.tooltip.impfausweis.upload' | transloco"
-                      [icon]="'upload'"
-                      [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
-                      (click)="gotoImpfausweis(item)">
-              </button>
-            }
-          </td>
-          <td>
-            @let hasFragebogenFile = (item.data.fragebogen?.data?.files?.length ?? 0) > 0;
-            @if (hasFragebogenFile) {
-              <button svuiIconOnlyButton="success"
-                      type="button"
-                      [tooltip]="'global.tooltip.fragebogen' | transloco"
-                      [icon]="'check'"
-                      [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
-                      (click)="gotoFragebogen(item)">
-              </button>
-            } @else {
-              <button svuiIconOnlyButton="primary"
-                      type="button"
-                      [tooltip]="'global.tooltip.fragebogen.upload' | transloco"
-                      [icon]="'upload'"
-                      [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
-                      (click)="gotoFragebogen(item)">
-              </button>
-            }
-          </td>
+          @if (anlassStore.showImpfausweis()) {
+            <td>
+              @if (hasNotizFile(item.data.notizen, NotizTyp.IMPFAUSWEIS)) {
+                <button svuiIconOnlyButton="success"
+                        type="button"
+                        [tooltip]="'global.tooltip.impfausweis' | transloco"
+                        [icon]="'check'"
+                        [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
+                        (click)="gotoEinladungNotiz(item, NotizTyp.IMPFAUSWEIS)">
+                </button>
+              } @else {
+                <button svuiIconOnlyButton="primary"
+                        type="button"
+                        [tooltip]="'global.tooltip.impfausweis.upload' | transloco"
+                        [icon]="'upload'"
+                        [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
+                        (click)="gotoEinladungNotiz(item, NotizTyp.IMPFAUSWEIS)">
+                </button>
+              }
+            </td>
+          }
+          @if (anlassStore.showFragebogen()) {
+            <td>
+              @if (hasNotizFile(item.data.notizen, NotizTyp.FRAGEBOGEN)) {
+                <button svuiIconOnlyButton="success"
+                        type="button"
+                        [tooltip]="'global.tooltip.fragebogen' | transloco"
+                        [icon]="'check'"
+                        [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
+                        (click)="gotoEinladungNotiz(item, NotizTyp.FRAGEBOGEN)">
+                </button>
+              } @else {
+                <button svuiIconOnlyButton="primary"
+                        type="button"
+                        [tooltip]="'global.tooltip.fragebogen.upload' | transloco"
+                        [icon]="'upload'"
+                        [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
+                        (click)="gotoEinladungNotiz(item, NotizTyp.FRAGEBOGEN)">
+                </button>
+              }
+            </td>
+          }
+          @if (anlassStore.showAnmeldungBestaetigung()) {
+            <td>
+              @if (hasNotizFile(item.data.notizen, NotizTyp.ANMELDUNG_BESTAETIGUNG)) {
+                <button svuiIconOnlyButton="success"
+                        type="button"
+                        [tooltip]="'global.tooltip.anmeldungBestaetigung' | transloco"
+                        [icon]="'check'"
+                        [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
+                        (click)="gotoEinladungNotiz(item, NotizTyp.ANMELDUNG_BESTAETIGUNG)">
+                </button>
+              } @else {
+                <button svuiIconOnlyButton="primary"
+                        type="button"
+                        [tooltip]="'global.tooltip.anmeldungBestaetigung.upload' | transloco"
+                        [icon]="'upload'"
+                        [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
+                        (click)="gotoEinladungNotiz(item, NotizTyp.ANMELDUNG_BESTAETIGUNG)">
+                </button>
+              }
+            </td>
+          }
           <td>
             <svui-collapsible-menu
               [loading]="false"
@@ -402,10 +457,12 @@
                 <svui-icon [useCase]="'link'"></svui-icon>
                 {{ 'anlass.kinder.dossier' | transloco }}
               </a>
-              <button ngbDropdownItem
-                      [disabled]="!anlassStore.canUserEditAnlassInCurrentState()"
-                      (click)="addAbmeldungsgrund(item)">{{ 'anlass.kinder.abmeldegrund.hinterlegen' | transloco }}
-              </button>
+              @if (tenantSettingsStore.hasAbmeldungsEinladungsStatus()) {
+                <button ngbDropdownItem
+                        [disabled]="!anlassStore.canUserEditAnlassInCurrentState()"
+                        (click)="addAbmeldungsgrund(item)">{{ 'anlass.kinder.abmeldegrund.hinterlegen' | transloco }}
+                </button>
+              }
               @if (canDownloadDossierExport()) {
                 <button ngbDropdownItem (click)="downloadKinderdossier(item)">
                   {{ 'anlass.kinder.schuluntersuchungsdaten.exportieren' | transloco }}
@@ -413,7 +470,7 @@
               }
             </svui-collapsible-menu>
           </td>
-          }
+      }
     </tbody>
   </table>
 </svui-card>

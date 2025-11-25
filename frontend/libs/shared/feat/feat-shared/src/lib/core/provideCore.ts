@@ -26,6 +26,7 @@ import {
 import {appErrorInterceptor} from '@dvb/util-angular';
 
 import {LanguageStore, provideAppTransloco} from '@dvb/util-i18n';
+import {hasListViewBerechtigung} from '@dvb/util-shared';
 import {TranslocoService} from '@jsverse/transloco';
 import {provideNgIconLoader, withCaching} from '@ng-icons/core';
 import * as Sentry from '@sentry/angular';
@@ -139,7 +140,9 @@ function appInitializer(
     transloco.setActiveLang(languageStore.activeLocale());
     await deploymentStore.init();
     await benutzerStore.init();
-    benutzerOptionsStore.loadAllBenutzerOptions();
+    if (benutzerStore.createHasRequiredRoleSig(hasListViewBerechtigung())()) {
+      benutzerOptionsStore.loadAllBenutzerOptions();
+    }
     tenantSettingsStore.loadTenantSettings();
 
     // load current timetravel state

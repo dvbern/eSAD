@@ -34,9 +34,12 @@
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
     >
       @for (art of anlassArten; track art) {
-        <ng-option [value]="art">
-          {{ 'AnlassArt.' + art | transloco }}
-        </ng-option>
+        <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+        @if ('AnlassArt.' + art | transloco; as translatedArt) {
+          <ng-option [value]="art">
+            {{ 'AnlassArt.' + art | transloco }}
+          </ng-option>
+        }
       }
     </ng-select>
   </svui-form-control>
@@ -54,10 +57,13 @@
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
       [readonly]="!this.store.selectedIsNew()"
     >
-      @for (typ of anlassTypen; track typ) {
-        <ng-option [value]="typ">
-          {{ 'AnlassTyp.' + typ | transloco }}
-        </ng-option>
+      @for (typ of anlassTypen(); track typ) {
+        <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+        @if ('AnlassTyp.' + typ | transloco; as translatedTyp) {
+          <ng-option [value]="typ">
+            {{ 'AnlassTyp.' + typ | transloco }}
+          </ng-option>
+        }
       }
     </ng-select>
   </svui-form-control>
@@ -66,7 +72,8 @@
   <!-- Datum -->
   <svui-form-control [label]="'anlass.detail.datum' | transloco"
                      [viewValue]="form.group.value.datum"
-                     data-testid="anlass-datum-date-picker">
+                     data-testid="anlass-datum-date-picker"
+                     [size]="'half'">
     <input svuiTextInput="date" [formControl]="form.controlAt('datum')"/>
   </svui-form-control>
 
@@ -75,7 +82,8 @@
   } @else {
     <!-- Schuljahr -->
     <svui-form-control [label]="'anlass.detail.schuljahr' | transloco"
-                       [viewValue]="displaySchuljahr(form.group.value.schuljahr)">
+                       [viewValue]="displaySchuljahr(form.group.value.schuljahr)"
+                       [size]="'half'">
       <ng-select
         svuiNgSelect
         bindLabel='dummy'
@@ -92,6 +100,30 @@
       </ng-select>
     </svui-form-control>
   }
+
+  <!-- AnlassConfig -->
+  <svui-form-control [label]="'anlass.detail.anlassconfig' | transloco"
+                     [viewValue]="form.group.value.anlassConfigOption?.bezeichnung">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.anlassConfigOption"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [searchable]="true"
+      [compareWith]="compareFnAnlassConfig"
+      [readonly]="!this.store.selectedIsNew()"
+    >
+      <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+      @if (anlassConfigOptionsStore.getOptionsForAnlassTyp(form.group.value.anlassTyp)) {
+        @for (each of anlassConfigOptionsStore.getOptionsForAnlassTyp(form.group.value.anlassTyp); track each) {
+          <ng-option [value]="each">
+            {{ each.bezeichnung }}
+          </ng-option>
+        }
+      }
+    </ng-select>
+  </svui-form-control>
 
   <!-- Von -->
   <svui-form-control [label]="'anlass.detail.von' | transloco"
@@ -119,12 +151,15 @@
       [searchable]="true"
       [compareWith]="compareFnBenutzer"
     >
-      @for (item of benutzerOptionsStore.arztOptionsIncluding(store.arztOfCurrentAnlass()); track item.id; ) {
-        <ng-option [value]="item" [disabled]="!item.aktiv">
-            <span class="w-100 d-flex justify-content-between">
-              <span>{{ item.fullName }}</span>
-            </span>
-        </ng-option>
+      <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+      @if (benutzerOptionsStore.arztOptionsIncluding(store.arztOfCurrentAnlass())) {
+        @for (item of benutzerOptionsStore.arztOptionsIncluding(store.arztOfCurrentAnlass()); track item.id; ) {
+          <ng-option [value]="item" [disabled]="!item.aktiv">
+              <span class="w-100 d-flex justify-content-between">
+                <span>{{ item.fullName }}</span>
+              </span>
+          </ng-option>
+        }
       }
     </ng-select>
   </svui-form-control>
@@ -141,12 +176,15 @@
       [searchable]="true"
       [compareWith]="compareFnBenutzer"
     >
-      @for (item of benutzerOptionsStore.mpaOptionsIncluding(store.mpaOfCurrentAnlass()); track item.id; ) {
-        <ng-option [value]="item" [disabled]="!item.aktiv">
-            <span class="w-100 d-flex justify-content-between">
-              <span>{{ item.fullName }}</span>
-            </span>
-        </ng-option>
+      <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+      @if (benutzerOptionsStore.mpaOptionsIncluding(store.mpaOfCurrentAnlass())) {
+        @for (item of benutzerOptionsStore.mpaOptionsIncluding(store.mpaOfCurrentAnlass()); track item.id; ) {
+          <ng-option [value]="item" [disabled]="!item.aktiv">
+              <span class="w-100 d-flex justify-content-between">
+                <span>{{ item.fullName }}</span>
+              </span>
+          </ng-option>
+        }
       }
     </ng-select>
   </svui-form-control>
@@ -163,12 +201,15 @@
       [searchable]="true"
       [compareWith]="compareFnBenutzer"
     >
-      @for (item of benutzerOptionsStore.entitiesIncluding(store.weiterePersonOfCurrentAnlass()); track item.id) {
-        <ng-option [value]="item" [disabled]="!item.aktiv">
-            <span class="w-100 d-flex justify-content-between">
-              <span>{{ item.fullName }}</span>
-            </span>
-        </ng-option>
+      <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+      @if (benutzerOptionsStore.entitiesIncluding(store.weiterePersonOfCurrentAnlass())) {
+        @for (item of benutzerOptionsStore.entitiesIncluding(store.weiterePersonOfCurrentAnlass()); track item.id) {
+          <ng-option [value]="item" [disabled]="!item.aktiv">
+              <span class="w-100 d-flex justify-content-between">
+                <span>{{ item.fullName }}</span>
+              </span>
+          </ng-option>
+        }
       }
     </ng-select>
   </svui-form-control>

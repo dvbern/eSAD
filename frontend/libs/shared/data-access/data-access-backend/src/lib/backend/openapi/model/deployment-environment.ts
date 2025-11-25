@@ -9,16 +9,13 @@
  */
 
 
-export type DeploymentEnvironment = 'LOCAL' | 'UNIT_TEST' | 'DEV' | 'REVIEW' | 'IAT' | 'UAT' | 'DEMO' | 'PROD';
+export type DeploymentEnvironment = 'LOCAL' | 'UNIT_TEST' | 'DEV' | 'UAT' | 'PROD';
 
 export const DeploymentEnvironment = {
     LOCAL: 'LOCAL' as DeploymentEnvironment,
     UNIT_TEST: 'UNIT_TEST' as DeploymentEnvironment,
     DEV: 'DEV' as DeploymentEnvironment,
-    REVIEW: 'REVIEW' as DeploymentEnvironment,
-    IAT: 'IAT' as DeploymentEnvironment,
     UAT: 'UAT' as DeploymentEnvironment,
-    DEMO: 'DEMO' as DeploymentEnvironment,
     PROD: 'PROD' as DeploymentEnvironment
 } as const;
 

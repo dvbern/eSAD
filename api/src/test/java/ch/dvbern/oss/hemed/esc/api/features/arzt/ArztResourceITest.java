@@ -288,7 +288,7 @@ class ArztResourceITest extends AbstractITest {
             .then()
             .assertThat()
             .statusCode(Status.OK.getStatusCode())
-            .header("Content-Disposition", "attachment;filename*=UTF-8''export_aerzte_25-06-2025.docx")
+            .header("Content-Disposition", "attachment;filename=\"export_aerzte_25-06-2025.docx\"")
             .header("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
             .extract()
             .asByteArray();
@@ -316,7 +316,7 @@ class ArztResourceITest extends AbstractITest {
             .then()
             .assertThat()
             .statusCode(Status.OK.getStatusCode())
-            .header("Content-Disposition", "attachment;filename*=UTF-8''export_aerzte_25-06-2025.csv")
+            .header("Content-Disposition", "attachment;filename=\"export_aerzte_25-06-2025.csv\"")
             .header("Content-Type", "application/csv")
             .extract()
             .asByteArray();

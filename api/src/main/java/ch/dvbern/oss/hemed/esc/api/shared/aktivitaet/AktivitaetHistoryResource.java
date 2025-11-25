@@ -25,7 +25,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = OpenApiConst.Tags.TAG_AKTIVITAET)
-@RolesAllowed(BerechtigungName.LISTEN_LESEN)
+@RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed(name = "AktivitaetHistoryResourceMS", unit = MetricUnits.MILLISECONDS)
 public class AktivitaetHistoryResource {
@@ -37,7 +37,7 @@ public class AktivitaetHistoryResource {
     @GET
     @Path("self/kinder")
     @NonNull
-    @RolesAllowed(BerechtigungName.KINDER_LESEN)
+    @RolesAllowed({ BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH })
     public KindAktivitaetHistoryListJson findLetzteKinder() {
         ID<Benutzer> benutzerId = currentUserService.currentUserID();
         return new KindAktivitaetHistoryListJson(aktivitaetHistoryMapper.findLetzteKinder(benutzerId));
@@ -46,7 +46,7 @@ public class AktivitaetHistoryResource {
     @GET
     @Path("self/anlaesse")
     @NonNull
-    @RolesAllowed(BerechtigungName.ANLASSLISTE_LESEN)
+    @RolesAllowed({ BerechtigungName.ANLASSLISTE_LESEN, BerechtigungName.ANLASSLISTE_LESEN_LAEUSE })
     public AnlassAktivitaetHistoryListJson findLetzteAnlaesse() {
         ID<Benutzer> benutzerId = currentUserService.currentUserID();
         return new AnlassAktivitaetHistoryListJson(aktivitaetHistoryMapper.findLetzteAnlaesse(benutzerId));

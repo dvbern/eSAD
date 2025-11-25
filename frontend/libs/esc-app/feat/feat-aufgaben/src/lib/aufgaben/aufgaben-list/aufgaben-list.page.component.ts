@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import {
@@ -22,7 +22,6 @@ import { FilterSessionStorage, TableModel } from '@dvb/util-angular';
   selector: 'feat-aufgaben',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     PageComponent,
     TranslocoPipe,
     ReactiveFormsModule,

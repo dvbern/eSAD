@@ -25,15 +25,22 @@ public final class BerechtigungName {
     public static final String SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN = "SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN";
     public static final String SU_MASSNAHMEN_LESEN = "SU_MASSNAHMEN_LESEN";
     public static final String SU_MASSNAHMEN_SCHREIBEN = "SU_MASSNAHMEN_SCHREIBEN";
-    public static final String KINDER_LESEN = "KINDER_LESEN";
-    public static final String KINDER_SCHREIBEN = "KINDER_SCHREIBEN";
+    public static final String SU_LAEUSE_LESEN = "SU_LAEUSE_LESEN";
+    public static final String SU_LAEUSE_SCHREIBEN = "SU_LAEUSE_SCHREIBEN";
+    public static final String KINDER_LESEN_MEDIZINISCH = "KINDER_LESEN_MEDIZINISCH";
+    public static final String KINDER_LESEN_NICHT_MEDIZINISCH = "KINDER_LESEN_NICHT_MEDIZINISCH";
+    public static final String KINDER_SCHREIBEN_MEDIZINISCH = "KINDER_SCHREIBEN_MEDIZINISCH";
+    public static final String KINDER_SCHREIBEN_NICHT_MEDIZINISCH = "KINDER_SCHREIBEN_NICHT_MEDIZINISCH";
     public static final String KINDER_ALLE_NOTIZEN_LESEN = "KINDER_ALLE_NOTIZEN_LESEN";
     public static final String KINDER_ALLE_NOTIZEN_SCHREIBEN = "KINDER_ALLE_NOTIZEN_SCHREIBEN";
-    public static final String KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN = "KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN";
-    public static final String KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN = "KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN";
+    public static final String KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN =
+        "KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN";
+    public static final String KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN =
+        "KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN";
     public static final String INDIVIDUELLE_REPORTS = "INDIVIDUELLE_REPORTS";
     public static final String SPSS_EXPORT = "SPSS_EXPORT";
     public static final String KOMPLETTER_EXPORT = "KOMPLETTER_EXPORT";
+    public static final String LISTEN_ADMIN_LESEN = "LISTEN_ADMIN_LESEN";
     public static final String LISTEN_LESEN = "LISTEN_LESEN";
     public static final String LISTEN_SCHREIBEN = "LISTEN_SCHREIBEN";
     public static final String IMPFSTOFFE_LESEN = "IMPFSTOFFE_LESEN";
@@ -52,7 +59,9 @@ public final class BerechtigungName {
     public static final String ESCADA_PUSH = "ESCADA_PUSH";
     public static final String AERZTE_LESEN = "AERZTE_LESEN";
     public static final String AERZTE_SCHREIBEN = "AERZTE_SCHREIBEN";
-
+    public static final String ANLASSLISTE_LESEN_LAEUSE = "ANLASSLISTE_LESEN_LAEUSE";
+    public static final String ANLASSPLANUNG_LESEN_LAEUSE = "ANLASSPLANUNG_LESEN_LAEUSE";
+    public static final String ANLASSPLANUNG_SCHREIBEN_LAEUSE = "ANLASSPLANUNG_SCHREIBEN_LAEUSE";
 
     private BerechtigungName() {
         //constants only

@@ -4,15 +4,15 @@
 
     <table class="impf_table">
       <thead>
-      <tr>
-        <th></th>
-        <th></th>
-        <th>{{ 'Impfung.Impfentscheid.table.col.count' | transloco }}</th>
-        <th>{{ 'Impfung.Impfentscheid.table.col.date' | transloco }}</th>
-        <th>{{ 'Impfung.Impfentscheid.table.col.genuegend' | transloco }}</th>
-        <th>{{ 'Impfung.Impfentscheid.table.col.empfehlung' | transloco }}</th>
-        <th>{{ 'Impfung.Impfentscheid.table.col.entscheid' | transloco }}</th>
-      </tr>
+        <tr>
+          <th></th>
+          <th></th>
+          <th>{{ 'Impfung.Impfentscheid.table.col.count' | transloco }}</th>
+          <th>{{ 'Impfung.Impfentscheid.table.col.date' | transloco }}</th>
+          <th>{{ 'Impfung.Impfentscheid.table.col.genuegend' | transloco }}</th>
+          <th>{{ 'Impfung.Impfentscheid.table.col.empfehlung' | transloco }}</th>
+          <th>{{ 'Impfung.Impfentscheid.table.col.entscheid' | transloco }}</th>
+        </tr>
       </thead>
 
       <tbody>
@@ -22,7 +22,7 @@
           <tr class="{{statusForKrankheit(krankheit)}}">
 
             <td class="impf_table_td_icon"
-                style="min-width: 2rem; padding-right: 0;">
+              style="min-width: 2rem; padding-right: 0;">
               @switch (statusForKrankheit(krankheit)) {
 
                 @case ('impfschutzGenuegend') {
@@ -41,52 +41,57 @@
 
             <td class="dashed-right">
               <svui-table-control [columnHeader]="'Impfung.Impfentscheid.table.col.count' | transloco" [rowHeader]="'Krankheit.' + krankheit | transloco">
-                <input [svuiTextInput]="'text'"
-                       *ngIf="controlForKrankheit(krankheit,'anzahlImpfungen') as control"
-                       [formControl]="control"
-                       style="width: 2rem;">
+                @if (controlForKrankheit(krankheit,'anzahlImpfungen'); as control) {
+                  <input [svuiTextInput]="'text'"
+                    [formControl]="control"
+                    style="width: 2rem;">
+                }
               </svui-table-control>
             </td>
             <td class="dashed-right">
               <svui-table-control [columnHeader]="'Impfung.Impfentscheid.table.col.date' | transloco" [rowHeader]="'Krankheit.' + krankheit | transloco">
-                <input [svuiTextInput]="'month'"
-                       *ngIf="controlForKrankheit(krankheit,'datumLetzteImpfung') as control"
-                       [formControl]="control"
-                       style="width: 9rem;"
-                >
+                @if (controlForKrankheit(krankheit,'datumLetzteImpfung'); as control) {
+                  <input [svuiTextInput]="'month'"
+                    [formControl]="control"
+                    style="width: 9rem;"
+                    >
+                }
               </svui-table-control>
             </td>
             <td class="p-0 dashed-right">
               <label class="checkbox-label-around"
-                     [for]="krankheit + '_impfschutzGenuegend'">
-                <input class="form-check-input"
-                       type="checkbox"
-                       [id]="krankheit + '_impfschutzGenuegend'"
-                       [attr.aria-label]="('Krankheit.' + krankheit | transloco) + ' ' + ('Impfung.Impfentscheid.table.col.genuegend' | transloco)"
-                       *ngIf="controlForKrankheit(krankheit,'impfschutzGegeben') as control"
-                       [formControl]="control">
+                [for]="krankheit + '_impfschutzGenuegend'">
+                @if (controlForKrankheit(krankheit,'impfschutzGegeben'); as control) {
+                  <input class="form-check-input"
+                    type="checkbox"
+                    [id]="krankheit + '_impfschutzGenuegend'"
+                    [attr.aria-label]="('Krankheit.' + krankheit | transloco) + ' ' + ('Impfung.Impfentscheid.table.col.genuegend' | transloco)"
+                    [formControl]="control">
+                }
               </label>
             </td>
             <td class="p-0 dashed-right">
               <label class="checkbox-label-around"
-                     [for]="krankheit + '_impfempfehlung'">
-                <input class="form-check-input"
-                       type="checkbox"
-                       [id]="krankheit + '_impfempfehlung'"
-                       [attr.aria-label]="('Krankheit.' + krankheit | transloco) + ' ' + ('Impfung.Impfentscheid.table.col.empfehlung' | transloco)"
-                       *ngIf="controlForKrankheit(krankheit,'impfempfehlung') as control"
-                       [formControl]="control">
+                [for]="krankheit + '_impfempfehlung'">
+                @if (controlForKrankheit(krankheit,'impfempfehlung'); as control) {
+                  <input class="form-check-input"
+                    type="checkbox"
+                    [id]="krankheit + '_impfempfehlung'"
+                    [attr.aria-label]="('Krankheit.' + krankheit | transloco) + ' ' + ('Impfung.Impfentscheid.table.col.empfehlung' | transloco)"
+                    [formControl]="control">
+                }
               </label>
             </td>
             <td class="p-0">
               <label class="checkbox-label-around"
-                     [for]="krankheit + '_impfentscheid'">
-                <input class="form-check-input"
-                       type="checkbox"
-                       [id]="krankheit + '_impfentscheid'"
-                       [attr.aria-label]="('Krankheit.' + krankheit | transloco) + ' ' + ('Impfung.Impfentscheid.table.col.entscheid' | transloco)"
-                       *ngIf="controlForKrankheit(krankheit,'impfentscheid') as control"
-                       [formControl]="control">
+                [for]="krankheit + '_impfentscheid'">
+                @if (controlForKrankheit(krankheit,'impfentscheid'); as control) {
+                  <input class="form-check-input"
+                    type="checkbox"
+                    [id]="krankheit + '_impfentscheid'"
+                    [attr.aria-label]="('Krankheit.' + krankheit | transloco) + ' ' + ('Impfung.Impfentscheid.table.col.entscheid' | transloco)"
+                    [formControl]="control">
+                }
               </label>
             </td>
 

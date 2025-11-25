@@ -83,6 +83,13 @@ public class Notiz extends AbstractTenantEntity<Notiz> implements EntityWithOpti
 
     @NotNull
     @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length =  DbConst.DB_ENUM_LENGTH)
+    @ToString.Include
+    private NotizTyp typ = NotizTyp.DEFAULT;
+
+    @NotNull
+    @NonNull
     @ManyToOne(optional = false)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_notiz_dossier"), nullable = false)
     private Dossier dossier;
@@ -138,6 +145,7 @@ public class Notiz extends AbstractTenantEntity<Notiz> implements EntityWithOpti
         setTitel(notiz.getTitel());
         setBemerkungen(notiz.getBemerkungen());
         setStatus(notiz.getStatus());
+        setTyp(notiz.getTyp());
         setDossier(notiz.getDossier());
         setVerantwortlicher(notiz.getVerantwortlicher());
         setLabels(new HashSet<>(notiz.getLabels()));

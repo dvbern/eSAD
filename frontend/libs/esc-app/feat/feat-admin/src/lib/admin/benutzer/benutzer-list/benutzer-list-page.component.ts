@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {BenutzerJson, FachRolle} from '@dvb/data-access-backend';
@@ -30,7 +30,6 @@ import {BenutzerListStore} from './benutzer-list.store';
   selector: 'feat-benutzer-list.page',
   providers: [TranslatedStringPipe],
   imports: [
-    CommonModule,
     PageComponent,
     TableFilterComponent,
     TextInputDirective,
@@ -47,8 +46,8 @@ import {BenutzerListStore} from './benutzer-list.store';
     CollapsibleMenuComponent,
     CardComponent,
     EmptyTableMessageComponent,
-    ColWidthComponent,
-  ],
+    ColWidthComponent
+],
   templateUrl: './benutzer-list-page.component.html',
   styles: ':host { display:block;}',
   changeDetection: ChangeDetectionStrategy.OnPush,

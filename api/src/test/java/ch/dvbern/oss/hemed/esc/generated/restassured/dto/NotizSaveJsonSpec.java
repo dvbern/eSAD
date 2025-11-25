@@ -19,6 +19,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FileDataJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LabelJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizStatusSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizTypSpec;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -37,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   NotizSaveJsonSpec.JSON_PROPERTY_TITEL,
   NotizSaveJsonSpec.JSON_PROPERTY_BEMERKUNGEN,
   NotizSaveJsonSpec.JSON_PROPERTY_STATUS,
+  NotizSaveJsonSpec.JSON_PROPERTY_TYP,
   NotizSaveJsonSpec.JSON_PROPERTY_VERANTWORTLICHER,
   NotizSaveJsonSpec.JSON_PROPERTY_LABELS,
   NotizSaveJsonSpec.JSON_PROPERTY_FILES,
@@ -57,6 +59,10 @@ public class NotizSaveJsonSpec {
   public static final String JSON_PROPERTY_STATUS = "status";
   @jakarta.annotation.Nonnull
   private NotizStatusSpec status;
+
+  public static final String JSON_PROPERTY_TYP = "typ";
+  @jakarta.annotation.Nonnull
+  private NotizTypSpec typ;
 
   public static final String JSON_PROPERTY_VERANTWORTLICHER = "verantwortlicher";
   @jakarta.annotation.Nonnull
@@ -150,6 +156,31 @@ public class NotizSaveJsonSpec {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setStatus(@jakarta.annotation.Nonnull NotizStatusSpec status) {
     this.status = status;
+  }
+
+  public NotizSaveJsonSpec typ(@jakarta.annotation.Nonnull NotizTypSpec typ) {
+    
+    this.typ = typ;
+    return this;
+  }
+
+  /**
+   * Get typ
+   * @return typ
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_TYP)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public NotizTypSpec getTyp() {
+    return typ;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TYP)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setTyp(@jakarta.annotation.Nonnull NotizTypSpec typ) {
+    this.typ = typ;
   }
 
   public NotizSaveJsonSpec verantwortlicher(@jakarta.annotation.Nonnull BenutzerOptionJsonSpec verantwortlicher) {
@@ -280,6 +311,7 @@ public class NotizSaveJsonSpec {
     return Objects.equals(this.titel, notizSaveJson.titel) &&
         Objects.equals(this.bemerkungen, notizSaveJson.bemerkungen) &&
         Objects.equals(this.status, notizSaveJson.status) &&
+        Objects.equals(this.typ, notizSaveJson.typ) &&
         Objects.equals(this.verantwortlicher, notizSaveJson.verantwortlicher) &&
         Objects.equals(this.labels, notizSaveJson.labels) &&
         Objects.equals(this.files, notizSaveJson.files) &&
@@ -288,7 +320,7 @@ public class NotizSaveJsonSpec {
 
   @Override
   public int hashCode() {
-    return Objects.hash(titel, bemerkungen, status, verantwortlicher, labels, files, version);
+    return Objects.hash(titel, bemerkungen, status, typ, verantwortlicher, labels, files, version);
   }
 
   @Override
@@ -298,6 +330,7 @@ public class NotizSaveJsonSpec {
     sb.append("    titel: ").append(toIndentedString(titel)).append("\n");
     sb.append("    bemerkungen: ").append(toIndentedString(bemerkungen)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    typ: ").append(toIndentedString(typ)).append("\n");
     sb.append("    verantwortlicher: ").append(toIndentedString(verantwortlicher)).append("\n");
     sb.append("    labels: ").append(toIndentedString(labels)).append("\n");
     sb.append("    files: ").append(toIndentedString(files)).append("\n");

@@ -43,7 +43,7 @@
           type="button"
           [tooltip]="'global.tooltip.impfausweis.upload' | transloco"
           [icon]="'impfausweis'"
-          [badgeContent]="(einladung()?.data?.impfausweis?.data?.files?.length ?? 0) ? 1 : 0"
+          [badgeContent]="hasImpfausweisFile() ? 1 : 0"
           [disabled]="!hasImpfungenEditBerechtigung() || !anlassStore.canUserEditAnlassInCurrentState()"
           (click)="onGotoImpfausweisClicked()">
   </button>

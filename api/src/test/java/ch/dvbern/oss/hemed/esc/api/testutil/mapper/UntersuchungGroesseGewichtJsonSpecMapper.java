@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.mapper;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewichtJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.json.UntersuchungGroesseGewichtJson;
+import ch.dvbern.oss.hemed.esc.api.shared.mapper.BaseMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungGroesseGewichtJsonSpec;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.mapstruct.Mapper;

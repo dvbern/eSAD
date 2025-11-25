@@ -3,7 +3,9 @@ import {ActivatedRouteSnapshot, Route} from '@angular/router';
 import {requireValidBackendEntityId} from '@dvb/data-access-types';
 import {
   AerzteStore,
+  AnlassConfigOptionsStore,
   AufgabenStore,
+  BenutzerStore,
   BriefvorlagenStore,
   LabelsStore,
   Path,
@@ -11,7 +13,14 @@ import {
   SchulenOptionsStore,
 } from '@dvb/feat-shared';
 import {confirmOnDirty, toDetailModeStrict} from '@dvb/util-angular';
-import {hasNotizEditBerechtigung} from '@dvb/util-shared';
+import {
+  hasAufgabenViewBerechtigungen,
+  hasKindEditBerechtigung,
+  hasKinderMedizinischeDatenViewBerechtigung,
+  hasKindNotizViewBerechtigung,
+  hasKindVorlagenViewBerechtigung,
+  hasNotizEditBerechtigung,
+} from '@dvb/util-shared';
 import {DossierStore} from './kinder/dossier.store';
 import {
   KinderAufgabeDetailsPageComponent,
@@ -53,6 +62,7 @@ export const kinderRoutes: Route[] = [
     resolve: {
       _store: () => {
         inject(DossierStore).reset();
+        inject(AnlassConfigOptionsStore).loadAnlassConfigOptions();
       },
     },
     children: [
@@ -99,14 +109,23 @@ export const kinderRoutes: Route[] = [
         resolve: {
           _store: (route: ActivatedRouteSnapshot) => {
             const param = requireValidBackendEntityId(route.params['id']);
+            const benutzerStore = inject(BenutzerStore);
             inject(DossierStore).loadDossierForKind(param);
-            inject(DossierStore).loadLastImpfung(param);
+            if(benutzerStore.createHasRequiredRoleSig(hasKinderMedizinischeDatenViewBerechtigung())()) {
+              inject(DossierStore).loadLastImpfung(param);
+            }
             inject(DossierStore).setNewMode(false);
-            inject(KinderNotizStore).loadNotizenForKind(param);
-            inject(AufgabenStore).loadAufgabenForKind(param);
+            if (benutzerStore.createHasRequiredRoleSig(hasKindNotizViewBerechtigung())()) {
+              inject(KinderNotizStore).loadNotizenForKind(param);
+            }
+            if (benutzerStore.createHasRequiredRoleSig(hasAufgabenViewBerechtigungen())()) {
+              inject(AufgabenStore).loadAufgabenForKind(param);
+            }
             inject(KindAnlaesseStore).loadAnlaesseForKind(param);
-            inject(BriefvorlagenStore).loadBriefvorlagen();
-            inject(AerzteStore).loadAerzteList();
+            if (benutzerStore.createHasRequiredRoleSig(hasKindVorlagenViewBerechtigung())()) {
+              inject(BriefvorlagenStore).loadBriefvorlagen();
+              inject(AerzteStore).loadAerzteList(); // Ärzte werden nur im Briefvorlagen Modal benötigt.
+            }
           },
         },
         children: [
@@ -189,7 +208,10 @@ export const kinderRoutes: Route[] = [
                         const kindId = requireValidBackendEntityId(route.parent?.parent?.params['id']);
                         inject(KontaktPersonKindStore).loadKontaktPersonenByKind({kindID: kindId});
                         inject(KontaktPersonKindStore).setDetailModeView();
-                        inject(KontaktPersonKindOptionsStore).loadKontaktPersonenByKindOptions({kindID: kindId});
+
+                        if(inject(BenutzerStore).createHasRequiredRoleSig(hasKindEditBerechtigung())()) {
+                          inject(KontaktPersonKindOptionsStore).loadKontaktPersonenByKindOptions({kindID: kindId});
+                        }
                       },
                     },
                   },

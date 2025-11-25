@@ -1,4 +1,4 @@
-import {DatePipe, NgIf} from '@angular/common';
+import { DatePipe } from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, model} from '@angular/core';
 import {FormArray, FormControl, FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {
@@ -40,26 +40,25 @@ export type ImpfungPopupMode = 'create' | 'edit' | 'verabreicht' | 'nicht-verabr
     templateUrl: './untersuchung-impfungen-intern.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        FormsModule,
-        TranslocoPipe,
-        NgOptionComponent,
-        NgSelectComponent,
-        NgSelectDirective,
-        ReactiveFormsModule,
-        FormControlComponent,
-        FormLayoutComponent,
-        ModalDialogComponent,
-        SaveCancelButtonsComponent,
-        DatePipe,
-        TextInputDirective,
-        FormGroupComponent,
-        SingleRadioWrapperComponent,
-        RadioDirective,
-        TextareaDirective,
-        NgIf,
-        CheckboxDirective,
-        SingleCheckboxWrapperComponent,
-    ]
+    FormsModule,
+    TranslocoPipe,
+    NgOptionComponent,
+    NgSelectComponent,
+    NgSelectDirective,
+    ReactiveFormsModule,
+    FormControlComponent,
+    FormLayoutComponent,
+    ModalDialogComponent,
+    SaveCancelButtonsComponent,
+    DatePipe,
+    TextInputDirective,
+    FormGroupComponent,
+    SingleRadioWrapperComponent,
+    RadioDirective,
+    TextareaDirective,
+    CheckboxDirective,
+    SingleCheckboxWrapperComponent
+]
 })
 export class UntersuchungImpfungenInternComponent {
 

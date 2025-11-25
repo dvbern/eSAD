@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, inject, ViewChild} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {RequirementSetting,} from '@dvb/data-access-backend';
@@ -19,7 +19,6 @@ import {
 @Component({
   selector: 'feat-untersuchung-sehen',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     TranslocoPipe,
     CardInCardComponent,

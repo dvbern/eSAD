@@ -1,4 +1,4 @@
-import {CommonModule, DatePipe} from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit} from '@angular/core';
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {DuplikatJson, DuplikatKindJson, DuplikatStatus} from '@dvb/data-access-backend';

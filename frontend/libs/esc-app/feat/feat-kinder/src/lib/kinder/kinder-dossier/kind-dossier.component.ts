@@ -1,12 +1,17 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {AufgabenStore, KindSidebarComponent, PageComponent, Path} from '@dvb/feat-shared';
+import {AufgabenStore, BenutzerStore, KindSidebarComponent, PageComponent, Path} from '@dvb/feat-shared';
 import {LayoutColumnsComponent} from '@dvb/ui-components';
+import {
+  hasAufgabenViewBerechtigungen,
+  hasKinderMedizinischeDatenViewBerechtigung,
+  hasKindNotizViewBerechtigung,
+} from '@dvb/util-shared';
+import {DossierStore} from '../dossier.store';
 import {KindAnlaesseComponent} from './dossier-anlaesse/kind-anlaesse.component';
 import {KindDossierImpfungenComponent} from './dossier-impfungen/kind-dossier-impfungen.component';
 import {KindDossierMainComponent} from './dossier-main/kind-dossier-main.component';
 import {KindDossierNotizenComponent} from './dossier-notizen/kind-dossier-notizen.component';
-import {DossierStore} from '../dossier.store';
 
 @Component({
   selector: 'feat-kinder-detail-dossier',
@@ -26,5 +31,11 @@ import {DossierStore} from '../dossier.store';
 export class KindDossierComponent {
   readonly dossierStore = inject(DossierStore);
   readonly aufgabenStore = inject(AufgabenStore);
+  readonly benutzerStore = inject(BenutzerStore);
+
+  canViewAufgaben = this.benutzerStore.createHasRequiredRoleSig(hasAufgabenViewBerechtigungen());
+  canViewNotizen = this.benutzerStore.createHasRequiredRoleSig(hasKindNotizViewBerechtigung());
+  canViewMedizinischeDaten = this.benutzerStore.createHasRequiredRoleSig(hasKinderMedizinischeDatenViewBerechtigung());
+
   protected readonly Path = Path;
 }

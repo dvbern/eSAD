@@ -9,6 +9,7 @@ import {
   InspektionKonvergenzResultat,
   MotilitaetResultat,
   RequirementSetting,
+  SehenEmpfehlung,
   StereotestResultat,
   StrabismusAuftretenResultat,
   StrabismusAuspraegungResultat,
@@ -41,9 +42,16 @@ function makeStrabismusSubForm(fb: NonNullableFormBuilder, value: StrabismusResu
   });
 }
 
+function makeEmpfehlungSubForm(fb: NonNullableFormBuilder, value: SehenEmpfehlung) {
+  return fb.group({
+    resultat: fb.control<SehenEmpfehlung>({value, disabled: true}),
+    isChecked: fb.control<boolean>(false),
+  });
+}
+
 export type DistanzSehenSubFormType = ReturnType<typeof makeDistanzSehenSubForm>
 export type StrabismusSubFormType = ReturnType<typeof makeStrabismusSubForm>
-
+export type EmpfehlungSubFormType = ReturnType<typeof makeEmpfehlungSubForm>
 
 function makeForm(config: Config) {
   const fb = config.fb;
@@ -64,6 +72,7 @@ function makeForm(config: Config) {
     strabismusAuftreten: fb.control<StrabismusAuftretenResultat | undefined>(undefined),
     inspektion: fb.control<InspektionKonvergenzResultat | undefined>(undefined),
     konvergenz: fb.control<InspektionKonvergenzResultat | undefined>(undefined),
+    empfehlungArray: fb.array<EmpfehlungSubFormType>([]),
     bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength2000()),
     version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
@@ -90,11 +99,13 @@ function makeForm(config: Config) {
   markAllMultiCheckboxesAsTouched(group.controls.fernvisusArray, config.destroyRef);
   markAllMultiCheckboxesAsTouched(group.controls.nahvisusArray, config.destroyRef);
   markAllMultiCheckboxesAsTouched(group.controls.strabismusArray, config.destroyRef);
+  markAllMultiCheckboxesAsTouched(group.controls.empfehlungArray, config.destroyRef);
 
   return group;
 }
 
-export class UntersuchungSehenBeurteilungForm extends BaseForm<ReturnType<typeof makeForm>, UntersuchungSehenBeurteilungSaveJson> {
+export class UntersuchungSehenBeurteilungForm
+  extends BaseForm<ReturnType<typeof makeForm>, UntersuchungSehenBeurteilungSaveJson> {
 
   constructor(protected config: Config) {
     super(() => makeForm(config));
@@ -105,6 +116,7 @@ export class UntersuchungSehenBeurteilungForm extends BaseForm<ReturnType<typeof
     this.resetFernvisus(value);
     this.resetNahvisus(value);
     this.resetStrabismus(value);
+    this.resetEmpfehlung(value);
   }
 
   private resetFernvisus(value: UntersuchungSehenBeurteilungSaveJson | Nullish): void {
@@ -134,6 +146,15 @@ export class UntersuchungSehenBeurteilungForm extends BaseForm<ReturnType<typeof
     }
   }
 
+  private resetEmpfehlung(value: UntersuchungSehenBeurteilungSaveJson | Nullish): void {
+    this.group.controls.empfehlungArray.clear();
+    for (const resultat of Object.values(SehenEmpfehlung)) {
+      const subForm = makeEmpfehlungSubForm(this.config.fb, resultat);
+      subForm.controls.isChecked.reset(!!value?.empfehlung?.find(fv => fv === resultat));
+      this.group.controls.empfehlungArray.push(subForm);
+    }
+  }
+
   public override valueOnValid(): UntersuchungSehenBeurteilungSaveJson {
     const value = requireValue(this.group.getRawValue());
     return ensureProps<UntersuchungSehenBeurteilungSaveJson>({
@@ -154,24 +175,25 @@ export class UntersuchungSehenBeurteilungForm extends BaseForm<ReturnType<typeof
       strabismus: value.strabismusArray.filter(i => i.isChecked).map(i => i.resultat),
       strabismusAuspraegung: value.strabismusAuspraegung,
       strabismusAuftreten: value.strabismusAuftreten,
+      empfehlung: value.empfehlungArray.filter(i => i.isChecked).map(i => i.resultat),
       version: value.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 
   setValidatorsForAnlassConfig(config: AnlassConfigJson): void {
-    if (config.sehenBrilleLinsen === RequirementSetting.REQUIRED) {
+    if (config.data.sehenBrilleLinsen === RequirementSetting.REQUIRED) {
       this.group.controls.brilleLinsen.addValidators(Validators.required);
     }
-    if (config.sehenStereoTest === RequirementSetting.REQUIRED) {
+    if (config.data.sehenStereoTest === RequirementSetting.REQUIRED) {
       this.group.controls.stereotest.addValidators(Validators.required);
     }
-    if (config.sehenFarbsehen === RequirementSetting.REQUIRED) {
+    if (config.data.sehenFarbsehen === RequirementSetting.REQUIRED) {
       this.group.controls.farbsehen.addValidators(Validators.required);
     }
-    if (config.sehenTafel === RequirementSetting.REQUIRED) {
+    if (config.data.sehenTafel === RequirementSetting.REQUIRED) {
       this.group.controls.verwendeteTafel.addValidators(Validators.required);
     }
-    if (config.sehenFernvisus === RequirementSetting.REQUIRED) {
+    if (config.data.sehenFernvisus === RequirementSetting.REQUIRED) {
       this.group.controls.fernvisusArray.addValidators(AppValidators.atLeastOneCheckedValidator());
       this.group.controls.fernvisusRechts.addValidators(AppValidators.requiredIfValidator(() => {
         const formArray: FormArray<DistanzSehenSubFormType> = this.group.controls.fernvisusArray;
@@ -186,7 +208,7 @@ export class UntersuchungSehenBeurteilungForm extends BaseForm<ReturnType<typeof
         return !fernVisusNichtGeprueft?.value.isChecked;
       }));
     }
-    if (config.sehenNahvisus === RequirementSetting.REQUIRED) {
+    if (config.data.sehenNahvisus === RequirementSetting.REQUIRED) {
       this.group.controls.nahvisusArray.addValidators(AppValidators.atLeastOneCheckedValidator());
       this.group.controls.nahvisusRechts.addValidators(AppValidators.requiredIfValidator(() => {
         const formArray: FormArray<DistanzSehenSubFormType> = this.group.controls.nahvisusArray;
@@ -201,21 +223,24 @@ export class UntersuchungSehenBeurteilungForm extends BaseForm<ReturnType<typeof
         return !nahVisusNichtGeprueft?.value.isChecked;
       }));
     }
-    if (config.sehenStrabismus === RequirementSetting.REQUIRED) {
+    if (config.data.sehenStrabismus === RequirementSetting.REQUIRED) {
       this.group.controls.strabismusArray.addValidators(AppValidators.atLeastOneCheckedValidator());
       this.group.controls.strabismusAuspraegung.addValidators(Validators.required);
       this.group.controls.strabismusAuftreten.addValidators(Validators.required);
     }
-    if (config.sehenMotilitaet === RequirementSetting.REQUIRED) {
+    if (config.data.sehenMotilitaet === RequirementSetting.REQUIRED) {
       this.group.controls.motilitaet.addValidators(Validators.required);
     }
-    if (config.sehenInspektion === RequirementSetting.REQUIRED) {
+    if (config.data.sehenInspektion === RequirementSetting.REQUIRED) {
       this.group.controls.inspektion.addValidators(Validators.required);
     }
-    if (config.sehenKonvergenz === RequirementSetting.REQUIRED) {
+    if (config.data.sehenKonvergenz === RequirementSetting.REQUIRED) {
       this.group.controls.konvergenz.addValidators(Validators.required);
     }
-    if (config.sehenBemerkungen === RequirementSetting.REQUIRED) {
+    if (config.data.sehenEmpfehlung === RequirementSetting.REQUIRED) {
+      this.group.controls.empfehlungArray.addValidators(AppValidators.atLeastOneCheckedValidator());
+    }
+    if (config.data.sehenBemerkungen === RequirementSetting.REQUIRED) {
       this.group.controls.bemerkungen.addValidators(Validators.required);
     }
   }

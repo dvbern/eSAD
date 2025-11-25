@@ -47,12 +47,10 @@ export const genericCompareTo = (v1: unknown, v2: unknown): number => {
   }
 
   // compare values -> smaller is smaller, bigger is bigger
-
-  // @ts-expect-error reason: this code was copied from another project, feel free to rewrite everything...
   if (v1 < v2) {
     return -1;
 
-    // @ts-expect-error reason: this code was copied from another project, feel free to rewrite everything...
+
   } else if (v1 > v2) {
     return 1;
   } else {

@@ -1,0 +1,151 @@
+<form svuiFormLayout
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="store.detailMode()">
+  <h2 svuiHeading="formSection">{{ 'anlassconfig.detail.tab.hoerenaudiogramm' | transloco }}</h2>
+
+
+  <!-- Hoeren Audiogramm -->
+  <svui-form-control [label]="'anlassconfig.label.hoerenAudiogramm' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().hoerenAudiogramm | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.hoerenAudiogramm"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Hoeren Audiogramm 250Hz-->
+  <svui-form-control [label]="'anlassconfig.label.hoerenAudiogramm250Hz' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().hoerenAudiogramm250Hz | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.hoerenAudiogramm250Hz"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Hoeren Audiogramm 8000Hz-->
+  <svui-form-control [label]="'anlassconfig.label.hoerenAudiogramm8000Hz' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().hoerenAudiogramm8000Hz | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.hoerenAudiogramm8000Hz"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Hoeren Audiogramm Beurteilung-->
+  <svui-form-control [label]="'anlassconfig.label.hoerenAudiogrammBeurteilung' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().hoerenAudiogrammBeurteilung | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.hoerenAudiogrammBeurteilung"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Hoeren Audiogramm ZusaetzlicheAngaben-->
+  <svui-form-control [label]="'anlassconfig.label.hoerenAudiogrammZusaetzlicheAngaben' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().hoerenAudiogrammZusaetzlicheAngaben | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.hoerenAudiogrammZusaetzlicheAngaben"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- hoerenAudiogrammEmpfehlung -->
+  <svui-form-control [label]="'anlassconfig.label.hoerenAudiogrammEmpfehlung' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().hoerenAudiogrammEmpfehlung | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.hoerenAudiogrammEmpfehlung"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Hoeren Audiogramm Bemerkungen-->
+  <svui-form-control [label]="'anlassconfig.label.hoerenAudiogrammBemerkungen' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().hoerenAudiogrammBemerkungen | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.hoerenAudiogrammBemerkungen"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+
+  <!--messages for whole form -->
+  <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="store.detailMode()"
+    [isCreate]="store.selectedIsNew()"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="anlassConfigHelperService.canEdit()"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+    [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"
+  />
+</form>

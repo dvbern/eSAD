@@ -32,7 +32,6 @@ public final class KlasseMapper {
         return new KlasseJson(
             klasse.getId(),
             ExternalImportInfoJson.toJson(klasse.getExternalImportInfo()),
-            klasse.isManualOrAktivInExternalSystem(),
             EntityInfoJson.fromEntity(klasse),
             new KlasseSaveJson(
                 SchuleMapper.toOptionJson(klasse.getSchule()),

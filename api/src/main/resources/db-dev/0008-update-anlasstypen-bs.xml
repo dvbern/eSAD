@@ -1,0 +1,22 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet author="anst" id="1762183066230-5">
+    <sql>
+      update anlassconfig set impfungenmassnahmekeinemassnahmen = true, showimpfungendoppelkontrolle = true
+      where anlasstyp in (
+        'FREMDSPRACHEN'
+          , 'KINDERGARTEN'
+          , 'IMPFAKTION'
+          , 'IMPFSPRECHSTUNDE'
+          , 'IMPFTERMIN'
+          , 'KLASSE_4'
+          , 'KLASSE_8'
+          , 'KLASSE_9'
+        );
+      
+      update anlassconfig set impfungenMassnahmeInfomaterialAbgegeben = false
+      where anlasstyp = 'VERTRAUENSARZT';
+    </sql>
+  </changeSet>
+</databaseChangeLog>

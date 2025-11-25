@@ -1,4 +1,3 @@
-import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {FormArray, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {RequirementSetting} from '@dvb/data-access-backend';
@@ -19,12 +18,14 @@ import {hasHoerenEditBerechtigung, isNotNullish, isNullish, requireValue} from '
 import {TranslocoPipe} from '@jsverse/transloco';
 import {AnlassStore} from '../../../anlass.store';
 import {UntersuchungStore} from '../../untersuchung.store';
+import {hasSomeNotNullishValueIgnoringVersion} from '../../untersuchung.util';
 
 import {AudiogrammForm} from './audiogramm/audiogramm-form';
 import {getAllAudiogrammKeys} from './audiogramm/audiogramm-util';
 import {AudiogrammComponent} from './audiogramm/audiogramm.component';
 import {
   AudiogrammBeurteilungSubFormType,
+  EmpfehlungSubFormType,
   UntersuchungHoerenAudiogrammForm,
   ZusaetzlicheAngabenSubFormType,
 } from './untersuchung-hoeren-audiogramm.form';
@@ -33,10 +34,18 @@ import {UntersuchungHoerenAudiogrammStore} from './untersuchung-hoeren-audiogram
 @Component({
   selector: 'feat-untersuchung-hoeren-audiogramm',
   imports: [
-    CommonModule, FormLayoutComponent, HeadingDirective, KachelControlComponent,
-    KachelFormSectionComponent, ReactiveFormsModule, SaveCancelButtonsComponent,
-    TranslocoPipe, CheckboxDirective, FormControlComponent,
-    TextareaDirective, TitleComponent, AudiogrammComponent,
+    FormLayoutComponent,
+    HeadingDirective,
+    KachelControlComponent,
+    KachelFormSectionComponent,
+    ReactiveFormsModule,
+    SaveCancelButtonsComponent,
+    TranslocoPipe,
+    CheckboxDirective,
+    FormControlComponent,
+    TextareaDirective,
+    TitleComponent,
+    AudiogrammComponent,
   ],
   templateUrl: './untersuchung-hoeren-audiogramm.component.html',
   styleUrl: './untersuchung-hoeren-audiogramm.component.scss',
@@ -79,9 +88,9 @@ export class UntersuchungHoerenAudiogrammComponent implements DirtyMarker {
     if (isNullish(config)) {
       return false;
     }
-    return !(config.hoerenAudiogramm === RequirementSetting.NOT_VISIBLE
-      && config.hoerenAudiogramm250Hz === RequirementSetting.NOT_VISIBLE
-      && config.hoerenAudiogramm8000Hz === RequirementSetting.NOT_VISIBLE);
+    return !(config.data.hoerenAudiogramm === RequirementSetting.NOT_VISIBLE
+      && config.data.hoerenAudiogramm250Hz === RequirementSetting.NOT_VISIBLE
+      && config.data.hoerenAudiogramm8000Hz === RequirementSetting.NOT_VISIBLE);
   }
 
   constructor() {
@@ -101,7 +110,7 @@ export class UntersuchungHoerenAudiogrammComponent implements DirtyMarker {
       // Wenn die Default-Values zu applyen markiert sind, dann das Formular mit den neuen Werten laden
       const defaultHoerenAudiogramm = this.hoerenAudiogrammStore.defaultHoerenAudiogrammToApply();
       if (isNotNullish(defaultHoerenAudiogramm)) {
-        const hasAnyValue = Object.values(defaultHoerenAudiogramm).some(isNotNullish);
+        const hasAnyValue = hasSomeNotNullishValueIgnoringVersion(defaultHoerenAudiogramm);
         if (hasAnyValue) {
           this.form.resetForm(defaultHoerenAudiogramm);
           this.form.group.markAsDirty();
@@ -146,5 +155,9 @@ export class UntersuchungHoerenAudiogrammComponent implements DirtyMarker {
 
   getZusaetzlicheAngabenArray(): FormArray<ZusaetzlicheAngabenSubFormType> {
     return this.form.group.controls.zusaetzlicheAngabenArray;
+  }
+
+  getEmpfehlungFormArray(): FormArray<EmpfehlungSubFormType> {
+    return this.form.group.controls.empfehlungArray;
   }
 }

@@ -62,6 +62,7 @@ class BenutzerServiceTest {
             "076 123 45 67",
             "061 123 45 67",
             "Herr",
+            TenantEnum.BS.name(),
             Set.of(FachRolle.SYSTEM_ADMIN)
         );
         var benutzer = service.createBenutzerFromJWT(jwtData);

@@ -3,10 +3,13 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren;
 import java.util.List;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungHoerenAudiogrammBuilder;
@@ -208,7 +211,7 @@ class UntersuchungHoerenAudiogrammResourceITest extends AbstractITest {
         assertThat(result).isNotNull();
         assertThat(result.getAudiogrammRechts()).isNull();
         assertThat(result.getAudiogrammLinks()).isNull();
-        assertThat(result.getAudiogrammBeurteilung()).isNull();
-        assertThat(result.getZusaetzlicheAngaben()).isNull();
+        assertThat(result.getAudiogrammBeurteilung()).isEmpty();
+        assertThat(result.getZusaetzlicheAngaben()).isEmpty();
     }
 }

@@ -66,4 +66,7 @@ public class FileDataJson {
     @NonNull
     @Schema(required = true)
     private final String fileIdInBucket;
+
+    @Schema(required = true)
+    private final boolean deletedInBucket;
 }

@@ -1,4 +1,4 @@
-import {CommonModule, Location} from '@angular/common';
+import { Location } from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, effect, inject, input, output, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {
@@ -41,12 +41,12 @@ import {NotizenFileParams} from './notizen.file.params';
 import {NotizenForm} from './notizen.form';
 import {NotizenSaveParams} from './notizen.save.params';
 import {NotizenStore} from './notizen.store';
+import { QrCodeUploadComponent } from '../upload/qr-code-upload/qr-code-upload.component';
 
 @Component({
   selector: 'feat-notizen',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     TranslocoPipe,
     CardComponent,
     HeadingDirective,
@@ -66,9 +66,10 @@ import {NotizenStore} from './notizen.store';
     PageHeaderEntityInfoComponent,
     SaveCancelButtonsComponent,
     BadgeComponent,
-  ],
+    QrCodeUploadComponent
+],
   templateUrl: './notizen.component.html',
-  styles: ':host { display:block;}',
+  styleUrl: './notizen.component.scss',
 })
 export class NotizenComponent implements DirtyMarker {
 
@@ -106,6 +107,8 @@ export class NotizenComponent implements DirtyMarker {
   notizStatus = Object.values(NotizStatus);
 
   canEditNotiz = this.benutzerStore.createHasRequiredRoleSig(hasNotizEditBerechtigung());
+
+  qrData = `${window.location.origin}${this.location.path()}/mobileupload`;
 
   uploadTable = new TableModel<FileDataJson>(
     {rawListSignal: this.notizenFiles},
@@ -164,7 +167,6 @@ export class NotizenComponent implements DirtyMarker {
       decision: this.#transloco.translate('ui.upload.table.action.delete.decision'),
     }).subscribe(() => {
       this.removeNotizFile.emit({
-        kindId: requireValue(this.kindId()),
         notizId: notizId,
         fileId: $event.id,
       });
@@ -174,7 +176,6 @@ export class NotizenComponent implements DirtyMarker {
   public onFileView($event: FileDataJson): void {
     const notizId = requireValidBackendEntityId(this.existingNotiz()?.id);
     this.store.downloadNotizFile({
-      kindId: requireValue(this.kindId()),
       notizId: notizId,
       fileId: $event.id,
     });
@@ -183,7 +184,6 @@ export class NotizenComponent implements DirtyMarker {
   public onFileDirectDownload($event: FileDataJson): void {
     const notizId = requireValidBackendEntityId(this.existingNotiz()?.id);
     this.store.downloadNotizFile({
-      kindId: requireValue(this.kindId()),
       notizId: notizId,
       fileId: $event.id,
       downloadDirectly: true,

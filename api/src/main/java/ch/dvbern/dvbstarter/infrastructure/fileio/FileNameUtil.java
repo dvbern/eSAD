@@ -46,7 +46,7 @@ public class FileNameUtil {
         String baseFileName = formattedDate + UNDERLINE + formattedName;
 
         // Add prefix if needed
-        if (fileTyp == FileTyp.IMPFAUSWEIS || fileTyp == FileTyp.FRAGEBOGEN) {
+        if (fileTyp == FileTyp.IMPFAUSWEIS || fileTyp == FileTyp.FRAGEBOGEN || fileTyp == FileTyp.ANMELDUNG_BESTAETIGUNG) {
             baseFileName += UNDERLINE + StringUtils.capitalize(fileTyp.getPrefix());
         }
 
@@ -125,11 +125,15 @@ public class FileNameUtil {
     public static FileTyp getTypFromLabel(Set<Label> labels, FileTyp defaultTyp) {
         boolean isImpfausweis = labels.stream().map(Label::getId).anyMatch(Label.ID_LABEL_IMPFAUSWEIS::equals);
         boolean isFragebogen = labels.stream().map(Label::getId).anyMatch(Label.ID_LABEL_FRAGEBOGEN::equals);
+        boolean isAnmeldungBestaetigung = labels.stream().map(Label::getId).anyMatch(Label.ID_LABEL_ANMELDUNG_BESTAETIGUNG::equals);
         if (isImpfausweis) {
             return FileTyp.IMPFAUSWEIS;
         }
         if (isFragebogen) {
             return FileTyp.FRAGEBOGEN;
+        }
+        if (isAnmeldungBestaetigung) {
+            return FileTyp.ANMELDUNG_BESTAETIGUNG;
         }
         return defaultTyp;
     }

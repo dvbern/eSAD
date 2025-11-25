@@ -5,12 +5,12 @@
   <h2 svuiHeading="formSection">{{ 'untersuchung.impfungen.imfstatusList.title' | transloco }}</h2>
 
   <div style="display: flex; align-items: center; justify-content: stretch; gap: 16px;">
-      @if (dossier()?.data?.immunitaetMasern) {
+      @if (dossier()?.dataMedizinisch?.immunitaetMasern) {
         <svui-status-text icon="vaccinated" style="flex: 1;"
                           statusColor="success">{{ 'kind.dossier.masern.immunitaet' | transloco }}
         </svui-status-text>
       }
-      @if (dossier()?.data?.immunitaetVarizellen) {
+      @if (dossier()?.dataMedizinisch?.immunitaetVarizellen) {
         <svui-status-text icon="vaccinated" style="flex: 1; margin-top: 0;"
                           statusColor="success">{{ 'kind.dossier.varizellen.immunitaet' |transloco }}
         </svui-status-text>

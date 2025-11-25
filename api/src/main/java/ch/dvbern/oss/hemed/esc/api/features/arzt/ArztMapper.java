@@ -88,7 +88,7 @@ public class ArztMapper {
     @NonNull
     public PrintResultDTO  exportArztList(@NonNull List<ID<Arzt>> arztIDs, @NonNull ExportMode exportMode) {
         List<Arzt> aerzte = arztService.findByIds(arztIDs);
-        String fileTimeStamp = appClock.localDateTime().now().toLocalDate().format(DATE_FORMATTER_FOR_FILENAME);
+        String fileTimeStamp = appClock.getToday().format(DATE_FORMATTER_FOR_FILENAME);
         return  ArztExportService.generatAearzteExport(aerzte, fileTimeStamp, tl, exportMode);
     }
 

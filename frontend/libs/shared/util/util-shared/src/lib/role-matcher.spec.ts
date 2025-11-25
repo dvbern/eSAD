@@ -53,12 +53,6 @@ describe('role-matcher', () => {
         case: 'all matchers resolve to true',
       },
       {
-        matchers: [() => true, () => true],
-        expected: true,
-        roles: [],
-        case: 'all matchers resolve to true',
-      },
-      {
         matchers: roleMatchers,
         expected: true,
         roles: [Berechtigung.SUPPORT, Berechtigung.SYSTEM_ADMIN, Berechtigung.KOMPLETTER_EXPORT],
@@ -85,7 +79,7 @@ describe('role-matcher', () => {
     ];
 
     it.each(tests)(
-      'withOneOfMatchers should evaluate to $expected when $case and rolles = $roles',
+      'should evaluate to $expected when $case and rolles = $roles',
       ({ matchers, roles, expected }) => {
         // ACT
         const actual = withOneOfMatchers(...matchers)(roles);

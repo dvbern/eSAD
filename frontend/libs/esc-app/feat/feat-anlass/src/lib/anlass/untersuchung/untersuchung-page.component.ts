@@ -15,6 +15,7 @@ import {
   hasGroesseGewichtViewBerechtigung,
   hasHoerenViewBerechtigung,
   hasImpfungenViewBerechtigung,
+  hasLaeusekontrolleViewBerechtigung,
   hasMassnahmenViewBerechtigung,
   hasSehenViewBerechtigung,
   hasTriageViewBerechtigung,
@@ -83,6 +84,7 @@ export class UntersuchungPageComponent {
   canViewUntersuchungAertzlicheUntersuchung = this.benutzerStore.createHasRequiredRoleSig(
     hasAerztlicheUntersuchungViewBerechtigung(),
   );
+  canViewUntersuchungLaeusekontrolle = this.benutzerStore.createHasRequiredRoleSig(hasLaeusekontrolleViewBerechtigung());
   canViewUntersuchungMassnahmen = this.benutzerStore.createHasRequiredRoleSig(hasMassnahmenViewBerechtigung());
 
   pageTitle = computed(() => {

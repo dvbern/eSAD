@@ -1,0 +1,21 @@
+<feat-page [heading]="pageTitle()"
+           [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.CONFIG}">
+  <svui-page-header-buttons
+    [showFilterPopup]="false"
+    [activeFilterCount]="itemTable.numberOfFilters()"
+    (resetFilter)="itemTable.resetFilters(); tableFilterForm.reset()"/>
+
+  @if (canEditList()) {
+    <svui-page-header-add-button
+      [addRouterLink]="Path.CREATE"/>
+  }
+
+  <svui-page-header-list-summary
+    [items]="summaryItems()"/>
+
+  <feat-anlass-config-list
+    [itemTable]="itemTable"
+    [tableFilterForm]="tableFilterForm"
+    [loading]="store.loader.isLoading()"
+  ></feat-anlass-config-list>
+</feat-page>

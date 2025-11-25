@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit } from '@angular/core';
 import { NonNullableFormBuilder } from '@angular/forms';
 import { EntityAktivStatus, EscadaKlasseStufe, SchuleJson } from '@dvb/data-access-backend';
@@ -18,14 +18,13 @@ import { KlassenListFilter, SchulenListFilterForm } from './schulen-list-filter.
 @Component({
   selector: 'feat-schulen-list-page',
   imports: [
-    CommonModule,
     PageComponent,
     SchulenListComponent,
     TranslocoPipe,
     PageHeaderButtonsComponent,
     PageHeaderAddButtonComponent,
-    PageHeaderListSummaryComponent,
-  ],
+    PageHeaderListSummaryComponent
+],
   templateUrl: './schulen-list.page.component.html',
   styleUrl: './schulen-list.page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

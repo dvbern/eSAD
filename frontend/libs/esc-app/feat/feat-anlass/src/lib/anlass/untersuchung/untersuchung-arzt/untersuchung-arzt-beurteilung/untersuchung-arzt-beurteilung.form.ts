@@ -124,7 +124,8 @@ function makeMundAndZaehneSubForm(fb: NonNullableFormBuilder, value: MundAndZaeh
   })
 }
 
-export class UntersuchungArztBeurteilungForm extends BaseForm<ReturnType<typeof makeForm>, UntersuchungArztBeurteilungSaveJson> {
+export class UntersuchungArztBeurteilungForm
+  extends BaseForm<ReturnType<typeof makeForm>, UntersuchungArztBeurteilungSaveJson> {
 
   constructor(protected config: Config) {
     super(() => makeForm(config));
@@ -205,58 +206,58 @@ export class UntersuchungArztBeurteilungForm extends BaseForm<ReturnType<typeof 
   }
 
   public setValidatorsForAnlassConfig(anlassConfig: AnlassConfigJson): void {
-    if (anlassConfig.untersuchungBewegungsapparat === RequirementSetting.REQUIRED) {
+    if (anlassConfig.data.untersuchungBewegungsapparat === RequirementSetting.REQUIRED) {
       this.group.controls.bewegungsapparatArray.addValidators(AppValidators.atLeastOneCheckedValidator());
       this.group.controls.bewegungsapparatBemerkung.addValidators(AppValidators.requiredIfValidator(() => {
         return this.isBewegungsapparatAnderesChecked();
       }));
     }
-    if (anlassConfig.untersuchungEinbeinstand === RequirementSetting.REQUIRED) {
+    if (anlassConfig.data.untersuchungEinbeinstand === RequirementSetting.REQUIRED) {
       this.group.controls.einbeinstand.addValidators(Validators.required);
       this.group.controls.einbeinstandBemerkung.addValidators(AppValidators.requiredIfValidator(() => {
         return this.isEinbeinstandAnderesChecked();
       }));
     }
-    if (anlassConfig.untersuchungEinbeinhuepfen === RequirementSetting.REQUIRED) {
+    if (anlassConfig.data.untersuchungEinbeinhuepfen === RequirementSetting.REQUIRED) {
       this.group.controls.einbeinhuepfen.addValidators(Validators.required);
       this.group.controls.einbeinhuepfenBemerkung.addValidators(AppValidators.requiredIfValidator(() => {
         return this.isEinbeinhuepfenAnderesChecked();
       }));
     }
-    if (anlassConfig.untersuchungFingeropposition === RequirementSetting.REQUIRED) {
+    if (anlassConfig.data.untersuchungFingeropposition === RequirementSetting.REQUIRED) {
       this.group.controls.fingeroppositionArray.addValidators(AppValidators.atLeastOneCheckedValidator());
       this.group.controls.fingeroppositionBemerkung.addValidators(AppValidators.requiredIfValidator(() => {
         return this.isFingeroppositionAnderesChecked();
       }));
     }
-    if (anlassConfig.untersuchungMotorik === RequirementSetting.REQUIRED) {
+    if (anlassConfig.data.untersuchungMotorik === RequirementSetting.REQUIRED) {
       this.group.controls.motorik.addValidators(Validators.required);
     }
-    if (anlassConfig.untersuchungSprache === RequirementSetting.REQUIRED) {
+    if (anlassConfig.data.untersuchungSprache === RequirementSetting.REQUIRED) {
       this.group.controls.sprachfaehigkeitArray.addValidators(AppValidators.atLeastOneCheckedValidator());
       this.group.controls.sprachfaehigkeitBemerkung.addValidators(AppValidators.requiredIfValidator(() => {
         return this.isSprachfaehigkeitAnderesOrArtikulationsfehlerChecked();
       }));
     }
-    if (anlassConfig.untersuchungMundZaehne === RequirementSetting.REQUIRED) {
+    if (anlassConfig.data.untersuchungMundZaehne === RequirementSetting.REQUIRED) {
       this.group.controls.mundAndZaehneArray.addValidators(AppValidators.atLeastOneCheckedValidator());
       this.group.controls.mundAndZaehneBemerkung.addValidators(AppValidators.requiredIfValidator(() => {
         return this.isMundAndZaehneAnderesChecked();
       }));
     }
-    if (anlassConfig.untersuchungHaut === RequirementSetting.REQUIRED) {
+    if (anlassConfig.data.untersuchungHaut === RequirementSetting.REQUIRED) {
       this.group.controls.haut.addValidators(Validators.required);
       this.group.controls.hautBemerkung.addValidators(AppValidators.requiredIfValidator(() => {
         return this.isHautAnderesChecked();
       }));
     }
-    if (anlassConfig.untersuchungHerz === RequirementSetting.REQUIRED) {
+    if (anlassConfig.data.untersuchungHerz === RequirementSetting.REQUIRED) {
       this.group.controls.herzauskultation.addValidators(Validators.required);
       this.group.controls.herzauskultationBemerkung.addValidators(AppValidators.requiredIfValidator(() => {
         return this.isHerzauskultationAnderesChecked();
       }));
     }
-    if (anlassConfig.untersuchungBlutdruck === RequirementSetting.REQUIRED) {
+    if (anlassConfig.data.untersuchungBlutdruck === RequirementSetting.REQUIRED) {
       this.group.controls.blutdruck.addValidators(Validators.required);
       this.group.controls.blutdruckSystolisch.addValidators(AppValidators.requiredIfValidator(() => {
         return this.group.controls.blutdruck.value !== Blutdruck.NICHT_GEPRUEFT;
@@ -265,21 +266,24 @@ export class UntersuchungArztBeurteilungForm extends BaseForm<ReturnType<typeof 
         return this.group.controls.blutdruck.value !== Blutdruck.NICHT_GEPRUEFT;
       }));
     }
-    if (anlassConfig.untersuchungVerhalten === RequirementSetting.REQUIRED) {
+    if (anlassConfig.data.untersuchungVerhalten === RequirementSetting.REQUIRED) {
       this.group.controls.verhalten.addValidators(Validators.required);
     }
   }
 
   public isSprachfaehigkeitAnderesOrArtikulationsfehlerChecked(): boolean {
-    return checkIfArrayContainsCheckedValue(this.group.controls.sprachfaehigkeitArray.controls, [Sprachfaehigkeit.ANDERES, Sprachfaehigkeit.ARTIKULATIONSFEHLER]);
+    return checkIfArrayContainsCheckedValue(this.group.controls.sprachfaehigkeitArray.controls,
+      [Sprachfaehigkeit.ANDERES, Sprachfaehigkeit.ARTIKULATIONSFEHLER]);
   }
 
   public isBewegungsapparatAnderesChecked(): boolean {
-    return checkIfArrayContainsCheckedValue(this.group.controls.bewegungsapparatArray.controls, [Bewegungsapparat.ANDERES]);
+    return checkIfArrayContainsCheckedValue(this.group.controls.bewegungsapparatArray.controls,
+      [Bewegungsapparat.ANDERES]);
   }
 
   public isFingeroppositionAnderesChecked(): boolean {
-    return checkIfArrayContainsCheckedValue(this.group.controls.fingeroppositionArray.controls, [Fingeropposition.ANDERES]);
+    return checkIfArrayContainsCheckedValue(this.group.controls.fingeroppositionArray.controls,
+      [Fingeropposition.ANDERES]);
   }
 
   public isMundAndZaehneAnderesChecked(): boolean {

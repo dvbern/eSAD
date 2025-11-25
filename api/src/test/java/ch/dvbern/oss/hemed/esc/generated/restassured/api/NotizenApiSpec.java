@@ -60,24 +60,29 @@ public class NotizenApiSpec {
 
     public List<Oper> getAllOperations() {
         return Arrays.asList(
+                kinderNotizResourceCreate(),
+                kinderNotizResourceFindAllForKind(),
                 notizResourceAddNotizFile(),
-                notizResourceCreate(),
                 notizResourceDeleteNotiz(),
                 notizResourceDownloadNotizFile(),
                 notizResourceDownloadNotizFileSync(),
-                notizResourceFindAllForKind(),
+                notizResourceFindAll(),
                 notizResourceGetNotiz(),
                 notizResourceRemoveNotizFile(),
                 notizResourceUpdateNotiz()
         );
     }
 
-    public NotizResourceAddNotizFileOper notizResourceAddNotizFile() {
-        return new NotizResourceAddNotizFileOper(createReqSpec());
+    public KinderNotizResourceCreateOper kinderNotizResourceCreate() {
+        return new KinderNotizResourceCreateOper(createReqSpec());
     }
 
-    public NotizResourceCreateOper notizResourceCreate() {
-        return new NotizResourceCreateOper(createReqSpec());
+    public KinderNotizResourceFindAllForKindOper kinderNotizResourceFindAllForKind() {
+        return new KinderNotizResourceFindAllForKindOper(createReqSpec());
+    }
+
+    public NotizResourceAddNotizFileOper notizResourceAddNotizFile() {
+        return new NotizResourceAddNotizFileOper(createReqSpec());
     }
 
     public NotizResourceDeleteNotizOper notizResourceDeleteNotiz() {
@@ -92,8 +97,8 @@ public class NotizenApiSpec {
         return new NotizResourceDownloadNotizFileSyncOper(createReqSpec());
     }
 
-    public NotizResourceFindAllForKindOper notizResourceFindAllForKind() {
-        return new NotizResourceFindAllForKindOper(createReqSpec());
+    public NotizResourceFindAllOper notizResourceFindAll() {
+        return new NotizResourceFindAllOper(createReqSpec());
     }
 
     public NotizResourceGetNotizOper notizResourceGetNotiz() {
@@ -119,23 +124,26 @@ public class NotizenApiSpec {
     }
 
     /**
-     * Add Notiz File
+     * Create
      * 
      *
      * @see #kindIdPath  (required)
-     * @see #notizIdPath  (required)
      * @see #_fileMultiPart  (optional)
+     * @see #file2MultiPart  (optional)
+     * @see #file3MultiPart  (optional)
+     * @see #file4MultiPart  (optional)
+     * @see #notizCreateJsonForm  (optional)
      * return NotizJsonSpec
      */
-    public static class NotizResourceAddNotizFileOper implements Oper {
+    public static class KinderNotizResourceCreateOper implements Oper {
 
         public static final Method REQ_METHOD = POST;
-        public static final String REQ_URI = "/api/dossiers/{kindId}/notizen/{notizId}/file";
+        public static final String REQ_URI = "/api/dossiers/{kindId}/notizen";
 
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
 
-        public NotizResourceAddNotizFileOper(RequestSpecBuilder reqSpec) {
+        public KinderNotizResourceCreateOper(RequestSpecBuilder reqSpec) {
             this.reqSpec = reqSpec;
             reqSpec.setContentType("multipart/form-data");
             reqSpec.setAccept("application/json");
@@ -143,7 +151,7 @@ public class NotizenApiSpec {
         }
 
         /**
-         * POST /api/dossiers/{kindId}/notizen/{notizId}/file
+         * POST /api/dossiers/{kindId}/notizen
          * @param handler handler
          * @param <T> type
          * @return type
@@ -154,7 +162,7 @@ public class NotizenApiSpec {
         }
 
         /**
-         * POST /api/dossiers/{kindId}/notizen/{notizId}/file
+         * POST /api/dossiers/{kindId}/notizen
          * @param handler handler
          * @return NotizJsonSpec
          */
@@ -169,9 +177,201 @@ public class NotizenApiSpec {
          * @param kindId (String)  (required)
          * @return operation
          */
-        public NotizResourceAddNotizFileOper kindIdPath(Object kindId) {
+        public KinderNotizResourceCreateOper kindIdPath(Object kindId) {
             reqSpec.addPathParam(KIND_ID_PATH, kindId);
             return this;
+        }
+
+         public static final String NOTIZ_CREATE_JSON_FORM = "notizCreateJson";
+
+         /**
+         * @param notizCreateJson (NotizSaveJsonSpec)  (optional)
+         * @return operation
+         */
+         public KinderNotizResourceCreateOper notizCreateJsonForm(Object... notizCreateJson) {
+            reqSpec.addFormParam(NOTIZ_CREATE_JSON_FORM, notizCreateJson);
+            return this;
+         }
+
+         /**
+         * It will assume that the control name is file and the &lt;content-type&gt; is &lt;application/octet-stream&gt;
+         * @see #reqSpec for customise
+         * @param _file (File)  (optional)
+         * @return operation
+         */
+         public KinderNotizResourceCreateOper _fileMultiPart(File _file) {
+            reqSpec.addMultiPart(_file);
+            return this;
+         }
+
+         /**
+         * It will assume that the control name is file and the &lt;content-type&gt; is &lt;application/octet-stream&gt;
+         * @see #reqSpec for customise
+         * @param file2 (File)  (optional)
+         * @return operation
+         */
+         public KinderNotizResourceCreateOper file2MultiPart(File file2) {
+            reqSpec.addMultiPart(file2);
+            return this;
+         }
+
+         /**
+         * It will assume that the control name is file and the &lt;content-type&gt; is &lt;application/octet-stream&gt;
+         * @see #reqSpec for customise
+         * @param file3 (File)  (optional)
+         * @return operation
+         */
+         public KinderNotizResourceCreateOper file3MultiPart(File file3) {
+            reqSpec.addMultiPart(file3);
+            return this;
+         }
+
+         /**
+         * It will assume that the control name is file and the &lt;content-type&gt; is &lt;application/octet-stream&gt;
+         * @see #reqSpec for customise
+         * @param file4 (File)  (optional)
+         * @return operation
+         */
+         public KinderNotizResourceCreateOper file4MultiPart(File file4) {
+            reqSpec.addMultiPart(file4);
+            return this;
+         }
+
+        /**
+         * Customize request specification
+         * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
+         * @return operation
+         */
+        public KinderNotizResourceCreateOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+            reqSpecCustomizer.accept(reqSpec);
+            return this;
+        }
+
+        /**
+         * Customize response specification
+         * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
+         * @return operation
+         */
+        public KinderNotizResourceCreateOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+            respSpecCustomizer.accept(respSpec);
+            return this;
+        }
+    }
+    /**
+     * Find All For Kind
+     * 
+     *
+     * @see #kindIdPath  (required)
+     * return NotizListJsonSpec
+     */
+    public static class KinderNotizResourceFindAllForKindOper implements Oper {
+
+        public static final Method REQ_METHOD = GET;
+        public static final String REQ_URI = "/api/dossiers/{kindId}/notizen";
+
+        private RequestSpecBuilder reqSpec;
+        private ResponseSpecBuilder respSpec;
+
+        public KinderNotizResourceFindAllForKindOper(RequestSpecBuilder reqSpec) {
+            this.reqSpec = reqSpec;
+            reqSpec.setAccept("application/json");
+            this.respSpec = new ResponseSpecBuilder();
+        }
+
+        /**
+         * GET /api/dossiers/{kindId}/notizen
+         * @param handler handler
+         * @param <T> type
+         * @return type
+         */
+        @Override
+        public <T> T execute(Function<Response, T> handler) {
+            return handler.apply(RestAssured.given().spec(reqSpec.build()).expect().spec(respSpec.build()).when().request(REQ_METHOD, REQ_URI));
+        }
+
+        /**
+         * GET /api/dossiers/{kindId}/notizen
+         * @param handler handler
+         * @return NotizListJsonSpec
+         */
+        public NotizListJsonSpec executeAs(Function<Response, Response> handler) {
+            TypeRef<NotizListJsonSpec> type = new TypeRef<NotizListJsonSpec>(){};
+            return execute(handler).as(type);
+        }
+
+        public static final String KIND_ID_PATH = "kindId";
+
+        /**
+         * @param kindId (String)  (required)
+         * @return operation
+         */
+        public KinderNotizResourceFindAllForKindOper kindIdPath(Object kindId) {
+            reqSpec.addPathParam(KIND_ID_PATH, kindId);
+            return this;
+        }
+
+        /**
+         * Customize request specification
+         * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
+         * @return operation
+         */
+        public KinderNotizResourceFindAllForKindOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+            reqSpecCustomizer.accept(reqSpec);
+            return this;
+        }
+
+        /**
+         * Customize response specification
+         * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
+         * @return operation
+         */
+        public KinderNotizResourceFindAllForKindOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+            respSpecCustomizer.accept(respSpec);
+            return this;
+        }
+    }
+    /**
+     * Add Notiz File
+     * 
+     *
+     * @see #notizIdPath  (required)
+     * @see #_fileMultiPart  (optional)
+     * return NotizJsonSpec
+     */
+    public static class NotizResourceAddNotizFileOper implements Oper {
+
+        public static final Method REQ_METHOD = POST;
+        public static final String REQ_URI = "/api/notizen/{notizId}/file";
+
+        private RequestSpecBuilder reqSpec;
+        private ResponseSpecBuilder respSpec;
+
+        public NotizResourceAddNotizFileOper(RequestSpecBuilder reqSpec) {
+            this.reqSpec = reqSpec;
+            reqSpec.setContentType("multipart/form-data");
+            reqSpec.setAccept("application/json");
+            this.respSpec = new ResponseSpecBuilder();
+        }
+
+        /**
+         * POST /api/notizen/{notizId}/file
+         * @param handler handler
+         * @param <T> type
+         * @return type
+         */
+        @Override
+        public <T> T execute(Function<Response, T> handler) {
+            return handler.apply(RestAssured.given().spec(reqSpec.build()).expect().spec(respSpec.build()).when().request(REQ_METHOD, REQ_URI));
+        }
+
+        /**
+         * POST /api/notizen/{notizId}/file
+         * @param handler handler
+         * @return NotizJsonSpec
+         */
+        public NotizJsonSpec executeAs(Function<Response, Response> handler) {
+            TypeRef<NotizJsonSpec> type = new TypeRef<NotizJsonSpec>(){};
+            return execute(handler).as(type);
         }
 
         public static final String NOTIZ_ID_PATH = "notizId";
@@ -217,150 +417,15 @@ public class NotizenApiSpec {
         }
     }
     /**
-     * Create
-     * 
-     *
-     * @see #kindIdPath  (required)
-     * @see #_fileMultiPart  (optional)
-     * @see #file2MultiPart  (optional)
-     * @see #file3MultiPart  (optional)
-     * @see #file4MultiPart  (optional)
-     * @see #notizCreateJsonForm  (optional)
-     * return NotizJsonSpec
-     */
-    public static class NotizResourceCreateOper implements Oper {
-
-        public static final Method REQ_METHOD = POST;
-        public static final String REQ_URI = "/api/dossiers/{kindId}/notizen";
-
-        private RequestSpecBuilder reqSpec;
-        private ResponseSpecBuilder respSpec;
-
-        public NotizResourceCreateOper(RequestSpecBuilder reqSpec) {
-            this.reqSpec = reqSpec;
-            reqSpec.setContentType("multipart/form-data");
-            reqSpec.setAccept("application/json");
-            this.respSpec = new ResponseSpecBuilder();
-        }
-
-        /**
-         * POST /api/dossiers/{kindId}/notizen
-         * @param handler handler
-         * @param <T> type
-         * @return type
-         */
-        @Override
-        public <T> T execute(Function<Response, T> handler) {
-            return handler.apply(RestAssured.given().spec(reqSpec.build()).expect().spec(respSpec.build()).when().request(REQ_METHOD, REQ_URI));
-        }
-
-        /**
-         * POST /api/dossiers/{kindId}/notizen
-         * @param handler handler
-         * @return NotizJsonSpec
-         */
-        public NotizJsonSpec executeAs(Function<Response, Response> handler) {
-            TypeRef<NotizJsonSpec> type = new TypeRef<NotizJsonSpec>(){};
-            return execute(handler).as(type);
-        }
-
-        public static final String KIND_ID_PATH = "kindId";
-
-        /**
-         * @param kindId (String)  (required)
-         * @return operation
-         */
-        public NotizResourceCreateOper kindIdPath(Object kindId) {
-            reqSpec.addPathParam(KIND_ID_PATH, kindId);
-            return this;
-        }
-
-         public static final String NOTIZ_CREATE_JSON_FORM = "notizCreateJson";
-
-         /**
-         * @param notizCreateJson (NotizSaveJsonSpec)  (optional)
-         * @return operation
-         */
-         public NotizResourceCreateOper notizCreateJsonForm(Object... notizCreateJson) {
-            reqSpec.addFormParam(NOTIZ_CREATE_JSON_FORM, notizCreateJson);
-            return this;
-         }
-
-         /**
-         * It will assume that the control name is file and the &lt;content-type&gt; is &lt;application/octet-stream&gt;
-         * @see #reqSpec for customise
-         * @param _file (File)  (optional)
-         * @return operation
-         */
-         public NotizResourceCreateOper _fileMultiPart(File _file) {
-            reqSpec.addMultiPart(_file);
-            return this;
-         }
-
-         /**
-         * It will assume that the control name is file and the &lt;content-type&gt; is &lt;application/octet-stream&gt;
-         * @see #reqSpec for customise
-         * @param file2 (File)  (optional)
-         * @return operation
-         */
-         public NotizResourceCreateOper file2MultiPart(File file2) {
-            reqSpec.addMultiPart(file2);
-            return this;
-         }
-
-         /**
-         * It will assume that the control name is file and the &lt;content-type&gt; is &lt;application/octet-stream&gt;
-         * @see #reqSpec for customise
-         * @param file3 (File)  (optional)
-         * @return operation
-         */
-         public NotizResourceCreateOper file3MultiPart(File file3) {
-            reqSpec.addMultiPart(file3);
-            return this;
-         }
-
-         /**
-         * It will assume that the control name is file and the &lt;content-type&gt; is &lt;application/octet-stream&gt;
-         * @see #reqSpec for customise
-         * @param file4 (File)  (optional)
-         * @return operation
-         */
-         public NotizResourceCreateOper file4MultiPart(File file4) {
-            reqSpec.addMultiPart(file4);
-            return this;
-         }
-
-        /**
-         * Customize request specification
-         * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
-         * @return operation
-         */
-        public NotizResourceCreateOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
-            reqSpecCustomizer.accept(reqSpec);
-            return this;
-        }
-
-        /**
-         * Customize response specification
-         * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
-         * @return operation
-         */
-        public NotizResourceCreateOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
-            respSpecCustomizer.accept(respSpec);
-            return this;
-        }
-    }
-    /**
      * Delete Notiz
      * 
      *
-     * @see #kindIdPath  (required)
      * @see #notizIdPath  (required)
      */
     public static class NotizResourceDeleteNotizOper implements Oper {
 
         public static final Method REQ_METHOD = DELETE;
-        public static final String REQ_URI = "/api/dossiers/{kindId}/notizen/{notizId}";
+        public static final String REQ_URI = "/api/notizen/{notizId}";
 
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
@@ -372,7 +437,7 @@ public class NotizenApiSpec {
         }
 
         /**
-         * DELETE /api/dossiers/{kindId}/notizen/{notizId}
+         * DELETE /api/notizen/{notizId}
          * @param handler handler
          * @param <T> type
          * @return type
@@ -380,17 +445,6 @@ public class NotizenApiSpec {
         @Override
         public <T> T execute(Function<Response, T> handler) {
             return handler.apply(RestAssured.given().spec(reqSpec.build()).expect().spec(respSpec.build()).when().request(REQ_METHOD, REQ_URI));
-        }
-
-        public static final String KIND_ID_PATH = "kindId";
-
-        /**
-         * @param kindId (String)  (required)
-         * @return operation
-         */
-        public NotizResourceDeleteNotizOper kindIdPath(Object kindId) {
-            reqSpec.addPathParam(KIND_ID_PATH, kindId);
-            return this;
         }
 
         public static final String NOTIZ_ID_PATH = "notizId";
@@ -429,14 +483,13 @@ public class NotizenApiSpec {
      * 
      *
      * @see #fileIdPath  (required)
-     * @see #kindIdPath  (required)
      * @see #notizIdPath  (required)
      * return File
      */
     public static class NotizResourceDownloadNotizFileOper implements Oper {
 
         public static final Method REQ_METHOD = GET;
-        public static final String REQ_URI = "/api/dossiers/{kindId}/notizen/{notizId}/file/{fileId}";
+        public static final String REQ_URI = "/api/notizen/{notizId}/file/{fileId}";
 
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
@@ -448,7 +501,7 @@ public class NotizenApiSpec {
         }
 
         /**
-         * GET /api/dossiers/{kindId}/notizen/{notizId}/file/{fileId}
+         * GET /api/notizen/{notizId}/file/{fileId}
          * @param handler handler
          * @param <T> type
          * @return type
@@ -459,7 +512,7 @@ public class NotizenApiSpec {
         }
 
         /**
-         * GET /api/dossiers/{kindId}/notizen/{notizId}/file/{fileId}
+         * GET /api/notizen/{notizId}/file/{fileId}
          * @param handler handler
          * @return File
          */
@@ -476,17 +529,6 @@ public class NotizenApiSpec {
          */
         public NotizResourceDownloadNotizFileOper fileIdPath(Object fileId) {
             reqSpec.addPathParam(FILE_ID_PATH, fileId);
-            return this;
-        }
-
-        public static final String KIND_ID_PATH = "kindId";
-
-        /**
-         * @param kindId (String)  (required)
-         * @return operation
-         */
-        public NotizResourceDownloadNotizFileOper kindIdPath(Object kindId) {
-            reqSpec.addPathParam(KIND_ID_PATH, kindId);
             return this;
         }
 
@@ -526,14 +568,13 @@ public class NotizenApiSpec {
      * 
      *
      * @see #fileIdPath  (required)
-     * @see #kindIdPath  (required)
      * @see #notizIdPath  (required)
      * return File
      */
     public static class NotizResourceDownloadNotizFileSyncOper implements Oper {
 
         public static final Method REQ_METHOD = GET;
-        public static final String REQ_URI = "/api/dossiers/{kindId}/notizen/{notizId}/file/{fileId}/sync";
+        public static final String REQ_URI = "/api/notizen/{notizId}/file/{fileId}/sync";
 
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
@@ -545,7 +586,7 @@ public class NotizenApiSpec {
         }
 
         /**
-         * GET /api/dossiers/{kindId}/notizen/{notizId}/file/{fileId}/sync
+         * GET /api/notizen/{notizId}/file/{fileId}/sync
          * @param handler handler
          * @param <T> type
          * @return type
@@ -556,7 +597,7 @@ public class NotizenApiSpec {
         }
 
         /**
-         * GET /api/dossiers/{kindId}/notizen/{notizId}/file/{fileId}/sync
+         * GET /api/notizen/{notizId}/file/{fileId}/sync
          * @param handler handler
          * @return File
          */
@@ -573,17 +614,6 @@ public class NotizenApiSpec {
          */
         public NotizResourceDownloadNotizFileSyncOper fileIdPath(Object fileId) {
             reqSpec.addPathParam(FILE_ID_PATH, fileId);
-            return this;
-        }
-
-        public static final String KIND_ID_PATH = "kindId";
-
-        /**
-         * @param kindId (String)  (required)
-         * @return operation
-         */
-        public NotizResourceDownloadNotizFileSyncOper kindIdPath(Object kindId) {
-            reqSpec.addPathParam(KIND_ID_PATH, kindId);
             return this;
         }
 
@@ -619,28 +649,27 @@ public class NotizenApiSpec {
         }
     }
     /**
-     * Find All For Kind
+     * Find All
      * 
      *
-     * @see #kindIdPath  (required)
      * return NotizListJsonSpec
      */
-    public static class NotizResourceFindAllForKindOper implements Oper {
+    public static class NotizResourceFindAllOper implements Oper {
 
         public static final Method REQ_METHOD = GET;
-        public static final String REQ_URI = "/api/dossiers/{kindId}/notizen";
+        public static final String REQ_URI = "/api/notizen";
 
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
 
-        public NotizResourceFindAllForKindOper(RequestSpecBuilder reqSpec) {
+        public NotizResourceFindAllOper(RequestSpecBuilder reqSpec) {
             this.reqSpec = reqSpec;
             reqSpec.setAccept("application/json");
             this.respSpec = new ResponseSpecBuilder();
         }
 
         /**
-         * GET /api/dossiers/{kindId}/notizen
+         * GET /api/notizen
          * @param handler handler
          * @param <T> type
          * @return type
@@ -651,7 +680,7 @@ public class NotizenApiSpec {
         }
 
         /**
-         * GET /api/dossiers/{kindId}/notizen
+         * GET /api/notizen
          * @param handler handler
          * @return NotizListJsonSpec
          */
@@ -660,23 +689,12 @@ public class NotizenApiSpec {
             return execute(handler).as(type);
         }
 
-        public static final String KIND_ID_PATH = "kindId";
-
-        /**
-         * @param kindId (String)  (required)
-         * @return operation
-         */
-        public NotizResourceFindAllForKindOper kindIdPath(Object kindId) {
-            reqSpec.addPathParam(KIND_ID_PATH, kindId);
-            return this;
-        }
-
         /**
          * Customize request specification
          * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
          * @return operation
          */
-        public NotizResourceFindAllForKindOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+        public NotizResourceFindAllOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
             reqSpecCustomizer.accept(reqSpec);
             return this;
         }
@@ -686,7 +704,7 @@ public class NotizenApiSpec {
          * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
          * @return operation
          */
-        public NotizResourceFindAllForKindOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+        public NotizResourceFindAllOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
             respSpecCustomizer.accept(respSpec);
             return this;
         }
@@ -695,14 +713,13 @@ public class NotizenApiSpec {
      * Get Notiz
      * 
      *
-     * @see #kindIdPath  (required)
      * @see #notizIdPath  (required)
      * return NotizJsonSpec
      */
     public static class NotizResourceGetNotizOper implements Oper {
 
         public static final Method REQ_METHOD = GET;
-        public static final String REQ_URI = "/api/dossiers/{kindId}/notizen/{notizId}";
+        public static final String REQ_URI = "/api/notizen/{notizId}";
 
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
@@ -714,7 +731,7 @@ public class NotizenApiSpec {
         }
 
         /**
-         * GET /api/dossiers/{kindId}/notizen/{notizId}
+         * GET /api/notizen/{notizId}
          * @param handler handler
          * @param <T> type
          * @return type
@@ -725,24 +742,13 @@ public class NotizenApiSpec {
         }
 
         /**
-         * GET /api/dossiers/{kindId}/notizen/{notizId}
+         * GET /api/notizen/{notizId}
          * @param handler handler
          * @return NotizJsonSpec
          */
         public NotizJsonSpec executeAs(Function<Response, Response> handler) {
             TypeRef<NotizJsonSpec> type = new TypeRef<NotizJsonSpec>(){};
             return execute(handler).as(type);
-        }
-
-        public static final String KIND_ID_PATH = "kindId";
-
-        /**
-         * @param kindId (String)  (required)
-         * @return operation
-         */
-        public NotizResourceGetNotizOper kindIdPath(Object kindId) {
-            reqSpec.addPathParam(KIND_ID_PATH, kindId);
-            return this;
         }
 
         public static final String NOTIZ_ID_PATH = "notizId";
@@ -781,14 +787,13 @@ public class NotizenApiSpec {
      * 
      *
      * @see #fileIdPath  (required)
-     * @see #kindIdPath  (required)
      * @see #notizIdPath  (required)
      * return NotizJsonSpec
      */
     public static class NotizResourceRemoveNotizFileOper implements Oper {
 
         public static final Method REQ_METHOD = DELETE;
-        public static final String REQ_URI = "/api/dossiers/{kindId}/notizen/{notizId}/file/{fileId}";
+        public static final String REQ_URI = "/api/notizen/{notizId}/file/{fileId}";
 
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
@@ -800,7 +805,7 @@ public class NotizenApiSpec {
         }
 
         /**
-         * DELETE /api/dossiers/{kindId}/notizen/{notizId}/file/{fileId}
+         * DELETE /api/notizen/{notizId}/file/{fileId}
          * @param handler handler
          * @param <T> type
          * @return type
@@ -811,7 +816,7 @@ public class NotizenApiSpec {
         }
 
         /**
-         * DELETE /api/dossiers/{kindId}/notizen/{notizId}/file/{fileId}
+         * DELETE /api/notizen/{notizId}/file/{fileId}
          * @param handler handler
          * @return NotizJsonSpec
          */
@@ -828,17 +833,6 @@ public class NotizenApiSpec {
          */
         public NotizResourceRemoveNotizFileOper fileIdPath(Object fileId) {
             reqSpec.addPathParam(FILE_ID_PATH, fileId);
-            return this;
-        }
-
-        public static final String KIND_ID_PATH = "kindId";
-
-        /**
-         * @param kindId (String)  (required)
-         * @return operation
-         */
-        public NotizResourceRemoveNotizFileOper kindIdPath(Object kindId) {
-            reqSpec.addPathParam(KIND_ID_PATH, kindId);
             return this;
         }
 
@@ -877,7 +871,6 @@ public class NotizenApiSpec {
      * Update Notiz
      * 
      *
-     * @see #kindIdPath  (required)
      * @see #notizIdPath  (required)
      * @see #_fileMultiPart  (optional)
      * @see #file2MultiPart  (optional)
@@ -889,7 +882,7 @@ public class NotizenApiSpec {
     public static class NotizResourceUpdateNotizOper implements Oper {
 
         public static final Method REQ_METHOD = PUT;
-        public static final String REQ_URI = "/api/dossiers/{kindId}/notizen/{notizId}";
+        public static final String REQ_URI = "/api/notizen/{notizId}";
 
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
@@ -902,7 +895,7 @@ public class NotizenApiSpec {
         }
 
         /**
-         * PUT /api/dossiers/{kindId}/notizen/{notizId}
+         * PUT /api/notizen/{notizId}
          * @param handler handler
          * @param <T> type
          * @return type
@@ -913,24 +906,13 @@ public class NotizenApiSpec {
         }
 
         /**
-         * PUT /api/dossiers/{kindId}/notizen/{notizId}
+         * PUT /api/notizen/{notizId}
          * @param handler handler
          * @return NotizJsonSpec
          */
         public NotizJsonSpec executeAs(Function<Response, Response> handler) {
             TypeRef<NotizJsonSpec> type = new TypeRef<NotizJsonSpec>(){};
             return execute(handler).as(type);
-        }
-
-        public static final String KIND_ID_PATH = "kindId";
-
-        /**
-         * @param kindId (String)  (required)
-         * @return operation
-         */
-        public NotizResourceUpdateNotizOper kindIdPath(Object kindId) {
-            reqSpec.addPathParam(KIND_ID_PATH, kindId);
-            return this;
         }
 
         public static final String NOTIZ_ID_PATH = "notizId";

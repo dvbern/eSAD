@@ -16,10 +16,16 @@
  */
 
 
-export const globalConstants = {
-    pollingIntervalMilliSeconds: 15000, // 15 seconds
-    entityPrePersistVersion: -1,
+import { ISODateString } from '@dvb/data-access-types';
 
-    // Keep this list in sync with the accepted types in backend as we do not sync config to client yet
-    acceptedFileTypes: '.pdf, .docx, .xlsx, .pptx, .eml, .msg, .jpg, .jpeg, .png, .heic, .webp'
+export const globalConstants = {
+  pollingIntervalMilliSeconds: 15000, // 15 seconds
+  entityPrePersistVersion: -1,
+
+  // Keep this list in sync with the accepted types in backend as we do not sync config to client yet
+  acceptedFileTypes: '.pdf, .docx, .xlsx, .pptx, .eml, .msg, .jpg, .jpeg, .png, .heic, .webp',
+  notizen: {
+    uploadFilesMax: 4
+  },
+  endOfTime: '9999-12-31' as ISODateString,
 };

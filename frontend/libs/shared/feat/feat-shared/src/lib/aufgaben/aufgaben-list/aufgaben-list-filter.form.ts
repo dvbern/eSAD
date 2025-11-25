@@ -4,6 +4,7 @@ import {NonNullableFormBuilder} from '@angular/forms';
 import {AufgabeStatus, BenutzerOptionJson, LabelJson} from '@dvb/data-access-backend';
 import {ISODateString} from '@dvb/data-access-types';
 import {BaseForm, FilterCombinationMethod, FilterMethod, onTextInput, TableModel} from '@dvb/util-angular';
+import {isNullish} from '@dvb/util-shared';
 import {distinctUntilChanged} from 'rxjs';
 import {AufgabeJsonEnhanced} from '../../admin-shared/aufgaben.store';
 
@@ -15,6 +16,7 @@ export interface AufgabenListFilter {
   erstelltDurch: BenutzerOptionJson[];
   empfaenger: BenutzerOptionJson[];
   kind: string;
+  hasAnhang: boolean | null
 }
 
 type Config = {
@@ -33,6 +35,7 @@ function makeForm(config: Config) {
     erstelltDurch: fb.control<BenutzerOptionJson[]>([]),
     empfaenger: fb.control<BenutzerOptionJson[]>([]),
     kind: fb.control<string>(''),
+    hasAnhang: fb.control<boolean | null>(null),
   });
 
   group.controls.faelligBis.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
@@ -116,6 +119,19 @@ function makeForm(config: Config) {
         filterMethod: FilterMethod.SUBSTRING,
         filterCombinationMethod: FilterCombinationMethod.AND,
         filterName: 'kindFullName',
+      });
+    },
+    error: console.error,
+  });
+
+  group.controls.hasAnhang.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef)).subscribe({
+    next: hasAnhang => {
+      const filterValue = isNullish(hasAnhang) ? '' : '' + hasAnhang;
+      config.paginatedTable.onFilterChanged({
+        filterValue: filterValue,
+        filterMethod: FilterMethod.BOOL,
+        filterCombinationMethod: FilterCombinationMethod.AND,
+        filterName: 'hasAnhang',
       });
     },
     error: console.error,

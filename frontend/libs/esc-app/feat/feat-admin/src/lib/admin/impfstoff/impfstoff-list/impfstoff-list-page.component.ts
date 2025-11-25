@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit} from '@angular/core';
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {EntityAktivStatus, ImpfstoffJson, Krankheit} from '@dvb/data-access-backend';
@@ -38,7 +38,6 @@ import {ImpfstoffFilterForm, ImpfstoffListFilterForm} from './impfstoff-list-fil
   selector: 'feat-impfstoff-list.page',
   providers: [TranslatedStringPipe],
   imports: [
-    CommonModule,
     PageComponent,
     FormsModule,
     SortableComponent,
@@ -58,8 +57,8 @@ import {ImpfstoffFilterForm, ImpfstoffListFilterForm} from './impfstoff-list-fil
     ColWidthComponent,
     NgOptionComponent,
     NgSelectComponent,
-    NgSelectDirective,
-  ],
+    NgSelectDirective
+],
   templateUrl: './impfstoff-list-page.component.html',
   styles: ':host { display:block;}',
   changeDetection: ChangeDetectionStrategy.OnPush,

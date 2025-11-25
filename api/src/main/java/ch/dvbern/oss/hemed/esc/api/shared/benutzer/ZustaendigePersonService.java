@@ -32,6 +32,7 @@ public class ZustaendigePersonService {
             dossierService.findBySchule(existingSchule.getId()).forEach(dossier -> {
                 dossier.setZustaendigArzt(null);
                 dossier.setZustaendigMPA(null);
+                dossier.disableOptimisticLockingCheck();
                 dossierService.persist(dossier);
             });
         }

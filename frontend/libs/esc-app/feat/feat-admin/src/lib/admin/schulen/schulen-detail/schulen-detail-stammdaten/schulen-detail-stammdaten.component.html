@@ -40,9 +40,12 @@
       [compareWith]="compareQuartierFn"
     >
       @for (each of quartierStore.entities(); track each) {
-        <ng-option [value]="each">
-          {{ each.quartierName }}
-        </ng-option>
+        <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+        @if (each) {
+          <ng-option [value]="each">
+            {{ each.quartierName }}
+          </ng-option>
+        }
       }
     </ng-select>
   </svui-form-control>
@@ -79,9 +82,12 @@
       [compareWith]="compareBenutzerFn"
     >
       @for (each of benutzerOptionsStore.arztOptionsIncluding(form.group.value.zustaendigArzt); track each) {
-        <ng-option [value]="each" [disabled]="!each.aktiv">
-          {{ each.fullName }}
-        </ng-option>
+        <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+        @if (each) {
+          <ng-option [value]="each" [disabled]="!each.aktiv">
+            {{ each.fullName }}
+          </ng-option>
+        }
       }
     </ng-select>
   </svui-form-control>
@@ -116,11 +122,14 @@
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
     >
       @for (status of schuleAktivStati; track status) {
-        <ng-option [value]="status">
-          {{ 'EntityAktivStatus.' + status | transloco }}
-        </ng-option>
-
+        <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+        @if ('EntityAktivStatus.' + status | transloco; as translatedStatus) {
+          <ng-option [value]="status">
+            {{ 'EntityAktivStatus.' + status | transloco }}
+          </ng-option>
+        }
       }
+
     </ng-select>
   </svui-form-control>
 

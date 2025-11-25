@@ -16,6 +16,7 @@ package ch.dvbern.oss.hemed.esc.generated.restassured.dto;
 import java.util.Objects;
 import java.util.Arrays;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassArtSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassConfigOptionJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassStatusSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassTypSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionJsonSpec;
@@ -34,6 +35,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  */
 @JsonPropertyOrder({
   AnlassSaveJsonSpec.JSON_PROPERTY_ANLASS_TYP,
+  AnlassSaveJsonSpec.JSON_PROPERTY_ANLASS_CONFIG_OPTION,
   AnlassSaveJsonSpec.JSON_PROPERTY_TITEL,
   AnlassSaveJsonSpec.JSON_PROPERTY_ANLASS_STATUS,
   AnlassSaveJsonSpec.JSON_PROPERTY_DATUM,
@@ -56,6 +58,10 @@ public class AnlassSaveJsonSpec {
   public static final String JSON_PROPERTY_ANLASS_TYP = "anlassTyp";
   @jakarta.annotation.Nonnull
   private AnlassTypSpec anlassTyp;
+
+  public static final String JSON_PROPERTY_ANLASS_CONFIG_OPTION = "anlassConfigOption";
+  @jakarta.annotation.Nonnull
+  private AnlassConfigOptionJsonSpec anlassConfigOption;
 
   public static final String JSON_PROPERTY_TITEL = "titel";
   @jakarta.annotation.Nonnull
@@ -139,6 +145,31 @@ public class AnlassSaveJsonSpec {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setAnlassTyp(@jakarta.annotation.Nonnull AnlassTypSpec anlassTyp) {
     this.anlassTyp = anlassTyp;
+  }
+
+  public AnlassSaveJsonSpec anlassConfigOption(@jakarta.annotation.Nonnull AnlassConfigOptionJsonSpec anlassConfigOption) {
+    
+    this.anlassConfigOption = anlassConfigOption;
+    return this;
+  }
+
+  /**
+   * Get anlassConfigOption
+   * @return anlassConfigOption
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_ANLASS_CONFIG_OPTION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public AnlassConfigOptionJsonSpec getAnlassConfigOption() {
+    return anlassConfigOption;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ANLASS_CONFIG_OPTION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setAnlassConfigOption(@jakarta.annotation.Nonnull AnlassConfigOptionJsonSpec anlassConfigOption) {
+    this.anlassConfigOption = anlassConfigOption;
   }
 
   public AnlassSaveJsonSpec titel(@jakarta.annotation.Nonnull String titel) {
@@ -501,6 +532,7 @@ public class AnlassSaveJsonSpec {
     }
     AnlassSaveJsonSpec anlassSaveJson = (AnlassSaveJsonSpec) o;
     return Objects.equals(this.anlassTyp, anlassSaveJson.anlassTyp) &&
+        Objects.equals(this.anlassConfigOption, anlassSaveJson.anlassConfigOption) &&
         Objects.equals(this.titel, anlassSaveJson.titel) &&
         Objects.equals(this.anlassStatus, anlassSaveJson.anlassStatus) &&
         Objects.equals(this.datum, anlassSaveJson.datum) &&
@@ -519,7 +551,7 @@ public class AnlassSaveJsonSpec {
 
   @Override
   public int hashCode() {
-    return Objects.hash(anlassTyp, titel, anlassStatus, datum, schuljahr, zeitVon, zeitBis, anlassArt, arzt, arztInfo, mpa, mpaInfo, weiterePerson, weiterePersonInfo, version);
+    return Objects.hash(anlassTyp, anlassConfigOption, titel, anlassStatus, datum, schuljahr, zeitVon, zeitBis, anlassArt, arzt, arztInfo, mpa, mpaInfo, weiterePerson, weiterePersonInfo, version);
   }
 
   @Override
@@ -527,6 +559,7 @@ public class AnlassSaveJsonSpec {
     StringBuilder sb = new StringBuilder();
     sb.append("class AnlassSaveJsonSpec {\n");
     sb.append("    anlassTyp: ").append(toIndentedString(anlassTyp)).append("\n");
+    sb.append("    anlassConfigOption: ").append(toIndentedString(anlassConfigOption)).append("\n");
     sb.append("    titel: ").append(toIndentedString(titel)).append("\n");
     sb.append("    anlassStatus: ").append(toIndentedString(anlassStatus)).append("\n");
     sb.append("    datum: ").append(toIndentedString(datum)).append("\n");

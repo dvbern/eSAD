@@ -1,8 +1,6 @@
-import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {RequirementSetting} from '@dvb/data-access-backend';
-import {AnlassStore} from '../../../anlass.store';
 import {BenutzerStore} from '@dvb/feat-shared';
 import {
   FormControlComponent,
@@ -12,16 +10,16 @@ import {
   TitleComponent,
 } from '@dvb/ui-components';
 import {DirtyMarker} from '@dvb/util-angular';
-import {hasAerztlicheUntersuchungEditBerechtigung, requireValue} from '@dvb/util-shared';
+import {requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
+import {AnlassStore} from '../../../anlass.store';
 import {UntersuchungStore} from '../../untersuchung.store';
+import {UntersuchungSehenStore} from '../untersuchung-sehen.store';
 import {UntersuchungSehenBemerkungfragebogenForm} from './untersuchung-sehen-bemerkungfragebogen.form';
-import {UntersuchungSehenStore} from "../untersuchung-sehen.store";
 
 @Component({
   selector: 'feat-untersuchung-sehen-bemerkungfragebogen',
   imports: [
-    CommonModule,
     FormLayoutComponent,
     ReactiveFormsModule,
     SaveCancelButtonsComponent,
@@ -44,8 +42,7 @@ export class UntersuchungSehenBemerkungfragebogenComponent implements DirtyMarke
 
   protected readonly RequirementSetting = RequirementSetting;
 
-  canEdit = computed(() => this.benutzerStore.createHasRequiredRoleSig(hasAerztlicheUntersuchungEditBerechtigung())()
-    && this.anlassStore.canUserEditAnlassInCurrentState());
+  canEdit = computed(() => this.anlassStore.canUserEditAnlassInCurrentState());
 
   form = new UntersuchungSehenBemerkungfragebogenForm({
     fb: inject(NonNullableFormBuilder),

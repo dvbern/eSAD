@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren;
 import java.io.Serial;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
 import jakarta.persistence.Column;

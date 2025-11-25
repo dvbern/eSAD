@@ -16,17 +16,17 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.sozialversicherungsnummer.SozialversicherungsNummerTestGenerator;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.EinladungService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankheitService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungIntern;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungInternService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmenService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.EinladungStatus;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.ImpfStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.Impfstoff;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffCharge;
@@ -67,19 +67,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenMassnah
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.SearchApiSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FilterCombinationSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindSearchListJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KrankheitSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizStatusSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.PageRequestJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.PageResultJsonSearchSummaryJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SearchColumnsSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SearchJsonFiltersInnerSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SearchJsonSortsInnerSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SearchJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SearchSummaryJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SearchSummaryListJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SortDirectionSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.*;
 import com.google.common.collect.MoreCollectors;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
@@ -392,8 +380,14 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 2);
+
+            assertThat(result.getTotalItemCount())
+                .as("totalItemCount should reflect total number of Kinder in DB")
+                .isNotNull()
+                .isInstanceOf(Integer.class)
+                .satisfies(total -> assertThat(total).isGreaterThanOrEqualTo(4));
 
             assertThat(result.getData())
                 .isNotEmpty()
@@ -408,6 +402,81 @@ class SearchResourceITest extends AbstractITest {
                 .isNotEmpty()
                 .filteredOn(k -> k.getName().contains(uuid.toString() + "ALLCAPS"))
                 .hasSize(1);
+        }
+
+
+
+        @Test
+        @TestAsAdminBS
+        void findAllKinderPaginated_should_return_filteredKinderCount() {
+            // ARRANGE
+            Kind kindA = KindBuilder.create(
+                builder -> builder
+                    .withID(ID.random(Kind.class))
+                    .withSozialversicherungsNummer(
+                        SozialversicherungsNummerTestGenerator.INSTANCE.getNextSozialversicherungsnummer())
+                    .withName("Reber", "Martin"));
+            kindService.persistWithoutDuplicateCheck(kindA);
+
+            Kind kindB = KindBuilder.create(
+                builder -> builder
+                    .withID(ID.random(Kind.class))
+                    .withSozialversicherungsNummer(
+                        SozialversicherungsNummerTestGenerator.INSTANCE.getNextSozialversicherungsnummer())
+                    .withName("Ruebli", "Anna"));
+            kindService.persistWithoutDuplicateCheck(kindB);
+
+            // ACT
+            var unfilteredSpec = new SearchJsonSpec(
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
+                Collections.emptyList(),
+                Collections.emptyList()
+            );
+
+            var unfiltered = api.searchResourceFindKinderPaginated()
+                .body(unfilteredSpec)
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .statusCode(Status.OK.getStatusCode())
+                .extract().as(PageResultJsonSearchSummaryJsonSpec.class);
+
+            var nameFilter = new SearchJsonFiltersInnerSpec(
+                SearchColumnsSpec.NAME, "Reber", FilterCombinationSpec.AND
+            );
+
+            var filteredSpec = new SearchJsonSpec(
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
+                Collections.emptyList(),
+                List.of(nameFilter)
+            );
+
+            var filtered = api.searchResourceFindKinderPaginated()
+                .body(filteredSpec)
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .statusCode(Status.OK.getStatusCode())
+                .extract().as(PageResultJsonSearchSummaryJsonSpec.class);
+
+            // ASSERT
+            assertThat(unfiltered)
+                .isNotNull()
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .as("totalItemCount (unfiltered) should be >= 2")
+                .satisfies(total -> assertThat(total).isInstanceOf(Integer.class))
+                .matches(total -> (total) >= 2);
+
+            Integer totalUnfiltered = unfiltered.getTotalItemCount();
+            Integer filteredCount   = filtered.getTotalFilteredCount();
+            Integer totalFiltered   = filtered.getTotalItemCount();
+
+            assertThat(totalFiltered)
+                .as("totalItemCount is global/unchanged by filters")
+                .isEqualTo(totalUnfiltered);
+
+            assertThat(filteredCount)
+                .as("filteredCount should be <= total")
+                .isLessThanOrEqualTo(totalUnfiltered)
+                .isLessThan(totalUnfiltered);
         }
 
         @Test
@@ -440,7 +509,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             assertThat(result.getData())
@@ -482,7 +551,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 2);
 
             assertThat(result.getData())
@@ -714,7 +783,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             assertThat(result.getData()).extracting(SearchSummaryJsonSpec::getId).containsAll(primarklssenKinderIds);
@@ -759,7 +828,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             assertThat(result.getData()).extracting(SearchSummaryJsonSpec::getId).contains(klassenkind.getId().getId());
@@ -801,7 +870,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             assertThat(result.getData()).extracting(SearchSummaryJsonSpec::getId).hasSameElementsAs(resultKids);
@@ -842,7 +911,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count == 1);
 
             assertThat(result.getData()).extracting(SearchSummaryJsonSpec::getId)
@@ -887,7 +956,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count == 2);
         }
 
@@ -933,7 +1002,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count == 1);
 
             assertThat(result.getData()).extracting(SearchSummaryJsonSpec::getId)
@@ -982,7 +1051,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(10, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 20);
 
             assertThat(result.getData())
@@ -1060,7 +1129,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             assertThat(result.getData()).extracting(SearchSummaryJsonSpec::getId)
@@ -1095,7 +1164,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(schuleMpaResult)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             assertThat(schuleMpaResult.getData()).extracting(SearchSummaryJsonSpec::getId)
@@ -1135,7 +1204,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(mpaUnassignedResult)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             assertThat(mpaUnassignedResult.getData()).extracting(SearchSummaryJsonSpec::getId)
@@ -1214,7 +1283,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             assertThat(result.getData()).extracting(SearchSummaryJsonSpec::getId)
@@ -1249,7 +1318,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(schuleArztResult)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             assertThat(schuleArztResult.getData()).extracting(SearchSummaryJsonSpec::getId)
@@ -1289,7 +1358,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(mpaUnassignedResult)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             assertThat(mpaUnassignedResult.getData()).extracting(SearchSummaryJsonSpec::getId)
@@ -1370,7 +1439,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             assertThat(result.getData()).extracting(SearchSummaryJsonSpec::getId)
@@ -1404,7 +1473,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(resultVarizellen)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             assertThat(resultVarizellen.getData()).extracting(SearchSummaryJsonSpec::getId)
@@ -1451,7 +1520,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             assertThat(result.getData()).extracting(SearchSummaryJsonSpec::getId)
@@ -1500,7 +1569,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             assertThat(result.getData()).extracting(SearchSummaryJsonSpec::getId)
@@ -1556,7 +1625,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             // Verify that the Kind with Masernimpfung is returned
@@ -1596,7 +1665,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(resultByDatum)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             // Verify that the Kind with Masernimpfung is returned
@@ -1660,7 +1729,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             // Verify that only kind1 with anlass on date1 is returned
@@ -1720,7 +1789,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             // Verify that only kind1 with anlass in schuljahr 2023 is returned
@@ -1777,7 +1846,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
 
@@ -1978,7 +2047,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             // Verify that only kind1 with einladung status TEILNAHME_BESTAETIGT is returned
@@ -2036,7 +2105,7 @@ class SearchResourceITest extends AbstractITest {
             assertThat(result)
                 .returns(1, PageResultJsonSearchSummaryJsonSpec::getPage)
                 .returns(MAX_PAGE_SIZE, PageResultJsonSearchSummaryJsonSpec::getMaxPageSize)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             // Verify that the Kind with Masernimpfung is returned
@@ -2102,7 +2171,7 @@ class SearchResourceITest extends AbstractITest {
 
             // ASSERT
             assertThat(result)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             // Verify that only kind1 with vormerkenFuerGruppenFolgetermin = true is returned
@@ -2184,7 +2253,7 @@ class SearchResourceITest extends AbstractITest {
 
             // ASSERT - should return children without anlass assignment
             assertThat(resultNoAnlass)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 2);
 
             assertThat(resultNoAnlass.getData())
@@ -2216,7 +2285,7 @@ class SearchResourceITest extends AbstractITest {
 
             // ASSERT - should return children with anlass assignment
             assertThat(resultHasAnlass)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             assertThat(resultHasAnlass.getData())
@@ -2268,7 +2337,7 @@ class SearchResourceITest extends AbstractITest {
 
             // ASSERT
             assertThat(result)
-                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalItemCount)
+                .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
             // Verify that only kind1 with nachkontrolle = true is returned

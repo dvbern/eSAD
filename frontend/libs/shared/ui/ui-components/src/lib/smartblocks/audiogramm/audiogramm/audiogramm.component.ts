@@ -1,4 +1,4 @@
-import {NgIf} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TranslocoPipe} from '@jsverse/transloco';
@@ -11,11 +11,10 @@ import {AudiogrammFrequenz, AudiogrammValue} from '../json/audiogramm-json';
     styleUrl: './audiogramm.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        NgIf,
-        TranslocoPipe,
-    ]
+    FormsModule,
+    ReactiveFormsModule,
+    TranslocoPipe
+]
 })
 export class AudiogrammComponent {
 

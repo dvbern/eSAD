@@ -7,7 +7,7 @@
         (ngSubmit)="submitIfValid()">
 
     <!-- Bemerkung -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.untersuchungBemerkungen !== RequirementSetting.NOT_VISIBLE) {
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBemerkungen !== RequirementSetting.NOT_VISIBLE) {
       <svui-title [context]="'formSection'"
                   class="mb-3">{{ 'untersuchung.tab.arzt.bemerkung' | transloco }}
       </svui-title>

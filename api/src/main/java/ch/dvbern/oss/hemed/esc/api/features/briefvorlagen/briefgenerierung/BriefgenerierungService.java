@@ -6,7 +6,7 @@ import java.io.InputStream;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileDownloadUtil;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.Arzt;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.Briefvorlage;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.docmerger.MergeSourceCreatorService;
@@ -84,7 +84,7 @@ public class BriefgenerierungService {
             "%s_%s_%s.docx",
             PrintUtil.WHITESPACE.matcher(briefvorlage.getName()).replaceAll("-"),
             PrintUtil.WHITESPACE.matcher(kind.getNameVorname()).replaceAll("-"),
-            appClock.localDateTime().now().toLocalDate().format(DATE_FORMATTER_FOR_FILENAME));
+            appClock.getToday().format(DATE_FORMATTER_FOR_FILENAME));
 
         return FileDownloadUtil.buildFileInfo(
             fileName,

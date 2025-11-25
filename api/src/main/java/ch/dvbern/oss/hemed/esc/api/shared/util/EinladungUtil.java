@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.Lehrperson;

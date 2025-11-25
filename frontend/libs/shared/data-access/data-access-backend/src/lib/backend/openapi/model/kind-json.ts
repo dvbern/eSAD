@@ -18,7 +18,6 @@ export interface KindJson {
     id: BackendEntityId;
     esadId?: string;
     externalImportInfoJson?: ExternalImportInfoJson;
-    manualOrAktivInExternalSystem: boolean;
     entityInfo: EntityInfoJson;
     data: KindSaveJson;
     landCode?: LandCode;

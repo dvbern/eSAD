@@ -347,6 +347,15 @@
           "attributes": {}
         },
         {
+          "id": "6e790c93-d8c3-4f03-8228-cc56d25e5ea6",
+          "name": "PFP",
+          "description": "Pflegefachperson",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "1fb129fa-6749-4801-adfa-6d3623c40b6d",
+          "attributes": {}
+        },
+        {
           "id": "31475450-9437-4e98-bd66-bd1ea8c5ce2b",
           "name": "SUPERUSER",
           "description": "",
@@ -2212,84 +2221,77 @@
       "id": "f83a0f57-0e54-4690-968d-79813a2f719e",
       "name": "ESC-SUPERUSER-ROLE",
       "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
-      "identityProviderMapper": "oidc-role-idp-mapper",
+      "identityProviderMapper": "oidc-advanced-role-idp-mapper",
       "config": {
-        "syncMode": "INHERIT",
-        "claim": "roles",
-        "role": "esc-oauth2-proxy-${KC_ENV}.SUPERUSER",
-        "claim.value": "GP_GD-MD_EDOKID-Superuser"
+        "syncMode": "FORCE",
+        "claims": "[{\"key\":\"tenant\",\"value\":\"BS\"},{\"key\":\"roles\",\"value\":\"GP_GD-MD_EDOKID-Superuser\"}]",
+        "role": "esc-oauth2-proxy-${KC_ENV}.SUPERUSER"
       }
     },
     {
       "id": "af2a09b5-8b56-4146-b1e3-9b35bc175ad2",
       "name": "ESC-MPA-ROLE",
       "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
-      "identityProviderMapper": "oidc-role-idp-mapper",
+      "identityProviderMapper": "oidc-advanced-role-idp-mapper",
       "config": {
         "syncMode": "FORCE",
-        "claim": "roles.",
-        "role": "esc-oauth2-proxy-${KC_ENV}.MPA",
-        "claim.value": "GP_GD-MD_EDOKID-MPA"
+        "claims": "[{\"key\":\"tenant\",\"value\":\"BS\"},{\"key\":\"roles\",\"value\":\"GP_GD-MD_EDOKID-MPA\"}]",
+        "role": "esc-oauth2-proxy-${KC_ENV}.MPA"
       }
     },
     {
       "id": "9ab6aa3b-112e-46ed-9ef2-5f3310adf18a",
       "name": "ESC-SUPPORT-ROLE",
       "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
-      "identityProviderMapper": "oidc-role-idp-mapper",
+      "identityProviderMapper": "oidc-advanced-role-idp-mapper",
       "config": {
         "syncMode": "INHERIT",
-        "claim": "roles",
-        "role": "esc-oauth2-proxy-${KC_ENV}.SUPPORT",
-        "claim.value": "GP_GD-MD_EDOKID-Support"
+        "claims": "[{\"key\":\"tenant\",\"value\":\"BS\"},{\"key\":\"roles\",\"value\":\"GP_GD-MD_EDOKID-Support\"}]",
+        "role": "esc-oauth2-proxy-${KC_ENV}.SUPPORT"
       }
     },
     {
       "id": "1496ba8d-050b-4c66-99b9-81661d9e42ee",
       "name": "ESC-EMPFANG-ROLE",
       "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
-      "identityProviderMapper": "oidc-role-idp-mapper",
+      "identityProviderMapper": "oidc-advanced-role-idp-mapper",
       "config": {
         "syncMode": "FORCE",
-        "claim": "roles",
-        "role": "esc-oauth2-proxy-${KC_ENV}.EMPFANG",
-        "claim.value": "GP_GD-MD_EDOKID-Empfang"
+        "claims": "[{\"key\":\"tenant\",\"value\":\"BS\"},{\"key\":\"roles\",\"value\":\"GP_GD-MD_EDOKID-Empfang\"}]",
+        "role": "esc-oauth2-proxy-${KC_ENV}.EMPFANG"
       }
     },
     {
       "id": "15e6886d-51f1-4351-8720-264ebbdc9101",
       "name": "ESC-SCHULAERZTIN-ROLE",
       "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
-      "identityProviderMapper": "oidc-role-idp-mapper",
+      "identityProviderMapper": "oidc-advanced-role-idp-mapper",
       "config": {
-        "syncMode": "INHERIT",
-        "claim": "roles",
-        "role": "esc-oauth2-proxy-${KC_ENV}.SCHULAERZTIN",
-        "claim.value": "GP_GD-MD_EDOKID-SÄ"
+        "syncMode": "FORCE",
+        "claims": "[{\"key\":\"tenant\",\"value\":\"BS\"},{\"key\":\"roles\",\"value\":\"GP_GD-MD_EDOKID-SÄ\"}]",
+        "role": "esc-oauth2-proxy-${KC_ENV}.SCHULAERZTIN"
       }
     },
     {
       "id": "829668c1-246b-4f3d-aeb6-75d87537a034",
       "name": "ESC-ADMIN-ROLE",
       "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
-      "identityProviderMapper": "oidc-role-idp-mapper",
+      "identityProviderMapper": "oidc-advanced-role-idp-mapper",
       "config": {
         "syncMode": "FORCE",
-        "claim": "roles",
-        "role": "esc-oauth2-proxy-${KC_ENV}.ADMIN",
-        "claim.value": "GP_GD-MD_EDOKID-Admin"
+        "claims": "[{\"key\":\"tenant\",\"value\":\"BS\"},{\"key\":\"roles\",\"value\":\"GP_GD-MD_EDOKID-Admin\"}]",
+        "role": "esc-oauth2-proxy-${KC_ENV}.ADMIN"
       }
     },
     {
       "id": "c4bd7714-b5b4-464f-af42-9b2fc2d7b75f",
       "name": "ESC-ORTHOPISTIN-ROLE",
       "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
-      "identityProviderMapper": "oidc-role-idp-mapper",
+      "identityProviderMapper": "oidc-advanced-role-idp-mapper",
       "config": {
         "syncMode": "FORCE",
-        "claim": "roles",
-        "role": "esc-oauth2-proxy-${KC_ENV}.ORTHOPISTIN",
-        "claim.value": "GP_GD-MD_EDOKID-Orthoptistin"
+        "claims": "[{\"key\":\"tenant\",\"value\":\"BS\"},{\"key\":\"roles\",\"value\":\"GP_GD-MD_EDOKID-Orthoptistin\"}]",
+        "role": "esc-oauth2-proxy-${KC_ENV}.ORTHOPISTIN"
       }
     },
     {

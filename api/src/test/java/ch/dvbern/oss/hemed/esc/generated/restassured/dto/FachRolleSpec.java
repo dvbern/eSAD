@@ -34,6 +34,10 @@ public enum FachRolleSpec {
   
   SCHULAERZTIN("SCHULAERZTIN"),
   
+  LAUSBEAUFTRAGTE("LAUSBEAUFTRAGTE"),
+  
+  PFP("PFP"),
+  
   SUPERUSER("SUPERUSER"),
   
   ADMIN("ADMIN"),

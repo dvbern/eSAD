@@ -37,7 +37,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   FileDataJsonSpec.JSON_PROPERTY_CALCULATED_FILE_NAME,
   FileDataJsonSpec.JSON_PROPERTY_FILE_SIZE,
   FileDataJsonSpec.JSON_PROPERTY_MIME_TYPE,
-  FileDataJsonSpec.JSON_PROPERTY_FILE_ID_IN_BUCKET
+  FileDataJsonSpec.JSON_PROPERTY_FILE_ID_IN_BUCKET,
+  FileDataJsonSpec.JSON_PROPERTY_DELETED_IN_BUCKET
 })
 @JsonTypeName("FileDataJson")
 @lombok.AllArgsConstructor
@@ -74,6 +75,10 @@ public class FileDataJsonSpec {
   public static final String JSON_PROPERTY_FILE_ID_IN_BUCKET = "fileIdInBucket";
   @jakarta.annotation.Nonnull
   private String fileIdInBucket;
+
+  public static final String JSON_PROPERTY_DELETED_IN_BUCKET = "deletedInBucket";
+  @jakarta.annotation.Nonnull
+  private Boolean deletedInBucket;
 
   public FileDataJsonSpec() {
   }
@@ -278,6 +283,31 @@ public class FileDataJsonSpec {
     this.fileIdInBucket = fileIdInBucket;
   }
 
+  public FileDataJsonSpec deletedInBucket(@jakarta.annotation.Nonnull Boolean deletedInBucket) {
+    
+    this.deletedInBucket = deletedInBucket;
+    return this;
+  }
+
+  /**
+   * Get deletedInBucket
+   * @return deletedInBucket
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_DELETED_IN_BUCKET)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Boolean getDeletedInBucket() {
+    return deletedInBucket;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_DELETED_IN_BUCKET)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setDeletedInBucket(@jakarta.annotation.Nonnull Boolean deletedInBucket) {
+    this.deletedInBucket = deletedInBucket;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -294,12 +324,13 @@ public class FileDataJsonSpec {
         Objects.equals(this.calculatedFileName, fileDataJson.calculatedFileName) &&
         Objects.equals(this.fileSize, fileDataJson.fileSize) &&
         Objects.equals(this.mimeType, fileDataJson.mimeType) &&
-        Objects.equals(this.fileIdInBucket, fileDataJson.fileIdInBucket);
+        Objects.equals(this.fileIdInBucket, fileDataJson.fileIdInBucket) &&
+        Objects.equals(this.deletedInBucket, fileDataJson.deletedInBucket);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, entityInfo, fileTyp, fileName, calculatedFileName, fileSize, mimeType, fileIdInBucket);
+    return Objects.hash(id, entityInfo, fileTyp, fileName, calculatedFileName, fileSize, mimeType, fileIdInBucket, deletedInBucket);
   }
 
   @Override
@@ -314,6 +345,7 @@ public class FileDataJsonSpec {
     sb.append("    fileSize: ").append(toIndentedString(fileSize)).append("\n");
     sb.append("    mimeType: ").append(toIndentedString(mimeType)).append("\n");
     sb.append("    fileIdInBucket: ").append(toIndentedString(fileIdInBucket)).append("\n");
+    sb.append("    deletedInBucket: ").append(toIndentedString(deletedInBucket)).append("\n");
     sb.append("}");
     return sb.toString();
   }

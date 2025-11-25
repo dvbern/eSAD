@@ -1,4 +1,5 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, output, ViewContainerRef} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, output, ViewContainerRef, inject} from '@angular/core';
+import { requireValue } from '@dvb/util-shared';
 
 @Component({
   selector: 'svui-virtual-scroll-auto-trigger',
@@ -7,30 +8,27 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, output, Vi
   imports: [],
 })
 export class VirtualScrollAutoTriggerComponent implements AfterViewInit, OnDestroy {
-
   trigger = output<void>();
 
-  observedElement: any;
+  observedElement: Element | undefined;
   observer: IntersectionObserver | undefined;
 
-  constructor(private vcRef: ViewContainerRef) {
-  }
+  readonly #vcRef = inject(ViewContainerRef);
 
   ngAfterViewInit() {
-    this.observedElement = this.vcRef.element.nativeElement.parentElement;
+    this.observedElement = this.#vcRef.element.nativeElement.parentElement;
 
     this.observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         this.trigger.emit();
       }
     });
-    this.observer.observe(this.observedElement);
+    this.observer.observe(requireValue(this.observedElement));
   }
 
   public ngOnDestroy(): void {
     if (this.observer) {
-      this.observer.unobserve(this.observedElement);
+      this.observer.unobserve(requireValue(this.observedElement));
     }
   }
-
 }

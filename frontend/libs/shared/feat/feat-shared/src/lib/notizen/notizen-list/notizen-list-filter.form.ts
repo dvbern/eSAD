@@ -3,16 +3,19 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder } from '@angular/forms';
 import { BenutzerOptionJson, LabelJson, NotizStatus } from '@dvb/data-access-backend';
 import { ISODateString } from '@dvb/data-access-types';
-import {BaseForm, FilterCombinationMethod, FilterMethod, TableModel} from '@dvb/util-angular';
+import {BaseForm, FilterCombinationMethod, FilterMethod, onTextInput, TableModel} from '@dvb/util-angular';
 import { distinctUntilChanged } from 'rxjs';
 import { NotizJsonEnhanced } from '../notiz-json-enhanced';
+import {isNullish} from "@dvb/util-shared";
 
 export interface NotizFilterForm {
   erstelltAm: ISODateString | null,
   titel: string | null,
   label: LabelJson[],
   status: NotizStatus[],
-  verantwortlichePerson: BenutzerOptionJson[]
+  verantwortlichePerson: BenutzerOptionJson[],
+  kindFullName: string,
+  hasAnhang: boolean | null
 }
 
 type Config = {
@@ -29,6 +32,8 @@ function makeForm(config: Config) {
     label: fb.control<LabelJson[]>([]),
     status: fb.control<NotizStatus[]>([]),
     verantwortlichePerson: fb.control<BenutzerOptionJson[]>([]),
+    kindFullName: fb.control<string>(''),
+    hasAnhang: fb.control<boolean | null>(null),
   });
 
   group.controls.erstelltAm.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
@@ -91,6 +96,31 @@ function makeForm(config: Config) {
         filterMethod: FilterMethod.SUBSTRING,
         filterCombinationMethod: FilterCombinationMethod.OR,
         filterName: 'data.verantwortlicher.id',
+      });
+    },
+    error: console.error,
+  });
+
+  onTextInput(group.controls.kindFullName, config.destroyRef).subscribe({
+    next: kindFullName => {
+      config.paginatedTable.onFilterChanged({
+        filterValue: kindFullName ?? '',
+        filterMethod: FilterMethod.SUBSTRING,
+        filterCombinationMethod: FilterCombinationMethod.AND,
+        filterName: 'kindFullName',
+      });
+    },
+    error: console.error,
+  });
+
+  group.controls.hasAnhang.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef)).subscribe({
+    next: hasAnhang => {
+      const filterValue = isNullish(hasAnhang) ? '' : '' + hasAnhang;
+      config.paginatedTable.onFilterChanged({
+        filterValue: filterValue,
+        filterMethod: FilterMethod.BOOL,
+        filterCombinationMethod: FilterCombinationMethod.AND,
+        filterName: 'hasAnhang',
       });
     },
     error: console.error,

@@ -1,0 +1,118 @@
+<form svuiFormLayout
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="store.detailMode()">
+  <h2 svuiHeading="formSection">{{ 'anlassconfig.detail.tab.daten' | transloco }}</h2>
+
+  <!--  Daten Personendaten -->
+  <svui-form-control [label]="'anlassconfig.label.showDatenPersonendaten' | transloco"
+                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showDatenPersonendaten | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.showDatenPersonendaten"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      <ng-option [value]="true">
+        {{ 'RequirementSetting.boolean.true' | transloco }}
+      </ng-option>
+      <ng-option [value]="false">
+        {{ 'RequirementSetting.boolean.false' | transloco }}
+      </ng-option>
+    </ng-select>
+  </svui-form-control>
+
+  <!--  Daten Personendaten EsadId -->
+  <svui-form-control [label]="'anlassconfig.label.showDatenPersonendatenEsadId' | transloco"
+                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showDatenPersonendatenEsadId | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.showDatenPersonendatenEsadId"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      <ng-option [value]="true">
+        {{ 'RequirementSetting.boolean.true' | transloco }}
+      </ng-option>
+      <ng-option [value]="false">
+        {{ 'RequirementSetting.boolean.false' | transloco }}
+      </ng-option>
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Daten Untersuchung -->
+  <svui-form-control [label]="'anlassconfig.label.datenUntersuchung' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().datenUntersuchung | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.datenUntersuchung"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!--  Daten Schule -->
+  <svui-form-control [label]="'anlassconfig.label.showDatenSchule' | transloco"
+                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showDatenSchule | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.showDatenSchule"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      <ng-option [value]="true">
+        {{ 'RequirementSetting.boolean.true' | transloco }}
+      </ng-option>
+      <ng-option [value]="false">
+        {{ 'RequirementSetting.boolean.false' | transloco }}
+      </ng-option>
+    </ng-select>
+  </svui-form-control>
+
+  <!-- datenBemerkung -->
+  <svui-form-control [label]="'anlassconfig.label.datenBemerkung' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().datenBemerkung | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.datenBemerkung"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!--messages for whole form -->
+  <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="store.detailMode()"
+    [isCreate]="store.selectedIsNew()"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="anlassConfigHelperService.canEdit()"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+    [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"
+  />
+</form>

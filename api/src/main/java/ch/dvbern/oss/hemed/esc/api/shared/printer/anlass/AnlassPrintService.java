@@ -36,8 +36,8 @@ import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.EinladungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.NachkontrolleService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
@@ -80,7 +80,7 @@ public class AnlassPrintService {
             AnlassPrintDTO dto = new AnlassPrintDTO(
                 anlass,
                 einladungen,
-                appClock.localDateTime().now().toLocalDate(),
+                appClock.getToday(),
                 TenantEnum.BS, // Use tenant resolver once we found a way around SonarCube's parameter limitation
                 (AppLanguages) appLanguageProvider.current(),
                 nachkontrollen
@@ -120,7 +120,7 @@ public class AnlassPrintService {
             "titel",
             PrintUtil.WHITESPACE.matcher(anlass.getTitel()).replaceAll("-"),
             "now",
-            appClock.localDateTime().now().toLocalDate().format(DATE_FORMATTER_FOR_FILENAME),
+            appClock.getToday().format(DATE_FORMATTER_FOR_FILENAME),
             "fileExtension",
             fileExtension);
 

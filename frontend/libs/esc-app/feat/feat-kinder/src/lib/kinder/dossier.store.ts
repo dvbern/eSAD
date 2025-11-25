@@ -1,8 +1,7 @@
 import {withDevtools} from '@angular-architects/ngrx-toolkit';
 import {computed, inject, Injectable} from '@angular/core';
 import {
-  DossierJson,
-  DossierSaveJson,
+  DossierJson, DossierMedizinischSaveJson, DossierNichtMedizinischSaveJson,
   DossierService,
   EntityAktivStatus,
   EntityAktivStatusSaveJson,
@@ -61,17 +60,17 @@ export class DossierStore extends signalStore(
   withIsNewModeFeature(),
   withComputed(({selectedDossier}) => ({
     hasZusatzinformationen: computed(() =>
-      !!selectedDossier()?.data?.kinderschutzfall ||
-      !!selectedDossier()?.data?.keineAuskunftAnDrittpersonen ||
-      !!selectedDossier()?.data?.sansPapier ||
-      !!selectedDossier()?.data?.andereZusatzinformation),
+      !!selectedDossier()?.dataMedizinisch?.kinderschutzfall ||
+      !!selectedDossier()?.dataMedizinisch?.keineAuskunftAnDrittpersonen ||
+      !!selectedDossier()?.dataMedizinisch?.sansPapier ||
+      !!selectedDossier()?.dataMedizinisch?.andereZusatzinformation),
     hasNachkontrolle: computed(() =>
-      !!selectedDossier()?.data?.nachkontrolle?.data?.anlassFlags.nachkontrolleHoeren
-      || !!selectedDossier()?.data?.nachkontrolle?.data?.anlassFlags.nachkontrolleSehen
-      || !!selectedDossier()?.data?.nachkontrolle?.data?.anlassFlags.nachkontrolleGroesseGewicht
-      || !!selectedDossier()?.data?.nachkontrolle?.data?.anlassFlags.nachkontrolleSprache
-      || !!selectedDossier()?.data?.nachkontrolle?.data?.anlassFlags.nachkontrolleMotorik
-      || !!selectedDossier()?.data?.nachkontrolle?.data?.anlassFlags.nachkontrolleAnderes,
+      !!selectedDossier()?.dataMedizinisch?.nachkontrolle?.data?.anlassFlags.nachkontrolleHoeren
+      || !!selectedDossier()?.dataMedizinisch?.nachkontrolle?.data?.anlassFlags.nachkontrolleSehen
+      || !!selectedDossier()?.dataMedizinisch?.nachkontrolle?.data?.anlassFlags.nachkontrolleGroesseGewicht
+      || !!selectedDossier()?.dataMedizinisch?.nachkontrolle?.data?.anlassFlags.nachkontrolleSprache
+      || !!selectedDossier()?.dataMedizinisch?.nachkontrolle?.data?.anlassFlags.nachkontrolleMotorik
+      || !!selectedDossier()?.dataMedizinisch?.nachkontrolle?.data?.anlassFlags.nachkontrolleAnderes,
     ),
     nameKind: computed(() => (selectedDossier()
       ? selectedDossier()?.kind.data.vorname + ' ' + selectedDossier()?.kind.data.name
@@ -242,13 +241,34 @@ export class DossierStore extends signalStore(
     ),
   );
 
-  updateDossier = rxMethod<{ dossier: DossierSaveJson, onSuccess: () => void }>(
+  updateDossierMedizinisch = rxMethod<{ dossier: DossierMedizinischSaveJson, onSuccess: () => void }>(
     pipe(
       exhaustMap(({dossier, onSuccess}) => this.saveLoader
         .tapLoading$(
-          this.#dossierService.updateDossier$({
+          this.#dossierService.updateDossierMedizinisch$({
             dossierId: requireValue(this.selectedDossier()?.id),
-            dossierSaveJson: dossier,
+            dossierMedizinischSaveJson: dossier,
+          }), error => this.#appErrorHandlerService.handleError(error))
+        .pipe(
+          tapResponse({
+            next: result => {
+              patchState(this, {selectedDossier: result});
+              onSuccess();
+            },
+            error: console.error,
+          }),
+        ),
+      ),
+    ),
+  );
+
+  updateDossierNichtMedizinisch = rxMethod<{ dossier: DossierNichtMedizinischSaveJson, onSuccess: () => void }>(
+    pipe(
+      exhaustMap(({dossier, onSuccess}) => this.saveLoader
+        .tapLoading$(
+          this.#dossierService.updateDossierNichtMedizinisch$({
+            dossierId: requireValue(this.selectedDossier()?.id),
+            dossierNichtMedizinischSaveJson: dossier,
           }), error => this.#appErrorHandlerService.handleError(error))
         .pipe(
           tapResponse({

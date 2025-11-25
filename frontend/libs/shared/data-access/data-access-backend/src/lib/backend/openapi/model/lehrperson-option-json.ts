@@ -17,7 +17,6 @@ export interface LehrpersonOptionJson {
     name: string;
     vorname?: string;
     fullName: string;
-    manualOrAktivInExternalSystem: boolean;
 }
 export namespace LehrpersonOptionJson {
 }

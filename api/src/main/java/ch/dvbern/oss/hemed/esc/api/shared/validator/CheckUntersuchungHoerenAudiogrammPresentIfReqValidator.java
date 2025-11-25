@@ -17,10 +17,11 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.validator;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.apache.commons.collections4.CollectionUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @ApplicationScoped
@@ -63,6 +64,9 @@ public class CheckUntersuchungHoerenAudiogrammPresentIfReqValidator
         if (anlassConfig.getHoerenAudiogrammZusaetzlicheAngaben().isRequired()
             && hoerenAudiogramm.getZusaetzlicheAngaben()
             .isEmpty()) {
+            return false;
+        }
+        if (anlassConfig.getHoerenAudiogrammEmpfehlung().isRequired() && CollectionUtils.isEmpty(hoerenAudiogramm.getEmpfehlung())) {
             return false;
         }
         if (anlassConfig.getHoerenAudiogrammBemerkungen().isRequired() && hoerenAudiogramm.getBemerkungen() == null) {

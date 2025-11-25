@@ -17,12 +17,15 @@
       [searchable]="true"
       [compareWith]="compareFn"
     >
-      @for (item of schuleOptions(); track item.id; let index = $index) {
-        <ng-option [value]="item">
-            <span class="w-100 d-flex justify-content-between">
-              <span>{{ item.bezeichnung }}</span>
-            </span>
-        </ng-option>
+      <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+      @if (schuleOptions()) {
+        @for (item of schuleOptions(); track item.id; let index = $index) {
+          <ng-option [value]="item">
+              <span class="w-100 d-flex justify-content-between">
+                <span>{{ item.bezeichnung }}</span>
+              </span>
+          </ng-option>
+        }
       }
     </ng-select>
 

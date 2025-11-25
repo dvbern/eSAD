@@ -135,7 +135,6 @@ class KlasseResourceITest extends AbstractITest {
         Klasse klasse = fixtureService.createKlasse();
         Assertions.assertThat(klasse).isNotNull();
         Assertions.assertThat(klasse.getExternalSystemIdOrNull()).isNull();
-        Assertions.assertThat(klasse.isManualOrAktivInExternalSystem()).isTrue();
         Assertions.assertThat(klasse.getKlasseAktivStatus()).isEqualTo(EntityAktivStatus.AKTIV);
 
         // ACT

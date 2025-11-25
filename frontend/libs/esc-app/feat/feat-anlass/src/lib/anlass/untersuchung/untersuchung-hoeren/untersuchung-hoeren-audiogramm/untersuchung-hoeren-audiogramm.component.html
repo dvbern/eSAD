@@ -15,7 +15,7 @@
   }
 
   <!-- Audiogramm Beurteilung -->
-  @if (anlassStore.selectedEntity()?.anlassConfig?.hoerenAudiogrammBeurteilung !== RequirementSetting.NOT_VISIBLE) {
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.hoerenAudiogrammBeurteilung !== RequirementSetting.NOT_VISIBLE) {
     <svui-kachel-form-section [heading]=" 'untersuchung.tab.hoeren.audiogramm.beurteilung' | transloco">
       @for (beurteilung of getAudiogrammBeurteilungArray().controls; track $index) {
         <svui-kachel-control [label]="'AudiogrammBeurteilung.' + beurteilung.controls.resultat.value | transloco">
@@ -29,7 +29,7 @@
   }
 
   <!-- ZusaetzlicheAngaben -->
-  @if (anlassStore.selectedEntity()?.anlassConfig?.hoerenAudiogrammZusaetzlicheAngaben !== RequirementSetting.NOT_VISIBLE) {
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.hoerenAudiogrammZusaetzlicheAngaben !== RequirementSetting.NOT_VISIBLE) {
     <svui-kachel-form-section [heading]=" 'untersuchung.tab.hoeren.zusaetzliche.angaben' | transloco">
       @for (angaben of getZusaetzlicheAngabenArray().controls; track $index) {
         <svui-kachel-control [label]="'HoerenZusaetzlicheAngaben.' + angaben.controls.resultat.value | transloco">
@@ -42,8 +42,23 @@
     </svui-kachel-form-section>
   }
 
+  <!-- Empfehlung -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.hoerenAudiogrammEmpfehlung !== RequirementSetting.NOT_VISIBLE) {
+    <svui-kachel-form-section [heading]=" 'untersuchung.tab.hoeren.verwendete.empfehlung' | transloco">
+      @for (empfehlung of getEmpfehlungFormArray().controls; track $index) {
+        <svui-kachel-control [label]="'HoerenEmpfehlung.' + empfehlung.controls.resultat.value |transloco">
+          <input svuiCheckbox
+                 type="checkbox"
+                 name="empfehlung"
+                 [formControl]="empfehlung.controls.isChecked"
+          />
+        </svui-kachel-control>
+      }
+    </svui-kachel-form-section>
+  }
+
   <!-- Bemerkung -->
-  @if (anlassStore.selectedEntity()?.anlassConfig?.hoerenAudiogrammBemerkungen !== RequirementSetting.NOT_VISIBLE) {
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.hoerenAudiogrammBemerkungen !== RequirementSetting.NOT_VISIBLE) {
     <svui-title [context]="'formSection'"
                 class="mb-3">{{ 'untersuchung.tab.sehen.bemerkung' | transloco }}
     </svui-title>

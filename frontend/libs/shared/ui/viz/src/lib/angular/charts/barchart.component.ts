@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {AbstractChartComponent} from './_common/abstract-chart.component';
 import {BarchartD3, BarChartData} from '../../d3/charts';
@@ -10,9 +10,7 @@ import {BarchartD3, BarChartData} from '../../d3/charts';
 @Component({
     selector: 'svui-barchart',
     template: '<div [id]="id" #wrapper class="h-100" style="height: 100%"></div>',
-    imports: [
-        CommonModule,
-    ],
+    imports: [],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BarchartComponent extends AbstractChartComponent<BarchartD3, BarChartData> implements

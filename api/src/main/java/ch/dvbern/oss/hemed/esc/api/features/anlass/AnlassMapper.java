@@ -1,3 +1,21 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
 import java.util.ArrayList;
@@ -6,6 +24,9 @@ import java.util.List;
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassListJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassOptionJson;
@@ -17,9 +38,9 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleMapper;
 import ch.dvbern.oss.hemed.esc.api.features.schule.json.SchulInformationenJson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
-import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.json.KlasseLehrpersonenJson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.LehrpersonMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateTimeRange;
 import jakarta.validation.constraints.NotNull;
@@ -35,6 +56,7 @@ public final class AnlassMapper {
     private final BenutzerService benutzerService;
     private final LehrpersonMapper lehrpersonMapper;
     private final AktivitaetHistoryService aktivitaetHistoryService;
+    private final AuthorizerService authorizerService;
 
     @NonNull
     public static AnlassJson toJson(@NonNull Anlass anlass) {
@@ -47,6 +69,7 @@ public final class AnlassMapper {
             EntityInfoJson.fromEntity(anlass),
             new AnlassSaveJson(
                 anlass.getAnlassConfig().getAnlassTyp(),
+                AnlassConfigMapper.toOptionJson(anlass.getAnlassConfig()),
                 anlass.getTitel(),
                 anlass.getAnlassStatus(),
                 anlass.getDatum(),
@@ -62,7 +85,7 @@ public final class AnlassMapper {
                 anlass.getWeiterePersonInfo(),
                 anlass.getVersion()
             ),
-            AnlassConfigMapper.toJson(anlass.getAnlassConfig())
+            AnlassConfigMapper.toJson(anlass.getAnlassConfig(), true, anlass.getDatum())
         );
     }
 
@@ -76,8 +99,7 @@ public final class AnlassMapper {
 
     @NonNull
     private Anlass toEntityForCreate(@NonNull AnlassSaveJson saveJson) {
-        AnlassConfig config =
-            anlassConfigService.getByAnlassTypAndStichtag(saveJson.getAnlassTyp(), saveJson.getDatum());
+        AnlassConfig config = anlassConfigService.getById(saveJson.getAnlassConfigOption().getId());
         Benutzer arzt = saveJson.getArzt() != null ? benutzerService.getById(saveJson.getArzt().getId()) : null;
         Benutzer mpa = saveJson.getMpa() != null ? benutzerService.getById(saveJson.getMpa().getId()) : null;
         Benutzer weiterePerson =
@@ -136,21 +158,17 @@ public final class AnlassMapper {
     @NonNull
     public List<AnlassJson> findAll() {
         return anlassService.findAll().stream()
+            // some Roles can only read Anlässe of a certain AnlassTyp
+            .filter(authorizerService::hasReadAuthorizationAnlassListe)
             .map(AnlassMapper::toJson)
             .toList();
-    }
-
-    @NonNull
-    public List<KlasseLehrpersonenJson> findKlassenLehrpersonenForAnlass(@NonNull ID<Anlass> anlassId) {
-        List<Klasse> klassen = anlassService.findKlassenForAnlass(anlassId);
-        return lehrpersonMapper.findLehrpersonenByKlassen(klassen);
     }
 
     @NonNull
     public AnlassJson getById(@NonNull ID<Anlass> anlassID) {
         Anlass anlass = anlassService.getById(anlassID);
         aktivitaetHistoryService.createAktivitaetAnlass(anlass);
-        return AnlassMapper.toJson(anlass);
+        return toJson(anlass);
     }
 
     @NonNull
@@ -179,6 +197,8 @@ public final class AnlassMapper {
     @NonNull
     public AnlassListJson findAllForUser(@NonNull ID<Benutzer> benutzerID) {
         List<AnlassJson> list = anlassService.findAllForUserInFuture(benutzerID).stream()
+            // some Roles can only read Anlässe of a certain AnlassTyp
+            .filter(authorizerService::hasReadAuthorizationAnlassListe)
             .map(AnlassMapper::toJson)
             .toList();
         return new AnlassListJson(list, anlassService.getCountAllforUserInFuture(benutzerID));

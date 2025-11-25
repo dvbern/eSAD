@@ -98,7 +98,7 @@ public class AufgabeService {
         aufgabe.disableOptimisticLockingCheck();
         FileTyp fileTyp = FileNameUtil.getTypFromLabel(aufgabe.getLabels(), FileTyp.AUFGABEUPLOAD);
         String nameVorname = aufgabe.getKind() != null ? aufgabe.getKind().getNameVorname() : "Aufgabe";
-        LocalDate today = appClock.localDateTime().now().toLocalDate();
+        LocalDate today = appClock.getToday();
         final String originalFileName = fileInfoS3.getFileName().getFileName();
         CleanFileName calculatedFileName = FileNameUtil.calculateAutomaticFilename(
             aufgabe.getFiles(),
@@ -133,7 +133,7 @@ public class AufgabeService {
         // upload the file to S3
         Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileUpload, fileInfoS3);
         PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
-        LOG.debug("Uploaded file to S3: {}", putObjectResponse);
+        LOG.info("Uploaded file to S3, fileIdInBucket: {}, putObjectResponse: {}", fileInfoS3.getFileIdInBucket(), putObjectResponse);
 
         return fileInfoS3;
     }

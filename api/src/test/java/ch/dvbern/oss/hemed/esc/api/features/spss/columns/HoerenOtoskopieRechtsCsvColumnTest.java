@@ -1,10 +1,10 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
-import java.util.List;
+import java.util.EnumSet;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -33,7 +33,7 @@ class HoerenOtoskopieRechtsCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        hoerenOtoskopie.setOtoskopieRechts(List.of(OtoskopieResultat.values()));
+        hoerenOtoskopie.setOtoskopieRechts(EnumSet.allOf(OtoskopieResultat.class));
 
         assertThat(column.extract(einladung)).isEqualTo("1");
     }

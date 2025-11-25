@@ -5,7 +5,7 @@ import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.Arzt;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.json.BriefvorlageJson;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.json.BriefvorlageListJson;

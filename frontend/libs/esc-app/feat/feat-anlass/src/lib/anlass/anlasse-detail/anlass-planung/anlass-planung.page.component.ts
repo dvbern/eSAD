@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -30,7 +30,6 @@ import { EinladungenListeComponent } from './einladungen-liste/einladungen-liste
   styleUrl: './anlass-planung.page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     DatenComponent,
     EinladungenListeComponent,
     PageComponent,
@@ -42,8 +41,8 @@ import { EinladungenListeComponent } from './einladungen-liste/einladungen-liste
     DatenComponent,
     NgSelectComponent,
     NgOptionComponent,
-    NgSelectDirective,
-  ],
+    NgSelectDirective
+],
 })
 export class AnlassPlanungPageComponent implements OnDestroy, AfterViewInit {
   readonly store = inject(AnlassStore);

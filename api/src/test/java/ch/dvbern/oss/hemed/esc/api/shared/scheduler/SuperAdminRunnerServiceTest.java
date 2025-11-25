@@ -6,6 +6,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.duplikate.Duplikat;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.duplikate.DuplikatRepo;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.duplikate.DuplikatSearchTerm;
+import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import ch.dvbern.oss.hemed.esc.api.features.spss.SpssReportType;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueue;
@@ -214,7 +215,7 @@ class SuperAdminRunnerServiceTest extends AbstractITest {
         );
         kindService.persistWithoutDuplicateCheck(kind);
         var dossier = fixtureService.createDossier(kind);
-        fixtureService.createNotiz(dossier, Set.of()); // old Notiz
+        fixtureService.createNotiz(dossier, Set.of(), NotizTyp.DEFAULT); // old Notiz
 
         // deactivated external kind
         var kindInaktivEscada = KindBuilder.create(builder -> builder

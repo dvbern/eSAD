@@ -79,6 +79,11 @@ public class NotizService {
     }
 
     @NonNull
+    public List<Notiz> findAll() {
+        return notizRepo.findAll();
+    }
+
+    @NonNull
     public List<Notiz> findAllForKind(@NonNull ID<Kind> kindID) {
         return notizRepo.findAllForKind(kindID);
     }
@@ -94,7 +99,7 @@ public class NotizService {
         String originalFileName = fileInfoS3.getFileName().getFileName();
         CleanFileName calculatedFileName = FileNameUtil.calculateAutomaticFilename(
             notiz.getFiles(),
-            appClock.localDateTime().now().toLocalDate(),
+            appClock.getToday(),
             nameVorname,
             fileTyp,
             originalFileName);
@@ -127,8 +132,7 @@ public class NotizService {
         // upload the file to S3
         Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileUpload, fileInfoS3);
         PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
-        LOG.debug("Uploaded file to S3: {}", putObjectResponse);
-
+        LOG.info("Uploaded file to S3, fileIdInBucket: {}, putObjectResponse: {}", fileInfoS3.getFileIdInBucket(), putObjectResponse);
         return fileInfoS3;
     }
 

@@ -26,6 +26,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -271,6 +272,31 @@ public class DateRange implements Serializable, Comparable<DateRange> {
     }
 
     /**
+     * @return Falls es zwischen dieser DateRange und otherRange eine zeitliche Lücke gibt, so wird diese
+     * zurueck gegeben
+     */
+    @NonNull
+    public Optional<DateRange> getGap(@NonNull DateRange otherRange) {
+        DateRange earlierRange = this.datumVon.isBefore(otherRange.datumVon) ? this : otherRange;
+        DateRange laterRange = this.datumVon.isAfter(otherRange.datumVon) ? this : otherRange;
+        long gap = earlierRange.datumBis.until(laterRange.datumVon, ChronoUnit.DAYS);
+        if (gap > 1) {
+            return Optional.of(DateRange.of(
+                earlierRange.datumBis.plusDays(1),
+                laterRange.datumVon.minusDays(1)
+            ));
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * {@link #getOverlap(DateRange)}.isPresent()
+     */
+    public boolean hasGap(@NonNull DateRange other) {
+        return getGap(other).isPresent();
+    }
+
+    /**
      * @return Zeitraeume dieser DateRange, welche den Range von {@code other} nicht beinhalten. Falls es keine
      * Ueberlappung gibt, wird eine leere Liste zurueck gegeben.
      *
@@ -386,4 +412,8 @@ public class DateRange implements Serializable, Comparable<DateRange> {
         return format(formatter, " - ");
     }
 
+    @Override
+    public String toString() {
+        return  format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN), " - ");
+    }
 }

@@ -17,8 +17,8 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.validator;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -29,7 +29,7 @@ public class CheckUntersuchungArztBeurteilungPresentIfReqValidator
     @Override
     @SuppressWarnings({
         "java:S3776" /* acceptable complexity */,
-        "java:S1126" /* readability is better with seprate return*/}
+        "java:S1126" /* readability is better with seprate return*/ }
     )
     public boolean isEntityValid(@NonNull UntersuchungArztBeurteilung aerztlicheUntersuchung) {
         AnlassConfig anlassConfig =

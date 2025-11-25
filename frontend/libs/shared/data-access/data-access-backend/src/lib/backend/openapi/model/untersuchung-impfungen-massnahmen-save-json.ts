@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 import { InformationEltern } from './information-eltern';
+import { ImpfungenMassnahmenEmpfehlung } from './impfungen-massnahmen-empfehlung';
 
 
 export interface UntersuchungImpfungenMassnahmenSaveJson { 
@@ -19,6 +20,8 @@ export interface UntersuchungImpfungenMassnahmenSaveJson {
     informationEltern?: InformationEltern;
     informationHausarzt: boolean;
     rueckfrageHausarzt: boolean;
+    empfehlung?: Array<ImpfungenMassnahmenEmpfehlung>;
+    achtung?: string;
     bemerkungen?: string;
     version: number;
 }

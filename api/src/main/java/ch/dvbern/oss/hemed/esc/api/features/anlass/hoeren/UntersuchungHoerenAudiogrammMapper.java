@@ -1,15 +1,42 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren;
+
+import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfigMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoerenAudiogrammJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoerenAudiogrammSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.shared.anlass.UntersuchungHoerenDefaultValueUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungHoerenUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -33,8 +60,9 @@ public class UntersuchungHoerenAudiogrammMapper {
             new UntersuchungHoerenAudiogrammSaveJson(
                 AudiogrammMapper.toJson(hoeren.getAudiogrammRechts()),
                 AudiogrammMapper.toJson(hoeren.getAudiogrammLinks()),
-                hoeren.getAudiogrammBeurteilung(),
-                hoeren.getZusaetzlicheAngaben(),
+                EnumSetUtil.toList(hoeren.getAudiogrammBeurteilung()),
+                EnumSetUtil.toList(hoeren.getZusaetzlicheAngaben()),
+                EnumSetUtil.toList(hoeren.getEmpfehlung()),
                 hoeren.getBemerkungen(),
                 hoeren.getVersion()
             )
@@ -62,8 +90,9 @@ public class UntersuchungHoerenAudiogrammMapper {
         hoeren.setAudiogrammLinks(AudiogrammMapper.toEntity(
             hoeren.getAudiogrammLinks(),
             saveJson.getAudiogrammLinks()));
-        hoeren.setAudiogrammBeurteilung(saveJson.getAudiogrammBeurteilung());
-        hoeren.setZusaetzlicheAngaben(saveJson.getZusaetzlicheAngaben());
+        hoeren.setAudiogrammBeurteilung(EnumSetUtil.toEnumSet(saveJson.getAudiogrammBeurteilung(), AudiogrammBeurteilung.class));
+        hoeren.setZusaetzlicheAngaben(EnumSetUtil.toEnumSet(saveJson.getZusaetzlicheAngaben(), HoerenZusaetzlicheAngaben.class));
+        hoeren.setEmpfehlung(EnumSetUtil.toEnumSet(saveJson.getEmpfehlung(), HoerenEmpfehlung.class));
         hoeren.setBemerkungen(saveJson.getBemerkungen());
         return hoeren;
     }
@@ -77,10 +106,14 @@ public class UntersuchungHoerenAudiogrammMapper {
         UntersuchungHoerenAudiogramm hoerenAudiogramm = untersuchung.getUntersuchungHoerenAudiogramm();
         UntersuchungHoerenAudiogramm entity = toEntity(untersuchung, hoerenAudiogramm, saveJson);
         if (entity.getAudiogrammRechts() != null && saveJson.getAudiogrammRechts() != null) {
-            untersuchungHoerenService.cascadeOptimisticLocking(entity.getAudiogrammRechts(), saveJson.getAudiogrammRechts().getVersion());
+            untersuchungHoerenService.cascadeOptimisticLocking(
+                entity.getAudiogrammRechts(),
+                saveJson.getAudiogrammRechts().getVersion());
         }
         if (entity.getAudiogrammLinks() != null && saveJson.getAudiogrammLinks() != null) {
-            untersuchungHoerenService.cascadeOptimisticLocking(entity.getAudiogrammLinks(), saveJson.getAudiogrammLinks().getVersion());
+            untersuchungHoerenService.cascadeOptimisticLocking(
+                entity.getAudiogrammLinks(),
+                saveJson.getAudiogrammLinks().getVersion());
         }
         return toJson(untersuchungHoerenService.persistWithOptimisticLocking(entity, saveJson.getVersion()));
     }
@@ -90,7 +123,20 @@ public class UntersuchungHoerenAudiogrammMapper {
         @NonNull ID<Anlass> anlassID
     ) {
         AnlassConfig anlassConfig = anlassService.getById(anlassID).getAnlassConfig();
-        return UntersuchungHoerenAudiogrammSaveJson
-            .defaultAudiogrammValuesForAnlassConfig(AnlassConfigMapper.toJson(anlassConfig));
+        return new UntersuchungHoerenAudiogrammSaveJson(
+            UntersuchungHoerenDefaultValueUtil.getDefaultAudiogramm(
+                anlassConfig.getHoerenAudiogramm(),
+                anlassConfig.getAnlassTyp()),
+            UntersuchungHoerenDefaultValueUtil.getDefaultAudiogramm(
+                anlassConfig.getHoerenAudiogramm(),
+                anlassConfig.getAnlassTyp()),
+            EnumSetUtil.toList(UntersuchungHoerenUtil.getAudiogrammBeurteilung(
+                anlassConfig.getHoerenAudiogrammBeurteilung(), null, AudiogrammBeurteilung.NORMAL)),
+            EnumSetUtil.toList(UntersuchungHoerenUtil.getZusaetzlicheAngaben(
+                anlassConfig.getHoerenAudiogrammZusaetzlicheAngaben(), null, HoerenZusaetzlicheAngaben.KEINE)),
+            List.of(),
+            null,
+            0L
+        );
     }
 }

@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {
     AfterContentInit,
     ChangeDetectionStrategy,
@@ -18,9 +18,8 @@ import {NamedChartDataCollection} from '../../_interface';
     templateUrl: './button-filters.component.html',
     styleUrls: ['./button-filters.component.scss'],
     imports: [
-        CommonModule,
-        ButtonComponent,
-    ],
+    ButtonComponent
+],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ButtonFiltersComponent<T extends ChartData> implements OnInit, AfterContentInit {

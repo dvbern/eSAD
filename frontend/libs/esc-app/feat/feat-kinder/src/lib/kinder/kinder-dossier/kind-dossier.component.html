@@ -7,17 +7,23 @@
     <feat-kind-dossier-anlaesse-list middle/>
 
     <!-- Impfungen -->
-    <feat-kind-dossier-impfungen middle/>
+    @if (canViewMedizinischeDaten()) {
+      <feat-kind-dossier-impfungen middle/>
+    }
 
     <!-- Notizen -->
-    <feat-kind-notizen-list right/>
+    @if (canViewNotizen()) {
+      <feat-kind-notizen-list right/>
+    }
 
     <!-- Aufgaben -->
-    <feat-aufgaben-sidebar right
-                           [showCreateAufgabeButton]="dossierStore.isKindAktiv()"
-                           [aufgabenList]="aufgabenStore.entities()"
-                           [loading]="aufgabenStore.loader.isLoading()"
-                           [routingPrefix]="Path.AUFGABEN"/>
+    @if (canViewAufgaben()) {
+      <feat-aufgaben-sidebar right
+                             [showCreateAufgabeButton]="dossierStore.isKindAktiv()"
+                             [aufgabenList]="aufgabenStore.entities()"
+                             [loading]="aufgabenStore.loader.isLoading()"
+                             [routingPrefix]="Path.AUFGABEN"/>
+    }
 
   </svui-layout-columns>
 </feat-page>

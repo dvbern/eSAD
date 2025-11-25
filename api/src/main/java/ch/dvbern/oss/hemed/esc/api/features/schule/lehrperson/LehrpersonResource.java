@@ -46,7 +46,7 @@ public class LehrpersonResource {
 
     @GET
     @NonNull
-    @RolesAllowed(BerechtigungName.LISTEN_LESEN)
+    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
     public LehrpersonListJson findAllAktivByKlasse(
         @NotNull @NonNull @PathParam("klasseID") ID<Klasse> klasseId
     ) {
@@ -56,7 +56,7 @@ public class LehrpersonResource {
     @GET
     @Path("/options")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.LISTEN_LESEN)
+    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
     public LehrpersonOptionListJson findAllOptionsActive(
         @NotNull @NonNull @PathParam("klasseID") ID<Klasse> klasseId,
         @NotNull @QueryParam("excludeKlasse") boolean excludeKlasse
@@ -68,7 +68,7 @@ public class LehrpersonResource {
     @GET
     @NonNull
     @Path("/{lehrpersonID}")
-    @RolesAllowed(BerechtigungName.LISTEN_LESEN)
+    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
     public LehrpersonJson getLehrperson(
         @NotNull @NonNull @PathParam("klasseID") ID<Klasse> klasseId,
         @NotNull @NonNull @PathParam("lehrpersonID") ID<Lehrperson> lehrpersonID

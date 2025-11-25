@@ -1,8 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungKindDaten;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDaten;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungKindDatenBuilder;
 import org.junit.jupiter.api.Test;

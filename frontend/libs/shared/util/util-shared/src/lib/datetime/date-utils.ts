@@ -1,10 +1,15 @@
 import {isISODateString, isISODateTimeString, ISODateString, ISODateTimeString} from '@dvb/data-access-types';
-import {format, Locale, parseISO} from 'date-fns';
+import {addDays, format, formatISO, Locale, parseISO} from 'date-fns';
 import {isNotNullish, isNullish, Nullish} from '../nullish';
 
 export function today(): Date {
   const now = new Date(Date.now());
   return new Date(now.setUTCHours(0, 0, 0, 0));
+}
+
+export function tomorrow(): Date {
+  const tomorrow = addDays(Date.now(), 1);
+  return new Date(tomorrow.setUTCHours(0, 0, 0, 0));
 }
 
 export function fromISODateTimeString<T extends string | Nullish>(
@@ -62,7 +67,7 @@ export function toISODateString<T extends Date | Nullish>(
   if (isNullish(value)) {
     return value as ISODateString & (T & Nullish);
   }
-  const result = value.toISOString();
+  const result = formatISO(value, { representation: 'date' });
   // Is there a better way?
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result as unknown as any;
@@ -89,7 +94,6 @@ export function truncateToDate<T extends ISODateTimeString | Date | Nullish>(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return result as unknown as any;
 }
-
 
 /**
  * Returns the date at the start of the day (at 00:00:00) in UTC.
@@ -137,10 +141,7 @@ export function toDateStr(
 ): string {
 
   const date = isISODateString(utcDate) ? new Date(utcDate) : utcDate;
-
-  const result = format(date, 'dd.MM.yyyy', {locale});
-
-  return result;
+  return format(date, 'dd.MM.yyyy', { locale });
 }
 
 /**
@@ -156,10 +157,9 @@ export function toDateTimeStr(
   return format(date, 'dd.MM.yyyy, kk:mm', {locale});
 }
 
-
 export function formatTimeWithDateIfNotToday(
   dateTimeString: ISODateTimeString | undefined,
-  timeOnlyForToday = false
+  timeOnlyForToday = false,
 ): string | undefined {
   if (!isISODateTimeString(dateTimeString)) {
     return undefined;

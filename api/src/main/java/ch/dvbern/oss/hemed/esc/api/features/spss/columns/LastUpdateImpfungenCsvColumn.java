@@ -2,7 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import java.time.OffsetDateTime;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;

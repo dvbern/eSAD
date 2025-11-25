@@ -10,12 +10,14 @@
 import { NotizSaveJson } from './notiz-save-json';
 import { EntityInfoJson } from './entity-info-json';
 import { BackendEntityId } from '@dvb/data-access-types';
+import { KindOptionJson } from './kind-option-json';
 
 
 export interface NotizJson { 
     id: BackendEntityId;
     entityInfo: EntityInfoJson;
     data: NotizSaveJson;
+    kind: KindOptionJson;
 }
 
 

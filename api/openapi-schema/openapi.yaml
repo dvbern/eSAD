@@ -46,29 +46,147 @@ components:
       type: object
       required:
       - id
-      - anlassTyp
-      - gueltigkeitsZeitraum
+      - data
+      - anlassConfigStatus
+      - anlassConfigVisible
+      - usedInAtLeastOneAnlass
+      - latestAnlassConfigForAnlassTyp
       - showTabDaten
+      - showTabImpfungen
+      - showChecklist
+      - showTabSehen
+      - showTabSehenBeurteilung
+      - showTabSehenBemerkungenFragenbogen
+      - showTabSehenMassnahmen
+      - showTabHoeren
+      - showTabHoerenAudiogramm
+      - showTabHoerenOtoskopie
+      - showTabGroesseGewicht
+      - showTabTriage
+      - showTabLaeusekontrolle
+      - showTabUntersuchung
+      - showTabUntersuchungBeurteilung
+      - showTabUntersuchungBemerkung
+      - showTabMassnahmen
+      properties:
+        id:
+          $ref: "#/components/schemas/IDAnlassConfig"
+        data:
+          $ref: "#/components/schemas/AnlassConfigSaveJson"
+        anlassConfigStatus:
+          $ref: "#/components/schemas/AnlassConfigStatus"
+        anlassConfigVisible:
+          type: boolean
+        usedInAtLeastOneAnlass:
+          type: boolean
+        latestAnlassConfigForAnlassTyp:
+          type: boolean
+        showTabDaten:
+          type: boolean
+        showTabImpfungen:
+          type: boolean
+        showChecklist:
+          type: boolean
+        showTabSehen:
+          type: boolean
+        showTabSehenBeurteilung:
+          type: boolean
+        showTabSehenBemerkungenFragenbogen:
+          type: boolean
+        showTabSehenMassnahmen:
+          type: boolean
+        showTabHoeren:
+          type: boolean
+        showTabHoerenAudiogramm:
+          type: boolean
+        showTabHoerenOtoskopie:
+          type: boolean
+        showTabGroesseGewicht:
+          type: boolean
+        showTabTriage:
+          type: boolean
+        showTabLaeusekontrolle:
+          type: boolean
+        showTabUntersuchung:
+          type: boolean
+        showTabUntersuchungBeurteilung:
+          type: boolean
+        showTabUntersuchungBemerkung:
+          type: boolean
+        showTabMassnahmen:
+          type: boolean
+    AnlassConfigListJson:
+      type: object
+      required:
+      - anlassConfigList
+      properties:
+        anlassConfigList:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnlassConfigJson"
+    AnlassConfigOptionJson:
+      type: object
+      required:
+      - id
+      - anlassTyp
+      - datumVon
+      - datumBis
+      - bezeichnung
+      properties:
+        id:
+          $ref: "#/components/schemas/IDAnlassConfig"
+        anlassTyp:
+          $ref: "#/components/schemas/AnlassTyp"
+        datumVon:
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        datumBis:
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        bezeichnung:
+          type: string
+    AnlassConfigOptionListJson:
+      type: object
+      required:
+      - configList
+      properties:
+        configList:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnlassConfigOptionJson"
+    AnlassConfigSaveJson:
+      type: object
+      required:
+      - anlassTyp
+      - datumVon
+      - datumBis
+      - bezeichnung
+      - showImpfausweis
+      - showFragebogen
+      - showAnmeldungBestaetigung
       - showDatenPersonendaten
+      - showDatenPersonendatenEsadId
       - datenUntersuchung
       - showDatenSchule
-      - showTabImpfungen
+      - datenBemerkung
       - impfungenUebersicht
       - impfungenListe
-      - impfungenMassnahmeFolgetermin
+      - showImpfungenDoppelkontrolle
+      - impfungenMassnahmeKeineMassnahmen
+      - impfungenMassnahmeGruppenFolgetermin
+      - impfungenMassnahmeImpfenFolgetermin
       - impfungenMassnahmeEinzelFolgetermin
       - impfungenMassnahmeInfoKinderarzt
       - impfungenMassnahmeBeratungMPA
       - impfungenMassnahmeInfomaterialAbgegeben
       - impfungenMassnahmeInfoEltern
       - impfungenMassnahmeRueckfrageKinderarzt
-      - showChecklist
       - checkEinwilligungVorhanden
       - checkKontraindikationenAbgeklaert
       - checkDoppelkontrolleImpfentscheidDurchgefuehrt
+      - untersuchungImpfungEmpfehlung
+      - untersuchungImpfungAchtung
       - untersuchungImpfungBemerkungen
-      - showTabSehen
-      - showTabSehenBeurteilung
       - sehenBrilleLinsen
       - sehenFarbsehen
       - sehenTafel
@@ -79,49 +197,72 @@ components:
       - sehenKonvergenz
       - sehenMotilitaet
       - sehenNahvisus
+      - sehenEmpfehlung
       - sehenBemerkungen
-      - showTabSehenBemerkungenFragenbogen
       - sehenBemerkungenFragebogen
-      - showTabSehenMassnahmen
       - sehenMassnahmen
-      - showTabHoeren
-      - showTabHoerenAudiogramm
       - hoerenAudiogramm
       - hoerenAudiogramm250Hz
       - hoerenAudiogramm8000Hz
       - hoerenAudiogrammBeurteilung
       - hoerenAudiogrammZusaetzlicheAngaben
+      - hoerenAudiogrammEmpfehlung
       - hoerenAudiogrammBemerkungen
-      - showTabHoerenOtoskopie
       - hoerenOtoskopie
       - hoerenOtoskopieBemerkungen
-      - showTabGroesseGewicht
       - groesseGewichtGroesse
       - groesseGewichtGewicht
       - groesseGewichtBmi
       - groesseGewichtGroessePerzentile
       - groesseGewichtGewichtPerzentile
       - groesseGewichtBmiPerzentile
+      - groesseGewichtBmiPerzentileValues
+      - groesseGewichtEmpfehlung
       - groesseGewichtBemerkungen
-      - showTabTriage
       - showTriageTriage
       - showTriageKindWeiterleiten
-      - showTabUntersuchung
-      - showTabUntersuchungBeurteilung
-      - showTabUntersuchungBemerkung
+      - laeusekontrolleBeurteilung
+      - laeusekontrolleEmpfehlung
+      - laeusekontrolleBemerkungen
       - untersuchungBewegungsapparat
       - untersuchungEinbeinstand
+      - untersuchungEinbeinstandRechts
+      - untersuchungEinbeinstandLinks
       - untersuchungEinbeinhuepfen
+      - untersuchungEinbeinhuepfenRechts
+      - untersuchungEinbeinhuepfenLinks
       - untersuchungFingeropposition
+      - untersuchungHampelmann
+      - untersuchungBallFangen
+      - untersuchungBallWerfen
+      - untersuchungNameSchreiben
+      - untersuchungFigurNachmalen
+      - untersuchungStifthaltung
+      - untersuchungAussprache
+      - untersuchungLesefit
+      - untersuchungLesefitPunkte
+      - untersuchungZahlenNachsprechen4
+      - untersuchungZahlenNachsprechen5
+      - untersuchungZeichnenKreis
+      - untersuchungZeichnenViereck
+      - untersuchungZeichnenDreieck
+      - untersuchungZeichnenMensch
+      - untersuchungZeichnenMenschPunkte
       - untersuchungMotorik
+      - untersuchungMotorikPunkte
+      - untersuchungKognition
+      - untersuchungKognitionPunkte
       - untersuchungSprache
+      - untersuchungSprachePunkte
       - untersuchungMundZaehne
       - untersuchungHaut
       - untersuchungHerz
       - untersuchungBlutdruck
       - untersuchungVerhalten
+      - unterlagenEinverstaendnis
+      - unterlagenVerhaltensfragebogen
+      - untersuchungEmpfehlung
       - untersuchungBemerkungen
-      - showTabMassnahmen
       - showMassnahmenPathologischeBefunde
       - showMassnahmenKeine
       - showMassnahmenBeratungMpa
@@ -134,27 +275,43 @@ components:
       - showMassnahmenNachkontrolleSaed
       - showMassnahmenAnderes
       properties:
-        id:
-          $ref: "#/components/schemas/IDAnlassConfig"
         anlassTyp:
           $ref: "#/components/schemas/AnlassTyp"
-        gueltigkeitsZeitraum:
-          $ref: "#/components/schemas/DateRange"
-        showTabDaten:
+        datumVon:
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        datumBis:
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        bezeichnung:
+          type: string
+        showImpfausweis:
+          type: boolean
+        showFragebogen:
+          type: boolean
+        showAnmeldungBestaetigung:
           type: boolean
         showDatenPersonendaten:
+          type: boolean
+        showDatenPersonendatenEsadId:
           type: boolean
         datenUntersuchung:
           $ref: "#/components/schemas/RequirementSetting"
         showDatenSchule:
           type: boolean
-        showTabImpfungen:
-          type: boolean
+        datenBemerkung:
+          $ref: "#/components/schemas/RequirementSetting"
         impfungenUebersicht:
           $ref: "#/components/schemas/RequirementSetting"
         impfungenListe:
           $ref: "#/components/schemas/RequirementSetting"
-        impfungenMassnahmeFolgetermin:
+        showImpfungenDoppelkontrolle:
+          type: boolean
+        impfungenMassnahmeKeineMassnahmen:
+          type: boolean
+        impfungenMassnahmeGruppenFolgetermin:
+          type: boolean
+        impfungenMassnahmeImpfenFolgetermin:
           type: boolean
         impfungenMassnahmeEinzelFolgetermin:
           type: boolean
@@ -168,20 +325,18 @@ components:
           type: boolean
         impfungenMassnahmeRueckfrageKinderarzt:
           type: boolean
-        showChecklist:
-          type: boolean
         checkEinwilligungVorhanden:
           $ref: "#/components/schemas/RequirementSetting"
         checkKontraindikationenAbgeklaert:
           $ref: "#/components/schemas/RequirementSetting"
         checkDoppelkontrolleImpfentscheidDurchgefuehrt:
           $ref: "#/components/schemas/RequirementSetting"
+        untersuchungImpfungEmpfehlung:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungImpfungAchtung:
+          $ref: "#/components/schemas/RequirementSetting"
         untersuchungImpfungBemerkungen:
           $ref: "#/components/schemas/RequirementSetting"
-        showTabSehen:
-          type: boolean
-        showTabSehenBeurteilung:
-          type: boolean
         sehenBrilleLinsen:
           $ref: "#/components/schemas/RequirementSetting"
         sehenFarbsehen:
@@ -202,20 +357,14 @@ components:
           $ref: "#/components/schemas/RequirementSetting"
         sehenNahvisus:
           $ref: "#/components/schemas/RequirementSetting"
+        sehenEmpfehlung:
+          $ref: "#/components/schemas/RequirementSetting"
         sehenBemerkungen:
           $ref: "#/components/schemas/RequirementSetting"
-        showTabSehenBemerkungenFragenbogen:
-          type: boolean
         sehenBemerkungenFragebogen:
           $ref: "#/components/schemas/RequirementSetting"
-        showTabSehenMassnahmen:
-          type: boolean
         sehenMassnahmen:
           $ref: "#/components/schemas/RequirementSetting"
-        showTabHoeren:
-          type: boolean
-        showTabHoerenAudiogramm:
-          type: boolean
         hoerenAudiogramm:
           $ref: "#/components/schemas/RequirementSetting"
         hoerenAudiogramm250Hz:
@@ -226,16 +375,14 @@ components:
           $ref: "#/components/schemas/RequirementSetting"
         hoerenAudiogrammZusaetzlicheAngaben:
           $ref: "#/components/schemas/RequirementSetting"
+        hoerenAudiogrammEmpfehlung:
+          $ref: "#/components/schemas/RequirementSetting"
         hoerenAudiogrammBemerkungen:
           $ref: "#/components/schemas/RequirementSetting"
-        showTabHoerenOtoskopie:
-          type: boolean
         hoerenOtoskopie:
           $ref: "#/components/schemas/RequirementSetting"
         hoerenOtoskopieBemerkungen:
           $ref: "#/components/schemas/RequirementSetting"
-        showTabGroesseGewicht:
-          type: boolean
         groesseGewichtGroesse:
           $ref: "#/components/schemas/RequirementSetting"
         groesseGewichtGewicht:
@@ -248,31 +395,83 @@ components:
           $ref: "#/components/schemas/RequirementSetting"
         groesseGewichtBmiPerzentile:
           $ref: "#/components/schemas/RequirementSetting"
+        groesseGewichtBmiPerzentileValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/PerzentileBmi"
+        groesseGewichtEmpfehlung:
+          $ref: "#/components/schemas/RequirementSetting"
         groesseGewichtBemerkungen:
           $ref: "#/components/schemas/RequirementSetting"
-        showTabTriage:
-          type: boolean
         showTriageTriage:
           type: boolean
         showTriageKindWeiterleiten:
           type: boolean
-        showTabUntersuchung:
-          type: boolean
-        showTabUntersuchungBeurteilung:
-          type: boolean
-        showTabUntersuchungBemerkung:
-          type: boolean
+        laeusekontrolleBeurteilung:
+          $ref: "#/components/schemas/RequirementSetting"
+        laeusekontrolleEmpfehlung:
+          $ref: "#/components/schemas/RequirementSetting"
+        laeusekontrolleBemerkungen:
+          $ref: "#/components/schemas/RequirementSetting"
         untersuchungBewegungsapparat:
           $ref: "#/components/schemas/RequirementSetting"
         untersuchungEinbeinstand:
           $ref: "#/components/schemas/RequirementSetting"
+        untersuchungEinbeinstandRechts:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungEinbeinstandLinks:
+          $ref: "#/components/schemas/RequirementSetting"
         untersuchungEinbeinhuepfen:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungEinbeinhuepfenRechts:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungEinbeinhuepfenLinks:
           $ref: "#/components/schemas/RequirementSetting"
         untersuchungFingeropposition:
           $ref: "#/components/schemas/RequirementSetting"
+        untersuchungHampelmann:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungBallFangen:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungBallWerfen:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungNameSchreiben:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungFigurNachmalen:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungStifthaltung:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungAussprache:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungLesefit:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungLesefitPunkte:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungZahlenNachsprechen4:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungZahlenNachsprechen5:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungZeichnenKreis:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungZeichnenViereck:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungZeichnenDreieck:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungZeichnenMensch:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungZeichnenMenschPunkte:
+          $ref: "#/components/schemas/RequirementSetting"
         untersuchungMotorik:
           $ref: "#/components/schemas/RequirementSetting"
+        untersuchungMotorikPunkte:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungKognition:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungKognitionPunkte:
+          $ref: "#/components/schemas/RequirementSetting"
         untersuchungSprache:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungSprachePunkte:
           $ref: "#/components/schemas/RequirementSetting"
         untersuchungMundZaehne:
           $ref: "#/components/schemas/RequirementSetting"
@@ -284,10 +483,14 @@ components:
           $ref: "#/components/schemas/RequirementSetting"
         untersuchungVerhalten:
           $ref: "#/components/schemas/RequirementSetting"
+        unterlagenEinverstaendnis:
+          $ref: "#/components/schemas/RequirementSetting"
+        unterlagenVerhaltensfragebogen:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungEmpfehlung:
+          $ref: "#/components/schemas/RequirementSetting"
         untersuchungBemerkungen:
           $ref: "#/components/schemas/RequirementSetting"
-        showTabMassnahmen:
-          type: boolean
         showMassnahmenPathologischeBefunde:
           type: boolean
         showMassnahmenKeine:
@@ -310,6 +513,12 @@ components:
           type: boolean
         showMassnahmenAnderes:
           type: boolean
+    AnlassConfigStatus:
+      type: string
+      enum:
+      - AKTIV
+      - ABGELAUFEN
+      - GEPLANT
     AnlassFlagsJson:
       type: object
       required:
@@ -376,6 +585,7 @@ components:
       type: object
       required:
       - anlassTyp
+      - anlassConfigOption
       - titel
       - anlassStatus
       - datum
@@ -385,6 +595,8 @@ components:
       properties:
         anlassTyp:
           $ref: "#/components/schemas/AnlassTyp"
+        anlassConfigOption:
+          $ref: "#/components/schemas/AnlassConfigOptionJson"
         titel:
           type: string
         anlassStatus:
@@ -439,6 +651,10 @@ components:
       - IMPFSPRECHSTUNDE
       - IMPFTERMIN
       - VERTRAUENSARZT
+      - KLASSE_5
+      - EINSCHULUNG
+      - SONSTIGES
+      - LAEUSEKONTROLLE
     AppFailureErrorJson:
       type: object
       required:
@@ -746,8 +962,11 @@ components:
       - AUFGABEN_LESEN
       - AUFGABEN_SCHREIBEN
       - ANLASSLISTE_LESEN
+      - ANLASSLISTE_LESEN_LAEUSE
       - ANLASSPLANUNG_LESEN
       - ANLASSPLANUNG_SCHREIBEN
+      - ANLASSPLANUNG_LESEN_LAEUSE
+      - ANLASSPLANUNG_SCHREIBEN_LAEUSE
       - VERANDERUNGEN_NACH_ABSCHLUSS
       - SU_DATEN_LESEN
       - SU_DATEN_SCHREIBEN
@@ -759,14 +978,18 @@ components:
       - SU_HOREN_SCHREIBEN
       - SU_GROSSE_GEWICHT_LESEN
       - SU_GROSSE_GEWICHT_SCHREIBEN
+      - SU_LAEUSE_LESEN
+      - SU_LAEUSE_SCHREIBEN
       - SU_TRIAGE_LESEN
       - SU_TRIAGE_SCHREIBEN
       - SU_AERZTLICHE_UNTERSUCHUNG_LESEN
       - SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN
       - SU_MASSNAHMEN_LESEN
       - SU_MASSNAHMEN_SCHREIBEN
-      - KINDER_LESEN
-      - KINDER_SCHREIBEN
+      - KINDER_LESEN_MEDIZINISCH
+      - KINDER_LESEN_NICHT_MEDIZINISCH
+      - KINDER_SCHREIBEN_MEDIZINISCH
+      - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
       - KINDER_ALLE_NOTIZEN_LESEN
       - KINDER_ALLE_NOTIZEN_SCHREIBEN
       - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN
@@ -774,6 +997,7 @@ components:
       - INDIVIDUELLE_REPORTS
       - SPSS_EXPORT
       - KOMPLETTER_EXPORT
+      - LISTEN_ADMIN_LESEN
       - LISTEN_LESEN
       - LISTEN_SCHREIBEN
       - IMPFSTOFFE_LESEN
@@ -965,16 +1189,6 @@ components:
           items:
             $ref: "#/components/schemas/DBInfoConnectionSSLJson"
           description: The connection information of the database
-    DateRange:
-      type: object
-      required:
-      - datumVon
-      - datumBis
-      properties:
-        datumVon:
-          $ref: "#/components/schemas/LocalDate"
-        datumBis:
-          $ref: "#/components/schemas/LocalDate"
     DbNumber:
       format: number-precise
       type: number
@@ -984,10 +1198,7 @@ components:
       - LOCAL
       - UNIT_TEST
       - DEV
-      - REVIEW
-      - IAT
       - UAT
-      - DEMO
       - PROD
     Dezibel:
       type: string
@@ -1085,19 +1296,21 @@ components:
       required:
       - id
       - entityInfo
-      - data
+      - dataNichtMedizinisch
       - kind
       properties:
         id:
           $ref: "#/components/schemas/IDDossier"
         entityInfo:
           $ref: "#/components/schemas/EntityInfoJson"
-        data:
-          $ref: "#/components/schemas/DossierSaveJson"
+        dataMedizinisch:
+          $ref: "#/components/schemas/DossierMedizinischSaveJson"
+        dataNichtMedizinisch:
+          $ref: "#/components/schemas/DossierNichtMedizinischSaveJson"
         kind:
           $ref: "#/components/schemas/KindJson"
-    DossierSaveJson:
-      description: Business data for a Dossier
+    DossierMedizinischSaveJson:
+      description: Medical business data for a Dossier
       type: object
       required:
       - kinderschutzfall
@@ -1105,7 +1318,6 @@ components:
       - sansPapier
       - immunitaetMasern
       - immunitaetVarizellen
-      - papierakteStatus
       - nachkontrolle
       - version
       properties:
@@ -1123,17 +1335,27 @@ components:
           type: boolean
         immunitaetVarizellen:
           type: boolean
-        papierakteStatus:
-          $ref: "#/components/schemas/PapierakteStatus"
-        zustaendigArzt:
-          $ref: "#/components/schemas/BenutzerOptionJson"
-        zustaendigMPA:
-          $ref: "#/components/schemas/BenutzerOptionJson"
         nachkontrolle:
           $ref: "#/components/schemas/NachkontrolleJson"
         version:
           type: integer
           format: int64
+    DossierNichtMedizinischSaveJson:
+      description: Non medical business data for a Dossier
+      type: object
+      properties:
+        zustaendigArzt:
+          $ref: "#/components/schemas/BenutzerOptionJson"
+        zustaendigMPA:
+          $ref: "#/components/schemas/BenutzerOptionJson"
+        papierakteStatus:
+          $ref: "#/components/schemas/PapierakteStatus"
+        version:
+          type: integer
+          format: int64
+      required:
+      - papierakteStatus
+      - version
     DuplikatJson:
       type: object
       required:
@@ -1261,6 +1483,7 @@ components:
       - anlassId
       - kindId
       - einladungStatus
+      - notizen
       - version
       properties:
         anlassId:
@@ -1275,10 +1498,10 @@ components:
           $ref: "#/components/schemas/ArtAbmeldung"
         bemerkungAbmeldung:
           type: string
-        impfausweis:
-          $ref: "#/components/schemas/NotizJson"
-        fragebogen:
-          $ref: "#/components/schemas/NotizJson"
+        notizen:
+          type: array
+          items:
+            $ref: "#/components/schemas/NotizJson"
         version:
           type: integer
           format: int64
@@ -1291,6 +1514,11 @@ components:
       - TEILNAHME_BESTAETIGT
       - TEILNAHME_ABGESAGT
       - NACHZUEGLER
+      - PRIVATARZT_OFFEN
+      - PRIVATARZT_BESTAETIGT
+      - PRIVATARZT_MUENDLICH_BESTAETIGT
+      - KEINE_ANMELDUNG
+      - UNTERSUCHUNG_JA
     EmailAddress:
       format: email
       type: string
@@ -1568,6 +1796,8 @@ components:
       - MPA
       - ORTHOPISTIN
       - SCHULAERZTIN
+      - LAUSBEAUFTRAGTE
+      - PFP
       - SUPERUSER
       - ADMIN
       - SUPPORT
@@ -1592,6 +1822,13 @@ components:
       - PATHOLOGISCH
       - UNSICHER
       - NICHT_GEPRUEFT
+    FeatureEnabledSetting:
+      type: string
+      enum:
+      - ENABLED
+      - ENABLED_FOR_BETA_TESTING
+      - ENABLED_FOR_DEVELOPMENT
+      - DISABLED
     FileDataJson:
       type: object
       required:
@@ -1603,6 +1840,7 @@ components:
       - fileSize
       - mimeType
       - fileIdInBucket
+      - deletedInBucket
       properties:
         id:
           $ref: "#/components/schemas/IDFileData"
@@ -1621,6 +1859,8 @@ components:
           type: string
         fileIdInBucket:
           type: string
+        deletedInBucket:
+          type: boolean
     FileTyp:
       type: string
       enum:
@@ -1631,6 +1871,7 @@ components:
       - FRAGEBOGEN
       - KINDERDOSSIER
       - BRIEFVORLAGE
+      - ANMELDUNG_BESTAETIGUNG
       - PLAYGROUND
       - PLAYGROUND_ERROR
       - SPSS_REPORT
@@ -1699,6 +1940,10 @@ components:
       - AKZIDENTELLES_SYSTOLIKUM
       - ANDERES
       - NICHT_GEPRUEFT
+    HoerenEmpfehlung:
+      type: string
+      enum:
+      - UEBERPRUEFUNG_ARZT
     HoerenZusaetzlicheAngaben:
       type: string
       enum:
@@ -1951,6 +2196,12 @@ components:
       pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
       examples:
       - 11111111-1111-1111-1111-111111111111
+    IDUntersuchungLaeusekontrolle:
+      type: string
+      format: entity-id
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      examples:
+      - 11111111-1111-1111-1111-111111111111
     IDUntersuchungMassnahmen:
       type: string
       format: entity-id
@@ -2063,6 +2314,10 @@ components:
         version:
           type: integer
           format: int64
+    ImpfungenMassnahmenEmpfehlung:
+      type: string
+      enum:
+      - IMPFUNG_BEIM_HAUSARZT
     InfomaterialJson:
       type: object
       required:
@@ -2189,7 +2444,6 @@ components:
       type: object
       required:
       - id
-      - manualOrAktivInExternalSystem
       - entityInfo
       - data
       properties:
@@ -2199,8 +2453,6 @@ components:
           type: string
         externalImportInfoJson:
           $ref: "#/components/schemas/ExternalImportInfoJson"
-        manualOrAktivInExternalSystem:
-          type: boolean
         entityInfo:
           $ref: "#/components/schemas/EntityInfoJson"
         data:
@@ -2216,6 +2468,19 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/KindJson"
+    KindOptionJson:
+      type: object
+      required:
+      - id
+      - name
+      - vorname
+      properties:
+        id:
+          $ref: "#/components/schemas/IDKind"
+        name:
+          type: string
+        vorname:
+          type: string
     KindSaveJson:
       description: Business data for a Kind
       type: object
@@ -2325,7 +2590,6 @@ components:
       type: object
       required:
       - id
-      - manualOrAktivInExternalSystem
       - entityInfo
       - data
       - lehrpersonen
@@ -2334,8 +2598,6 @@ components:
           $ref: "#/components/schemas/IDKlasse"
         externalImportInfoJson:
           $ref: "#/components/schemas/ExternalImportInfoJson"
-        manualOrAktivInExternalSystem:
-          type: boolean
         entityInfo:
           $ref: "#/components/schemas/EntityInfoJson"
         data:
@@ -2439,7 +2701,6 @@ components:
       type: object
       required:
       - id
-      - manualOrAktivInExternalSystem
       - entityInfo
       - data
       properties:
@@ -2447,8 +2708,6 @@ components:
           $ref: "#/components/schemas/IDKontaktPersonKind"
         externalImportInfoJson:
           $ref: "#/components/schemas/ExternalImportInfoJson"
-        manualOrAktivInExternalSystem:
-          type: boolean
         entityInfo:
           $ref: "#/components/schemas/EntityInfoJson"
         data:
@@ -2659,6 +2918,13 @@ components:
       enum:
       - NOTIZEN
       - AUFGABEN
+    LaeusekontrolleBeurteilung:
+      type: string
+      enum:
+      - KEINE_LAEUSE_KEINE_NISSEN
+      - LAEUSE_VORHANDEN
+      - NISSEN_VORHANDEN
+      - NICHT_GEPRUEFT
     Land:
       type: string
       enum:
@@ -2907,7 +3173,6 @@ components:
       type: object
       required:
       - id
-      - manualOrAktivInExternalSystem
       - entityInfo
       - data
       properties:
@@ -2915,8 +3180,6 @@ components:
           $ref: "#/components/schemas/IDLehrperson"
         externalImportInfoJson:
           $ref: "#/components/schemas/ExternalImportInfoJson"
-        manualOrAktivInExternalSystem:
-          type: boolean
         entityInfo:
           $ref: "#/components/schemas/EntityInfoJson"
         data:
@@ -2937,7 +3200,6 @@ components:
       - geschlecht
       - name
       - fullName
-      - manualOrAktivInExternalSystem
       properties:
         id:
           $ref: "#/components/schemas/IDLehrperson"
@@ -2949,8 +3211,6 @@ components:
           type: string
         fullName:
           type: string
-        manualOrAktivInExternalSystem:
-          type: boolean
     LehrpersonOptionListJson:
       type: object
       required:
@@ -3059,6 +3319,7 @@ components:
       - id
       - entityInfo
       - data
+      - kind
       properties:
         id:
           $ref: "#/components/schemas/IDNotiz"
@@ -3066,6 +3327,8 @@ components:
           $ref: "#/components/schemas/EntityInfoJson"
         data:
           $ref: "#/components/schemas/NotizSaveJson"
+        kind:
+          $ref: "#/components/schemas/KindOptionJson"
     NotizListJson:
       type: object
       required:
@@ -3080,6 +3343,7 @@ components:
       required:
       - titel
       - status
+      - typ
       - verantwortlicher
       - labels
       - files
@@ -3092,6 +3356,8 @@ components:
           type: string
         status:
           $ref: "#/components/schemas/NotizStatus"
+        typ:
+          $ref: "#/components/schemas/NotizTyp"
         verantwortlicher:
           $ref: "#/components/schemas/BenutzerOptionJson"
         labels:
@@ -3110,6 +3376,14 @@ components:
       enum:
       - AKTIV
       - ABGESCHLOSSEN
+    NotizTyp:
+      type: string
+      enum:
+      - DEFAULT
+      - FRAGEBOGEN
+      - IMPFAUSWEIS
+      - ANMELDUNG_BESTAETIGUNG
+      - ABMELDUNG
     NumOfOffeneFaelligeAufgabeJson:
       type: object
       required:
@@ -3185,6 +3459,9 @@ components:
         maxPageSize:
           type: integer
           format: int32
+        totalFilteredCount:
+          type: integer
+          format: int32
         totalItemCount:
           type: integer
           format: int32
@@ -3205,6 +3482,9 @@ components:
       - PERZENTILE_TIEF
       - PERZENTILE_HOCH
       - NICHT_GEPRUEFT
+      - UNTERGEWICHT
+      - UEBERGEWICHT
+      - ADIPOSITAS
     PerzentileGewicht:
       type: string
       enum:
@@ -3314,7 +3594,6 @@ components:
       type: object
       required:
       - id
-      - manualOrAktivInExternalSystem
       - entityInfo
       - data
       - klassenstufen
@@ -3323,8 +3602,6 @@ components:
           $ref: "#/components/schemas/IDSchule"
         externalImportInfoJson:
           $ref: "#/components/schemas/ExternalImportInfoJson"
-        manualOrAktivInExternalSystem:
-          type: boolean
         entityInfo:
           $ref: "#/components/schemas/EntityInfoJson"
         data:
@@ -3517,6 +3794,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/SearchSummaryJson"
+    SehenEmpfehlung:
+      type: string
+      enum:
+      - UEBERPRUEFUNG_AUGENARZT
+      - UEBERPRUEFUNG_BRILLE
     SemverSchema:
       format: semantic-version
       type: string
@@ -3577,21 +3859,69 @@ components:
       - ESO
       - HYPER
       - NICHT_GEPRUEFT
-    TenantSettingsJson:
+    TenantEnum:
+      type: string
+      enum:
+      - DEFAULT
+      - BS
+      - WIN
+      - BE
+    TenantSettingFeatureStateJson:
       type: object
       required:
-      - id
+      - featureEnabled
+      - enabledForStage
+      properties:
+        featureEnabled:
+          $ref: "#/components/schemas/FeatureEnabledSetting"
+        enabledForStage:
+          type: boolean
+    TenantSettingFeaturesJson:
+      type: object
+      required:
+      - esadIdFeature
+      - laenderCodeFeature
+      properties:
+        esadIdFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        laenderCodeFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+    TenantSettingSaveJson:
+      type: object
+      required:
       - defaultLanguage
       - supportedLanguages
+      - features
+      - einladungStatusValues
       properties:
-        id:
-          $ref: "#/components/schemas/IDTenantSetting"
         defaultLanguage:
           $ref: "#/components/schemas/AppLanguages"
         supportedLanguages:
           type: array
           items:
             $ref: "#/components/schemas/AppLanguages"
+        features:
+          $ref: "#/components/schemas/TenantSettingFeaturesJson"
+        einladungStatusValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/EinladungStatus"
+    TenantSettingsJson:
+      type: object
+      required:
+      - id
+      - tenant
+      - entityInfo
+      - data
+      properties:
+        id:
+          $ref: "#/components/schemas/IDTenantSetting"
+        tenant:
+          $ref: "#/components/schemas/TenantEnum"
+        entityInfo:
+          $ref: "#/components/schemas/EntityInfoJson"
+        data:
+          $ref: "#/components/schemas/TenantSettingSaveJson"
     TestingResponseJson:
       type: object
       required:
@@ -3774,6 +4104,8 @@ components:
           type: boolean
         neueintritt:
           type: boolean
+        bemerkungen:
+          type: string
         version:
           type: integer
           format: int64
@@ -3863,6 +4195,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/HoerenZusaetzlicheAngaben"
+        empfehlung:
+          type: array
+          items:
+            $ref: "#/components/schemas/HoerenEmpfehlung"
         bemerkungen:
           type: string
         version:
@@ -4111,6 +4447,12 @@ components:
           type: boolean
         rueckfrageHausarzt:
           type: boolean
+        empfehlung:
+          type: array
+          items:
+            $ref: "#/components/schemas/ImpfungenMassnahmenEmpfehlung"
+        achtung:
+          type: string
         bemerkungen:
           type: string
         version:
@@ -4195,6 +4537,33 @@ components:
         version:
           type: integer
           format: int64
+    UntersuchungLaeusekontrolleJson:
+      type: object
+      required:
+      - id
+      - entityInfo
+      - data
+      properties:
+        id:
+          $ref: "#/components/schemas/IDUntersuchungLaeusekontrolle"
+        entityInfo:
+          $ref: "#/components/schemas/EntityInfoJson"
+        data:
+          $ref: "#/components/schemas/UntersuchungLaeusekontrolleSaveJson"
+    UntersuchungLaeusekontrolleSaveJson:
+      type: object
+      properties:
+        beurteilung:
+          type: array
+          items:
+            $ref: "#/components/schemas/LaeusekontrolleBeurteilung"
+        bemerkungen:
+          type: string
+        version:
+          type: integer
+          format: int64
+      required:
+      - version
     UntersuchungMassnahmenJson:
       type: object
       required:
@@ -4345,6 +4714,10 @@ components:
           $ref: "#/components/schemas/InspektionKonvergenzResultat"
         konvergenz:
           $ref: "#/components/schemas/InspektionKonvergenzResultat"
+        empfehlung:
+          type: array
+          items:
+            $ref: "#/components/schemas/SehenEmpfehlung"
         bemerkungen:
           type: string
         version:
@@ -4424,6 +4797,7 @@ components:
       - triageTabSaved
       - aerzlicheUnteruchungTabSaved
       - massnahmenTabSaved
+      - laeusekontrolleTabSaved
       properties:
         untersuchungID:
           $ref: "#/components/schemas/IDUntersuchung"
@@ -4444,6 +4818,8 @@ components:
         aerzlicheUnteruchungTabSaved:
           type: boolean
         massnahmenTabSaved:
+          type: boolean
+        laeusekontrolleTabSaved:
           type: boolean
     UntersuchungTriageJson:
       type: object
@@ -4540,6 +4916,7 @@ tags:
 - name: Aerzte
 - name: Aktivitaet
 - name: Anlass
+- name: Anlass-Config
 - name: Aufgabe
 - name: Benutzer
 - name: Briefvorlage
@@ -4576,6 +4953,7 @@ tags:
 - name: UntersuchungHoerenAudiogramm
 - name: UntersuchungHoerenOtoskopie
 - name: UntersuchungImpfungen
+- name: UntersuchungLaeusekontrolle
 - name: UntersuchungMassnahmen
 - name: UntersuchungSehen
 - name: UntersuchungTriage
@@ -4762,6 +5140,7 @@ paths:
       security:
       - SecurityScheme:
         - ANLASSLISTE_LESEN
+        - ANLASSLISTE_LESEN_LAEUSE
   /api/aktivitaet-history/self/kinder:
     get:
       operationId: AktivitaetHistoryResource_findLetzteKinder
@@ -4781,7 +5160,8 @@ paths:
       summary: Find Letzte Kinder
       security:
       - SecurityScheme:
-        - KINDER_LESEN
+        - KINDER_LESEN_MEDIZINISCH
+        - KINDER_LESEN_NICHT_MEDIZINISCH
   /api/anlaesse:
     get:
       operationId: AnlassResource_findAllAnlaesse
@@ -4802,6 +5182,7 @@ paths:
       security:
       - SecurityScheme:
         - ANLASSLISTE_LESEN
+        - ANLASSLISTE_LESEN_LAEUSE
     post:
       operationId: AnlassResource_createAnlass
       tags:
@@ -4829,6 +5210,7 @@ paths:
       security:
       - SecurityScheme:
         - ANLASSPLANUNG_SCHREIBEN
+        - ANLASSPLANUNG_SCHREIBEN_LAEUSE
   /api/anlaesse/benutzer/{benutzerID}:
     get:
       operationId: AnlassResource_findAllForUser
@@ -4855,6 +5237,7 @@ paths:
       security:
       - SecurityScheme:
         - ANLASSLISTE_LESEN
+        - ANLASSLISTE_LESEN_LAEUSE
   /api/anlaesse/{anlassId}:
     put:
       operationId: AnlassResource_updateAnlass
@@ -4889,6 +5272,7 @@ paths:
       security:
       - SecurityScheme:
         - ANLASSPLANUNG_SCHREIBEN
+        - ANLASSPLANUNG_SCHREIBEN_LAEUSE
     delete:
       operationId: AnlassResource_removeAnlass
       tags:
@@ -4910,6 +5294,7 @@ paths:
       security:
       - SecurityScheme:
         - ANLASSPLANUNG_SCHREIBEN
+        - ANLASSPLANUNG_SCHREIBEN_LAEUSE
     get:
       operationId: AnlassResource_getAnlass
       tags:
@@ -4935,6 +5320,7 @@ paths:
       security:
       - SecurityScheme:
         - ANLASSPLANUNG_LESEN
+        - ANLASSPLANUNG_LESEN_LAEUSE
   /api/anlaesse/{anlassId}/einladungen:
     delete:
       operationId: EinladungResource_removeEinladungenForAnlass
@@ -4963,6 +5349,7 @@ paths:
       security:
       - SecurityScheme:
         - ANLASSPLANUNG_SCHREIBEN
+        - ANLASSPLANUNG_SCHREIBEN_LAEUSE
     get:
       operationId: EinladungResource_findEinladungenByAnlass
       tags:
@@ -4988,6 +5375,7 @@ paths:
       security:
       - SecurityScheme:
         - ANLASSPLANUNG_LESEN
+        - ANLASSPLANUNG_LESEN_LAEUSE
     post:
       operationId: EinladungResource_createEinladungenForAnlass
       tags:
@@ -5021,6 +5409,7 @@ paths:
       security:
       - SecurityScheme:
         - ANLASSPLANUNG_SCHREIBEN
+        - ANLASSPLANUNG_SCHREIBEN_LAEUSE
   /api/anlaesse/{anlassId}/einladungen/hiddentabinfo:
     get:
       operationId: EinladungResource_getHiddenUntersuchungTabInfos
@@ -5053,7 +5442,7 @@ paths:
       summary: Get Hidden Untersuchung Tab Infos
       security:
       - SecurityScheme:
-        - KINDER_LESEN
+        - KINDER_LESEN_MEDIZINISCH
   /api/anlaesse/{anlassId}/einladungen/tabinfo:
     get:
       operationId: EinladungResource_getUntersuchungTabInfos
@@ -5086,7 +5475,8 @@ paths:
       summary: Get Untersuchung Tab Infos
       security:
       - SecurityScheme:
-        - KINDER_LESEN
+        - KINDER_LESEN_MEDIZINISCH
+        - KINDER_LESEN_NICHT_MEDIZINISCH
   /api/anlaesse/{anlassId}/einladungen/{einladungId}:
     put:
       operationId: EinladungResource_updateEinladung
@@ -5126,6 +5516,7 @@ paths:
       security:
       - SecurityScheme:
         - ANLASSPLANUNG_SCHREIBEN
+        - ANLASSPLANUNG_SCHREIBEN_LAEUSE
     get:
       operationId: EinladungResource_getEinladungById
       tags:
@@ -5156,9 +5547,10 @@ paths:
       security:
       - SecurityScheme:
         - ANLASSPLANUNG_LESEN
-  /api/anlaesse/{anlassId}/einladungen/{einladungId}/fragebogen:
+        - ANLASSPLANUNG_LESEN_LAEUSE
+  /api/anlaesse/{anlassId}/einladungen/{einladungId}/notiz:
     post:
-      operationId: EinladungResource_createFragebogenNotiz
+      operationId: EinladungResource_createNotiz
       tags:
       - Einladungen
       parameters:
@@ -5207,62 +5599,7 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
-      summary: Create Fragebogen Notiz
-      security:
-      - SecurityScheme:
-        - KINDER_ALLE_NOTIZEN_SCHREIBEN
-  /api/anlaesse/{anlassId}/einladungen/{einladungId}/impfausweis:
-    post:
-      operationId: EinladungResource_createImpfausweisNotiz
-      tags:
-      - Einladungen
-      parameters:
-      - name: anlassId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDAnlass"
-      - name: einladungId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDEinladung"
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-                file2:
-                  type: string
-                  format: binary
-                file3:
-                  type: string
-                  format: binary
-                file4:
-                  type: string
-                  format: binary
-                notizCreateJson:
-                  $ref: "#/components/schemas/NotizSaveJson"
-            encoding:
-              notizCreateJson:
-                contentType: application/json
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NotizJson"
-        "401":
-          description: Not Authorized
-        "403":
-          description: Not Allowed
-      summary: Create Impfausweis Notiz
+      summary: Create Notiz
       security:
       - SecurityScheme:
         - KINDER_ALLE_NOTIZEN_SCHREIBEN
@@ -5297,6 +5634,7 @@ paths:
       security:
       - SecurityScheme:
         - ANLASSPLANUNG_LESEN
+        - ANLASSPLANUNG_LESEN_LAEUSE
   /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/abschluss:
     put:
       operationId: EinladungResource_untersuchungAbschliessen
@@ -5324,6 +5662,7 @@ paths:
       security:
       - SecurityScheme:
         - ANLASSPLANUNG_SCHREIBEN
+        - ANLASSPLANUNG_SCHREIBEN_LAEUSE
   /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/arzt/bemerkung:
     put:
       operationId: UntersuchungArztResource_saveUntersuchungArztBemerkung
@@ -6343,6 +6682,75 @@ paths:
       security:
       - SecurityScheme:
         - SU_DATEN_LESEN
+  /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/laeusekontrolle:
+    put:
+      operationId: UntersuchungLaeusekontrolleResource_saveUntersuchungLaeusekontrolle
+      tags:
+      - UntersuchungLaeusekontrolle
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDEinladung"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UntersuchungLaeusekontrolleSaveJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungLaeusekontrolleJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Save Untersuchung Laeusekontrolle
+      security:
+      - SecurityScheme:
+        - SU_LAEUSE_SCHREIBEN
+    get:
+      operationId: UntersuchungLaeusekontrolleResource_getUntersuchungLaeusekontrolle
+      tags:
+      - UntersuchungLaeusekontrolle
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDEinladung"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungLaeusekontrolleJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get Untersuchung Laeusekontrolle
+      security:
+      - SecurityScheme:
+        - SU_LAEUSE_LESEN
   /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/massnahmen:
     put:
       operationId: UntersuchungMassnahmenResource_saveUntersuchungMassnahmen
@@ -6745,6 +7153,7 @@ paths:
       security:
       - SecurityScheme:
         - ANLASSPLANUNG_LESEN
+        - ANLASSPLANUNG_LESEN_LAEUSE
   /api/anlaesse/{anlassId}/status/{status}:
     put:
       operationId: AnlassResource_changeAnlassStatus
@@ -6776,6 +7185,136 @@ paths:
       security:
       - SecurityScheme:
         - ANLASSPLANUNG_SCHREIBEN
+        - ANLASSPLANUNG_SCHREIBEN_LAEUSE
+  /api/anlassconfig:
+    get:
+      operationId: AnlassConfigResource_findAllAnlassConfigs
+      tags:
+      - Anlass-Config
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnlassConfigListJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Find All Anlass Configs
+      security:
+      - SecurityScheme:
+        - SUPPORT
+    post:
+      operationId: AnlassConfigResource_createAnlassConfig
+      tags:
+      - Anlass-Config
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnlassConfigSaveJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnlassConfigListJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Create Anlass Config
+      security:
+      - SecurityScheme:
+        - SUPPORT
+  /api/anlassconfig/script/{anlassConfigId}:
+    get:
+      operationId: AnlassConfigResource_downloadSqlSkripts
+      tags:
+      - Anlass-Config
+      parameters:
+      - name: anlassConfigId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlassConfig"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Download Sql Skripts
+      security:
+      - SecurityScheme:
+        - SUPPORT
+  /api/anlassconfig/visible:
+    get:
+      operationId: AnlassConfigResource_findAllAnlassConfigsVisible
+      tags:
+      - Anlass-Config
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnlassConfigOptionListJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Find All Anlass Configs Visible
+      security:
+      - SecurityScheme:
+        - ANLASSLISTE_LESEN
+        - ANLASSLISTE_LESEN_LAEUSE
+  /api/anlassconfig/{anlassConfigId}:
+    put:
+      operationId: AnlassConfigResource_updateAnlassConfig
+      tags:
+      - Anlass-Config
+      parameters:
+      - name: anlassConfigId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlassConfig"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnlassConfigSaveJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnlassConfigListJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Update Anlass Config
+      security:
+      - SecurityScheme:
+        - SUPPORT
   /api/aufgaben:
     get:
       operationId: AufgabeResource_findAllAufgaben
@@ -7179,6 +7718,7 @@ paths:
       summary: Find All Active Benutzer Options
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
   /api/benutzer/self:
     get:
@@ -7687,41 +8227,9 @@ paths:
       summary: Get Or Create Dossier
       security:
       - SecurityScheme:
-        - KINDER_LESEN
+        - KINDER_LESEN_MEDIZINISCH
+        - KINDER_LESEN_NICHT_MEDIZINISCH
   /api/dossiers/{dossierId}:
-    put:
-      operationId: DossierResource_updateDossier
-      tags:
-      - Dossier
-      parameters:
-      - name: dossierId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDDossier"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DossierSaveJson"
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DossierJson"
-        "401":
-          description: Not Authorized
-        "403":
-          description: Not Allowed
-        "400":
-          description: Bad Request
-      summary: Update Dossier
-      security:
-      - SecurityScheme:
-        - KINDER_SCHREIBEN
     delete:
       operationId: DossierResource_removeDossier
       tags:
@@ -7742,10 +8250,79 @@ paths:
       summary: Remove Dossier
       security:
       - SecurityScheme:
-        - KINDER_SCHREIBEN
+        - KINDER_SCHREIBEN_MEDIZINISCH
+  /api/dossiers/{dossierId}/medizinisch:
+    put:
+      operationId: DossierResource_updateDossierMedizinisch
+      tags:
+      - Dossier
+      parameters:
+      - name: dossierId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDDossier"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DossierMedizinischSaveJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DossierJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Update Dossier Medizinisch
+      security:
+      - SecurityScheme:
+        - KINDER_SCHREIBEN_MEDIZINISCH
+  /api/dossiers/{dossierId}/nicht-medizinisch:
+    put:
+      operationId: DossierResource_updateDossierNichtMedizinisch
+      tags:
+      - Dossier
+      parameters:
+      - name: dossierId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDDossier"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DossierNichtMedizinischSaveJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DossierJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Update Dossier Nicht Medizinisch
+      security:
+      - SecurityScheme:
+        - KINDER_SCHREIBEN_MEDIZINISCH
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/dossiers/{kindId}/notizen:
     get:
-      operationId: NotizResource_findAllForKind
+      operationId: KinderNotizResource_findAllForKind
       tags:
       - Notizen
       parameters:
@@ -7771,7 +8348,7 @@ paths:
         - KINDER_ALLE_NOTIZEN_LESEN
         - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN
     post:
-      operationId: NotizResource_create
+      operationId: KinderNotizResource_create
       tags:
       - Notizen
       parameters:
@@ -7820,275 +8397,6 @@ paths:
       - SecurityScheme:
         - KINDER_ALLE_NOTIZEN_SCHREIBEN
         - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN
-  /api/dossiers/{kindId}/notizen/{notizId}:
-    put:
-      operationId: NotizResource_updateNotiz
-      tags:
-      - Notizen
-      parameters:
-      - name: kindId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDKind"
-      - name: notizId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDNotiz"
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-                file2:
-                  type: string
-                  format: binary
-                file3:
-                  type: string
-                  format: binary
-                file4:
-                  type: string
-                  format: binary
-                notizSaveJson:
-                  $ref: "#/components/schemas/NotizSaveJson"
-            encoding:
-              notizSaveJson:
-                contentType: application/json
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NotizJson"
-        "401":
-          description: Not Authorized
-        "403":
-          description: Not Allowed
-      summary: Update Notiz
-      security:
-      - SecurityScheme:
-        - KINDER_ALLE_NOTIZEN_SCHREIBEN
-        - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN
-    get:
-      operationId: NotizResource_getNotiz
-      tags:
-      - Notizen
-      parameters:
-      - name: kindId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDKind"
-      - name: notizId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDNotiz"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NotizJson"
-        "401":
-          description: Not Authorized
-        "403":
-          description: Not Allowed
-      summary: Get Notiz
-      security:
-      - SecurityScheme:
-        - KINDER_ALLE_NOTIZEN_LESEN
-        - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN
-    delete:
-      operationId: NotizResource_deleteNotiz
-      tags:
-      - Notizen
-      parameters:
-      - name: kindId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDKind"
-      - name: notizId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDNotiz"
-      responses:
-        "204":
-          description: No Content
-        "401":
-          description: Not Authorized
-        "403":
-          description: Not Allowed
-      summary: Delete Notiz
-      security:
-      - SecurityScheme:
-        - KINDER_ALLE_NOTIZEN_SCHREIBEN
-        - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN
-  /api/dossiers/{kindId}/notizen/{notizId}/file:
-    post:
-      operationId: NotizResource_addNotizFile
-      tags:
-      - Notizen
-      parameters:
-      - name: kindId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDKind"
-      - name: notizId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDNotiz"
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-                  $ref: "#/components/schemas/UploadItemSchema"
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NotizJson"
-        "401":
-          description: Not Authorized
-        "403":
-          description: Not Allowed
-      summary: Add Notiz File
-      security:
-      - SecurityScheme:
-        - KINDER_ALLE_NOTIZEN_SCHREIBEN
-        - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN
-  /api/dossiers/{kindId}/notizen/{notizId}/file/{fileId}:
-    delete:
-      operationId: NotizResource_removeNotizFile
-      tags:
-      - Notizen
-      parameters:
-      - name: fileId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDFileData"
-      - name: kindId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDKind"
-      - name: notizId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDNotiz"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NotizJson"
-        "401":
-          description: Not Authorized
-        "403":
-          description: Not Allowed
-      summary: Remove Notiz File
-      security:
-      - SecurityScheme:
-        - KINDER_ALLE_NOTIZEN_SCHREIBEN
-        - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN
-    get:
-      operationId: NotizResource_downloadNotizFile
-      tags:
-      - Notizen
-      parameters:
-      - name: fileId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDFileData"
-      - name: kindId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDKind"
-      - name: notizId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDNotiz"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/octet-stream:
-              schema:
-                format: binary
-                type: string
-        "401":
-          description: Not Authorized
-        "403":
-          description: Not Allowed
-      summary: Download Notiz File
-      security:
-      - SecurityScheme:
-        - KINDER_ALLE_NOTIZEN_LESEN
-        - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN
-  /api/dossiers/{kindId}/notizen/{notizId}/file/{fileId}/sync:
-    get:
-      operationId: NotizResource_downloadNotizFileSync
-      tags:
-      - Notizen
-      parameters:
-      - name: fileId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDFileData"
-      - name: kindId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDKind"
-      - name: notizId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDNotiz"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/octet-stream:
-              schema:
-                format: binary
-                type: string
-        "401":
-          description: Not Authorized
-        "403":
-          description: Not Allowed
-      summary: Download Notiz File Sync
-      security:
-      - SecurityScheme:
-        - KINDER_ALLE_NOTIZEN_LESEN
-        - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN
   /api/duplikate:
     get:
       operationId: DuplikatResource_findAllDuplikate
@@ -8358,6 +8666,7 @@ paths:
       summary: Find All By Impfstoff
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
     post:
       operationId: ImpfstoffChargeResource_createImpfstoffCharge
@@ -8490,7 +8799,7 @@ paths:
       summary: Update Impfstoff Aktiv Status
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - IMPFSTOFFE_SCHREIBEN
   /api/impfstoffe/{impfstoffeId}:
     put:
       operationId: ImpfstoffResource_updateImpfstoff
@@ -8571,6 +8880,7 @@ paths:
       summary: Find All Infomaterialien
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
     post:
       operationId: InfomaterialResource_createInfomaterial
@@ -8680,6 +8990,7 @@ paths:
       security:
       - SecurityScheme:
         - ANLASSLISTE_LESEN
+        - ANLASSLISTE_LESEN_LAEUSE
   /api/kindanlaesse/kind/{kindId}/latest-impfung:
     get:
       operationId: KindAnlaesseResource_getLatestImpfung
@@ -8705,7 +9016,7 @@ paths:
       summary: Get Latest Impfung
       security:
       - SecurityScheme:
-        - KINDER_LESEN
+        - KINDER_LESEN_MEDIZINISCH
   /api/kinder:
     get:
       operationId: KindResource_findAllKinder
@@ -8725,7 +9036,8 @@ paths:
       summary: Find All Kinder
       security:
       - SecurityScheme:
-        - KINDER_LESEN
+        - KINDER_LESEN_MEDIZINISCH
+        - KINDER_LESEN_NICHT_MEDIZINISCH
     post:
       operationId: KindResource_createKind
       tags:
@@ -8758,7 +9070,8 @@ paths:
       summary: Create Kind
       security:
       - SecurityScheme:
-        - KINDER_SCHREIBEN
+        - KINDER_SCHREIBEN_MEDIZINISCH
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/kinder/options:
     get:
       operationId: KindResource_findKinderBySchuleOrKlasse
@@ -8787,7 +9100,8 @@ paths:
       summary: Find Kinder By Schule Or Klasse
       security:
       - SecurityScheme:
-        - KINDER_LESEN
+        - KINDER_LESEN_MEDIZINISCH
+        - KINDER_LESEN_NICHT_MEDIZINISCH
   /api/kinder/{kindID}/kontaktpersonen:
     get:
       operationId: KontaktPersonKindResource_findAktivByKind
@@ -8813,7 +9127,9 @@ paths:
       summary: Find Aktiv By Kind
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
+        - KINDER_LESEN_NICHT_MEDIZINISCH
     post:
       operationId: KontaktPersonKindResource_createKontaktPersonKind
       tags:
@@ -8847,6 +9163,7 @@ paths:
       security:
       - SecurityScheme:
         - LISTEN_SCHREIBEN
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/kinder/{kindID}/kontaktpersonen/options:
     get:
       operationId: KontaktPersonKindResource_findAllOptionsActive
@@ -8876,8 +9193,9 @@ paths:
       summary: Find All Options Active
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_SCHREIBEN
-        - LISTEN_LESEN
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/kinder/{kindID}/kontaktpersonen/schule/{kontaktPersonKindID}:
     delete:
       operationId: KontaktPersonKindResource_removeKontaktPersonKindFromKind
@@ -8905,6 +9223,7 @@ paths:
       security:
       - SecurityScheme:
         - LISTEN_SCHREIBEN
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
     put:
       operationId: KontaktPersonKindResource_addKontaktPersonKindToKind
       tags:
@@ -8935,6 +9254,7 @@ paths:
       security:
       - SecurityScheme:
         - LISTEN_SCHREIBEN
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/kinder/{kindID}/kontaktpersonen/{kontaktPersonKindID}:
     put:
       operationId: KontaktPersonKindResource_updateKontaktPersonKind
@@ -8974,6 +9294,7 @@ paths:
       security:
       - SecurityScheme:
         - LISTEN_SCHREIBEN
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
     get:
       operationId: KontaktPersonKindResource_getKontaktPersonKind
       tags:
@@ -9003,7 +9324,8 @@ paths:
       summary: Get Kontakt Person Kind
       security:
       - SecurityScheme:
-        - LISTEN_LESEN
+        - LISTEN_ADMIN_LESEN
+        - KINDER_LESEN_NICHT_MEDIZINISCH
     delete:
       operationId: KontaktPersonKindResource_deleteKontaktPersonKind
       tags:
@@ -9030,6 +9352,7 @@ paths:
       security:
       - SecurityScheme:
         - LISTEN_SCHREIBEN
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/kinder/{kindId}:
     put:
       operationId: KindResource_updateKind
@@ -9068,7 +9391,8 @@ paths:
       summary: Update Kind
       security:
       - SecurityScheme:
-        - KINDER_SCHREIBEN
+        - KINDER_SCHREIBEN_MEDIZINISCH
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
     delete:
       operationId: KindResource_removeKind
       tags:
@@ -9089,7 +9413,8 @@ paths:
       summary: Remove Kind
       security:
       - SecurityScheme:
-        - KINDER_SCHREIBEN
+        - KINDER_SCHREIBEN_MEDIZINISCH
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
     get:
       operationId: KindResource_getKind
       tags:
@@ -9114,7 +9439,8 @@ paths:
       summary: Get Kind
       security:
       - SecurityScheme:
-        - KINDER_LESEN
+        - KINDER_LESEN_MEDIZINISCH
+        - KINDER_LESEN_NICHT_MEDIZINISCH
   /api/kinder/{kindId}/esad-id-generated:
     put:
       operationId: KindResource_generateEsadIdForKind
@@ -9140,7 +9466,8 @@ paths:
       summary: Generate Esad Id For Kind
       security:
       - SecurityScheme:
-        - KINDER_SCHREIBEN
+        - KINDER_SCHREIBEN_MEDIZINISCH
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/kinder/{kindId}/esad-id-manual:
     put:
       operationId: KindResource_setEsadIdForKind
@@ -9174,7 +9501,8 @@ paths:
       summary: Set Esad Id For Kind
       security:
       - SecurityScheme:
-        - KINDER_SCHREIBEN
+        - KINDER_SCHREIBEN_MEDIZINISCH
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/kinder/{kindId}/kindaktivstatus:
     put:
       operationId: KindResource_updateKindAktivStatus
@@ -9204,7 +9532,8 @@ paths:
       summary: Update Kind Aktiv Status
       security:
       - SecurityScheme:
-        - KINDER_SCHREIBEN
+        - KINDER_SCHREIBEN_MEDIZINISCH
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/kinder/{kindId}/kontaktpersonen:
     get:
       operationId: KindResource_findAktivKindKontaktPersonen
@@ -9230,7 +9559,8 @@ paths:
       summary: Find Aktiv Kind Kontakt Personen
       security:
       - SecurityScheme:
-        - KINDER_LESEN
+        - KINDER_LESEN_MEDIZINISCH
+        - KINDER_LESEN_NICHT_MEDIZINISCH
   /api/klasse/{klasseID}/lehrpersonen:
     get:
       operationId: LehrpersonResource_findAllAktivByKlasse
@@ -9256,6 +9586,7 @@ paths:
       summary: Find All Aktiv By Klasse
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
     post:
       operationId: LehrpersonResource_createLehrperson
@@ -9319,6 +9650,7 @@ paths:
       summary: Find All Options Active
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
   /api/klasse/{klasseID}/lehrpersonen/schule/{lehrpersonID}:
     delete:
@@ -9445,6 +9777,7 @@ paths:
       summary: Get Lehrperson
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
     delete:
       operationId: LehrpersonResource_deleteLehrperson
@@ -9491,6 +9824,7 @@ paths:
       summary: Find All Klassen
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
     post:
       operationId: KlasseResource_createKlasse
@@ -9598,6 +9932,7 @@ paths:
       summary: Find Klasse
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
   /api/klassen/{klasseId}/klasseaktivstatus:
     put:
@@ -9762,6 +10097,261 @@ paths:
       security:
       - SecurityScheme:
         - LABELS_SCHREIBEN
+  /api/notizen:
+    get:
+      operationId: NotizResource_findAll
+      tags:
+      - Notizen
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotizListJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Find All
+      security:
+      - SecurityScheme:
+        - KINDER_ALLE_NOTIZEN_LESEN
+        - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN
+  /api/notizen/{notizId}:
+    put:
+      operationId: NotizResource_updateNotiz
+      tags:
+      - Notizen
+      parameters:
+      - name: notizId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDNotiz"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                file2:
+                  type: string
+                  format: binary
+                file3:
+                  type: string
+                  format: binary
+                file4:
+                  type: string
+                  format: binary
+                notizSaveJson:
+                  $ref: "#/components/schemas/NotizSaveJson"
+            encoding:
+              notizSaveJson:
+                contentType: application/json
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotizJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Update Notiz
+      security:
+      - SecurityScheme:
+        - KINDER_ALLE_NOTIZEN_SCHREIBEN
+        - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN
+    get:
+      operationId: NotizResource_getNotiz
+      tags:
+      - Notizen
+      parameters:
+      - name: notizId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDNotiz"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotizJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get Notiz
+      security:
+      - SecurityScheme:
+        - KINDER_ALLE_NOTIZEN_LESEN
+        - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN
+    delete:
+      operationId: NotizResource_deleteNotiz
+      tags:
+      - Notizen
+      parameters:
+      - name: notizId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDNotiz"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Delete Notiz
+      security:
+      - SecurityScheme:
+        - KINDER_ALLE_NOTIZEN_SCHREIBEN
+        - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN
+  /api/notizen/{notizId}/file:
+    post:
+      operationId: NotizResource_addNotizFile
+      tags:
+      - Notizen
+      parameters:
+      - name: notizId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDNotiz"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  $ref: "#/components/schemas/UploadItemSchema"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotizJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Add Notiz File
+      security:
+      - SecurityScheme:
+        - KINDER_ALLE_NOTIZEN_SCHREIBEN
+        - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN
+  /api/notizen/{notizId}/file/{fileId}:
+    delete:
+      operationId: NotizResource_removeNotizFile
+      tags:
+      - Notizen
+      parameters:
+      - name: fileId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDFileData"
+      - name: notizId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDNotiz"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotizJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Remove Notiz File
+      security:
+      - SecurityScheme:
+        - KINDER_ALLE_NOTIZEN_SCHREIBEN
+        - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN
+    get:
+      operationId: NotizResource_downloadNotizFile
+      tags:
+      - Notizen
+      parameters:
+      - name: fileId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDFileData"
+      - name: notizId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDNotiz"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Download Notiz File
+      security:
+      - SecurityScheme:
+        - KINDER_ALLE_NOTIZEN_LESEN
+        - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN
+  /api/notizen/{notizId}/file/{fileId}/sync:
+    get:
+      operationId: NotizResource_downloadNotizFileSync
+      tags:
+      - Notizen
+      parameters:
+      - name: fileId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDFileData"
+      - name: notizId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDNotiz"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Download Notiz File Sync
+      security:
+      - SecurityScheme:
+        - KINDER_ALLE_NOTIZEN_LESEN
+        - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN
   /api/plz:
     get:
       operationId: PLZResource_findPLZData
@@ -9927,6 +10517,7 @@ paths:
       summary: Find All Quartiere
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
   /api/quartiere/options:
     get:
@@ -9947,6 +10538,7 @@ paths:
       summary: Find All Quartier Options
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
   /api/s3/files/{fileIdInbucket}:
     get:
@@ -9994,6 +10586,7 @@ paths:
       summary: Find All Schulen
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
     post:
       operationId: SchuleResource_createSchule
@@ -10047,6 +10640,7 @@ paths:
       summary: Find All Options
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
   /api/schulen/{schuleID}/kontaktpersonen:
     get:
@@ -10073,6 +10667,7 @@ paths:
       summary: Find All Aktiv By Schule
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
     post:
       operationId: KontaktPersonSchuleResource_createKontaktPersonSchule
@@ -10136,6 +10731,7 @@ paths:
       summary: Find All Options Active
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
   /api/schulen/{schuleID}/kontaktpersonen/schule/{kontaktPersonSchuleID}:
     delete:
@@ -10262,6 +10858,7 @@ paths:
       summary: Get Kontakt Person Schule
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
     delete:
       operationId: KontaktPersonSchuleResource_deleteKontaktPersonSchule
@@ -10368,6 +10965,7 @@ paths:
       summary: Get Schule
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
   /api/schulen/{schuleId}/klassen:
     get:
@@ -10394,6 +10992,7 @@ paths:
       summary: Find Schule Klassen
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
   /api/schulen/{schuleId}/klassen/options:
     get:
@@ -10425,6 +11024,7 @@ paths:
       summary: Find Schule Klassen Options
       security:
       - SecurityScheme:
+        - LISTEN_ADMIN_LESEN
         - LISTEN_LESEN
   /api/schulen/{schuleId}/schuleaktivstatus:
     put:
@@ -10487,7 +11087,8 @@ paths:
       summary: Find Kinder Paginated
       security:
       - SecurityScheme:
-        - KINDER_LESEN
+        - KINDER_LESEN_MEDIZINISCH
+        - KINDER_LESEN_NICHT_MEDIZINISCH
   /api/search/search:
     get:
       operationId: SearchResource_searchKinder
@@ -10512,7 +11113,8 @@ paths:
       summary: Search Kinder
       security:
       - SecurityScheme:
-        - KINDER_LESEN
+        - KINDER_LESEN_MEDIZINISCH
+        - KINDER_LESEN_NICHT_MEDIZINISCH
   /api/search/summary:
     get:
       operationId: SearchResource_findAllKinderSummary
@@ -10532,7 +11134,8 @@ paths:
       summary: Find All Kinder Summary
       security:
       - SecurityScheme:
-        - KINDER_LESEN
+        - KINDER_LESEN_MEDIZINISCH
+        - KINDER_LESEN_NICHT_MEDIZINISCH
   /api/super-admin-runner/normalize-kind-namen:
     post:
       operationId: SuperAdminRunnerResource_normalizeKindNamen
@@ -10630,6 +11233,33 @@ paths:
       - SecurityScheme:
         - SUPPORT
   /api/tenant-settings/self:
+    put:
+      operationId: TenantSettingsResource_updateTenantSettings
+      tags:
+      - Tenant-Settings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TenantSettingSaveJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantSettingsJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Update Tenant Settings
+      security:
+      - SecurityScheme:
+        - SUPPORT
     get:
       operationId: TenantSettingsResource_getTenantSettings
       tags:

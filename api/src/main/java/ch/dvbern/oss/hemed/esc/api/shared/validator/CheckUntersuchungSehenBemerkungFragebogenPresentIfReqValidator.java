@@ -17,14 +17,15 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.validator;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBemerkungFragebogen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBemerkungFragebogen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @ApplicationScoped
 public class CheckUntersuchungSehenBemerkungFragebogenPresentIfReqValidator
-    extends AbstractValidator<CheckUntersuchungSehenBemerkungFragebogenPresentIfReq, UntersuchungSehenBemerkungFragebogen> {
+    extends AbstractValidator<CheckUntersuchungSehenBemerkungFragebogenPresentIfReq,
+    UntersuchungSehenBemerkungFragebogen> {
 
     @Override
     @SuppressWarnings("java:S1126" /* readability is better with seprate return*/)

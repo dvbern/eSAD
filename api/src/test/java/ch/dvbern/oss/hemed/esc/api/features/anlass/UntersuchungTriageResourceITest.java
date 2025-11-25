@@ -1,6 +1,12 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.NaechsteStation;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriageService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.NaechsteStation;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungTriageBuilder;

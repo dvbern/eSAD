@@ -42,7 +42,7 @@ export class KindAnlaesseComponent {
   readonly timetravelStore = inject(TimetravelStore);
 
   canEditAnlaesse = computed(() =>
-    this.benutzerStore.createHasRequiredRoleSig(hasAnlassEditBerechtigungForNotAbgeschlossen()) &&
+    this.benutzerStore.createHasRequiredRoleSig(hasAnlassEditBerechtigungForNotAbgeschlossen())() &&
     this.dossierStore.isKindAktiv()
   );
 
@@ -57,9 +57,14 @@ export class KindAnlaesseComponent {
   public einladungStatusColor(status: EinladungStatus): BadgeColor {
     switch (status) {
       case 'TEILNAHME_BESTAETIGT':
+      case 'UNTERSUCHUNG_JA':
+      case 'KEINE_ANMELDUNG':
         return 'green';
 
       case 'TEILNAHME_ABGESAGT':
+      case 'PRIVATARZT_BESTAETIGT':
+      case 'PRIVATARZT_MUENDLICH_BESTAETIGT':
+      case 'PRIVATARZT_OFFEN':
         return 'red';
 
       case 'NACHZUEGLER':

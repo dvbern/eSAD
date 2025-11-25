@@ -170,22 +170,22 @@ export class UntersuchungGroesseGewichtForm
   }
 
   setValidatorsForAnlassConfig(config: AnlassConfigJson): void {
-    if (config.groesseGewichtGroesse === RequirementSetting.REQUIRED) {
+    if (config.data.groesseGewichtGroesse === RequirementSetting.REQUIRED) {
       this.group.controls.groesse.addValidators(Validators.required);
     }
-    if (config.groesseGewichtGroessePerzentile === RequirementSetting.REQUIRED) {
+    if (config.data.groesseGewichtGroessePerzentile === RequirementSetting.REQUIRED) {
       this.group.controls.groessePerzentile.addValidators(Validators.required);
     }
-    if (config.groesseGewichtGewicht === RequirementSetting.REQUIRED) {
+    if (config.data.groesseGewichtGewicht === RequirementSetting.REQUIRED) {
       this.group.controls.gewicht.addValidators(Validators.required);
     }
-    if (config.groesseGewichtGewichtPerzentile === RequirementSetting.REQUIRED) {
+    if (config.data.groesseGewichtGewichtPerzentile === RequirementSetting.REQUIRED) {
       this.group.controls.gewichtPerzentile.addValidators(Validators.required);
     }
-    if (config.groesseGewichtBmiPerzentile === RequirementSetting.REQUIRED) {
+    if (config.data.groesseGewichtBmiPerzentile === RequirementSetting.REQUIRED) {
       this.group.controls.bmiPerzentile.addValidators(Validators.required);
     }
-    if (config.groesseGewichtBemerkungen === RequirementSetting.REQUIRED) {
+    if (config.data.groesseGewichtBemerkungen === RequirementSetting.REQUIRED) {
       this.group.controls.bemerkungen.addValidators(Validators.required);
     }
   }

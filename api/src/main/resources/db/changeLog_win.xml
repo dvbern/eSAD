@@ -37,13 +37,43 @@
   <include file="db/win/0011-enable-pg_trgm-indizes-gin.xml"/>
   <include file="db/base/0004_gewicht_bigdecimal.xml"/>
   <include file="db/base/0005-split-tab-sehen.xml"/>
+  <include file="db/base/0006-anlassconfig-bezeichnung.xml"/>
+  <include file="db/base/0007-insert-new-anlasstypen.xml"/>
+  <include file="db/win/0012-update-anlasstypen-win.xml"/>
+  <include file="db/base/0008-groesse-gewicht-bmi-perzentile-values.xml"/>
+  <include file="db/win/0013-groesse-gewicht-bmi-perzentile-values-win.xml"/>
+  <include file="db/win/0014-add-berechtigungen-laeuse-win.xml"/>
+  <include file="db/win/0015-add-berechtigung-kinder-medizinisch-win.xml"/>
+  <include file="db/base/0009-add-new-anlassconfig-properties.xml"/>
+  <include file="db/base/0010-add-new-feature-flag-esadid.xml"/>
+  <include file="db/base/0011-add-showfragebogen-and-showanmeldung.xml"/>
+  <include file="db/win/0016-update-showfragebogen-showanmeldung-showimpfausweis-to-anlassconfig.xml"/>
+  <include file="db/base/0012-add-anmeldung-bestaetigung.xml" />
+  <include file="db/base/0013-create-einladung-notizen-and-add-notiz-typ.xml" />
+  <include file="db/base/0014-insert-anmeldung-bestaetigung-label.xml"/>
+  <include file="db/base/0015-add-new-untersuchung-properties.xml"/>
+  <include file="db/base/0016-change-enum-list-db-len.xml"/>
+  <include file="db/base/0016-add-einladungstatus-to-tenant-setting.xml"/>
+  <include file="db/win/0017-add-einladungstatus-to-tenant-setting-win.xml"/>
 
   <!--  The following scripts only run in the 'test' context-->
   <include file="db-test/0011-insert-test-benutzer-admin-win.xml" context="@test"/>
-
+  <include file="db-test/0012-insert-test-benutzer-lausbeauftragte-win.xml" context="@test"/>
+  <include file="db-test/0014-insert-test-benutzer-pfp-win.xml" context="@test"/>
+  
   <!-- The following scripts only run in the 'dev' context
 	  To use it, insert the following in your .env:
 	  _DEV_QUARKUS_LIQUIBASE_CONTEXTS=dev,test
   -->
+  <include file="db-dev/0000-insert-example-benutzer-mpa-arzt.xml" context="@dev"/>
+  <include file="db-dev/0001-insert-example-schulen.xml" context="@dev"/>
+  <include file="db-dev/0002-insert-example-klassen.xml" context="@dev"/>
+  <include file="db-dev/0003-insert-example-kinder.xml" context="@dev"/>
+  <include file="db-dev/0004-insert-example-labels.xml" context="@dev"/>
+  <include file="db-dev/0005-insert-example-impfstoffchargen.xml" context="@dev"/>
+  <include file="db-dev/0006-insert-example-anlass.xml" context="@dev"/>
+  <include file="db-dev/0007-insert-example-aerzte.xml" context="@dev"/>
+  <include file="/db-dev/0008-update-anlasstypen-win.xml" context="@dev"/>
+  <include file="/db-dev/0008-update-anlasstypen-win-v2.xml" context="@dev"/>
 
 </databaseChangeLog>

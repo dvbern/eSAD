@@ -32,8 +32,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   LehrpersonOptionJsonSpec.JSON_PROPERTY_GESCHLECHT,
   LehrpersonOptionJsonSpec.JSON_PROPERTY_NAME,
   LehrpersonOptionJsonSpec.JSON_PROPERTY_VORNAME,
-  LehrpersonOptionJsonSpec.JSON_PROPERTY_FULL_NAME,
-  LehrpersonOptionJsonSpec.JSON_PROPERTY_MANUAL_OR_AKTIV_IN_EXTERNAL_SYSTEM
+  LehrpersonOptionJsonSpec.JSON_PROPERTY_FULL_NAME
 })
 @JsonTypeName("LehrpersonOptionJson")
 @lombok.AllArgsConstructor
@@ -58,10 +57,6 @@ public class LehrpersonOptionJsonSpec {
   public static final String JSON_PROPERTY_FULL_NAME = "fullName";
   @jakarta.annotation.Nonnull
   private String fullName;
-
-  public static final String JSON_PROPERTY_MANUAL_OR_AKTIV_IN_EXTERNAL_SYSTEM = "manualOrAktivInExternalSystem";
-  @jakarta.annotation.Nonnull
-  private Boolean manualOrAktivInExternalSystem;
 
   public LehrpersonOptionJsonSpec() {
   }
@@ -191,31 +186,6 @@ public class LehrpersonOptionJsonSpec {
     this.fullName = fullName;
   }
 
-  public LehrpersonOptionJsonSpec manualOrAktivInExternalSystem(@jakarta.annotation.Nonnull Boolean manualOrAktivInExternalSystem) {
-    
-    this.manualOrAktivInExternalSystem = manualOrAktivInExternalSystem;
-    return this;
-  }
-
-  /**
-   * Get manualOrAktivInExternalSystem
-   * @return manualOrAktivInExternalSystem
-   */
-  @jakarta.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_MANUAL_OR_AKTIV_IN_EXTERNAL_SYSTEM)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public Boolean getManualOrAktivInExternalSystem() {
-    return manualOrAktivInExternalSystem;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_MANUAL_OR_AKTIV_IN_EXTERNAL_SYSTEM)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setManualOrAktivInExternalSystem(@jakarta.annotation.Nonnull Boolean manualOrAktivInExternalSystem) {
-    this.manualOrAktivInExternalSystem = manualOrAktivInExternalSystem;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -229,13 +199,12 @@ public class LehrpersonOptionJsonSpec {
         Objects.equals(this.geschlecht, lehrpersonOptionJson.geschlecht) &&
         Objects.equals(this.name, lehrpersonOptionJson.name) &&
         Objects.equals(this.vorname, lehrpersonOptionJson.vorname) &&
-        Objects.equals(this.fullName, lehrpersonOptionJson.fullName) &&
-        Objects.equals(this.manualOrAktivInExternalSystem, lehrpersonOptionJson.manualOrAktivInExternalSystem);
+        Objects.equals(this.fullName, lehrpersonOptionJson.fullName);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, geschlecht, name, vorname, fullName, manualOrAktivInExternalSystem);
+    return Objects.hash(id, geschlecht, name, vorname, fullName);
   }
 
   @Override
@@ -247,7 +216,6 @@ public class LehrpersonOptionJsonSpec {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    vorname: ").append(toIndentedString(vorname)).append("\n");
     sb.append("    fullName: ").append(toIndentedString(fullName)).append("\n");
-    sb.append("    manualOrAktivInExternalSystem: ").append(toIndentedString(manualOrAktivInExternalSystem)).append("\n");
     sb.append("}");
     return sb.toString();
   }

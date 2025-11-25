@@ -196,6 +196,25 @@
           </a>
         </li>
       }
+
+      <!-- Läusekontrolle -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showTabLaeusekontrolle && canViewUntersuchungLaeusekontrolle()) {
+        <li ngbNavItem>
+          <a class="nav-link"
+             [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_LAEUSEKONTROLLE"
+             [routerLinkActive]="'active'"
+             [queryParamsHandling]="'preserve'"
+             aria-current="page">
+            {{ 'untersuchung.tab.laeusekontrolle' | transloco }}
+            @if (untersuchungStore.tabsSaved()?.laeusekontrolleTabSaved) {
+              <svui-icon-with-tooltip [iconColor]="'success'" [iconUseCase]="'check-circle'">
+                {{ 'untersuchung.tab.completed' | transloco }}
+              </svui-icon-with-tooltip>
+            }
+          </a>
+        </li>
+      }
+
       <!-- Massnahmen -->
       @if (anlassStore.selectedEntity()?.anlassConfig?.showTabMassnahmen && canViewUntersuchungMassnahmen()) {
         <li ngbNavItem>

@@ -21,7 +21,7 @@ import {NotizenService, NotizJson, NotizSaveJson} from '@dvb/data-access-backend
 import {BackendEntityId} from '@dvb/data-access-types';
 import {NotizJsonEnhanced} from '@dvb/feat-shared';
 import {AppErrorHandlerService, Loader, withSelectedEntity} from '@dvb/util-angular';
-import {isNotNullish, requireValue} from '@dvb/util-shared';
+import {compareByEntityInfoTimestampErstellt, isNotNullish, requireValue} from '@dvb/util-shared';
 import {tapResponse} from '@ngrx/operators';
 import {patchState, signalStore, withComputed} from '@ngrx/signals';
 import {addEntity, removeEntity, setAllEntities, setEntity, withEntities} from '@ngrx/signals/entities';
@@ -38,12 +38,12 @@ export class KinderNotizStore extends signalStore(
   withComputed(({entities, selectedEntity}) => ({
     notizenSortedAndSliced: computed(
       () => entities()
-        .sort((a, b) => b.entityInfo.timestampErstellt.localeCompare(a.entityInfo.timestampErstellt))
+        .sort(compareByEntityInfoTimestampErstellt)
         .slice(0, 10),
     ),
     notizenFiles: computed(
       () => selectedEntity()?.data?.files
-        .sort((a, b) => b.entityInfo.timestampErstellt.localeCompare(a.entityInfo.timestampErstellt)),
+        .sort(compareByEntityInfoTimestampErstellt),
     ),
   })),
 ) {
@@ -111,7 +111,6 @@ export class KinderNotizStore extends signalStore(
         ({notizId, fileId, onSuccess}) => this.saveLoader.tapLoading$(
           this.#notizenService.removeNotizFile$(
             {
-              kindId: requireValue(this.dossierStore.selectedDossier()?.kind.id),
               notizId: notizId,
               fileId: fileId,
             }),
@@ -143,7 +142,6 @@ export class KinderNotizStore extends signalStore(
           const [file, file2, file3, file4] = fileUploads;
           return this.saveLoader.tapLoading$(
             this.#notizenService.updateNotiz$({
-              kindId: requireValue(this.dossierStore.selectedDossier()?.kind.id),
               notizId: requireValue(this.selectedEntity()).id,
               notizSaveJson: notiz,
               file: file,
@@ -167,13 +165,11 @@ export class KinderNotizStore extends signalStore(
   );
 
   removeNotiz = rxMethod<{
-    kindId: BackendEntityId,
     notizId: BackendEntityId
   }>(
     pipe(
-      exhaustMap(({kindId, notizId}) => this.deleteLoader.tapLoading$(
+      exhaustMap(({notizId}) => this.deleteLoader.tapLoading$(
           this.#notizenService.deleteNotiz$({
-            kindId: requireValue(kindId),
             notizId: requireValue(notizId),
           }),
           error => this.#appErrorHandlerService.handleError(error),
@@ -189,10 +185,12 @@ export class KinderNotizStore extends signalStore(
     ),
   );
 
-  private enhanceNotiz(notiz: NotizJson) {
+  private enhanceNotiz(notiz: NotizJson): NotizJsonEnhanced {
     return {
       ...notiz,
       labelIds: notiz.data.labels.map(each => each.id),
+      hasAnhang: notiz.data.files.length > 0,
+      kindFullName: notiz.kind.vorname + ' ' + notiz.kind.name,
     }
   }
 }

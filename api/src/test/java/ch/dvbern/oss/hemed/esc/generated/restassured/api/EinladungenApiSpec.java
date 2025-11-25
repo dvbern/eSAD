@@ -67,8 +67,7 @@ public class EinladungenApiSpec {
     public List<Oper> getAllOperations() {
         return Arrays.asList(
                 einladungResourceCreateEinladungenForAnlass(),
-                einladungResourceCreateFragebogenNotiz(),
-                einladungResourceCreateImpfausweisNotiz(),
+                einladungResourceCreateNotiz(),
                 einladungResourceFindEinladungenByAnlass(),
                 einladungResourceGetEinladungById(),
                 einladungResourceGetHiddenUntersuchungTabInfos(),
@@ -85,12 +84,8 @@ public class EinladungenApiSpec {
         return new EinladungResourceCreateEinladungenForAnlassOper(createReqSpec());
     }
 
-    public EinladungResourceCreateFragebogenNotizOper einladungResourceCreateFragebogenNotiz() {
-        return new EinladungResourceCreateFragebogenNotizOper(createReqSpec());
-    }
-
-    public EinladungResourceCreateImpfausweisNotizOper einladungResourceCreateImpfausweisNotiz() {
-        return new EinladungResourceCreateImpfausweisNotizOper(createReqSpec());
+    public EinladungResourceCreateNotizOper einladungResourceCreateNotiz() {
+        return new EinladungResourceCreateNotizOper(createReqSpec());
     }
 
     public EinladungResourceFindEinladungenByAnlassOper einladungResourceFindEinladungenByAnlass() {
@@ -224,7 +219,7 @@ public class EinladungenApiSpec {
         }
     }
     /**
-     * Create Fragebogen Notiz
+     * Create Notiz
      * 
      *
      * @see #anlassIdPath  (required)
@@ -236,15 +231,15 @@ public class EinladungenApiSpec {
      * @see #notizCreateJsonForm  (optional)
      * return NotizJsonSpec
      */
-    public static class EinladungResourceCreateFragebogenNotizOper implements Oper {
+    public static class EinladungResourceCreateNotizOper implements Oper {
 
         public static final Method REQ_METHOD = POST;
-        public static final String REQ_URI = "/api/anlaesse/{anlassId}/einladungen/{einladungId}/fragebogen";
+        public static final String REQ_URI = "/api/anlaesse/{anlassId}/einladungen/{einladungId}/notiz";
 
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
 
-        public EinladungResourceCreateFragebogenNotizOper(RequestSpecBuilder reqSpec) {
+        public EinladungResourceCreateNotizOper(RequestSpecBuilder reqSpec) {
             this.reqSpec = reqSpec;
             reqSpec.setContentType("multipart/form-data");
             reqSpec.setAccept("application/json");
@@ -252,7 +247,7 @@ public class EinladungenApiSpec {
         }
 
         /**
-         * POST /api/anlaesse/{anlassId}/einladungen/{einladungId}/fragebogen
+         * POST /api/anlaesse/{anlassId}/einladungen/{einladungId}/notiz
          * @param handler handler
          * @param <T> type
          * @return type
@@ -263,7 +258,7 @@ public class EinladungenApiSpec {
         }
 
         /**
-         * POST /api/anlaesse/{anlassId}/einladungen/{einladungId}/fragebogen
+         * POST /api/anlaesse/{anlassId}/einladungen/{einladungId}/notiz
          * @param handler handler
          * @return NotizJsonSpec
          */
@@ -278,7 +273,7 @@ public class EinladungenApiSpec {
          * @param anlassId (String)  (required)
          * @return operation
          */
-        public EinladungResourceCreateFragebogenNotizOper anlassIdPath(Object anlassId) {
+        public EinladungResourceCreateNotizOper anlassIdPath(Object anlassId) {
             reqSpec.addPathParam(ANLASS_ID_PATH, anlassId);
             return this;
         }
@@ -289,7 +284,7 @@ public class EinladungenApiSpec {
          * @param einladungId (String)  (required)
          * @return operation
          */
-        public EinladungResourceCreateFragebogenNotizOper einladungIdPath(Object einladungId) {
+        public EinladungResourceCreateNotizOper einladungIdPath(Object einladungId) {
             reqSpec.addPathParam(EINLADUNG_ID_PATH, einladungId);
             return this;
         }
@@ -300,7 +295,7 @@ public class EinladungenApiSpec {
          * @param notizCreateJson (NotizSaveJsonSpec)  (optional)
          * @return operation
          */
-         public EinladungResourceCreateFragebogenNotizOper notizCreateJsonForm(Object... notizCreateJson) {
+         public EinladungResourceCreateNotizOper notizCreateJsonForm(Object... notizCreateJson) {
             reqSpec.addFormParam(NOTIZ_CREATE_JSON_FORM, notizCreateJson);
             return this;
          }
@@ -311,7 +306,7 @@ public class EinladungenApiSpec {
          * @param _file (File)  (optional)
          * @return operation
          */
-         public EinladungResourceCreateFragebogenNotizOper _fileMultiPart(File _file) {
+         public EinladungResourceCreateNotizOper _fileMultiPart(File _file) {
             reqSpec.addMultiPart(_file);
             return this;
          }
@@ -322,7 +317,7 @@ public class EinladungenApiSpec {
          * @param file2 (File)  (optional)
          * @return operation
          */
-         public EinladungResourceCreateFragebogenNotizOper file2MultiPart(File file2) {
+         public EinladungResourceCreateNotizOper file2MultiPart(File file2) {
             reqSpec.addMultiPart(file2);
             return this;
          }
@@ -333,7 +328,7 @@ public class EinladungenApiSpec {
          * @param file3 (File)  (optional)
          * @return operation
          */
-         public EinladungResourceCreateFragebogenNotizOper file3MultiPart(File file3) {
+         public EinladungResourceCreateNotizOper file3MultiPart(File file3) {
             reqSpec.addMultiPart(file3);
             return this;
          }
@@ -344,7 +339,7 @@ public class EinladungenApiSpec {
          * @param file4 (File)  (optional)
          * @return operation
          */
-         public EinladungResourceCreateFragebogenNotizOper file4MultiPart(File file4) {
+         public EinladungResourceCreateNotizOper file4MultiPart(File file4) {
             reqSpec.addMultiPart(file4);
             return this;
          }
@@ -354,7 +349,7 @@ public class EinladungenApiSpec {
          * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
          * @return operation
          */
-        public EinladungResourceCreateFragebogenNotizOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+        public EinladungResourceCreateNotizOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
             reqSpecCustomizer.accept(reqSpec);
             return this;
         }
@@ -364,153 +359,7 @@ public class EinladungenApiSpec {
          * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
          * @return operation
          */
-        public EinladungResourceCreateFragebogenNotizOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
-            respSpecCustomizer.accept(respSpec);
-            return this;
-        }
-    }
-    /**
-     * Create Impfausweis Notiz
-     * 
-     *
-     * @see #anlassIdPath  (required)
-     * @see #einladungIdPath  (required)
-     * @see #_fileMultiPart  (optional)
-     * @see #file2MultiPart  (optional)
-     * @see #file3MultiPart  (optional)
-     * @see #file4MultiPart  (optional)
-     * @see #notizCreateJsonForm  (optional)
-     * return NotizJsonSpec
-     */
-    public static class EinladungResourceCreateImpfausweisNotizOper implements Oper {
-
-        public static final Method REQ_METHOD = POST;
-        public static final String REQ_URI = "/api/anlaesse/{anlassId}/einladungen/{einladungId}/impfausweis";
-
-        private RequestSpecBuilder reqSpec;
-        private ResponseSpecBuilder respSpec;
-
-        public EinladungResourceCreateImpfausweisNotizOper(RequestSpecBuilder reqSpec) {
-            this.reqSpec = reqSpec;
-            reqSpec.setContentType("multipart/form-data");
-            reqSpec.setAccept("application/json");
-            this.respSpec = new ResponseSpecBuilder();
-        }
-
-        /**
-         * POST /api/anlaesse/{anlassId}/einladungen/{einladungId}/impfausweis
-         * @param handler handler
-         * @param <T> type
-         * @return type
-         */
-        @Override
-        public <T> T execute(Function<Response, T> handler) {
-            return handler.apply(RestAssured.given().spec(reqSpec.build()).expect().spec(respSpec.build()).when().request(REQ_METHOD, REQ_URI));
-        }
-
-        /**
-         * POST /api/anlaesse/{anlassId}/einladungen/{einladungId}/impfausweis
-         * @param handler handler
-         * @return NotizJsonSpec
-         */
-        public NotizJsonSpec executeAs(Function<Response, Response> handler) {
-            TypeRef<NotizJsonSpec> type = new TypeRef<NotizJsonSpec>(){};
-            return execute(handler).as(type);
-        }
-
-        public static final String ANLASS_ID_PATH = "anlassId";
-
-        /**
-         * @param anlassId (String)  (required)
-         * @return operation
-         */
-        public EinladungResourceCreateImpfausweisNotizOper anlassIdPath(Object anlassId) {
-            reqSpec.addPathParam(ANLASS_ID_PATH, anlassId);
-            return this;
-        }
-
-        public static final String EINLADUNG_ID_PATH = "einladungId";
-
-        /**
-         * @param einladungId (String)  (required)
-         * @return operation
-         */
-        public EinladungResourceCreateImpfausweisNotizOper einladungIdPath(Object einladungId) {
-            reqSpec.addPathParam(EINLADUNG_ID_PATH, einladungId);
-            return this;
-        }
-
-         public static final String NOTIZ_CREATE_JSON_FORM = "notizCreateJson";
-
-         /**
-         * @param notizCreateJson (NotizSaveJsonSpec)  (optional)
-         * @return operation
-         */
-         public EinladungResourceCreateImpfausweisNotizOper notizCreateJsonForm(Object... notizCreateJson) {
-            reqSpec.addFormParam(NOTIZ_CREATE_JSON_FORM, notizCreateJson);
-            return this;
-         }
-
-         /**
-         * It will assume that the control name is file and the &lt;content-type&gt; is &lt;application/octet-stream&gt;
-         * @see #reqSpec for customise
-         * @param _file (File)  (optional)
-         * @return operation
-         */
-         public EinladungResourceCreateImpfausweisNotizOper _fileMultiPart(File _file) {
-            reqSpec.addMultiPart(_file);
-            return this;
-         }
-
-         /**
-         * It will assume that the control name is file and the &lt;content-type&gt; is &lt;application/octet-stream&gt;
-         * @see #reqSpec for customise
-         * @param file2 (File)  (optional)
-         * @return operation
-         */
-         public EinladungResourceCreateImpfausweisNotizOper file2MultiPart(File file2) {
-            reqSpec.addMultiPart(file2);
-            return this;
-         }
-
-         /**
-         * It will assume that the control name is file and the &lt;content-type&gt; is &lt;application/octet-stream&gt;
-         * @see #reqSpec for customise
-         * @param file3 (File)  (optional)
-         * @return operation
-         */
-         public EinladungResourceCreateImpfausweisNotizOper file3MultiPart(File file3) {
-            reqSpec.addMultiPart(file3);
-            return this;
-         }
-
-         /**
-         * It will assume that the control name is file and the &lt;content-type&gt; is &lt;application/octet-stream&gt;
-         * @see #reqSpec for customise
-         * @param file4 (File)  (optional)
-         * @return operation
-         */
-         public EinladungResourceCreateImpfausweisNotizOper file4MultiPart(File file4) {
-            reqSpec.addMultiPart(file4);
-            return this;
-         }
-
-        /**
-         * Customize request specification
-         * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
-         * @return operation
-         */
-        public EinladungResourceCreateImpfausweisNotizOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
-            reqSpecCustomizer.accept(reqSpec);
-            return this;
-        }
-
-        /**
-         * Customize response specification
-         * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
-         * @return operation
-         */
-        public EinladungResourceCreateImpfausweisNotizOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+        public EinladungResourceCreateNotizOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
             respSpecCustomizer.accept(respSpec);
             return this;
         }

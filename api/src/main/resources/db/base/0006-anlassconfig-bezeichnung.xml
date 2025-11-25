@@ -1,0 +1,25 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hefr (generated)" id="1761727293920-5">
+    <addColumn tableName="anlassconfig">
+      <column name="bezeichnung" type="VARCHAR(255)"/>
+    </addColumn>
+    <sql>
+      update anlassconfig set bezeichnung = 'Default' where bezeichnung is null;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="bezeichnung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1761727293920-6">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="bezeichnung" type="VARCHAR(255)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1761727293920-7">
+    <addUniqueConstraint columnNames="anlasstyp, bezeichnung" constraintName="uc_anlassconfig_typ_bezeichnung" tableName="anlassconfig"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1761727293920-8">
+    <sql>
+      update anlassconfig set datumbis = '9999-12-31';  
+    </sql>
+  </changeSet>
+</databaseChangeLog>

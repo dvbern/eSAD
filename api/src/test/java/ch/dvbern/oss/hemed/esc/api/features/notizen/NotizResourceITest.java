@@ -133,7 +133,7 @@ class NotizResourceITest extends AbstractITest {
 
         // ACT
         NotizJsonSpec result = api
-            .notizResourceCreate()
+            .kinderNotizResourceCreate()
             .kindIdPath(kindId.getId())
             .reqSpec(spec -> {
                 spec.setContentType("multipart/form-data");
@@ -190,7 +190,7 @@ class NotizResourceITest extends AbstractITest {
 
         // ACT & ASSERT
         AppValidationErrorJsonSpec validationError =  api
-                .notizResourceCreate()
+                .kinderNotizResourceCreate()
                 .kindIdPath(kind.getId().getId())
                 .reqSpec(spec -> {
                     spec.setContentType("multipart/form-data");
@@ -217,6 +217,37 @@ class NotizResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
+    void findAllNotizen() {
+        // ARRANGE
+        Notiz notizKind1 = notizService.persist(NotizBuilder.create(
+            builder -> builder
+                .withTitel("Test Notiz 1")
+                .withDossier(fixtureService.createDossier())
+                .withVerantwortlicher(verantwortlicher)));
+        Notiz notizKind2 = notizService.persist(NotizBuilder.create(
+            builder -> builder
+                .withTitel("Test Notiz 2")
+                .withDossier(fixtureService.createDossier())
+                .withVerantwortlicher(verantwortlicher)));
+
+        // ACT
+        NotizListJsonSpec result = api
+            .notizResourceFindAll()
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(NotizListJsonSpec.class);
+
+        // ASSERT
+        assertThat(result.getNotizen())
+            .isNotEmpty()
+            .anyMatch(notizJsonSpec -> notizKind1.getId().getId().equals(notizJsonSpec.getId()))
+            .anyMatch(notizJsonSpec -> notizKind2.getId().getId().equals(notizJsonSpec.getId()));
+    }
+
+    @Test
+    @TestAsAdminBS
     void findAllNotizenForDossier() {
         // ARRANGE
         Notiz notiz = NotizBuilder.create(
@@ -232,7 +263,7 @@ class NotizResourceITest extends AbstractITest {
 
         // ACT
         NotizListJsonSpec result = api
-            .notizResourceFindAllForKind()
+            .kinderNotizResourceFindAllForKind()
             .kindIdPath(kindId.getId())
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -277,7 +308,6 @@ class NotizResourceITest extends AbstractITest {
         // ACT
         NotizJsonSpec result = api
             .notizResourceGetNotiz()
-            .kindIdPath(kindId.getId())
             .notizIdPath(notiz.getId().getId())
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -305,7 +335,6 @@ class NotizResourceITest extends AbstractITest {
 
         NotizJsonSpec result = api
             .notizResourceGetNotiz()
-            .kindIdPath(kindId.getId())
             .notizIdPath(notiz.getId().getId())
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -316,7 +345,6 @@ class NotizResourceITest extends AbstractITest {
 
         // ACT
         api.notizResourceDeleteNotiz()
-            .kindIdPath(kindId.getId())
             .notizIdPath(notiz.getId().getId())
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -346,7 +374,6 @@ class NotizResourceITest extends AbstractITest {
 
         NotizJsonSpec result = api
             .notizResourceGetNotiz()
-            .kindIdPath(kind.getId().getId())
             .notizIdPath(notiz.getId().getId())
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -364,7 +391,6 @@ class NotizResourceITest extends AbstractITest {
         // ACT
         AppValidationErrorJsonSpec validationError =  api
                 .notizResourceDeleteNotiz()
-                .kindIdPath(kind.getId().getId())
                 .notizIdPath(notiz.getId().getId())
                 .execute(ResponseBody::prettyPeek)
                 .then()
@@ -394,7 +420,6 @@ class NotizResourceITest extends AbstractITest {
 
         NotizJsonSpec result = api
             .notizResourceGetNotiz()
-            .kindIdPath(kindId.getId())
             .notizIdPath(notiz.getId().getId())
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -413,7 +438,6 @@ class NotizResourceITest extends AbstractITest {
 
         // ACT
         var notizUpdated = api.notizResourceUpdateNotiz()
-            .kindIdPath(kindId.getId())
             .notizIdPath(notiz.getId().getId())
             .reqSpec(spec -> {
                 spec.setContentType("multipart/form-data");
@@ -448,7 +472,6 @@ class NotizResourceITest extends AbstractITest {
 
         NotizJsonSpec result = api
             .notizResourceGetNotiz()
-            .kindIdPath(kindId.getId())
             .notizIdPath(notiz.getId().getId())
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -475,7 +498,6 @@ class NotizResourceITest extends AbstractITest {
             // ACT
             // Use the NotizenApiSpec method for updateNotizAllAtOnce
             NotizJsonSpec notizUpdated = api.notizResourceUpdateNotiz()
-                .kindIdPath(kindId.getId())
                 .notizIdPath(notiz.getId().getId())
                 .reqSpec(spec -> {
                     spec.addMultiPart("notizSaveJson", saveNotizJsonString, "application/json");
@@ -524,7 +546,6 @@ class NotizResourceITest extends AbstractITest {
 
         NotizJsonSpec result = api
             .notizResourceGetNotiz()
-            .kindIdPath(kind.getId().getId())
             .notizIdPath(notiz.getId().getId())
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -555,7 +576,6 @@ class NotizResourceITest extends AbstractITest {
         // ACT
         // Use the NotizenApiSpec method for updateNotizAllAtOnce
         AppValidationErrorJsonSpec validationError =  api.notizResourceUpdateNotiz()
-                .kindIdPath(kind.getId().getId())
                 .notizIdPath(notiz.getId().getId())
                 .reqSpec(spec -> {
                     spec.addMultiPart("notizSaveJson", saveNotizJsonString, "application/json");
@@ -583,7 +603,6 @@ class NotizResourceITest extends AbstractITest {
     void getNotiz_errors_whenNotizNotFound() {
         // ACT & ASSERT
         var failure = api.notizResourceGetNotiz()
-            .kindIdPath(kindId.getId())
             .notizIdPath(ID.random(Notiz.class).getId())
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -620,7 +639,6 @@ class NotizResourceITest extends AbstractITest {
 
             //ACT
             NotizJsonSpec notizJsonSpec = api.notizResourceAddNotizFile()
-                .kindIdPath(kindId.getId())
                 .notizIdPath(notiz.getId().getId())
                 ._fileMultiPart(pdfFile)
                 .execute(ResponseBody::prettyPeek)
@@ -656,7 +674,6 @@ class NotizResourceITest extends AbstractITest {
 
             //ACT
             AppValidationErrorJsonSpec error = api.notizResourceAddNotizFile()
-                .kindIdPath(kindId.getId())
                 .notizIdPath(notiz.getId().getId())
                 ._fileMultiPart(pdfFile)
                 .execute(ResponseBody::prettyPeek)
@@ -689,7 +706,6 @@ class NotizResourceITest extends AbstractITest {
 
             //ACT
             var violation = api.notizResourceAddNotizFile()
-                .kindIdPath(kindId.getId())
                 .notizIdPath(notiz.getId().getId())
                 ._fileMultiPart(pdfFile)
                 .execute(ResponseBody::prettyPeek)
@@ -715,7 +731,6 @@ class NotizResourceITest extends AbstractITest {
 
             File testfile = TestUtil.loadTestImage();
             NotizJsonSpec notizJsonSpec = api.notizResourceAddNotizFile()
-                .kindIdPath(storedNotiz.getDossier().getKind().getId().getId())
                 .notizIdPath(storedNotiz.getId().getId())
                 ._fileMultiPart(testfile)
                 .execute(ResponseBody::prettyPeek)
@@ -731,7 +746,6 @@ class NotizResourceITest extends AbstractITest {
             // ACT
 
             byte[] image = api.notizResourceDownloadNotizFile()
-                .kindIdPath(storedNotiz.getDossier().getKind().getId().getId())
                 .notizIdPath(storedNotiz.getId().getId())
                 .fileIdPath(Objects.requireNonNull(notizJsonSpec.getData().getFiles()).getFirst().getId())
                 .execute(ResponseOptions::andReturn)
@@ -760,7 +774,6 @@ class NotizResourceITest extends AbstractITest {
             File testfile = TestUtil.loadTestImage();
             String name = testfile.getName();
             NotizJsonSpec notizJsonSpec = api.notizResourceAddNotizFile()
-                .kindIdPath(storedNotiz.getDossier().getKind().getId().getId())
                 .notizIdPath(storedNotiz.getId().getId())
                 ._fileMultiPart(testfile)
                 .execute(ResponseBody::prettyPeek)
@@ -776,13 +789,12 @@ class NotizResourceITest extends AbstractITest {
             // ACT
 
             byte[] image = api.notizResourceDownloadNotizFileSync()
-                .kindIdPath(storedNotiz.getDossier().getKind().getId().getId())
                 .notizIdPath(storedNotiz.getId().getId())
                 .fileIdPath(Objects.requireNonNull(notizJsonSpec.getData().getFiles()).getFirst().getId())
                 .execute(ResponseOptions::andReturn)
                 .then()
                 .statusCode(Status.OK.getStatusCode())
-                .header("Content-Disposition", "attachment;filename*=UTF-8''" + name)
+                .header("Content-Disposition", "attachment;filename=\"" + name+ '"')
                 .extract()
                 .asByteArray();
 
@@ -812,7 +824,6 @@ class NotizResourceITest extends AbstractITest {
             File pdfFile = TestUtil.loadTestPDF();
 
             NotizJsonSpec notizJsonSpec = api.notizResourceAddNotizFile()
-                .kindIdPath(kindId.getId())
                 .notizIdPath(notiz.getId().getId())
                 ._fileMultiPart(pdfFile)
                 .execute(ResponseBody::prettyPeek)
@@ -828,7 +839,6 @@ class NotizResourceITest extends AbstractITest {
 
             //ACT
             NotizJsonSpec notizAfterRemoval = api.notizResourceRemoveNotizFile()
-                .kindIdPath(kindId.getId())
                 .notizIdPath(notiz.getId().getId())
                 .fileIdPath(Objects.requireNonNull(notizJsonSpec.getData().getFiles()).getFirst().getId())
                 .execute(ResponseBody::prettyPeek)

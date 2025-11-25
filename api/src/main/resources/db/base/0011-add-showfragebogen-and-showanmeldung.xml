@@ -1,0 +1,48 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="1762855871101-1">
+    <addColumn tableName="anlassconfig">
+      <column name="showanmeldungbestaetigung" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762855871101-2">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="showanmeldungbestaetigung" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762855871101-3">
+    <addColumn tableName="anlassconfig">
+      <column name="showfragebogen" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762855871101-4">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="showfragebogen" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762855871101-5">
+    <addColumn tableName="anlassconfig">
+      <column name="showimpfausweis" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762855871101-6">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="showimpfausweis" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762855871101-7">
+    <sql>
+      update anlassconfig
+      SET showfragebogen = false, showanmeldungbestaetigung = false, showimpfausweis = false
+    </sql>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762855871101-8">
+    <addNotNullConstraint tableName="anlassconfig" columnName="showfragebogen"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762855871101-9">
+    <addNotNullConstraint tableName="anlassconfig" columnName="showanmeldungbestaetigung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762855871101-10">
+    <addNotNullConstraint tableName="anlassconfig" columnName="showimpfausweis"/>
+  </changeSet>
+</databaseChangeLog>

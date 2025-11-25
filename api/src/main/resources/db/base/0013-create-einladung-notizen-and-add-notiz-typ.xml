@@ -1,0 +1,120 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="1762935155941-1">
+    <dropForeignKeyConstraint baseTableName="einladung" constraintName="fk_einladung_notiz_anmeldungBestaetigung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-2">
+    <dropForeignKeyConstraint baseTableName="einladung" constraintName="fk_einladung_notiz_fragebogen"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-3">
+    <dropForeignKeyConstraint baseTableName="einladung" constraintName="fk_einladung_notiz_impfausweis"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-4">
+    <createTable tableName="einladung_notiz">
+      <column name="einladung_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="notiz_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-5">
+    <createTable tableName="einladung_notiz_aud">
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="einladung_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="notiz_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-6">
+    <addColumn tableName="notiz">
+      <column name="typ" type="VARCHAR(30)">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-7">
+    <addColumn tableName="notiz_aud">
+      <column name="typ" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-8">
+    <sql>
+      UPDATE notiz
+      SET typ = 'DEFAULT';
+
+      UPDATE notiz
+      SET typ = 'FRAGEBOGEN'
+      WHERE titel LIKE 'Fragebogen %';
+
+      UPDATE notiz
+      SET typ = 'IMPFAUSWEIS'
+      WHERE titel LIKE 'Impfausweis %';
+
+      INSERT INTO einladung_notiz (einladung_id, notiz_id)
+      SELECT e.id, e.fragebogen_id
+      FROM Einladung e where e.fragebogen_id is not null;
+
+      INSERT INTO einladung_notiz (einladung_id, notiz_id)
+      SELECT e.id, e.impfausweis_id
+      FROM Einladung e where e.impfausweis_id is not null;
+    </sql>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-9">
+    <addNotNullConstraint tableName="notiz" columnName="typ"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-10">
+    <addPrimaryKey columnNames="einladung_id, rev, notiz_id" constraintName="einladung_notiz_audPK" tableName="einladung_notiz_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-11">
+    <addUniqueConstraint columnNames="notiz_id" constraintName="UC_EINLADUNG_NOTIZNOTIZ_ID_COL" tableName="einladung_notiz"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-12">
+    <createIndex indexName="ix_einladung_notiz_einladung" tableName="einladung_notiz">
+      <column name="einladung_id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-13">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="einladung_notiz_aud" constraintName="FKjr4va4gvoc28tx105d0yb8ggi" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-14">
+    <addForeignKeyConstraint baseColumnNames="einladung_id" baseTableName="einladung_notiz" constraintName="fk_einladung_notiz_einladung" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="einladung" validate="true"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-15">
+    <addForeignKeyConstraint baseColumnNames="notiz_id" baseTableName="einladung_notiz" constraintName="fk_einladung_notiz_notiz" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="notiz" validate="true"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-16">
+    <dropUniqueConstraint constraintName="uc_einladunganmeldungbestaetigung_id_col" tableName="einladung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-17">
+    <dropUniqueConstraint constraintName="uc_einladungfragebogen_id_col" tableName="einladung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-18">
+    <dropUniqueConstraint constraintName="uc_einladungimpfausweis_id_col" tableName="einladung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-19">
+    <dropColumn columnName="anmeldungbestaetigung_id" tableName="einladung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-20">
+    <dropColumn columnName="anmeldungbestaetigung_id" tableName="einladung_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-21">
+    <dropColumn columnName="fragebogen_id" tableName="einladung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-22">
+    <dropColumn columnName="fragebogen_id" tableName="einladung_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-23">
+    <dropColumn columnName="impfausweis_id" tableName="einladung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1762935155941-24">
+    <dropColumn columnName="impfausweis_id" tableName="einladung_aud"/>
+  </changeSet>
+</databaseChangeLog>

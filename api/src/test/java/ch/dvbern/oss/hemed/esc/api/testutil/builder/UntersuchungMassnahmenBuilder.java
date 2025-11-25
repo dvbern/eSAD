@@ -7,13 +7,13 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.InformationEltern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmenJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.json.UntersuchungMassnahmenJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmenMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungSehenMassnahmenMapper;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungSehenMassnahmenSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.json.UntersuchungSehenMassnahmenSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.infomaterial.Infomaterial;
 import ch.dvbern.oss.hemed.esc.api.shared.anlass.anlassflags.AnlassFlags;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;

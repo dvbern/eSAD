@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { NotizTyp } from './notiz-typ';
 import { LabelJson } from './label-json';
 import { NotizStatus } from './notiz-status';
 import { BenutzerOptionJson } from './benutzer-option-json';
@@ -17,6 +18,7 @@ export interface NotizSaveJson {
     titel: string;
     bemerkungen?: string;
     status: NotizStatus;
+    typ: NotizTyp;
     verantwortlicher: BenutzerOptionJson;
     labels: Array<LabelJson>;
     files: Array<FileDataJson>;

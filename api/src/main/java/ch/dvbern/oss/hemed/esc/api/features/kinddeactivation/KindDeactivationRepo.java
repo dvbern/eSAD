@@ -11,7 +11,7 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.QAnlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.QEinladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.QEinladung;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.QDossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.QKind;

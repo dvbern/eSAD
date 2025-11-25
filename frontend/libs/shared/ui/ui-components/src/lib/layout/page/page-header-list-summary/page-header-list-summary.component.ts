@@ -1,4 +1,4 @@
-import {NgIf} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 
 export type SummaryListItem = {
@@ -12,9 +12,7 @@ export type SummaryListItem = {
     templateUrl: './page-header-list-summary.component.html',
     styleUrl: './page-header-list-summary.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        NgIf,
-    ]
+    imports: []
 })
 export class PageHeaderListSummaryComponent {
 

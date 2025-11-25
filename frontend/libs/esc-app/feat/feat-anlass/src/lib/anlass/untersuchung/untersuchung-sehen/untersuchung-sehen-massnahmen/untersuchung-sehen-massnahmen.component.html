@@ -6,7 +6,7 @@
         [formGroup]="form.group"
         (ngSubmit)="submitIfValid()">
 
-    @if (anlassStore.selectedEntity()?.anlassConfig?.sehenMassnahmen !== RequirementSetting.NOT_VISIBLE) {
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.sehenMassnahmen !== RequirementSetting.NOT_VISIBLE) {
       <!-- Massnahmen -->
       <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.massnahmen' | transloco">
 
@@ -68,14 +68,17 @@
           [placeholder]="'global.select.bitte-auswaehlen' | transloco"
           [multiple]="true"
         >
-          @for (each of infomaterialOptions; track each.id) {
-            <ng-option [value]="each" [disabled]="!each.data.aktiv">
-              {{ each.data.name | translatedStringPipe }}
-              @if (!each.data.aktiv) {
-				  {{ 'gloabl.suffixInaktiv' | transloco }}
-              }
-            </ng-option>
-          }
+			@for (each of infomaterialOptions; track each.id) {
+				<!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+				@if (each) {
+					<ng-option [value]="each" [disabled]="!each.data.aktiv">
+						{{ each.data.name | translatedStringPipe }}
+						@if (!each.data.aktiv) {
+							{{ 'gloabl.suffixInaktiv' | transloco }}
+						}
+					</ng-option>
+				}
+			}
         </ng-select>
       </svui-form-control>
     }

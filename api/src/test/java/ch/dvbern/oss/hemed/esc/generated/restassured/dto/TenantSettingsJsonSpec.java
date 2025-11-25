@@ -15,15 +15,14 @@ package ch.dvbern.oss.hemed.esc.generated.restassured.dto;
 
 import java.util.Objects;
 import java.util.Arrays;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppLanguagesSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EntityInfoJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.TenantEnumSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.TenantSettingSaveJsonSpec;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -32,8 +31,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  */
 @JsonPropertyOrder({
   TenantSettingsJsonSpec.JSON_PROPERTY_ID,
-  TenantSettingsJsonSpec.JSON_PROPERTY_DEFAULT_LANGUAGE,
-  TenantSettingsJsonSpec.JSON_PROPERTY_SUPPORTED_LANGUAGES
+  TenantSettingsJsonSpec.JSON_PROPERTY_TENANT,
+  TenantSettingsJsonSpec.JSON_PROPERTY_ENTITY_INFO,
+  TenantSettingsJsonSpec.JSON_PROPERTY_DATA
 })
 @JsonTypeName("TenantSettingsJson")
 @lombok.AllArgsConstructor
@@ -43,13 +43,17 @@ public class TenantSettingsJsonSpec {
   @jakarta.annotation.Nonnull
   private String id;
 
-  public static final String JSON_PROPERTY_DEFAULT_LANGUAGE = "defaultLanguage";
+  public static final String JSON_PROPERTY_TENANT = "tenant";
   @jakarta.annotation.Nonnull
-  private AppLanguagesSpec defaultLanguage;
+  private TenantEnumSpec tenant;
 
-  public static final String JSON_PROPERTY_SUPPORTED_LANGUAGES = "supportedLanguages";
+  public static final String JSON_PROPERTY_ENTITY_INFO = "entityInfo";
   @jakarta.annotation.Nonnull
-  private List<AppLanguagesSpec> supportedLanguages;
+  private EntityInfoJsonSpec entityInfo;
+
+  public static final String JSON_PROPERTY_DATA = "data";
+  @jakarta.annotation.Nonnull
+  private TenantSettingSaveJsonSpec data;
 
   public TenantSettingsJsonSpec() {
   }
@@ -79,62 +83,79 @@ public class TenantSettingsJsonSpec {
     this.id = id;
   }
 
-  public TenantSettingsJsonSpec defaultLanguage(@jakarta.annotation.Nonnull AppLanguagesSpec defaultLanguage) {
+  public TenantSettingsJsonSpec tenant(@jakarta.annotation.Nonnull TenantEnumSpec tenant) {
     
-    this.defaultLanguage = defaultLanguage;
+    this.tenant = tenant;
     return this;
   }
 
   /**
-   * Get defaultLanguage
-   * @return defaultLanguage
+   * Get tenant
+   * @return tenant
    */
   @jakarta.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_DEFAULT_LANGUAGE)
+  @JsonProperty(JSON_PROPERTY_TENANT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public AppLanguagesSpec getDefaultLanguage() {
-    return defaultLanguage;
+  public TenantEnumSpec getTenant() {
+    return tenant;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_DEFAULT_LANGUAGE)
+  @JsonProperty(JSON_PROPERTY_TENANT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setDefaultLanguage(@jakarta.annotation.Nonnull AppLanguagesSpec defaultLanguage) {
-    this.defaultLanguage = defaultLanguage;
+  public void setTenant(@jakarta.annotation.Nonnull TenantEnumSpec tenant) {
+    this.tenant = tenant;
   }
 
-  public TenantSettingsJsonSpec supportedLanguages(@jakarta.annotation.Nonnull List<AppLanguagesSpec> supportedLanguages) {
+  public TenantSettingsJsonSpec entityInfo(@jakarta.annotation.Nonnull EntityInfoJsonSpec entityInfo) {
     
-    this.supportedLanguages = supportedLanguages;
-    return this;
-  }
-
-  public TenantSettingsJsonSpec addSupportedLanguagesItem(AppLanguagesSpec supportedLanguagesItem) {
-    if (this.supportedLanguages == null) {
-      this.supportedLanguages = new ArrayList<>();
-    }
-    this.supportedLanguages.add(supportedLanguagesItem);
+    this.entityInfo = entityInfo;
     return this;
   }
 
   /**
-   * Get supportedLanguages
-   * @return supportedLanguages
+   * Get entityInfo
+   * @return entityInfo
    */
   @jakarta.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_SUPPORTED_LANGUAGES)
+  @JsonProperty(JSON_PROPERTY_ENTITY_INFO)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<AppLanguagesSpec> getSupportedLanguages() {
-    return supportedLanguages;
+  public EntityInfoJsonSpec getEntityInfo() {
+    return entityInfo;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_SUPPORTED_LANGUAGES)
+  @JsonProperty(JSON_PROPERTY_ENTITY_INFO)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setSupportedLanguages(@jakarta.annotation.Nonnull List<AppLanguagesSpec> supportedLanguages) {
-    this.supportedLanguages = supportedLanguages;
+  public void setEntityInfo(@jakarta.annotation.Nonnull EntityInfoJsonSpec entityInfo) {
+    this.entityInfo = entityInfo;
+  }
+
+  public TenantSettingsJsonSpec data(@jakarta.annotation.Nonnull TenantSettingSaveJsonSpec data) {
+    
+    this.data = data;
+    return this;
+  }
+
+  /**
+   * Get data
+   * @return data
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_DATA)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public TenantSettingSaveJsonSpec getData() {
+    return data;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_DATA)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setData(@jakarta.annotation.Nonnull TenantSettingSaveJsonSpec data) {
+    this.data = data;
   }
 
   @Override
@@ -147,13 +168,14 @@ public class TenantSettingsJsonSpec {
     }
     TenantSettingsJsonSpec tenantSettingsJson = (TenantSettingsJsonSpec) o;
     return Objects.equals(this.id, tenantSettingsJson.id) &&
-        Objects.equals(this.defaultLanguage, tenantSettingsJson.defaultLanguage) &&
-        Objects.equals(this.supportedLanguages, tenantSettingsJson.supportedLanguages);
+        Objects.equals(this.tenant, tenantSettingsJson.tenant) &&
+        Objects.equals(this.entityInfo, tenantSettingsJson.entityInfo) &&
+        Objects.equals(this.data, tenantSettingsJson.data);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, defaultLanguage, supportedLanguages);
+    return Objects.hash(id, tenant, entityInfo, data);
   }
 
   @Override
@@ -161,8 +183,9 @@ public class TenantSettingsJsonSpec {
     StringBuilder sb = new StringBuilder();
     sb.append("class TenantSettingsJsonSpec {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    defaultLanguage: ").append(toIndentedString(defaultLanguage)).append("\n");
-    sb.append("    supportedLanguages: ").append(toIndentedString(supportedLanguages)).append("\n");
+    sb.append("    tenant: ").append(toIndentedString(tenant)).append("\n");
+    sb.append("    entityInfo: ").append(toIndentedString(entityInfo)).append("\n");
+    sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("}");
     return sb.toString();
   }

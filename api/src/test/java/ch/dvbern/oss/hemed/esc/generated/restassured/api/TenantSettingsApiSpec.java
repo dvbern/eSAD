@@ -13,6 +13,7 @@
 
 package ch.dvbern.oss.hemed.esc.generated.restassured.api;
 
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.TenantSettingSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.TenantSettingsJsonSpec;
 
 import java.util.ArrayList;
@@ -57,12 +58,17 @@ public class TenantSettingsApiSpec {
 
     public List<Oper> getAllOperations() {
         return Arrays.asList(
-                tenantSettingsResourceGetTenantSettings()
+                tenantSettingsResourceGetTenantSettings(),
+                tenantSettingsResourceUpdateTenantSettings()
         );
     }
 
     public TenantSettingsResourceGetTenantSettingsOper tenantSettingsResourceGetTenantSettings() {
         return new TenantSettingsResourceGetTenantSettingsOper(createReqSpec());
+    }
+
+    public TenantSettingsResourceUpdateTenantSettingsOper tenantSettingsResourceUpdateTenantSettings() {
+        return new TenantSettingsResourceUpdateTenantSettingsOper(createReqSpec());
     }
 
     /**
@@ -132,6 +138,78 @@ public class TenantSettingsApiSpec {
          * @return operation
          */
         public TenantSettingsResourceGetTenantSettingsOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+            respSpecCustomizer.accept(respSpec);
+            return this;
+        }
+    }
+    /**
+     * Update Tenant Settings
+     * 
+     *
+     * @see #body  (required)
+     * return TenantSettingsJsonSpec
+     */
+    public static class TenantSettingsResourceUpdateTenantSettingsOper implements Oper {
+
+        public static final Method REQ_METHOD = PUT;
+        public static final String REQ_URI = "/api/tenant-settings/self";
+
+        private RequestSpecBuilder reqSpec;
+        private ResponseSpecBuilder respSpec;
+
+        public TenantSettingsResourceUpdateTenantSettingsOper(RequestSpecBuilder reqSpec) {
+            this.reqSpec = reqSpec;
+            reqSpec.setContentType("application/json");
+            reqSpec.setAccept("application/json");
+            this.respSpec = new ResponseSpecBuilder();
+        }
+
+        /**
+         * PUT /api/tenant-settings/self
+         * @param handler handler
+         * @param <T> type
+         * @return type
+         */
+        @Override
+        public <T> T execute(Function<Response, T> handler) {
+            return handler.apply(RestAssured.given().spec(reqSpec.build()).expect().spec(respSpec.build()).when().request(REQ_METHOD, REQ_URI));
+        }
+
+        /**
+         * PUT /api/tenant-settings/self
+         * @param handler handler
+         * @return TenantSettingsJsonSpec
+         */
+        public TenantSettingsJsonSpec executeAs(Function<Response, Response> handler) {
+            TypeRef<TenantSettingsJsonSpec> type = new TypeRef<TenantSettingsJsonSpec>(){};
+            return execute(handler).as(type);
+        }
+
+         /**
+         * @param tenantSettingSaveJsonSpec (TenantSettingSaveJsonSpec)  (required)
+         * @return operation
+         */
+        public TenantSettingsResourceUpdateTenantSettingsOper body(TenantSettingSaveJsonSpec tenantSettingSaveJsonSpec) {
+            reqSpec.setBody(tenantSettingSaveJsonSpec);
+            return this;
+        }
+
+        /**
+         * Customize request specification
+         * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
+         * @return operation
+         */
+        public TenantSettingsResourceUpdateTenantSettingsOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+            reqSpecCustomizer.accept(reqSpec);
+            return this;
+        }
+
+        /**
+         * Customize response specification
+         * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
+         * @return operation
+         */
+        public TenantSettingsResourceUpdateTenantSettingsOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
             respSpecCustomizer.accept(respSpec);
             return this;
         }

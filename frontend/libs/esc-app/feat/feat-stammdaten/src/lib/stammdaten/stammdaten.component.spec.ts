@@ -8,8 +8,8 @@ import { FakeStammdatenService, MyStammdatenDTO } from './fake-stammdaten.servic
 import { StammdatenComponent } from './stammdaten.component';
 import { StammdatenStore } from './stammdaten.store';
 
-// this test takes a long time to run (30 min or more in pipeline) disable until we know why
-describe.skip('StammdatenComponent', () => {
+
+describe('StammdatenComponent', () => {
   let user: UserEvent;
   let component: StammdatenComponent;
   let fixture: ComponentFixture<StammdatenComponent>;

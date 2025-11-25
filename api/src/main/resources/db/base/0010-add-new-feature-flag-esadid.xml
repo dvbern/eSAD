@@ -1,0 +1,42 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="dvbern (generated)" id="1763137067129-5">
+    <addColumn tableName="tenantsetting">
+      <column name="esadidfeature" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      update tenantsetting
+      set esadidfeature = 'ENABLED'
+      where esadidfeature is null;
+    </sql>
+    <addNotNullConstraint tableName="tenantsetting"
+                          columnName="esadidfeature"
+    />
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1763137067129-6">
+    <addColumn tableName="tenantsetting_aud">
+      <column name="esadidfeature" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1763137067129-7">
+    <addColumn tableName="tenantsetting">
+      <column name="laendercodefeature" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+
+      update tenantsetting
+      set laendercodefeature = 'ENABLED'
+      where laendercodefeature is null;
+    </sql>
+    <addNotNullConstraint tableName="tenantsetting"
+                          columnName="laendercodefeature"
+                          columnDataType="VARCHAR(30)"/>
+  </changeSet>
+  <changeSet author="dvbern (generated)" id="1763137067129-8">
+    <addColumn tableName="tenantsetting_aud">
+      <column name="laendercodefeature" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+</databaseChangeLog>
+
+  

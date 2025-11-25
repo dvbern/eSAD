@@ -88,7 +88,7 @@ export class UntersuchungHoerenOtoskopieForm
 
   setValidators(config: AnlassConfigJson): void {
     // Otoskopie
-    if (config.hoerenOtoskopie === RequirementSetting.REQUIRED) {
+    if (config.data.hoerenOtoskopie === RequirementSetting.REQUIRED) {
       this.group.controls.otoskopieRechtsArray.addValidators(AppValidators.atLeastOneCheckedValidator());
       this.group.controls.otoskopieRechtsResultatAndere.addValidators(AppValidators.requiredIfValidator(() => {
         return this.isHoerenOtroskopieRechtsResultatAndereChecked()
@@ -99,7 +99,7 @@ export class UntersuchungHoerenOtoskopieForm
       }));
     }
     // Bemerkungen
-    if (config.hoerenOtoskopieBemerkungen === RequirementSetting.REQUIRED) {
+    if (config.data.hoerenOtoskopieBemerkungen === RequirementSetting.REQUIRED) {
       this.group.controls.bemerkungen.addValidators(Validators.required);
     }
   }

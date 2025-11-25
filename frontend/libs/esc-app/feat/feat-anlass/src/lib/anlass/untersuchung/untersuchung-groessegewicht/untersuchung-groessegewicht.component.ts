@@ -1,4 +1,3 @@
-import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {
@@ -36,9 +35,19 @@ import {UntersuchungGroesseGewichtStore} from './untersuchung-groessegewicht.sto
 @Component({
   selector: 'feat-untersuchung-groessegewicht',
   imports: [
-    CommonModule, FormLayoutComponent, ReactiveFormsModule, KachelControlComponent, KachelFormSectionComponent,
-    RadioDirective, TranslocoPipe, FormControlComponent, TextInputDirective,
-    SaveCancelButtonsComponent, TextareaDirective, TitleComponent, PercentileChartComponent, CardInCardComponent,
+    FormLayoutComponent,
+    ReactiveFormsModule,
+    KachelControlComponent,
+    KachelFormSectionComponent,
+    RadioDirective,
+    TranslocoPipe,
+    FormControlComponent,
+    TextInputDirective,
+    SaveCancelButtonsComponent,
+    TextareaDirective,
+    TitleComponent,
+    PercentileChartComponent,
+    CardInCardComponent,
   ],
   templateUrl: './untersuchung-groessegewicht.component.html',
   styleUrl: './untersuchung-groessegewicht.component.scss',
@@ -115,20 +124,20 @@ export class UntersuchungGroessegewichtComponent implements DirtyMarker {
 
   showDiagrammGroesse(): boolean {
     const anlassConfig = this.anlassStore.selectedEntity()?.anlassConfig;
-    return isNotNullish(anlassConfig) && anlassConfig.groesseGewichtGroesse !== RequirementSetting.NOT_VISIBLE;
+    return isNotNullish(anlassConfig) && anlassConfig.data.groesseGewichtGroesse !== RequirementSetting.NOT_VISIBLE;
   }
 
   showDiagrammGewicht(): boolean {
     const anlassConfig = this.anlassStore.selectedEntity()?.anlassConfig;
     return isNotNullish(anlassConfig)
-      && this.anlassStore.selectedEntity()?.anlassConfig?.groesseGewichtGewicht
+      && this.anlassStore.selectedEntity()?.anlassConfig?.data.groesseGewichtGewicht
       !== RequirementSetting.NOT_VISIBLE;
   }
 
   showDiagrammBmi(): boolean {
     const anlassConfig = this.anlassStore.selectedEntity()?.anlassConfig;
     return isNotNullish(anlassConfig)
-      && this.anlassStore.selectedEntity()?.anlassConfig?.groesseGewichtBmi
+      && this.anlassStore.selectedEntity()?.anlassConfig?.data.groesseGewichtBmi
       !== RequirementSetting.NOT_VISIBLE;
   }
 

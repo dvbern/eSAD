@@ -6,10 +6,9 @@
 
 .svui_columns {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, 1fr);
   grid-template-areas: 'left middle right';
   column-gap: spacing.$gutter-width;
-
 
   &__area {
     ::ng-deep > * {
@@ -30,6 +29,15 @@
     &--right {
       grid-area: right;
     }
+  }
+
+  // If right area is empty, adjust layout
+  &:has(.svui_columns__area--right:empty) {
+    grid-template-areas: 'left middle';
+  }
+
+  .svui_columns__area:empty {
+    display: none;
   }
 }
 

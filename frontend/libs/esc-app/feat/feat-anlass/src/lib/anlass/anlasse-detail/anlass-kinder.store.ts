@@ -1,5 +1,4 @@
-import {withDevtools} from '@angular-architects/ngrx-toolkit';
-import {computed, inject, Injectable} from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import {
   AnlassFlagsJson,
   EinladungenService,
@@ -12,9 +11,10 @@ import {
   NotizenService,
   NotizJson,
   NotizSaveJson,
+  NotizTyp,
   PrinterService,
 } from '@dvb/data-access-backend';
-import {BackendEntityId} from '@dvb/data-access-types';
+import { BackendEntityId } from '@dvb/data-access-types';
 import {
   AppErrorHandlerService,
   AppNotificationStore,
@@ -22,32 +22,23 @@ import {
   Loader,
   rxMethod,
 } from '@dvb/util-angular';
-import {ensurePropsFlat, isNotNullish, requireValue} from '@dvb/util-shared';
-import {TranslocoService} from '@jsverse/transloco';
-import {tapResponse} from '@ngrx/operators';
-import {
-  EmptyFeatureResult,
-  patchState,
-  signalStore,
-  SignalStoreFeature,
-  withComputed,
-  withMethods,
-  withState,
-} from '@ngrx/signals';
-import {catchError, exhaustMap, filter, map, of, pipe, switchMap, tap} from 'rxjs';
-import {AnlassStore} from '../anlass.store';
-import {EinladungNotizTyp} from './anlass-planung/notizen/einladung-notiz.page.component';
+import { ensurePropsFlat, isNotNullish, requireValue } from '@dvb/util-shared';
+import { TranslocoService } from '@jsverse/transloco';
+import { tapResponse } from '@ngrx/operators';
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { catchError, exhaustMap, filter, map, of, pipe, switchMap, tap } from 'rxjs';
+import { AnlassStore } from '../anlass.store';
 
 export interface EinladungJsonEnhanced extends EinladungJson {
   nachkontrolleString: string;
 }
 
 type AnlassKinderState = {
-  alleKinder: KindJson[],
-  einladungen: EinladungJsonEnhanced[],
-  selectedIdsForUntersuchung: BackendEntityId[],
-  selectedEinladungId: BackendEntityId | undefined,
-  kindWasAdded: boolean,
+  alleKinder: KindJson[];
+  einladungen: EinladungJsonEnhanced[];
+  selectedIdsForUntersuchung: BackendEntityId[];
+  selectedEinladungId: BackendEntityId | undefined;
+  kindWasAdded: boolean;
 };
 
 const initialState: AnlassKinderState = {
@@ -61,7 +52,7 @@ const initialState: AnlassKinderState = {
 @Injectable()
 export class AnlassKinderStore extends signalStore(
   { protectedState: false },
-  withDevtools('anlassKinder') as SignalStoreFeature<EmptyFeatureResult, EmptyFeatureResult>,
+  // withDevtools('anlassKinder'),
   withState(initialState),
   withComputed(({ einladungen, alleKinder, selectedIdsForUntersuchung, selectedEinladungId }) => ({
     selectedForUntersuchung: computed(() =>
@@ -78,13 +69,13 @@ export class AnlassKinderStore extends signalStore(
       ),
     ),
     countEinladungen: computed(() => einladungen().length),
-    selectedEinladung: computed( ():  EinladungJsonEnhanced | undefined  =>
-       einladungen().find(({id}) => id === selectedEinladungId())
+    selectedEinladung: computed((): EinladungJsonEnhanced | undefined =>
+      einladungen().find(({ id }) => id === selectedEinladungId()),
     ),
-    nameKind: computed(() : string => {
-      const kind = einladungen().find(({id}) => id === selectedEinladungId())?.kind;
+    nameKind: computed((): string => {
+      const kind = einladungen().find(({ id }) => id === selectedEinladungId())?.kind;
       return kind ? kind.data.vorname + ' ' + kind.data.name : '';
-    })
+    }),
   })),
   withMethods((store, translateService = inject(TranslocoService)) => ({
     markEinladungForUntersuchung(id: BackendEntityId): void {
@@ -181,11 +172,10 @@ export class AnlassKinderStore extends signalStore(
     pipe(
       tap(() => patchState(this, { alleKinder: [], einladungen: [] })),
       switchMap(anlassId => {
-          return this.loader.tapLoading$(this.#einladungenService.findEinladungenByAnlass$({anlassId}), error =>
-            this.#appErrorHandlerService.handleError(error),
-          );
-        },
-      ),
+        return this.loader.tapLoading$(this.#einladungenService.findEinladungenByAnlass$({ anlassId }), error =>
+          this.#appErrorHandlerService.handleError(error),
+        );
+      }),
       tapResponse({
         next: result =>
           patchState(this, { einladungen: result.einladungList.map(einladung => this.enhanceEinladung(einladung)) }),
@@ -280,36 +270,41 @@ export class AnlassKinderStore extends signalStore(
   );
 
   einladungAbmelden = rxMethod<{
-    einladungId: BackendEntityId; einladungSaveJson: EinladungSaveJson; onSuccess: () => void
+    einladungId: BackendEntityId;
+    einladungSaveJson: EinladungSaveJson;
+    onSuccess: () => void;
   }>(
     pipe(
       exhaustMap(params =>
-        this.saveLoader.tapLoading$(
-          this.#einladungenService.updateEinladung$({
-            anlassId: requireValue(this.anlassStore.selectedEntity()?.id),
-            einladungId: params.einladungId,
-            einladungSaveJson: params.einladungSaveJson,
-          }),
-          error => this.#appErrorHandlerService.handleError(error),
-        ).pipe(
-          tapResponse({
-            next: result => {
-              patchState(this, {
-                einladungen: [...this.einladungen().map(el => (el.id === result.id ? this.enhanceEinladung(result) : el))],
-              });
-              this.#appNotficationService.addNotification({
-                alertType: 'success',
-                id: crypto.randomUUID(),
-                summary: this.transloco.translate('anlass.kinder.abmeldegrund.hinterlegen.success'),
-                autohide: true,
-              });
-              params.onSuccess();
-            },
-            error: console.error,
-          }),
-        ),
+        this.saveLoader
+          .tapLoading$(
+            this.#einladungenService.updateEinladung$({
+              anlassId: requireValue(this.anlassStore.selectedEntity()?.id),
+              einladungId: params.einladungId,
+              einladungSaveJson: params.einladungSaveJson,
+            }),
+            error => this.#appErrorHandlerService.handleError(error),
+          )
+          .pipe(
+            tapResponse({
+              next: result => {
+                patchState(this, {
+                  einladungen: [
+                    ...this.einladungen().map(el => (el.id === result.id ? this.enhanceEinladung(result) : el)),
+                  ],
+                });
+                this.#appNotficationService.addNotification({
+                  alertType: 'success',
+                  id: crypto.randomUUID(),
+                  summary: this.transloco.translate('anlass.kinder.abmeldegrund.hinterlegen.success'),
+                  autohide: true,
+                });
+                params.onSuccess();
+              },
+              error: console.error,
+            }),
+          ),
       ),
-
     ),
   );
 
@@ -361,109 +356,93 @@ export class AnlassKinderStore extends signalStore(
 
   createNotizWithFiles = rxMethod<{
     notiz: NotizSaveJson;
-    notizTyp: EinladungNotizTyp;
+    notizTyp: NotizTyp;
     fileUploads: File[];
     onSuccess: (notiz: NotizJson) => void;
   }>(
     pipe(
-      exhaustMap(({notiz, notizTyp, onSuccess, fileUploads}) => {
+      exhaustMap(({ notiz, onSuccess, fileUploads }) => {
         const [file, file2, file3, file4] = fileUploads;
         return this.saveLoader
-            .tapLoading$(
-              notizTyp === 'impfausweis'
-                ? this.#einladungenService.createImpfausweisNotiz$({
-                    anlassId: requireValue(this.anlassStore.selectedEntity()?.id),
-                    einladungId: requireValue(this.selectedEinladungId()),
-                    notizCreateJson: notiz,
-                    file: file,
-                    file2: file2,
-                    file3: file3,
-                    file4: file4,
-                  })
-                : this.#einladungenService.createFragebogenNotiz$({
-                    anlassId: requireValue(this.anlassStore.selectedEntity()?.id),
-                    einladungId: requireValue(this.selectedEinladungId()),
-                    notizCreateJson: notiz,
-                    file: file,
-                    file2: file2,
-                    file3: file3,
-                    file4: file4,
-                  }),
-              error => this.#appErrorHandlerService.handleError(error),
-            )
-            .pipe(
-              tapResponse({
-                next: result => {
-                  patchState(this, {
-                    einladungen: this.replaceNotizOfEinladungInArray(result, notizTyp).map(einladung =>
-                      this.enhanceEinladung(einladung),
-                    ),
-                  });
-                  onSuccess(result);
-                },
-                error: console.error,
-              }),
-            );
-        },
-      ),
+          .tapLoading$(
+            this.#einladungenService.createNotiz$({
+              anlassId: requireValue(this.anlassStore.selectedEntity()?.id),
+              einladungId: requireValue(this.selectedEinladungId()),
+              notizCreateJson: notiz,
+              file: file,
+              file2: file2,
+              file3: file3,
+              file4: file4,
+            }),
+            error => this.#appErrorHandlerService.handleError(error),
+          )
+          .pipe(
+            tapResponse({
+              next: result => {
+                patchState(this, {
+                  einladungen: this.replaceNotizOfEinladungInArray(result).map(einladung =>
+                    this.enhanceEinladung(einladung),
+                  ),
+                });
+                onSuccess(result);
+              },
+              error: console.error,
+            }),
+          );
+      }),
     ),
   );
 
   updateNotizWithFiles = rxMethod<{
-    kindId: BackendEntityId,
-    notizId: BackendEntityId,
-    notiz: NotizSaveJson,
-    notizTyp: EinladungNotizTyp,
+    notizId: BackendEntityId;
+    notiz: NotizSaveJson;
+    notizTyp: NotizTyp;
     fileUploads: File[];
-    onSuccess: (notiz: NotizJson) => void
+    onSuccess: (notiz: NotizJson) => void;
   }>(
     pipe(
-      exhaustMap(({ kindId, notizId, notiz, notizTyp, fileUploads, onSuccess }) => {
+      exhaustMap(({ notizId, notiz, fileUploads, onSuccess }) => {
         const [file, file2, file3, file4] = fileUploads;
-          return this.saveLoader
-            .tapLoading$(
-              this.#notizenService.updateNotiz$({
-                kindId: kindId,
-                notizId: notizId,
-                file: file,
-                file2: file2,
-                file3: file3,
-                file4: file4,
-                notizSaveJson: notiz,
-              }),
-              error => this.#appErrorHandlerService.handleError(error),
-            )
-            .pipe(
-              tapResponse({
-                next: result => {
-                  patchState(this, {
-                    einladungen: this.replaceNotizOfEinladungInArray(result, notizTyp).map(einladung =>
-                      this.enhanceEinladung(einladung),
-                    ),
-                  });
-                  onSuccess(result);
-                },
-                error: console.error,
-              }),
-            );
-        },
-      ),
+        return this.saveLoader
+          .tapLoading$(
+            this.#notizenService.updateNotiz$({
+              notizId: notizId,
+              file: file,
+              file2: file2,
+              file3: file3,
+              file4: file4,
+              notizSaveJson: notiz,
+            }),
+            error => this.#appErrorHandlerService.handleError(error),
+          )
+          .pipe(
+            tapResponse({
+              next: result => {
+                patchState(this, {
+                  einladungen: this.replaceNotizOfEinladungInArray(result).map(einladung =>
+                    this.enhanceEinladung(einladung),
+                  ),
+                });
+                onSuccess(result);
+              },
+              error: console.error,
+            }),
+          );
+      }),
     ),
   );
 
   removeNotizFile = rxMethod<{
-    kindId: BackendEntityId,
-    notizId: BackendEntityId,
-    fileId: BackendEntityId,
-    notizTyp: EinladungNotizTyp,
-    onSuccess?: (notiz: NotizJson) => void
+    notizId: BackendEntityId;
+    fileId: BackendEntityId;
+    notizTyp: NotizTyp;
+    onSuccess?: (notiz: NotizJson) => void;
   }>(
     pipe(
-      exhaustMap(({ kindId, notizId, fileId, notizTyp, onSuccess }) =>
+      exhaustMap(({ notizId, fileId, onSuccess }) =>
         this.saveLoader
           .tapLoading$(
             this.#notizenService.removeNotizFile$({
-              kindId: kindId,
               notizId: notizId,
               fileId: fileId,
             }),
@@ -473,7 +452,7 @@ export class AnlassKinderStore extends signalStore(
             tapResponse({
               next: result => {
                 patchState(this, {
-                  einladungen: this.replaceNotizOfEinladungInArray(result, notizTyp).map(einladung =>
+                  einladungen: this.replaceNotizOfEinladungInArray(result).map(einladung =>
                     this.enhanceEinladung(einladung),
                   ),
                 });
@@ -488,19 +467,18 @@ export class AnlassKinderStore extends signalStore(
     ),
   );
 
-  private replaceNotizOfEinladungInArray(result: NotizJson, notizTyp: EinladungNotizTyp): EinladungJson[] {
-    const newEinadungArray = this.einladungen().map(einladung => {
+  private replaceNotizOfEinladungInArray(result: NotizJson): EinladungJson[] {
+    return this.einladungen().map(einladung => {
       if (einladung.id === this.selectedEinladungId()) {
-        if (notizTyp === 'impfausweis') {
-          einladung.data.impfausweis = result;
+        const notizIndex = einladung.data.notizen.findIndex(n => n.id === result.id);
+        if (notizIndex === -1) {
+          einladung.data.notizen.push(result);
         } else {
-          einladung.data.fragebogen = result;
+          einladung.data.notizen[notizIndex] = result;
         }
-        return einladung;
       }
       return einladung;
     });
-    return newEinadungArray;
   }
 
   private enhanceEinladung(einladung: EinladungJson): EinladungJsonEnhanced {

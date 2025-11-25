@@ -2,25 +2,27 @@ package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Collection;
 import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilungMapper;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungSehenBeurteilungJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.BrilleLinsenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.DistanzSehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.FarbsehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.InspektionKonvergenzResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.MotilitaetResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StereotestResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusAuftretenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusAuspraegungResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.StrabismusResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.VerwendetTafelResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilungMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.json.UntersuchungSehenBeurteilungJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.SehenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftretenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungSehenBeurteilungJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenBeurteilungJsonSpec;
@@ -88,8 +90,8 @@ public class UntersuchungSehenBeurteilungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungSehenBeurteilungBuilder withFernvisus(@Nullable List<DistanzSehenResultat> fernvisus) {
-        this.sehen.setFernvisus(fernvisus);
+    public UntersuchungSehenBeurteilungBuilder withFernvisus(@Nullable Collection<DistanzSehenResultat> fernvisus) {
+        this.sehen.setFernvisus(EnumSetUtil.toEnumSet(fernvisus, DistanzSehenResultat.class));
         return this;
     }
 
@@ -109,8 +111,8 @@ public class UntersuchungSehenBeurteilungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungSehenBeurteilungBuilder withNahvisus(@Nullable List<DistanzSehenResultat> nahvisus) {
-        this.sehen.setNahvisus(nahvisus);
+    public UntersuchungSehenBeurteilungBuilder withNahvisus(@Nullable Collection<DistanzSehenResultat> nahvisus) {
+        this.sehen.setNahvisus(EnumSetUtil.toEnumSet(nahvisus, DistanzSehenResultat.class));
         return this;
     }
 
@@ -137,8 +139,8 @@ public class UntersuchungSehenBeurteilungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungSehenBeurteilungBuilder withStrabismus(@Nullable List<StrabismusResultat> strabismus) {
-        this.sehen.setStrabismus(strabismus);
+    public UntersuchungSehenBeurteilungBuilder withStrabismus(@Nullable Collection<StrabismusResultat> strabismus) {
+        this.sehen.setStrabismus(EnumSetUtil.toEnumSet(strabismus, StrabismusResultat.class));
         return this;
     }
 
@@ -169,6 +171,13 @@ public class UntersuchungSehenBeurteilungBuilder {
     @CanIgnoreReturnValue
     public UntersuchungSehenBeurteilungBuilder withKonvergenz(@Nullable InspektionKonvergenzResultat konvergenz) {
         this.sehen.setKonvergenz(konvergenz);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungSehenBeurteilungBuilder withEmpfehlung(@Nullable Collection<SehenEmpfehlung> empfehlungList) {
+        this.sehen.setEmpfehlung(EnumSetUtil.toEnumSet(empfehlungList, SehenEmpfehlung.class));
         return this;
     }
 

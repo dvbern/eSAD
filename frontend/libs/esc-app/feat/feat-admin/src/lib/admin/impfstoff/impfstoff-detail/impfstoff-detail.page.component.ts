@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
@@ -14,7 +14,6 @@ import {NgbNav, NgbNavItem} from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'feat-label-detail.page',
   imports: [
-    CommonModule,
     PageComponent,
     TranslocoPipe,
     ReactiveFormsModule,
@@ -23,8 +22,8 @@ import {NgbNav, NgbNavItem} from '@ng-bootstrap/ng-bootstrap';
     NgbNavItem,
     RouterLink,
     RouterLinkActive,
-    RouterOutlet,
-  ],
+    RouterOutlet
+],
   templateUrl: './impfstoff-detail.page.component.html',
   styles: ':host { display:block;}',
   changeDetection: ChangeDetectionStrategy.OnPush,

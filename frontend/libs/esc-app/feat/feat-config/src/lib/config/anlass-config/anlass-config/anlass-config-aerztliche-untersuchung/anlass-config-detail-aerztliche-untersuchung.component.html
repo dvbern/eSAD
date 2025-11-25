@@ -1,0 +1,760 @@
+<form svuiFormLayout
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="store.detailMode()">
+  <h2 svuiHeading="formSection">{{ 'anlassconfig.detail.tab.aerztlicheuntersuchung' | transloco }}</h2>
+
+
+  <!-- Untersuchung Bewegungsapparat-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungBewegungsapparat' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungBewegungsapparat | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungBewegungsapparat"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Untersuchung Einbeinstand-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungEinbeinstand' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungEinbeinstand | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungEinbeinstand"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungEinbeinstandRechts -->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungEinbeinstandRechts' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungEinbeinstandRechts | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungEinbeinstandRechts"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungEinbeinstandLinks -->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungEinbeinstandLinks' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungEinbeinstandLinks | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungEinbeinstandLinks"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungEinbeinhuepfen -->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungEinbeinhuepfen' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungEinbeinhuepfen | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungEinbeinhuepfen"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungEinbeinhuepfenRechts -->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungEinbeinhuepfenRechts' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungEinbeinhuepfenRechts | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungEinbeinhuepfenRechts"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungEinbeinhuepfenLinks -->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungEinbeinhuepfenLinks' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungEinbeinhuepfenLinks | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungEinbeinhuepfenLinks"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Untersuchung Fingeropposition-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungFingeropposition' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungFingeropposition | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungFingeropposition"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungHampelmann-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungHampelmann' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungHampelmann | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungHampelmann"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungBallFangen-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungBallFangen' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungBallFangen | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungBallFangen"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungBallWerfen-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungBallWerfen' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungBallWerfen | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungBallWerfen"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungNameSchreiben-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungNameSchreiben' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungNameSchreiben | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungNameSchreiben"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungFigurNachmalen-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungFigurNachmalen' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungFigurNachmalen | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungFigurNachmalen"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungStifthaltung-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungStifthaltung' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungStifthaltung | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungStifthaltung"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungAussprache-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungAussprache' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungAussprache | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungAussprache"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungLesefit-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungLesefit' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungLesefit | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungLesefit"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!--  untersuchungLesefitPunkte-->
+  <svui-form-control [label]="'anlassconfig.label. untersuchungLesefitPunkte' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue(). untersuchungLesefitPunkte | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls. untersuchungLesefitPunkte"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungZahlenNachsprechen4-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungZahlenNachsprechen4' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungZahlenNachsprechen4 | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungZahlenNachsprechen4"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungZahlenNachsprechen5-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungZahlenNachsprechen5' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungZahlenNachsprechen5 | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungZahlenNachsprechen5"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungZeichnenKreis-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungZeichnenKreis' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungZeichnenKreis | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungZeichnenKreis"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungZeichnenViereck-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungZeichnenViereck' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungZeichnenViereck | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungZeichnenViereck"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungZeichnenDreieck-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungZeichnenDreieck' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungZeichnenDreieck | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungZeichnenDreieck"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungZeichnenMensch-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungZeichnenMensch' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungZeichnenMensch | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungZeichnenMensch"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!--  untersuchungZeichnenMenschPunkte-->
+  <svui-form-control [label]="'anlassconfig.label. untersuchungZeichnenMenschPunkte' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue(). untersuchungZeichnenMenschPunkte | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls. untersuchungZeichnenMenschPunkte"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungMotorik-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungMotorik' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungMotorik | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungMotorik"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungMotorikPunkte-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungMotorikPunkte' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungMotorikPunkte | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungMotorikPunkte"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungKognition-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungKognition' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungKognition | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungKognition"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungKognitionPunkte-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungKognitionPunkte' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungKognitionPunkte | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungKognitionPunkte"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Untersuchung Sprache-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungSprache' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungSprache | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungSprache"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungSprachePunkte-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungSprachePunkte' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungSprachePunkte | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungSprachePunkte"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Untersuchung MundZaehne-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungMundZaehne' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungMundZaehne | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungMundZaehne"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Untersuchung Haut-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungHaut' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungHaut | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungHaut"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Untersuchung Herz-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungHerz' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungHerz | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungHerz"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Untersuchung Blutdruck-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungBlutdruck' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungBlutdruck | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungBlutdruck"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Untersuchung Verhalten-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungVerhalten' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungVerhalten | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungVerhalten"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- unterlagenEinverstaendnis-->
+  <svui-form-control [label]="'anlassconfig.label.unterlagenEinverstaendnis' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().unterlagenEinverstaendnis | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.unterlagenEinverstaendnis"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- unterlagenVerhaltensfragebogen-->
+  <svui-form-control [label]="'anlassconfig.label.unterlagenVerhaltensfragebogen' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().unterlagenVerhaltensfragebogen | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.unterlagenVerhaltensfragebogen"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungEmpfehlung-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungEmpfehlung' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungEmpfehlung | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungEmpfehlung"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Untersuchung Bemerkungen-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungBemerkungen' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungBemerkungen | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungBemerkungen"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+
+  <!--messages for whole form -->
+  <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="store.detailMode()"
+    [isCreate]="store.selectedIsNew()"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="anlassConfigHelperService.canEdit()"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+    [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"
+  />
+</form>

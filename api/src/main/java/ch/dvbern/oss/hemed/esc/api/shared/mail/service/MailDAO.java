@@ -40,7 +40,11 @@ public class MailDAO {
 
     public void sendEmailWithAttachmentSync(String to, String subject, String htmlContent, List<Path> attachments)
         throws IOException {
-        var mail = createMail(to, subject, htmlContent, attachments);
+        var mail = createMail(
+            to,
+            subject,
+            htmlContent,
+            attachments);
         mailer.send(mail);
     }
 
@@ -56,7 +60,12 @@ public class MailDAO {
     }
 
     private Mail createMail(String to, String subject, String htmlContent, List<Path> attachments) throws IOException {
-        var mail = createMail(to, subject, htmlContent);
+
+        var mail = createMail(
+            to,
+            subject,
+            htmlContent
+        );
         addAttachments(mail, attachments);
         return mail;
     }

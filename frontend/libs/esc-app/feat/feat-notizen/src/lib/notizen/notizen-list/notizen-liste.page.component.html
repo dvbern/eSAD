@@ -1,0 +1,20 @@
+<feat-page [heading]="'notizen.list.global.page.title' | transloco">
+
+  <svui-page-header-list-summary [items]="summaryItems()"/>
+
+  <svui-page-header-buttons
+    [showFilterPopup]="false"
+    [activeFilterCount]="notizenTable.numberOfFilters()"
+    (resetFilter)="notizenTable.resetFilters(); tableFilterForm.reset();"/>
+
+  <feat-notiz-list
+    [itemTable]="notizenTable"
+    [tableFilterForm]="tableFilterForm"
+    (goToNotiz)="goToNotiz($event)"
+    (removeNotiz)="removeNotiz($event)"
+    [deleteLoading]="notizenListStore.deleteLoader.isLoading()"
+    [loading]="notizenListStore.loader.isLoading()"
+    [notizen]="this.notizenListStore.entities()"
+    [showKind]="true"
+  />
+</feat-page>

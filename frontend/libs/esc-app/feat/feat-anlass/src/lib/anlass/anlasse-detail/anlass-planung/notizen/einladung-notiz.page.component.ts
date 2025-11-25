@@ -1,7 +1,7 @@
 import {Location} from '@angular/common'
-import {ChangeDetectionStrategy, Component, computed, inject, input, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, ViewChild} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
-import {NotizJson, NotizSaveJson, NotizStatus} from '@dvb/data-access-backend';
+import {LabelJson, NotizJson, NotizSaveJson, NotizStatus, NotizTyp} from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
 import {
   BenutzerOptionsStore,
@@ -15,13 +15,11 @@ import {
   Path,
 } from '@dvb/feat-shared';
 import {AppNotificationStore, DirtyMarker} from '@dvb/util-angular';
-import {isNotNullish, isNullish, requireValue} from '@dvb/util-shared';
+import {compareByEntityInfoTimestampErstellt, isNotNullish, isNullish, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {AnlassStore} from '../../../anlass.store';
 import {anlassTitleOptional} from '../../../anlass.util';
 import {AnlassKinderStore} from '../../anlass-kinder.store';
-
-export type EinladungNotizTyp = 'impfausweis' | 'fragebogen';
 
 @Component({
   selector: 'feat-anlass.einladung-notiz.page',
@@ -51,52 +49,60 @@ export class EinladungNotizPageComponent implements DirtyMarker {
   protected readonly Path = Path;
   protected readonly requireValue = requireValue;
 
-  readonly notizTyp = input.required<EinladungNotizTyp>();
+  readonly notizTyp = computed(() => {
+    const state = this.location.getState() as { notizTyp: NotizTyp };
+    return state.notizTyp;
+  });
 
   kindId = computed<BackendEntityId | undefined>(() => this.anlassKinderStore.selectedEinladung()?.kind.id);
+
   currentNotiz = computed<NotizJson | undefined>(() => {
-    if (this.notizTyp() === 'impfausweis') {
-      return this.anlassKinderStore.selectedEinladung()?.data?.impfausweis;
-    } else {
-      return this.anlassKinderStore.selectedEinladung()?.data?.fragebogen;
+    return this.anlassKinderStore.selectedEinladung()?.data?.notizen.find(n => n.data.typ === this.notizTyp());
+  });
+
+  currentIsNew = computed(() => !this.currentNotiz());
+  notizenFiles = computed(() => this.currentNotiz()?.data?.files.sort(compareByEntityInfoTimestampErstellt));
+
+  typeKey = computed(() => {
+    switch (this.notizTyp()) {
+      case NotizTyp.IMPFAUSWEIS:
+        return 'impfausweis';
+      case NotizTyp.FRAGEBOGEN:
+        return 'fragebogen';
+      case NotizTyp.ANMELDUNG_BESTAETIGUNG:
+        return 'anmeldungBestaetigung';
+      default:
+        return '';
     }
   });
-  currentIsNew = computed(() => !this.currentNotiz());
-  notizenFiles = computed(() => this.currentNotiz()
-    ?.data
-    ?.files
-    .sort((a, b) => b.entityInfo.timestampErstellt.localeCompare(a.entityInfo.timestampErstellt)));
 
   pageTitle = computed(() => {
-    if (this.notizTyp() === 'impfausweis') {
-      if (this.currentIsNew()) {
-        return 'einladung.impfausweis.page.create.title';
-      } else {
-        return 'einladung.impfausweis.page.edit.title';
-      }
-    } else {
-      if (this.currentIsNew()) {
-        return 'einladung.fragebogen.page.create.title';
-      } else {
-        return 'einladung.fragebogen.page.edit.title';
-      }
-    }
+    const mode = this.currentIsNew() ? 'create' : 'edit';
+    return `einladung.${this.typeKey()}.page.${mode}.title`;
   });
 
   defaultNotizTitleSig = computed(() => {
-    const titelKey = this.notizTyp() === 'impfausweis'
-      ? 'einladung.impfausweis.notiz.title'
-      : 'einladung.fragebogen.notiz.title';
-    return this.#transloco.translate(titelKey,
+    return this.#transloco.translate(`einladung.${this.typeKey()}.notiz.title`,
       {anlassname: anlassTitleOptional(this.anlassStore.selectedEntity()?.data, this.#transloco)});
   });
 
   defaultNotizLabelSig = computed(() => {
-    const defaultLabel = this.notizTyp() === 'impfausweis'
-      ? this.labelStore.impfausweisAutoLabel()
-      : this.labelStore.fragebogenAutoLabel();
+    const defaultLabel = this.getDefaultLabel(this.notizTyp());
     return isNotNullish(defaultLabel) ? [defaultLabel] : [];
   });
+
+  private getDefaultLabel(notizTyp: NotizTyp): LabelJson | undefined {
+    switch (notizTyp) {
+      case NotizTyp.IMPFAUSWEIS:
+        return this.labelStore.impfausweisAutoLabel();
+      case NotizTyp.FRAGEBOGEN:
+        return this.labelStore.fragebogenAutoLabel();
+      case NotizTyp.ANMELDUNG_BESTAETIGUNG:
+        return this.labelStore.anmeldungBestaetigungAutoLabel();
+      default:
+        return undefined;
+    }
+  }
 
   defaultNotizSig = computed(() => {
       const titel = this.defaultNotizTitleSig();
@@ -109,6 +115,7 @@ export class EinladungNotizPageComponent implements DirtyMarker {
         titel: titel,
         bemerkungen: undefined,
         status: NotizStatus.ABGESCHLOSSEN,
+        typ: this.notizTyp(),
         verantwortlicher: requireValue(currentUser),
         labels: labels,
         files: [],
@@ -123,12 +130,11 @@ export class EinladungNotizPageComponent implements DirtyMarker {
   }
 
   onSaveNotiz(payload: NotizenSaveParams) {
-    if (isNotNullish(payload.fileUploads) && payload.fileUploads.length > 4) {
+    if (isNotNullish(payload.fileUploads) && payload.fileUploads.length > globalConstants.notizen.uploadFilesMax) {
       this.#notificationService.addDangerNotification(this.#transloco.translate('ui.validation-error.max-files'));
       return;
     }
 
-    const kindId: BackendEntityId = requireValue(this.kindId());
     if (this.currentIsNew()) {
       this.anlassKinderStore.createNotizWithFiles({
         notiz: payload.notiz,
@@ -140,7 +146,6 @@ export class EinladungNotizPageComponent implements DirtyMarker {
       });
     } else {
       this.anlassKinderStore.updateNotizWithFiles({
-        kindId: kindId,
         notizId: requireValue(this.currentNotiz()?.id),
         notiz: payload.notiz,
         notizTyp: this.notizTyp(),

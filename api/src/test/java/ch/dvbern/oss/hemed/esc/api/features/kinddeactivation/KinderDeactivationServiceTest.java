@@ -35,6 +35,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.DossierService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
+import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
@@ -497,7 +498,7 @@ class KinderDeactivationServiceTest extends AbstractITest {
                 setTime(OffsetDateTime.ofInstant(
                     lastNotizDate.atStartOfDay().atZone(DateConst.ZONE_ID).toInstant(),
                     DateConst.ZONE_ID));
-                fixtureService.createNotiz(dossier, Set.of());
+                fixtureService.createNotiz(dossier, Set.of(), NotizTyp.DEFAULT);
             }
             if (lastAnlassDate != null) {
                 // set timestamptErstellt Time

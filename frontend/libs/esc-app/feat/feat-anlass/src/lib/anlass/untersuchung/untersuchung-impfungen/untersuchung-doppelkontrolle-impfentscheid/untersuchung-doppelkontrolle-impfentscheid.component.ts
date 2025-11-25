@@ -1,4 +1,4 @@
-import {CommonModule, DatePipe} from '@angular/common';
+import { DatePipe } from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, Signal} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {BenutzerOptionJson, UntersuchungImpfungenDoppelkontrolleSaveJson} from '@dvb/data-access-backend';
@@ -27,7 +27,6 @@ type VisumStatus = 'Visum1Ausstehend' | 'Visum1Visiert' | 'Visum2Angefordert' | 
   selector: 'feat-untersuchung-doppelkontrolle-impfentscheid',
   providers: [DatePipe],
   imports: [
-    CommonModule,
     FormLayoutComponent,
     ReactiveFormsModule,
     HeadingDirective,
@@ -37,8 +36,8 @@ type VisumStatus = 'Visum1Ausstehend' | 'Visum1Visiert' | 'Visum2Angefordert' | 
     NgSelectComponent,
     NgSelectDirective,
     ButtonComponent,
-    TextInputDirective,
-  ],
+    TextInputDirective
+],
   templateUrl: './untersuchung-doppelkontrolle-impfentscheid.component.html',
   styleUrl: './untersuchung-doppelkontrolle-impfentscheid.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

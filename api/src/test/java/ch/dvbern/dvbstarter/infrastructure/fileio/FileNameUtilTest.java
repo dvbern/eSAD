@@ -42,7 +42,7 @@ class FileNameUtilTest {
     })
     void testGetNextNumber(int listSize, int expected) {
         // ARRANGE
-        LocalDate today = this.appClock.localDateTime().now().toLocalDate();
+        LocalDate today = this.appClock.getToday();
         FileTyp fileTyp = FileTyp.IMPFAUSWEIS;
         FileInfoS3 fileInfoS3 = FileInfoS3.of(CleanFileName.parse("File.pdf"), MediaType.TEXT_PLAIN, 92378L);
         List<FileData> files = List.of(
@@ -107,7 +107,7 @@ class FileNameUtilTest {
     })
     void testGenerateFileWithCorrectNameForImpfausweis(@NonNull String formattedName, @NonNull String expectedCalculatedName) {
         // ARRANGE
-        LocalDate today = this.appClock.localDateTime().now().toLocalDate();
+        LocalDate today = this.appClock.getToday();
 
         FileTyp fileTyp = FileTyp.IMPFAUSWEIS;
         FileInfoS3 fileInfoS3 = FileInfoS3.of(CleanFileName.parse("File.pdf"), MediaType.TEXT_PLAIN, 92378L);

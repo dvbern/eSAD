@@ -81,7 +81,6 @@ class NotizenFileuploadDecryptionITest extends AbstractITest {
         String name = testfile.getName();
 
         NotizJsonSpec notizJsonSpec = api.notizResourceAddNotizFile()
-            .kindIdPath(storedNotiz.getDossier().getKind().getId().getId())
             .notizIdPath(storedNotiz.getId().getId())
             ._fileMultiPart(testfile)
             .execute(ResponseBody::prettyPeek)
@@ -96,13 +95,12 @@ class NotizenFileuploadDecryptionITest extends AbstractITest {
             .hasSize(1);
 
         byte[] file = api.notizResourceDownloadNotizFileSync()
-            .kindIdPath(storedNotiz.getDossier().getKind().getId().getId())
             .notizIdPath(storedNotiz.getId().getId())
             .fileIdPath(Objects.requireNonNull(notizJsonSpec.getData().getFiles()).getFirst().getId())
             .execute(ResponseOptions::andReturn)
             .then()
             .statusCode(Status.OK.getStatusCode())
-            .header("Content-Disposition", "attachment;filename*=UTF-8''" + name)
+            .header("Content-Disposition", "attachment;filename=\"" + name+ '"')
             .extract()
             .asByteArray();
 
@@ -129,7 +127,6 @@ class NotizenFileuploadDecryptionITest extends AbstractITest {
         File testfile = TestUtil.loadTestPDF();
 
         NotizJsonSpec notizJsonSpec = api.notizResourceAddNotizFile()
-            .kindIdPath(storedNotiz.getDossier().getKind().getId().getId())
             .notizIdPath(storedNotiz.getId().getId())
             ._fileMultiPart(testfile)
             .execute(ResponseBody::prettyPeek)
@@ -146,7 +143,6 @@ class NotizenFileuploadDecryptionITest extends AbstractITest {
         Mockito.when(s3RequestBuilderProducerMock.produceS3RequestBuilder()).thenReturn(new S3RequestBuilderImpl());
 
         var error = api.notizResourceDownloadNotizFileSync()
-            .kindIdPath(storedNotiz.getDossier().getKind().getId().getId())
             .notizIdPath(storedNotiz.getId().getId())
             .fileIdPath(Objects.requireNonNull(notizJsonSpec.getData().getFiles()).getFirst().getId())
             .execute(ResponseBody::prettyPeek)
@@ -175,7 +171,6 @@ class NotizenFileuploadDecryptionITest extends AbstractITest {
         File testfile = TestUtil.loadTestPDF();
 
         NotizJsonSpec notizJsonSpec = api.notizResourceAddNotizFile()
-            .kindIdPath(storedNotiz.getDossier().getKind().getId().getId())
             .notizIdPath(storedNotiz.getId().getId())
             ._fileMultiPart(testfile)
             .execute(ResponseBody::prettyPeek)
@@ -194,7 +189,6 @@ class NotizenFileuploadDecryptionITest extends AbstractITest {
             .thenReturn(new S3EncryptedRequestBuilderImpl(anotherRandomKey));
 
         var error = api.notizResourceDownloadNotizFileSync()
-            .kindIdPath(storedNotiz.getDossier().getKind().getId().getId())
             .notizIdPath(storedNotiz.getId().getId())
             .fileIdPath(Objects.requireNonNull(notizJsonSpec.getData().getFiles()).getFirst().getId())
             .execute(ResponseBody::prettyPeek)

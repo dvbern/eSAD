@@ -22,6 +22,7 @@ export interface FileDataJson {
     fileSize: number;
     mimeType: string;
     fileIdInBucket: string;
+    deletedInBucket: boolean;
 }
 export namespace FileDataJson {
 }

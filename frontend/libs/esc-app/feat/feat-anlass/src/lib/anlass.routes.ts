@@ -3,6 +3,8 @@ import {ActivatedRouteSnapshot, Route} from '@angular/router';
 import {AnlassSaveJson} from '@dvb/data-access-backend';
 import {requireValidBackendEntityId, requireValidBackendEntityIds} from '@dvb/data-access-types';
 import {
+  BenutzerStore,
+  AnlassConfigOptionsStore,
   ImpfstoffeChargenStore,
   InfomaterialStore,
   LabelsStore,
@@ -18,6 +20,8 @@ import {
   hasGroesseGewichtViewBerechtigung,
   hasHoerenViewBerechtigung,
   hasImpfungenViewBerechtigung,
+  hasLaeusekontrolleViewBerechtigung,
+  hasListViewBerechtigung,
   hasMassnahmenViewBerechtigung,
   hasSehenViewBerechtigung,
   hasTriageViewBerechtigung,
@@ -34,7 +38,6 @@ import {AnlassKinderStore} from './anlass/anlasse-detail/anlass-kinder.store';
 import {AnlassPlanungPageComponent} from './anlass/anlasse-detail/anlass-planung/anlass-planung.page.component';
 import {
   EinladungNotizPageComponent,
-  EinladungNotizTyp,
 } from './anlass/anlasse-detail/anlass-planung/notizen/einladung-notiz.page.component';
 import {AnlassEinladungenId} from './anlass/untersuchung/anlass-einladungen-id';
 import {UntersuchungArztComponent} from './anlass/untersuchung/untersuchung-arzt/untersuchung-arzt.component';
@@ -68,6 +71,12 @@ import {UntersuchungSehenStore} from './anlass/untersuchung/untersuchung-sehen/u
 import {UntersuchungTriageComponent} from './anlass/untersuchung/untersuchung-triage/untersuchung-triage.component';
 import {UntersuchungTriageStore} from './anlass/untersuchung/untersuchung-triage/untersuchung-triage.store';
 import {UntersuchungStore} from './anlass/untersuchung/untersuchung.store';
+import {
+  UntersuchungLaeusekontrolleComponent
+} from "./anlass/untersuchung/untersuchung-laeusekontrolle/untersuchung-laeusekontrolle.component";
+import {
+  UntersuchungLaeusekontrolleStore
+} from "./anlass/untersuchung/untersuchung-laeusekontrolle/untersuchung-laeusekontrolle.store";
 
 export const anlassRoutes: Route[] = [
   {
@@ -77,8 +86,12 @@ export const anlassRoutes: Route[] = [
       _store: () => {
         inject(AnlassStore).loadAnlassList();
         inject(AnlassStore).setSelectedEntityId(undefined);
-        inject(InfomaterialStore).loadInfomaterialList({onlyActive: true});
-        inject(SchulenOptionsStore).loadSchulenOptions({onlyActive: true});
+        const benutzerStore = inject(BenutzerStore);
+        if (benutzerStore.createHasRequiredRoleSig(hasListViewBerechtigung())()) {
+          inject(InfomaterialStore).loadInfomaterialList({onlyActive: true});
+          inject(SchulenOptionsStore).loadSchulenOptions({onlyActive: true});
+        }
+        inject(AnlassConfigOptionsStore).loadAnlassConfigOptions();
       },
     },
     children: [
@@ -159,7 +172,9 @@ export const anlassRoutes: Route[] = [
           },
           {
             path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG + '/:einladungId/' + Path.NOTIZEN,
+            component: EinladungNotizPageComponent,
             canActivate: [requireRole(hasAllNotizenEditBerechtigung())],
+            canDeactivate: [confirmOnDirty()],
             resolve: {
               _labels: () => inject(LabelsStore).loadLabelsList(),
               _store: (route: ActivatedRouteSnapshot) => {
@@ -167,26 +182,6 @@ export const anlassRoutes: Route[] = [
                 inject(AnlassKinderStore).setSelectedEinladungId(einladungId);
               },
             },
-            children: [
-              {
-                path: Path.IMPFAUSWEIS,
-                component: EinladungNotizPageComponent,
-                data: {
-                  notizTyp: 'impfausweis' as EinladungNotizTyp, // will be passed to input of component
-                },
-                canDeactivate: [confirmOnDirty()],
-                canActivate: [requireRole(hasAllNotizenEditBerechtigung())],
-              },
-              {
-                path: Path.FRAGEBOGEN,
-                component: EinladungNotizPageComponent,
-                data: {
-                  notizTyp: 'fragebogen' as EinladungNotizTyp, // will be passed to input of component
-                },
-                canDeactivate: [confirmOnDirty()],
-                canActivate: [requireRole(hasAllNotizenEditBerechtigung())],
-              },
-            ],
           },
           {
             path: Path.ANLASS_UNTERSUCHUNG,
@@ -225,6 +220,7 @@ export const anlassRoutes: Route[] = [
                   UntersuchungGroesseGewichtStore,
                   UntersuchungTriageStore,
                   UntersuchungArztStore,
+                  UntersuchungLaeusekontrolleStore,
                   UntersuchungMassnahmenStore,
                 ],
                 resolve: {
@@ -391,6 +387,24 @@ export const anlassRoutes: Route[] = [
                       },
                     },
                     canActivate: [requireRole(hasAerztlicheUntersuchungViewBerechtigung())],
+                    canDeactivate: [confirmOnDirty()],
+                  },
+                  {
+                    path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG_LAEUSEKONTROLLE,
+                    component: UntersuchungLaeusekontrolleComponent,
+                    resolve: {
+                      _store: (route: ActivatedRouteSnapshot) => {
+                        const currentEinladungId = requireValidBackendEntityId(route.params['id']);
+                        const currentAnlassId = requireValidBackendEntityId(
+                          route.parent?.parent?.parent?.paramMap.get('anlassId'),
+                        );
+                        inject(UntersuchungLaeusekontrolleStore).loadLaeusekontrolle({
+                          anlassId: currentAnlassId,
+                          einladungId: currentEinladungId,
+                        });
+                      },
+                    },
+                    canActivate: [requireRole(hasLaeusekontrolleViewBerechtigung())],
                     canDeactivate: [confirmOnDirty()],
                   },
                   {

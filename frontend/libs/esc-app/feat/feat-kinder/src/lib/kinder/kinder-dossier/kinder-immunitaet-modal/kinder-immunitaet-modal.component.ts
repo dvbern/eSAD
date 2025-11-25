@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, effect, inject, model} from '@angular/core';
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
-import {DossierSaveJson} from '@dvb/data-access-backend';
+import {DossierMedizinischSaveJson} from '@dvb/data-access-backend';
 import {ModalDialogComponent} from '@dvb/feat-shared';
 import {CheckboxDirective, SaveCancelButtonsComponent, StandaloneControlComponent} from '@dvb/ui-components';
 import {DetailMode} from '@dvb/util-angular';
@@ -26,7 +26,7 @@ import {KinderImmunitaetForm} from './kinder-immunitaet.form';
 export class KinderImmunitaetModalComponent {
   readonly activeModal = inject(NgbActiveModal);
 
-  dossierData = model<DossierSaveJson>();
+  dossierData = model<DossierMedizinischSaveJson>();
 
   form = new KinderImmunitaetForm(inject(NonNullableFormBuilder));
 

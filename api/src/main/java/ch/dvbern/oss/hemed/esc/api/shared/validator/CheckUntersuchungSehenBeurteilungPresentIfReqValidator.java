@@ -17,10 +17,11 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.validator;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungSehenBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.DistanzSehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.apache.commons.collections4.CollectionUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @ApplicationScoped
@@ -30,7 +31,7 @@ public class CheckUntersuchungSehenBeurteilungPresentIfReqValidator
     @Override
     @SuppressWarnings({
         "java:S3776" /* acceptable complexity */,
-        "java:S1126" /* readability is better with seprate return*/}
+        "java:S1126" /* readability is better with seprate return*/ }
     )
     public boolean isEntityValid(@NonNull UntersuchungSehenBeurteilung sehen) {
         AnlassConfig anlassConfig = sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
@@ -47,7 +48,7 @@ public class CheckUntersuchungSehenBeurteilungPresentIfReqValidator
             return false;
         }
         if (anlassConfig.getSehenFernvisus().isRequired()) {
-            if (sehen.getFernvisus().isEmpty()) {
+            if (CollectionUtils.isEmpty(sehen.getFernvisus())) {
                 return false;
             }
             if (!sehen.getFernvisus().contains(DistanzSehenResultat.NICHT_GEPRUEFT)
@@ -57,7 +58,7 @@ public class CheckUntersuchungSehenBeurteilungPresentIfReqValidator
             }
         }
         if (anlassConfig.getSehenNahvisus().isRequired()) {
-            if (sehen.getNahvisus().isEmpty()) {
+            if (CollectionUtils.isEmpty(sehen.getNahvisus())) {
                 return false;
             }
             if (!sehen.getNahvisus().contains(DistanzSehenResultat.NICHT_GEPRUEFT)
@@ -70,7 +71,9 @@ public class CheckUntersuchungSehenBeurteilungPresentIfReqValidator
             return false;
         }
         if (anlassConfig.getSehenStrabismus().isRequired()
-            && (sehen.getStrabismus().isEmpty() || sehen.getStrabismusAuspraegung() == null || sehen.getStrabismusAuftreten() == null)
+            && (CollectionUtils.isEmpty(sehen.getStrabismus())
+                || sehen.getStrabismusAuspraegung() == null
+                || sehen.getStrabismusAuftreten() == null)
         ) {
             return false;
         }
@@ -78,6 +81,9 @@ public class CheckUntersuchungSehenBeurteilungPresentIfReqValidator
             return false;
         }
         if (anlassConfig.getSehenKonvergenz().isRequired() && sehen.getKonvergenz() == null) {
+            return false;
+        }
+        if (anlassConfig.getSehenEmpfehlung().isRequired() && CollectionUtils.isEmpty(sehen.getEmpfehlung())) {
             return false;
         }
         if (anlassConfig.getSehenBemerkungen().isRequired() && sehen.getBemerkungen() == null) {

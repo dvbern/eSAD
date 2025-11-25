@@ -1,0 +1,17 @@
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { QRCodeComponent } from 'angularx-qrcode';
+
+@Component({
+  selector: 'feat-qr-code-upload',
+  standalone: true,
+  imports: [QRCodeComponent],
+  templateUrl: './qr-code-upload.component.html',
+  styleUrls: ['./qr-code-upload.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class QrCodeUploadComponent {
+  readonly qrData = input<string>('');
+  readonly title = input<string>('');
+  readonly width= input<number>(275);
+  readonly text= input<string>('QR-Code scannen');
+}

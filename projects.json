@@ -3,14 +3,16 @@
   "feat-adresse",
   "feat-anlass",
   "feat-aufgaben",
-  "feat-shared",
+  "feat-config",
   "feat-dashboard",
   "feat-document-queue",
+  "feat-enum-config-list",
   "feat-notizen",
   "feat-page",
   "feat-page3",
   "feat-reports",
   "feat-search-popup",
+  "feat-shared",
   "feat-shared-aufgaben",
   "feat-upload"
 ]

@@ -19,6 +19,7 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.mapper;
 
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizJson;
+import ch.dvbern.oss.hemed.esc.api.shared.mapper.BaseMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizJsonSpec;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.mapstruct.Mapper;

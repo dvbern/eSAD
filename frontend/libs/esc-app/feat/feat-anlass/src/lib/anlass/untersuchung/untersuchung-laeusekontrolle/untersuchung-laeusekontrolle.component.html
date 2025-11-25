@@ -1,0 +1,47 @@
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabLaeusekontrolle) {
+  <form svuiFormLayout
+        [formType]="'kacheln'"
+        [mode]="'edit'"
+        [formGroup]="form.group"
+        (ngSubmit)="submitIfValid()">
+
+    <!-- Beurteilung -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.laeusekontrolleBeurteilung !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.laeusekontrolle.beurteilung' | transloco">
+        @for (beurteilung of getBeurteilungFormArray().controls; track $index) {
+          <svui-kachel-control [label]="'LaeusekontrolleBeurteilung.' + beurteilung.controls.resultat.value |transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="beurteilung"
+                   [formControl]="beurteilung.controls.isChecked"
+            />
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- Bemerkung -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.laeusekontrolleBemerkungen !== RequirementSetting.NOT_VISIBLE) {
+
+      <svui-title [context]="'formSection'"
+                  class="mb-3">{{ 'untersuchung.tab.laeusekontrolle.bemerkung' | transloco }}
+      </svui-title>
+      <svui-form-control
+        [label]="'untersuchung.tab.laeusekontrolle.bemerkung' | transloco"
+        [topLabelVisibility]="'hidden'"
+        [viewValue]="form.group.controls.bemerkungen.value">
+        <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
+      </svui-form-control>
+    }
+
+    @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+      <svui-save-cancel-buttons
+        class="mt-4"
+        [saving]="store.saveLoader.isLoading()"
+        [canEdit]="true"
+        (cancelClicked)="abbrechen()"/>
+    }
+
+  </form>
+}
+

@@ -7,16 +7,18 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { DossierSaveJson } from './dossier-save-json';
+import { DossierNichtMedizinischSaveJson } from './dossier-nicht-medizinisch-save-json';
 import { EntityInfoJson } from './entity-info-json';
 import { BackendEntityId } from '@dvb/data-access-types';
 import { KindJson } from './kind-json';
+import { DossierMedizinischSaveJson } from './dossier-medizinisch-save-json';
 
 
 export interface DossierJson { 
     id: BackendEntityId;
     entityInfo: EntityInfoJson;
-    data: DossierSaveJson;
+    dataMedizinisch?: DossierMedizinischSaveJson;
+    dataNichtMedizinisch: DossierNichtMedizinischSaveJson;
     kind: KindJson;
 }
 

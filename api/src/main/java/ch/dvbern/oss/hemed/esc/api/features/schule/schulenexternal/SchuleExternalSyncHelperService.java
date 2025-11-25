@@ -105,6 +105,7 @@ public class SchuleExternalSyncHelperService {
                 updatedSchuleExt,
                 appClock.offsetDateTime().now()
             );
+        ensureSchuleAktivStatus(updatedSchule);
         updatedSchule.disableOptimisticLockingCheck();
         schuleService.persist(updatedSchule);
         return ItemSyncResultJson.createUpdateOkItem(idDTO, Schule.class, updatedSchule.getSchulhaus());
@@ -115,11 +116,15 @@ public class SchuleExternalSyncHelperService {
     public ItemSyncResultJson<Schule> addNewSchule(@NonNull SchuleExternal schuleExternalToAdd) {
         Optional<Schule> preexistingSchuleOpt = findPreexistingSchule(schuleExternalToAdd);
         Schule internalSchuleToStore = preexistingSchuleOpt
-            .map(existingSchule -> updateSchuleBasedOnSchuleExternal(
-                existingSchule,
-                schuleExternalToAdd,
-                appClock.offsetDateTime().now()
-            ))
+            .map(existingSchule -> {
+                var schuleUpdated = updateSchuleBasedOnSchuleExternal(
+                    existingSchule,
+                    schuleExternalToAdd,
+                    appClock.offsetDateTime().now()
+                );
+                ensureSchuleAktivStatus(schuleUpdated);
+                return schuleUpdated;
+            })
             .orElseGet(() -> SchuleExternalSyncHelperService.toEntityForCreate(
                 schuleExternalToAdd,
                 appClock.offsetDateTime().now()
@@ -141,6 +146,15 @@ public class SchuleExternalSyncHelperService {
             result.getExternalId()
         );
         return result;
+    }
+    private static void ensureSchuleAktivStatus(Schule schuleUpdated) {
+        if (schuleUpdated.getSchuleAktivStatus() == EntityAktivStatus.INAKTIV) {
+            LOG.info(
+                "ESCADA: Schule with UUID {} and ExternalID {} was INAKTIV, resetting to AKTIV",
+                schuleUpdated.getId().getUUID(),
+                schuleUpdated.getExternalSystemIdOrNull());
+            schuleUpdated.setSchuleAktivStatus(EntityAktivStatus.AKTIV);
+        }
     }
 
     private Optional<Schule> findPreexistingSchule(@NonNull SchuleExternal schuleExternalToAdd) {

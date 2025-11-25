@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {InfomaterialJson, InformationEltern, RequirementSetting,} from '@dvb/data-access-backend';
@@ -24,12 +24,19 @@ import {UntersuchungSehenMassnahmenForm} from "./untersuchung-sehen-massnahmen.f
 @Component({
   selector: 'feat-untersuchung-sehen-massnahmen',
   imports: [
-    CommonModule, ReactiveFormsModule, SaveCancelButtonsComponent,
-    TranslocoPipe, FormLayoutComponent, KachelFormSectionComponent,
-    KachelControlComponent, FormControlComponent, CheckboxDirective,
-    NgOptionComponent, NgSelectComponent, NgSelectDirective, TranslatedStringPipe,
-
-  ],
+    ReactiveFormsModule,
+    SaveCancelButtonsComponent,
+    TranslocoPipe,
+    FormLayoutComponent,
+    KachelFormSectionComponent,
+    KachelControlComponent,
+    FormControlComponent,
+    CheckboxDirective,
+    NgOptionComponent,
+    NgSelectComponent,
+    NgSelectDirective,
+    TranslatedStringPipe
+],
   templateUrl: './untersuchung-sehen-massnahmen.component.html',
   styleUrl: './untersuchung-sehen-massnahmen.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

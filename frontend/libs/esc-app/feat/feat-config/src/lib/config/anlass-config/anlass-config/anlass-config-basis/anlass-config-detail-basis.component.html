@@ -1,0 +1,82 @@
+<form svuiFormLayout
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="store.detailMode()">
+  <h2 svuiHeading="formSection">{{ 'anlassconfig.detail.tab.basis' | transloco }}</h2>
+
+  <!-- AnlassTyp-->
+  <svui-form-control [label]="'anlassconfig.label.anlasstyp' | transloco"
+                     [viewValue]="'AnlassTyp.' + form.group.getRawValue().anlassTyp | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.anlassTyp"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (typ of anlassTypOptions; track typ) {
+        <ng-option [value]="typ">
+          {{ 'AnlassTyp.' + typ | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Bezeichnung -->
+  <svui-form-control [label]="'anlassconfig.label.bezeichnung' | transloco"
+                     [viewValue]="form.group.getRawValue().bezeichnung">
+    <input svuiTextInput="text" [formControl]="form.group.controls.bezeichnung"/>
+  </svui-form-control>
+
+  <div></div>
+
+  <!-- Gültig ab-->
+  <svui-form-control [label]="'anlassconfig.label.datumvon' | transloco"
+                     [viewValue]="form.group.getRawValue().datumVon | date: 'dd.MM.yyyy'"
+                     data-testid="anlass-datum-date-picker">
+    <input svuiTextInput="date" [formControl]="form.group.controls.datumVon"/>
+  </svui-form-control>
+  <!-- Gültig bis -->
+  <svui-form-control [label]="'anlassconfig.label.datumbis' | transloco"
+                     [viewValue]="form.group.getRawValue().datumBis | date: 'dd.MM.yyyy'"
+                     data-testid="anlass-datum-date-picker">
+    <input svuiTextInput="date" [formControl]="form.group.controls.datumBis"/>
+  </svui-form-control>
+
+  <svui-form-group [label]="'anlassconfig.label.einladung.notizen' | transloco"
+                   [direction]="'horizontal'"
+                   [size]="'full'"
+                   [viewValue]="">
+    <svui-single-checkbox-wrapper [label]="'anlassconfig.label.einladung.notizen.impfausweis' | transloco">
+      <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.showImpfausweis"/>
+    </svui-single-checkbox-wrapper>
+    <svui-single-checkbox-wrapper [label]="'anlassconfig.label.einladung.notizen.fragebogen' | transloco">
+      <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.showFragebogen"/>
+    </svui-single-checkbox-wrapper>
+    <svui-single-checkbox-wrapper [label]="'anlassconfig.label.einladung.notizen.anmeldung.bestaetigung' | transloco">
+      <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.showAnmeldungBestaetigung"/>
+    </svui-single-checkbox-wrapper>
+  </svui-form-group>
+
+  <!-- Hilfetext bei neuen Configs -->
+  @if(store.selectedIsNew()) {
+    <span class="svui_form-layout--full">
+      {{ 'anlassconfig.info.create.anlassconfig' | transloco: {minDatumVon: this.store.minDatumVon() | date : 'dd.MM.yyyy'} }}
+  	</span>
+  }
+
+  <!--messages for whole form -->
+  <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="store.detailMode()"
+    [isCreate]="store.selectedIsNew()"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="anlassConfigHelperService.canEdit()"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+    [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"
+  />
+</form>

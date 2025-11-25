@@ -9,14 +9,15 @@ import java.util.Optional;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankheit;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfstatusKrankheitService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungIntern;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungInternService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
 import ch.dvbern.oss.hemed.esc.api.features.kindanlaesse.json.KindAnlassSummaryJson;
-import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kindanlaesse.json.LastImpfungJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -27,10 +28,13 @@ public final class KindAnlaesseMapper {
     private final KindAnlaesseService kindAnlaesseService;
     private final UntersuchungImpfstatusKrankheitService untersuchungImpfstatusKrankheitService;
     private final UntersuchungImpfungInternService untersuchungImpfungInternService;
+    private final AuthorizerService authorizerService;
 
     @NonNull
     public List<KindAnlassSummaryJson> findAllForKind(@NonNull ID<Kind> kindID) {
         return kindAnlaesseService.findAllEinladungForKind(kindID).stream()
+            // some Roles can only read Einladungen of a certain AnlassTyp
+            .filter(einladung -> authorizerService.hasReadAuthorizationAnlassListe(einladung.getAnlass()))
             .map(KindAnlaesseMapper::toKindAnlassSummaryJson)
             .toList();
     }

@@ -71,27 +71,27 @@ export class AudiogrammForm extends BaseForm<ReturnType<typeof makeForm>, Audiog
 
   setValidators(anlassConfig: AnlassConfigJson, nichtGeprueftIsChecked: boolean): void {
     // Audiogramm 250Hz
-    if (anlassConfig.hoerenAudiogramm250Hz === RequirementSetting.REQUIRED) {
+    if (anlassConfig.data.hoerenAudiogramm250Hz === RequirementSetting.REQUIRED) {
       this.addRequiredValidators('dbHz250');
     } else {
       this.removeValidators('dbHz250');
     }
     // Audiogramm 500Hz bis 6000Hz
-    if (anlassConfig.hoerenAudiogramm === RequirementSetting.REQUIRED) {
+    if (anlassConfig.data.hoerenAudiogramm === RequirementSetting.REQUIRED) {
       this.config.frequenzenKeys
-          .filter(frequenz => frequenz !== 'dbHz250' && frequenz !== 'dbHz8000')
-          .forEach(frequenz => {
-            this.addRequiredValidators(frequenz);
-          });
+        .filter(frequenz => frequenz !== 'dbHz250' && frequenz !== 'dbHz8000')
+        .forEach(frequenz => {
+          this.addRequiredValidators(frequenz);
+        });
     } else {
       this.config.frequenzenKeys
-          .filter(frequenz => frequenz !== 'dbHz250' && frequenz !== 'dbHz8000')
-          .forEach(frequenz => {
-            this.removeValidators(frequenz);
-          });
+        .filter(frequenz => frequenz !== 'dbHz250' && frequenz !== 'dbHz8000')
+        .forEach(frequenz => {
+          this.removeValidators(frequenz);
+        });
     }
     // Audiogramm 8000Hz
-    if (anlassConfig.hoerenAudiogramm8000Hz === RequirementSetting.REQUIRED && !nichtGeprueftIsChecked) {
+    if (anlassConfig.data.hoerenAudiogramm8000Hz === RequirementSetting.REQUIRED && !nichtGeprueftIsChecked) {
       this.addRequiredValidators('dbHz8000');
     } else {
       this.removeValidators('dbHz8000');

@@ -1,4 +1,4 @@
-import {NonNullableFormBuilder, Validators} from '@angular/forms';
+import { NonNullableFormBuilder, Validators } from '@angular/forms';
 import {
   AnlassConfigJson,
   BenutzerOptionJson,
@@ -6,43 +6,47 @@ import {
   Klassenstufe,
   Land,
   LandCode,
+  RequirementSetting,
   UntersuchungDurchfuehrungDataSaveJson,
   UntersuchungDurchfuehrungSaveJson,
   UntersuchungKindDatenJson,
   UntersuchungKindDatenSaveJson,
 } from '@dvb/data-access-backend';
-import {ISODateString} from '@dvb/data-access-types';
-import {globalConstants} from '@dvb/feat-shared';
-import {AppValidators, BaseForm, DetailMode} from '@dvb/util-angular';
-import {ensureProps, Nullish, requireFilledIn, requireValue} from '@dvb/util-shared';
+import { ISODateString } from '@dvb/data-access-types';
+import { globalConstants } from '@dvb/feat-shared';
+import { AppValidators, BaseForm, DetailMode } from '@dvb/util-angular';
+import { ensureProps, Nullish, requireFilledIn, requireValue, trimToUndefined } from '@dvb/util-shared';
 
 function makeForm(fb: NonNullableFormBuilder) {
   const maxLength = AppValidators.dbMaxLength();
   return fb.group({
-    name: fb.control<string>({value: '', disabled: true}, [Validators.required, maxLength]),
-    vorname: fb.control<string>({value: '', disabled: true}, [Validators.required, maxLength]),
-    esadId: fb.control<string>({value: '', disabled: true}),
-    geschlecht: fb.control<Geschlecht | undefined>({value: undefined, disabled: true}, Validators.required),
-    geburtsdatum: fb.control<ISODateString | undefined>({value: undefined, disabled: true}, Validators.required),
-    alterDuodezimal: fb.control<string>({value: '', disabled: true}),
-    nationalitaet: fb.control<Land | undefined>({value: undefined, disabled: true}),
-    landCode: fb.control<LandCode | undefined>({value: undefined, disabled: true}),
-    schulhaus: fb.control<string>({value: '', disabled: true}, [Validators.required, maxLength]),
-    quartier: fb.control<string>({value: '', disabled: true}, maxLength),
-    schulkreis: fb.control<string>({value: '', disabled: true}, maxLength),
-    schulhausnummer: fb.control<string>({value: '', disabled: true},
-      [AppValidators.numberOrNumericChars(), Validators.maxLength(3)]),
-    klassenstufe: fb.control<Klassenstufe | undefined>({value: undefined, disabled: true}),
-    klasse: fb.control<string>({value: '', disabled: true}, maxLength),
-    klassentyp: fb.control<string>({value: '', disabled: true}, maxLength),
-    anlassDatum: fb.control<ISODateString | undefined>({value: undefined, disabled: true}),
+    name: fb.control<string>({ value: '', disabled: true }, [Validators.required, maxLength]),
+    vorname: fb.control<string>({ value: '', disabled: true }, [Validators.required, maxLength]),
+    esadId: fb.control<string>({ value: '', disabled: true }),
+    geschlecht: fb.control<Geschlecht | undefined>({ value: undefined, disabled: true }, Validators.required),
+    geburtsdatum: fb.control<ISODateString | undefined>({ value: undefined, disabled: true }, Validators.required),
+    alterDuodezimal: fb.control<string>({ value: '', disabled: true }),
+    nationalitaet: fb.control<Land | undefined>({ value: undefined, disabled: true }),
+    landCode: fb.control<LandCode | undefined>({ value: undefined, disabled: true }),
+    schulhaus: fb.control<string>({ value: '', disabled: true }, [Validators.required, maxLength]),
+    quartier: fb.control<string>({ value: '', disabled: true }, maxLength),
+    schulkreis: fb.control<string>({ value: '', disabled: true }, maxLength),
+    schulhausnummer: fb.control<string>({ value: '', disabled: true }, [
+      AppValidators.numberOrNumericChars(),
+      Validators.maxLength(3),
+    ]),
+    klassenstufe: fb.control<Klassenstufe | undefined>({ value: undefined, disabled: true }),
+    klasse: fb.control<string>({ value: '', disabled: true }, maxLength),
+    klassentyp: fb.control<string>({ value: '', disabled: true }, maxLength),
+    anlassDatum: fb.control<ISODateString | undefined>({ value: undefined, disabled: true }),
     arzt: fb.control<BenutzerOptionJson | undefined>(undefined),
     mpa: fb.control<BenutzerOptionJson | undefined>(undefined),
     nachkontrolle: fb.control<boolean>(false),
     nachzuegler: fb.control<boolean>(false),
     neueintritt: fb.control<boolean>(false),
-    versionDurchfuehrung: fb.control<number | Nullish>({value: undefined, disabled: true}),
-    versionKindDaten: fb.control<number | Nullish>({value: undefined, disabled: true}),
+    bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength2000()),
+    versionDurchfuehrung: fb.control<number | Nullish>({ value: undefined, disabled: true }),
+    versionKindDaten: fb.control<number | Nullish>({ value: undefined, disabled: true }),
   });
 }
 
@@ -52,9 +56,12 @@ export class UntersuchungDatenForm extends BaseForm<ReturnType<typeof makeForm>,
   }
 
   setValidators(config: AnlassConfigJson): void {
-    if (config.datenUntersuchung === 'REQUIRED') {
+    if (config.data.datenUntersuchung === RequirementSetting.REQUIRED) {
       this.group.controls.arzt.addValidators(Validators.required);
       this.group.controls.mpa.addValidators(Validators.required);
+    }
+    if (config.data.datenBemerkung === RequirementSetting.REQUIRED) {
+      this.group.controls.bemerkungen.addValidators(Validators.required);
     }
   }
 
@@ -83,6 +90,7 @@ export class UntersuchungDatenForm extends BaseForm<ReturnType<typeof makeForm>,
       nachkontrolle: value.nachkontrolle,
       nachzuegler: value.nachzuegler,
       neueintritt: value.neueintritt,
+      bemerkungen: trimToUndefined(value.bemerkungen),
       version: value.versionDurchfuehrung ?? globalConstants.entityPrePersistVersion,
     });
   }
@@ -108,7 +116,7 @@ export class UntersuchungDatenForm extends BaseForm<ReturnType<typeof makeForm>,
         klasse: values.klasse,
         version: values.versionKindDaten ?? globalConstants.entityPrePersistVersion,
       }),
-    }
+    };
   }
 
   public setDisabledForm(notAllowed: boolean, isAbgeschlossen: boolean): void {
@@ -130,6 +138,7 @@ export class UntersuchungDatenForm extends BaseForm<ReturnType<typeof makeForm>,
     this.group.controls.nachkontrolle.disable();
     this.group.controls.nachzuegler.disable();
     this.group.controls.neueintritt.disable();
+    this.group.controls.bemerkungen.disable();
   }
 
   private enableModifiableFields(): void {
@@ -138,6 +147,7 @@ export class UntersuchungDatenForm extends BaseForm<ReturnType<typeof makeForm>,
     this.group.controls.nachkontrolle.enable();
     this.group.controls.nachzuegler.enable();
     this.group.controls.neueintritt.enable();
+    this.group.controls.bemerkungen.enable();
   }
 
   private disableKindFields(): void {

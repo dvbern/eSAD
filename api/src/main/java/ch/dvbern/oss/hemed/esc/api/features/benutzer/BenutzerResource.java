@@ -1,11 +1,18 @@
 package ch.dvbern.oss.hemed.esc.api.features.benutzer;
 
+import java.util.Optional;
+
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.EnsureBenutzerService;
-import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.*;
+import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerJson;
+import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerListJson;
+import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionListJson;
+import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.PrincipalJson;
+import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.TestingResponseJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
@@ -16,7 +23,12 @@ import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +37,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-
-import java.util.Optional;
 
 @Path("/benutzer")
 @JaxResource
@@ -55,7 +65,7 @@ public class BenutzerResource {
     @NonNull
     @Path("/options")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.LISTEN_LESEN)
+    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
     public BenutzerOptionListJson findAllActiveBenutzerOptions() {
         return new BenutzerOptionListJson(mapper.findAllActiveBenutzerOptions());
     }

@@ -16,7 +16,6 @@ import { BackendEntityId } from '@dvb/data-access-types';
 export interface LehrpersonJson { 
     id: BackendEntityId;
     externalImportInfoJson?: ExternalImportInfoJson;
-    manualOrAktivInExternalSystem: boolean;
     entityInfo: EntityInfoJson;
     data: LehrpersonSaveJson;
 }

@@ -32,13 +32,7 @@ public enum DeploymentEnvironmentSpec {
   
   DEV("DEV"),
   
-  REVIEW("REVIEW"),
-  
-  IAT("IAT"),
-  
   UAT("UAT"),
-  
-  DEMO("DEMO"),
   
   PROD("PROD");
 

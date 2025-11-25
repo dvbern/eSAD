@@ -44,7 +44,6 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ESCADA_PUSH;
@@ -100,21 +99,28 @@ class EscadaResourceITest extends AbstractITest {
     @TestAsEscada
     @Test
     @Order(10)
-    void escada_csv_upload_does_nothing_if_file_empty_and_db_empty() {
+    void escada_csv_upload_throws_if_file_empty() {
         File emptyFile = TestUtil.loadEmptyFile();
         // ACT
         var result = api.escadaResourceSyncWithEscada()
             ._fileMultiPart(emptyFile)
             .execute(ResponseBody::peek)
             .then()
-            .statusCode(Status.OK.getStatusCode())
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
             .extract()
-            .as(EscadaImportResultJsonSpec.class);
+            .as(AppValidationErrorJsonSpec.class);
         // ASSERT
-        Assertions.assertThat(result.getSchuleImportResultJsons()).isEmpty();
-        Assertions.assertThat(result.getKlasseImportResultJsons()).isEmpty();
-        Assertions.assertThat(result.getLehrpersonResultJsons()).isEmpty();
-        Assertions.assertThat(result.getKindImportResultJsons()).isEmpty();
+
+        AppValidationErrorJsonSpecAssert.assertThatAppValidationErrorJsonSpec(result)
+            .extractingExactlyOneViolation()
+            .hasClientKey("InvalidCSVFormat");
+
+        Assertions.assertThat(result.getViolations())
+            .isNotEmpty()
+            .asInstanceOf(InstanceOfAssertFactories.list(ViolationJsonSpec.class))
+            .hasSize(1)
+            .extracting(ViolationJsonSpec::getKey)
+            .allMatch(k -> k.equals("InvalidCSVFormat"));
     }
 
     @TestAsEscada

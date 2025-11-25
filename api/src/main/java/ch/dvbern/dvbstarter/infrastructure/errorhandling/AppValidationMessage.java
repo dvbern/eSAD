@@ -1,10 +1,14 @@
 package ch.dvbern.dvbstarter.infrastructure.errorhandling;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.commons.i18nl10n.I18nMessage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
@@ -361,5 +365,41 @@ public class AppValidationMessage {
                 expectedForeignKey,
                 "actualForeignKey",
                 actualForeignKeys.toString()));
+    }
+
+    @NonNull
+    public static AppValidationMessage anlassConfigUsedInAtLeastOneAnlassCannotBeEdited() {
+        return of(
+            "AnlassConfigUsedInAtLeastOneAnlassCannotBeEdited",
+            I18nMessage.of("AppValidation.ANLASS_CONFIG_USED_IN_AT_LEAST_ONE_ANLASS_CANNOT_BE_EDITED"));
+    }
+
+    @NonNull
+    public static AppValidationMessage anlassConfigCannotStartBeforeLastAnlassConfig(
+        @NonNull LocalDate minDatumVon
+    ) {
+        return of(
+            "AnlassConfigCannotStartBeforeLastAnlassConfig",
+            I18nMessage.of(
+                "AppValidation.ANLASS_CONFIG_CANNOT_START_BEFORE_LAST_ANLASS_CONFIG",
+                "minDatumVon",
+                minDatumVon.format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN))
+            ));
+    }
+
+    @NonNull
+    public static AppValidationMessage anlassConfigGapOrOverlapDetected(
+        @NonNull AnlassConfig config1,
+        @NonNull AnlassConfig config2
+    ) {
+        return of(
+            "AnlassConfigGapOrOverlapDetected",
+            I18nMessage.of(
+                "AppValidation.ANLASS_CONFIG_GAP_OR_OVERLAP_DETECTED",
+                "config1",
+                config1.getId(),
+                "config2",
+                config2.getId()
+            ));
     }
 }

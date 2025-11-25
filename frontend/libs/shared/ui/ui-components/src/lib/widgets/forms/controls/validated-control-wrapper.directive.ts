@@ -8,16 +8,15 @@ import {
   inject,
   QueryList,
 } from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {AbstractControl, FormGroup, Validators} from '@angular/forms';
-import {Nullish, requireValue} from '@dvb/util-shared';
-import {ValidatedInputWithIdDirective} from '../inputs/validated-input-with-id.directive';
-import {RecursiveValidityCheckTrigger} from './recursive-validity-check-trigger';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AbstractControl, FormGroup, Validators } from '@angular/forms';
+import { Nullish, requireValue } from '@dvb/util-shared';
+import { ValidatedInputWithIdDirective } from '../inputs/validated-input-with-id.directive';
+import { RecursiveValidityCheckTrigger } from './recursive-validity-check-trigger';
 
 function detectRequiredValidator(control: AbstractControl): boolean {
   return hasRequiredValidator(control);
 }
-
 
 /**
  *
@@ -27,9 +26,7 @@ function detectRequiredValidator(control: AbstractControl): boolean {
  *
  */
 // see: https://stackoverflow.com/questions/39819123/angular2-find-out-if-formcontrol-has-required-validator
-export function hasRequiredValidator(
-  abstractControl: AbstractControl,
-): boolean {
+export function hasRequiredValidator(abstractControl: AbstractControl): boolean {
   if (abstractControl.validator) {
     const validator = abstractControl.validator({} as AbstractControl);
     if (validator && validator['required']) {
@@ -48,12 +45,11 @@ export function hasRequiredValidator(
   return false;
 }
 
-
-@Directive({standalone: true})
+@Directive({ standalone: true })
 export class ValidatedControlWrapperDirective implements DoCheck, AfterViewInit {
   required = false;
 
-  @ContentChildren(ValidatedInputWithIdDirective, {descendants: true})
+  @ContentChildren(ValidatedInputWithIdDirective, { descendants: true })
   controlDirective: QueryList<ValidatedInputWithIdDirective> | undefined;
 
   readonly #changeDetectorRef = inject(ChangeDetectorRef);
@@ -79,14 +75,12 @@ export class ValidatedControlWrapperDirective implements DoCheck, AfterViewInit 
       // required status: initial check
       this.required = detectRequiredValidator(this.control);
       // required status: whenever the status changes
-      this.control.statusChanges
-        .pipe(takeUntilDestroyed(this.#destoryRef))
-        .subscribe({
-          next: () => {
-            this.required = detectRequiredValidator(requireValue(this.control));
-          },
-          error: console.error,
-        });
+      this.control.statusChanges.pipe(takeUntilDestroyed(this.#destoryRef)).subscribe({
+        next: () => {
+          this.required = detectRequiredValidator(requireValue(this.control));
+        },
+        error: console.error,
+      });
 
       this.#validityChecker = new RecursiveValidityCheckTrigger(
         this.control,

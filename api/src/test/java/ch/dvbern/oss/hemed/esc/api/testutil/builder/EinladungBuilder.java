@@ -19,19 +19,21 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.EinladungMapper;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.EinladungJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.ArtAbmeldung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.EinladungStatus;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.GrundAbmeldung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.EinladungJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.ArtAbmeldung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.GrundAbmeldung;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
@@ -58,6 +60,7 @@ public class EinladungBuilder {
         Einladung einl = new Einladung();
         einl.setDossier(DossierBuilder.defaultDossier());
         einl.setAnlass(AnlassBuilder.defaultAnlass(now));
+        einl.setNotizen(List.of());
         return einl;
     }
 
@@ -127,14 +130,27 @@ public class EinladungBuilder {
     @NonNull
     @CanIgnoreReturnValue
     public EinladungBuilder withImpfausweis(@NonNull Notiz impfausweis) {
-        this.einladung.setImpfausweis(impfausweis);
+        ArrayList<Notiz> notizen = new ArrayList<>(this.einladung.getNotizen());
+        notizen.add(impfausweis);
+        this.einladung.setNotizen(notizen);
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
     public EinladungBuilder withFrageBogen(@NonNull Notiz frageBogen) {
-        this.einladung.setFragebogen(frageBogen);
+        ArrayList<Notiz> notizen = new ArrayList<>(this.einladung.getNotizen());
+        notizen.add(frageBogen);
+        this.einladung.setNotizen(notizen);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public EinladungBuilder withAnmeldungBestaetigung(@NonNull Notiz anmeldungBestaetigung) {
+        ArrayList<Notiz> notizen = new ArrayList<>(this.einladung.getNotizen());
+        notizen.add(anmeldungBestaetigung);
+        this.einladung.setNotizen(notizen);
         return this;
     }
 

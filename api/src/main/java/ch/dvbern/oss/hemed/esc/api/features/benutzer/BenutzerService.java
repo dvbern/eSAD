@@ -15,6 +15,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerBerechtigung;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import io.quarkus.security.identity.SecurityIdentity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,9 +67,10 @@ public class BenutzerService {
             jsonWebTokenDataDTO.getGivenName(),
             NormalizedPhoneNumber.parse(jsonWebTokenDataDTO.getPhoneNumberClaim()),
             null,
-            Benutzer.mapRollenlistToString(jsonWebTokenDataDTO.getFachRollen()),
+            EnumSetUtil.toString(EnumSetUtil.toEnumSet(jsonWebTokenDataDTO.getFachRollen(), FachRolle.class)),
             Collections.emptySet(),
-            true,  // Wenn sich der Benutzer einloggen kann, ist er aktiv,
+            true,
+            // Wenn sich der Benutzer einloggen kann, ist er aktiv,
             null
         );
         benutzerRepo.persist(newBenutzer);
@@ -85,7 +87,7 @@ public class BenutzerService {
             dto.getVorname(),
             dto.getTelefon(),
             null,
-            null,
+            EnumSetUtil.toString(EnumSet.noneOf(FachRolle.class)),
             Collections.emptySet(),
             true,  // Neue benutzer sind aktiv
             null

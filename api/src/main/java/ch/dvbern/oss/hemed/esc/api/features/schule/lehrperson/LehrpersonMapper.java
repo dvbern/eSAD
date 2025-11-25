@@ -35,7 +35,6 @@ public final class LehrpersonMapper {
         return new LehrpersonJson(
             lehrperson.getId(),
             ExternalImportInfoJson.toJson(lehrperson.getExternalImportInfo()),
-            lehrperson.isManualOrAktivInExternalSystem(),
             EntityInfoJson.fromEntity(lehrperson),
             new LehrpersonSaveJson(
                 lehrperson.getGeschlecht(),
@@ -68,8 +67,8 @@ public final class LehrpersonMapper {
             lehrperson.getGeschlecht(),
             lehrperson.getName(),
             lehrperson.getVorname(),
-            lehrperson.getName() + ' ' + lehrperson.getVorname(),
-            lehrperson.isManualOrAktivInExternalSystem());
+            lehrperson.getName() + ' ' + lehrperson.getVorname()
+        );
     }
 
     @NonNull

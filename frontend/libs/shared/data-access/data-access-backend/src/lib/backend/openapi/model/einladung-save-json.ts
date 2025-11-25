@@ -24,8 +24,7 @@ export interface EinladungSaveJson {
     grundAbmeldung?: GrundAbmeldung;
     artAbmeldung?: ArtAbmeldung;
     bemerkungAbmeldung?: string;
-    impfausweis?: NotizJson;
-    fragebogen?: NotizJson;
+    notizen: Array<NotizJson>;
     version: number;
     versionAbmeldungsNotiz?: number;
 }

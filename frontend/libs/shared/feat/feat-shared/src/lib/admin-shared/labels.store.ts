@@ -20,6 +20,7 @@ import {TranslatedStringPipe} from '../translated-strings/view/translated-string
 const IMPFAUSWEIS_AUTO_LABEL_ID: BackendEntityId = '350f2746-7db4-4dfa-ae28-1b3b5812434a';
 const FRAGEBOGEN_AUTO_LABEL_ID: BackendEntityId = 'f8514824-9694-408e-bdb6-d72e376d7833';
 const DISPENSATIONSGESUCH_AUTO_LABEL_ID: BackendEntityId = '345d4d49-ef8d-4236-94dc-3e35f4bdf76c';
+const ANMELDUNG_BESTAETIGUNG_AUTO_LABEL_ID: BackendEntityId = 'e84f6525-0f70-4440-bb62-11fd25fea5b1';
 
 @Injectable({ providedIn: 'root' })
 export class LabelsStore extends signalStore(
@@ -32,6 +33,9 @@ export class LabelsStore extends signalStore(
     },
     fragebogenAutoLabel: () => {
       return store.entities().find(entity => entity.id === FRAGEBOGEN_AUTO_LABEL_ID);
+    },
+    anmeldungBestaetigungAutoLabel: () => {
+      return store.entities().find(entity => entity.id === ANMELDUNG_BESTAETIGUNG_AUTO_LABEL_ID);
     },
     dispensationsgesuchAutoLabel: () => {
       return store.entities().find(entity => entity.id === DISPENSATIONSGESUCH_AUTO_LABEL_ID);

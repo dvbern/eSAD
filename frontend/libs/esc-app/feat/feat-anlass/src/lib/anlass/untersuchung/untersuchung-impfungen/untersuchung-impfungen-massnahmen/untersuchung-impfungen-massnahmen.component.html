@@ -9,7 +9,7 @@
     <h2 svuiHeading="formSection">{{ 'untersuchung.impfungen.massnahmen.title' | transloco }}</h2>
 
     <!-- Einzel-Folgetermin erstellen -->
-    @if (canEdit() && anlassStore.selectedEntity()?.anlassConfig?.impfungenMassnahmeEinzelFolgetermin) {
+    @if (canEdit() && anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenMassnahmeEinzelFolgetermin) {
       <button svuiButton="secondary" type="button" (click)="einzelFolgeterminErstellen()">
         {{ 'untersuchung.tab.impfungen.massnahmen.einzelFolgeterminErstellen' | transloco }}
       </button>
@@ -18,19 +18,21 @@
 
 
   <!-- Keine Massnahmen -->
-  <svui-standalone-control [label]="'untersuchung.tab.impfungen.massnahmen.keineMassnahmen' | transloco">
-    <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.keineMassnahmen">
-  </svui-standalone-control>
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenMassnahmeKeineMassnahmen) {
+    <svui-standalone-control [label]="'untersuchung.tab.impfungen.massnahmen.keineMassnahmen' | transloco">
+      <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.keineMassnahmen">
+    </svui-standalone-control>
+  }
 
   <!-- Vormerken fuer Gruppen-Folgetermin -->
-  @if (anlassStore.selectedEntity()?.anlassConfig?.impfungenMassnahmeFolgetermin) {
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenMassnahmeGruppenFolgetermin) {
     <svui-standalone-control [label]="'untersuchung.tab.impfungen.massnahmen.vormerkenFuerGruppenFolgetermin' | transloco">
       <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.vormerkenFuerGruppenFolgetermin">
     </svui-standalone-control>
   }
 
   <!-- Impfberatung MPA durchgefuhert -->
-  @if (anlassStore.selectedEntity()?.anlassConfig?.impfungenMassnahmeBeratungMPA) {
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenMassnahmeBeratungMPA) {
     <svui-standalone-control [label]="'untersuchung.tab.impfungen.massnahmen.impfberatungMpaDurchgefuehrt' | transloco">
       <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.impfberatungMpaDurchgefuehrt">
     </svui-standalone-control>
@@ -45,7 +47,7 @@
   }
 
   <!-- Infomaterial abgegeben -->
-  @if (anlassStore.selectedEntity()?.anlassConfig?.impfungenMassnahmeInfomaterialAbgegeben) {
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenMassnahmeInfomaterialAbgegeben) {
     <svui-standalone-control class="mt-3"
                              [label]="'untersuchung.tab.impfungen.massnahmen.infomaterialAbgegeben' | transloco">
       <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.infomaterialAbgegeben">
@@ -53,7 +55,7 @@
   }
 
   <!-- Information Eltern -->
-  @if (anlassStore.selectedEntity()?.anlassConfig?.impfungenMassnahmeInfoEltern) {
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenMassnahmeInfoEltern) {
     <svui-form-control [label]="'untersuchung.tab.impfungen.massnahmen.informationEltern' | transloco"
                        [viewValue]="form.group.value.informationEltern"
                        class="mt-3">
@@ -74,25 +76,60 @@
   }
 
   <!-- Rueckfrage Hausarzt -->
-  @if (anlassStore.selectedEntity()?.anlassConfig?.impfungenMassnahmeRueckfrageKinderarzt) {
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenMassnahmeRueckfrageKinderarzt) {
     <svui-standalone-control [label]="'untersuchung.tab.impfungen.massnahmen.rueckfrageHausarzt' | transloco">
       <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.rueckfrageHausarzt">
     </svui-standalone-control>
   }
 
   <!-- Information Hausarzt -->
-  @if (anlassStore.selectedEntity()?.anlassConfig?.impfungenMassnahmeInfoKinderarzt) {
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenMassnahmeInfoKinderarzt) {
     <svui-standalone-control [label]="'untersuchung.tab.impfungen.massnahmen.informationHausarzt' | transloco">
       <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.informationHausarzt">
     </svui-standalone-control>
   }
 
-  <!-- Bemerkungen -->
-  <svui-form-control class="mt-3"
-                     [label]="'untersuchung.tab.impfungen.massnahmen.bemerkungen' | transloco"
-                     [viewValue]="form.group.controls.bemerkungen.value">
+  <!-- Empfehlung -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungImpfungEmpfehlung !== RequirementSetting.NOT_VISIBLE) {
+    <svui-kachel-form-section [heading]=" 'untersuchung.tab.impfungen.massnahmen.empfehlung' | transloco">
+      @for (empfehlung of getEmpfehlungFormArray().controls; track $index) {
+        <svui-kachel-control [label]="'ImpfungenMassnahmenEmpfehlung.' + empfehlung.controls.resultat.value |transloco">
+          <input svuiCheckbox
+                 type="checkbox"
+                 name="empfehlung"
+                 [formControl]="empfehlung.controls.isChecked"
+          />
+        </svui-kachel-control>
+      }
+    </svui-kachel-form-section>
+  }
+
+  <!-- Achtung -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungImpfungAchtung !== RequirementSetting.NOT_VISIBLE) {
+    <svui-title [context]="'formSection'"
+                class="mb-3">{{ 'untersuchung.impfungen.checklist.achtung' | transloco }}
+    </svui-title>
+    <svui-form-control
+      [label]="'untersuchung.impfungen.checklist.achtung' | transloco"
+      [topLabelVisibility]="'hidden'"
+      size="full"
+      [viewValue]="form.group.controls.achtung.value">
+      <textarea svuiTextarea [formControl]="form.group.controls.achtung"></textarea>
+    </svui-form-control>
+  }
+
+  <!--Bemerkung-->
+  <svui-title [context]="'formSection'"
+              class="mb-3">{{ 'untersuchung.tab.impfungen.massnahmen.bemerkungen' | transloco }}
+  </svui-title>
+  <svui-form-control
+    [label]="'untersuchung.tab.impfungen.massnahmen.bemerkungen' | transloco"
+    [topLabelVisibility]="'hidden'"
+    size="full"
+    [viewValue]="form.group.controls.bemerkungen.value">
     <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
   </svui-form-control>
+
 
   <!-- Save / Cancel Buttons -->
   @if (canEdit()) {

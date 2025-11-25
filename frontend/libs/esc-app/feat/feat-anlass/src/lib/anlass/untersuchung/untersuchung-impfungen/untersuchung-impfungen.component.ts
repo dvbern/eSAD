@@ -1,7 +1,6 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, viewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RequirementSetting, UntersuchungImpfstatusListSaveJson } from '@dvb/data-access-backend';
+import { NotizTyp, RequirementSetting, UntersuchungImpfstatusListSaveJson } from '@dvb/data-access-backend';
 import { BackendEntityId } from '@dvb/data-access-types';
 import { NavigationService } from '@dvb/feat-shared';
 import { CardInCardComponent, LayoutTwoColumnsComponent } from '@dvb/ui-components';
@@ -25,7 +24,6 @@ import { UntersuchungImpfungenStore } from './untersuchung-impfungen.store';
   styleUrl: './untersuchung-impfungen.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     UntersuchungImpfstatusComponent,
@@ -39,12 +37,10 @@ import { UntersuchungImpfungenStore } from './untersuchung-impfungen.store';
   ],
 })
 export class UntersuchungImpfungenComponent implements DirtyMarker {
-  @ViewChild(UntersuchungDoppelkontrolleImpfentscheidComponent)
-  doppelkontrolleComponent!: UntersuchungDoppelkontrolleImpfentscheidComponent;
-  @ViewChild(UntersuchungImpfstatusComponent) impfstatusComponent!: UntersuchungImpfstatusComponent;
-  @ViewChild(UntersuchungImpfungenChecklistComponent) impfChecklistComponent!: UntersuchungImpfungenChecklistComponent;
-  @ViewChild(UntersuchungImpfungenMassnahmenComponent)
-  impfMassnahmenComponent!: UntersuchungImpfungenMassnahmenComponent;
+  doppelkontrolleComponent = viewChild(UntersuchungDoppelkontrolleImpfentscheidComponent);
+  impfstatusComponent = viewChild(UntersuchungImpfstatusComponent);
+  impfChecklistComponent = viewChild(UntersuchungImpfungenChecklistComponent);
+  impfMassnahmenComponent = viewChild(UntersuchungImpfungenMassnahmenComponent);
 
   readonly anlassStore = inject(AnlassStore);
   readonly untersuchungStore = inject(UntersuchungStore);
@@ -67,10 +63,10 @@ export class UntersuchungImpfungenComponent implements DirtyMarker {
 
   isDirty(): boolean {
     return (
-      this.impfstatusComponent.form.isDirty() ||
-      this.doppelkontrolleComponent.form.isDirty() ||
-      this.impfChecklistComponent.form.isDirty() ||
-      this.impfMassnahmenComponent.form.isDirty() ||
+      this.impfstatusComponent()?.form.isDirty() ||
+      this.doppelkontrolleComponent()?.form.isDirty() ||
+      this.impfChecklistComponent()?.form.isDirty() ||
+      this.impfMassnahmenComponent()?.form.isDirty() ||
       this.untersuchungImpfungenStore.loader.isLoading()
     );
   }
@@ -110,9 +106,10 @@ export class UntersuchungImpfungenComponent implements DirtyMarker {
   }
 
   public gotoImpfausweis(): void {
-    this.navigationService.navigateToEinladungImpfausweis(
+    this.navigationService.navigateToEinladungNotiz(
       this.anlassStore.selectedEntity()?.id,
       this.untersuchungStore.currentTabId(),
+      NotizTyp.IMPFAUSWEIS,
     );
   }
 }

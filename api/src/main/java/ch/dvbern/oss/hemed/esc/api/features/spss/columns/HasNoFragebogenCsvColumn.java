@@ -1,6 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -13,7 +13,7 @@ public class HasNoFragebogenCsvColumn extends AbstractCsvColumn {
     @Override
     @NonNull
     public String extract(@NonNull Einladung einladung) {
-        return einladung.getFragebogen() == null ? "1" : "";
+        return einladung.getFragebogenNotiz().isPresent() ? "" : "1";
     }
 
     @Override

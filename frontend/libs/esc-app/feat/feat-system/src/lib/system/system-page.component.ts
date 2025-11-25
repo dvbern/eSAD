@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {Path} from '@dvb/feat-shared';
@@ -11,16 +11,14 @@ import {NgbNav, NgbNavItem} from '@ng-bootstrap/ng-bootstrap';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     PageComponent,
     CardComponent,
     NgbNav,
     NgbNavItem,
     RouterOutlet,
     RouterLink,
-    RouterLinkActive,
-
-  ],
+    RouterLinkActive
+],
   templateUrl: './system-page.component.html',
   styles: ':host { display:block;}',
 })

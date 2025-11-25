@@ -182,7 +182,6 @@ class KontaktPersonKindResourceITest extends AbstractITest {
         assertThat(savedVater).isNotNull();
         assertThat(savedVater.getId()).isNotNull();
         assertThat(savedVater.getExternalSystemIdOrNull()).isNull();
-        assertThat(savedVater.isManualOrAktivInExternalSystem()).isTrue();
         assertThat(savedVater.isAktivInExternalSystem()).isFalse();
         KontaktPersonKindSaveJsonSpec payload = KontaktPersonKindBuilder.createJaxSpec(
             builder -> builder

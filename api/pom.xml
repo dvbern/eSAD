@@ -63,7 +63,9 @@
         <sonar.coverage.jacoco.xmlReportPaths>target/jacoco-report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.coverage.exclusions>src/test/**</sonar.coverage.exclusions>
         <sonar.exclusions>src/main/java/ch/dvbern/oss/hemed/esc/api/generated/**,</sonar.exclusions>
-        <sonar.issue.ignore.multicriteria>immediately-return,override-equals,generics-naming</sonar.issue.ignore.multicriteria>
+        <sonar.issue.ignore.multicriteria>immediately-return,override-equals,generics-naming,enum-set-allowed</sonar.issue.ignore.multicriteria>
+        <sonar.issue.ignore.multicriteria.enum-set-allowed.ruleKey>java:S1319</sonar.issue.ignore.multicriteria.enum-set-allowed.ruleKey>
+        <sonar.issue.ignore.multicriteria.enum-set-allowed.resourceKey>**/*</sonar.issue.ignore.multicriteria.enum-set-allowed.resourceKey>
         <sonar.issue.ignore.multicriteria.immediately-return.ruleKey>java:S1488</sonar.issue.ignore.multicriteria.immediately-return.ruleKey>
         <sonar.issue.ignore.multicriteria.immediately-return.resourceKey>**/*</sonar.issue.ignore.multicriteria.immediately-return.resourceKey>
         <sonar.issue.ignore.multicriteria.override-equals.ruleKey>java:S2160</sonar.issue.ignore.multicriteria.override-equals.ruleKey>
@@ -381,7 +383,7 @@
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>${mapstruct.version}</version>
-            <scope>test</scope>
+            
         </dependency>
         <dependency>
             <groupId>org.apache.pdfbox</groupId>

@@ -1,0 +1,60 @@
+<form svuiFormLayout
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="store.detailMode()">
+  <h2 svuiHeading="formSection">{{ 'anlassconfig.detail.tab.triage' | transloco }}</h2>
+
+  <!-- Triage Triage -->
+  <svui-form-control [label]="'anlassconfig.label.showTriageTriage' | transloco"
+                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showTriageTriage | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.showTriageTriage"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      <ng-option [value]="true">
+        {{ 'RequirementSetting.boolean.true' | transloco }}
+      </ng-option>
+      <ng-option [value]="false">
+        {{ 'RequirementSetting.boolean.false' | transloco }}
+      </ng-option>
+    </ng-select>
+  </svui-form-control>
+  <!-- Triage Kind Weiterleiten-->
+  <svui-form-control [label]="'anlassconfig.label.showTriageKindWeiterleiten' | transloco"
+                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showTriageKindWeiterleiten | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.showTriageKindWeiterleiten"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      <ng-option [value]="true">
+        {{ 'RequirementSetting.boolean.true' | transloco }}
+      </ng-option>
+      <ng-option [value]="false">
+        {{ 'RequirementSetting.boolean.false' | transloco }}
+      </ng-option>
+    </ng-select>
+  </svui-form-control>
+
+
+  <!--messages for whole form -->
+  <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="store.detailMode()"
+    [isCreate]="store.selectedIsNew()"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="anlassConfigHelperService.canEdit()"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+    [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"
+  />
+</form>

@@ -58,8 +58,8 @@ public class DeveloperResource {
     @PermitAll
     public ExampleDateTimeJson getDate() {
         return new ExampleDateTimeJson(
-            appClock.localDateTime().now().toLocalDate(),
-            appClock.localDateTime().now(),
+            appClock.getToday(),
+            appClock.getNow(),
             appClock.offsetDateTime().now(),
             appClock.zonedDateTime().now()
         );

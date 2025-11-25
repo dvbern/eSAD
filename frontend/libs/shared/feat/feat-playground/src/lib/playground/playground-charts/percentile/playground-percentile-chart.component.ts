@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {TenantSettingsStore} from '@dvb/feat-shared';
 import {CardComponent} from '@dvb/ui-components';
@@ -53,8 +53,10 @@ interface DatasetCollectionJaxTS {
 @Component({
   selector: 'feat-playground-percentile-chart',
   imports: [
-    CommonModule, ButtonFiltersComponent, PercentileChartComponent, CardComponent,
-  ],
+    ButtonFiltersComponent,
+    PercentileChartComponent,
+    CardComponent
+],
   templateUrl: './playground-percentile-chart.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

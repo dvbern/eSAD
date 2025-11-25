@@ -1,5 +1,12 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
+import java.time.OffsetDateTime;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.UUID;
+import java.util.function.Consumer;
+
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
@@ -9,18 +16,13 @@ import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerLoginInfos;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.BenutzerJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerJsonSpec;
 import org.assertj.core.util.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.time.OffsetDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Consumer;
 
 public class BenutzerBuilder {
 
@@ -41,7 +43,7 @@ public class BenutzerBuilder {
             "TesterVorname",
             null,
             null,
-            FachRolle.MPA.name(),
+            EnumSetUtil.toString(EnumSet.of(FachRolle.MPA)),
             Collections.emptySet(),
             true,
             null
@@ -120,8 +122,8 @@ public class BenutzerBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public BenutzerBuilder withFachRolle(@NonNull List<FachRolle> fachRollen) {
-        this.benutzer.setFachRollen(fachRollen);
+    public BenutzerBuilder withFachRolle(@NonNull Collection<FachRolle> fachRollen) {
+        this.benutzer.setFachRollen(EnumSetUtil.toEnumSet(fachRollen, FachRolle.class));
         return this;
     }
 

@@ -1,77 +1,100 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.shared.util;
 
-import java.util.List;
+import java.util.EnumSet;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.AudiogrammBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.HoerenZusaetzlicheAngaben;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.collections4.CollectionUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 @UtilityClass
 public class UntersuchungHoerenUtil {
 
-    @Nullable
-    public static List<AudiogrammBeurteilung> getAudiogrammBeurteilung(
-        @NonNull AnlassConfig config,
+    @NonNull
+    public static EnumSet<AudiogrammBeurteilung> getAudiogrammBeurteilung(
+        @NonNull RequirementSetting config,
         @Nullable UntersuchungHoerenAudiogramm hoeren,
         @NonNull AudiogrammBeurteilung defaultWert
     ) {
-        if (config.getHoerenAudiogramm().isVisible()) {
-            if (hoeren != null && !hoeren.getAudiogrammBeurteilung().isEmpty()) {
+        if (config.isVisible()) {
+            if (hoeren != null && CollectionUtils.isNotEmpty(hoeren.getAudiogrammBeurteilung())) {
                 return hoeren.getAudiogrammBeurteilung();
             }
-            return List.of(defaultWert);
+            return EnumSet.of(defaultWert);
         }
-        return null;
+        return EnumSet.noneOf(AudiogrammBeurteilung.class);
     }
 
-    @Nullable
-    public static List<HoerenZusaetzlicheAngaben> getZusaetzlicheAngaben(
-        @NonNull AnlassConfig config,
+    @NonNull
+    public static EnumSet<HoerenZusaetzlicheAngaben> getZusaetzlicheAngaben(
+        @NonNull RequirementSetting config,
         @Nullable UntersuchungHoerenAudiogramm hoeren,
         @NonNull HoerenZusaetzlicheAngaben defaultWert
     ) {
-        if (config.getHoerenAudiogrammZusaetzlicheAngaben().isVisible()) {
-            if (hoeren != null && !hoeren.getZusaetzlicheAngaben().isEmpty()) {
+        if (config.isVisible()) {
+            if (hoeren != null && CollectionUtils.isNotEmpty(hoeren.getZusaetzlicheAngaben())) {
                 return hoeren.getZusaetzlicheAngaben();
             }
-            return List.of(defaultWert);
+            return EnumSet.of(defaultWert);
         }
-        return null;
+        return EnumSet.noneOf(HoerenZusaetzlicheAngaben.class);
     }
 
-    @Nullable
-    public static List<OtoskopieResultat> getOtoskopieRechts(
-        @NonNull AnlassConfig config,
+    @NonNull
+    public static EnumSet<OtoskopieResultat> getOtoskopieRechts(
+        @NonNull RequirementSetting config,
         @Nullable UntersuchungHoerenOtoskopie hoeren,
-        @NonNull OtoskopieResultat defaultWert
+        @Nullable OtoskopieResultat defaultWert
     ) {
-        if (config.getHoerenOtoskopie().isVisible()) {
-            if (hoeren != null && !hoeren.getOtoskopieRechts().isEmpty()) {
+        if (config.isVisible()) {
+            if (hoeren != null && CollectionUtils.isNotEmpty(hoeren.getOtoskopieRechts())) {
                 return hoeren.getOtoskopieRechts();
             }
-            return List.of(defaultWert);
+            if (defaultWert != null) {
+                return EnumSet.of(defaultWert);
+            }
         }
-        return null;
+        return EnumSet.noneOf(OtoskopieResultat.class);
     }
 
-    @Nullable
-    public static List<OtoskopieResultat> getOtoskopieLinks(
-        @NonNull AnlassConfig config,
+    @NonNull
+    public static EnumSet<OtoskopieResultat> getOtoskopieLinks(
+        @NonNull RequirementSetting config,
         @Nullable UntersuchungHoerenOtoskopie hoeren,
-        @NonNull OtoskopieResultat defaultWert
+        @Nullable OtoskopieResultat defaultWert
     ) {
-        if (config.getHoerenOtoskopie().isVisible()) {
-            if (hoeren != null && !hoeren.getOtoskopieLinks().isEmpty()) {
+        if (config.isVisible()) {
+            if (hoeren != null && CollectionUtils.isNotEmpty(hoeren.getOtoskopieLinks())) {
                 return hoeren.getOtoskopieLinks();
             }
-            return List.of(defaultWert);
+            if (defaultWert != null) {
+                return EnumSet.of(defaultWert);
+            }
         }
-        return null;
+        return EnumSet.noneOf(OtoskopieResultat.class);
     }
 }

@@ -1,6 +1,7 @@
 package ch.dvbern.dvbstarter.shared.clock;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -10,6 +11,7 @@ import java.util.Objects;
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateUtil;
 import jakarta.enterprise.context.RequestScoped;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 @RequiredArgsConstructor
 @RequestScoped
@@ -114,5 +116,15 @@ public class AppClock {
 
     }
     // </editor-fold>
+
+    @NonNull
+    public LocalDateTime getNow() {
+        return localDateTime().now();
+    }
+
+    @NonNull
+    public LocalDate getToday() {
+        return getNow().toLocalDate();
+    }
 
 }

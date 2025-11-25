@@ -45,7 +45,7 @@ public class KlasseResource {
 
     @GET
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.LISTEN_LESEN)
+    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
     public KlasseListJson findAllKlassen() {
         return new KlasseListJson(klasseMapper.findAll());
     }
@@ -53,7 +53,7 @@ public class KlasseResource {
     @GET
     @Path("/{klasseId}")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.LISTEN_LESEN)
+    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
     public KlasseJson findKlasse(
         @NonNull @NotNull @PathParam("klasseId") ID<Klasse> klasseId
     ) {

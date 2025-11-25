@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {InfomaterialJson, InformationEltern} from '@dvb/data-access-backend';
@@ -31,11 +31,24 @@ import {
 @Component({
   selector: 'feat-untersuchung-massnahmen',
   imports: [
-    CommonModule, FormLayoutComponent, ReactiveFormsModule, CheckboxDirective, KachelControlComponent,
-    KachelFormSectionComponent, TranslocoPipe, FormControlComponent, NgSelectDirective, NgOptionComponent,
-    NgSelectComponent, TranslatedStringPipe, SaveCancelButtonsComponent, TextareaDirective, StandaloneControlComponent,
-    TitleComponent, UntersuchungPathologischeBefundeComponent, CardInCardComponent,
-  ],
+    FormLayoutComponent,
+    ReactiveFormsModule,
+    CheckboxDirective,
+    KachelControlComponent,
+    KachelFormSectionComponent,
+    TranslocoPipe,
+    FormControlComponent,
+    NgSelectDirective,
+    NgOptionComponent,
+    NgSelectComponent,
+    TranslatedStringPipe,
+    SaveCancelButtonsComponent,
+    TextareaDirective,
+    StandaloneControlComponent,
+    TitleComponent,
+    UntersuchungPathologischeBefundeComponent,
+    CardInCardComponent
+],
   templateUrl: './untersuchung-massnahmen.component.html',
   styleUrl: './untersuchung-massnahmen.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -5,14 +5,15 @@ import {
   effect,
   ElementRef,
   HostBinding,
+  inject,
   input,
   OnInit,
   output,
   ViewContainerRef,
 } from '@angular/core';
-import {PageChanged, PaginationDTO, TableModelConfig} from '@dvb/util-angular';
-import {requireValue} from '@dvb/util-shared';
-import {TableWrapperComponent} from '../table-wrapper/table-wrapper.component';
+import { PageChanged, PaginationDTO, TableModelConfig } from '@dvb/util-angular';
+import { requireValue } from '@dvb/util-shared';
+import { TableWrapperComponent } from '../table-wrapper/table-wrapper.component';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -35,16 +36,15 @@ export class TableComponent implements OnInit {
 
   readonly loading = input.required<boolean>();
 
+  readonly #elementRef = inject(ElementRef);
+  readonly #viewContainerRef = inject(ViewContainerRef);
 
   #wrapperComponent?: ComponentRef<TableWrapperComponent>;
 
   readonly pageChanged = output<PageChanged>();
   readonly downloadContent = output();
 
-  constructor(
-    private readonly elementRef: ElementRef,
-    private readonly viewContainerRef: ViewContainerRef,
-  ) {
+  constructor() {
     // pass on our input signals
     effect(() => {
       const totalsRows = this.totalRows() ?? 0;
@@ -58,17 +58,25 @@ export class TableComponent implements OnInit {
       // check required inputs
       if (tableConfig) {
         if (tableConfig.pageOrScrollOrNothing !== undefined) {
-          requireValue(this.pagination,
-            'missing pagination in table: for pagination or scroll, we need a pagination input');
-          requireValue(this.totalRows,
-            'missing totalRows in table: for pagination or scroll, we need to know the total (filtered) size');
+          requireValue(
+            this.pagination,
+            'missing pagination in table: for pagination or scroll, we need a pagination input',
+          );
+          requireValue(
+            this.totalRows,
+            'missing totalRows in table: for pagination or scroll, we need to know the total (filtered) size',
+          );
         }
         if (tableConfig.frontendOrBackend === 'backend') {
           if (tableConfig.pageOrScrollOrNothing === 'scroll') {
-            requireValue(this.loadedRowCount,
-              'missing loadedRowCount in table: for backend infinite scroll, we need to know if there is more (totalRows and loadedRowCount)');
-            requireValue(this.lastLoadedPage,
-              'missing lastLoadedPage in table: for backend infinite scroll, we need to know the last loaded page');
+            requireValue(
+              this.loadedRowCount,
+              'missing loadedRowCount in table: for backend infinite scroll, we need to know if there is more (totalRows and loadedRowCount)',
+            );
+            requireValue(
+              this.lastLoadedPage,
+              'missing lastLoadedPage in table: for backend infinite scroll, we need to know the last loaded page',
+            );
           }
         }
       }
@@ -91,8 +99,8 @@ export class TableComponent implements OnInit {
   }
 
   private addTableWrapper(): void {
-    const wrapperComponent = this.viewContainerRef.createComponent(TableWrapperComponent, {
-      projectableNodes: [[this.elementRef.nativeElement]],
+    const wrapperComponent = this.#viewContainerRef.createComponent(TableWrapperComponent, {
+      projectableNodes: [[this.#elementRef.nativeElement]],
     });
     // do not pass the inputs here directly because it does not work properly -> use effect
     wrapperComponent.instance.pageChanged = this.pageChanged;

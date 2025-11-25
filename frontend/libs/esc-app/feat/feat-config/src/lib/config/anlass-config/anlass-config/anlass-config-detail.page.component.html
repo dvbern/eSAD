@@ -1,0 +1,95 @@
+<feat-page [heading]="pageTitle()"
+           [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.CONFIG + '/' + Path.ANLASS_CONFIG}">
+  <svui-card>
+    <ul ngbNav style="margin-bottom: 2rem;">
+      <li ngbNavItem>
+        <a class="nav-link"
+           [routerLink]="Path.ANLASS_CONFIG_BASIS"
+           [routerLinkActive]="'active'"
+           aria-current="page">{{ 'anlassconfig.detail.tab.basis' | transloco }}</a>
+      </li>
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.selectedIsNew()"
+                [routerLink]="Path.ANLASS_CONFIG_DATEN"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'anlassconfig.detail.tab.daten' | transloco }}
+        </button>
+      </li>
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.selectedIsNew()"
+                [routerLink]="Path.ANLASS_CONFIG_IMPFUNGEN"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'anlassconfig.detail.tab.impfungen' | transloco }}
+        </button>
+      </li>
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.selectedIsNew()"
+                [routerLink]="Path.ANLASS_CONFIG_SEHEN"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'anlassconfig.detail.tab.sehen' | transloco }}
+        </button>
+      </li>
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.selectedIsNew()"
+                [routerLink]="Path.ANLASS_CONFIG_HOEREN_AUDIOGRAMM"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'anlassconfig.detail.tab.hoerenaudiogramm' | transloco }}
+        </button>
+      </li>
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.selectedIsNew()"
+                [routerLink]="Path.ANLASS_CONFIG_HOEREN_OTOSKOPIE"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'anlassconfig.detail.tab.hoerenotoskopie' | transloco }}
+        </button>
+      </li>
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.selectedIsNew()"
+                [routerLink]="Path.ANLASS_CONFIG_GROEOSSE_GEWICHT"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'anlassconfig.detail.tab.groessegewicht' | transloco }}
+        </button>
+      </li>
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.selectedIsNew()"
+                [routerLink]="Path.ANLASS_CONFIG_TRIAGE"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'anlassconfig.detail.tab.triage' | transloco }}
+        </button>
+      </li>
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.selectedIsNew()"
+                [routerLink]="Path.ANLASS_CONFIG_LAEUSEKONTROLLE"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'anlassconfig.detail.tab.laeusekontrolle' | transloco }}
+        </button>
+      </li>
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.selectedIsNew()"
+                [routerLink]="Path.ANLASS_CONFIG_AERZTLICHE_UNTERSUCHUNG"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'anlassconfig.detail.tab.aerztlicheuntersuchung' | transloco }}
+        </button>
+      </li>
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.selectedIsNew()"
+                [routerLink]="Path.ANLASS_CONFIG_MASSNAHMEN"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'anlassconfig.detail.tab.massnahmen' | transloco }}
+        </button>
+      </li>
+    </ul>
+    <router-outlet></router-outlet>
+  </svui-card>
+</feat-page>
+

@@ -3,7 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.kinder.duplikate;
 import ch.dvbern.dvbstarter.shared.types.sozialversicherungsnummer.SozialversicherungsNummer;
 import ch.dvbern.dvbstarter.shared.types.sozialversicherungsnummer.SozialversicherungsNummerTestGenerator;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.kindanlaesse.KindAnlaesseService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
@@ -15,6 +15,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPe
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizService;
+import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AufgabeService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
@@ -147,8 +148,8 @@ class DuplikatResourceITest extends AbstractITest {
         Dossier dossier2 = fixtureService.createDossier(kind2);
         KontaktPersonKind kontaktPersonKind1 = fixtureService.createKontaktPersonKind(kind1);
         KontaktPersonKind kontaktPersonKind2 = fixtureService.createKontaktPersonKind(kind2);
-        Notiz notiz1 = fixtureService.createNotiz(dossier1, Set.of(Label.ID_LABEL_NACHZUEGLER));
-        Notiz notiz2 = fixtureService.createNotiz(dossier2, Set.of(Label.ID_LABEL_DISPENSATIONSGESUCH));
+        Notiz notiz1 = fixtureService.createNotiz(dossier1, Set.of(Label.ID_LABEL_NACHZUEGLER), NotizTyp.DEFAULT);
+        Notiz notiz2 = fixtureService.createNotiz(dossier2, Set.of(Label.ID_LABEL_DISPENSATIONSGESUCH), NotizTyp.DEFAULT);
         Aufgabe aufgabe1 = fixtureService.createAufgabe(kind1);
         Aufgabe aufgabe2 = fixtureService.createAufgabe(kind2);
         Untersuchung untersuchung1 =
@@ -220,7 +221,6 @@ class DuplikatResourceITest extends AbstractITest {
 
         // download one of the files
         byte[] kinderDossierExport = notizapi.notizResourceDownloadNotizFile()
-            .kindIdPath(duplikatKind1.getId().getId())
             .notizIdPath(notizMergeOptional.get().getId().getId())
             .fileIdPath(Objects.requireNonNull(notizMergeOptional.get().getFiles()).getFirst().getId().getId())
             .execute(ResponseOptions::andReturn)

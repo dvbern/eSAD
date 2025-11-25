@@ -16,6 +16,7 @@ package ch.dvbern.oss.hemed.esc.generated.restassured.dto;
 import java.util.Objects;
 import java.util.Arrays;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EntityInfoJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindOptionJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizSaveJsonSpec;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -31,7 +32,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonPropertyOrder({
   NotizJsonSpec.JSON_PROPERTY_ID,
   NotizJsonSpec.JSON_PROPERTY_ENTITY_INFO,
-  NotizJsonSpec.JSON_PROPERTY_DATA
+  NotizJsonSpec.JSON_PROPERTY_DATA,
+  NotizJsonSpec.JSON_PROPERTY_KIND
 })
 @JsonTypeName("NotizJson")
 @lombok.AllArgsConstructor
@@ -48,6 +50,10 @@ public class NotizJsonSpec {
   public static final String JSON_PROPERTY_DATA = "data";
   @jakarta.annotation.Nonnull
   private NotizSaveJsonSpec data;
+
+  public static final String JSON_PROPERTY_KIND = "kind";
+  @jakarta.annotation.Nonnull
+  private KindOptionJsonSpec kind;
 
   public NotizJsonSpec() {
   }
@@ -127,6 +133,31 @@ public class NotizJsonSpec {
     this.data = data;
   }
 
+  public NotizJsonSpec kind(@jakarta.annotation.Nonnull KindOptionJsonSpec kind) {
+    
+    this.kind = kind;
+    return this;
+  }
+
+  /**
+   * Get kind
+   * @return kind
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_KIND)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public KindOptionJsonSpec getKind() {
+    return kind;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_KIND)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setKind(@jakarta.annotation.Nonnull KindOptionJsonSpec kind) {
+    this.kind = kind;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -138,12 +169,13 @@ public class NotizJsonSpec {
     NotizJsonSpec notizJson = (NotizJsonSpec) o;
     return Objects.equals(this.id, notizJson.id) &&
         Objects.equals(this.entityInfo, notizJson.entityInfo) &&
-        Objects.equals(this.data, notizJson.data);
+        Objects.equals(this.data, notizJson.data) &&
+        Objects.equals(this.kind, notizJson.kind);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, entityInfo, data);
+    return Objects.hash(id, entityInfo, data, kind);
   }
 
   @Override
@@ -153,6 +185,7 @@ public class NotizJsonSpec {
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    entityInfo: ").append(toIndentedString(entityInfo)).append("\n");
     sb.append("    data: ").append(toIndentedString(data)).append("\n");
+    sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("}");
     return sb.toString();
   }

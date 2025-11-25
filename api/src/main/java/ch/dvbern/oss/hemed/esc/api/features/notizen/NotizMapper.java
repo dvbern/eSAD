@@ -1,5 +1,9 @@
 package ch.dvbern.oss.hemed.esc.api.features.notizen;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
@@ -9,6 +13,7 @@ import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.DossierService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.KindMapper;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.labels.LabelMapper;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizJson;
@@ -18,14 +23,9 @@ import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
-import ch.dvbern.oss.hemed.esc.api.shared.util.PathParamConsistancyUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 @JaxMapper
 @RequiredArgsConstructor
@@ -46,11 +46,13 @@ public final class NotizMapper {
                 notiz.getTitel(),
                 notiz.getBemerkungen(),
                 notiz.getStatus(),
+                notiz.getTyp(),
                 BenutzerMapper.toOptionJson(notiz.getVerantwortlicher()),
                 notiz.getLabels().stream().map(LabelMapper::toJson).toList(),
                 notiz.getFiles().stream().map(FileDataMapper::toJson).toList(),
                 notiz.getVersion()
-            )
+            ),
+            KindMapper.toOptionJson(notiz.getDossier().getKind())
         );
     }
 
@@ -59,6 +61,7 @@ public final class NotizMapper {
         existingNotiz.setTitel(saveJson.getTitel());
         existingNotiz.setBemerkungen(saveJson.getBemerkungen());
         existingNotiz.setStatus(saveJson.getStatus());
+        existingNotiz.setTyp(saveJson.getTyp());
         existingNotiz.setVerantwortlicher(benutzerService.getById(saveJson.getVerantwortlicher().getId()));
         Set<Label> desiredLabels = labelMapper.toEntityList(saveJson.getLabels());
         labelMapper.requireNoDisabledOrInactivLabelAddedOrRemoved(existingNotiz.getLabels(), desiredLabels);
@@ -82,6 +85,7 @@ public final class NotizMapper {
             notizJson.getTitel(),
             notizJson.getBemerkungen(),
             notizJson.getStatus(),
+            notizJson.getTyp(),
             dossier,
             verantwortlicher,
             desiredLabels,
@@ -138,6 +142,12 @@ public final class NotizMapper {
     }
 
     @NonNull
+    public List<NotizJson> findAll() {
+        List<Notiz> notizenList = notizService.findAll();
+        return notizenList.stream().map(NotizMapper::toJson).toList();
+    }
+
+    @NonNull
     public List<NotizJson> findAllForKind(@NonNull ID<Kind> kindID) {
         return notizService.findAllForKind(kindID).stream()
             // some Roles can only read Notizen with certain labels
@@ -170,9 +180,5 @@ public final class NotizMapper {
                 new FileData()));
         notizService.removeUploadedFile(existingNotiz, fileIdToRemove);
         return toJson(existingNotiz);
-    }
-
-	public void requireConsistentPathParams(@NonNull ID<Notiz> notizId, @NonNull ID<Kind> expectedKindId) {
-        PathParamConsistancyUtil.requireForeignIdsAreEqual(notizId, notizService.getById(notizId).getDossier().getKind().getId(), expectedKindId );
     }
 }

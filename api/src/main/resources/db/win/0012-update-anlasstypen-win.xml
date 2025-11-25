@@ -1,0 +1,49 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="anst" id="1762183066230-5">
+    <sql>
+      UPDATE anlassconfig
+      SET
+        showdatenpersonendaten = true,
+        showdatenschule = true,
+        
+        datenuntersuchung = 'REQUIRED',
+        
+        impfungenliste = 'REQUIRED',
+
+        sehenbrillelinsen = 'REQUIRED',
+        sehenfarbsehen = 'REQUIRED',
+        sehenfernvisus = 'REQUIRED',
+        sehenbemerkungen = 'REQUIRED',
+
+        hoerenaudiogramm = 'REQUIRED',
+        hoerenaudiogramm250hz = 'REQUIRED',
+        hoerenaudiogramm8000hz = 'REQUIRED',
+        hoerenaudiogrammbemerkungen = 'REQUIRED',
+        hoerenaudiogrammbeurteilung = 'REQUIRED',
+        hoerenaudiogrammzusaetzlicheangaben = 'REQUIRED',
+
+        groessegewichtbemerkungen = 'REQUIRED',
+        groessegewichtbmi = 'REQUIRED',
+        groessegewichtbmiperzentile = 'REQUIRED',
+        groessegewichtgewicht = 'REQUIRED',
+        groessegewichtgewichtperzentile = 'REQUIRED',
+        groessegewichtgroesse = 'REQUIRED',
+        groessegewichtgroesseperzentile = 'REQUIRED'
+
+      WHERE anlasstyp in (
+        'KLASSE_5',
+        'EINSCHULUNG',
+        'SONSTIGES'
+      )
+      AND tenant = 'WIN';
+
+      UPDATE anlassconfig
+      SET
+        sehenstereotest = 'REQUIRED',
+        untersuchungblutdruck = 'REQUIRED',
+        untersuchungbemerkungen = 'REQUIRED'
+      WHERE anlasstyp in ('EINSCHULUNG', 'SONSTIGES') AND tenant = 'WIN';
+    </sql>
+  </changeSet>
+</databaseChangeLog>

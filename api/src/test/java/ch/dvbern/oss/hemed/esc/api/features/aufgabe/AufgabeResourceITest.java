@@ -735,7 +735,7 @@ class AufgabeResourceITest extends AbstractITest {
                 .execute(ResponseOptions::andReturn)
                 .then()
                 .statusCode(Status.OK.getStatusCode())
-                .header("Content-Disposition", "attachment;filename*=UTF-8''" + name)
+                .header("Content-Disposition", "attachment;filename=\"" + name + '"')
                 .extract()
                 .asByteArray();
 

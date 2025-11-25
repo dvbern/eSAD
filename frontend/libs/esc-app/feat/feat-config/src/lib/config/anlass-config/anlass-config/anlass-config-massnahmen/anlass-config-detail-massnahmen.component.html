@@ -1,0 +1,230 @@
+<form svuiFormLayout
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="store.detailMode()">
+  <h2 svuiHeading="formSection">{{ 'anlassconfig.detail.tab.massnahmen' | transloco }}</h2>
+
+  <!-- Massnahmen Pathologische Befunde-->
+  <svui-form-control [label]="'anlassconfig.label.showMassnahmenPathologischeBefunde' | transloco"
+                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showMassnahmenPathologischeBefunde | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.showMassnahmenPathologischeBefunde"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      <ng-option [value]="true">
+        {{ 'RequirementSetting.boolean.true' | transloco }}
+      </ng-option>
+      <ng-option [value]="false">
+        {{ 'RequirementSetting.boolean.false' | transloco }}
+      </ng-option>
+    </ng-select>
+  </svui-form-control>
+  <!-- Massnahmen Keine-->
+  <svui-form-control [label]="'anlassconfig.label.showMassnahmenKeine' | transloco"
+                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showMassnahmenKeine | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.showMassnahmenKeine"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      <ng-option [value]="true">
+        {{ 'RequirementSetting.boolean.true' | transloco }}
+      </ng-option>
+      <ng-option [value]="false">
+        {{ 'RequirementSetting.boolean.false' | transloco }}
+      </ng-option>
+    </ng-select>
+  </svui-form-control>
+  <!-- Massnahmen Beratung Mpa-->
+  <svui-form-control [label]="'anlassconfig.label.showMassnahmenBeratungMpa' | transloco"
+                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showMassnahmenBeratungMpa | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.showMassnahmenBeratungMpa"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      <ng-option [value]="true">
+        {{ 'RequirementSetting.boolean.true' | transloco }}
+      </ng-option>
+      <ng-option [value]="false">
+        {{ 'RequirementSetting.boolean.false' | transloco }}
+      </ng-option>
+    </ng-select>
+  </svui-form-control>
+  <!-- Massnahmen Beratung SchulAerztin-->
+  <svui-form-control [label]="'anlassconfig.label.showMassnahmenBeratungSchulAerztin' | transloco"
+                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showMassnahmenBeratungSchulAerztin | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.showMassnahmenBeratungSchulAerztin"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      <ng-option [value]="true">
+        {{ 'RequirementSetting.boolean.true' | transloco }}
+      </ng-option>
+      <ng-option [value]="false">
+        {{ 'RequirementSetting.boolean.false' | transloco }}
+      </ng-option>
+    </ng-select>
+  </svui-form-control>
+  <!-- Massnahmen Bereits Behandelt-->
+  <svui-form-control [label]="'anlassconfig.label.showMassnahmenBereitsBehandelt' | transloco"
+                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showMassnahmenBereitsBehandelt | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.showMassnahmenBereitsBehandelt"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      <ng-option [value]="true">
+        {{ 'RequirementSetting.boolean.true' | transloco }}
+      </ng-option>
+      <ng-option [value]="false">
+        {{ 'RequirementSetting.boolean.false' | transloco }}
+      </ng-option>
+    </ng-select>
+  </svui-form-control>
+  <!-- Massnahmen Infomaterial-->
+  <svui-form-control [label]="'anlassconfig.label.showMassnahmenInfomaterial' | transloco"
+                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showMassnahmenInfomaterial | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.showMassnahmenInfomaterial"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      <ng-option [value]="true">
+        {{ 'RequirementSetting.boolean.true' | transloco }}
+      </ng-option>
+      <ng-option [value]="false">
+        {{ 'RequirementSetting.boolean.false' | transloco }}
+      </ng-option>
+    </ng-select>
+  </svui-form-control>
+  <!-- Massnahmen Info Eltern-->
+  <svui-form-control [label]="'anlassconfig.label.showMassnahmenInfoEltern' | transloco"
+                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showMassnahmenInfoEltern | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.showMassnahmenInfoEltern"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      <ng-option [value]="true">
+        {{ 'RequirementSetting.boolean.true' | transloco }}
+      </ng-option>
+      <ng-option [value]="false">
+        {{ 'RequirementSetting.boolean.false' | transloco }}
+      </ng-option>
+    </ng-select>
+  </svui-form-control>
+  <!-- Massnahmen Ueberweisung Hausarzt-->
+  <svui-form-control [label]="'anlassconfig.label.showMassnahmenUeberweisungHausarzt' | transloco"
+                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showMassnahmenUeberweisungHausarzt | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.showMassnahmenUeberweisungHausarzt"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      <ng-option [value]="true">
+        {{ 'RequirementSetting.boolean.true' | transloco }}
+      </ng-option>
+      <ng-option [value]="false">
+        {{ 'RequirementSetting.boolean.false' | transloco }}
+      </ng-option>
+    </ng-select>
+  </svui-form-control>
+  <!-- Massnahmen Ueberweisung Augenarzt-->
+  <svui-form-control [label]="'anlassconfig.label.showMassnahmenUeberweisungAugenarzt' | transloco"
+                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showMassnahmenUeberweisungAugenarzt | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.showMassnahmenUeberweisungAugenarzt"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      <ng-option [value]="true">
+        {{ 'RequirementSetting.boolean.true' | transloco }}
+      </ng-option>
+      <ng-option [value]="false">
+        {{ 'RequirementSetting.boolean.false' | transloco }}
+      </ng-option>
+    </ng-select>
+  </svui-form-control>
+  <!-- Massnahmen Nachkontrolle Saed-->
+  <svui-form-control [label]="'anlassconfig.label.showMassnahmenNachkontrolleSaed' | transloco"
+                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showMassnahmenNachkontrolleSaed | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.showMassnahmenNachkontrolleSaed"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      <ng-option [value]="true">
+        {{ 'RequirementSetting.boolean.true' | transloco }}
+      </ng-option>
+      <ng-option [value]="false">
+        {{ 'RequirementSetting.boolean.false' | transloco }}
+      </ng-option>
+    </ng-select>
+  </svui-form-control>
+  <!-- Massnahmen Anderes-->
+  <svui-form-control [label]="'anlassconfig.label.showMassnahmenAnderes' | transloco"
+                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showMassnahmenAnderes | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.showMassnahmenAnderes"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      <ng-option [value]="true">
+        {{ 'RequirementSetting.boolean.true' | transloco }}
+      </ng-option>
+      <ng-option [value]="false">
+        {{ 'RequirementSetting.boolean.false' | transloco }}
+      </ng-option>
+    </ng-select>
+  </svui-form-control>
+
+  <!--messages for whole form -->
+  <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="store.detailMode()"
+    [isCreate]="store.selectedIsNew()"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="anlassConfigHelperService.canEdit()"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+    [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"
+  />
+</form>

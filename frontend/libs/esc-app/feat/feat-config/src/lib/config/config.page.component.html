@@ -1,0 +1,28 @@
+<feat-page heading="" [backLink]="undefined">
+  <svui-list [loading]="false" heading="">
+    <style>
+      li {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        column-gap: 16px;
+      }
+    </style>
+
+    @if (canViewConfig()) {
+      <li svuiListItem>
+        <a svuiListItemTitle
+           routerLink="{{ Path.ANLASS_CONFIG }}"> {{ 'config.list.item.anlassconfig' | transloco }} </a>
+        <span> </span>
+        <span svuiListItemSecondary> </span>
+      </li>
+    }
+    @if (canViewConfig()) {
+      <li svuiListItem>
+      <a svuiListItemTitle
+         routerLink="{{ Path.TENANT_CONFIG }}"> {{ 'config.list.item.tenantconfig' | transloco }} </a>
+      <span> </span>
+      <span svuiListItemSecondary> </span>
+      </li>
+    }
+  </svui-list>
+</feat-page>

@@ -1,6 +1,6 @@
-import {Directive, HostBinding, input, Optional, Self} from '@angular/core';
-import {NgControl} from '@angular/forms';
-import {ControlType, ValidatedInputWithIdDirective} from '../validated-input-with-id.directive';
+import { Directive, HostBinding, inject, input } from '@angular/core';
+import { NgControl } from '@angular/forms';
+import { ControlType, ValidatedInputWithIdDirective } from '../validated-input-with-id.directive';
 
 @Directive({
   selector: 'ng-select[svuiNgSelect]',
@@ -32,8 +32,9 @@ export class NgSelectDirective extends ValidatedInputWithIdDirective {
 
   readonly allowBadgesToWrap = input<boolean>(false);
 
-  constructor(@Optional() @Self() public override ngControl: NgControl) {
-    super(ngControl);
+  constructor() {
+    const ngCtrl = inject(NgControl, { optional: true, self: true });
+    super(ngCtrl);
   }
 
   get controlType(): ControlType {

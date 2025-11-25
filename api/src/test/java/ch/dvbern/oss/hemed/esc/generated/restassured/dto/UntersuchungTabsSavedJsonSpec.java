@@ -36,7 +36,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   UntersuchungTabsSavedJsonSpec.JSON_PROPERTY_GROESSE_GEWICHT_TAB_SAVED,
   UntersuchungTabsSavedJsonSpec.JSON_PROPERTY_TRIAGE_TAB_SAVED,
   UntersuchungTabsSavedJsonSpec.JSON_PROPERTY_AERZLICHE_UNTERUCHUNG_TAB_SAVED,
-  UntersuchungTabsSavedJsonSpec.JSON_PROPERTY_MASSNAHMEN_TAB_SAVED
+  UntersuchungTabsSavedJsonSpec.JSON_PROPERTY_MASSNAHMEN_TAB_SAVED,
+  UntersuchungTabsSavedJsonSpec.JSON_PROPERTY_LAEUSEKONTROLLE_TAB_SAVED
 })
 @JsonTypeName("UntersuchungTabsSavedJson")
 @lombok.AllArgsConstructor
@@ -81,6 +82,10 @@ public class UntersuchungTabsSavedJsonSpec {
   public static final String JSON_PROPERTY_MASSNAHMEN_TAB_SAVED = "massnahmenTabSaved";
   @jakarta.annotation.Nonnull
   private Boolean massnahmenTabSaved;
+
+  public static final String JSON_PROPERTY_LAEUSEKONTROLLE_TAB_SAVED = "laeusekontrolleTabSaved";
+  @jakarta.annotation.Nonnull
+  private Boolean laeusekontrolleTabSaved;
 
   public UntersuchungTabsSavedJsonSpec() {
   }
@@ -335,6 +340,31 @@ public class UntersuchungTabsSavedJsonSpec {
     this.massnahmenTabSaved = massnahmenTabSaved;
   }
 
+  public UntersuchungTabsSavedJsonSpec laeusekontrolleTabSaved(@jakarta.annotation.Nonnull Boolean laeusekontrolleTabSaved) {
+    
+    this.laeusekontrolleTabSaved = laeusekontrolleTabSaved;
+    return this;
+  }
+
+  /**
+   * Get laeusekontrolleTabSaved
+   * @return laeusekontrolleTabSaved
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_LAEUSEKONTROLLE_TAB_SAVED)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Boolean getLaeusekontrolleTabSaved() {
+    return laeusekontrolleTabSaved;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_LAEUSEKONTROLLE_TAB_SAVED)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setLaeusekontrolleTabSaved(@jakarta.annotation.Nonnull Boolean laeusekontrolleTabSaved) {
+    this.laeusekontrolleTabSaved = laeusekontrolleTabSaved;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -353,12 +383,13 @@ public class UntersuchungTabsSavedJsonSpec {
         Objects.equals(this.groesseGewichtTabSaved, untersuchungTabsSavedJson.groesseGewichtTabSaved) &&
         Objects.equals(this.triageTabSaved, untersuchungTabsSavedJson.triageTabSaved) &&
         Objects.equals(this.aerzlicheUnteruchungTabSaved, untersuchungTabsSavedJson.aerzlicheUnteruchungTabSaved) &&
-        Objects.equals(this.massnahmenTabSaved, untersuchungTabsSavedJson.massnahmenTabSaved);
+        Objects.equals(this.massnahmenTabSaved, untersuchungTabsSavedJson.massnahmenTabSaved) &&
+        Objects.equals(this.laeusekontrolleTabSaved, untersuchungTabsSavedJson.laeusekontrolleTabSaved);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(untersuchungID, datenTabSaved, impfungenTabSaved, sehenTabSaved, hoerenAudiogrammTabSaved, hoerenOtoskopieTabSaved, groesseGewichtTabSaved, triageTabSaved, aerzlicheUnteruchungTabSaved, massnahmenTabSaved);
+    return Objects.hash(untersuchungID, datenTabSaved, impfungenTabSaved, sehenTabSaved, hoerenAudiogrammTabSaved, hoerenOtoskopieTabSaved, groesseGewichtTabSaved, triageTabSaved, aerzlicheUnteruchungTabSaved, massnahmenTabSaved, laeusekontrolleTabSaved);
   }
 
   @Override
@@ -375,6 +406,7 @@ public class UntersuchungTabsSavedJsonSpec {
     sb.append("    triageTabSaved: ").append(toIndentedString(triageTabSaved)).append("\n");
     sb.append("    aerzlicheUnteruchungTabSaved: ").append(toIndentedString(aerzlicheUnteruchungTabSaved)).append("\n");
     sb.append("    massnahmenTabSaved: ").append(toIndentedString(massnahmenTabSaved)).append("\n");
+    sb.append("    laeusekontrolleTabSaved: ").append(toIndentedString(laeusekontrolleTabSaved)).append("\n");
     sb.append("}");
     return sb.toString();
   }

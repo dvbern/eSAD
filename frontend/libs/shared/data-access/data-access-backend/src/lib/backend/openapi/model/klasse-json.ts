@@ -17,7 +17,6 @@ import { KlasseSaveJson } from './klasse-save-json';
 export interface KlasseJson { 
     id: BackendEntityId;
     externalImportInfoJson?: ExternalImportInfoJson;
-    manualOrAktivInExternalSystem: boolean;
     entityInfo: EntityInfoJson;
     data: KlasseSaveJson;
     lehrpersonen: Array<LehrpersonOptionJson>;

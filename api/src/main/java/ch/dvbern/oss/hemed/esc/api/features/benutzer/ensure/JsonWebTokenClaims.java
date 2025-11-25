@@ -12,6 +12,7 @@ public final class JsonWebTokenClaims {
     public static final String MOBILE_NUMMER = "MobileNummer";
     public static final String TITLE_CLAIM = "ESC-TITLE";
     public static final String PHONE_CLAIM = "ESC-PHONE";
+    public static final String TENANT_CLAIM = "tenant";
     // client roles are nested in the token like this: 'resource_access.esc.roles'
     public static final String CLIENT_ROLE_CLAIM = "resource_access";
     public static final String CLIENT_ROLE_CLIENT_NAME_CLAIM = "esc";

@@ -10,9 +10,11 @@ import {
   Geschlecht,
   Klassenstufe,
   NaechsteStation,
+  NotizJson,
+  NotizTyp,
 } from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
-import {BenutzerStore, NavigationService, Path} from '@dvb/feat-shared';
+import {BenutzerStore, NavigationService, Path, TenantSettingsStore} from '@dvb/feat-shared';
 import {
   BadgeComponent,
   CardComponent,
@@ -91,20 +93,23 @@ export enum AnlassFlags {
   ],
 })
 export class EinladungenListeComponent {
-
   readonly store = inject(AnlassKinderStore);
   readonly anlassStore = inject(AnlassStore);
   readonly #ngModal = inject(NgbModal);
   readonly navigationService = inject(NavigationService);
   readonly #benutzerStore = inject(BenutzerStore);
+  readonly #tenantSettingStore = inject(TenantSettingsStore);
   readonly #fb = inject(NonNullableFormBuilder);
+  readonly tenantSettingsStore = inject(TenantSettingsStore);
 
   protected readonly geschlechter = Object.values(Geschlecht);
-  protected readonly einladungStatusValues = Object.values(EinladungStatus);
+  protected readonly einladungStatusValues = Object.values(this.#tenantSettingStore.availableEinladungStatus());
   protected readonly klassenStufeValues = Object.values(Klassenstufe);
   protected readonly naechsteStationValues = Object.values(NaechsteStation);
   protected readonly getUseCaseGechlecht = getUseCaseGechlecht;
   protected readonly Path = Path;
+  protected readonly NotizTyp = NotizTyp;
+
   canDownloadDossierExport = this.#benutzerStore.createHasRequiredRoleSig(hasDownloadDossierBerechtigung());
 
   isAnlassStatusBereit = computed(() => this.anlassStore.selectedEntity()?.data.anlassStatus === AnlassStatus.BEREIT);
@@ -126,13 +131,14 @@ export class EinladungenListeComponent {
     paginatedTable: this.itemTable,
   });
 
-  einladungStatusForm : FormRecord<FormControl<EinladungStatus>> = this.#fb.record({});
+  einladungStatusForm: FormRecord<FormControl<EinladungStatus>> = this.#fb.record({});
 
   constructor() {
     effect(() => {
       this.einladungStatusForm = this.#fb.record({});
       this.store.einladungen().forEach((einladung) => {
-        this.einladungStatusForm.addControl(einladung.id, this.#fb.control({value: einladung.data.einladungStatus, disabled: false}));
+        this.einladungStatusForm.addControl(einladung.id,
+          this.#fb.control({value: einladung.data.einladungStatus, disabled: false}));
       });
     });
   }
@@ -168,10 +174,11 @@ export class EinladungenListeComponent {
   }
 
   async addAbmeldungsgrund(einladung: EinladungJson) {
-    const ngbModalRef = this.#ngModal.open(EinladungAbmeldenComponent, { size: 'lg'});
-    ngbModalRef.componentInstance.einladungData.set(einladung);
-    ngbModalRef.componentInstance.saveForm.subscribe(
-        (form: EinladungAbmeldenJson ) => {
+    if (this.tenantSettingsStore.hasAbmeldungsEinladungsStatus()) {
+      const ngbModalRef = this.#ngModal.open(EinladungAbmeldenComponent, {size: 'lg'});
+      ngbModalRef.componentInstance.einladungData.set(einladung);
+      ngbModalRef.componentInstance.saveForm.subscribe(
+        (form: EinladungAbmeldenJson) => {
           const requestObject: EinladungSaveJson = {
             ...einladung.data,
             einladungStatus: EinladungStatus.TEILNAHME_ABGESAGT,
@@ -183,17 +190,20 @@ export class EinladungenListeComponent {
             einladungId: einladung.id,
             einladungSaveJson: requestObject,
             onSuccess: () => {
-              ngbModalRef.close({ result: 'success'});
+              ngbModalRef.close({result: 'success'});
             },
           });
-        }
+        },
       );
 
-    const result = await firstValueFrom(ngbModalRef.closed, {defaultValue: undefined});
+      const result = await firstValueFrom(ngbModalRef.closed, {defaultValue: undefined});
 
-    if (!result) {
-      const previousStatus = this.store.einladungById(einladung.id)?.data?.einladungStatus;
-      this.einladungStatusForm.controls[einladung.id].reset(previousStatus);
+      if (!result) {
+        const previousStatus = this.store.einladungById(einladung.id)?.data?.einladungStatus;
+        this.einladungStatusForm.controls[einladung.id].reset(previousStatus);
+      }
+    } else{
+      console.info('This tenant does not have an Einladungsstatus for abmeldung, so no popup is shown for this case.');
     }
   }
 
@@ -205,15 +215,15 @@ export class EinladungenListeComponent {
     return `${item.id}-${item.data.einladungStatus}`;
   }
 
-  gotoImpfausweis(einladung: EinladungJson): void {
-    this.navigationService.navigateToEinladungImpfausweis(einladung.data.anlassId, einladung.id);
-  }
-
-  gotoFragebogen(einladung: EinladungJson): void {
-    this.navigationService.navigateToEinladungFragebogen(einladung.data.anlassId, einladung.id);
+  gotoEinladungNotiz(einladung: EinladungJson, notizTyp: NotizTyp): void {
+    this.navigationService.navigateToEinladungNotiz(einladung.data.anlassId, einladung.id, notizTyp);
   }
 
   downloadKinderdossier(einladung: EinladungJson): void {
     this.store.downloadKinderdossierReport({kindId: einladung.kind.id, anlassId: einladung.data.anlassId});
+  }
+
+  hasNotizFile(notizen: NotizJson[], typ: NotizTyp): boolean {
+    return notizen.some(notiz => notiz.data.typ === typ && notiz.data.files && notiz.data.files.length > 0);
   }
 }

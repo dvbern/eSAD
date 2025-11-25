@@ -1,0 +1,210 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.8 Chrome/140.0.7339.240 Electron/38.4.0 Safari/537.36" version="28.2.8">
+  <diagram name="Page-1" id="lCNx1Q3nUwS4fsPSshJg">
+    <mxGraphModel dx="2253" dy="2148" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="dRVGitipRpvs3cBtdEd7-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;fillColor=#e1d5e7;strokeColor=#9673a6;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-11" target="dRVGitipRpvs3cBtdEd7-14">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="455" y="300" />
+              <mxPoint x="794" y="300" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-4" target="dRVGitipRpvs3cBtdEd7-31">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.75;entryY=0;entryDx=0;entryDy=0;fillColor=#d5e8d4;strokeColor=#82b366;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-4" target="dRVGitipRpvs3cBtdEd7-31">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-4" value="SÄD" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="435.63" y="-220" width="38.75" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fillColor=#e1d5e7;strokeColor=#9673a6;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-11" target="dRVGitipRpvs3cBtdEd7-22">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-6" value="https" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="dRVGitipRpvs3cBtdEd7-5">
+          <mxGeometry y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fillColor=#d5e8d4;strokeColor=#82b366;exitX=0.661;exitY=0.955;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.694;entryY=-0.012;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-11" target="dRVGitipRpvs3cBtdEd7-16">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="489.95" y="180" as="sourcePoint" />
+            <mxPoint x="516.2500000000002" y="615" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-8" value="https" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="dRVGitipRpvs3cBtdEd7-7">
+          <mxGeometry x="-0.7271" y="4" relative="1" as="geometry">
+            <mxPoint y="21" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-11" target="dRVGitipRpvs3cBtdEd7-21">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="455" y="300" />
+              <mxPoint x="1230" y="300" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fillColor=#e1d5e7;strokeColor=#9673a6;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-11" target="dRVGitipRpvs3cBtdEd7-23">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="455" y="300" />
+              <mxPoint x="710" y="300" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-11" value="" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="352.5" y="70" width="205" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-12" value="OpenShift (Kubernetes)" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-50" y="460" width="1072.5" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-13" value="Webservice&amp;nbsp; mit Angular App&lt;br&gt;(Caddy)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="dRVGitipRpvs3cBtdEd7-12">
+          <mxGeometry x="86.25" y="187" width="180" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-14" value="IAM System Keycloak &lt;br&gt;(eSchool)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="dRVGitipRpvs3cBtdEd7-12">
+          <mxGeometry x="796.25" y="187" width="190" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-15" value="REST Api &lt;br&gt;(Quarkus)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="dRVGitipRpvs3cBtdEd7-12">
+          <mxGeometry x="441.25" y="187" width="180" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-16" value="oAuth Proxy" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="dRVGitipRpvs3cBtdEd7-12">
+          <mxGeometry x="425" y="60" width="180" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fillColor=#e1d5e7;strokeColor=#9673a6;exitX=0.411;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="dRVGitipRpvs3cBtdEd7-12" source="dRVGitipRpvs3cBtdEd7-16" target="dRVGitipRpvs3cBtdEd7-13">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="505" y="145" />
+              <mxPoint x="505" y="160" />
+              <mxPoint x="176" y="160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.654;entryY=-0.012;entryDx=0;entryDy=0;entryPerimeter=0;fillColor=#d5e8d4;strokeColor=#82b366;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="dRVGitipRpvs3cBtdEd7-12">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="527.9999999999998" y="145.00000000000023" as="sourcePoint" />
+            <mxPoint x="526.97" y="185.9799999999998" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-21" target="dRVGitipRpvs3cBtdEd7-39">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-20" value="jdbc" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="dRVGitipRpvs3cBtdEd7-19">
+          <mxGeometry x="0.025" y="3" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-21" value="Keycloak (vacme-web)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="620" width="179" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-22" value="Loadbalancer / WAF" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-345" y="340" width="1600" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-23" value="AD FS Win" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="650" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-25" target="dRVGitipRpvs3cBtdEd7-28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-25" value="Escada" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="117" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-27" target="dRVGitipRpvs3cBtdEd7-28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-27" value="Escada Service&lt;br&gt;(Basel)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="650" y="117" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-28" value="Escada Share" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="840" y="117" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.96;entryY=0.7;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-27" target="dRVGitipRpvs3cBtdEd7-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-31" target="dRVGitipRpvs3cBtdEd7-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-31" value="Browser" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="395.25" y="-55" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-32" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Typischer Loginprozess&lt;/h1&gt;&lt;p&gt;&lt;b&gt;A: Seite Laden&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;Der User navigiert mit seinem Browser auf die eSchool (esc) Website. Dabei verwendet er die Winterthur spezifische URL&lt;br&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;b&gt;B: Einloggen&lt;/b&gt;&lt;br&gt;Der OAuth Proxy erkennt dass der User kein gülgiges Logintoken&amp;nbsp; hat und beginnte den OIDC Flow indem sie den Browser umleitet zum IAM System Keycloak esc&lt;br&gt;B1: Keycloak esc erkennt, dass der User keine aktive LoginSession hat und redirected auf dem zentralen vacme-web Keycloak&lt;br&gt;B2: Der vacme-web Keycloak erkennt dass der User keine aktive Login Session hat und redirected auf die AD FS von Winterthur&lt;br&gt;B3: Im Browser wird dem User die Loginmaske von AD FS angezeigt falls er sich einloggen muss.&amp;nbsp;&lt;br&gt;B4: ADFS erstellt ein eine SAML Assertion und redirected zurück zum vacme-web Keycloak, dabei werden die Rollen als mitgegeben&lt;br&gt;B5: Der vacme-web Keycloak mapped das Token von EntraId und redirected zurück zum Keycloak esc&amp;nbsp;&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;B6: Der Keycloak esc erstellt aus dem erhaltenen Token das definitive Logintoken und erstellt eine Usersession&lt;br&gt;B7: Der Keycloak esc redirected zurück auf die Applikation&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;b&gt;C: Daten vom REST Api laden&lt;/b&gt;&lt;br&gt;C1: Die esc Angular Applikation im Browser lädt die nötigen Daten zum darstellen der Seite aus dem REST API&lt;br&gt;C2: Das REST Api prueft das Logintoken und gibt die angefragten Daten zurück&lt;br&gt;C3: Das REST Api führt Fachlogik aus und liest/schreibt Daten in die Datenbank&lt;br&gt;&lt;br&gt;&lt;/span&gt;&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-530" y="-90" width="870" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-34" value="esc PSQL Datenbank&lt;br&gt;Win" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="416.25" y="870" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-35" value="jdbc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;fillColor=#d5e8d4;strokeColor=#82b366;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-15" target="dRVGitipRpvs3cBtdEd7-34">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-36" value="esc-kc PSQL Datenbank" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="776.25" y="870" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-14" target="dRVGitipRpvs3cBtdEd7-36">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-38" value="jdbc" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="dRVGitipRpvs3cBtdEd7-37">
+          <mxGeometry x="-0.0875" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-39" value="vacme-web mysql Datenbank" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="1164.5" y="860" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.681;exitY=0.967;exitDx=0;exitDy=0;entryX=0.625;entryY=0.2;entryDx=0;entryDy=0;entryPerimeter=0;fillColor=#d5e8d4;strokeColor=#82b366;exitPerimeter=0;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-31" target="dRVGitipRpvs3cBtdEd7-11">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="481" y="3" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-41" value="esc S3 Bucket in&lt;br&gt;Openshift" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="570" y="870" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-42" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-15" target="dRVGitipRpvs3cBtdEd7-41">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="550" y="785" />
+              <mxPoint x="630" y="785" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-43" value="https" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="dRVGitipRpvs3cBtdEd7-42">
+          <mxGeometry x="0.048" y="2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fillColor=#e1d5e7;strokeColor=#9673a6;exitX=0.507;exitY=0.95;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-22" target="dRVGitipRpvs3cBtdEd7-16">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="465" y="410" as="sourcePoint" />
+            <mxPoint x="136" y="657" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="465" y="397" />
+              <mxPoint x="465" y="500" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-45" value="EntraId (Basel)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="786.25" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-46" value="esc PSQL Datenbank&lt;br&gt;Basel" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="250" y="870" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-49" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-47" target="dRVGitipRpvs3cBtdEd7-48">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-47" value="Pupil&lt;br&gt;(win)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="50" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-48" value="Pupil Service&lt;br&gt;(Basel)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="656.25" y="50" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dRVGitipRpvs3cBtdEd7-50" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.92;entryY=0.364;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="dRVGitipRpvs3cBtdEd7-48" target="dRVGitipRpvs3cBtdEd7-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

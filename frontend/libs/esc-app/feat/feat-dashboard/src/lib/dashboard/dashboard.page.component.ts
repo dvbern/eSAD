@@ -1,9 +1,7 @@
-import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {Path} from '@dvb/feat-shared';
-import {PageComponent} from '@dvb/feat-shared';
-import {KindSidebarComponent} from '@dvb/feat-shared';;
+import {BenutzerStore, KindSidebarComponent, PageComponent, Path} from '@dvb/feat-shared';
 import {DashboardComponent} from '@dvb/ui-components';
+import {hasAufgabenViewBerechtigungen} from '@dvb/util-shared';
 import {AnlassTermineComponent} from '../anlass-termine/anlass-termine.component';
 import {DashboardStore} from '../dashboard.store';
 import {LetzteAnlaesseComponent} from '../letzte-anlaesse/letzte-anlaesse.component';
@@ -13,7 +11,6 @@ import {LetzteKinderComponent} from '../letzte-kinder/letzte-kinder.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'feat-dashboard',
   imports: [
-    CommonModule,
     DashboardComponent,
     PageComponent,
     AnlassTermineComponent,
@@ -25,6 +22,9 @@ import {LetzteKinderComponent} from '../letzte-kinder/letzte-kinder.component';
 })
 export class DashboardPageComponent {
   readonly dashboardStore = inject(DashboardStore);
+  readonly benutzerStore = inject(BenutzerStore);
+
+  public canViewAufgaben = this.benutzerStore.createHasRequiredRoleSig(hasAufgabenViewBerechtigungen());
 
   protected readonly Path = Path;
 }

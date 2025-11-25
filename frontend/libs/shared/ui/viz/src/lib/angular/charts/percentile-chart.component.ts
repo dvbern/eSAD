@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {PercentileChartD3, PercentileChartData} from '../../d3/charts';
 import {AbstractChartComponent} from './_common/abstract-chart.component';
@@ -10,9 +10,7 @@ import {AbstractChartComponent} from './_common/abstract-chart.component';
 @Component({
     selector: 'svui-percentilechart',
     template: '<div [id]="id" #wrapper class="h-100" style="height: 100%"></div>',
-    imports: [
-        CommonModule,
-    ],
+    imports: [],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PercentileChartComponent extends AbstractChartComponent<PercentileChartD3, PercentileChartData>

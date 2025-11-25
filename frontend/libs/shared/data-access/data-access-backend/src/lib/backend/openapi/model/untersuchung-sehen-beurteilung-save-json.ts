@@ -17,6 +17,7 @@ import { StrabismusResultat } from './strabismus-resultat';
 import { StrabismusAuspraegungResultat } from './strabismus-auspraegung-resultat';
 import { StereotestResultat } from './stereotest-resultat';
 import { StrabismusAuftretenResultat } from './strabismus-auftreten-resultat';
+import { SehenEmpfehlung } from './sehen-empfehlung';
 
 
 export interface UntersuchungSehenBeurteilungSaveJson { 
@@ -36,6 +37,7 @@ export interface UntersuchungSehenBeurteilungSaveJson {
     strabismusAuftreten?: StrabismusAuftretenResultat;
     inspektion?: InspektionKonvergenzResultat;
     konvergenz?: InspektionKonvergenzResultat;
+    empfehlung?: Array<SehenEmpfehlung>;
     bemerkungen?: string;
     version: number;
 }

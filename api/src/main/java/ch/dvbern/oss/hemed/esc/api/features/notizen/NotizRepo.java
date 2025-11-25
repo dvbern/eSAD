@@ -21,6 +21,13 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public class NotizRepo extends BaseRepo<Notiz> {
 
     @NonNull
+    public List<Notiz> findAll() {
+        return db.selectFrom(QNotiz.notiz)
+            .orderBy(QNotiz.notiz.timestampErstellt.desc())
+            .fetch();
+    }
+
+    @NonNull
     public List<Notiz> findAllForKind(@NonNull ID<Kind> kindID) {
         return db.selectFrom(QNotiz.notiz)
             .leftJoin(QNotiz.notiz.labels, QLabel.label).fetchJoin() // prefetch

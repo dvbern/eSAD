@@ -33,7 +33,6 @@ public final class KontaktPersonKindMapper {
         return new KontaktPersonKindJson(
             kontaktPerson.getId(),
             ExternalImportInfoJson.toJson(kontaktPerson.getExternalImportInfo()),
-            kontaktPerson.isManualOrAktivInExternalSystem(),
             EntityInfoJson.fromEntity(kontaktPerson),
             new KontaktPersonKindSaveJson(
                 kontaktPerson.getName(),

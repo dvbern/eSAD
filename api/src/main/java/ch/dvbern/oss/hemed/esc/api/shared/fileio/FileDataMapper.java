@@ -25,6 +25,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 @JaxMapper
 public final class FileDataMapper {
 
+    public static final String PREFIX_DATENVERLUST = "Datenverlust_";
+
     private FileDataMapper() {
     }
 
@@ -38,7 +40,8 @@ public final class FileDataMapper {
             data.getCalculatedFileName().toString(),
             data.getFileInfoBucket().getFileSize(),
             data.getFileInfoBucket().getMediaType().toString(),
-            data.getFileInfoBucket().getFileIdInBucket()
+            data.getFileInfoBucket().getFileIdInBucket(),
+            data.getCalculatedFileName().toString().startsWith(PREFIX_DATENVERLUST)
         );
     }
 }

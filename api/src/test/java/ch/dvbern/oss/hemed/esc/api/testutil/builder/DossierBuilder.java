@@ -117,7 +117,7 @@ public class DossierBuilder {
     public static DossierJson createJax(@NonNull Consumer<DossierBuilder> block,
         @NonNull LocalDate now) {
         Dossier entity = create(block);
-        return DossierMapper.toJson(entity, null, now);
+        return DossierMapper.toJson(entity, null, now, true);
     }
 
     @NonNull

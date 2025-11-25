@@ -1,4 +1,4 @@
-import {CommonModule, Location} from '@angular/common';
+import { Location } from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked} from '@angular/core';
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -32,12 +32,24 @@ import {BriefvorlageForm} from './briefvorlage-detail.form';
 @Component({
   selector: 'feat-briefvorlagen-detail',
   imports: [
-    CommonModule, CardComponent, FormControlComponent,
-    FormLayoutComponent, FormsModule, NgOptionComponent, NgSelectComponent,
-    NgSelectDirective, PageComponent, TranslocoPipe, TextInputDirective,
-    ReactiveFormsModule, FileDropComponent, HeadingDirective, UploadTableComponent, SaveCancelButtonsComponent,
-    DashboardComponent, FormErrorMessageComponent,
-  ],
+    CardComponent,
+    FormControlComponent,
+    FormLayoutComponent,
+    FormsModule,
+    NgOptionComponent,
+    NgSelectComponent,
+    NgSelectDirective,
+    PageComponent,
+    TranslocoPipe,
+    TextInputDirective,
+    ReactiveFormsModule,
+    FileDropComponent,
+    HeadingDirective,
+    UploadTableComponent,
+    SaveCancelButtonsComponent,
+    DashboardComponent,
+    FormErrorMessageComponent
+],
   templateUrl: './briefvorlagen-detail.page.component.html',
   styles: ':host { display:block;}',
   changeDetection: ChangeDetectionStrategy.OnPush,

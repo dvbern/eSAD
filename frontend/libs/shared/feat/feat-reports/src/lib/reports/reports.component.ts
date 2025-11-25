@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ConfirmService, DocumentQueueComponent, DocumentQueueStore, PageComponent} from '@dvb/feat-shared';
@@ -9,7 +9,6 @@ import {SpssFormComponent} from './spss-form/spss-form.component';
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush, selector: 'feat-reports',
   imports: [
-    CommonModule,
     PageComponent,
     FormsModule,
     TranslocoPipe,
@@ -17,8 +16,8 @@ import {SpssFormComponent} from './spss-form/spss-form.component';
     DocumentQueueComponent,
     SpssFormComponent,
     IconOnlyButtonComponent,
-    PageHeaderButtonsComponent,
-  ],
+    PageHeaderButtonsComponent
+],
   templateUrl: './reports.component.html',
 })
 export class ReportsComponent {

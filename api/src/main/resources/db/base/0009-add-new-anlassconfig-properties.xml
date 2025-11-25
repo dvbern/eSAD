@@ -1,0 +1,594 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hefr (generated)" id="1762416789440-5">
+    <addColumn tableName="anlassconfig">
+      <column name="datenbemerkung" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET datenbemerkung = 'NOT_VISIBLE' WHERE datenbemerkung IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="datenbemerkung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-6">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="datenbemerkung" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-7">
+    <addColumn tableName="anlassconfig">
+      <column name="hoerenaudiogrammempfehlung" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET hoerenaudiogrammempfehlung = 'NOT_VISIBLE' WHERE hoerenaudiogrammempfehlung IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="hoerenaudiogrammempfehlung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-8">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="hoerenaudiogrammempfehlung" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-8a">
+    <addColumn tableName="anlassconfig">
+      <column name="impfungenmassnahmekeinemassnahmen" type="BOOLEAN"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET impfungenmassnahmekeinemassnahmen = false 
+                          WHERE impfungenmassnahmekeinemassnahmen IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="impfungenmassnahmekeinemassnahmen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-8b">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="impfungenmassnahmekeinemassnahmen" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-9">
+    <addColumn tableName="anlassconfig">
+      <column name="impfungenmassnahmeimpfenfolgetermin" type="BOOLEAN"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET impfungenmassnahmeimpfenfolgetermin = false WHERE impfungenmassnahmeimpfenfolgetermin IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="impfungenmassnahmeimpfenfolgetermin"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-10">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="impfungenmassnahmeimpfenfolgetermin" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-15">
+    <addColumn tableName="anlassconfig">
+      <column name="laeusekontrollebemerkungen" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET laeusekontrollebemerkungen = 'NOT_VISIBLE' WHERE laeusekontrollebemerkungen IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="laeusekontrollebemerkungen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-16">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="laeusekontrollebemerkungen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-17">
+    <addColumn tableName="anlassconfig">
+      <column name="laeusekontrollebeurteilung" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET laeusekontrollebeurteilung = 'NOT_VISIBLE' WHERE laeusekontrollebeurteilung IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="laeusekontrollebeurteilung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-18">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="laeusekontrollebeurteilung" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-19">
+    <addColumn tableName="anlassconfig">
+      <column name="sehenempfehlung" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET sehenempfehlung = 'NOT_VISIBLE' WHERE sehenempfehlung IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="sehenempfehlung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-20">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="sehenempfehlung" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-21">
+    <addColumn tableName="anlassconfig">
+      <column name="showdatenpersonendatenesadid" type="BOOLEAN"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET showdatenpersonendatenesadid = false WHERE showdatenpersonendatenesadid IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="showdatenpersonendatenesadid"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-22">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="showdatenpersonendatenesadid" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-23">
+    <addColumn tableName="anlassconfig">
+      <column name="unterlageneinverstaendnis" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET unterlageneinverstaendnis = 'NOT_VISIBLE' WHERE unterlageneinverstaendnis IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="unterlageneinverstaendnis"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-24">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="unterlageneinverstaendnis" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-25">
+    <addColumn tableName="anlassconfig">
+      <column name="unterlagenverhaltensfragebogen" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET unterlagenverhaltensfragebogen = 'NOT_VISIBLE' WHERE unterlagenverhaltensfragebogen IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="unterlagenverhaltensfragebogen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-26">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="unterlagenverhaltensfragebogen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-27">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungaussprache" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungaussprache = 'NOT_VISIBLE' WHERE untersuchungaussprache IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungaussprache"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-28">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungaussprache" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-29">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungballfangen" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungballfangen = 'NOT_VISIBLE' WHERE untersuchungballfangen IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungballfangen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-30">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungballfangen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-31">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungballwerfen" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungballwerfen = 'NOT_VISIBLE' WHERE untersuchungballwerfen IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungballwerfen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-32">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungballwerfen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-33">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungempfehlung" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungempfehlung = 'NOT_VISIBLE' WHERE untersuchungempfehlung IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungempfehlung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-34">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungempfehlung" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-35">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungeinbeinhuepfenlinks" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungeinbeinhuepfenlinks = 'NOT_VISIBLE' WHERE untersuchungeinbeinhuepfenlinks IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungeinbeinhuepfenlinks"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-36">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungeinbeinhuepfenlinks" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-37">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungeinbeinhuepfenrechts" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungeinbeinhuepfenrechts = 'NOT_VISIBLE' WHERE untersuchungeinbeinhuepfenrechts IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungeinbeinhuepfenrechts"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-38">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungeinbeinhuepfenrechts" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-39">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungeinbeinstandlinks" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungeinbeinstandlinks = 'NOT_VISIBLE' WHERE untersuchungeinbeinstandlinks IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungeinbeinstandlinks"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-40">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungeinbeinstandlinks" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-41">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungeinbeinstandrechts" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungeinbeinstandrechts = 'NOT_VISIBLE' WHERE untersuchungeinbeinstandrechts IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungeinbeinstandrechts"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-42">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungeinbeinstandrechts" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-43">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungfigurnachmalen" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungfigurnachmalen = 'NOT_VISIBLE' WHERE untersuchungfigurnachmalen IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungfigurnachmalen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-44">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungfigurnachmalen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-45">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchunghampelmann" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchunghampelmann = 'NOT_VISIBLE' WHERE untersuchunghampelmann IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchunghampelmann"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-46">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchunghampelmann" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-47">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungimpfungachtung" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungimpfungachtung = 'NOT_VISIBLE' WHERE untersuchungimpfungachtung IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungimpfungachtung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-48">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungimpfungachtung" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-49">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungkognition" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungkognition = 'NOT_VISIBLE' WHERE untersuchungkognition IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungkognition"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-50">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungkognition" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-51">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungkognitionpunkte" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungkognitionpunkte = 'NOT_VISIBLE' WHERE untersuchungkognitionpunkte IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungkognitionpunkte"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-52">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungkognitionpunkte" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-53">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchunglesefit" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchunglesefit = 'NOT_VISIBLE' WHERE untersuchunglesefit IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchunglesefit"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-54">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchunglesefit" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-55">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungmotorikpunkte" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungmotorikpunkte = 'NOT_VISIBLE' WHERE untersuchungmotorikpunkte IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungmotorikpunkte"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-56">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungmotorikpunkte" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-57">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungnameschreiben" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungnameschreiben = 'NOT_VISIBLE' WHERE untersuchungnameschreiben IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungnameschreiben"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-58">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungnameschreiben" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-59">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungsprachepunkte" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungsprachepunkte = 'NOT_VISIBLE' WHERE untersuchungsprachepunkte IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungsprachepunkte"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-60">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungsprachepunkte" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-61">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungstifthaltung" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungstifthaltung = 'NOT_VISIBLE' WHERE untersuchungstifthaltung IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungstifthaltung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-62">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungstifthaltung" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-63">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungzahlennachsprechen4" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungzahlennachsprechen4 = 'NOT_VISIBLE' WHERE untersuchungzahlennachsprechen4 IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungzahlennachsprechen4"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-64">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungzahlennachsprechen4" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-65">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungzahlennachsprechen5" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungzahlennachsprechen5 = 'NOT_VISIBLE' WHERE untersuchungzahlennachsprechen5 IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungzahlennachsprechen5"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-66">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungzahlennachsprechen5" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-67">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungzeichnendreieck" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungzeichnendreieck = 'NOT_VISIBLE' WHERE untersuchungzeichnendreieck IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungzeichnendreieck"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-68">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungzeichnendreieck" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-69">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungzeichnenkreis" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungzeichnenkreis = 'NOT_VISIBLE' WHERE untersuchungzeichnenkreis IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungzeichnenkreis"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-70">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungzeichnenkreis" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-71">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungzeichnenmensch" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungzeichnenmensch = 'NOT_VISIBLE' WHERE untersuchungzeichnenmensch IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungzeichnenmensch"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-72">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungzeichnenmensch" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-73">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungzeichnenviereck" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungzeichnenviereck = 'NOT_VISIBLE' WHERE untersuchungzeichnenviereck IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungzeichnenviereck"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-74">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungzeichnenviereck" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-75">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungimpfungempfehlung" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungimpfungempfehlung = 'NOT_VISIBLE' WHERE untersuchungimpfungempfehlung IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungimpfungempfehlung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-76">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungimpfungempfehlung" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-77">
+    <addColumn tableName="anlassconfig">
+      <column name="groessegewichtempfehlung" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET groessegewichtempfehlung = 'NOT_VISIBLE' WHERE groessegewichtempfehlung IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="groessegewichtempfehlung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-78">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="groessegewichtempfehlung" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-79">
+    <addColumn tableName="anlassconfig">
+      <column name="laeusekontrolleempfehlung" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET laeusekontrolleempfehlung = 'NOT_VISIBLE' WHERE laeusekontrolleempfehlung IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="laeusekontrolleempfehlung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-80">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="laeusekontrolleempfehlung" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-81">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungzeichnenmenschpunkte" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchungzeichnenmenschpunkte = 'NOT_VISIBLE' WHERE untersuchungzeichnenmenschpunkte IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungzeichnenmenschpunkte"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-82">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungzeichnenmenschpunkte" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-83">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchunglesefitpunkte" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET untersuchunglesefitpunkte = 'NOT_VISIBLE' WHERE untersuchunglesefitpunkte IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchunglesefitpunkte"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1762416789440-84">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchunglesefitpunkte" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="hefr (generated)" id="1762416789440-85">
+    <sql>
+      update anlassconfig set datumbis = '9999-12-31' where datumBis = '2999-12-31';
+    </sql>
+  </changeSet>
+</databaseChangeLog>

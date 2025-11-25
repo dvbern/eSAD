@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, DestroyRef, inject} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {NonNullableFormBuilder} from '@angular/forms';
@@ -12,10 +12,9 @@ import {KindSearchComponent} from '../../../kind-search/kind-search.component';
 @Component({
   selector: 'feat-page-global-search',
   imports: [
-    CommonModule,
     KindSearchComponent,
-    TranslocoPipe,
-  ],
+    TranslocoPipe
+],
   templateUrl: './global-search.component.html',
   styleUrl: './global-search.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

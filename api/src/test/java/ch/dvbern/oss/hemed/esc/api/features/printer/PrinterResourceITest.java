@@ -1,10 +1,11 @@
 package ch.dvbern.oss.hemed.esc.api.features.printer;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
+import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
@@ -70,7 +71,7 @@ class PrinterResourceITest extends AbstractITest {
             .statusCode(Status.OK.getStatusCode())
             .header(
                 "Content-Disposition",
-                "attachment;filename*=UTF-8''" + fileName)
+                "attachment;filename=\"" + fileName + '"')
             .extract()
             .asByteArray();
         // ASSERT
@@ -111,7 +112,7 @@ class PrinterResourceITest extends AbstractITest {
             .statusCode(Status.OK.getStatusCode())
             .header(
                 "Content-Disposition",
-                "attachment;filename*=UTF-8''" + fileName)
+                "attachment;filename=\"" + fileName+ '"')
             .extract()
             .asByteArray();
         // ASSERT
@@ -144,7 +145,7 @@ class PrinterResourceITest extends AbstractITest {
             .statusCode(Status.OK.getStatusCode())
             .header(
                 "Content-Disposition",
-                "attachment;filename*=UTF-8''" + fileName)
+                "attachment;filename=\"" + fileName+ '\"')
             .extract()
             .asByteArray();
         // ASSERT
@@ -174,11 +175,10 @@ class PrinterResourceITest extends AbstractITest {
         // ARRANGE
         Einladung einladung = fixtureService.createEinladung();
         Kind kind = einladung.getDossier().getKind();
-        Notiz notiz = fixtureService.createNotiz(einladung.getDossier(), Set.of(Label.ID_LABEL_FRAGEBOGEN));
+        Notiz notiz = fixtureService.createNotiz(einladung.getDossier(), Set.of(Label.ID_LABEL_FRAGEBOGEN), NotizTyp.FRAGEBOGEN);
         File pdfFile = TestUtil.loadTestPDF();
 
         notizenApi.notizResourceAddNotizFile()
-            .kindIdPath(kind.getId().getId())
             .notizIdPath(notiz.getId().getId())
             ._fileMultiPart(pdfFile)
             .execute(ResponseBody::prettyPeek)
@@ -205,7 +205,7 @@ class PrinterResourceITest extends AbstractITest {
             .statusCode(Status.OK.getStatusCode())
             .header(
                 "Content-Disposition",
-                "attachment;filename*=UTF-8''" + fileName)
+                "attachment;filename=\"" + fileName+ '"')
             .extract()
             .asByteArray();
         // ASSERT
@@ -235,7 +235,7 @@ class PrinterResourceITest extends AbstractITest {
             .statusCode(Status.OK.getStatusCode())
             .header(
                 "Content-Disposition",
-                "attachment;filename*=UTF-8''" + fileName)
+                "attachment;filename=\"" + fileName+ '"')
             .extract()
             .asByteArray();
         // ASSERT

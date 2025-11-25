@@ -21,16 +21,17 @@ package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungImpfungen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.InformationEltern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmenJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.json.UntersuchungImpfungenMassnahmenJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmenMapper;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungImpfungenMassnahmenJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenMassnahmenJsonSpec;
 import org.assertj.core.util.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class UntersuchungImpfungenMassnahmenBuilder {
 
@@ -83,6 +84,13 @@ public class UntersuchungImpfungenMassnahmenBuilder {
     @CanIgnoreReturnValue
     public UntersuchungImpfungenMassnahmenBuilder withRueckfrageHausarzt(boolean info) {
         this.massnahmen.setRueckfrageHausarzt(info);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungImpfungenMassnahmenBuilder withAchtung(@Nullable String achtung) {
+        this.massnahmen.setAchtung(achtung);
         return this;
     }
 

@@ -32,16 +32,16 @@ export class UntersuchungImpfungenChecklistForm extends BaseForm<
   }
 
   setValidatorsForAnlassConfig(config: AnlassConfigJson): void {
-    if (config.checkEinwilligungVorhanden === RequirementSetting.REQUIRED) {
+    if (config.data.checkEinwilligungVorhanden === RequirementSetting.REQUIRED) {
       this.group.controls.checkEinwilligungVorhanden.addValidators(Validators.requiredTrue);
     }
-    if (config.checkKontraindikationenAbgeklaert === RequirementSetting.REQUIRED) {
+    if (config.data.checkKontraindikationenAbgeklaert === RequirementSetting.REQUIRED) {
       this.group.controls.checkKontraindikationenAbgeklaert.addValidators(Validators.requiredTrue);
     }
-    if (config.checkDoppelkontrolleImpfentscheidDurchgefuehrt === RequirementSetting.REQUIRED) {
+    if (config.data.checkDoppelkontrolleImpfentscheidDurchgefuehrt === RequirementSetting.REQUIRED) {
       this.group.controls.checkDoppelkontrolleImpfentscheidDurchgefuehrt.addValidators(Validators.requiredTrue);
     }
-    if (config.untersuchungImpfungBemerkungen === RequirementSetting.REQUIRED) {
+    if (config.data.untersuchungImpfungBemerkungen === RequirementSetting.REQUIRED) {
       this.group.controls.bemerkungen.addValidators(Validators.required);
     }
   }

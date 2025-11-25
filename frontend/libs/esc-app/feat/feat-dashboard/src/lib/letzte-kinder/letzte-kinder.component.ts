@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
 import {ISODateTimeString} from '@dvb/data-access-types';
 import {Path} from '@dvb/feat-shared';
@@ -11,14 +11,12 @@ import {DashboardStore} from '../dashboard.store';
     changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'feat-dashboard-letze-kinder',
     imports: [
-        CommonModule,
-        ListComponent,
-        TranslocoPipe,
-        TableComponent,
-        TableLinkComponent,
-        EmptyTableMessageComponent,
-
-    ],
+    ListComponent,
+    TranslocoPipe,
+    TableComponent,
+    TableLinkComponent,
+    EmptyTableMessageComponent
+],
     templateUrl: './letzte-kinder.component.html',
 })
 export class LetzteKinderComponent {

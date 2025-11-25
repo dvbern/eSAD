@@ -4,9 +4,9 @@ import {
   Translation,
   TranslocoMissingHandler,
   TranslocoMissingHandlerData,
+  TranslocoLoader,
 } from '@jsverse/transloco';
 
-import { TranslocoLoader } from '@jsverse/transloco/lib/transloco.loader';
 import { DEFAULT_LANGUAGE, Language, SUPPORTED_LANGUAGES } from './Language';
 
 type TestingTranslations = Record<Language, Translation>;

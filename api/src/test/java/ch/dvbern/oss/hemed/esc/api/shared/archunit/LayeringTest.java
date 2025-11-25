@@ -6,6 +6,7 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.NoTransactionService;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
+import ch.dvbern.oss.hemed.esc.api.shared.mapper.BaseMapper;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
@@ -13,7 +14,6 @@ import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.library.Architectures;
 import com.tngtech.archunit.library.dependencies.Slice;
 import jakarta.persistence.Entity;
-import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -53,6 +53,9 @@ class LayeringTest {
         is(interfaceWithSuffix("Repo")).or(is(metaAnnotatedWith(Repository.class)));
     public static final DescribedPredicate<JavaClass> RESOURCE = metaAnnotatedWith(JaxResource.class).forSubtype();
     public static final DescribedPredicate<JavaClass> RESOURCE_MAPPER = metaAnnotatedWith(JaxMapper.class).forSubtype();
+    public static final DescribedPredicate<JavaClass> AUTO_MAPPER =
+        is(JavaClass.Predicates.implement(BaseMapper.class));
+
     public static final DescribedPredicate<JavaClass> JSON_DTO = metaAnnotatedWith(JaxDTO.class).forSubtype();
     public static final DescribedPredicate<JavaClass> ENTITY = annotatedWith(Entity.class).forSubtype();
 
@@ -69,6 +72,7 @@ class LayeringTest {
             .or(LayeringTest.REPOSITORY)
             .or(ENTITY)
             .or(QUERYDSL_Q_CLASSES);
+
 
     public static final DescribedPredicate<JavaClass> SHARED_PRINTER =
         resideInAPackage(APP_PACKAGE + ".shared.printer..");
@@ -140,6 +144,7 @@ class LayeringTest {
             .onlyBeCalled()
             .byClassesThat(are(DATABASE_LAYER).or(SERVICE)
                 .or(RESOURCE_MAPPER)
+                .or(AUTO_MAPPER)
                 .or(STARTER_INFRASTRUCTURE)
                 .or(STARTER_SHARED)
                 .or(SHARED_PRINTER)
@@ -158,6 +163,7 @@ class LayeringTest {
             .onlyBeCalled()
             .byClassesThat(are(DATABASE_LAYER).or(SERVICE)
                 .or(RESOURCE_MAPPER)
+                .or(AUTO_MAPPER)
                 .or(STARTER_INFRASTRUCTURE)
                 .or(STARTER_SHARED)
                 .or(DOC_MERGER))
@@ -173,6 +179,7 @@ class LayeringTest {
             .onlyBeCalled()
             .byClassesThat(are(DATABASE_LAYER).or(SERVICE).or(UTIL)
                 .or(RESOURCE_MAPPER)
+                .or(AUTO_MAPPER)
                 .or(STARTER_INFRASTRUCTURE)
                 .or(STARTER_SHARED)
                 .or(SHARED_PRINTER)

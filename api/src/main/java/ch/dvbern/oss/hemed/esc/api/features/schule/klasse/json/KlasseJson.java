@@ -35,10 +35,6 @@ public class KlasseJson {
     @Schema(required = false)
     private final ExternalImportInfoJson externalImportInfoJson;
 
-    @NotNull
-    @Schema(required = true)
-    private final boolean manualOrAktivInExternalSystem;
-
     @NonNull
     @Valid
     @Schema(required = true)

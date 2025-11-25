@@ -17,10 +17,11 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.validator;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.apache.commons.collections4.CollectionUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @ApplicationScoped
@@ -36,10 +37,10 @@ public class CheckUntersuchungHoerenOtoskopiePresentIfReqValidator
         AnlassConfig anlassConfig = hoerenOtoskopie.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
 
         if (anlassConfig.getHoerenOtoskopie().isRequired()) {
-            if (hoerenOtoskopie.getOtoskopieRechts().isEmpty()) {
+            if (CollectionUtils.isEmpty(hoerenOtoskopie.getOtoskopieRechts())) {
                 return false;
             }
-            if (hoerenOtoskopie.getOtoskopieLinks().isEmpty()) {
+            if (CollectionUtils.isEmpty(hoerenOtoskopie.getOtoskopieLinks())) {
                 return false;
             }
             if (hoerenOtoskopie.getOtoskopieRechts().contains(OtoskopieResultat.ANDERES)

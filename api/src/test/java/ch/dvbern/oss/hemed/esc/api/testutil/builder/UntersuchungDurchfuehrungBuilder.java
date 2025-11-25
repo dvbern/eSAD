@@ -24,10 +24,10 @@ import java.util.function.Consumer;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungDurchfuehrung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.UntersuchungDurchfuehrungMapper;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.UntersuchungDurchfuehrungJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrungMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.json.UntersuchungDurchfuehrungJson;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungDurchfuehrungJsonSpecMapper;
@@ -107,6 +107,13 @@ public class UntersuchungDurchfuehrungBuilder {
     @CanIgnoreReturnValue
     public UntersuchungDurchfuehrungBuilder isNachkontrolle(boolean isNachkontrolle) {
         this.durchfuehrung.setNachkontrolle(isNachkontrolle);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungDurchfuehrungBuilder withBemerkung(@Nullable String bemerkung) {
+        this.durchfuehrung.setBemerkungen(bemerkung);
         return this;
     }
 

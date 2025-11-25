@@ -1,0 +1,21 @@
+<div class="qrcodeWrapper">
+
+<!-- this component uses https://github.com/cordobo/angularx-qrcode -->
+<!--  the following attributes is a selection of the available options, there are more, check the documentation-->
+  <qrcode
+    [qrdata]="qrData()"
+    [allowEmptyString]="true"
+    [ariaLabel]="'QR Code image with the following content...'"
+    [cssClass]="'center'"
+    [colorDark]="'#000000ff'"
+    [colorLight]="'#ffffffff'"
+    [elementType]="'canvas'"
+    [errorCorrectionLevel]="'M'"
+    [margin]="4"
+    [scale]="1"
+    [title]="title()"
+    [width]="width()"
+  />
+
+  <h3>{{ text() }}</h3>
+</div>

@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import io.quarkus.test.security.TestSecurity;
 
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_LESEN;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 // java Annotation require compile time Constants so we need to define the array each time :(
@@ -17,10 +19,12 @@ import io.quarkus.test.security.TestSecurity;
         BerechtigungName.AUFGABEN_SCHREIBEN,
         BerechtigungName.ANLASSLISTE_LESEN,
         BerechtigungName.ANLASSPLANUNG_LESEN,
-        BerechtigungName.KINDER_LESEN,
+        BerechtigungName.KINDER_LESEN_MEDIZINISCH,
+        BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH,
         BerechtigungName.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
         BerechtigungName.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
-        BerechtigungName.LISTEN_LESEN,
+        LISTEN_LESEN,
+        BerechtigungName.LISTEN_ADMIN_LESEN,
         BerechtigungName.AERZTE_LESEN,
         BerechtigungName.IMPFSTOFFE_LESEN,
         BerechtigungName.EIGENE_BERECHTIGUNGEN_LESEN,

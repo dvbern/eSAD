@@ -105,6 +105,21 @@
   <include file="db/bs/0074-rename-constraints.xml"/>
   <include file="db/base/0004_gewicht_bigdecimal.xml"/>
   <include file="db/base/0005-split-tab-sehen.xml"/>
+  <include file="db/base/0006-anlassconfig-bezeichnung.xml"/>
+  <include file="db/base/0007-insert-new-anlasstypen.xml"/>
+  <include file="db/base/0008-groesse-gewicht-bmi-perzentile-values.xml"/>
+  <include file="db/bs/0075-add-berechtigungen-laeuse.xml"/>
+  <include file="db/bs/0076-add-berechtigung-kinder-medizinisch.xml"/>
+  <include file="db/base/0009-add-new-anlassconfig-properties.xml"/>
+  <include file="db/base/0010-add-new-feature-flag-esadid.xml"/>
+  <include file="db/base/0011-add-showfragebogen-and-showanmeldung.xml"/>
+  <include file="db/bs/0077-update-showfragebogen-showanmeldung-showimpfausweis-to-anlassconfig.xml"/>
+  <include file="db/base/0012-add-anmeldung-bestaetigung.xml" />
+  <include file="db/base/0013-create-einladung-notizen-and-add-notiz-typ.xml" />
+  <include file="db/base/0014-insert-anmeldung-bestaetigung-label.xml"/>
+  <include file="db/base/0015-add-new-untersuchung-properties.xml"/>
+  <include file="db/base/0016-change-enum-list-db-len.xml"/>
+  <include file="db/base/0016-add-einladungstatus-to-tenant-setting.xml"/>
   
   <!--  The following scripts only run in the 'test' context-->
   <include file="db-test/0001-insert-test-benutzer-support.xml" context="@test"/>
@@ -116,6 +131,9 @@
   <include file="db-test/0008-insert-test-benutzer-mpa-super.xml" context="@test"/>
   <include file="db-test/0009-create-tables-for-ordering-tests.xml" context="@test"/>
   <include file="db-test/0010-insert-test-aerzte.xml" context="@test"/>
+  <include file="db-test/0012-insert-test-benutzer-lausbeauftragte-win.xml" context="@test"/>
+  <include file="db-test/0013-update-anlassconfig-all-optional.xml" context="@test"/>
+  <include file="db-test/0014-insert-test-benutzer-pfp-win.xml" context="@test"/>
 
   <!-- The following scripts only run in the 'dev' context
 	  To use it, insert the following in your .env:
@@ -129,4 +147,5 @@
   <include file="db-dev/0005-insert-example-impfstoffchargen.xml" context="@dev"/>
   <include file="db-dev/0006-insert-example-anlass.xml" context="@dev"/>
   <include file="db-dev/0007-insert-example-aerzte.xml" context="@dev"/>
+  <include file="db-dev/0008-update-anlasstypen-bs.xml" context="@dev"/>
 </databaseChangeLog>

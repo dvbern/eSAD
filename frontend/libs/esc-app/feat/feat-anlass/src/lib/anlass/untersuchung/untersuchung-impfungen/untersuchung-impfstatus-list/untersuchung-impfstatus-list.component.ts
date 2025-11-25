@@ -1,4 +1,4 @@
-import {NgIf} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Krankheit} from '@dvb/data-access-backend';
@@ -12,14 +12,13 @@ import {UntersuchungImpfstatusSubFormType} from './untersuchung-impfstatus-list.
     styleUrl: './untersuchung-impfstatus-list.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        NgIf,
-        TextInputDirective,
-        IconComponent,
-        TranslocoPipe,
-        TableControlComponent,
-    ]
+    FormsModule,
+    ReactiveFormsModule,
+    TextInputDirective,
+    IconComponent,
+    TranslocoPipe,
+    TableControlComponent
+]
 })
 export class UntersuchungImpfstatusListComponent {
 

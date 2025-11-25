@@ -11,11 +11,13 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerBerechtigung;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -37,7 +39,7 @@ public class BenutzerMapper {
             benutzer.getNachname(),
             benutzer.getVorname(),
             benutzer.getVorname() + ' ' + benutzer.getNachname(),
-            benutzer.getFachRollen(),
+            EnumSetUtil.toList(benutzer.getFachRollen()),
             benutzer.isAktiv()
         );
     }
@@ -70,7 +72,7 @@ public class BenutzerMapper {
 
         // Only System-Admin, Support and Admin roles can update roles
         if (isAllowedToUpdateFachRollen(currentBenutzer, existingBenutzer, saveJson)) {
-            existingBenutzer.setFachRollen(saveJson.getFachRollen());
+            existingBenutzer.setFachRollen(EnumSetUtil.toEnumSet(saveJson.getFachRollen(), FachRolle.class));
         } else {
             throw new AppFailureException(AppFailureMessage.updateFachRollenNotAllowed());
         }
@@ -95,7 +97,7 @@ public class BenutzerMapper {
                 benutzer.getEmail(),
                 benutzer.getTelefon(),
                 benutzer.isAktiv(),
-                benutzer.getFachRollen(),
+                EnumSetUtil.toList(benutzer.getFachRollen()),
                 benutzer.getVersion()
             )
         );
@@ -165,9 +167,9 @@ public class BenutzerMapper {
         @NonNull BenutzerSaveJson benutzerSaveJson
     ) {
         // Roles of currently logged-in user
-        List<FachRolle> userFachRollen = currentBenutzer.getFachRollen();
+        EnumSet<FachRolle> userFachRollen = currentBenutzer.getFachRollen();
         // Roles of the user to update
-        List<FachRolle> existingFachRollen = benutzerToUpdate.getFachRollen();
+        EnumSet<FachRolle> existingFachRollen = benutzerToUpdate.getFachRollen();
         // Roles of the user after the update
         List<FachRolle> updatedFachRollen = benutzerSaveJson.getFachRollen();
         // Roles to add to the user

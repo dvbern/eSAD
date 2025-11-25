@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component, inject, input} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {EntityAktivStatus, EscadaKlasseStufe, SchuleJson} from '@dvb/data-access-backend';
@@ -27,7 +27,6 @@ import {SchulenListFilterForm} from '../schulen-list-filter.form';
 @Component({
   selector: 'feat-schulen-list',
   imports: [
-    CommonModule,
     TableComponent,
     SortableComponent,
     TableFilterComponent,
@@ -42,8 +41,8 @@ import {SchulenListFilterForm} from '../schulen-list-filter.form';
     NgSelectComponent,
     NgSelectDirective,
     TableLinkComponent,
-    ColWidthComponent,
-  ],
+    ColWidthComponent
+],
   templateUrl: './schulen-list.component.html',
   styleUrl: './schulen-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

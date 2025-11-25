@@ -1,15 +1,18 @@
 package ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure;
 
-import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import java.util.Set;
 import java.util.UUID;
 
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
+import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerRepo;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
@@ -21,6 +24,12 @@ class EnsureBenutzerHelperServiceTest {
 
     private final EnsureBenutzerHelperService ensureBenutzerHelperService;
     private final BenutzerRepo benutzerRepo;
+    private final TenantProducer tenantProducer;
+
+    @BeforeEach
+    void setUp() {
+        tenantProducer.setCurrentTenant(TenantEnum.BS);
+    }
 
     @Test
     void ensureUser() {
@@ -37,6 +46,7 @@ class EnsureBenutzerHelperServiceTest {
             "+41 76 123 45 56",
             "+41 61 123 45 56", // might be the tel of the office phone
             "Dr. Med",
+            TenantEnum.BS.name(),
             Set.of(FachRolle.SYSTEM_ADMIN)
         );
         ensureBenutzerHelperService.createNewUserFromToken(jwtData);
@@ -55,6 +65,7 @@ class EnsureBenutzerHelperServiceTest {
             "+41 76 123 45 56",
             "+41 61 123 45 90", // might be the tel of the office phone
             "Herr",
+            TenantEnum.BS.name(),
             Set.of(FachRolle.SYSTEM_ADMIN)
         );
         ensureBenutzerHelperService.updateExistingUser(userToUpdate.getId(), jwtDataChanged);
@@ -76,6 +87,7 @@ class EnsureBenutzerHelperServiceTest {
     void ensureUser_keycloakIc_changed() {
         // ARRANGE
         UUID subjectId = UUID.randomUUID();
+
         var testemail = "admin-testuser.basel." + subjectId + "@example.com";
         JsonWebTokenDataDTO jwtData = new JsonWebTokenDataDTO(
             null,
@@ -88,6 +100,7 @@ class EnsureBenutzerHelperServiceTest {
             "+41 76 123 45 56",
             "+41 61 123 45 56", // might be the tel of the office phone
             "Dr. Med",
+            TenantEnum.BS.name(),
             Set.of(FachRolle.SYSTEM_ADMIN)
         );
         ensureBenutzerHelperService.createNewUserFromToken(jwtData);
@@ -109,6 +122,7 @@ class EnsureBenutzerHelperServiceTest {
             "+41 76 123 45 56",
             "+41 61 123 45 56", // might be the tel of the office phone
             "Dr. Med",
+            TenantEnum.BS.name(),
             Set.of(FachRolle.SYSTEM_ADMIN)
         );
         ensureBenutzerHelperService.updateExistingUser(userToUpdate.getId(), jwtDataChanged);

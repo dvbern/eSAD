@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {NgbModalModule} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmDialogContentComponent} from './confirm-dialog-content.component';
@@ -9,10 +9,9 @@ import {AbstractDialogComponent} from './dialog.component';
     selector: 'feat-dialogs-confirm',
     templateUrl: './confirm-dialog.component.html',
     imports: [
-        CommonModule,
-        NgbModalModule,
-        ConfirmDialogContentComponent,
-    ],
+    NgbModalModule,
+    ConfirmDialogContentComponent
+],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfirmDialogComponent extends AbstractDialogComponent<ConfirmConfig, ConfirmOutcomeEnum> {

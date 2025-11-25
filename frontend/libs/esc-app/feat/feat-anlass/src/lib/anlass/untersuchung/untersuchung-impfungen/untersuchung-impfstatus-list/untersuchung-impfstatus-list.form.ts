@@ -115,7 +115,7 @@ export class UntersuchungImpfstatusListForm extends BaseForm<
   }
 
   valueOnValid(): UntersuchungImpfstatusListSaveJson {
-    const newValue: UntersuchungImpfstatusListSaveJson = { impfstatusList: [] };
+    const newValue: UntersuchungImpfstatusListSaveJson = {impfstatusList: []};
     Object.keys(this.group.controls.impfentscheide.controls).forEach(krankheit => {
       const krankheitGroup: UntersuchungImpfstatusSubFormType = this.getKrankheitGroup(krankheit as Krankheit);
       const rawValue = krankheitGroup.getRawValue();
@@ -147,7 +147,7 @@ export class UntersuchungImpfstatusListForm extends BaseForm<
       const krankheitGroup: UntersuchungImpfstatusSubFormType = this.getKrankheitGroup(k);
       const krankheitData = data?.impfstatusList.find(k2 => k2.krankheit === k);
       const yearMont = getYearMonthFromISODateString(krankheitData?.datumLetzteImpfung);
-      const inputToReset = { ...krankheitData, datumLetzteImpfung: yearMont };
+      const inputToReset = {...krankheitData, datumLetzteImpfung: yearMont};
       krankheitGroup.reset(inputToReset);
     });
   }
@@ -156,13 +156,13 @@ export class UntersuchungImpfstatusListForm extends BaseForm<
     Object.keys(this.group.controls.impfentscheide.controls).forEach(krankheit => {
       const krankheitGroup: UntersuchungImpfstatusSubFormType = this.getKrankheitGroup(krankheit as Krankheit);
       // Wenn AnzahlImpfungen gesetzt, ist DatumLetzteImpfung Pflicht, u.U.
-      if (config.impfungenUebersicht === RequirementSetting.REQUIRED) {
+      if (config.data.impfungenUebersicht === RequirementSetting.REQUIRED) {
         krankheitGroup.controls['datumLetzteImpfung'].setValidators([
           AppValidators.minYear(this.MIN_YEAR_FOR_LAST_IMPFUNG),
-            AppValidators.requiredIfValidator(() => (
+          AppValidators.requiredIfValidator(() => (
               krankheitGroup.controls['anzahlImpfungen'].value ?? 0) > 0
-              && !impfausweis.impfausweisUnvollstaendig
-              && !impfausweis.impfausweisNichtVorhanden),
+            && !impfausweis.impfausweisUnvollstaendig
+            && !impfausweis.impfausweisNichtVorhanden),
         ]);
         krankheitGroup.controls['anzahlImpfungen'].addValidators(
           AppValidators.requiredIfValidator(() => !!krankheitGroup.controls['datumLetzteImpfung'].value),

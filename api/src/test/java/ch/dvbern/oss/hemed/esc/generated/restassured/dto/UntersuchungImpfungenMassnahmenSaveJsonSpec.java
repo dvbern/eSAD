@@ -15,12 +15,16 @@ package ch.dvbern.oss.hemed.esc.generated.restassured.dto;
 
 import java.util.Objects;
 import java.util.Arrays;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ImpfungenMassnahmenEmpfehlungSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.InformationElternSpec;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -36,6 +40,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_INFORMATION_ELTERN,
   UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_INFORMATION_HAUSARZT,
   UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_RUECKFRAGE_HAUSARZT,
+  UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_EMPFEHLUNG,
+  UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_ACHTUNG,
   UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_BEMERKUNGEN,
   UntersuchungImpfungenMassnahmenSaveJsonSpec.JSON_PROPERTY_VERSION
 })
@@ -74,6 +80,14 @@ public class UntersuchungImpfungenMassnahmenSaveJsonSpec {
   public static final String JSON_PROPERTY_RUECKFRAGE_HAUSARZT = "rueckfrageHausarzt";
   @jakarta.annotation.Nonnull
   private Boolean rueckfrageHausarzt;
+
+  public static final String JSON_PROPERTY_EMPFEHLUNG = "empfehlung";
+  @jakarta.annotation.Nullable
+  private List<ImpfungenMassnahmenEmpfehlungSpec> empfehlung;
+
+  public static final String JSON_PROPERTY_ACHTUNG = "achtung";
+  @jakarta.annotation.Nullable
+  private String achtung;
 
   public static final String JSON_PROPERTY_BEMERKUNGEN = "bemerkungen";
   @jakarta.annotation.Nullable
@@ -286,6 +300,64 @@ public class UntersuchungImpfungenMassnahmenSaveJsonSpec {
     this.rueckfrageHausarzt = rueckfrageHausarzt;
   }
 
+  public UntersuchungImpfungenMassnahmenSaveJsonSpec empfehlung(@jakarta.annotation.Nullable List<ImpfungenMassnahmenEmpfehlungSpec> empfehlung) {
+    
+    this.empfehlung = empfehlung;
+    return this;
+  }
+
+  public UntersuchungImpfungenMassnahmenSaveJsonSpec addEmpfehlungItem(ImpfungenMassnahmenEmpfehlungSpec empfehlungItem) {
+    if (this.empfehlung == null) {
+      this.empfehlung = new ArrayList<>();
+    }
+    this.empfehlung.add(empfehlungItem);
+    return this;
+  }
+
+  /**
+   * Get empfehlung
+   * @return empfehlung
+   */
+  @jakarta.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_EMPFEHLUNG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<ImpfungenMassnahmenEmpfehlungSpec> getEmpfehlung() {
+    return empfehlung;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_EMPFEHLUNG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEmpfehlung(@jakarta.annotation.Nullable List<ImpfungenMassnahmenEmpfehlungSpec> empfehlung) {
+    this.empfehlung = empfehlung;
+  }
+
+  public UntersuchungImpfungenMassnahmenSaveJsonSpec achtung(@jakarta.annotation.Nullable String achtung) {
+    
+    this.achtung = achtung;
+    return this;
+  }
+
+  /**
+   * Get achtung
+   * @return achtung
+   */
+  @jakarta.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ACHTUNG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getAchtung() {
+    return achtung;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ACHTUNG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAchtung(@jakarta.annotation.Nullable String achtung) {
+    this.achtung = achtung;
+  }
+
   public UntersuchungImpfungenMassnahmenSaveJsonSpec bemerkungen(@jakarta.annotation.Nullable String bemerkungen) {
     
     this.bemerkungen = bemerkungen;
@@ -353,13 +425,15 @@ public class UntersuchungImpfungenMassnahmenSaveJsonSpec {
         Objects.equals(this.informationEltern, untersuchungImpfungenMassnahmenSaveJson.informationEltern) &&
         Objects.equals(this.informationHausarzt, untersuchungImpfungenMassnahmenSaveJson.informationHausarzt) &&
         Objects.equals(this.rueckfrageHausarzt, untersuchungImpfungenMassnahmenSaveJson.rueckfrageHausarzt) &&
+        Objects.equals(this.empfehlung, untersuchungImpfungenMassnahmenSaveJson.empfehlung) &&
+        Objects.equals(this.achtung, untersuchungImpfungenMassnahmenSaveJson.achtung) &&
         Objects.equals(this.bemerkungen, untersuchungImpfungenMassnahmenSaveJson.bemerkungen) &&
         Objects.equals(this.version, untersuchungImpfungenMassnahmenSaveJson.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(keineMassnahmen, vormerkenFuerGruppenFolgetermin, impfberatungMpaDurchgefuehrt, impfberatungMpaDurchgefuehrtBemerkungen, infomaterialAbgegeben, informationEltern, informationHausarzt, rueckfrageHausarzt, bemerkungen, version);
+    return Objects.hash(keineMassnahmen, vormerkenFuerGruppenFolgetermin, impfberatungMpaDurchgefuehrt, impfberatungMpaDurchgefuehrtBemerkungen, infomaterialAbgegeben, informationEltern, informationHausarzt, rueckfrageHausarzt, empfehlung, achtung, bemerkungen, version);
   }
 
   @Override
@@ -374,6 +448,8 @@ public class UntersuchungImpfungenMassnahmenSaveJsonSpec {
     sb.append("    informationEltern: ").append(toIndentedString(informationEltern)).append("\n");
     sb.append("    informationHausarzt: ").append(toIndentedString(informationHausarzt)).append("\n");
     sb.append("    rueckfrageHausarzt: ").append(toIndentedString(rueckfrageHausarzt)).append("\n");
+    sb.append("    empfehlung: ").append(toIndentedString(empfehlung)).append("\n");
+    sb.append("    achtung: ").append(toIndentedString(achtung)).append("\n");
     sb.append("    bemerkungen: ").append(toIndentedString(bemerkungen)).append("\n");
     sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");

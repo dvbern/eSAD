@@ -33,6 +33,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonPropertyOrder({
   PageResultJsonSearchSummaryJsonSpec.JSON_PROPERTY_PAGE,
   PageResultJsonSearchSummaryJsonSpec.JSON_PROPERTY_MAX_PAGE_SIZE,
+  PageResultJsonSearchSummaryJsonSpec.JSON_PROPERTY_TOTAL_FILTERED_COUNT,
   PageResultJsonSearchSummaryJsonSpec.JSON_PROPERTY_TOTAL_ITEM_COUNT,
   PageResultJsonSearchSummaryJsonSpec.JSON_PROPERTY_DATA
 })
@@ -47,6 +48,10 @@ public class PageResultJsonSearchSummaryJsonSpec {
   public static final String JSON_PROPERTY_MAX_PAGE_SIZE = "maxPageSize";
   @jakarta.annotation.Nonnull
   private Integer maxPageSize;
+
+  public static final String JSON_PROPERTY_TOTAL_FILTERED_COUNT = "totalFilteredCount";
+  @jakarta.annotation.Nullable
+  private Integer totalFilteredCount;
 
   public static final String JSON_PROPERTY_TOTAL_ITEM_COUNT = "totalItemCount";
   @jakarta.annotation.Nullable
@@ -107,6 +112,31 @@ public class PageResultJsonSearchSummaryJsonSpec {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setMaxPageSize(@jakarta.annotation.Nonnull Integer maxPageSize) {
     this.maxPageSize = maxPageSize;
+  }
+
+  public PageResultJsonSearchSummaryJsonSpec totalFilteredCount(@jakarta.annotation.Nullable Integer totalFilteredCount) {
+    
+    this.totalFilteredCount = totalFilteredCount;
+    return this;
+  }
+
+  /**
+   * Get totalFilteredCount
+   * @return totalFilteredCount
+   */
+  @jakarta.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TOTAL_FILTERED_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getTotalFilteredCount() {
+    return totalFilteredCount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TOTAL_FILTERED_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTotalFilteredCount(@jakarta.annotation.Nullable Integer totalFilteredCount) {
+    this.totalFilteredCount = totalFilteredCount;
   }
 
   public PageResultJsonSearchSummaryJsonSpec totalItemCount(@jakarta.annotation.Nullable Integer totalItemCount) {
@@ -178,13 +208,14 @@ public class PageResultJsonSearchSummaryJsonSpec {
     PageResultJsonSearchSummaryJsonSpec pageResultJsonSearchSummaryJson = (PageResultJsonSearchSummaryJsonSpec) o;
     return Objects.equals(this.page, pageResultJsonSearchSummaryJson.page) &&
         Objects.equals(this.maxPageSize, pageResultJsonSearchSummaryJson.maxPageSize) &&
+        Objects.equals(this.totalFilteredCount, pageResultJsonSearchSummaryJson.totalFilteredCount) &&
         Objects.equals(this.totalItemCount, pageResultJsonSearchSummaryJson.totalItemCount) &&
         Objects.equals(this.data, pageResultJsonSearchSummaryJson.data);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(page, maxPageSize, totalItemCount, data);
+    return Objects.hash(page, maxPageSize, totalFilteredCount, totalItemCount, data);
   }
 
   @Override
@@ -193,6 +224,7 @@ public class PageResultJsonSearchSummaryJsonSpec {
     sb.append("class PageResultJsonSearchSummaryJsonSpec {\n");
     sb.append("    page: ").append(toIndentedString(page)).append("\n");
     sb.append("    maxPageSize: ").append(toIndentedString(maxPageSize)).append("\n");
+    sb.append("    totalFilteredCount: ").append(toIndentedString(totalFilteredCount)).append("\n");
     sb.append("    totalItemCount: ").append(toIndentedString(totalItemCount)).append("\n");
     sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("}");

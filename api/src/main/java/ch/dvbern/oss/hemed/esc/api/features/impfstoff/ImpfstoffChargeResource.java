@@ -44,7 +44,7 @@ public class ImpfstoffChargeResource {
 
     @GET
     @NonNull
-    @RolesAllowed(BerechtigungName.LISTEN_LESEN)
+    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
     public ImpfstoffChargeListJson findAllByImpfstoff(
         @NotNull @NonNull @PathParam("impfstoffId") ID<Impfstoff> impfstoffId
     ) {

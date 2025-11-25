@@ -37,7 +37,7 @@ class EdokidIdGeneratorServiceTest {
     }
 
     private String getSchuljahrFormatted() {
-        LocalDate localDate = this.appClock.localDateTime().now().toLocalDate();
+        LocalDate localDate = this.appClock.getToday();
 
         int jahr = localDate.isBefore(LocalDate.of(localDate.getYear(), Month.AUGUST, 1)) ?
             localDate.getYear() - 1 :

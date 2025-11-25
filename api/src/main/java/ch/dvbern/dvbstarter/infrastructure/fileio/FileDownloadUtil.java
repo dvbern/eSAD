@@ -44,7 +44,7 @@ import org.jboss.resteasy.reactive.RestMulti;
 public class FileDownloadUtil {
 
     public static final String CONTENT_DISPOSITION = "Content-Disposition";
-    public static final String FILENAME_UTF_8 = ";filename*=UTF-8''";
+    public static final String FILENAME = ";filename=";
     public static final String MIME_TYPE_DOCX = "vnd.openxmlformats-officedocument.wordprocessingml.document";
 
     @NonNull
@@ -53,7 +53,7 @@ public class FileDownloadUtil {
         @NonNull FileStoreService fileStoreService,
         @NonNull String disposition) {
         String fileId = fileInfoBucket.getFileIdInBucket();
-        final String filename = UrlEscapers.urlFragmentEscaper().escape(fileInfoBucket.getFileName().getFileName());
+        final String filename = urlEscapeAndQuoteFilename(fileInfoBucket.getFileName().getFileName());
         final String contentType = fileInfoBucket.getMediaType().toString();
 
         return RestMulti.fromUniResponse(
@@ -63,7 +63,7 @@ public class FileDownloadUtil {
                 .map(FileStoreService::toBuffer),
             response -> Map.of(
                 CONTENT_DISPOSITION,
-                List.of(disposition + FILENAME_UTF_8 + filename),
+                List.of(disposition + FILENAME + filename),
                 "Content-Type",
                 List.of(contentType)));
     }
@@ -77,7 +77,7 @@ public class FileDownloadUtil {
         @NonNull String disposition
     ) {
         String fileId = fileInfoBucket.getFileIdInBucket();
-        String filename = UrlEscapers.urlFragmentEscaper().escape(fileInfoBucket.getFileName().getFileName());
+        String filename = urlEscapeAndQuoteFilename(fileInfoBucket.getFileName().getFileName());
         final String contentType = fileInfoBucket.getMediaType().toString();
 
         return Uni.createFrom().completionStage(() -> fileStoreService.getFileAsync(fileId))
@@ -85,7 +85,7 @@ public class FileDownloadUtil {
             .transformToMulti(responsePublisher -> RestMulti
                 .fromMultiData(Multi.createFrom().safePublisher(AdaptersToFlow.publisher(responsePublisher))
                     .map(FileStoreService::toBuffer))
-                .header(CONTENT_DISPOSITION, disposition + FILENAME_UTF_8 + filename)
+                .header(CONTENT_DISPOSITION, disposition + FILENAME + filename)
                 .header("Content-Type", contentType)
                 .build());
     }
@@ -106,8 +106,9 @@ public class FileDownloadUtil {
     ) {
 
         String mimeType = fileInfoBucket.getMediaType().toString();
-        String filename = UrlEscapers.urlFragmentEscaper().escape(fileInfoBucket.getFileName().getFileName());
-        String contentDispositionHeaderValue = disposition + FILENAME_UTF_8 + filename;
+
+        String filename = urlEscapeAndQuoteFilename(fileInfoBucket.getFileName().getFileName());
+        String contentDispositionHeaderValue = disposition + FILENAME + filename;
 
         return Response
             .ok(content, mimeType)
@@ -116,6 +117,11 @@ public class FileDownloadUtil {
             // ... which is used for most downloads by Jackson
             //.header(HttpHeaders.CONTENT_LENGTH, content.length)
             .build();
+    }
+
+    @NonNull
+    private String urlEscapeAndQuoteFilename(@NonNull String filename) {
+        return '"' + UrlEscapers.urlFragmentEscaper().escape(filename) + '"';
     }
 
     @NonNull

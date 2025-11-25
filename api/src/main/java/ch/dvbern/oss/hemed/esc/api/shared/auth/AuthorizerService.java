@@ -8,6 +8,7 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
@@ -84,6 +85,41 @@ public class AuthorizerService {
     public boolean checkReadAuthorizationDocument(@NonNull DocumentQueue documentQueue) {
         Benutzer currentBenutzer = benutzerService.getCurrentBenutzerOrThrowException();
         return documentQueue.getBenutzer().equals(currentBenutzer);
+    }
+
+    public void requireReadAuthorizationAnlass(@NonNull ID<Anlass> anlassId) {
+        Anlass anlass = anlassService.getById(anlassId);
+        if (!hasReadAuthorizationAnlass(anlass)) {
+            throwViolation(anlass);
+        }
+    }
+
+    public void requireWriteAuthorizationAnlassLaeuse(@NonNull ID<Anlass> anlassId) {
+        Anlass anlass = anlassService.getById(anlassId);
+        if (!hasWriteAuthorizationAnlass(anlass)) {
+            throwViolation(anlass);
+        }
+    }
+
+    public boolean hasReadAuthorizationAnlassListe(@NonNull Anlass anlass) {
+        if (anlass.getAnlassConfig().getAnlassTyp() != AnlassTyp.LAEUSEKONTROLLE) {
+            return benutzerService.hasCallerBerechtigung(Berechtigung.ANLASSLISTE_LESEN);
+        }
+        return true;
+    }
+
+    public boolean hasReadAuthorizationAnlass(@NonNull Anlass anlass) {
+        if (anlass.getAnlassConfig().getAnlassTyp() != AnlassTyp.LAEUSEKONTROLLE) {
+            return benutzerService.hasCallerBerechtigung(Berechtigung.ANLASSPLANUNG_LESEN);
+        }
+        return true;
+    }
+
+    public boolean hasWriteAuthorizationAnlass(@NonNull Anlass anlass) {
+        if (anlass.getAnlassConfig().getAnlassTyp() != AnlassTyp.LAEUSEKONTROLLE) {
+            return benutzerService.hasCallerBerechtigung(Berechtigung.ANLASSPLANUNG_SCHREIBEN);
+        }
+        return true;
     }
 
     private void throwViolation(@NonNull AbstractEntity<?> abstractEntity) {

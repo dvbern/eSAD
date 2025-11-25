@@ -68,9 +68,12 @@
             [placeholder]="'global.select.bitte-auswaehlen' | transloco"
           >
             @for (label of labelsStore.notizLabelsEnabledSorted(); track label.id) {
-              <ng-option [value]="label" [disabled]="label.data.disabled">
-                {{ label.data.name |translatedStringPipe }}
-              </ng-option>
+              <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+              @if (label.data.name | translatedStringPipe; as translatedLabel) {
+                <ng-option [value]="label" [disabled]="label.data.disabled">
+                  {{ label.data.name | translatedStringPipe }}
+                </ng-option>
+              }
             }
           </ng-select>
         </svui-form-control>
@@ -94,11 +97,29 @@
                       [formControl]="form.controlAt('bemerkungen')"></textarea>
         </svui-form-control>
 
-        <!-- Fileupload -->
-        <feat-file-drop
-          (filesToUpload)="onFilesSelected($event)"
-          [acceptedFiletypes]="acceptedFiletypes"
-        />
+        <!-- two-column row inside the form -->
+        <div class="form-two-column-row">
+
+          <div style="margin-top: 30px;">
+
+            <!-- Fileupload -->
+            <feat-file-drop
+            (filesToUpload)="onFilesSelected($event)"
+              [acceptedFiletypes]="acceptedFiletypes"
+            ></feat-file-drop>
+          </div>
+
+          <!-- QRCode -->
+          <div style="display:flex; justify-content:center;">
+            <feat-qr-code-upload
+              [qrData]="qrData"
+              [title]="'ui.upload.qr.title' | transloco "
+              [width]="275"
+              [text]="'ui.upload.qr.title' | transloco "
+            ></feat-qr-code-upload>
+          </div>
+        </div>
+
 
         <!--messages for whole form -->
         <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>

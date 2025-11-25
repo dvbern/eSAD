@@ -24,6 +24,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -37,8 +40,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   EinladungSaveJsonSpec.JSON_PROPERTY_GRUND_ABMELDUNG,
   EinladungSaveJsonSpec.JSON_PROPERTY_ART_ABMELDUNG,
   EinladungSaveJsonSpec.JSON_PROPERTY_BEMERKUNG_ABMELDUNG,
-  EinladungSaveJsonSpec.JSON_PROPERTY_IMPFAUSWEIS,
-  EinladungSaveJsonSpec.JSON_PROPERTY_FRAGEBOGEN,
+  EinladungSaveJsonSpec.JSON_PROPERTY_NOTIZEN,
   EinladungSaveJsonSpec.JSON_PROPERTY_VERSION,
   EinladungSaveJsonSpec.JSON_PROPERTY_VERSION_ABMELDUNGS_NOTIZ
 })
@@ -70,13 +72,9 @@ public class EinladungSaveJsonSpec {
   @jakarta.annotation.Nullable
   private String bemerkungAbmeldung;
 
-  public static final String JSON_PROPERTY_IMPFAUSWEIS = "impfausweis";
-  @jakarta.annotation.Nullable
-  private NotizJsonSpec impfausweis;
-
-  public static final String JSON_PROPERTY_FRAGEBOGEN = "fragebogen";
-  @jakarta.annotation.Nullable
-  private NotizJsonSpec fragebogen;
+  public static final String JSON_PROPERTY_NOTIZEN = "notizen";
+  @jakarta.annotation.Nonnull
+  private List<NotizJsonSpec> notizen;
 
   public static final String JSON_PROPERTY_VERSION = "version";
   @jakarta.annotation.Nonnull
@@ -239,54 +237,37 @@ public class EinladungSaveJsonSpec {
     this.bemerkungAbmeldung = bemerkungAbmeldung;
   }
 
-  public EinladungSaveJsonSpec impfausweis(@jakarta.annotation.Nullable NotizJsonSpec impfausweis) {
+  public EinladungSaveJsonSpec notizen(@jakarta.annotation.Nonnull List<NotizJsonSpec> notizen) {
     
-    this.impfausweis = impfausweis;
+    this.notizen = notizen;
+    return this;
+  }
+
+  public EinladungSaveJsonSpec addNotizenItem(NotizJsonSpec notizenItem) {
+    if (this.notizen == null) {
+      this.notizen = new ArrayList<>();
+    }
+    this.notizen.add(notizenItem);
     return this;
   }
 
   /**
-   * Get impfausweis
-   * @return impfausweis
+   * Get notizen
+   * @return notizen
    */
-  @jakarta.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_IMPFAUSWEIS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_NOTIZEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public NotizJsonSpec getImpfausweis() {
-    return impfausweis;
+  public List<NotizJsonSpec> getNotizen() {
+    return notizen;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_IMPFAUSWEIS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setImpfausweis(@jakarta.annotation.Nullable NotizJsonSpec impfausweis) {
-    this.impfausweis = impfausweis;
-  }
-
-  public EinladungSaveJsonSpec fragebogen(@jakarta.annotation.Nullable NotizJsonSpec fragebogen) {
-    
-    this.fragebogen = fragebogen;
-    return this;
-  }
-
-  /**
-   * Get fragebogen
-   * @return fragebogen
-   */
-  @jakarta.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_FRAGEBOGEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public NotizJsonSpec getFragebogen() {
-    return fragebogen;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_FRAGEBOGEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setFragebogen(@jakarta.annotation.Nullable NotizJsonSpec fragebogen) {
-    this.fragebogen = fragebogen;
+  @JsonProperty(JSON_PROPERTY_NOTIZEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setNotizen(@jakarta.annotation.Nonnull List<NotizJsonSpec> notizen) {
+    this.notizen = notizen;
   }
 
   public EinladungSaveJsonSpec version(@jakarta.annotation.Nonnull Long version) {
@@ -354,15 +335,14 @@ public class EinladungSaveJsonSpec {
         Objects.equals(this.grundAbmeldung, einladungSaveJson.grundAbmeldung) &&
         Objects.equals(this.artAbmeldung, einladungSaveJson.artAbmeldung) &&
         Objects.equals(this.bemerkungAbmeldung, einladungSaveJson.bemerkungAbmeldung) &&
-        Objects.equals(this.impfausweis, einladungSaveJson.impfausweis) &&
-        Objects.equals(this.fragebogen, einladungSaveJson.fragebogen) &&
+        Objects.equals(this.notizen, einladungSaveJson.notizen) &&
         Objects.equals(this.version, einladungSaveJson.version) &&
         Objects.equals(this.versionAbmeldungsNotiz, einladungSaveJson.versionAbmeldungsNotiz);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(anlassId, kindId, einladungStatus, grundAbmeldung, artAbmeldung, bemerkungAbmeldung, impfausweis, fragebogen, version, versionAbmeldungsNotiz);
+    return Objects.hash(anlassId, kindId, einladungStatus, grundAbmeldung, artAbmeldung, bemerkungAbmeldung, notizen, version, versionAbmeldungsNotiz);
   }
 
   @Override
@@ -375,8 +355,7 @@ public class EinladungSaveJsonSpec {
     sb.append("    grundAbmeldung: ").append(toIndentedString(grundAbmeldung)).append("\n");
     sb.append("    artAbmeldung: ").append(toIndentedString(artAbmeldung)).append("\n");
     sb.append("    bemerkungAbmeldung: ").append(toIndentedString(bemerkungAbmeldung)).append("\n");
-    sb.append("    impfausweis: ").append(toIndentedString(impfausweis)).append("\n");
-    sb.append("    fragebogen: ").append(toIndentedString(fragebogen)).append("\n");
+    sb.append("    notizen: ").append(toIndentedString(notizen)).append("\n");
     sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("    versionAbmeldungsNotiz: ").append(toIndentedString(versionAbmeldungsNotiz)).append("\n");
     sb.append("}");

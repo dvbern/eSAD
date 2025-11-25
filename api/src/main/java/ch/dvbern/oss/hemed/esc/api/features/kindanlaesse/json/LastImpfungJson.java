@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.Nullable;

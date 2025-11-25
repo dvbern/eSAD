@@ -1,5 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.testutil;
 
+import ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.JsonWebTokenClaims;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import io.quarkus.arc.profile.IfBuildProfile;
@@ -30,7 +31,7 @@ public class TenantTestFilter implements ContainerRequestFilter {
             return;
         }
         JsonWebToken jsonWebToken = (JsonWebToken) association.getIdentity().getPrincipal();
-        String tenantFromToken = jsonWebToken.getClaim("tenant");
+        String tenantFromToken = jsonWebToken.getClaim(JsonWebTokenClaims.TENANT_CLAIM);
         if (tenantFromToken != null) {
             tenantProducer.setCurrentTenant(TenantEnum.valueOf(tenantFromToken));
         } else{

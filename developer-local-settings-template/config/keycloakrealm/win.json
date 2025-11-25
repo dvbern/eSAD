@@ -364,6 +364,15 @@
           "attributes": {}
         },
         {
+          "id": "8390bae0-9eaa-4958-9f0c-655f17ae2bc4",
+          "name": "LAUSBEAUFTRAGTE",
+          "description": "",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "ab3bea17-093b-4be8-878c-77a71062bfef",
+          "attributes": {}
+        },
+        {
           "id": "6f7c8d2c-4d37-4729-8755-ad32fd771074",
           "name": "MPA",
           "description": "",
@@ -379,6 +388,15 @@
           "composite": false,
           "clientRole": true,
           "containerId": "d9469623-dc02-41c7-8abf-ff61f75328e1",
+          "attributes": {}
+        },
+        {
+          "id": "75ff78c4-dee4-4426-8051-837795d1217f",
+          "name": "PFP",
+          "description": "Pflegefachperson",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "ab3bea17-093b-4be8-878c-77a71062bfef",
           "attributes": {}
         }
       ],
@@ -2175,87 +2193,14 @@
       }
     },
     {
-      "id": "70af8659-b38d-4c22-91bc-7101e21c4da5",
-      "name": "ESC-SUPERUSER-ROLE",
-      "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
-      "identityProviderMapper": "oidc-role-idp-mapper",
-      "config": {
-        "syncMode": "INHERIT",
-        "claim": "roles",
-        "role": "esc-oauth2-proxy-${KC_ENV}.SUPERUSER",
-        "claim.value": "GP_GD-MD_EDOKID-Superuser"
-      }
-    },
-    {
-      "id": "a8ae9cb2-dfa2-4456-8ac9-163b187f40c3",
-      "name": "ESC-MPA-ROLE",
-      "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
-      "identityProviderMapper": "oidc-role-idp-mapper",
-      "config": {
-        "syncMode": "FORCE",
-        "claim": "roles.",
-        "role": "esc-oauth2-proxy-${KC_ENV}.MPA",
-        "claim.value": "GP_GD-MD_EDOKID-MPA"
-      }
-    },
-    {
       "id": "40ad624d-e6af-4a52-b6a2-44ee61fd9377",
       "name": "ESC-SUPPORT-ROLE",
       "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
-      "identityProviderMapper": "oidc-role-idp-mapper",
-      "config": {
-        "syncMode": "INHERIT",
-        "claim": "roles",
-        "role": "esc-oauth2-proxy-${KC_ENV}.SUPPORT",
-        "claim.value": "GP_GD-MD_EDOKID-Support"
-      }
-    },
-    {
-      "id": "275afee7-d8e3-436f-a61e-e383a712e671",
-      "name": "ESC-EMPFANG-ROLE",
-      "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
-      "identityProviderMapper": "oidc-role-idp-mapper",
+      "identityProviderMapper": "oidc-advanced-role-idp-mapper",
       "config": {
         "syncMode": "FORCE",
-        "claim": "roles",
-        "role": "esc-oauth2-proxy-${KC_ENV}.EMPFANG",
-        "claim.value": "GP_GD-MD_EDOKID-Empfang"
-      }
-    },
-    {
-      "id": "f3ee29b0-f699-4ec6-8921-db3d620fc755",
-      "name": "ESC-SCHULAERZTIN-ROLE",
-      "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
-      "identityProviderMapper": "oidc-role-idp-mapper",
-      "config": {
-        "syncMode": "INHERIT",
-        "claim": "roles",
-        "role": "esc-oauth2-proxy-${KC_ENV}.SCHULAERZTIN",
-        "claim.value": "GP_GD-MD_EDOKID-SÄ"
-      }
-    },
-    {
-      "id": "e378d751-d763-4512-95c2-c5b195dd31bf",
-      "name": "ESC-ADMIN-ROLE",
-      "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
-      "identityProviderMapper": "oidc-role-idp-mapper",
-      "config": {
-        "syncMode": "FORCE",
-        "claim": "roles",
-        "role": "esc-oauth2-proxy-${KC_ENV}.ADMIN",
-        "claim.value": "GP_GD-MD_EDOKID-Admin"
-      }
-    },
-    {
-      "id": "e2ae8c2f-9b5d-457e-8c0e-1622d79d56fe",
-      "name": "ESC-ORTHOPISTIN-ROLE",
-      "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
-      "identityProviderMapper": "oidc-role-idp-mapper",
-      "config": {
-        "syncMode": "FORCE",
-        "claim": "roles",
-        "role": "esc-oauth2-proxy-${KC_ENV}.ORTHOPISTIN",
-        "claim.value": "GP_GD-MD_EDOKID-Orthoptistin"
+        "claims": "[{\"key\":\"tenant\",\"value\":\"WIN\"},{\"key\":\"roles\",\"value\":\"stadt\\\\G5EGZD_eSAD_Support\"}]",
+        "role": "esc-oauth2-proxy-${KC_ENV}.SUPPORT"
       }
     },
     {
@@ -2289,6 +2234,50 @@
         "syncMode": "FORCE",
         "claim": "ESC-TITLE",
         "user.attribute": "ESC-TITLE"
+      }
+    },
+    {
+      "id": "758f46f1-b477-4a5d-8abf-cbd805edbdce",
+      "name": "ESC-LAUSBEAUFTRAGTE-ROLE",
+      "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
+      "identityProviderMapper": "oidc-advanced-role-idp-mapper",
+      "config": {
+        "syncMode": "FORCE",
+        "claims": "[{\"key\":\"tenant\",\"value\":\"WIN\"},{\"key\":\"roles\",\"value\":\"stadt\\\\G5EGZD_eSAD_LB\"}]",
+        "role": "esc-oauth2-proxy-${KC_ENV}.LAUSBEAUFTRAGTE"
+      }
+    },
+    {
+      "id": "731d640b-b581-421f-afa5-007e245478c2",
+      "name": "ESC-SCHULAERZTIN-ROLE",
+      "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
+      "identityProviderMapper": "oidc-advanced-role-idp-mapper",
+      "config": {
+        "syncMode": "FORCE",
+        "claims": "[{\"key\":\"tenant\",\"value\":\"WIN\"},{\"key\":\"roles\",\"value\":\"stadt\\\\G5EGZD_eSAD_SA\"}]",
+        "role": "esc-oauth2-proxy-${KC_ENV}.SCHULAERZTIN"
+      }
+    },
+    {
+      "id": "9feaeb23-e383-4c51-b73f-6051006f9e0f",
+      "name": "ESC-ADMIN-ROLE",
+      "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
+      "identityProviderMapper": "oidc-advanced-role-idp-mapper",
+      "config": {
+        "syncMode": "FORCE",
+        "claims": "[{\"key\":\"tenant\",\"value\":\"WIN\"},{\"key\":\"roles\",\"value\":\"stadt\\\\G5EGZD_eSAD_Admin\"}]",
+        "role": "esc-oauth2-proxy-${KC_ENV}.ADMIN"
+      }
+    },
+    {
+      "id": "d4bd7d77-bdf8-4e93-85b8-d7637aed998a",
+      "name": "ESC-PFP-ROLE",
+      "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
+      "identityProviderMapper": "oidc-advanced-role-idp-mapper",
+      "config": {
+        "syncMode": "FORCE",
+        "claims": "[{\"key\":\"tenant\",\"value\":\"WIN\"},{\"key\":\"roles\",\"value\":\"stadt\\\\G5EGZD_eSAD_PFP\"}]",
+        "role": "esc-oauth2-proxy-${KC_ENV}.PFP"
       }
     }
   ],

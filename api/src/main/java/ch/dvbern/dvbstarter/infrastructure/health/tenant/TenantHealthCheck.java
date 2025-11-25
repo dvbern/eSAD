@@ -18,11 +18,14 @@
 
 package ch.dvbern.dvbstarter.infrastructure.health.tenant;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassConfigService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerRepo;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
-import ch.dvbern.oss.hemed.esc.api.features.pub.settings.TenantSettingsService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
@@ -31,8 +34,6 @@ import ch.dvbern.oss.hemed.esc.api.shared.scheduler.SchedulerConfigService;
 import io.smallrye.health.api.Wellness;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.eclipse.microprofile.health.HealthCheck;
@@ -46,7 +47,8 @@ public class TenantHealthCheck extends AbstractTenantHealthCheck implements Heal
 
     private final List<TenantInfos> tenantesToCheckHealthFor;
 
-    record TenantInfos(TenantEnum tenantEnum, ID<Benutzer> systemAdminId) {}
+    record TenantInfos(TenantEnum tenantEnum, ID<Benutzer> systemAdminId) {
+    }
 
     @Inject
     public TenantHealthCheck(
@@ -97,7 +99,9 @@ public class TenantHealthCheck extends AbstractTenantHealthCheck implements Heal
                     .withData(tenantPrefix + "tenantSettingsPresent", result.tenantSettingsPresent())
                     .withData(tenantPrefix + "tenantHeaderLogoPresent", result.tenantHeaderLogoPresent())
                     .withData(tenantPrefix + "systemAdminPresent", result.systemAdminPresent())
-                    .withData(tenantPrefix + "systemAdminNotReturnedByFindAll", result.systemAdminNotReturnedByFindAll())
+                    .withData(
+                        tenantPrefix + "systemAdminNotReturnedByFindAll",
+                        result.systemAdminNotReturnedByFindAll())
                     .withData(tenantPrefix + "anlassConfigPresent", result.anlassConfigPresent())
                     .withData(tenantPrefix + "schedulerConfigPresent", result.schedulerConfigPresent())
                     .withData(tenantPrefix + "s3EncryptionKeyPresent", result.s3EncryptionKeyPresent())

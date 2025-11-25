@@ -29,10 +29,6 @@ public class KontaktPersonKindJson {
     private final ExternalImportInfoJson externalImportInfoJson;
 
     @NotNull
-    @Schema(required = true)
-    private final boolean manualOrAktivInExternalSystem;
-
-    @NotNull
     @NonNull
     @Valid
     @Schema(required = true)

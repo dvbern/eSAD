@@ -8,7 +8,9 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierJson;
-import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierMedizinischSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierNichtMedizinischSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
@@ -33,14 +35,15 @@ public final class DossierMapper {
     public static DossierJson toJson(
         @NonNull Dossier dossier,
         @Nullable Nachkontrolle nachkontrolle,
-        @NonNull LocalDate now
+        @NonNull LocalDate now,
+        boolean canReadMedizinischeDaten
     ) {
         Benutzer zustaendigArzt = dossier.getZustaendigArztFromDossierOrSchule();
         Benutzer zustaendigMPA = dossier.getZustaendigMPAFromDossierOrSchule();
         return new DossierJson(
             dossier.getId(),
             EntityInfoJson.fromEntity(dossier),
-            new DossierSaveJson(
+            canReadMedizinischeDaten ? new DossierMedizinischSaveJson(
                 dossier.isKinderschutzfall(),
                 dossier.isKeineAuskunftAnDrittpersonen(),
                 dossier.isSansPapier(),
@@ -48,10 +51,13 @@ public final class DossierMapper {
                 dossier.getAndereZusatzInformationText(),
                 dossier.isImmunitaetMasern(),
                 dossier.isImmunitaetVarizellen(),
-                dossier.getPapierakteStatus(),
+                NachkontrolleMapper.toJson(nachkontrolle),
+                dossier.getVersion()
+            ) : null,
+            new DossierNichtMedizinischSaveJson(
                 BenutzerMapper.toOptionJson(zustaendigArzt),
                 BenutzerMapper.toOptionJson(zustaendigMPA),
-                NachkontrolleMapper.toJson(nachkontrolle),
+                dossier.getPapierakteStatus(),
                 dossier.getVersion()
             ),
             KindMapper.toJson(dossier.getKind(), now)
@@ -59,23 +65,31 @@ public final class DossierMapper {
     }
 
     @NonNull
-    private Dossier toEntity(@NonNull Dossier existingDossier, @NonNull DossierSaveJson saveJson) {
+    private Dossier toEntity(
+        @NonNull Dossier existingDossier,
+        @Nullable DossierMedizinischSaveJson saveJsonMedizinisch,
+        @Nullable DossierNichtMedizinischSaveJson saveJsonNichtMedizinisch) {
         // We don't set the EdokidId in toEntity() because it can't be changed
         // Either it's generated in the according service, or it's already set on existingDossier
-        existingDossier.setKinderschutzfall(saveJson.isKinderschutzfall());
-        existingDossier.setKeineAuskunftAnDrittpersonen(saveJson.isKeineAuskunftAnDrittpersonen());
-        existingDossier.setSansPapier(saveJson.isSansPapier());
-        existingDossier.setAndereZusatzinformation(saveJson.isAndereZusatzinformation());
-        existingDossier.setAndereZusatzInformationText(saveJson.getAndereZusatzInformationText());
-        existingDossier.setImmunitaetMasern(saveJson.isImmunitaetMasern());
-        existingDossier.setImmunitaetVarizellen(saveJson.isImmunitaetVarizellen());
-        existingDossier.setPapierakteStatus(saveJson.getPapierakteStatus());
-        existingDossier.setZustaendigArzt(
-            benutzerService.getBenutzerIfCorrectRole(saveJson.getZustaendigArzt(), FachRolle.SCHULAERZTIN)
-        );
-        existingDossier.setZustaendigMPA(
-            benutzerService.getBenutzerIfCorrectRole(saveJson.getZustaendigMPA(), FachRolle.MPA)
-        );
+        if (saveJsonMedizinisch != null) {
+            existingDossier.setKinderschutzfall(saveJsonMedizinisch.isKinderschutzfall());
+            existingDossier.setKeineAuskunftAnDrittpersonen(saveJsonMedizinisch.isKeineAuskunftAnDrittpersonen());
+            existingDossier.setSansPapier(saveJsonMedizinisch.isSansPapier());
+            existingDossier.setAndereZusatzinformation(saveJsonMedizinisch.isAndereZusatzinformation());
+            existingDossier.setAndereZusatzInformationText(saveJsonMedizinisch.getAndereZusatzInformationText());
+            existingDossier.setImmunitaetMasern(saveJsonMedizinisch.isImmunitaetMasern());
+            existingDossier.setImmunitaetVarizellen(saveJsonMedizinisch.isImmunitaetVarizellen());
+        } else if (saveJsonNichtMedizinisch != null) {
+            existingDossier.setZustaendigArzt(
+                benutzerService.getBenutzerIfCorrectRole(
+                    saveJsonNichtMedizinisch.getZustaendigArzt(),
+                    FachRolle.SCHULAERZTIN)
+            );
+            existingDossier.setZustaendigMPA(
+                benutzerService.getBenutzerIfCorrectRole(saveJsonNichtMedizinisch.getZustaendigMPA(), FachRolle.MPA)
+            );
+            existingDossier.setPapierakteStatus(saveJsonNichtMedizinisch.getPapierakteStatus());
+        }
         return existingDossier;
     }
 
@@ -85,11 +99,17 @@ public final class DossierMapper {
         aktivitaetHistoryService.createAktivitaetKind(dossier.getKind());
         Nachkontrolle nachkontrolle = nachkontrolleService.getOrCreateByDossier(dossier.getId());
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
-        return DossierMapper.toJson(dossier, nachkontrolle, now);
+        return DossierMapper.toJson(
+            dossier,
+            nachkontrolle,
+            now,
+            benutzerService.hasCallerBerechtigung(Berechtigung.KINDER_LESEN_MEDIZINISCH));
     }
 
     @NonNull
-    public DossierJson update(@NonNull ID<Dossier> dossierID, @NonNull DossierSaveJson dossierJson) {
+    public DossierJson updateMedizinisch(
+        @NonNull ID<Dossier> dossierID,
+        @NonNull DossierMedizinischSaveJson dossierJson) {
         Dossier existingDossier = dossierService.getById(dossierID);
         KindValidationUtil.throwErrorIfKindIsInactive(
             existingDossier.getKind(),
@@ -97,7 +117,7 @@ public final class DossierMapper {
                 existingDossier.getKind(),
                 existingDossier
             ));
-        Dossier entity = toEntity(existingDossier, dossierJson);
+        Dossier entity = toEntity(existingDossier, dossierJson, null);
         Dossier persistedDossier = dossierService.persistWithOptimisticLocking(entity, dossierJson.getVersion());
         persistedDossier.disableOptimisticLockingCheck();
         Nachkontrolle nachkontrolle = nachkontrolleService.getOrCreateByDossier(existingDossier.getId());
@@ -109,11 +129,33 @@ public final class DossierMapper {
         return toJson(
             persistedDossier,
             persistedNachkontrolle,
-            now);
+            now,
+            benutzerService.hasCallerBerechtigung(Berechtigung.KINDER_LESEN_MEDIZINISCH));
+    }
+
+    @NonNull
+    public DossierJson updateNichtMedizinisch(
+        @NonNull ID<Dossier> dossierID,
+        @NonNull DossierNichtMedizinischSaveJson dossierJson) {
+        Dossier existingDossier = dossierService.getById(dossierID);
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            existingDossier.getKind(),
+            AppValidationMessage.cannotEditEntityForInactiveKind(
+                existingDossier.getKind(),
+                existingDossier
+            ));
+        Dossier entity = toEntity(existingDossier, null, dossierJson);
+        Dossier persistedDossier = dossierService.persistWithOptimisticLocking(entity, dossierJson.getVersion());
+        persistedDossier.disableOptimisticLockingCheck();
+        LocalDate now = appClock.offsetDateTime().now().toLocalDate();
+        return toJson(
+            persistedDossier,
+            null,
+            now,
+            benutzerService.hasCallerBerechtigung(Berechtigung.KINDER_LESEN_MEDIZINISCH));
     }
 
     public void remove(@NonNull ID<Dossier> dossierID) {
         dossierService.remove(dossierID);
     }
-
 }

@@ -17,6 +17,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.edokid_id.EdokidId;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.edokid_id.EdokidIdGeneratorService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.EsadIdJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindSaveResultJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindSucheOptionsJson;
@@ -66,7 +67,6 @@ public final class KindMapper {
             kind.getId(),
             kind.getEsadId(),
             ExternalImportInfoJson.toJson(kind.getExternalImportInfo()),
-            kind.isManualOrAktivInExternalSystem(),
             EntityInfoJson.fromEntity(kind),
             new KindSaveJson(
                 kind.getSozialversicherungsNummer(),
@@ -88,6 +88,15 @@ public final class KindMapper {
                 kind.getVersion()
             ),
             LandCode.getCode(kind.getNationalitaet())
+        );
+    }
+
+    @NonNull
+    public static KindOptionJson toOptionJson(@NonNull Kind kind) {
+        return new KindOptionJson(
+            kind.getId(),
+            kind.getName(),
+            kind.getVorname()
         );
     }
 

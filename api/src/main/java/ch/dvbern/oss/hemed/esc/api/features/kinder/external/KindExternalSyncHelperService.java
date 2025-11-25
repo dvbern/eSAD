@@ -535,7 +535,7 @@ public class KindExternalSyncHelperService {
 
         if (kind.getExternalImportInfo() != null && kind.isAktivInExternalSystem()) {
             kind.getExternalImportInfo().setAktivInExternalSystem(false);
-            // If the Kind to deactivate has an Escada-Schul/Klasse we remove it
+            // If the Kind to deactivate has an Escada-Schule/Klasse we remove it
             if (kind.getKlasse() != null && kind.getKlasse().getExternalSystemIdOrNull() != null) {
                 kind.setKlasse(null);
             }

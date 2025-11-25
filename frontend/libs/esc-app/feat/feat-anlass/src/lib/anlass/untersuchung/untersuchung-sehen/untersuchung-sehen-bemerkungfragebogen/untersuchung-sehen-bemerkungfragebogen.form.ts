@@ -21,7 +21,7 @@ import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {
   AnlassConfigJson,
   RequirementSetting,
-  UntersuchungSehenBemerkungFragebogenSaveJson
+  UntersuchungSehenBemerkungFragebogenSaveJson,
 } from '@dvb/data-access-backend';
 import {globalConstants} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
@@ -40,7 +40,8 @@ function makeForm(config: Config) {
   });
 }
 
-export class UntersuchungSehenBemerkungfragebogenForm extends BaseForm<ReturnType<typeof makeForm>, UntersuchungSehenBemerkungFragebogenSaveJson> {
+export class UntersuchungSehenBemerkungfragebogenForm
+  extends BaseForm<ReturnType<typeof makeForm>, UntersuchungSehenBemerkungFragebogenSaveJson> {
 
   constructor(protected config: Config) {
     super(() => makeForm(config));
@@ -61,7 +62,7 @@ export class UntersuchungSehenBemerkungfragebogenForm extends BaseForm<ReturnTyp
   }
 
   public setValidatorsForAnlassConfig(anlassConfig: AnlassConfigJson): void {
-    if (anlassConfig.sehenBemerkungenFragebogen === RequirementSetting.REQUIRED) {
+    if (anlassConfig.data.sehenBemerkungenFragebogen === RequirementSetting.REQUIRED) {
       this.group.controls.bemerkungenFragebogen.addValidators(Validators.required);
     }
   }

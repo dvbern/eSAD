@@ -1,5 +1,5 @@
 <form svuiFormLayout [formGroup]="form.group" [mode]="DetailMode.EDIT" (ngSubmit)="save()">
-  @if (anlassStore.selectedEntity()?.anlassConfig?.showDatenPersonendaten) {
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showDatenPersonendaten) {
     <h2 svuiHeading="formSection">{{ 'untersuchung.tab.daten.personen.titel' | transloco }}</h2>
 
     <svui-form-control [label]="'untersuchung.tab.daten.personen.name' | transloco"
@@ -12,10 +12,12 @@
       <input svuiTextInput [formControl]="form.group.controls.vorname">
     </svui-form-control>
 
-    <svui-form-control [label]="'untersuchung.tab.daten.personen.idNr' | transloco"
-                       [viewValue]="form.group.controls.esadId.value">
-      <input svuiTextInput [formControl]="form.group.controls.esadId">
-    </svui-form-control>
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showDatenPersonendatenEsadId) {
+      <svui-form-control [label]="'untersuchung.tab.daten.personen.idNr' | transloco"
+                         [viewValue]="form.group.controls.esadId.value">
+        <input svuiTextInput [formControl]="form.group.controls.esadId">
+      </svui-form-control>
+    }
 
     <svui-form-group [label]="'untersuchung.tab.daten.personen.geschlecht' | transloco"
                      [direction]="'horizontal'"
@@ -64,7 +66,7 @@
   }
 
   <!--UNTERSUCHUNG-->
-  @if (anlassStore.selectedEntity()?.anlassConfig?.datenUntersuchung) {
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.datenUntersuchung) {
 
     <h2 svuiHeading="formSection">{{ 'untersuchung.tab.daten.untersuchung.titel' | transloco }}</h2>
     <svui-form-control [label]="'untersuchung.tab.daten.untersuchung.datum' | transloco"
@@ -123,9 +125,23 @@
     </svui-form-group>
   }
 
+  <!-- Bemerkung -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.datenBemerkung !== RequirementSetting.NOT_VISIBLE) {
+    <svui-title [context]="'formSection'"
+                class="mb-3 mt-5">{{ 'untersuchung.tab.daten.untersuchung.bemerkung' | transloco }}
+    </svui-title>
+    <svui-form-control
+      [label]="'untersuchung.tab.daten.untersuchung.bemerkung' | transloco"
+      [topLabelVisibility]="'hidden'"
+      size="full"
+      [viewValue]="form.group.controls.bemerkungen.value">
+      <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
+    </svui-form-control>
+  }
+
   <!--SCHULE-->
 
-  @if (anlassStore.selectedEntity()?.anlassConfig?.showDatenSchule) {
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showDatenSchule) {
     <h2 svuiHeading="formSection">{{ 'untersuchung.tab.daten.schule.titel' | transloco }}</h2>
 
     <svui-form-control [label]="'untersuchung.tab.daten.schule.schule' | transloco"

@@ -45,6 +45,9 @@ public class ApiClient {
     public AnlassApiSpec anlass() {
         return AnlassApiSpec.anlass(config.reqSpecSupplier);
     }
+    public AnlassConfigApiSpec anlassConfig() {
+        return AnlassConfigApiSpec.anlassConfig(config.reqSpecSupplier);
+    }
     public AufgabeApiSpec aufgabe() {
         return AufgabeApiSpec.aufgabe(config.reqSpecSupplier);
     }
@@ -155,6 +158,9 @@ public class ApiClient {
     }
     public UntersuchungImpfungenApiSpec untersuchungImpfungen() {
         return UntersuchungImpfungenApiSpec.untersuchungImpfungen(config.reqSpecSupplier);
+    }
+    public UntersuchungLaeusekontrolleApiSpec untersuchungLaeusekontrolle() {
+        return UntersuchungLaeusekontrolleApiSpec.untersuchungLaeusekontrolle(config.reqSpecSupplier);
     }
     public UntersuchungMassnahmenApiSpec untersuchungMassnahmen() {
         return UntersuchungMassnahmenApiSpec.untersuchungMassnahmen(config.reqSpecSupplier);

@@ -44,7 +44,7 @@ public class InfomaterialResource {
 
     @GET
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.LISTEN_LESEN)
+    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
     public InfomaterialListJson findAllInfomaterialien(
         @NotNull @QueryParam("onlyActive") boolean onlyActive
     ) {

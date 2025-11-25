@@ -40,7 +40,6 @@ public final class SchuleMapper {
         return new SchuleJson(
             schule.getId(),
             ExternalImportInfoJson.toJson(schule.getExternalImportInfo()),
-            schule.isManualOrAktivInExternalSystem(),
             EntityInfoJson.fromEntity(schule),
             new SchuleSaveJson(
                 schule.getSchulhaus(),

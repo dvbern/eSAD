@@ -168,7 +168,7 @@ class DocumentQueueResourceITest extends AbstractITest {
             .execute(ResponseOptions::andReturn)
             .then()
             .statusCode(Status.OK.getStatusCode())
-            .header("Content-Disposition", "attachment;filename*=UTF-8''" + fileName)
+            .header("Content-Disposition", "attachment;filename=\"" + fileName+ '"')
             .extract()
             .asByteArray();
 
