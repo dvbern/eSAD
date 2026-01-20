@@ -30,6 +30,7 @@ class JsonDtoTest {
         var rule = fields()
             .that()
             .areDeclaredInClassesThat(JSON_DTO)
+            .and().areNotStatic()
             .should()
             .haveNameMatching(Pattern.STARTS_WITH_LOWERCASE_FOLLOWED_BY_ALPHANUMERIC.pattern());
 
@@ -76,6 +77,7 @@ class JsonDtoTest {
         ArchRule rule = ArchRuleDefinition
             .fields().that()
             .areDeclaredInClassesThat(JSON_DTO)
+            .and().areNotStatic()
             .should().beAnnotatedWith(Schema.class)
             .because("All fields of json-dto-classes must be annoated with '@Schema(required = x)'");
         rule.allowEmptyShould(true).check(ArchConst.APP_CLASSES);

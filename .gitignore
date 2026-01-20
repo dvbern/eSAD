@@ -97,3 +97,5 @@ hs_err_pid*.log
 /api/docs/escada-service/escada-client.json
 /frontend/playwright/.auth/*
 /.run/
+/api/docs/escada-service/scripts/
+/api/docs/file-ingress/scripts/

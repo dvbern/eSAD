@@ -67,7 +67,7 @@ class EinladungMapperTest {
                     LocalDate.now()))),
                 List.of(UntersuchungImpfstatusKrankheitBuilder.create(builder -> builder.forUntersuchungImpfungen(
                         UntersuchungImpfungenBuilder.defaultUntersuchungImpfungen(LocalDate.now()))
-                    .forKrankheit(Krankheit.HEPATITIS_B))),
+                    .forKrankheit(Krankheit.HEPATITIS_B)).setVersion(1L)),
                 List.of(),
                 true,
                 "UntersuchungImpfung has impfstatus list not empty "),
@@ -75,7 +75,8 @@ class EinladungMapperTest {
                 UntersuchungBuilder.create(builder -> builder.withUntersuchungImpfungen(UntersuchungImpfungenBuilder.defaultUntersuchungImpfungen(
                     LocalDate.now()))),
                 List.of(),
-                List.of(UntersuchungImpfungInternBuilder.defaultUntersuchungImpfungIntern(LocalDate.now())),
+                List.of(UntersuchungImpfungInternBuilder.defaultUntersuchungImpfungIntern(LocalDate.now())
+                    .setVersion(1L)),
                 true,
                 "UntersuchungImpfung has impfungenIntern list not empty "),
             Arguments.of(
@@ -87,14 +88,76 @@ class EinladungMapperTest {
                 UntersuchungBuilder.create(builder -> builder.withUntersuchungImpfungen(UntersuchungImpfungenBuilder.create(
                     untersuchungImpfungenBuilder -> untersuchungImpfungenBuilder.withVisum2(
                         BenutzerBuilder.defaultBenutzer(),
-                        LocalDate.now())))), List.of(),List.of(), false, "with visum 2 is ignored"),
+                        LocalDate.now())))), List.of(), List.of(), false, "with visum 2 is ignored"),
             Arguments.of(
                 UntersuchungBuilder.create(builder -> builder.withUntersuchungImpfungen(UntersuchungImpfungenBuilder.create(
                     untersuchungImpfungenBuilder -> untersuchungImpfungenBuilder.withUntersuchungImpfungenMassnahmen(
                         UntersuchungImpfungenMassnahmenBuilder.defaultUntersuchungImpfungenMassnahmen())))),
                 List.of(),
                 List.of(),
+                true,
+                "UntersuchungImpfungenMassnahmen is present"),
+
+        Arguments.of(
+            UntersuchungBuilder.create(builder -> builder.withUntersuchungImpfungen(UntersuchungImpfungenBuilder.create(
+                untersuchungImpfungenBuilder -> untersuchungImpfungenBuilder.withUntersuchungImpfungenMassnahmen(null)))),
+            List.of(),
+            List.of(),
+            false,
+            "UntersuchungImpfungenMassnahmen is null"),
+            Arguments.of(
+                UntersuchungBuilder.create(builder -> builder.withUntersuchungImpfungen(
+                    UntersuchungImpfungenBuilder.create(
+                    untersuchungImpfungenBuilder ->
+                        untersuchungImpfungenBuilder.withImpfausweisZweiPlusEinsSchema(true)
+                            .withUntersuchungImpfungenMassnahmen(null)
+                    )
+                )),
+                List.of(),
+                List.of(),
+                true,
+                "withImpfausweisZweiPlusEinsSchema is true"),
+            Arguments.of(
+                UntersuchungBuilder.create(builder -> builder.withUntersuchungImpfungen(
+                    UntersuchungImpfungenBuilder.create(
+                        untersuchungImpfungenBuilder ->
+                            untersuchungImpfungenBuilder.withImpfausweisUnvollstaendig(true)
+                                .withUntersuchungImpfungenMassnahmen(null)
+                    )
+                )),
+                List.of(),
+                List.of(),
+                true,
+                "withImpfausweisUnvollstaendig is true"),
+            Arguments.of(
+                UntersuchungBuilder.create(builder -> builder.withUntersuchungImpfungen(
+                    UntersuchungImpfungenBuilder.create(
+                        untersuchungImpfungenBuilder ->
+                            untersuchungImpfungenBuilder.withImpfausweisNichtVorhanden(true)
+                                .withUntersuchungImpfungenMassnahmen(null)
+                    )
+                )),
+                List.of(),
+                List.of(),
+                true,
+                "withImpfausweisNichtVorhanden is true"),
+            Arguments.of(
+                UntersuchungBuilder.create(builder -> builder.withUntersuchungImpfungen(
+                    UntersuchungImpfungenBuilder.create(
+                        untersuchungImpfungenBuilder ->
+                            untersuchungImpfungenBuilder
+                                .withImpfausweisUnvollstaendig(false)
+                                .withImpfausweisZweiPlusEinsSchema(false)
+                                .withImpfausweisNichtVorhanden(false)
+                                .withUntersuchungImpfungenMassnahmen(null)
+                    )
+                )),
+                List.of(),
+                List.of(),
                 false,
-                "UntersuchungImpfungenMassnahmen is ignored"));
+                "when flags are false, lists empty and massnahmen null")
+
+        );
+
     }
 }

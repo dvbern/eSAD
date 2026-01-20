@@ -11,7 +11,7 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.Lehrperson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -50,7 +50,7 @@ import org.hibernate.envers.Audited;
 @ToString(callSuper = true, onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 public class Klasse
-        extends AbstractTenantEntity<Klasse>
+        extends AbstractEntity<Klasse>
         implements Serializable, HasExternalImportInfo, EntityWithOptimisticLocking {
 
     @Serial

@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
@@ -202,7 +203,7 @@ class KlasseResourceITest extends AbstractITest {
     @TestAsAdminBS
     void changeSchuleAktivStatus_shouldWork_ifExternalAndInactive() {
         // ARRANGE
-        Klasse existingKlasse = fixtureService.createKlasseExternal("TestKlasseToDeactivate", false);
+        Klasse existingKlasse = fixtureService.createKlasseExternal("TestKlasseToDeactivate", false, ImportTyp.ESCADA);
         ID<Klasse> existingSchuleId = existingKlasse.getId();
         assertThat(existingKlasse.getKlasseAktivStatus()).isEqualTo(EntityAktivStatus.AKTIV);
         assertThat(existingKlasse.getExternalImportInfo()).isNotNull();
@@ -231,7 +232,7 @@ class KlasseResourceITest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void changeKlasseAktivStatus_shouldNotWork_ifExternalAndActive() {
-        Klasse existingKlasse = fixtureService.createKlasseExternal("TestKlasseToDeactivate", true);
+        Klasse existingKlasse = fixtureService.createKlasseExternal("TestKlasseToDeactivate", true, ImportTyp.ESCADA);
         ID<Klasse> existingKlasseId = existingKlasse.getId();
         assertThat(existingKlasse.getKlasseAktivStatus()).isEqualTo(EntityAktivStatus.AKTIV);
         assertThat(existingKlasse.getExternalImportInfo()).isNotNull();
@@ -289,7 +290,7 @@ class KlasseResourceITest extends AbstractITest {
                 .withID(klasseID)
                 .forSchule(schule)
                 .withBezeichnung("Klasse 4a")
-                .withExternalImportInfo(externalSystemId, true, getAppClock().offsetDateTime().now())
+                .withExternalImportInfo(externalSystemId, true, getAppClock().offsetDateTime().now(), ImportTyp.ESCADA)
         );
         Klasse persistedKlasse = klasseService.persist(klasse);
 

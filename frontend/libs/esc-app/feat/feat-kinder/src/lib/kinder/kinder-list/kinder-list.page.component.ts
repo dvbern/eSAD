@@ -3,8 +3,17 @@ import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {EntityAktivStatus, Geschlecht, Klassenstufe, SearchSummaryJson} from '@dvb/data-access-backend';
 import {isISODateString} from '@dvb/data-access-types';
-import {BenutzerStore, ConfirmService, PageComponent, Path, SchulenOptionsStore} from '@dvb/feat-shared';
 import {
+  BenutzerStore,
+  ConfirmService,
+  PageComponent,
+  Path,
+  SchulenOptionsStore,
+  TenantSettingsStore,
+} from '@dvb/feat-shared';
+import {
+  ButtonComponent,
+  ButtonsRightContainerComponent,
   CardComponent,
   CollapsibleMenuComponent,
   ColWidthComponent,
@@ -21,8 +30,14 @@ import {
   TableLinkComponent,
   TextInputDirective,
 } from '@dvb/ui-components';
-import {FilterSessionStorage, SortDTO, TableModel} from '@dvb/util-angular';
-import {ensurePropsFlat, hasKindEditBerechtigung, isValidEnumValue, toValidEnumList} from '@dvb/util-shared';
+import {AppNotificationStore, FilterSessionStorage, SortDTO, TableModel} from '@dvb/util-angular';
+import {
+  ensurePropsFlat,
+  hasKindEditBerechtigung,
+  isNotNullish,
+  isValidEnumValue,
+  toValidEnumList,
+} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbDropdownItem, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
@@ -31,6 +46,8 @@ import {firstValueFrom} from 'rxjs';
 import {KinderSummaryStore} from '../kinder-summary.store';
 import {KinderFilterComponent} from './kinder-filter/kinder-filter.component';
 import {ErweiterteFilterJson} from './kinder-filter/kinder-filter.form';
+import {KinderImportComponent} from './kinder-import/kinder-import.component';
+import {KinderImportJsonEnhanced, KinderImportStore} from './kinder-import/kinder-import.store';
 import {KinderFilterForm, KinderListFilterForm} from './kinder-list-filter.form';
 
 @Component({
@@ -58,6 +75,8 @@ import {KinderFilterForm, KinderListFilterForm} from './kinder-list-filter.form'
     ColWidthComponent,
     NgbDropdownItem,
     InputWithIconComponent,
+    ButtonComponent,
+    ButtonsRightContainerComponent,
   ],
   templateUrl: './kinder-list.page.component.html',
   styleUrl: './kinder-list.page.component.scss',
@@ -65,10 +84,13 @@ import {KinderFilterForm, KinderListFilterForm} from './kinder-list-filter.form'
 })
 export class KinderListPageComponent extends FilterSessionStorage<KinderFilterForm> implements OnInit {
   readonly kinderSummaryStore = inject(KinderSummaryStore);
+  readonly kinderImportStore = inject(KinderImportStore);
   readonly #transloco = inject(TranslocoService);
   readonly confirmService = inject(ConfirmService);
   readonly benutzerStore = inject(BenutzerStore);
   readonly #schulenOptionsStore = inject(SchulenOptionsStore);
+  readonly #appNotificationStore = inject(AppNotificationStore);
+  readonly tenantSettingsStore = inject(TenantSettingsStore);
 
   readonly Path = Path;
   readonly klassenstufen = Object.values(Klassenstufe);
@@ -85,14 +107,14 @@ export class KinderListPageComponent extends FilterSessionStorage<KinderFilterFo
       backendLastLoadedPageSignal: this.kinderSummaryStore.currentLoadedPage,
       lazyLoadOnSortOrFilter: displayConfig => {
         console.debug('changed sort or filter');
-        this.kinderSummaryStore.loadPaginatedKinderList({ config: displayConfig, replaceList: true });
+        this.kinderSummaryStore.loadPaginatedKinderList({config: displayConfig, replaceList: true});
         this.setSessionStorageFilter(
           this.tableFilterForm.valueOnValid(),
         );
       },
       lazyLoadOnPaginateOrScroll: displayConfig => {
         console.debug('changed page');
-        this.kinderSummaryStore.loadPaginatedKinderList({ config: displayConfig, replaceList: false });
+        this.kinderSummaryStore.loadPaginatedKinderList({config: displayConfig, replaceList: false});
       },
     },
     {
@@ -126,8 +148,8 @@ export class KinderListPageComponent extends FilterSessionStorage<KinderFilterFo
     // prepare initial filter
     const initialSortConfig: SortDTO<SearchSummaryJson> = {
       colSorts: [
-        { colName: 'name', sortDirection: 'ASC' },
-        { colName: 'vorname', sortDirection: 'ASC' },
+        {colName: 'name', sortDirection: 'ASC'},
+        {colName: 'vorname', sortDirection: 'ASC'},
       ],
     };
     this.itemTable.onSort(initialSortConfig);
@@ -167,7 +189,7 @@ export class KinderListPageComponent extends FilterSessionStorage<KinderFilterFo
   }
 
   async openFilter(): Promise<void> {
-    const ngbModalRef = this.#ngModal.open(KinderFilterComponent, { size: 'xl' });
+    const ngbModalRef = this.#ngModal.open(KinderFilterComponent, {size: 'xl'});
     ngbModalRef.componentInstance.filterData.set(this.kinderSummaryStore.erweiterteFilterValues());
     const result: ErweiterteFilterJson | undefined = await firstValueFrom(ngbModalRef.closed, {
       defaultValue: undefined,
@@ -175,8 +197,38 @@ export class KinderListPageComponent extends FilterSessionStorage<KinderFilterFo
     if (result) {
       this.itemTable.resetPaginationToFirstPage();
       this.kinderSummaryStore.setErweiterteFilter(result);
-      this.kinderSummaryStore.loadPaginatedKinderList({ config: this.itemTable.displayConfig(), replaceList: true });
+      this.kinderSummaryStore.loadPaginatedKinderList({config: this.itemTable.displayConfig(), replaceList: true});
     }
+  }
+
+  async openImport(): Promise<void> {
+    const ngbModalRef = this.#ngModal.open(KinderImportComponent, {size: 'l'});
+
+    const result: KinderImportJsonEnhanced = await firstValueFrom(ngbModalRef.closed, {
+      defaultValue: undefined,
+    });
+    if (isNotNullish(result)) {
+      if (result.standardImport) {
+        this.kinderImportStore.importKinderStandard({
+          kinderImportJson: result,
+          onSuccess: () => this.showImportStartedNotification(),
+        });
+      } else {
+        this.kinderImportStore.importKinderKlassen({
+          kinderImportJson: result,
+          onSuccess: () => this.showImportStartedNotification(),
+        });
+      }
+    }
+  }
+
+  private showImportStartedNotification(): void {
+    this.#appNotificationStore.addNotification({
+      alertType: 'success',
+      id: crypto.randomUUID(),
+      summary: this.#transloco.translate('kinder.list.import.started'),
+      autohide: true,
+    });
   }
 
   mapSessionStorageStringToFilter(sessionStorageFilter: string): KinderFilterForm | undefined {
@@ -185,15 +237,15 @@ export class KinderListPageComponent extends FilterSessionStorage<KinderFilterFo
 
       // Reconstruct the filter with proper data types and validation
       return ensurePropsFlat({
-          schule: Array.isArray(parsed.schule) ? parsed.schule : [],
-          klasse: parsed.klasse ?? '',
-          klassenstufe: toValidEnumList(Klassenstufe, parsed.klassenstufe),
-          geschlecht: isValidEnumValue(Geschlecht, parsed.geschlecht) ? parsed.geschlecht : '',
-          name: parsed.name ?? '',
-          vorname: parsed.vorname ?? '',
-          geburtsdatum: isISODateString(parsed.geburtsdatum) ? parsed.geburtsdatum : null,
-          esadId: parsed.esadId ?? '',
-        })
+        schule: Array.isArray(parsed.schule) ? parsed.schule : [],
+        klasse: parsed.klasse ?? '',
+        klassenstufe: toValidEnumList(Klassenstufe, parsed.klassenstufe),
+        geschlecht: isValidEnumValue(Geschlecht, parsed.geschlecht) ? parsed.geschlecht : '',
+        name: parsed.name ?? '',
+        vorname: parsed.vorname ?? '',
+        geburtsdatum: isISODateString(parsed.geburtsdatum) ? parsed.geburtsdatum : null,
+        esadId: parsed.esadId ?? '',
+      })
     } catch (error) {
       console.warn('Failed to parse session storage filter:', error);
       return undefined;

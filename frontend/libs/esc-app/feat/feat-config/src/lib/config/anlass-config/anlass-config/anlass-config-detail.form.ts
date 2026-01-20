@@ -1,13 +1,22 @@
-import { DestroyRef } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NonNullableFormBuilder, Validators } from '@angular/forms';
-import { AnlassConfigSaveJson, AnlassTyp, PerzentileBmi, RequirementSetting } from '@dvb/data-access-backend';
-import { ISODateString } from '@dvb/data-access-types';
-import { AppValidators, BaseForm } from '@dvb/util-angular';
-import {ensureProps, ensurePropsFlat, fromISODateString, isNotNullish, requireValue, today} from '@dvb/util-shared';
-import { distinctUntilChanged } from 'rxjs';
-import { globalConstants } from '@dvb/feat-shared';
-import { AnlassConfigStore } from '../anlass-config.store';
+import {DestroyRef} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {NonNullableFormBuilder, ValidatorFn, Validators} from '@angular/forms';
+import {
+  AnlassConfigSaveJson,
+  AnlassTyp,
+  Einbeinhuepfen,
+  Einbeinstand, Krankheit,
+  Motorik,
+  PerzentileBmi,
+  RequirementSetting,
+  Sprachfaehigkeit,
+} from '@dvb/data-access-backend';
+import {ISODateString} from '@dvb/data-access-types';
+import {AppValidatorKeys, AppValidators, BaseForm} from '@dvb/util-angular';
+import {ensurePropsFlat, fromISODateString, isNotNullish, requireValue, today} from '@dvb/util-shared';
+import {distinctUntilChanged} from 'rxjs';
+import {globalConstants, ImpfstoffeChargenStore} from '@dvb/feat-shared';
+import {AnlassConfigStore} from '../anlass-config.store';
 
 type Config = {
   fb: NonNullableFormBuilder;
@@ -55,6 +64,8 @@ function makeForm(config: Config) {
     untersuchungImpfungEmpfehlung: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
     untersuchungImpfungAchtung: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
     untersuchungImpfungBemerkungen: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
+    untersuchungImpfungKrankheitenLinksValues: fb.control<Krankheit[]>([]),
+    untersuchungImpfungKrankheitenRechtsValues: fb.control<Krankheit[]>([]),
     sehenBrilleLinsen: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
     sehenFarbsehen: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
     sehenTafel: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
@@ -103,11 +114,13 @@ function makeForm(config: Config) {
     laeusekontrolleBemerkungen: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
     untersuchungBewegungsapparat: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
     untersuchungEinbeinstand: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
-    untersuchungEinbeinstandRechts: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
-    untersuchungEinbeinstandLinks: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
+    untersuchungEinbeinstandRechtsLinks: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE,
+      Validators.required),
+    untersuchungEinbeinstandValues: fb.control<Einbeinstand[]>([]),
     untersuchungEinbeinhuepfen: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
-    untersuchungEinbeinhuepfenRechts: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
-    untersuchungEinbeinhuepfenLinks: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
+    untersuchungEinbeinhuepfenRechtsLinks: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE,
+      Validators.required),
+    untersuchungEinbeinhuepfenValues: fb.control<Einbeinhuepfen[]>([]),
     untersuchungFingeropposition: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
     untersuchungHampelmann: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
     untersuchungBallFangen: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
@@ -118,19 +131,28 @@ function makeForm(config: Config) {
     untersuchungAussprache: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
     untersuchungLesefit: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
     untersuchungLesefitPunkte: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
-    untersuchungZahlenNachsprechen4: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
-    untersuchungZahlenNachsprechen5: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
+    untersuchungZahlenNachsprechen4: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE,
+      Validators.required),
+    untersuchungZahlenNachsprechen5: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE,
+      Validators.required),
     untersuchungZeichnenKreis: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
     untersuchungZeichnenViereck: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
     untersuchungZeichnenDreieck: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
     untersuchungZeichnenMensch: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
-    untersuchungZeichnenMenschPunkte: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
+    untersuchungZeichnenMenschPunkte: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE,
+      Validators.required),
     untersuchungMotorik: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
+    untersuchungMotorikValues: fb.control<Motorik[]>([]),
     untersuchungMotorikPunkte: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
     untersuchungKognition: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
     untersuchungKognitionPunkte: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
-    untersuchungSprache: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
-    untersuchungSprachePunkte: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
+    untersuchungSprachfaehigkeitSingleValue: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE,
+      Validators.required),
+    untersuchungSprachfaehigkeitMultiValue: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE,
+      Validators.required),
+    untersuchungSprachfaehigkeitValues: fb.control<Sprachfaehigkeit[]>([]),
+    untersuchungSprachfaehigkeitPunkte: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE,
+      Validators.required),
     untersuchungMundZaehne: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
     untersuchungHaut: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
     untersuchungHerz: fb.control<RequirementSetting>(RequirementSetting.NOT_VISIBLE, Validators.required),
@@ -151,7 +173,7 @@ function makeForm(config: Config) {
     showMassnahmenUeberweisungAugenarzt: fb.control<boolean>(false, [Validators.required]),
     showMassnahmenNachkontrolleSaed: fb.control<boolean>(false, [Validators.required]),
     showMassnahmenAnderes: fb.control<boolean>(false, [Validators.required]),
-  });
+  }, {validators: [einmalAuswahlKrankheiten()]});
 
   group.controls.anlassTyp.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef)).subscribe({
     next: anlassTyp => {
@@ -170,6 +192,27 @@ function makeForm(config: Config) {
   });
 
   return group;
+}
+
+function einmalAuswahlKrankheiten(): ValidatorFn {
+
+  return group => {
+    const krankheitenLinks: Krankheit[] = group.get('untersuchungImpfungKrankheitenLinksValues')?.value;
+    const krankheitenRechts: Krankheit[] = group.get('untersuchungImpfungKrankheitenRechtsValues')?.value;
+
+    if (krankheitenLinks.length === 0 || krankheitenRechts.length === 0) {
+      return null;
+    }
+
+    const uberschneidungen = krankheitenLinks.filter(krankheit => krankheitenRechts.includes(krankheit));
+    if (uberschneidungen.length > 0) {
+      return {
+        [AppValidatorKeys.einmalAuswahlKrankheiten]: true,
+      }
+    }
+
+    return null;
+  };
 }
 
 export class AnlassConfigForm extends BaseForm<ReturnType<typeof makeForm>, AnlassConfigSaveJson> {
@@ -212,6 +255,8 @@ export class AnlassConfigForm extends BaseForm<ReturnType<typeof makeForm>, Anla
       untersuchungImpfungEmpfehlung: requireValue(value.untersuchungImpfungEmpfehlung),
       untersuchungImpfungAchtung: requireValue(value.untersuchungImpfungAchtung),
       untersuchungImpfungBemerkungen: requireValue(value.untersuchungImpfungBemerkungen),
+      untersuchungImpfungKrankheitenLinksValues: value.untersuchungImpfungKrankheitenLinksValues,
+      untersuchungImpfungKrankheitenRechtsValues: value.untersuchungImpfungKrankheitenRechtsValues,
       sehenBrilleLinsen: requireValue(value.sehenBrilleLinsen),
       sehenFarbsehen: requireValue(value.sehenFarbsehen),
       sehenTafel: requireValue(value.sehenTafel),
@@ -251,11 +296,11 @@ export class AnlassConfigForm extends BaseForm<ReturnType<typeof makeForm>, Anla
       laeusekontrolleBemerkungen: requireValue(value.laeusekontrolleBemerkungen),
       untersuchungBewegungsapparat: requireValue(value.untersuchungBewegungsapparat),
       untersuchungEinbeinstand: requireValue(value.untersuchungEinbeinstand),
-      untersuchungEinbeinstandRechts: requireValue(value.untersuchungEinbeinstandRechts),
-      untersuchungEinbeinstandLinks: requireValue(value.untersuchungEinbeinstandLinks),
+      untersuchungEinbeinstandRechtsLinks: requireValue(value.untersuchungEinbeinstandRechtsLinks),
+      untersuchungEinbeinstandValues: value.untersuchungEinbeinstandValues,
       untersuchungEinbeinhuepfen: requireValue(value.untersuchungEinbeinhuepfen),
-      untersuchungEinbeinhuepfenRechts: requireValue(value.untersuchungEinbeinhuepfenRechts),
-      untersuchungEinbeinhuepfenLinks: requireValue(value.untersuchungEinbeinhuepfenLinks),
+      untersuchungEinbeinhuepfenRechtsLinks: requireValue(value.untersuchungEinbeinhuepfenRechtsLinks),
+      untersuchungEinbeinhuepfenValues: requireValue(value.untersuchungEinbeinhuepfenValues),
       untersuchungFingeropposition: requireValue(value.untersuchungFingeropposition),
       untersuchungHampelmann: requireValue(value.untersuchungHampelmann),
       untersuchungBallFangen: requireValue(value.untersuchungBallFangen),
@@ -274,11 +319,14 @@ export class AnlassConfigForm extends BaseForm<ReturnType<typeof makeForm>, Anla
       untersuchungZeichnenMensch: requireValue(value.untersuchungZeichnenMensch),
       untersuchungZeichnenMenschPunkte: requireValue(value.untersuchungZeichnenMenschPunkte),
       untersuchungMotorik: requireValue(value.untersuchungMotorik),
+      untersuchungMotorikValues: value.untersuchungMotorikValues,
       untersuchungMotorikPunkte: requireValue(value.untersuchungMotorikPunkte),
       untersuchungKognition: requireValue(value.untersuchungKognition),
       untersuchungKognitionPunkte: requireValue(value.untersuchungKognitionPunkte),
-      untersuchungSprache: requireValue(value.untersuchungSprache),
-      untersuchungSprachePunkte: requireValue(value.untersuchungSprachePunkte),
+      untersuchungSprachfaehigkeitSingleValue: requireValue(value.untersuchungSprachfaehigkeitSingleValue),
+      untersuchungSprachfaehigkeitMultiValue: requireValue(value.untersuchungSprachfaehigkeitMultiValue),
+      untersuchungSprachfaehigkeitValues: requireValue(value.untersuchungSprachfaehigkeitValues),
+      untersuchungSprachePunkte: requireValue(value.untersuchungSprachfaehigkeitPunkte),
       untersuchungMundZaehne: requireValue(value.untersuchungMundZaehne),
       untersuchungHaut: requireValue(value.untersuchungHaut),
       untersuchungHerz: requireValue(value.untersuchungHerz),

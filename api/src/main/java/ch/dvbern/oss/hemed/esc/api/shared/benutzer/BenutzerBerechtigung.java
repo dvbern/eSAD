@@ -2,7 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.benutzer;
 
 import java.io.Serial;
 
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,7 +36,7 @@ import org.hibernate.envers.Audited;
     )
 )
 @ToString(onlyExplicitlyIncluded = true)
-public class BenutzerBerechtigung extends AbstractTenantEntity<BenutzerBerechtigung> {
+public class BenutzerBerechtigung extends AbstractEntity<BenutzerBerechtigung> {
 
     @Serial
     private static final long serialVersionUID = 3647102230877993926L;

@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -17,7 +18,12 @@ public class MassnahmenAnderesCsvColumn extends AbstractCsvColumn {
     public String extract(@NonNull Einladung einladung) {
         return ExtractorForCsvUtil.extractUntersuchungMassnahmen(
             einladung,
-            untersuchungMassnahmen -> untersuchungMassnahmen.isAnderes() ? "1" : ""
+            untersuchungMassnahmen -> {
+                if (config.forSpssReport()) {
+                    return untersuchungMassnahmen.isAnderes() ? "1" : "";
+                }
+                return PrintUtil.trimToPlaceholder(untersuchungMassnahmen.isAnderes(), config.tl());
+            }
         );
     }
 

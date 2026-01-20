@@ -165,6 +165,13 @@ public class AnlassBuilder {
     }
 
     @NonNull
+    @CanIgnoreReturnValue
+    public AnlassBuilder withAnlassArt(@NonNull AnlassArt anlassArt) {
+        this.anlass.setAnlassArt(anlassArt);
+        return this;
+    }
+
+    @NonNull
     public static Anlass create(@NonNull Consumer<AnlassBuilder> block) {
         AnlassBuilder builder = new AnlassBuilder();
         block.accept(builder);

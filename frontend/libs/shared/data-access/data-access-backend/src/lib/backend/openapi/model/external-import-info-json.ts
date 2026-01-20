@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 import { ISODateTimeString } from '@dvb/data-access-types';
+import { ImportTyp } from './import-typ';
 
 
 /**
@@ -18,6 +19,10 @@ export interface ExternalImportInfoJson {
     aktivInExternalSystem: boolean;
     timestampFirstImport: ISODateTimeString;
     timestampLatestImport: ISODateTimeString;
+    importTyp: ImportTyp;
 }
+export namespace ExternalImportInfoJson {
+}
+
 
 

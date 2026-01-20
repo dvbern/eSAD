@@ -2,8 +2,8 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
   <changeSet author="dvbern" id="2025-11-27-1800">
     <sql>
-      INSERT INTO benutzer (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, tenant, email, fachrollen, keycloakid, lastusedip, lastusedsessionid, lastusedsessiontimestamp, oidcissuer, nachname, vorname, aktiv, titel, telefon)
-      VALUES ('a36b1dfd-9b8b-4bf9-bfb3-8a13764b8d36', '2024-12-01 12:00:00.118393', '2024-12-01 12:00:00.202890', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'BE', 'admin.bern@example.com', 'SYSTEM_ADMIN', '3617e847-a9d0-4184-8e39-59af661f63b4', '172.19.1.193', '0c5436bc-2bc5-4629-b7f2-7937c5c585a6', '2024-12-04 12:00:00.202171', 'https://local-esc-bs.localhost:8989/realms/bs', 'Bernabeu', 'Bernhard', true, null, '+41 61 123 45 71');
+      INSERT INTO benutzer (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, email, fachrollen, keycloakid, lastusedip, lastusedsessionid, lastusedsessiontimestamp, oidcissuer, nachname, vorname, aktiv, titel, telefon)
+      VALUES ('a36b1dfd-9b8b-4bf9-bfb3-8a13764b8d36', '2024-12-01 12:00:00.118393', '2024-12-01 12:00:00.202890', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'admin.bern@example.com', 'SYSTEM_ADMIN', '3617e847-a9d0-4184-8e39-59af661f63b4', '172.19.1.193', '0c5436bc-2bc5-4629-b7f2-7937c5c585a6', '2024-12-04 12:00:00.202171', 'https://local-esc-bs.localhost:8989/realms/bs', 'Bernabeu', 'Bernhard', true, null, '+41 61 123 45 71');
     </sql>
   </changeSet>
 </databaseChangeLog>

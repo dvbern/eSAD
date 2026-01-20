@@ -47,6 +47,11 @@ public class TenantSettingSaveJson {
     private final List<AppLanguages> supportedLanguages;
 
     @NotNull
+    @Valid
+    @Schema(required = true)
+    private int folgeTermineMaxSlots;
+
+    @NotNull
     @NonNull
     @Valid
     @Schema(required = true)

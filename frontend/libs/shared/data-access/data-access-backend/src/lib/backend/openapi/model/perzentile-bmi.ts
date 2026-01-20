@@ -9,15 +9,15 @@
  */
 
 
-export type PerzentileBmi = 'NORMAL' | 'PERZENTILE_TIEF' | 'PERZENTILE_HOCH' | 'NICHT_GEPRUEFT' | 'UNTERGEWICHT' | 'UEBERGEWICHT' | 'ADIPOSITAS';
+export type PerzentileBmi = 'NORMAL' | 'PERZENTILE_TIEF' | 'PERZENTILE_HOCH' | 'UNTERGEWICHT' | 'UEBERGEWICHT' | 'ADIPOSITAS' | 'NICHT_GEPRUEFT';
 
 export const PerzentileBmi = {
     NORMAL: 'NORMAL' as PerzentileBmi,
     PERZENTILE_TIEF: 'PERZENTILE_TIEF' as PerzentileBmi,
     PERZENTILE_HOCH: 'PERZENTILE_HOCH' as PerzentileBmi,
-    NICHT_GEPRUEFT: 'NICHT_GEPRUEFT' as PerzentileBmi,
     UNTERGEWICHT: 'UNTERGEWICHT' as PerzentileBmi,
     UEBERGEWICHT: 'UEBERGEWICHT' as PerzentileBmi,
-    ADIPOSITAS: 'ADIPOSITAS' as PerzentileBmi
+    ADIPOSITAS: 'ADIPOSITAS' as PerzentileBmi,
+    NICHT_GEPRUEFT: 'NICHT_GEPRUEFT' as PerzentileBmi
 } as const;
 

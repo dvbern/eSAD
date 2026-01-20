@@ -5,6 +5,7 @@ import java.util.List;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
@@ -50,7 +51,7 @@ class KindAnlaesseServiceTest {
         Mockito.doAnswer(invocation -> List.of(einladung1, einladung2))
             .when(repo).findAllEinladungForKind(ArgumentMatchers.any());
         Mockito.doAnswer(invocation -> true)
-            .when(authorizerService).hasReadAuthorizationAnlassListe(ArgumentMatchers.any());
+            .when(authorizerService).hasReadAuthorizationAnlassListe(ArgumentMatchers.any(Anlass.class));
 
         // Act
         List<KindAnlassSummaryJson> mappedList = mapper.findAllForKind(ID.random(Kind.class));

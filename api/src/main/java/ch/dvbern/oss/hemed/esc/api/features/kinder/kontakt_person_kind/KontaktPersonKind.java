@@ -13,7 +13,7 @@ import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.HasExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.types.KontaktPersonKindBeziehung;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import jakarta.persistence.Column;
@@ -47,7 +47,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 public class KontaktPersonKind
-        extends AbstractTenantEntity<KontaktPersonKind>
+        extends AbstractEntity<KontaktPersonKind>
         implements Serializable, HasExternalImportInfo, EntityWithOptimisticLocking {
 
     @Serial
@@ -123,5 +123,13 @@ public class KontaktPersonKind
             return name + ' ' + vorname;
         }
         return name;
+    }
+
+    @Nullable
+    public String getFullNameIfAllowed(boolean redactFullName) {
+        if(redactFullName) {
+            return null;
+        }
+        return getNameVorname();
     }
 }

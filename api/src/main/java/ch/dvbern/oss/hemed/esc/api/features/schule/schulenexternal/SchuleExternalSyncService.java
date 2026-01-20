@@ -27,10 +27,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ExternalSystemIdDTO;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ImportPlanDTO;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ItemSyncResultJson;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ExternalSystemIdDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ImportPlanDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ItemSyncResultJson;
 import io.smallrye.context.api.ManagedExecutorConfig;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -61,10 +62,13 @@ public class SchuleExternalSyncService {
 
     @NonNull
     @Transactional(TxType.NOT_SUPPORTED)
-    public List<ItemSyncResultJson<Schule>> syncSchulen(@NonNull ImportPlanDTO<SchuleExternal> importPlan) {
-        List<ItemSyncResultJson<Schule>> addResults = addNewSchulen(importPlan.itemsToAdd());
-        List<ItemSyncResultJson<Schule>> updateResults = updateExistingSchulen(importPlan.getItemsToSyncMap());
-        List<ItemSyncResultJson<Schule>> deactivateResults = deactivateRemovedSchulen(importPlan.itemsToDelete());
+    public List<ItemSyncResultJson<Schule>> syncSchulen(
+        @NonNull ImportPlanDTO<SchuleExternal> importPlan,
+        @NonNull ImportTyp importTyp
+    ) {
+        List<ItemSyncResultJson<Schule>> addResults = addNewSchulen(importPlan.itemsToAdd(), importTyp);
+        List<ItemSyncResultJson<Schule>> updateResults = updateExistingSchulen(importPlan.getItemsToSyncMap(), importTyp);
+        List<ItemSyncResultJson<Schule>> deactivateResults = deactivateRemovedSchulen(importPlan.itemsToDelete(), importTyp);
 
         List<ItemSyncResultJson<Schule>> schulImportResults = new ArrayList<>(addResults);
         schulImportResults.addAll(updateResults);
@@ -74,19 +78,21 @@ public class SchuleExternalSyncService {
 
     @NonNull
     private List<ItemSyncResultJson<Schule>> addNewSchulen(
-        @NonNull Set<SchuleExternal> itemsToPersist
+        @NonNull Set<SchuleExternal> itemsToPersist,
+        @NonNull ImportTyp importTyp
     ) {
         var stopwatch = StopWatch.createStarted();
-        LOG.info("ESCADA: Starting to add {} Schulen", itemsToPersist.size());
+        LOG.info("{}: Starting to add {} Schulen", importTyp.toString().toUpperCase(), itemsToPersist.size());
 
         List<CompletableFuture<ItemSyncResultJson<Schule>>> futures = itemsToPersist.stream()
             .map(schuleExternalToAdd -> CompletableFuture.supplyAsync(
                 () -> {
                     try {
-                        return schuleExternalSyncHelperService.addNewSchule(schuleExternalToAdd);
+                        return schuleExternalSyncHelperService.addNewSchule(schuleExternalToAdd, importTyp);
                     } catch (Exception e) {
                         LOG.warn(
-                            "ESCADA: Error adding new Schule with externalId: '{}'",
+                            "{}: Error adding new Schule with externalId: '{}'",
+                            importTyp.toString().toUpperCase(),
                             schuleExternalToAdd.getExternalId(),
                             e);
                         return ItemSyncResultJson.<Schule>createAddErrorItem(
@@ -103,25 +109,27 @@ public class SchuleExternalSyncService {
             .map(CompletableFuture::join)
             .toList();
 
-        LOG.info("ESCADA: Finished persisting new Schulen, took {}ms", stopwatch.getTime(TimeUnit.MILLISECONDS));
+        LOG.info("{}: Finished persisting new Schulen, took {}ms", importTyp.toString().toUpperCase(), stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 
     @NonNull
     private List<ItemSyncResultJson<Schule>> deactivateRemovedSchulen(
-        @NonNull Set<ExternalSystemIdDTO> itemsToDelete
+        @NonNull Set<ExternalSystemIdDTO> itemsToDelete,
+        @NonNull ImportTyp importTyp
     ) {
         var stopwatch = StopWatch.createStarted();
-        LOG.info("ESCADA: Starting to deactivate {} Schulen", itemsToDelete.size());
+        LOG.info("{}: Starting to deactivate {} Schulen", importTyp.toString().toUpperCase(), itemsToDelete.size());
 
         List<CompletableFuture<ItemSyncResultJson<Schule>>> futures = itemsToDelete.stream()
             .map(externalSystemIdDTO -> CompletableFuture.supplyAsync(
                 () -> {
                     try {
-                        return schuleExternalSyncHelperService.deactivateRemovedSchule(externalSystemIdDTO);
+                        return schuleExternalSyncHelperService.deactivateRemovedSchule(externalSystemIdDTO, importTyp);
                     } catch (Exception e) {
                         LOG.warn(
-                            "ESCADA: Error deactivating Schule with externalId: '{}', internalId: '{}'",
+                            "{}: Error deactivating Schule with externalId: '{}', internalId: '{}'",
+                            importTyp.toString().toUpperCase(),
                             externalSystemIdDTO.getExternalId(), externalSystemIdDTO.getInternalId(), e);
                         return ItemSyncResultJson.createDeactivateErrorItem(externalSystemIdDTO, Schule.class, e);
                     }
@@ -132,26 +140,28 @@ public class SchuleExternalSyncService {
             .map(CompletableFuture::join)
             .toList();
 
-        LOG.info("ESCADA: Finished deactivating Schulen, took {}ms", stopwatch.getTime(TimeUnit.MILLISECONDS));
+        LOG.info("{}: Finished deactivating Schulen, took {}ms", importTyp.toString().toUpperCase(), stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 
     @NonNull
     private List<ItemSyncResultJson<Schule>> updateExistingSchulen(
-        @NonNull Map<ExternalSystemIdDTO, SchuleExternal> itemsToSync
+        @NonNull Map<ExternalSystemIdDTO, SchuleExternal> itemsToSync,
+        @NonNull ImportTyp importTyp
     ) {
         var stopwatch = StopWatch.createStarted();
-        LOG.info("ESCADA: Starting to update {} Schulen", itemsToSync.size());
+        LOG.info("{}: Starting to update {} Schulen", importTyp.toString().toUpperCase(), itemsToSync.size());
 
         List<CompletableFuture<ItemSyncResultJson<Schule>>> futures = itemsToSync.entrySet().stream()
             .map(entry -> CompletableFuture.supplyAsync(
                 () -> {
                     ExternalSystemIdDTO idDTO = entry.getKey();
                     try {
-                        return schuleExternalSyncHelperService.updateExistingSchule(entry.getKey(), entry.getValue());
+                        return schuleExternalSyncHelperService.updateExistingSchule(entry.getKey(), entry.getValue(), importTyp);
                     } catch (Exception e) {
                         LOG.warn(
-                            "ESCADA: Error updating Schule with externalId: '{}', internalId: '{}'",
+                            "{}: Error updating Schule with externalId: '{}', internalId: '{}'",
+                            importTyp.toString().toUpperCase(),
                             idDTO.getExternalId(),
                             idDTO.getInternalId(),
                             e);
@@ -165,7 +175,7 @@ public class SchuleExternalSyncService {
             .map(CompletableFuture::join)
             .toList();
 
-        LOG.info("ESCADA: Finished updating Schulen, took {}ms", stopwatch.getTime(TimeUnit.MILLISECONDS));
+        LOG.info("{}: Finished updating Schulen, took {}ms", importTyp.toString().toUpperCase(), stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 }

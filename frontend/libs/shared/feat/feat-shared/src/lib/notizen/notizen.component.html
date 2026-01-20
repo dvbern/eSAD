@@ -46,8 +46,7 @@
             [clearable]="false"
             [placeholder]="'global.select.bitte-auswaehlen' | transloco"
           >
-            @for (
-              benutzer of benutzerOptionsStore.entitiesIncluding(form.group.value.verantwortlicher); track benutzer.id) {
+            @for (benutzer of benutzerOptionsStore.entitiesIncluding(form.group.value.verantwortlicher); track benutzer.id) {
               <ng-option [value]="benutzer" [disabled]="!benutzer.aktiv">
                 {{ benutzer.fullName }}
               </ng-option>
@@ -98,28 +97,35 @@
         </svui-form-control>
 
         <!-- two-column row inside the form -->
-        <div class="form-two-column-row">
+        @if (tenantSettingsStore.isMobileScannerVisible()) {
+          <div class="form-two-column-row">
 
-          <div style="margin-top: 30px;">
+            <div style="margin-top: 30px;">
 
-            <!-- Fileupload -->
-            <feat-file-drop
-            (filesToUpload)="onFilesSelected($event)"
-              [acceptedFiletypes]="acceptedFiletypes"
-            ></feat-file-drop>
+              <!-- Fileupload -->
+              <feat-file-drop
+                (filesToUpload)="onFilesSelected($event)"
+                [acceptedFiletypes]="acceptedFiletypes"
+              ></feat-file-drop>
+            </div>
+
+            <!-- QRCode -->
+            <div style="margin-top: 17px;">
+              <feat-mobile-upload
+              (clicked)="onMobileClick()">
+              </feat-mobile-upload>
+            </div>
+
           </div>
+        }
+        @else {
 
-          <!-- QRCode -->
-          <div style="display:flex; justify-content:center;">
-            <feat-qr-code-upload
-              [qrData]="qrData"
-              [title]="'ui.upload.qr.title' | transloco "
-              [width]="275"
-              [text]="'ui.upload.qr.title' | transloco "
-            ></feat-qr-code-upload>
-          </div>
-        </div>
+        <feat-file-drop
+          (filesToUpload)="onFilesSelected($event)"
+          [acceptedFiletypes]="acceptedFiletypes"
+        ></feat-file-drop>
 
+      }
 
         <!--messages for whole form -->
         <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>

@@ -40,6 +40,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.QDossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.QKind;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.QNotiz;
+import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
 import com.querydsl.core.Tuple;
 import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
@@ -159,7 +160,19 @@ public class EinladungRepo extends BaseRepo<Einladung> {
                 .and(QEinladung.einladung.spssExported.isFalse())
                 .and(QEinladung.einladung.einladungStatus.eq(EinladungStatus.TEILNAHME_BESTAETIGT))
             ).fetch();
+        return einladungIdList.stream().map(uuid -> ID.of(uuid, Einladung.class)).toList();
+    }
 
+    @NonNull
+    public List<ID<Einladung>> findAllForCsvReport(@NonNull DateRange zeitraum) {
+        List<UUID> einladungIdList = db
+            .select(QEinladung.einladung.id)
+            .from(QEinladung.einladung)
+            .innerJoin(QEinladung.einladung.anlass, QAnlass.anlass)
+            .where(QAnlass.anlass.datum.loe(zeitraum.getDatumBis())
+                .and(QAnlass.anlass.datum.goe(zeitraum.getDatumVon())
+                .and(QEinladung.einladung.einladungStatus.eq(EinladungStatus.TEILNAHME_BESTAETIGT)))
+            ).fetch();
         return einladungIdList.stream().map(uuid -> ID.of(uuid, Einladung.class)).toList();
     }
 

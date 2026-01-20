@@ -6,8 +6,10 @@ import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.scheduler.SuperAdminRunnerService;
 import io.smallrye.faulttolerance.api.RateLimit;
+import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
@@ -23,6 +25,8 @@ import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import static ch.dvbern.oss.hemed.esc.api.shared.scheduler.SuperAdminEventService.DUPLIKAT_RECALCULATION_EVENT;
+
 @Path("/duplikate")
 @JaxResource
 @RequiredArgsConstructor
@@ -34,12 +38,22 @@ public class DuplikatResource {
 
     private final SuperAdminRunnerService superAdminRunnerService;
     private final DuplikatMapper duplikatMapper;
+    private final TenantProducer tenantProducer;
+    private final EventBus eventBus;
 
     @PUT
     @Path("/reload")
     @RolesAllowed(BerechtigungName.DUBLETTEN_ZUSAMMENFUHREN)
     @Transactional(TxType.NOT_SUPPORTED)
-    public DuplikatListJson reloadDuplikate() {
+    public void reloadDuplikateAsync() {
+        eventBus.send(DUPLIKAT_RECALCULATION_EVENT, tenantProducer.produceTenant());
+    }
+
+    @PUT
+    @Path("/reload-sync")
+    @RolesAllowed(BerechtigungName.DUBLETTEN_ZUSAMMENFUHREN)
+    @Transactional(TxType.NOT_SUPPORTED)
+    public DuplikatListJson reloadDuplikateSync() {
         superAdminRunnerService.runReloadDuplikateJob(true);
         return findAllDuplikate();
     }

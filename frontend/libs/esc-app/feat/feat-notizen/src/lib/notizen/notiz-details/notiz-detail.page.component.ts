@@ -47,6 +47,18 @@ export class NotizDetailPageComponent implements DirtyMarker {
   }
 
   onSaveNotiz(payload: NotizenSaveParams) {
+    this.saveNotiz(payload, () => {
+      this.afterSuccessfulSaveAndUpload();
+    });
+  }
+
+  onSaveNotizSilent(payload: NotizenSaveParams) {
+    this.saveNotiz(payload, (updatedId: string) => {
+      payload.afterSave?.(updatedId);
+    });
+  }
+
+  saveNotiz(payload: NotizenSaveParams, onSuccess: (resultId: string) => void): void {
     if (isNotNullish(payload.fileUploads) && payload.fileUploads.length > globalConstants.notizen.uploadFilesMax) {
       this.#notificationService.addDangerNotification(this.#transloco.translate('ui.validation-error.max-files'));
       return;
@@ -54,9 +66,7 @@ export class NotizDetailPageComponent implements DirtyMarker {
     this.notizenListStore.updateNotiz({
       notiz: payload.notiz,
       fileUploads: payload.fileUploads ?? [],
-      onSuccess: (_) => {
-        this.afterSuccessfulSaveAndUpload();
-      },
+      onSuccess: (result) => onSuccess(result.id),
     });
   }
 

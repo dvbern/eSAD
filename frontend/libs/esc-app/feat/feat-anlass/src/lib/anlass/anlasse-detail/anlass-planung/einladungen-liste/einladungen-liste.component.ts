@@ -135,10 +135,11 @@ export class EinladungenListeComponent {
 
   constructor() {
     effect(() => {
+      const disabled = !this.anlassStore.canUserEditAnlassInCurrentState();
       this.einladungStatusForm = this.#fb.record({});
       this.store.einladungen().forEach((einladung) => {
         this.einladungStatusForm.addControl(einladung.id,
-          this.#fb.control({value: einladung.data.einladungStatus, disabled: false}));
+          this.#fb.control({ value: einladung.data.einladungStatus, disabled }));
       });
     });
   }

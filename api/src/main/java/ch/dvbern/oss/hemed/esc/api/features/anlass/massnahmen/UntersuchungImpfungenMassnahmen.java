@@ -8,7 +8,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.ImpfungenMassnahmenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungImpfungenMassnahmenPresentIfReq;
@@ -51,7 +51,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckUntersuchungImpfungenMassnahmenPresentIfReq
-public class UntersuchungImpfungenMassnahmen extends AbstractTenantEntity<UntersuchungImpfungenMassnahmen>
+public class UntersuchungImpfungenMassnahmen extends AbstractEntity<UntersuchungImpfungenMassnahmen>
     implements EntityWithOptimisticLocking {
 
     @Serial

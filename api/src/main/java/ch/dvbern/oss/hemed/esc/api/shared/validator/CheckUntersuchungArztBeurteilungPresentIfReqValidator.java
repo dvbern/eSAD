@@ -35,6 +35,14 @@ public class CheckUntersuchungArztBeurteilungPresentIfReqValidator
         AnlassConfig anlassConfig =
             aerztlicheUntersuchung.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
 
+        if (anlassConfig.getUnterlagenEinverstaendnis().isRequired()
+            && aerztlicheUntersuchung.getEinverstaendniserklaerung().isEmpty()) {
+            return false;
+        }
+        if (anlassConfig.getUnterlagenVerhaltensfragebogen().isRequired()
+            && aerztlicheUntersuchung.getVerhaltensfragebogen() == null) {
+            return false;
+        }
         if (anlassConfig.getUntersuchungBewegungsapparat().isRequired()
             && aerztlicheUntersuchung.getBewegungsapparat().isEmpty()) {
             return false;
@@ -43,8 +51,18 @@ public class CheckUntersuchungArztBeurteilungPresentIfReqValidator
             && aerztlicheUntersuchung.getEinbeinstand() == null) {
             return false;
         }
+        if (anlassConfig.getUntersuchungEinbeinstandRechtsLinks().isRequired()
+            && (aerztlicheUntersuchung.getEinbeinstandRechts() == null
+                || aerztlicheUntersuchung.getEinbeinstandLinks() == null)) {
+            return false;
+        }
         if (anlassConfig.getUntersuchungEinbeinhuepfen().isRequired()
             && aerztlicheUntersuchung.getEinbeinhuepfen() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungEinbeinhuepfenRechtsLinks().isRequired()
+            && (aerztlicheUntersuchung.getEinbeinhuepfenRechts() == null
+                || aerztlicheUntersuchung.getEinbeinhuepfenLinks() == null)) {
             return false;
         }
         if (anlassConfig.getUntersuchungFingeropposition().isRequired()
@@ -55,8 +73,28 @@ public class CheckUntersuchungArztBeurteilungPresentIfReqValidator
             && aerztlicheUntersuchung.getMotorik() == null) {
             return false;
         }
-        if (anlassConfig.getUntersuchungSprache().isRequired()
-            && aerztlicheUntersuchung.getSprachfaehigkeit().isEmpty()) {
+        if (anlassConfig.getUntersuchungMotorikPunkte().isRequired()
+            && aerztlicheUntersuchung.getMotorikPunkte() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungKognition().isRequired()
+            && aerztlicheUntersuchung.getKognition() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungKognitionPunkte().isRequired()
+            && aerztlicheUntersuchung.getKognitionPunkte() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungSprachfaehigkeitMultiValue().isRequired()
+            && aerztlicheUntersuchung.getSprachfaehigkeitMultiValue().isEmpty()) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungSprachfaehigkeitSingleValue().isRequired()
+            && aerztlicheUntersuchung.getSprachfaehigkeitSingleValue() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungSprachePunkte().isRequired()
+            && aerztlicheUntersuchung.getSprachfaehigkeitPunkte() == null) {
             return false;
         }
         if (anlassConfig.getUntersuchungMundZaehne().isRequired()
@@ -77,6 +115,70 @@ public class CheckUntersuchungArztBeurteilungPresentIfReqValidator
         }
         if (anlassConfig.getUntersuchungVerhalten().isRequired()
             && aerztlicheUntersuchung.getVerhalten() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungHampelmann().isRequired()
+            && aerztlicheUntersuchung.getHampelmann() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungBallFangen().isRequired()
+            && aerztlicheUntersuchung.getBallFangen() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungBallWerfen().isRequired()
+            && aerztlicheUntersuchung.getBallWerfen() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungNameSchreiben().isRequired()
+            && aerztlicheUntersuchung.getNameSchreiben() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungFigurNachmalen().isRequired()
+            && aerztlicheUntersuchung.getFigurNachmalen() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungStifthaltung().isRequired()
+            && aerztlicheUntersuchung.getStifthaltung() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungAussprache().isRequired()
+            && aerztlicheUntersuchung.getAussprache() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungLesefit().isRequired()
+            && aerztlicheUntersuchung.getLesefit() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungLesefitPunkte().isRequired()
+            && aerztlicheUntersuchung.getLesefitPunkte() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungZahlenNachsprechen4().isRequired()
+            && aerztlicheUntersuchung.getZahlenNachsprechen4() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungZahlenNachsprechen5().isRequired()
+            && aerztlicheUntersuchung.getZahlenNachsprechen5() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungZeichnenKreis().isRequired()
+            && aerztlicheUntersuchung.getZeichnenKreis() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungZeichnenViereck().isRequired()
+            && aerztlicheUntersuchung.getZeichnenViereck() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungZeichnenDreieck().isRequired()
+            && aerztlicheUntersuchung.getZeichnenDreieck() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungZeichnenMensch().isRequired()
+            && aerztlicheUntersuchung.getZeichnenMensch() == null) {
+            return false;
+        }
+        if (anlassConfig.getUntersuchungZeichnenMenschPunkte().isRequired()
+            && aerztlicheUntersuchung.getZeichnenMenschPunkte() == null) {
             return false;
         }
         return true;

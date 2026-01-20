@@ -55,3 +55,4 @@ export * from './lib/upload/upload-table/upload-table.component';
 export * from './lib/upload/file-drop/file-drop.component';
 export * from './lib/constants/global-constants';
 export * from './lib/upload/qr-code-upload/qr-code-upload.component';
+export * from './lib/notizen/notizen-mobile-upload/notizen-mobile-upload.component';

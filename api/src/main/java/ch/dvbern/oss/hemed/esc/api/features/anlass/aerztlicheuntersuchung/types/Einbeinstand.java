@@ -24,5 +24,7 @@ public enum Einbeinstand {
     UNSICHER_UNGEUEBT,
     NICHT_MOEGLICH,
     ANDERES,
+    MIN_FUENF_SEKUNDEN,
+    MAX_FUENF_SEKUNDEN,
     NICHT_GEPRUEFT
 }

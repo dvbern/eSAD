@@ -1,6 +1,13 @@
 import {AbstractControl, FormArray, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
-import {isISOYearMonthString} from '@dvb/data-access-types';
-import {AhvNummerUtil, getSchoolYearFromISODateString, isFilledIn, isNullish, toDateStr} from '@dvb/util-shared';
+import {isISOYearMonthString, ISODateString} from '@dvb/data-access-types';
+import {
+  AhvNummerUtil,
+  fromISODateString,
+  getSchoolYearFromISODateString,
+  isFilledIn,
+  isNullish,
+  toDateStr
+} from '@dvb/util-shared';
 import {addYears, subYears} from 'date-fns';
 
 /**
@@ -38,6 +45,9 @@ export const AppValidatorKeys = {
   zeitVonAfterZeitBis: 'zeitVonAfterZeitBis',
   zeroDecimalPlaces: 'zeroDecimalPlaces',
   changeSchuljahr: 'changeSchuljahr',
+  einmalAuswahlKrankheiten: 'einmalAuswahlKrankheiten',
+  datumVonAfterDatumBis: 'datumVonAfterDatumBis',
+  dateRangeIsMaximumNumberOfYears: 'dateRangeIsMaximumNumberOfYears'
 } as const satisfies ValidatorKeyMap<AppValidators>;
 
 const MIN_KIND_AGE = 3;
@@ -172,7 +182,7 @@ export class AppValidators {
       if (isNullish(control.value)) {
         return null;
       }
-      const dateErrors = AppValidators.date()(control);
+        const dateErrors = AppValidators.date()(control);
       if (dateErrors) {
         return dateErrors;
       }
@@ -350,6 +360,48 @@ export class AppValidators {
 
       if (datumVon >= datumBis) {
         return {[AppValidatorKeys.zeitVonAfterZeitBis]: true};
+      }
+
+      return null;
+    };
+  }
+
+  static datumBisIsAfterDatumVon(nameVon: string, nameBis: string): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const datumVon: ISODateString = control.get(nameVon)?.value;
+      const datumBis: ISODateString = control.get(nameBis)?.value;
+
+      if (isNullish(datumVon) || isNullish(datumBis)) {
+        return null;
+      }
+
+      const datumVonDate = fromISODateString(datumVon);
+      const datumBisDate = fromISODateString(datumBis);
+      if (datumVonDate >= datumBisDate) {
+        return {[AppValidatorKeys.datumVonAfterDatumBis]: true};
+      }
+
+      return null;
+    };
+  }
+
+  static dateRangeIsMaximumNumberOfYears(nameVon: string, nameBis: string, maximalRange: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const datumVon: ISODateString = control.get(nameVon)?.value;
+      const datumBis: ISODateString = control.get(nameBis)?.value;
+
+      if (isNullish(datumVon) || isNullish(datumBis)) {
+        return null;
+      }
+
+      const datumVonDate = fromISODateString(datumVon);
+      const datumBisDate = fromISODateString(datumBis);
+      datumBisDate.setFullYear(datumBisDate.getFullYear() - maximalRange);
+
+      if (datumVonDate < datumBisDate) {
+        return {[AppValidatorKeys.dateRangeIsMaximumNumberOfYears]: {
+            maximalYears: maximalRange,
+          }};
       }
 
       return null;

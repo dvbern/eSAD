@@ -23,7 +23,7 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
@@ -41,7 +41,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 @Slf4j
 public class AutoNotizService {
 
-    private static final String PARAM_ANLASSNAME = "anlassname";
+    public static final String PARAM_ANLASSNAME = "anlassname";
 
     private final NotizService notizService;
     private final LabelService labelService;
@@ -205,16 +205,16 @@ public class AutoNotizService {
     private FileData createFileData(@NonNull PrintResultDTO exportKind, @NonNull String prefixFilename) {
         // automatisch generierter Name mit Prfefix ergänzen damit man sieht dass das Dok von Merge ist
         CleanFileName cleanFileName = new CleanFileName(prefixFilename + '_' + exportKind.getFileInfo().getFileName());
-        FileInfoS3 fileInfoS3 = FileInfoS3.of(exportKind.getFileInfo());
-        fileInfoS3.setFileName(cleanFileName);
+        FileInfo fileInfo = FileInfo.of(exportKind.getFileInfo());
+        fileInfo.setFileName(cleanFileName);
         Uni<PutObjectResponse> putObjectResponseUni =
-            fileStoreService.uploadToS3Async(fileInfoS3.getMediaType().toString(), exportKind.getContent(), fileInfoS3);
+            fileStoreService.uploadToS3Async(fileInfo.getMediaType().toString(), exportKind.getContent(), fileInfo);
         PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
         LOG.info(
             "Uploaded file to S3, fileIdInBucket: {}, putObjectResponse: {}",
-            fileInfoS3.getFileIdInBucket(),
+            fileInfo.getFileIdInBucket(),
             putObjectResponse);
-        return new FileData(FileTyp.KINDERDOSSIER, fileInfoS3.getFileName(), fileInfoS3);
+        return new FileData(FileTyp.KINDERDOSSIER, fileInfo.getFileName(), fileInfo);
     }
 
     @NonNull
@@ -241,7 +241,7 @@ public class AutoNotizService {
         Notiz savedNotiz = this.createNotizWithLabel(notiz, this.getAutoLabelId(notiz.getTyp()));
         savedNotiz.disableOptimisticLockingCheck();
         for (FileUpload fileUpload : fileUploads) {
-            savedNotiz = notizService.addUploadedFile(savedNotiz.getId(), fileUpload);
+            savedNotiz = notizService.addUploadedFileAndFlush(savedNotiz.getId(), fileUpload);
         }
         einladung.getNotizen().add(savedNotiz);
         return savedNotiz;

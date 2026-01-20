@@ -15,11 +15,16 @@ public class GeschlechtCsvColumn extends AbstractCsvColumn {
     public String extract(@NonNull Einladung einladung) {
         return ExtractorForCsvUtil.extractUntersuchungKindDaten(
             einladung,
-            kindDaten -> switch (kindDaten.getGeschlecht()) {
-                case MAENNLICH -> "1";
-                case WEIBLICH -> "2";
-                case DIVERS -> "4";
-                case UNBEKANNT -> "3";
+            kindDaten -> {
+                if (!config.forSpssReport()) {
+                    return config.tl().translateValue(kindDaten.getGeschlecht());
+                }
+                return switch (kindDaten.getGeschlecht()) {
+                    case MAENNLICH -> "1";
+                    case WEIBLICH -> "2";
+                    case DIVERS -> "4";
+                    case UNBEKANNT -> "3";
+                };
             });
     }
 

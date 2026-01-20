@@ -1,0 +1,25 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet author="markus.hofstetter (generated)" id="1765979886718-15">
+    <addColumn tableName="tenantsetting">
+      <column name="mobilescannerfeature" type="VARCHAR(30)">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+    <sql>
+      update tenantsetting
+      set mobilescannerfeature = 'ENABLED_FOR_DEVELOPMENT'
+      where mobilescannerfeature is null;
+    </sql>
+    <addNotNullConstraint tableName="tenantsetting"
+                          columnName="mobilescannerfeature"
+    />
+  </changeSet>
+  <changeSet author="markus.hofstetter (generated)" id="1765979886718-17">
+    <addColumn tableName="tenantsetting_aud">
+      <column name="mobilescannerfeature" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+</databaseChangeLog>

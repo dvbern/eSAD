@@ -9,6 +9,7 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.schule.QSchule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
+import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -34,5 +35,14 @@ public class DossierRepo extends BaseRepo<Dossier> {
                 .and(QKind.kind.kindAktivStatus.ne(EntityAktivStatus.INAKTIV)))
             .orderBy(QKind.kind.name.asc(), QKind.kind.vorname.asc())
             .fetch();
+    }
+
+    @NonNull
+    public Optional<Dossier> findByEsadId(@IgnoreForIdClassTest @NonNull String esadId) {
+        return db.select(QDossier.dossier)
+            .from(QDossier.dossier)
+            .innerJoin(QDossier.dossier.kind, QKind.kind)
+            .where(QKind.kind.esadId.eq(esadId))
+            .fetchOne();
     }
 }

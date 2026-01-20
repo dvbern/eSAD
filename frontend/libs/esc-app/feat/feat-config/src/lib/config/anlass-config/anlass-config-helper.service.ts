@@ -1,5 +1,5 @@
 import { computed, inject, Injectable } from '@angular/core';
-import { BenutzerStore, Path } from '@dvb/feat-shared';
+import { BenutzerStore, DeploymentStore, Path } from '@dvb/feat-shared';
 import { hasConfigEditBerechtigung } from '@dvb/util-shared';
 import { AnlassConfigStore } from './anlass-config.store';
 import { isValidBackendEntityId } from '@dvb/data-access-types';
@@ -7,18 +7,24 @@ import { DetailMode } from '@dvb/util-angular';
 import { TranslocoService } from '@jsverse/transloco';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AnlassConfigForm } from './anlass-config/anlass-config-detail.form';
+import {DeploymentEnvironment} from "@dvb/data-access-backend";
 
 @Injectable({ providedIn: 'root' })
 export class AnlassConfigHelperService {
   readonly store = inject(AnlassConfigStore);
   readonly benutzerStore = inject(BenutzerStore);
-
+  readonly deploymentStore = inject(DeploymentStore);
   readonly transloco = inject(TranslocoService);
   readonly #router = inject(Router);
 
   canEdit = computed(() => {
-    const selectedEntity = this.store.selectedEntity();
     const hasRole = this.benutzerStore.createHasRequiredRoleSig(hasConfigEditBerechtigung())();
+    const alwaysEditable = this.deploymentStore.environment() !== DeploymentEnvironment.UAT
+      && this.deploymentStore.environment() !== DeploymentEnvironment.PROD;
+    if (hasRole && alwaysEditable) {
+      return true;
+    }
+    const selectedEntity = this.store.selectedEntity();
     return hasRole && !selectedEntity?.usedInAtLeastOneAnlass;
   });
 

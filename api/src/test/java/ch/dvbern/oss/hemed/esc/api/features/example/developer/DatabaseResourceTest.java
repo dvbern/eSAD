@@ -36,6 +36,7 @@ class DatabaseResourceTest {
     void setUp() {
         databaseService.liquibaseFactoryBS = liquibaseFactory;
         databaseService.liquibaseFactoryWIN = liquibaseFactory;
+        databaseService.liquibaseFactoryBE = liquibaseFactory;
         when(liquibaseFactory.createLiquibase()).thenReturn(liquibase);
     }
 

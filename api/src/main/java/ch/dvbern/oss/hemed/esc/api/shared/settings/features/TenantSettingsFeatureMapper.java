@@ -33,12 +33,12 @@ public class TenantSettingsFeatureMapper {
 
     @NonNull
     public TenantSettingFeaturesJson toJson(@NonNull TenantSettingFeatures featureSettings) {
-
         return new TenantSettingFeaturesJson(
             toTenantSettingFeatureState(featureSettings.getEsadIdFeature()),
-            toTenantSettingFeatureState(featureSettings.getLaenderCodeFeature())
+            toTenantSettingFeatureState(featureSettings.getLaenderCodeFeature()),
+            toTenantSettingFeatureState(featureSettings.getMobileScannerFeature()),
+            toTenantSettingFeatureState(featureSettings.getMassenimportFeature())
         );
-
     }
 
     /**
@@ -55,10 +55,10 @@ public class TenantSettingsFeatureMapper {
 
     public void toEntity(
         @Valid @NotNull @NonNull TenantSettingFeatures existingFeatures,
-        @NotNull @NonNull @Valid TenantSettingFeaturesJson features)
-    {
+        @NotNull @NonNull @Valid TenantSettingFeaturesJson features) {
         existingFeatures.setEsadIdFeature(features.getEsadIdFeature().getFeatureEnabled());
         existingFeatures.setLaenderCodeFeature(features.getLaenderCodeFeature().getFeatureEnabled());
-
+        existingFeatures.setMobileScannerFeature(features.getMobileScannerFeature().getFeatureEnabled());
+        existingFeatures.setMassenimportFeature(features.getMassenimportFeature().getFeatureEnabled());
     }
 }

@@ -1,4 +1,25 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind;
+
+import java.util.List;
+import java.util.Set;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
@@ -17,9 +38,6 @@ import ch.dvbern.oss.hemed.esc.api.shared.util.PathParamConsistancyUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.util.List;
-import java.util.Set;
 
 @JaxMapper
 @RequiredArgsConstructor
@@ -109,7 +127,9 @@ public final class KontaktPersonKindMapper {
             saveJson.getTelefon(),
             saveJson.isKorrespondenz()
         );
-        KindValidationUtil.throwErrorIfKindIsInactive(kind, AppValidationMessage.cannotCreateEntityForInactiveKind(kind, kontaktPersonKind));
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            kind,
+            AppValidationMessage.cannotCreateEntityForInactiveKind(kind, kontaktPersonKind));
         return toJson(kontaktPersonKindService.persist(kontaktPersonKind));
     }
 
@@ -122,7 +142,9 @@ public final class KontaktPersonKindMapper {
         KontaktPersonKind existingKP = kontaktPersonKindService.getById(kontaktPersonKindID);
         Kind kind = kindService.getById(kindId);
         KontaktPersonKind entity = toEntity(existingKP, saveJson);
-        KindValidationUtil.throwErrorIfKindIsInactive(kind, AppValidationMessage.cannotEditEntityForInactiveKind(kind, entity));
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            kind,
+            AppValidationMessage.cannotEditEntityForInactiveKind(kind, entity));
         return toJson(kontaktPersonKindService.persistWithOptimisticLocking(entity, saveJson.getVersion()));
     }
 
@@ -175,8 +197,11 @@ public final class KontaktPersonKindMapper {
         kontaktPersonKindService.removeFromKind(kindID, kontaktPersonKindID);
     }
 
-	public void requireConsistentPathParams(@NonNull ID<KontaktPersonKind> kontaktPersonId, @NonNull ID<Kind> expectedKindId) {
-		PathParamConsistancyUtil.requireContainsForeignId(
+    public void requireConsistentPathParams(
+        @NonNull ID<KontaktPersonKind> kontaktPersonId,
+        @NonNull ID<Kind> expectedKindId
+    ) {
+        PathParamConsistancyUtil.requireContainsForeignId(
             kontaktPersonId,
             kontaktPersonKindService.getById(kontaktPersonId).getKinder().stream().map(AbstractEntity::getId).toList(),
             expectedKindId

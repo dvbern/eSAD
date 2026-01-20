@@ -19,6 +19,11 @@ public class StereotestCsvColumn extends AbstractCsvColumn {
                 if (sehen.getStereotest() == null) {
                     return "";
                 }
+
+                if (!config.forSpssReport()) {
+                    return config.tl().translateValue(sehen.getStereotest());
+                }
+
                 return switch (sehen.getStereotest()) {
                     case NORMAL -> "1";
                     case PATHOLOGISCH -> "2";

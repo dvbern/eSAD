@@ -14,7 +14,7 @@ class MpaCsvColumnTest extends AbstractBaseColumnTest {
     @Test
     void extract() {
         // ARRANGE
-        final MpaCsvColumn column = new MpaCsvColumn(config, null);
+        final MpaCsvColumn column = new MpaCsvColumn(configForCsv, null);
         final Einladung einladung = new Einladung();
 
         Anlass anlass = new Anlass();

@@ -1,0 +1,25 @@
+package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
+
+import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassArt;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class AnlassArtCsvColumnTest extends AbstractBaseColumnTest {
+
+    @Test
+    void extract() {
+        // ARRANGE
+        final AnlassArtCsvColumn column = new AnlassArtCsvColumn(config);
+        final Einladung einladung = new Einladung();
+
+        Anlass anlass = new Anlass();
+        einladung.setAnlass(anlass);
+        anlass.setAnlassArt(AnlassArt.EINZEL_ANLASS);
+
+        assertThat(column.extract(einladung)).isEqualTo(config.tl().translateValue(AnlassArt.EINZEL_ANLASS));
+    }
+}

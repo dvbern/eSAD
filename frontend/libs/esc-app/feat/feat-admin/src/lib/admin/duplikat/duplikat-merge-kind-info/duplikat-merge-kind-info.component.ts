@@ -6,7 +6,7 @@ import {BooleanPipe} from '@dvb/feat-shared';
 import {FormLayoutComponent, InfoItemComponent} from '@dvb/ui-components';
 import {DetailMode} from '@dvb/util-angular';
 import {formatTimeWithDateIfNotToday, isNullish} from '@dvb/util-shared';
-import {TranslocoPipe} from '@jsverse/transloco';
+import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -26,16 +26,17 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 export class DuplikatMergeKindInfoComponent {
 
   readonly activeModal = inject(NgbActiveModal);
-
+  readonly #transloco = inject(TranslocoService);
   protected readonly DetailMode = DetailMode;
 
   kind = input<DuplikatKindJson>();
 
-  public getEscadaLastImportTimestamp(): string {
+  public getExternalLastImportTimestamp(): string {
     const date = this.kind()?.timestampLatestImport;
-    if(isNullish(date)) {
+    const importTyp = this.kind()?.importTyp;
+    if (isNullish(date) || isNullish(importTyp)) {
       return '';
     }
-    return  ' (' + formatTimeWithDateIfNotToday( date, true) + ')' ;
+    return this.#transloco.translate('ImportTyp.' + importTyp) + ' (' + formatTimeWithDateIfNotToday(date, true) + ')';
   }
 }

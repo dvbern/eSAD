@@ -47,6 +47,12 @@ public class AufgabeService {
     }
 
     @NonNull
+    public Aufgabe persistAndFlush(@NonNull Aufgabe aufgabe) {
+        aufgabeRepo.persistAndFlush(aufgabe);
+        return aufgabe;
+    }
+
+    @NonNull
     public Aufgabe persistWithOptimisticLocking(@NonNull Aufgabe aufgabe, @NonNull Long versionFromFrontend) {
         aufgabeRepo.persistWithOptimisticLocking(aufgabe, versionFromFrontend);
         return aufgabe;
@@ -93,30 +99,32 @@ public class AufgabeService {
     @NonNull
     public Aufgabe addUploadedFile(@NonNull ID<Aufgabe> aufgabeID, @NonNull FileUpload file) {
         fileValidationService.requireFiletypeIsAllowed(file, FileTyp.AUFGABEUPLOAD);
-        FileInfoS3 fileInfoS3 = saveAufgabeAttachmentInFilestorage(file);
+        FileInfo fileInfo = saveAufgabeAttachmentInFilestorage(file);
         Aufgabe aufgabe = aufgabeRepo.getById(aufgabeID);
         aufgabe.disableOptimisticLockingCheck();
         FileTyp fileTyp = FileNameUtil.getTypFromLabel(aufgabe.getLabels(), FileTyp.AUFGABEUPLOAD);
         String nameVorname = aufgabe.getKind() != null ? aufgabe.getKind().getNameVorname() : "Aufgabe";
         LocalDate today = appClock.getToday();
-        final String originalFileName = fileInfoS3.getFileName().getFileName();
+        final String originalFileName = fileInfo.getFileName().getFileName();
         CleanFileName calculatedFileName = FileNameUtil.calculateAutomaticFilename(
             aufgabe.getFiles(),
             today,
             nameVorname,
             fileTyp, originalFileName);
 
-        FileData fileData = new FileData(fileTyp, calculatedFileName, fileInfoS3);
+        FileData fileData = new FileData(fileTyp, calculatedFileName, fileInfo);
         return aufgabeRepo.addUploadedFile(aufgabeID, fileData);
     }
 
     public void removeUploadedFile(@NonNull Aufgabe loadedAufgabe, @NonNull ID<FileData> fileId) {
-        FileInfoS3 fileToRemove = findUploadedFileInfoS3(loadedAufgabe.getId(), fileId);
+        FileInfo fileToRemove = findUploadedFileInfoS3(loadedAufgabe.getId(), fileId);
         loadedAufgabe.disableOptimisticLockingCheck();
         boolean removedFromList = loadedAufgabe.getFiles().removeIf(fileData -> fileId.equals(fileData.getId()));
         if (!removedFromList) {
             throw new AppFailureException(AppFailureMessage.entityNotFound(fileId, "File not found"));
         }
+
+        aufgabeRepo.flush();
 
         Uni<DeleteObjectResponse> deleteObjectResponseUni =
             fileStoreService.deleteInS3Async(fileToRemove.getFileIdInBucket());
@@ -127,19 +135,19 @@ public class AufgabeService {
     }
 
     @NonNull
-    private FileInfoS3 saveAufgabeAttachmentInFilestorage(@NonNull FileUpload fileUpload) {
+    private FileInfo saveAufgabeAttachmentInFilestorage(@NonNull FileUpload fileUpload) {
         // prepare the file info Embeddable
-        FileInfoS3 fileInfoS3 = FileInfoS3Mapper.mapFileUploadToFileInfoS3(fileUpload, FileTyp.AUFGABEUPLOAD);
+        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfo(fileUpload, FileTyp.AUFGABEUPLOAD);
         // upload the file to S3
-        Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileUpload, fileInfoS3);
+        Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileUpload, fileInfo);
         PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
-        LOG.info("Uploaded file to S3, fileIdInBucket: {}, putObjectResponse: {}", fileInfoS3.getFileIdInBucket(), putObjectResponse);
+        LOG.info("Uploaded file to S3, fileIdInBucket: {}, putObjectResponse: {}", fileInfo.getFileIdInBucket(), putObjectResponse);
 
-        return fileInfoS3;
+        return fileInfo;
     }
 
     @NonNull
-    public FileInfoS3 findUploadedFileInfoS3(@NonNull ID<Aufgabe> aufgabeId, @NonNull ID<FileData> fileId) {
+    public FileInfo findUploadedFileInfoS3(@NonNull ID<Aufgabe> aufgabeId, @NonNull ID<FileData> fileId) {
         return getById(aufgabeId).getFiles().stream()
             .filter(fileData -> fileData.getId().equals(fileId))
             .findFirst()

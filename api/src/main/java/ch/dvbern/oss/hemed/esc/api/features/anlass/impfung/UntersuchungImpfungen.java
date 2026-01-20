@@ -4,7 +4,7 @@ import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungImpfungenPresentIfReq;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -32,7 +32,7 @@ import java.io.Serial;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckUntersuchungImpfungenPresentIfReq
-public class UntersuchungImpfungen extends AbstractTenantEntity<UntersuchungImpfungen>
+public class UntersuchungImpfungen extends AbstractEntity<UntersuchungImpfungen>
         implements EntityWithOptimisticLocking {
 
     @Serial

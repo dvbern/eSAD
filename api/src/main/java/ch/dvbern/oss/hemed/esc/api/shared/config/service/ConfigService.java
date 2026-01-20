@@ -72,6 +72,10 @@ public class ConfigService {
     @ConfigProperty(name = "app.deployment.public-url.win" )
     URL publicUrlWIN;
 
+    @Getter(AccessLevel.NONE)
+    @ConfigProperty(name = "app.deployment.public-url.be" )
+    URL publicUrlBE;
+
     @ConfigProperty(name = "app.deployment.version")
     String version;
 
@@ -136,6 +140,27 @@ public class ConfigService {
 
     @ConfigProperty(name = "esc.esca-sync.client.azp", defaultValue = "escada-client")
     String escadaAZP;
+
+    @ConfigProperty(name = "esc.esca-sync.log.redact.personalinfo", defaultValue = "true")
+    boolean escadaRedactPersonalInfo;
+
+    @ConfigProperty(name = "esc.pupil-sync.error-mail.enabled", defaultValue = "true")
+    boolean pupilSyncErrorMailEnabled;
+
+    @ConfigProperty(name = "esc.pupil-sync.client.user", defaultValue = "pupil-client@dvbern.ch")
+    String pupilClientUser;
+
+    @ConfigProperty(name = "esc.pupil-sync.client.azp", defaultValue = "pupil-client")
+    String pupilAZP;
+
+    @ConfigProperty(name = "esc.pupil-sync.log.redact.personalinfo", defaultValue = "true")
+    boolean pupilRedactPersonalInfo;
+
+    @ConfigProperty(name = "esc.file-ingress.client.user", defaultValue = "file-ingress-client@dvbern.ch")
+    String fileIngressClientUser;
+
+    @ConfigProperty(name = "esc.file-ingress.client.azp", defaultValue = "file-ingress-client")
+    String fileIngressAZP;
 
     @ConfigProperty(name = "esc.customer-admin-emails", defaultValue = "bs-esc@dvbern.ch")
     List<String> customerAdminEmails;
@@ -213,6 +238,9 @@ public class ConfigService {
         if (fileTyp == FileTyp.ESCADA_SYNC) {
             return Set.of("text/csv", "text/plain");
         }
+        if (fileTyp == FileTyp.PUPIL_SYNC) {
+            return Set.of("text/csv", "text/plain");
+        }
         if (fileTyp == FileTyp.BRIEFVORLAGE) {
             // According to MDN, this is mime type is for .docx files
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types/Common_types
@@ -241,6 +269,7 @@ public class ConfigService {
         return switch (tenantEnum) {
             case TenantEnum.BS -> publicUrlBS;
             case TenantEnum.WIN -> publicUrlWIN;
+            case  TenantEnum.BE -> publicUrlBE;
             default -> throw new AppFailureException(AppFailureMessage.internalError("Unknown tenant: " + tenantEnum));
         };
     }

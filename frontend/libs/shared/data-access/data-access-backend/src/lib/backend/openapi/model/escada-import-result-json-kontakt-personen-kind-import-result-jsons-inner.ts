@@ -7,14 +7,14 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { EscadaImportMode } from './escada-import-mode';
-import { EscadaImportStatus } from './escada-import-status';
+import { ImportMode } from './import-mode';
+import { ImportStatus } from './import-status';
 import { BackendEntityId } from '@dvb/data-access-types';
 
 
 export interface EscadaImportResultJsonKontaktPersonenKindImportResultJsonsInner { 
-    determinedImportMode: EscadaImportMode;
-    status: EscadaImportStatus;
+    determinedImportMode: ImportMode;
+    status: ImportStatus;
     externalId: string;
     internalId?: BackendEntityId;
     friendlyName?: string | null;

@@ -19,14 +19,21 @@ public class EinbeinstandCsvColumn extends AbstractCsvColumn {
         return ExtractorForCsvUtil.extractUntersuchungArztBeurteilung(
             einladung,
             untersuchungArzt -> {
-                if (untersuchungArzt.getEinbeinstand() == null) {
+                Einbeinstand einbeinstand = untersuchungArzt.getEinbeinstand();
+                if (einbeinstand == null) {
                     return "";
                 }
-                return switch (untersuchungArzt.getEinbeinstand()) {
+
+                if (!config.forSpssReport()) {
+                    return config.tl().translateValue(einbeinstand);
+                }
+
+                return switch (einbeinstand) {
                     case Einbeinstand.SICHER -> "1";
                     case Einbeinstand.UNSICHER_UNGEUEBT -> "2";
                     case Einbeinstand.NICHT_MOEGLICH -> "3";
                     case Einbeinstand.ANDERES, Einbeinstand.NICHT_GEPRUEFT -> "4";
+                    default -> throw new IllegalStateException("Unexpected value for Einbeinstand: " + einbeinstand);
                 };
             }
         );

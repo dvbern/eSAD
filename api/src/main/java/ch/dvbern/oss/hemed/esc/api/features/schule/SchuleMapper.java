@@ -86,9 +86,9 @@ public final class SchuleMapper {
         existingSchule.setZustaendigArzt(benutzerService.getBenutzerIfCorrectRole(
             saveJson.getZustaendigArzt(),
             FachRolle.SCHULAERZTIN));
-        existingSchule.setZustaendigMPA(benutzerService.getBenutzerIfCorrectRole(
+        existingSchule.setZustaendigMPA(benutzerService.getBenutzerIfOneOfRolesIsCorrect(
             saveJson.getZustaendigMPA(),
-            FachRolle.MPA));
+            List.of(FachRolle.MPA, FachRolle.PFP)));
         existingSchule.setSchuleAktivStatus(saveJson.getSchuleAktivStatus());
         return existingSchule;
     }
@@ -107,7 +107,7 @@ public final class SchuleMapper {
             saveJson.getTelefon(),
             saveJson.getBemerkungen(),
             benutzerService.getBenutzerIfCorrectRole(saveJson.getZustaendigArzt(), FachRolle.SCHULAERZTIN),
-            benutzerService.getBenutzerIfCorrectRole(saveJson.getZustaendigMPA(), FachRolle.MPA),
+            benutzerService.getBenutzerIfOneOfRolesIsCorrect(saveJson.getZustaendigMPA(), List.of(FachRolle.MPA, FachRolle.PFP)),
             EntityAktivStatus.AKTIV
         );
     }

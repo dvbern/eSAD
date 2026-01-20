@@ -20,6 +20,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @JaxMapper
 @RequiredArgsConstructor
@@ -86,7 +87,7 @@ public final class DossierMapper {
                     FachRolle.SCHULAERZTIN)
             );
             existingDossier.setZustaendigMPA(
-                benutzerService.getBenutzerIfCorrectRole(saveJsonNichtMedizinisch.getZustaendigMPA(), FachRolle.MPA)
+                benutzerService.getBenutzerIfOneOfRolesIsCorrect(saveJsonNichtMedizinisch.getZustaendigMPA(), List.of(FachRolle.MPA, FachRolle.PFP))
             );
             existingDossier.setPapierakteStatus(saveJsonNichtMedizinisch.getPapierakteStatus());
         }

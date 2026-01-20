@@ -48,6 +48,9 @@ import {
   KinderNotizenListePageComponent,
 } from './kinder/kinder-notiz/kinder-notizen-liste/kinder-notizen-liste.page.component';
 import {KinderSummaryStore} from './kinder/kinder-summary.store';
+import {
+  KinderNotizenHochladenPageComponent
+} from './kinder/kinder-notiz/kinder-notizen-hochladen/kinder-notizen-hochladen.page.component';
 
 export const kinderRoutes: Route[] = [
   {
@@ -294,7 +297,6 @@ export const kinderRoutes: Route[] = [
               },
               {
                 path: ':id',
-                component: KinderNotizPageComponent,
                 resolve: {
                   _store: (route: ActivatedRouteSnapshot) => {
                     const param = requireValidBackendEntityId(route.params['id']);
@@ -302,10 +304,20 @@ export const kinderRoutes: Route[] = [
                     inject(KinderNotizStore).setDetailMode('edit');
                   },
                 },
-                canDeactivate: [confirmOnDirty()],
                 canActivate: [
                   requireRole(hasNotizEditBerechtigung()),
                 ],
+                children: [
+                  {
+                    path: '',
+                    component: KinderNotizPageComponent,
+                    canDeactivate: [confirmOnDirty()],
+                  },
+                  {
+                    path: Path.UPLOAD,
+                    component: KinderNotizenHochladenPageComponent
+                  }
+                ]
               },
             ],
           },

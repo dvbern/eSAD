@@ -20,7 +20,6 @@ class TranslatedStringMapperTest {
     private final TenantSettingsService tenantSettingsServiceMock = Mockito.mock(TenantSettingsService.class);
     private final TranslatedStringMapper sut = new TranslatedStringMapper(tenantSettingsServiceMock);
 
-
     @Test
     void all_languages_supported_all_properties_set() {
         mockSettings(AppLanguages.DE, "DE, FR");
@@ -62,13 +61,18 @@ class TranslatedStringMapperTest {
     private void mockSettings(@NonNull AppLanguages defaultLanguage, @NonNull String supportedLanguages) {
         Mockito.when(tenantSettingsServiceMock.getTenantSetting())
             .thenReturn(new TenantSetting(
-                defaultLanguage,
-                supportedLanguages,
+                    defaultLanguage,
+                    supportedLanguages,
+                    16,
                     new TenantSettingFeatures(
                         FeatureEnabledSetting.ENABLED,
+                        FeatureEnabledSetting.ENABLED,
+                        FeatureEnabledSetting.ENABLED,
                         FeatureEnabledSetting.ENABLED
+
                     ),
-                EnumSetUtil.toString(List.of(EinladungStatus.TEILNAHME_ABGESAGT, EinladungStatus.TEILNAHME_ABGESAGT))
+                    EnumSetUtil.toString(List.of(EinladungStatus.TEILNAHME_ABGESAGT,
+                        EinladungStatus.TEILNAHME_ABGESAGT))
                 )
             );
     }

@@ -2,9 +2,8 @@ import {DatePipe} from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Geschlecht} from '@dvb/data-access-backend';
-import {KlassenStore} from '@dvb/feat-shared';
-import {Path} from '@dvb/feat-shared';
+import {Geschlecht, ImportTyp} from '@dvb/data-access-backend';
+import {KlassenStore, Path} from '@dvb/feat-shared';
 import {
   FormButtonsComponent,
   FormControlComponent,
@@ -17,7 +16,7 @@ import {
   TextInputDirective,
 } from '@dvb/ui-components';
 import {DirtyMarker} from '@dvb/util-angular';
-import {fromISODateTimeString, isNullish, requireValue} from '@dvb/util-shared';
+import {fromISODateTimeString, isNotNullish, isNullish, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {LehrpersonenStore} from '../lehrpersonen.store';
 import {LehrpersonForm} from './lehrperson.form';
@@ -54,7 +53,10 @@ export class LehrpersonComponent implements DirtyMarker {
   protected readonly Path = Path;
 
   isEscadaObject = computed(() => {
-    return !!this.store.selectedEntity()?.externalImportInfoJson?.aktivInExternalSystem;
+    const externalImportInfo = this.store.selectedEntity()?.externalImportInfoJson;
+    return isNotNullish(externalImportInfo)
+      && externalImportInfo?.aktivInExternalSystem
+      && externalImportInfo?.importTyp === ImportTyp.ESCADA;
   });
 
   getDateLatestImportIfEscadaObject() {

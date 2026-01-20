@@ -1,0 +1,58 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <!--Kind-->
+  <changeSet author="hora (generated)" id="1761744262123-1">
+    <sql>
+      UPDATE kind
+      SET importtyp = 'ESCADA'
+      WHERE idInExternalSystem IS NOT NULL
+        OR aktivInExternalSystem IS NOT NULL
+        OR timestampFirstImport IS NOT NULL
+        OR timestampLatestImport IS NOT NULL;
+    </sql>
+  </changeSet>
+  <!--schule-->
+  <changeSet author="hora (generated)" id="1761744262123-2">
+    <sql>
+      UPDATE schule
+      SET importtyp = 'ESCADA'
+      WHERE idInExternalSystem IS NOT NULL
+        OR aktivInExternalSystem IS NOT NULL
+        OR timestampFirstImport IS NOT NULL
+        OR timestampLatestImport IS NOT NULL;
+    </sql>
+  </changeSet>
+  <!--klasse-->
+  <changeSet author="hora (generated)" id="1761744262123-3">
+    <sql>
+      UPDATE klasse
+      SET importtyp = 'ESCADA'
+      WHERE idInExternalSystem IS NOT NULL
+        OR aktivInExternalSystem IS NOT NULL
+        OR timestampFirstImport IS NOT NULL
+        OR timestampLatestImport IS NOT NULL;
+    </sql>
+  </changeSet>
+  <!--KontaktPersonKind-->
+  <changeSet author="hora (generated)" id="1761744262123-4">
+    <sql>
+      UPDATE kontaktpersonkind
+      SET importtyp = 'ESCADA'
+      WHERE idInExternalSystem IS NOT NULL
+        OR aktivInExternalSystem IS NOT NULL
+        OR timestampFirstImport IS NOT NULL
+        OR timestampLatestImport IS NOT NULL;
+    </sql>
+  </changeSet>
+  <!--Lehrperson-->
+  <changeSet author="hora (generated)" id="1761744262123-5">
+    <sql>
+      UPDATE lehrperson
+      SET importtyp = 'ESCADA'
+      WHERE idInExternalSystem IS NOT NULL
+        OR aktivInExternalSystem IS NOT NULL
+        OR timestampFirstImport IS NOT NULL
+        OR timestampLatestImport IS NOT NULL;
+    </sql>
+  </changeSet>
+</databaseChangeLog>

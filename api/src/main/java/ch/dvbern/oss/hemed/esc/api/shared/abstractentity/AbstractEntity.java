@@ -81,7 +81,7 @@ public abstract class AbstractEntity<Entity extends AbstractEntity<Entity>> impl
      */
     @Nullable
     @Size(max = DbConst.DB_DEFAULT_MAX_LENGTH)
-    @Column(nullable = false, updatable = false, length = DbConst.DB_DEFAULT_MAX_LENGTH)
+    @Column(nullable = false, updatable = true, length = DbConst.DB_DEFAULT_MAX_LENGTH)
     // No validation: managed by DefaultEntityListener
     private String userMutiert;
 

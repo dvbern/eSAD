@@ -4,7 +4,7 @@ import java.io.Serial;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -27,7 +27,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Quartier extends AbstractTenantEntity<Quartier> implements EntityWithOptimisticLocking {
+public class Quartier extends AbstractEntity<Quartier> implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = -8993998933687829415L;

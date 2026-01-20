@@ -1,0 +1,33 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="1766479073640-15">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungimpfungkrankheitenlinksvalues" type="VARCHAR(2000)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig
+      SET untersuchungimpfungkrankheitenlinksvalues = 'DIPHTERIE,TETANUS,PERTUSSIS,POLIO,HEPATITIS_B,HPV'
+      WHERE untersuchungimpfungkrankheitenlinksvalues IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1766479073640-16">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungimpfungkrankheitenlinksvalues" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1766479073640-17">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungimpfungkrankheitenrechtsvalues" type="VARCHAR(2000)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig
+      SET untersuchungimpfungkrankheitenrechtsvalues = 'MASERN,MUMPS,ROETELN,VARIZELLEN,MENINGOKOKKEN_A_C_W_Y,MENINGOKOKKEN_B'
+      WHERE untersuchungimpfungkrankheitenrechtsvalues IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1766479073640-18">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungimpfungkrankheitenrechtsvalues" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+</databaseChangeLog>

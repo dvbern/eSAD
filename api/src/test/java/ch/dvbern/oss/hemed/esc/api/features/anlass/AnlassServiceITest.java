@@ -224,8 +224,6 @@ class AnlassServiceITest extends AbstractITest {
         assertThat(result.getFirst().getLabels()).contains(demoLabel);
         // should not update Bemerkung
         assertThat(result.getFirst().getBemerkung()).isEqualTo(expectedBemerkung);
-        // should set AufgabeStatus to offen again
-        assertThat(result.getFirst().getAufgabeStatus()).isEqualTo(AufgabeStatus.OFFEN);
     }
 
 

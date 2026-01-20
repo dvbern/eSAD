@@ -19,6 +19,9 @@ public class BrilleLinsenCsvColumn extends AbstractCsvColumn {
                 if (sehen.getBrilleLinsen() == null) {
                     return "";
                 }
+                if (!config.forSpssReport()) {
+                    return config.tl().translateValue(sehen.getBrilleLinsen());
+                }
                 return switch (sehen.getBrilleLinsen()) {
                     case OHNE_KEINE -> "1";
                     case MIT -> "2";

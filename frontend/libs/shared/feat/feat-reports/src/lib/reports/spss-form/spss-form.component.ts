@@ -45,7 +45,7 @@ export class SpssFormComponent {
     if (await this.form.validate()) {
       const documentQueueListSaveJson = this.form.valueOnValid();
 
-      this.documentQueueStore.createMultipleDocumentQueue({
+      this.documentQueueStore.createMultipleSpssDocumentQueue({
         documentQueueListSaveJson,
         onSuccess: () => {
           this.form.reset();

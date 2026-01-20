@@ -12,7 +12,6 @@ import {
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {
   AnlassConfigJson,
-  Krankheit,
   UntersuchungImpfstatusListSaveJson,
   UntersuchungImpfungenImpfausweisSaveJson,
 } from '@dvb/data-access-backend';
@@ -49,15 +48,8 @@ import {UntersuchungImpfstatusListForm} from '../untersuchung-impfstatus-list/un
   ],
 })
 export class UntersuchungImpfstatusComponent {
-  krankheitenLeft: Krankheit[] = ['DIPHTERIE', 'TETANUS', 'PERTUSSIS', 'POLIO', 'HEPATITIS_B', 'HPV'];
-  krankheitenRight: Krankheit[] = [
-    'MASERN',
-    'MUMPS',
-    'ROETELN',
-    'VARIZELLEN',
-    'MENINGOKOKKEN_A_C_W_Y',
-    'MENINGOKOKKEN_B',
-  ];
+  krankheitenLeft = computed(() => this.anlassStore.selectedEntity()?.anlassConfig.data?.untersuchungImpfungKrankheitenLinksValues || []);
+  krankheitenRight = computed(() => this.anlassStore.selectedEntity()?.anlassConfig.data?.untersuchungImpfungKrankheitenRechtsValues || []);
   columns = [this.krankheitenLeft, this.krankheitenRight];
 
   readonly benutzerStore = inject(BenutzerStore);
@@ -67,7 +59,7 @@ export class UntersuchungImpfstatusComponent {
   public form: UntersuchungImpfstatusListForm = new UntersuchungImpfstatusListForm({
     fb: inject(NonNullableFormBuilder),
     destroyRef: inject(DestroyRef),
-    krankheiten: [...this.krankheitenLeft, ...this.krankheitenRight],
+    krankheiten: [...this.krankheitenLeft(), ...this.krankheitenRight()],
   });
 
   dossier = computed(() => this.untersuchungStore.currentDossier());
@@ -81,8 +73,7 @@ export class UntersuchungImpfstatusComponent {
 
   constructor() {
     effect(() => {
-      const data = this.impfstatusList();
-      this.form.resetForm(data);
+      this.form.createKrankheitenSubForms([...this.krankheitenLeft(), ...this.krankheitenRight()], this.impfstatusList());
     });
 
     effect(() => {

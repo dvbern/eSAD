@@ -1,13 +1,13 @@
-  <form svuiFormLayout [mode]="DetailMode.VIEW" [formType]="'kacheln'" >
+<form svuiFormLayout [mode]="DetailMode.VIEW" [formType]="'kacheln'">
 
-    <svui-info-item [label]="'kind.name' | transloco">{{ kind()?.name }}</svui-info-item>
-    <svui-info-item [label]="'kind.vorname' | transloco">{{ kind()?.vorname }}</svui-info-item>
+  <svui-info-item [label]="'kind.name' | transloco">{{ kind()?.name }}</svui-info-item>
+  <svui-info-item [label]="'kind.vorname' | transloco">{{ kind()?.vorname }}</svui-info-item>
 
-    <svui-info-item [label]="'kind.timestampErstellt' | transloco">{{ kind()?.timestampErstellt | date: 'dd.MM.yyyy'}}</svui-info-item>
-    <svui-info-item [label]="'kind.aktiv' | transloco">{{ 'EntityAktivStatus.' + kind()?.aktivStatus | transloco }}</svui-info-item>
-    <svui-info-item [label]="'kind.escada' | transloco">{{ (kind()?.escada | booleanPipe) + getEscadaLastImportTimestamp() }}</svui-info-item>
+  <svui-info-item [label]="'kind.timestampErstellt' | transloco">{{ kind()?.timestampErstellt | date: 'dd.MM.yyyy' }}</svui-info-item>
+  <svui-info-item [label]="'kind.aktiv' | transloco">{{ 'EntityAktivStatus.' + kind()?.aktivStatus | transloco }}</svui-info-item>
+  <svui-info-item [label]="'kind.external' | transloco">{{ (kind()?.external | booleanPipe) + getExternalLastImportTimestamp() }}</svui-info-item>
 
-    <svui-info-item [label]="'kind.schule' | transloco">{{ kind()?.schule }}</svui-info-item>
-    <svui-info-item [label]="'kind.klasse' | transloco">{{ kind()?.klasse }}</svui-info-item>
+  <svui-info-item [label]="'kind.schule' | transloco">{{ kind()?.schule }}</svui-info-item>
+  <svui-info-item [label]="'kind.klasse' | transloco">{{ kind()?.klasse }}</svui-info-item>
 
-  </form>
+</form>

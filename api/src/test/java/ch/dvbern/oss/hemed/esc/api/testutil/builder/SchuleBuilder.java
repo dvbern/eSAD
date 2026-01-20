@@ -26,6 +26,7 @@ import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfo;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleMapper;
 import ch.dvbern.oss.hemed.esc.api.features.schule.json.SchuleJson;
@@ -130,8 +131,10 @@ public class SchuleBuilder {
     public SchuleBuilder withExternalImportInfo(
         @NonNull String externalId,
         boolean aktiv,
-        @NonNull OffsetDateTime now) {
-        ExternalImportInfo importInfo = new ExternalImportInfo(externalId, aktiv, now, now);
+        @NonNull OffsetDateTime now,
+        @NonNull ImportTyp importTyp
+    ) {
+        ExternalImportInfo importInfo = new ExternalImportInfo(externalId, aktiv, now, now, importTyp);
         this.schule.setExternalImportInfo(importInfo);
         return this;
     }

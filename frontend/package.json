@@ -1,6 +1,6 @@
 {
   "name": "@dvb/angular-starter",
-  "version": "0.0.0",
+  "version": "26.1.0-SNAPSHOT",
   "license": "FIXME: starter: determine license",
   "scripts": {
     "prepush": "run-s prepush:*",
@@ -33,9 +33,9 @@
     "lint:fix": "nx run-many --target=lint --all --fix",
     "prelint:affected": "check-engine",
     "lint:affected": "nx affected:lint",
-    "start": "npm run serve",
+    "start": "nx serve --host 0.0.0.0",
     "preserve": "check-engine",
-    "serve": "nx serve",
+    "serve": "nx serve --host 0.0.0.0",
     "preserve:esc-app": "check-engine",
     "serve:esc-app": "nx serve esc-app",
     "pretest": "check-engine",
@@ -124,6 +124,7 @@
     "@typescript-eslint/utils": "^8.40.0",
     "angular-eslint": "20.2.0",
     "autoprefixer": "^10.4.0",
+    "baseline-browser-mapping": "^2.8.32",
     "check-engine": "^1.14.0",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "10.1.8",

@@ -3,7 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.plz;
 import java.io.Serial;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
@@ -25,7 +25,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PLZData extends AbstractTenantEntity<PLZData> {
+public class PLZData extends AbstractEntity<PLZData> {
 
     @Serial
     private static final long serialVersionUID = -3297584486691688796L;

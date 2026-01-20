@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfo;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseMapper;
@@ -126,8 +127,10 @@ public class KlasseBuilder {
     public KlasseBuilder withExternalImportInfo(
         @NonNull String externalId,
         boolean aktiv,
-        @NonNull OffsetDateTime now) {
-        ExternalImportInfo importInfo = new ExternalImportInfo(externalId, aktiv, now, now);
+        @NonNull OffsetDateTime now,
+        @NonNull ImportTyp importTyp
+    ) {
+        ExternalImportInfo importInfo = new ExternalImportInfo(externalId, aktiv, now, now, importTyp);
         this.klasse.setExternalImportInfo(importInfo);
         return this;
     }

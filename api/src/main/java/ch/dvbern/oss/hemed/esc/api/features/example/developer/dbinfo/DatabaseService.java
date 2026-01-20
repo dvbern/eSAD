@@ -45,6 +45,9 @@ public class DatabaseService {
     @LiquibaseDataSource("win")
     public LiquibaseFactory liquibaseFactoryWIN;
 
+    @LiquibaseDataSource("be")
+    public LiquibaseFactory liquibaseFactoryBE;
+
     private final DatabaseInfoRepo databaseInfoRepo;
 
     private final TenantProducer tenantProducer;
@@ -103,6 +106,9 @@ public class DatabaseService {
         }
         if (TenantEnum.WIN == tenant) {
             return liquibaseFactoryWIN;
+        }
+        if (TenantEnum.BE == tenant) {
+            return liquibaseFactoryBE;
         }
         throw new AppFailureException(AppFailureMessage.internalError("Unknown tenant: " + tenant));
 

@@ -26,12 +26,12 @@ import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ExternalSystemIdDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ExternalSystemIdDTO;
 
 
 import ch.dvbern.oss.hemed.esc.api.features.schule.QSchule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.QExternalSystemIdDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.QExternalSystemIdDTO;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 

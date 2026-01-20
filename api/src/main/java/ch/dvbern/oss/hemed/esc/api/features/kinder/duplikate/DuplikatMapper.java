@@ -33,7 +33,7 @@ public final class DuplikatMapper {
     @NonNull
     public static DuplikatKindJson toKindJson(@NonNull ID<Kind> id, @Nullable Kind duplikat) {
         if (duplikat == null) {
-            return new DuplikatKindJson(id, null, null, null, null, null, null, null, false, null, null);
+            return new DuplikatKindJson(id, null, null, null, null, null, null, null, null, false, null, null);
         }
         Validate.isTrue(id.equals(duplikat.getId()));
 
@@ -45,7 +45,10 @@ public final class DuplikatMapper {
             duplikat.getGeburtsdatum(),
             duplikat.getTimestampErstellt().toLocalDateTime(),
             duplikat.getKindAktivStatus(),
-            duplikat.getExternalImportInfo() != null ? duplikat.getExternalImportInfo().getTimestampLatestImport() : null,
+            duplikat.getExternalImportInfo() != null ?
+                duplikat.getExternalImportInfo().getTimestampLatestImport() :
+                null,
+            duplikat.getExternalImportInfo() != null ? duplikat.getExternalImportInfo().getImportTyp() : null,
             duplikat.getExternalSystemIdOrNull() != null,
             duplikat.getSchule() != null ? duplikat.getSchule().getSchulhaus() : null,
             duplikat.getKlasse() != null ? duplikat.getKlasse().getBezeichnung() : null

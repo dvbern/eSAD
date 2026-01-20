@@ -25,6 +25,7 @@ import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.dvbstarter.shared.types.sozialversicherungsnummer.SozialversicherungsNummer;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
@@ -144,7 +145,7 @@ class KindExternalSyncHelperServiceTest {
             // Arrange
             KindExternal existingKindExternal = KindExternalBuilder.defaultKindExternal();
             Kind kindWithUnchangedEscadaData = KindExternalSyncHelperService.toEntityForCreate(
-                existingKindExternal, KlasseBuilder.defaultKlasse(), appClock.offsetDateTime().now()
+                existingKindExternal, KlasseBuilder.defaultKlasse(), appClock.offsetDateTime().now(), ImportTyp.ESCADA
             );
 
             // Act
@@ -152,7 +153,8 @@ class KindExternalSyncHelperServiceTest {
                 kindWithUnchangedEscadaData,
                 kindExternalUpdated,
                 existingKindExternal,
-                appClock.offsetDateTime().now());
+                appClock.offsetDateTime().now(),
+                ImportTyp.ESCADA);
 
             // Assert
             // Check if the data is updated correctly, all fields should have changed
@@ -185,7 +187,8 @@ class KindExternalSyncHelperServiceTest {
                 defaultKind,
                 previousKindExternal,
                 previousKindExternal,
-                appClock.offsetDateTime().now());
+                appClock.offsetDateTime().now(),
+                ImportTyp.ESCADA);
 
             // ASSERT
             // check that data did not change
@@ -215,7 +218,8 @@ class KindExternalSyncHelperServiceTest {
                 defaultKind,
                 previousKindExternal,
                 previousKindExternal,
-                appClock.offsetDateTime().now());
+                appClock.offsetDateTime().now(),
+                ImportTyp.ESCADA);
             // ASSERT
             KindAssert.assertThatKind(updatedKind).hasSameDataAs(previousKindExternal);
 
@@ -225,7 +229,8 @@ class KindExternalSyncHelperServiceTest {
                 updatedKind,
                 kindExternalUpdated,
                 previousKindExternal,
-                appClock.offsetDateTime().now());
+                appClock.offsetDateTime().now(),
+                ImportTyp.ESCADA);
             // ASSERT
             KindAssert.assertThatKind(updatedKind).hasSameDataAs(kindExternalUpdated);
         }

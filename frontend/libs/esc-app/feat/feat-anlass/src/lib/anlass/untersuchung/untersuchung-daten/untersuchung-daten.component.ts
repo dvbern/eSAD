@@ -116,7 +116,7 @@ export class UntersuchungDatenComponent implements DirtyMarker {
   }
 
   compareFn(item: BenutzerOptionJson, selected: BenutzerOptionJson) {
-    return item.id === selected.id;
+    return item?.id === selected?.id;
   }
 
   abbrechen(): void {

@@ -28,7 +28,7 @@ export class NavigationService {
       return;
     }
     this.#router.navigate(
-      [Path.ANLASS, anlassId, Path.ANLASS_UNTERSUCHUNG_EINLADUNG, einladungId, Path.NOTIZEN],
-      {state: {notizTyp: notizTyp}, queryParamsHandling: 'merge'});
+      [Path.ANLASS, anlassId, Path.ANLASS_UNTERSUCHUNG_EINLADUNG, einladungId, Path.NOTIZEN, notizTyp],
+      {queryParamsHandling: 'merge'});
   }
 }

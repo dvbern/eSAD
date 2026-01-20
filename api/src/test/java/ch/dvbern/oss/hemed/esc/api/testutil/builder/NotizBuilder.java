@@ -1,7 +1,9 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,8 +42,8 @@ public class NotizBuilder {
     public static Notiz defaultNotiz() {
         @NotNull @NonNull Dossier defaultDossier = new Dossier();
         @NotNull @NonNull @Valid Benutzer defaultVerantwortlicher = BenutzerBuilder.defaultBenutzer();
-        @NotNull @NonNull Set<Label> defaultLabels = Collections.emptySet();
-        @NotNull @NonNull List<FileData> defaultFiles = Collections.emptyList();
+        @NotNull @NonNull Set<Label> defaultLabels = new HashSet<>();
+        @NotNull @NonNull List<FileData> defaultFiles = new ArrayList<>();
         Notiz notiz = new Notiz(
             "My Default Notiz",
             "My Default Notiz Bemerkungen",

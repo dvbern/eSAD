@@ -12,8 +12,8 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.QKind;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ExternalSystemIdDTO;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.QExternalSystemIdDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ExternalSystemIdDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.QExternalSystemIdDTO;
 import lombok.RequiredArgsConstructor;
 
 @Repository
@@ -42,4 +42,4 @@ public class KindExternalRepo extends BaseRepo<KindExternal> {
         return this.findExternalKindForKind(id)
             .orElseThrow(() -> new AppFailureException(AppFailureMessage.entityNotFound(id)));
     }
-} 
+}

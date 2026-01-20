@@ -1,5 +1,8 @@
 <svui-page-layout [backLink]="backLink()" [heading]="heading()">
+
   <ng-container class="svui-page-header-content-left">
+
+    @if (showNav()){
 
     <!-- MAIN NAV -->
     <div class="smallscreen-hide">
@@ -8,10 +11,14 @@
       </ul>
     </div>
 
+    }
+
   </ng-container>
 
-  <div class="svui-page-header-content-right">
 
+
+    <div class="svui-page-header-content-right">
+      @if (showNav()){
     <div class="d-flex justify-content-center align-items-center gap-3">
 
       <!-- TIMETRAVEL -->
@@ -21,12 +28,14 @@
       <feat-page-global-search/>
 
       <!-- NOTIZEN -->
-      <button svuiIconOnlyButton="secondary"
-              type="button"
-              [icon]="'document'"
-              [tooltip]="'global.tooltip.notizen' | transloco"
-              [routerLink]="'/' + Path.NOTIZEN">
-      </button>
+      @if (canViewNotizen()) {
+        <button svuiIconOnlyButton="secondary"
+                type="button"
+                [icon]="'document'"
+                [tooltip]="'global.tooltip.notizen' | transloco"
+                [routerLink]="'/' + Path.NOTIZEN">
+        </button>
+      }
 
       <!-- AUFGABEN -->
       @if (canViewAufgaben()) {
@@ -71,6 +80,7 @@
               (click)="open(offcanvasNav)">
       </button>
     </div>
+      }
   </div>
 
   <ng-content select="svui-page-header-list-summary" ngProjectAs="svui-page-header-list-summary"/>
@@ -80,6 +90,7 @@
   <ng-content select="svui-page-header-buttons" ngProjectAs="svui-page-header-buttons"/>
 
   <ng-content select="svui-page-header-add-button" ngProjectAs="svui-page-header-add-button"/>
+
 
   <!-- MAIN CONTENT -->
   <ng-content/>

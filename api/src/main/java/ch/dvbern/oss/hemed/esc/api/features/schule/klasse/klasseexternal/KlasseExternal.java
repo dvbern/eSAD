@@ -23,8 +23,8 @@ import java.util.Comparator;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.HasExternalId;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.HasExternalId;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -64,7 +64,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class KlasseExternal extends AbstractTenantEntity<KlasseExternal> implements HasExternalId {
+public class KlasseExternal extends AbstractEntity<KlasseExternal> implements HasExternalId {
 
     public static final Comparator<KlasseExternal> KLASSE_EXTERNAL_DATA_COMPARATOR = Comparator
         .comparing(KlasseExternal::getKlasseBezeichnung, Comparator.nullsFirst(String::compareTo))

@@ -18,7 +18,7 @@
 
 import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {AppLanguages, EinladungStatus, FeatureEnabledSetting, TenantSettingSaveJson} from '@dvb/data-access-backend';
-import {BaseForm} from '@dvb/util-angular';
+import {AppValidators, BaseForm} from '@dvb/util-angular';
 import {ensurePropsFlat, requireValue} from '@dvb/util-shared';
 
 // Keep the structure and style similar to anlass-config-detail.form.ts but adapted for TenantSettingSaveJson
@@ -33,17 +33,27 @@ function makeForm(config: Config) {
   const featuresGroup = fb.group({
     esadIdFeature: fb.group({
       featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
-      enabledForStage: fb.control<boolean >({value: false, disabled: true}),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
     }),
     laenderCodeFeature: fb.group({
       featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
-      enabledForStage: fb.control<boolean >({value: false, disabled: true}),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
     }),
+    mobileScannerFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
+    massenimportFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
+
   });
 
   const group = fb.group({
     defaultLanguage: fb.control<AppLanguages>(AppLanguages.DE, Validators.required),
     supportedLanguages: fb.control<AppLanguages[]>([], Validators.required),
+    folgeTermineMaxSlots: fb.control<number>(0, AppValidators.zeroDecimalPlaces()),
     einladungStatusValues: fb.control<EinladungStatus[]>([], Validators.required),
     features: featuresGroup,
   });
@@ -59,22 +69,29 @@ export class TenantSettingsForm extends BaseForm<ReturnType<typeof makeForm>, Te
   override valueOnValid(): TenantSettingSaveJson {
     const value = requireValue(this.group.getRawValue());
 
-    const val =  ensurePropsFlat({
+    const val = ensurePropsFlat({
       features: {
-        esadIdFeature:  {
+        esadIdFeature: {
           featureEnabled: value.features.esadIdFeature.featureEnabled,
           enabledForStage: value.features.esadIdFeature.enabledForStage,
         },
-        laenderCodeFeature:  {
+        laenderCodeFeature: {
           featureEnabled: value.features.laenderCodeFeature.featureEnabled,
           enabledForStage: value.features.laenderCodeFeature.enabledForStage,
         },
-
+        mobileScannerFeature: {
+          featureEnabled: value.features.mobileScannerFeature.featureEnabled,
+          enabledForStage: value.features.mobileScannerFeature.enabledForStage,
+        },
+        massenimportFeature: {
+          featureEnabled: value.features.massenimportFeature.featureEnabled,
+          enabledForStage: value.features.massenimportFeature.enabledForStage,
+        },
       },
       defaultLanguage: value.defaultLanguage,
       supportedLanguages: value.supportedLanguages,
+      folgeTermineMaxSlots: value.folgeTermineMaxSlots,
       einladungStatusValues: value.einladungStatusValues,
-
     });
     return val;
   }

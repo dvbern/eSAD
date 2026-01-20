@@ -53,4 +53,30 @@ class QuartierCsvColumnTest extends AbstractBaseColumnTest {
         quartier.setQuartierName("Blub");
         assertThat(column.extract(einladung)).isEmpty();
     }
+
+    @Test
+    void extractCsv() {
+        // ARRANGE
+        final QuartierCsvColumn column = new QuartierCsvColumn(configForCsv, null);
+        final Einladung einladung = new Einladung();
+
+        Kind kind = KindBuilder.defaultKind();
+        einladung.setDossier(Dossier.forKind(kind));
+
+        // Without Schule -> empty string
+        assertThat(column.extract(einladung)).isEmpty();
+
+        // Without Quartier -> empty string
+        Schule schule = new Schule();
+        kind.setSchule(schule);
+        assertThat(column.extract(einladung)).isEmpty();
+
+        // With Quartier
+        Quartier quartier = new Quartier();
+        schule.setQuartier(quartier);
+
+        // GBW
+        quartier.setQuartierName("GBW");
+        assertThat(column.extract(einladung)).isEqualTo("GBW");
+    }
 }

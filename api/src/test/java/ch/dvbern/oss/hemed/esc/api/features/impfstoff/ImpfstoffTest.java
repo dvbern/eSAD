@@ -30,10 +30,11 @@ class ImpfstoffTest {
             Krankheit.VARIZELLEN,
             Krankheit.ROETELN,
             Krankheit.MENINGOKOKKEN_A_C_W_Y,
-            Krankheit.MENINGOKOKKEN_B));
+            Krankheit.MENINGOKOKKEN_B,
+            Krankheit.FSME));
         Assertions.assertThat(impfstoff.getKrankheiten())
             .isNotEmpty()
-            .hasSize(12)
+            .hasSize(13)
             .contains(
                 Krankheit.MUMPS,
                 Krankheit.HPV,
@@ -45,7 +46,8 @@ class ImpfstoffTest {
                 Krankheit.VARIZELLEN,
                 Krankheit.ROETELN,
                 Krankheit.MENINGOKOKKEN_A_C_W_Y,
-                Krankheit.MENINGOKOKKEN_B);
+                Krankheit.MENINGOKOKKEN_B,
+                Krankheit.FSME);
     }
 
 }

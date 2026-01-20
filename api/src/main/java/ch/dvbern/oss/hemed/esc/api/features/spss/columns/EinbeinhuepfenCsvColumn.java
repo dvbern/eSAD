@@ -19,14 +19,22 @@ public class EinbeinhuepfenCsvColumn extends AbstractCsvColumn {
         return ExtractorForCsvUtil.extractUntersuchungArztBeurteilung(
             einladung,
             untersuchungArzt -> {
-                if (untersuchungArzt.getEinbeinhuepfen() == null) {
+                Einbeinhuepfen einbeinhuepfen = untersuchungArzt.getEinbeinhuepfen();
+                if (einbeinhuepfen == null) {
                     return "";
                 }
-                return switch (untersuchungArzt.getEinbeinhuepfen()) {
+
+                if (!config.forSpssReport()) {
+                    return config.tl().translateValue(einbeinhuepfen);
+                }
+
+                return switch (einbeinhuepfen) {
                     case Einbeinhuepfen.SICHER -> "1";
                     case Einbeinhuepfen.UNSICHER_UNGEUEBT -> "2";
                     case Einbeinhuepfen.NICHT_MOEGLICH -> "3";
                     case Einbeinhuepfen.ANDERES, Einbeinhuepfen.NICHT_GEPRUEFT -> "4";
+                    default ->
+                        throw new IllegalStateException("Unexpected value for Einbeinhuepfen: " + einbeinhuepfen);
                 };
             }
         );

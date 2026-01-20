@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -22,7 +23,11 @@ public class MassnahmenInformationElternCsvColumn extends AbstractCsvColumn {
                 if (untersuchungMassnahmen.getInformationEltern() == null) {
                     return "";
                 }
-                return untersuchungMassnahmen.getInformationEltern() == InformationEltern.KEINE ? "" : "1";
+                boolean infoAnEltern = untersuchungMassnahmen.getInformationEltern() == InformationEltern.KEINE;
+                if (!config.forSpssReport()) {
+                    return PrintUtil.trimToPlaceholder(!infoAnEltern, config.tl());
+                }
+                return infoAnEltern ? "" : "1";
             }
         );
     }

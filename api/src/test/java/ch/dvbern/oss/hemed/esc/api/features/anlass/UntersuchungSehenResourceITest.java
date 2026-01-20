@@ -15,13 +15,17 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.Requiremen
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBemerkungFragebogenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBeurteilungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminWIN;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.UntersuchungSehenApiSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BrilleLinsenResultatSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DistanzSehenResultatSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FarbsehenResultatSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.InspektionKonvergenzResultatSpec;
@@ -38,11 +42,13 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.VerwendetTafelResultatS
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response.Status;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatList;
 
 @QuarkusTest
 @RequiredArgsConstructor
@@ -56,6 +62,7 @@ class UntersuchungSehenResourceITest extends AbstractITest {
     private final UntersuchungSehenBemerkungFragebogenService untersuchungSehenBemerkungFragebogenService;
     private final UntersuchungMassnahmenService untersuchungMassnahmenService;
     private final FixtureService fixtureService;
+    private final TenantProducer tenantProducer;
 
     @Override
     @BeforeEach
@@ -232,24 +239,37 @@ class UntersuchungSehenResourceITest extends AbstractITest {
             .as(UntersuchungSehenBeurteilungSaveJsonSpec.class);
 
         // ASSERT
-        assertThat(result).isNotNull();
+        // Special case for BS Brillen value is null
         assertThat(result.getBrilleLinsen()).isNull();
-        assertThat(result.getStereotest()).isEqualTo(StereotestResultatSpec.NORMAL);
-        assertThat(result.getFarbsehen()).isEqualTo(FarbsehenResultatSpec.NORMAL);
-        assertThat(result.getVerwendeteTafel()).isEqualTo(VerwendetTafelResultatSpec.E_TAFEL);
-        assertThat(result.getFernvisus()).isEqualTo(List.of(DistanzSehenResultatSpec.NORMAL));
-        assertThat(result.getFernvisusRechts()).isEqualTo(BigDecimal.valueOf(0.8));
-        assertThat(result.getFernvisusLinks()).isEqualTo(BigDecimal.valueOf(0.8));
-        assertThat(result.getNahvisus()).isEqualTo(List.of(DistanzSehenResultatSpec.NICHT_GEPRUEFT));
-        assertThat(result.getNahvisusRechts()).isNull();
-        assertThat(result.getNahvisusLinks()).isNull();
-        assertThat(result.getMotilitaet()).isEqualTo(MotilitaetResultatSpec.NORMAL);
-        assertThat(result.getStrabismus()).isEqualTo(List.of(StrabismusResultatSpec.KEIN_STRABISMUS));
-        assertThat(result.getStrabismusAuftreten()).isEqualTo(StrabismusAuftretenResultatSpec.KEIN_STRABISMUS);
-        assertThat(result.getStrabismusAuspraegung()).isEqualTo(StrabismusAuspraegungResultatSpec.KEIN_STRABISMUS);
-        assertThat(result.getInspektion()).isEqualTo(InspektionKonvergenzResultatSpec.UNAUFFAELLIG);
-        assertThat(result.getKonvergenz()).isEqualTo(InspektionKonvergenzResultatSpec.UNAUFFAELLIG);
-        assertThat(result.getBemerkungen()).isNull();
+
+        this.assertCommonDefaultValuesSehenBeurteilungKG(result);
+    }
+
+    @Test
+    @TestAsAdminWIN
+    void getDefaultUntersuchungSehenBeurteilungForAnlassConfigKindergartenWithTenantNotBsSetsBrilleToOhneKeine() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.WIN);
+
+        Anlass anlass = fixtureService.createAnlass(AnlassTyp.KINDERGARTEN);
+        Einladung einladung = fixtureService.createEinladung(anlass);
+
+        // ACT
+        UntersuchungSehenBeurteilungSaveJsonSpec result = api.untersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfig()
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .einladungIdPath(einladung.getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungSehenBeurteilungSaveJsonSpec.class);
+
+        // ASSERT
+        // Normal case for WIN Brillen value is provided
+        assertThat(result.getBrilleLinsen()).isEqualTo(BrilleLinsenResultatSpec.OHNE_KEINE);
+
+        this.assertCommonDefaultValuesSehenBeurteilungKG(result);
     }
 
     @Test
@@ -405,5 +425,22 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         assertThat(result).isNotNull();
         assertThat(result.getId()).isNotNull();
         assertThat(result.getData().getBemerkungenFragebogen()).isNotNull().isEqualTo("Test updateUntersuchungSehenBemerkungFragebogen");
+    }
+
+    private void assertCommonDefaultValuesSehenBeurteilungKG(@NonNull UntersuchungSehenBeurteilungSaveJsonSpec result){
+        assertThat(result.getStereotest()).isEqualTo(StereotestResultatSpec.NORMAL);
+        assertThat(result.getFarbsehen()).isEqualTo(FarbsehenResultatSpec.NORMAL);
+        assertThat(result.getVerwendeteTafel()).isEqualTo(VerwendetTafelResultatSpec.E_TAFEL);
+        assertThatList(result.getFernvisus()).containsExactlyInAnyOrder(DistanzSehenResultatSpec.NORMAL);
+        assertThatList(result.getNahvisus()).containsExactlyInAnyOrder(DistanzSehenResultatSpec.NICHT_GEPRUEFT);
+        assertThat(result.getNahvisusRechts()).isNull();
+        assertThat(result.getNahvisusLinks()).isNull();
+        assertThat(result.getMotilitaet()).isEqualTo(MotilitaetResultatSpec.NORMAL);
+        assertThatList(result.getStrabismus()).containsExactlyInAnyOrder(StrabismusResultatSpec.KEIN_STRABISMUS);
+        assertThat(result.getStrabismusAuftreten()).isEqualTo(StrabismusAuftretenResultatSpec.KEIN_STRABISMUS);
+        assertThat(result.getStrabismusAuspraegung()).isEqualTo(StrabismusAuspraegungResultatSpec.KEIN_STRABISMUS);
+        assertThat(result.getInspektion()).isEqualTo(InspektionKonvergenzResultatSpec.UNAUFFAELLIG);
+        assertThat(result.getKonvergenz()).isEqualTo(InspektionKonvergenzResultatSpec.UNAUFFAELLIG);
+        assertThat(result.getBemerkungen()).isNull();
     }
 }

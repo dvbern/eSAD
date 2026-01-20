@@ -1,14 +1,15 @@
 import {computed, inject, Injectable} from '@angular/core';
 import {
-  AppLanguages, EinladungStatus,
+  AppLanguages,
+  EinladungStatus,
   TenantSettingSaveJson,
   TenantSettingsJson,
   TenantSettingsService,
 } from '@dvb/data-access-backend';
-import {AppErrorHandlerService, AppNotificationStore, Loader} from '@dvb/util-angular';
+import {AppErrorHandlerService, Loader} from '@dvb/util-angular';
 import {requireValue} from '@dvb/util-shared';
 import {tapResponse} from '@ngrx/operators';
-import {patchState, signalStore, withComputed, withState} from '@ngrx/signals';
+import {patchState, signalStore, withState} from '@ngrx/signals';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, pipe, switchMap, tap} from 'rxjs';
 
@@ -83,6 +84,14 @@ export class TenantSettingsStore extends signalStore(
 
   availableEinladungStatus = computed(() => {
     return this.settings()?.data.einladungStatusValues ?? [];
+  });
+
+  isMobileScannerVisible = computed(() => {
+    return this.settings()?.data.features.mobileScannerFeature.enabledForStage;
+  });
+
+  isMassenimportVisible = computed(() => {
+    return this.settings()?.data.features.massenimportFeature.enabledForStage;
   });
 
   hasAbmeldungsEinladungsStatus = computed(() => this.availableEinladungStatus()

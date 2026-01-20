@@ -1,5 +1,14 @@
 package ch.dvbern.oss.hemed.esc.api.shared.documentqueue;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Objects;
+
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileNameUtil;
@@ -12,7 +21,12 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.spss.CsvGeneratorService;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.*;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataRepo;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3Mapper;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
+import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smallrye.mutiny.Uni;
@@ -26,15 +40,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -103,7 +108,7 @@ public class DocumentQueueService {
     }
 
     @NonNull
-    public FileInfoS3 findUploadedFileInfoS3(@NonNull ID<DocumentQueue> id) {
+    public FileInfo findUploadedFileInfo(@NonNull ID<DocumentQueue> id) {
         FileData fileData = getById(id).getResult();
         Objects.requireNonNull(fileData);
 
@@ -113,40 +118,59 @@ public class DocumentQueueService {
     @Transactional(TxType.NOT_SUPPORTED)
     public byte[] triggerGenerationFunction(@NonNull DocumentQueue documentQueue) {
         switch (documentQueue.getType()) {
-            case PLAYGROUND -> {
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new AppFailureException(AppFailureMessage.internalError("Error while sleeping"), e);
-                }
-                try (InputStream resourceAsStream = DocumentQueueService.class.getResourceAsStream(
-                    "/playground-document/playground.pdf")) {
-                    Objects.requireNonNull(resourceAsStream);
-                    return resourceAsStream.readAllBytes();
-                } catch (IOException e) {
-                    throw new AppFailureException(AppFailureMessage.internalError("Error reading playground PDF"), e);
-                }
+        case PLAYGROUND -> {
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new AppFailureException(AppFailureMessage.internalError("Error while sleeping"), e);
             }
-            case PLAYGROUND_ERROR -> {
-                // This will always error out.
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new AppFailureException(AppFailureMessage.internalError("Error while sleeping"), e);
-                }
+            try (InputStream resourceAsStream = DocumentQueueService.class.getResourceAsStream(
+                "/playground-document/playground.pdf")) {
+                Objects.requireNonNull(resourceAsStream);
+                return resourceAsStream.readAllBytes();
+            } catch (IOException e) {
+                throw new AppFailureException(AppFailureMessage.internalError("Error reading playground PDF"), e);
+            }
+        }
+        case PLAYGROUND_ERROR -> {
+            // This will always error out.
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new AppFailureException(AppFailureMessage.internalError("Error while sleeping"), e);
+            }
 
-                throw new AppFailureException(AppFailureMessage.internalError("Expected playground document queue error"));
-            }
-            case SPSS_REPORT -> {
-                // Extract payload
-                DocumentQueueParams parameters = unmarshalDocumentQueueParameter(documentQueue);
-                Objects.requireNonNull(parameters.getSpssReportType());
-                return csvGeneratorService.generateSpssReport(parameters.getSpssReportType(), documentQueue.getBenutzer().getEmail());
-            }
-            default -> throw new AppFailureException(AppFailureMessage.internalError(
-                "Unhandled FileType in DocumentQueue generator: " + documentQueue.getType()));
+            throw new AppFailureException(AppFailureMessage.internalError("Expected playground document queue error"));
+        }
+        case SPSS_REPORT -> {
+            // Extract payload
+            DocumentQueueParams parameters = unmarshalDocumentQueueParameter(documentQueue);
+            Objects.requireNonNull(parameters.getSpssReportType());
+            return csvGeneratorService.generateSpssReport(
+                parameters.getSpssReportType(),
+                documentQueue.getBenutzer().getEmail());
+        }
+        case CSV_REPORT -> {
+            // Extract payload
+            DocumentQueueCsvParams parameters = unmarshalDocumentQueueCsvParameter(documentQueue);
+
+            Objects.requireNonNull(parameters.getCsvReportType());
+            Objects.requireNonNull(documentQueue.getDatumBis());
+            Objects.requireNonNull(documentQueue.getDatumVon());
+
+            DateRange zeitraum = new DateRange();
+            zeitraum.setDatumBis(documentQueue.getDatumBis());
+            zeitraum.setDatumVon(documentQueue.getDatumVon());
+
+            return csvGeneratorService.generateCsvReport(
+                parameters.getCsvReportType(),
+                zeitraum,
+                documentQueue.getBenutzer().getEmail());
+        }
+        default -> throw new AppFailureException(AppFailureMessage.internalError(
+            "Unhandled FileType in DocumentQueue generator: " + documentQueue.getType()));
         }
     }
 
@@ -163,13 +187,13 @@ public class DocumentQueueService {
 
         Path tempFilePath = createTmpFile(calculatedFileName.toString(), content);
         FileUpload fileUpload = FileUtil.fileToFileUpload(tempFilePath, calculatedFileName.toString());
-        FileInfoS3 fileInfoS3 = FileInfoS3Mapper.mapFileUploadToFileInfoS3(fileUpload, documentQueue.getType());
+        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfo(fileUpload, documentQueue.getType());
 
-        fileStoreService.uploadToS3Async(fileUpload, fileInfoS3)
+        fileStoreService.uploadToS3Async(fileUpload, fileInfo)
             .await()
             .atMost(configService.getS3UploadTimeout());
 
-        FileData filedata = new FileData(documentQueue.getType(), calculatedFileName, fileInfoS3);
+        FileData filedata = new FileData(documentQueue.getType(), calculatedFileName, fileInfo);
         fileDataRepo.persist(filedata);
 
         documentQueue.setResult(filedata);
@@ -188,6 +212,13 @@ public class DocumentQueueService {
 
                 yield "Spss-Report-" + suffix;
             }
+            case CSV_REPORT -> {
+                DocumentQueueCsvParams params = unmarshalDocumentQueueCsvParameter(documentQueue);
+                Objects.requireNonNull(params.getCsvReportType());
+                String suffix = tl.translateValue(params.getCsvReportType());
+
+                yield "CSV-Report-" + suffix;
+            }
             default -> throw new AppFailureException(AppFailureMessage.internalError(
                 "Unhandled FileType in DocumentQueue getNameVorname switch: " + documentQueue.getType()));
         };
@@ -197,7 +228,7 @@ public class DocumentQueueService {
     private String getFileExtension(@NonNull DocumentQueue documentQueue) {
         return switch (documentQueue.getType()) {
             case PLAYGROUND, PLAYGROUND_ERROR -> ".pdf";
-            case SPSS_REPORT -> ".csv";
+            case SPSS_REPORT, CSV_REPORT -> ".csv";
             default -> throw new AppFailureException(AppFailureMessage.internalError(
                 "Unhandled FileType in DocumentQueue getFileExtension switch: " + documentQueue.getType()));
         };
@@ -225,6 +256,20 @@ public class DocumentQueueService {
                 return objectMapper.readValue(documentQueue.getParameters(), DocumentQueueParams.class);
             }
             return new DocumentQueueParams();
+        } catch (JsonProcessingException e) {
+            throw new AppFailureException(AppFailureMessage.internalError(
+                "Could not convert DocumentQueue parameter string to object" + e.getMessage()));
+        }
+    }
+
+    @NonNull
+    public static DocumentQueueCsvParams unmarshalDocumentQueueCsvParameter(@NonNull DocumentQueue documentQueue) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            if (documentQueue.getParameters() != null) {
+                return objectMapper.readValue(documentQueue.getParameters(), DocumentQueueCsvParams.class);
+            }
+            return new DocumentQueueCsvParams();
         } catch (JsonProcessingException e) {
             throw new AppFailureException(AppFailureMessage.internalError(
                 "Could not convert DocumentQueue parameter string to object" + e.getMessage()));

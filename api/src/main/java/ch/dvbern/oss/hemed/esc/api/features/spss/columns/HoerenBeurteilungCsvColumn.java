@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -22,14 +23,18 @@ public class HoerenBeurteilungCsvColumn extends AbstractCsvColumn {
     public String extract(@NonNull Einladung einladung) {
         return ExtractorForCsvUtil.extractUntersuchungHoerenAudiogramm(
             einladung,
-            untersuchungHoeren ->
-                untersuchungHoeren.getAudiogrammBeurteilung().contains(audiogrammBeurteilung) ? "1" : ""
+            untersuchungHoeren -> {
+                if (config.forSpssReport()) {
+                    return untersuchungHoeren.getAudiogrammBeurteilung().contains(audiogrammBeurteilung) ? "1" : "";
+                }
+                return PrintUtil.trimToPlaceholder(untersuchungHoeren.getAudiogrammBeurteilung().contains(audiogrammBeurteilung), config.tl());
+            }
         );
     }
 
     @Override
     @NonNull
     protected String getDefaultHeaderKey() {
-        return "CsvColumn.hoerenBeurteilung";
+        return "CsvColumn.hoerenBeurteilung." + this.audiogrammBeurteilung;
     }
 }

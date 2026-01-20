@@ -165,7 +165,7 @@ public final class NotizMapper {
             AppValidationMessage.cannotAddEntityToInactiveKind(
                 kind,
                 new FileData()));
-        Notiz updatedNotiz = notizService.addUploadedFile(notizID, file);
+        Notiz updatedNotiz = notizService.addUploadedFileAndFlush(notizID, file);
         return toJson(updatedNotiz);
     }
 

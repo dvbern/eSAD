@@ -1,7 +1,7 @@
-import {Location} from '@angular/common'
+import {Location} from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, inject, ViewChild} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
-import {LabelJson, NotizJson, NotizSaveJson, NotizStatus, NotizTyp} from '@dvb/data-access-backend';
+import {LabelJson, NotizJson, NotizStatus, NotizTyp} from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
 import {
   BenutzerOptionsStore,
@@ -50,8 +50,11 @@ export class EinladungNotizPageComponent implements DirtyMarker {
   protected readonly requireValue = requireValue;
 
   readonly notizTyp = computed(() => {
-    const state = this.location.getState() as { notizTyp: NotizTyp };
-    return state.notizTyp;
+    const currentNotizTyp = this.anlassKinderStore.currentNotizTyp();
+    if (isNullish(currentNotizTyp)) {
+      console.error('currentNotizTyp must be set in anlassKinderStore')
+    }
+    return requireValue(currentNotizTyp);
   });
 
   kindId = computed<BackendEntityId | undefined>(() => this.anlassKinderStore.selectedEinladung()?.kind.id);
@@ -76,9 +79,12 @@ export class EinladungNotizPageComponent implements DirtyMarker {
     }
   });
 
+  mode = computed(() =>
+    this.currentIsNew() ? 'create' : 'edit',
+  );
+
   pageTitle = computed(() => {
-    const mode = this.currentIsNew() ? 'create' : 'edit';
-    return `einladung.${this.typeKey()}.page.${mode}.title`;
+    return `einladung.${this.typeKey()}.page.${this.mode()}.title`;
   });
 
   defaultNotizTitleSig = computed(() => {
@@ -111,7 +117,8 @@ export class EinladungNotizPageComponent implements DirtyMarker {
       if (isNullish(currentUser)) {
         return undefined;
       }
-      const defaultNotiz: NotizSaveJson = {
+
+      return {
         titel: titel,
         bemerkungen: undefined,
         status: NotizStatus.ABGESCHLOSSEN,
@@ -121,7 +128,6 @@ export class EinladungNotizPageComponent implements DirtyMarker {
         files: [],
         version: globalConstants.entityPrePersistVersion,
       };
-      return defaultNotiz;
     },
   );
 
@@ -129,20 +135,29 @@ export class EinladungNotizPageComponent implements DirtyMarker {
     return this.notizenComponent.isDirty();
   }
 
-  onSaveNotiz(payload: NotizenSaveParams) {
+  onSaveNotiz(payload: NotizenSaveParams): void {
+    this.saveNotiz(payload, () => {
+      this.afterSuccessfulSaveAndUpload()
+    });
+  }
+
+  onSaveNotizSilent(payload: NotizenSaveParams) {
+    this.saveNotiz(payload, (resultId: string) => {
+      payload.afterSave?.(resultId);
+    });
+  }
+
+  saveNotiz(payload: NotizenSaveParams, onSuccess: (resultId: string) => void): void {
     if (isNotNullish(payload.fileUploads) && payload.fileUploads.length > globalConstants.notizen.uploadFilesMax) {
       this.#notificationService.addDangerNotification(this.#transloco.translate('ui.validation-error.max-files'));
       return;
     }
-
     if (this.currentIsNew()) {
       this.anlassKinderStore.createNotizWithFiles({
         notiz: payload.notiz,
         notizTyp: this.notizTyp(),
         fileUploads: payload.fileUploads ?? [],
-        onSuccess: (_) => {
-          this.afterSuccessfulSaveAndUpload();
-        },
+        onSuccess: (created) => onSuccess(created.id),
       });
     } else {
       this.anlassKinderStore.updateNotizWithFiles({
@@ -150,9 +165,7 @@ export class EinladungNotizPageComponent implements DirtyMarker {
         notiz: payload.notiz,
         notizTyp: this.notizTyp(),
         fileUploads: payload.fileUploads ?? [],
-        onSuccess: (_) => {
-          this.afterSuccessfulSaveAndUpload();
-        },
+        onSuccess: (updated) => onSuccess(updated.id),
       });
     }
   }

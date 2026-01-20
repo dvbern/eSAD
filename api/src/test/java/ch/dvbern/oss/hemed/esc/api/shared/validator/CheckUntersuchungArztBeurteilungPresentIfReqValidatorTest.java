@@ -189,7 +189,7 @@ class CheckUntersuchungArztBeurteilungPresentIfReqValidatorTest {
         UntersuchungArztBeurteilung entity = UntersuchungArztBeurteilungBuilder.create(
             builder -> builder
                 .withSprachfaehigkeit(sprachfaehigkeitList));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungSprache(requirementSetting);
+        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungSprachfaehigkeitMultiValue(requirementSetting);
         // ACT
         CheckUntersuchungArztBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungArztBeurteilungPresentIfReqValidator();

@@ -153,16 +153,9 @@ export class DossierStore extends signalStore(
           )
           .pipe(
             tapResponse({
-              next: () => {
-                const kind: KindJson | undefined = this.selectedDossier()?.kind;
-                if (isNotNullish(kind)) {
-                  kind.data.kindAktivStatus = saveJson.entityAktivStatus;
-                  // setting the entityAktivStatus increments the entities version in the backend
-                  // in order for the optimistic locking to work the version musst be increased here as well
-                  kind.data.version += 1;
+              next: (kind: KindJson ) => {
                   this.patchStateKind(kind);
                   onSuccess();
-                }
               },
               error: console.error,
             }),

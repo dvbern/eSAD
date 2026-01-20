@@ -190,7 +190,7 @@
         [disabled]="!canEditKind()"
       >
         <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-        @if (benutzerOptionsStore.mpaOptionsIncluding(zustaendigMPA()); as zustaendigMPAOptions) {
+        @if (benutzerOptionsStore.mpaOrPfpOptionsIncluding(zustaendigMPA()); as zustaendigMPAOptions) {
           @for (each of zustaendigMPAOptions; track each; ) {
             <ng-option [value]="each" [disabled]="!each.aktiv">
               {{ each.fullName }}

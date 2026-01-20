@@ -15,6 +15,7 @@ import { TenantSettingFeaturesJson } from './tenant-setting-features-json';
 export interface TenantSettingSaveJson { 
     defaultLanguage: AppLanguages;
     supportedLanguages: Array<AppLanguages>;
+    folgeTermineMaxSlots: number;
     features: TenantSettingFeaturesJson;
     einladungStatusValues: Array<EinladungStatus>;
 }

@@ -1,7 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.impfung;
 
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -34,7 +34,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UntersuchungImpfungKrankheitImmunitaet extends AbstractTenantEntity<UntersuchungImpfungKrankheitImmunitaet> {
+public class UntersuchungImpfungKrankheitImmunitaet extends AbstractEntity<UntersuchungImpfungKrankheitImmunitaet> {
 
     @Serial
     private static final long serialVersionUID = 8686021517090828592L;

@@ -1,0 +1,50 @@
+s_id;s_name;s_vorname;s_geschlecht;s_geburtsdatum;k_id;k_bezeichnung;k_stufe;k_programmjahr;sch_id;sch_bezeichnung
+S84475;Jankovic;Ana;2;30.09.2019;111111;KIGA 2A Wasserwiesen;Kindergarten;1;222221;Wasserwiesen
+S87059;Binakaj;Asja;2;14.01.2021;111112;KIGA 1 Talwiesen;Kindergarten;1;222222;Talwiesen
+S63722;Fazliji;Ramadan;1;12.03.2018;111113;P2 b Gutschick;Primar;2;222223;Gutschick PS
+S63161;Walder;Pio;1;13.04.2016;111114;P3 c Wölflingerstrasse;Primar;3;222224;Wölflingerstrasse
+S54040;Klinger;Jan;1;22.03.2011;111115;3. Sek A a Böchelwiesen;SEK;3;222225;Böchelwiesen
+S82572;Jankovic;Angelina;2;06.08.2018;111116;P1 e Langwiesen;Primar;1;222226;Langwiesen PS
+S54634;Fazli;Melah;1;02.10.2010;111117;3. Sek BC Ba Böelwiesen;SEK;3;222225;Böchelwiesen
+S90376;de Macedo;Elya;2;22.08.2020;111118;KIGA 1B Schönengrund;Kindergarten;1;222228;Schönengrund KG
+S64703;Nagel;Lukas;1;14.12.2017;111119;P2 g Langwiesen;Primar;2;222226;Langwiesen PS
+S84862;Duraku;Neyla;2;19.08.2019;111120;KIGA 2a Gerzler;Kindergarten;1;222230;Gerzler
+S82339;Blum;Enea;1;25.12.2018;111121;P1 a Geiselweid;Primar;1;222231;Geiselweid PS
+S53840;D'Aversa;Noe;1;25.02.2011;111122;3. Sek A c Böchelwiesen;SEK;3;222225;Böchelwiesen
+S56718;Trüllinger;Jonas;1;08.09.2012;111123;1. Sek A b Feld;SEK;1;222233;Feld
+S62326;Aslan;Sila;2;27.10.2017;111124;P2 c Zinzikon;Primar;2;222234;Zinzikon PS
+S60641;Bärtschi;Elias;1;25.05.2015;111125;P4 b Zinzikon;Primar;4;222234;Zinzikon PS
+S62596;Michienzi;Patrizio;1;30.08.2015;111125;P4 b Zinzikon;Primar;4;222234;Zinzikon PS
+S57114;Kalac;Ermin;1;15.01.2013;111127;1. Sek BC Bb Oberseen;SEK;1;222237;Oberseen OS
+S83993;Sylaj;Aron;1;02.09.2018;111128;P1 d Talhof;Primar;1;222238;Talhof PS
+S56820;Bankay;Valérie;2;09.10.2012;111129;1. Sek A c Feld;SEK;1;222233;Feld
+S85297;Cabdi Yousof;Mohamed;1;17.02.2020;111130;KIGA 1b Schooren;Kindergarten;1;222240;Schooren
+S63672;Reinmann;Jaro;1;11.02.2018;111131;P2 a Schönengrund;Primar;2;222241;Schönengrund PS
+S60271;Tréllinger;Aurel;1;20.12.2014;111132;P5 e Talhof;Primar;5;222242;Talhof PS
+S57384;Strauss;Yael;2;05.04.2013;111123;1. Sek A b Feld;SEK;1;222233;Feld
+S85241;Osmani;Luana;2;23.04.2020;111134;KIGA 2B Schlossberg;Kindergarten;1;222244;Schlossberg
+S58171;Leibacher;Lukas;1;23.07.2013;111135;1. Sek A b Oberseen;SEK;1;222237;Oberseen OS
+S59911;Sulzer;Arline;2;16.06.2014;111136;P6 c Gutschick;Primar;6;222223;Gutschick PS
+S54071;Ahmeti;Erina;2;21.10.2010;111137;3. Sek BC Ba Böchelwiesen;SEK;3;222225;Böchelwiesen
+S64370;Petrovic;Vanja;2;18.08.2017;111138;P2 b Ausserdorf;Primar;2;222248;Ausserdorf
+S60278;Baovic;Hanna;2;22.12.2014;111139;P5 a Tägelmoos;Primar;5;222249;Tägelmoos
+S86561;Grossenbacher;Lio;1;14.11.2020;111140;KIGA 1B Eigenheim;Kindergarten;1;222250;Eigenheim
+S60385;Wegmann;Luca;1;04.02.2015;111141;P5 a Gutschick;Primar;5;222223;Gutschick PS
+S63353;Tahiri;Ajan;1;04.09.2016;111142;P3 a Laubegg;Primar;3;222252;Laubegg PS
+S62210;Suleyman;Rohlat;2;29.04.2016;111143;MK 3c Schachen;Primar;3;222253;Schachen PS
+S86233;Sahli;Isabelle;2;05.05.2020;111144;KIGA 2UR1 Unterröttiweg;Kindergarten;1;222254;Unterröttiweg
+S54966;Ghebru;Dbora;2;30.08.2011;111145;1. Sek B a Wallrütti;SEK;1;222255;Wallrütti OS
+S85093;Cacovic;Mathias;1;11.02.2020;111146;KIGA 2B Wyden;Kindergarten;1;222256;Wyden KG
+S56655;Zolles;Felix;1;25.08.2012;111147;1. Sek A a Heiligberg;SEK;1;222257;Heiligberg
+S84415;Faucheux;Aldo;1;04.01.2020;111148;KIGA 21 Neuhegi;Kindergarten;1;222258;Neuhegi KG
+S92838;Savia;Aldo;1;19.02.2011;111149;3. Sek B c Wallrütti;SEK;3;222255;Wallrütti OS
+S93002;Toaquiza ;Tyler;1;31.08.2015;111150;P4 b Ausserdorf;Primar;4;222248;Ausserdorf
+S83546;Veliu;Jara;2;19.10.2017;111151;P2 b Mattenbach;Primar;2;222261;Mattenbach PS
+S63748;Radovic;Alina;2;07.09.2015;111152;P3 a Gutschick;Primar;3;222223;Gutschick PS
+S57096;Khalil;Diar;1;08.01.2013;111153;1. Sek BC Cc Böchelwiesen;SEK;1;222225;Böchelwiesen
+S87567;Bachmann;Lio;1;22.06.2021;111154;KIGA 1C1 Wiesenstrasse;Kindergarten;1;222264;Wiesenstrasse KG
+S84734;Nussbaumer;Emil;1;08.08.2019;111155;KIGA 2D1 Wiesenstrasse;Kindergarten;1;222264;Wiesenstrasse KG
+S83035;Schipp;Leon;1;19.09.2018;111156;P1 b Schönengrund;Primar;1;222241;Schönengrund PS
+S86699;Tetikasar;Khalil;1;03.03.2021;111157;KIGA 1 Rychenberg (Wald);Kindergarten;1;222267;Rychenberg (Wald)
+S86791;Gerber;Emilie;2;07.03.2021;111112;KIGA 1 Talwiesen;Kindergarten;1;222222;Talwiesen
+S59034;Ramaj;Luisa;2;12.04.2014;111159;P6 a Tässfeld;Primar;6;222269;Tässfeld

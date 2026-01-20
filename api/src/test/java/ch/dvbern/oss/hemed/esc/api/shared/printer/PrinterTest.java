@@ -64,6 +64,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.types.KontaktPersonKindBeziehung;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
+import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
@@ -261,22 +262,23 @@ class PrinterTest {
                         .isNachkontrolle(true)
                         .isNeueintritt(false));
 
-            UntersuchungSehenBeurteilung untersuchungSehenBeurteilung = UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withBrilleLinsen(
-                    BrilleLinsenResultat.MIT)
-                .withStereotest(StereotestResultat.NICHT_GEPRUEFT)
-                .withFarbsehen(FarbsehenResultat.PATHOLOGISCH)
-                .withVerwendeteTafel(VerwendetTafelResultat.BUCHSTABEN)
-                .withFernvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT, DistanzSehenResultat.RECHTS_REDUZIERT))
-                .withFernvisusRechts(BigDecimal.valueOf(2.5))
-                .withNahvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT))
-                .withMotilitaet(MotilitaetResultat.NORMAL)
-                .withStrabismus(List.of(StrabismusResultat.KEIN_STRABISMUS))
-                .withStrabismusAuspraegung(StrabismusAuspraegungResultat.LATENT)
-                .withStrabismusAuftreten(StrabismusAuftretenResultat.KEIN_STRABISMUS)
-                .withInspektion(InspektionKonvergenzResultat.AUFFAELLIG)
-                .withKonvergenz(InspektionKonvergenzResultat.UNAUFFAELLIG)
-                .withBemerkung("Eine sehr ausführliche bemerkung!")
-            );
+            UntersuchungSehenBeurteilung untersuchungSehenBeurteilung =
+                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withBrilleLinsen(
+                        BrilleLinsenResultat.MIT)
+                    .withStereotest(StereotestResultat.NICHT_GEPRUEFT)
+                    .withFarbsehen(FarbsehenResultat.PATHOLOGISCH)
+                    .withVerwendeteTafel(VerwendetTafelResultat.BUCHSTABEN)
+                    .withFernvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT, DistanzSehenResultat.RECHTS_REDUZIERT))
+                    .withFernvisusRechts(BigDecimal.valueOf(2.5))
+                    .withNahvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT))
+                    .withMotilitaet(MotilitaetResultat.NORMAL)
+                    .withStrabismus(List.of(StrabismusResultat.KEIN_STRABISMUS))
+                    .withStrabismusAuspraegung(StrabismusAuspraegungResultat.LATENT)
+                    .withStrabismusAuftreten(StrabismusAuftretenResultat.KEIN_STRABISMUS)
+                    .withInspektion(InspektionKonvergenzResultat.AUFFAELLIG)
+                    .withKonvergenz(InspektionKonvergenzResultat.UNAUFFAELLIG)
+                    .withBemerkung("Eine sehr ausführliche bemerkung!")
+                );
 
             UntersuchungHoerenAudiogramm untersuchungHoerenAudiogramm = UntersuchungHoerenAudiogrammBuilder.create(
                 builder -> builder
@@ -404,22 +406,23 @@ class PrinterTest {
                         .isNachkontrolle(true)
                         .isNeueintritt(false));
 
-            UntersuchungSehenBeurteilung untersuchungSehenBeurteilung = UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withBrilleLinsen(
-                    BrilleLinsenResultat.MIT)
-                .withStereotest(StereotestResultat.NICHT_GEPRUEFT)
-                .withFarbsehen(FarbsehenResultat.PATHOLOGISCH)
-                .withVerwendeteTafel(VerwendetTafelResultat.BUCHSTABEN)
-                .withFernvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT, DistanzSehenResultat.RECHTS_REDUZIERT))
-                .withFernvisusRechts(BigDecimal.valueOf(2.5))
-                .withNahvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT))
-                .withMotilitaet(MotilitaetResultat.NORMAL)
-                .withStrabismus(List.of(StrabismusResultat.KEIN_STRABISMUS))
-                .withStrabismusAuspraegung(StrabismusAuspraegungResultat.LATENT)
-                .withStrabismusAuftreten(StrabismusAuftretenResultat.KEIN_STRABISMUS)
-                .withInspektion(InspektionKonvergenzResultat.AUFFAELLIG)
-                .withKonvergenz(InspektionKonvergenzResultat.UNAUFFAELLIG)
-                .withBemerkung("Eine sehr ausführliche bemerkung!")
-            );
+            UntersuchungSehenBeurteilung untersuchungSehenBeurteilung =
+                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withBrilleLinsen(
+                        BrilleLinsenResultat.MIT)
+                    .withStereotest(StereotestResultat.NICHT_GEPRUEFT)
+                    .withFarbsehen(FarbsehenResultat.PATHOLOGISCH)
+                    .withVerwendeteTafel(VerwendetTafelResultat.BUCHSTABEN)
+                    .withFernvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT, DistanzSehenResultat.RECHTS_REDUZIERT))
+                    .withFernvisusRechts(BigDecimal.valueOf(2.5))
+                    .withNahvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT))
+                    .withMotilitaet(MotilitaetResultat.NORMAL)
+                    .withStrabismus(List.of(StrabismusResultat.KEIN_STRABISMUS))
+                    .withStrabismusAuspraegung(StrabismusAuspraegungResultat.LATENT)
+                    .withStrabismusAuftreten(StrabismusAuftretenResultat.KEIN_STRABISMUS)
+                    .withInspektion(InspektionKonvergenzResultat.AUFFAELLIG)
+                    .withKonvergenz(InspektionKonvergenzResultat.UNAUFFAELLIG)
+                    .withBemerkung("Eine sehr ausführliche bemerkung!")
+                );
 
             UntersuchungHoerenAudiogramm untersuchungHoerenAudiogramm = UntersuchungHoerenAudiogrammBuilder.create(
                 builder -> builder.withAudiogrammBeurteilung(List.of(
@@ -757,13 +760,20 @@ class PrinterTest {
                     .forKind(KindBuilder.create(kindBuilder -> kindBuilder
                         .withKlasse(klasse7c)
                         .withName("Weber", "Clara")))))
-                .withImpfausweis(NotizBuilder.create(
-                    notizBuilder -> notizBuilder.withFiles(List.of(FileDataBuilder.defaultPdfFileData()))
+                .withNotiz(NotizBuilder.create(
+                    notizBuilder -> notizBuilder.withNotizTyp(NotizTyp.IMPFAUSWEIS)
+                        .withFiles(List.of(FileDataBuilder.defaultPdfFileData()))
                 ))
-                .withFrageBogen(NotizBuilder.create(
-                    notizBuilder -> notizBuilder.withFiles(List.of(FileDataBuilder.defaultPdfFileData()))
+                .withNotiz(NotizBuilder.create(
+                    notizBuilder -> notizBuilder.withNotizTyp(NotizTyp.FRAGEBOGEN)
+                        .withFiles(List.of(FileDataBuilder.defaultPdfFileData()))
                 ))
             );
+
+            Notiz notizImpfausweis = NotizBuilder.defaultNotiz();
+            notizImpfausweis.setTyp(NotizTyp.IMPFAUSWEIS);
+            Notiz notizFragebogen = NotizBuilder.defaultNotiz();
+            notizFragebogen.setTyp(NotizTyp.FRAGEBOGEN);
 
             Einladung einladung4 = EinladungBuilder.create(builder -> builder
                 .withAnlass(anlass)
@@ -772,8 +782,8 @@ class PrinterTest {
                         .withKlasse(klasseKG)
                         .withGeschlecht(Geschlecht.DIVERS)
                         .withName("Fischer", "David Mario")))))
-                .withImpfausweis(NotizBuilder.defaultNotiz())
-                .withFrageBogen(NotizBuilder.defaultNotiz())
+                .withNotiz(notizImpfausweis)
+                .withNotiz(notizFragebogen)
             );
             var ud = UntersuchungDurchfuehrungBuilder.create(builder -> builder.isNachkontrolle(true));
             var u = UntersuchungBuilder.create(builder -> builder.withDurchgefuehrt(ud));

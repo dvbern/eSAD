@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.labels;
 
+import java.util.UUID;
+
 import ch.dvbern.oss.hemed.esc.api.features.labels.types.LabelTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
@@ -7,14 +9,15 @@ import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.LabelBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminWIN;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminWIN;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminWithInvalidTenant;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupport;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.LabelsApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LabelJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LabelListJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LabelSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.TranslatedStringJsonSpec;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response.Status;
@@ -40,7 +43,7 @@ class LabelResourceIMandantITest extends AbstractITest {
     private final LabelsApiSpec api = LabelsApiSpec.labels(RequestSpecUtil.quarkusSpec());
 
     private String createdLabelBaselId;
-    private String createdLabelBernId;
+    private String createdLabelWinId;
 
     @Override
     @BeforeEach
@@ -81,11 +84,11 @@ class LabelResourceIMandantITest extends AbstractITest {
     @Test
     @TestAsAdminWIN
     @Order(30)
-    void create_label_as_admin_bern() {
+    void create_label_as_admin_win() {
         tenantProducer.setCurrentTenant(TenantEnum.WIN);
         LabelJsonSpec createdForBern = labelResourceHelper.createNewLabel("CreatedForBern", LabelTyp.NOTIZEN);
         Assertions.assertThat(createdForBern).isNotNull();
-        createdLabelBernId = createdForBern.getId();
+        createdLabelWinId = createdForBern.getId();
     }
 
     @Test
@@ -110,7 +113,7 @@ class LabelResourceIMandantITest extends AbstractITest {
             .asInstanceOf(InstanceOfAssertFactories.list(LabelJsonSpec.class))
             .extracting(LabelJsonSpec::getId)
             .contains(createdLabelBaselId)
-            .doesNotContain(createdLabelBernId);
+            .doesNotContain(createdLabelWinId);
     }
 
     @Test
@@ -134,6 +137,51 @@ class LabelResourceIMandantITest extends AbstractITest {
             .asInstanceOf(InstanceOfAssertFactories.list(LabelJsonSpec.class))
             .extracting(LabelJsonSpec::getId)
             .contains(createdLabelBaselId)
-            .doesNotContain(createdLabelBernId);
+            .doesNotContain(createdLabelWinId);
+    }
+
+    @Test
+    @TestAsSupport
+    @Order(60)
+    void updateLabel_should_update_user_mutiert() {
+        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        var result = api.labelResourceGetById()
+            .labelIDPath(createdLabelBaselId)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(LabelJsonSpec.class);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getId()).isEqualTo(createdLabelBaselId);
+
+        // ACT
+        var loadedLabel = result.getData();
+        UUID uuid = UUID.randomUUID();
+        loadedLabel.getName().setDe("MyLabelNameChange_" + uuid);
+
+        LabelJsonSpec changedLabel  = api.labelResourceUpdateLabel()
+            .body(loadedLabel)
+            .labelIdPath(createdLabelBaselId)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(LabelJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(changedLabel).isNotNull()
+            .extracting(LabelJsonSpec::getData)
+            .isNotNull()
+            .extracting(LabelSaveJsonSpec::getName)
+            .isNotNull()
+            .extracting(TranslatedStringJsonSpec::getDe).isEqualTo("MyLabelNameChange_" + uuid);
+
+        Assertions.assertThat(changedLabel.getEntityInfo().getUserErstellt()).isNotNull().isEqualTo(TestAsAdminBS.BENUTZER_ID);
+        Assertions.assertThat(changedLabel.getEntityInfo().getUserMutiert()).isNotNull().isEqualTo(TestAsSupport.BENUTZER_ID);
+
     }
 }

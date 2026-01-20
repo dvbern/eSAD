@@ -57,6 +57,8 @@ public final class BerechtigungName {
     public static final String SUPPORT = "SUPPORT";
     public static final String SYSTEM_ADMIN = "SYSTEM_ADMIN";
     public static final String ESCADA_PUSH = "ESCADA_PUSH";
+    public static final String FILE_INGRESS_PUSH = "FILE_INGRESS_PUSH";
+    public static final String PUPIL_PUSH = "PUPIL_PUSH";
     public static final String AERZTE_LESEN = "AERZTE_LESEN";
     public static final String AERZTE_SCHREIBEN = "AERZTE_SCHREIBEN";
     public static final String ANLASSLISTE_LESEN_LAEUSE = "ANLASSLISTE_LESEN_LAEUSE";

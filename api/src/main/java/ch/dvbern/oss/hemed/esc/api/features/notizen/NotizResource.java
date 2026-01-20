@@ -14,7 +14,7 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.UploadItemSchema;
 import io.smallrye.common.annotation.Blocking;
@@ -136,8 +136,8 @@ public class NotizResource {
         @NotNull @NonNull @PathParam("fileId") ID<FileData> fileId
     ) {
         authorizerService.requireReadAuthorizationNotiz(notizId);
-        FileInfoS3 fileInfoS3 = notizService.findUploadedFileInfoS3(notizId, fileId);
-        return FileDownloadUtil.getBufferRestMultiWithInfo(fileInfoS3, fileStoreService);
+        FileInfo fileInfo = notizService.findUploadedFileInfo(notizId, fileId);
+        return FileDownloadUtil.getBufferRestMultiWithInfo(fileInfo, fileStoreService);
     }
 
     /**
@@ -157,7 +157,7 @@ public class NotizResource {
         @NotNull @NonNull @PathParam("fileId") ID<FileData> fileId
     ) {
         authorizerService.requireReadAuthorizationNotiz(notizId);
-        FileInfoS3 fileInfo = notizService.findUploadedFileInfoS3(notizId, fileId);
+        FileInfo fileInfo = notizService.findUploadedFileInfo(notizId, fileId);
         var content = fileStoreService.getFileBytesSync(fileInfo.getFileIdInBucket());
         return FileDownloadUtil.buildFileResponse("attachment", content, fileInfo);
     }

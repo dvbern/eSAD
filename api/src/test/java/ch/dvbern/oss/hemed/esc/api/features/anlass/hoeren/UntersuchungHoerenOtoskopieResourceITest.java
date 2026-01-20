@@ -3,11 +3,12 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren;
 import java.util.List;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungHoerenOtoskopieBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
@@ -155,6 +156,33 @@ class UntersuchungHoerenOtoskopieResourceITest {
 
     @Test
     @TestAsAdminBS
+    void getDefaultUntersuchungHoerenOtoskopieForAnlassConfigForKindergarten() {
+        // ARRANGE
+        Anlass anlass = fixtureService.createAnlass(AnlassTyp.KINDERGARTEN);
+        Einladung einladung = fixtureService.createEinladung(anlass);
+
+        // ACT
+        UntersuchungHoerenOtoskopieSaveJsonSpec result =
+            api.untersuchungHoerenOtoskopieResourceGetDefaultUntersuchungHoerenOtoskopieForAnlassConfig()
+                .anlassIdPath(einladung.getAnlass().getId().getId())
+                .einladungIdPath(einladung.getId().getId())
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.OK.getStatusCode())
+                .extract()
+                .as(UntersuchungHoerenOtoskopieSaveJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getOtoskopieRechts()).isNull();
+        assertThat(result.getOtoskopieRechtsResultatAndere()).isNull();
+        assertThat(result.getOtoskopieLinks()).isNull();
+        assertThat(result.getOtoskopieLinksResultatAndere()).isNull();
+    }
+
+    @Test
+    @TestAsAdminBS
     void getDefaultUntersuchungOtoskopieForAnlassConfig_NOT_VISIBLE() {
         // ARRANGE
         Anlass anlass = fixtureService.createAnlassWithSameRequirementSettings(RequirementSetting.NOT_VISIBLE);
@@ -174,9 +202,9 @@ class UntersuchungHoerenOtoskopieResourceITest {
 
         // ASSERT
         assertThat(result).isNotNull();
-        assertThat(result.getOtoskopieRechts()).isEmpty();
+        assertThat(result.getOtoskopieRechts()).isNull();
         assertThat(result.getOtoskopieRechtsResultatAndere()).isNull();
-        assertThat(result.getOtoskopieLinks()).isEmpty();
+        assertThat(result.getOtoskopieLinks()).isNull();
         assertThat(result.getOtoskopieLinksResultatAndere()).isNull();
     }
 }

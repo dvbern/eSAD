@@ -3,7 +3,14 @@
 @use '../../../../styles/core/spacing';
 
 
-:host {
+:host.display-flex {
+  display: flex;
+  flex-flow: row wrap;
+  gap: spacing.$base spacing.$double;
+  justify-content: flex-start;
+}
+
+:host.display-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: auto 1fr;
@@ -12,5 +19,5 @@
 }
 
 svui-icon {
-  color: color.$text-secondary;;
+  color: color.$text-secondary;
 }

@@ -7,6 +7,7 @@ import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintVariant;
@@ -43,6 +44,8 @@ public class PrinterResource {
 
     public static final String ATTACHMENT = "attachment";
     private final PrinterMapper printerMapper;
+    private final AuthorizerService authorizerService;
+
 
     @GET
     @Path("/kind/{kindId}")
@@ -51,12 +54,13 @@ public class PrinterResource {
         schema = @Schema(type = SchemaType.STRING, format = "binary")), description = "OK", responseCode = "200")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.KOMPLETTER_EXPORT)
+    @RolesAllowed({ BerechtigungName.KOMPLETTER_EXPORT })
     @Blocking
     public Response downloadKinderdossier(
         @NotNull @NonNull @PathParam("kindId") ID<Kind> kindId,
         @NotNull @NonNull @QueryParam("variation") KinderdossierPrintVariant variation
     ) {
+        authorizerService.requireKinderDownloadAuthorization(kindId);
         PrintResultDTO printResultDTO = printerMapper.printKinderdossier(variation, kindId);
 
         return FileDownloadUtil.buildFileResponse(
@@ -78,6 +82,7 @@ public class PrinterResource {
         @NotNull @NonNull @PathParam("kindId") ID<Kind> kindId,
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId
     ) {
+        authorizerService.requireKinderDownloadAuthorization(kindId);
         PrintResultDTO printResultDTO = printerMapper.printKinderdossierForAnlass(kindId, anlassId);
 
         return FileDownloadUtil.buildFileResponse(

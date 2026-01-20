@@ -23,7 +23,7 @@ import java.io.Serial;
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungArztBemerkungPresentIfReq;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,7 +47,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckUntersuchungArztBemerkungPresentIfReq
-public class UntersuchungArztBemerkung extends AbstractTenantEntity<UntersuchungArztBemerkung> implements EntityWithOptimisticLocking {
+public class UntersuchungArztBemerkung extends AbstractEntity<UntersuchungArztBemerkung> implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 2262757170782081496L;

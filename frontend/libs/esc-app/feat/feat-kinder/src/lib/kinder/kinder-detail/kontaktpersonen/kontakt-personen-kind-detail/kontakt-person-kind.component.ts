@@ -2,7 +2,7 @@ import {DatePipe} from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Geschlecht, KontaktPersonKindBeziehung} from '@dvb/data-access-backend';
+import {Geschlecht, ImportTyp, KontaktPersonKindBeziehung} from '@dvb/data-access-backend';
 import {isValidBackendEntityId} from '@dvb/data-access-types';
 import {AdresseComponent, AdresseForm, BenutzerStore, BooleanPipe, Path} from '@dvb/feat-shared';
 import {
@@ -20,7 +20,7 @@ import {
   TextInputDirective,
 } from '@dvb/ui-components';
 import {DirtyMarker} from '@dvb/util-angular';
-import {fromISODateTimeString, hasKindEditBerechtigung, isNullish} from '@dvb/util-shared';
+import {fromISODateTimeString, hasKindEditBerechtigung, isNotNullish, isNullish} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {DossierStore} from '../../../dossier.store';
@@ -49,7 +49,7 @@ import {KontaktPersonKindForm} from './kontakt-person-kind.form';
     AdresseComponent,
     FormFullWidthDirective,
     DatePipe,
-    BooleanPipe
+    BooleanPipe,
   ],
   templateUrl: './kontakt-person-kind.component.html',
   styleUrl: './kontakt-person-kind.component.scss',
@@ -70,7 +70,10 @@ export class KontaktPersonKindComponent implements DirtyMarker {
   canEdit = this.#benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung());
 
   isEscadaObject = computed(() => {
-    return !!this.store.selectedEntity()?.externalImportInfoJson?.aktivInExternalSystem;
+    const externalImportInfo = this.store.selectedEntity()?.externalImportInfoJson;
+    return isNotNullish(externalImportInfo)
+      && externalImportInfo?.aktivInExternalSystem
+      && externalImportInfo?.importTyp === ImportTyp.ESCADA;
   });
 
   getDateLatestImportIfEscadaObject() {

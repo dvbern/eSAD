@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -22,14 +23,18 @@ public class HoerenOtoskopieLinksCsvColumn extends AbstractCsvColumn {
     public String extract(@NonNull Einladung einladung) {
         return ExtractorForCsvUtil.extractUntersuchungHoerenOtoskopie(
             einladung,
-            untersuchungHoeren ->
-                untersuchungHoeren.getOtoskopieLinks().contains(otoskopieResultat) ? "1" : ""
+            untersuchungHoeren -> {
+                if (config.forSpssReport()) {
+                    return untersuchungHoeren.getOtoskopieLinks().contains(otoskopieResultat) ? "1" : "";
+                }
+                return PrintUtil.trimToPlaceholder(untersuchungHoeren.getOtoskopieLinks().contains(otoskopieResultat), config.tl());
+            }
         );
     }
 
     @Override
     @NonNull
     protected String getDefaultHeaderKey() {
-        return "CsvColumn.hoereOtoskopieLinks";
+        return "CsvColumn.hoereOtoskopieLinks." + this.otoskopieResultat;
     }
 }

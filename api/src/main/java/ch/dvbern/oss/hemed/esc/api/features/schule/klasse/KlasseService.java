@@ -42,6 +42,11 @@ public class KlasseService {
     }
 
     @NonNull
+    public List<Klasse> findBySchuleAndBezeichnung(@NonNull ID<Schule> schuleID, @NonNull String bezeichung) {
+        return klasseRepo.findBySchuleAndBezeichnung(schuleID, bezeichung);
+    }
+
+    @NonNull
     public List<Klasse> findAktivBySchule(@NonNull ID<Schule> schuleID) {
         return klasseRepo.findAktivBySchule(schuleID);
     }
@@ -79,12 +84,12 @@ public class KlasseService {
     }
 
     @NonNull
-	public Optional<Klasse> findByExternalId(@IgnoreForIdClassTest @NonNull String externalId) {
+    public Optional<Klasse> findByExternalId(@IgnoreForIdClassTest @NonNull String externalId) {
         return klasseRepo.findByExternalId(externalId).map(klasse -> {
             klasse.disableOptimisticLockingCheck();
             return klasse;
         });
-	}
+    }
 
     public List<Klasse> findByLehrperson(@NonNull ID<Lehrperson> id) {
         return klasseRepo.findByLehrperson(id);

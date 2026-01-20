@@ -9,10 +9,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ExternalSystemIdDTO;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ImportPlanDTO;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ItemSyncResultJson;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ExternalSystemIdDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ImportPlanDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ItemSyncResultJson;
 import io.smallrye.context.api.ManagedExecutorConfig;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -42,10 +43,15 @@ public class KlasseExternalSyncService {
 
     @NonNull
     @Transactional(TxType.NOT_SUPPORTED)
-    public List<ItemSyncResultJson<Klasse>> syncKlassen(@NonNull ImportPlanDTO<KlasseExternal> importPlan) {
-        List<ItemSyncResultJson<Klasse>> addResults = addNewKlassenAsync(importPlan.itemsToAdd());
-        List<ItemSyncResultJson<Klasse>> updateResults = updateExistingKlassenAsync(importPlan.getItemsToSyncMap());
-        List<ItemSyncResultJson<Klasse>> deactivateResults = deactivateRemovedKlassenAsync(importPlan.itemsToDelete());
+    public List<ItemSyncResultJson<Klasse>> syncKlassen(
+        @NonNull ImportPlanDTO<KlasseExternal> importPlan,
+        @NonNull ImportTyp importTyp
+    ) {
+        List<ItemSyncResultJson<Klasse>> addResults = addNewKlassenAsync(importPlan.itemsToAdd(), importTyp);
+        List<ItemSyncResultJson<Klasse>> updateResults =
+            updateExistingKlassenAsync(importPlan.getItemsToSyncMap(), importTyp);
+        List<ItemSyncResultJson<Klasse>> deactivateResults =
+            deactivateRemovedKlassenAsync(importPlan.itemsToDelete(), importTyp);
 
         List<ItemSyncResultJson<Klasse>> klasseImportResults = new ArrayList<>(addResults);
         klasseImportResults.addAll(updateResults);
@@ -54,18 +60,21 @@ public class KlasseExternalSyncService {
     }
 
     @NonNull
-    private List<ItemSyncResultJson<Klasse>> addNewKlassenAsync(@NonNull Set<KlasseExternal> itemsToPersist) {
+    private List<ItemSyncResultJson<Klasse>> addNewKlassenAsync(
+        @NonNull Set<KlasseExternal> itemsToPersist,
+        @NonNull ImportTyp importTyp) {
         var stopwatch = StopWatch.createStarted();
-        LOG.info("ESCADA: Starting to add {} Klassen", itemsToPersist.size());
+        LOG.info("{}: Starting to add {} Klassen", importTyp.toString().toUpperCase(), itemsToPersist.size());
 
         List<CompletableFuture<ItemSyncResultJson<Klasse>>> futures = itemsToPersist.stream()
             .map(klasseExternalToAdd -> CompletableFuture.supplyAsync(
                 () -> {
                     try {
-                        return klasseExternalSyncHelperService.addNewKlasse(klasseExternalToAdd);
+                        return klasseExternalSyncHelperService.addNewKlasse(klasseExternalToAdd, importTyp);
                     } catch (Exception e) {
                         LOG.warn(
-                            "ESCADA: Error adding new Klasse with externalId: '{}'",
+                            "{}: Error adding new Klasse with externalId: '{}'",
+                            importTyp.toString().toUpperCase(),
                             klasseExternalToAdd.getExternalId(), e);
                         return ItemSyncResultJson.<Klasse>createAddErrorItem(
                             klasseExternalToAdd,
@@ -81,23 +90,29 @@ public class KlasseExternalSyncService {
             .map(CompletableFuture::join)
             .toList();
 
-        LOG.info("ESCADA: Finished persisting new Klassen, took {}ms", stopwatch.getTime(TimeUnit.MILLISECONDS));
+        LOG.info(
+            "{}: Finished persisting new Klassen, took {}ms",
+            importTyp.toString().toUpperCase(),
+            stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 
     @NonNull
-    private List<ItemSyncResultJson<Klasse>> deactivateRemovedKlassenAsync(@NonNull Set<ExternalSystemIdDTO> itemsToDelete) {
+    private List<ItemSyncResultJson<Klasse>> deactivateRemovedKlassenAsync(
+        @NonNull Set<ExternalSystemIdDTO> itemsToDelete,
+        @NonNull ImportTyp importTyp) {
         var stopwatch = StopWatch.createStarted();
-        LOG.info("ESCADA: Starting to deactivate {} Klassen", itemsToDelete.size());
+        LOG.info("{}: Starting to deactivate {} Klassen", importTyp.toString().toUpperCase(), itemsToDelete.size());
 
         List<CompletableFuture<ItemSyncResultJson<Klasse>>> futures = itemsToDelete.stream()
             .map(externalSystemIdDTO -> CompletableFuture.supplyAsync(
                 () -> {
                     try {
-                        return klasseExternalSyncHelperService.deactivateRemovedKlasse(externalSystemIdDTO);
+                        return klasseExternalSyncHelperService.deactivateRemovedKlasse(externalSystemIdDTO, importTyp);
                     } catch (Exception e) {
                         LOG.warn(
-                            "ESCADA: Error deactivating Klasse with externalId: '{}', internalId: '{}'",
+                            "{}: Error deactivating Klasse with externalId: '{}', internalId: '{}'",
+                            importTyp.toString().toUpperCase(),
                             externalSystemIdDTO.getExternalId(), externalSystemIdDTO.getInternalId(), e);
                         return ItemSyncResultJson.createDeactivateErrorItem(externalSystemIdDTO, Klasse.class, e);
                     }
@@ -108,26 +123,31 @@ public class KlasseExternalSyncService {
             .map(CompletableFuture::join)
             .toList();
 
-        LOG.info("ESCADA: Finished deactivating Klassen, took {}ms", stopwatch.getTime(TimeUnit.MILLISECONDS));
+        LOG.info(
+            "{}: Finished deactivating Klassen, took {}ms",
+            importTyp.toString().toUpperCase(),
+            stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 
     @NonNull
     private List<ItemSyncResultJson<Klasse>> updateExistingKlassenAsync(
-        @NonNull Map<ExternalSystemIdDTO, KlasseExternal> itemsToSync
+        @NonNull Map<ExternalSystemIdDTO, KlasseExternal> itemsToSync,
+        @NonNull ImportTyp importTyp
     ) {
         var stopwatch = StopWatch.createStarted();
-        LOG.info("ESCADA: Starting to update {} Klassen", itemsToSync.size());
+        LOG.info("{}: Starting to update {} Klassen", importTyp.toString().toUpperCase(), itemsToSync.size());
 
         List<CompletableFuture<ItemSyncResultJson<Klasse>>> futures = itemsToSync.entrySet().stream()
             .map(entry -> CompletableFuture.supplyAsync(
                 () -> {
                     ExternalSystemIdDTO idDTO = entry.getKey();
                     try {
-                        return klasseExternalSyncHelperService.updateExistingKlasse(idDTO, entry.getValue());
+                        return klasseExternalSyncHelperService.updateExistingKlasse(idDTO, entry.getValue(),  importTyp);
                     } catch (Exception e) {
                         LOG.warn(
-                            "ESCADA: Error updating Klasse with externalId: '{}', internalId: '{}'",
+                            "{}: Error updating Klasse with externalId: '{}', internalId: '{}'",
+                            importTyp.toString().toUpperCase(),
                             idDTO.getExternalId(), idDTO.getInternalId(), e);
                         return ItemSyncResultJson.createUpdateErrorItem(idDTO, Klasse.class, e);
                     }
@@ -138,7 +158,10 @@ public class KlasseExternalSyncService {
             .map(CompletableFuture::join)
             .toList();
 
-        LOG.info("ESCADA: Finished updating Klassen, took {}ms", stopwatch.getTime(TimeUnit.MILLISECONDS));
+        LOG.info(
+            "{}: Finished updating Klassen, took {}ms",
+            importTyp.toString().toUpperCase(),
+            stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 }

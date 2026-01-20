@@ -1,0 +1,17 @@
+@use '../../../../../../ui/ui-components/src/styles/core/_layout.scss';
+@use '../../../../../../ui/ui-components/src/styles/core/_spacing.scss';
+
+.button-wrapper {
+  @include layout.flex(
+    $direction: row-reverse,
+    $wrap: wrap,
+    $justify-content: center,
+    $row-gap: spacing.$row-gap,
+    $column-gap: spacing.$gutter-width
+  );
+  margin-top: 16px;
+}
+
+.modal-header {
+  justify-content: center;
+}

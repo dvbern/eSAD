@@ -48,15 +48,22 @@
   <changeSet author="gema (generated)" id="1762935155941-8">
     <sql>
       UPDATE notiz
-      SET typ = 'DEFAULT';
-
-      UPDATE notiz
       SET typ = 'FRAGEBOGEN'
-      WHERE titel LIKE 'Fragebogen %';
+      WHERE id IN (
+        SELECT e.fragebogen_id
+        FROM Einladung e where e.fragebogen_id is not null
+      );
 
       UPDATE notiz
       SET typ = 'IMPFAUSWEIS'
-      WHERE titel LIKE 'Impfausweis %';
+      WHERE id IN (
+        SELECT e.impfausweis_id
+        FROM Einladung e where e.impfausweis_id is not null
+      );
+
+      UPDATE notiz
+      SET typ = 'DEFAULT'
+      WHERE typ IS NULL;
 
       INSERT INTO einladung_notiz (einladung_id, notiz_id)
       SELECT e.id, e.fragebogen_id

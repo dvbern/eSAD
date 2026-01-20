@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/core": "^20.2.4",
+    "@angular/common": "^20.2.4",
     "@angular/forms": "^20.2.4",
     "@angular/router": "^20.2.4",
     "@dvb/data-access-backend":  "0.0.1",

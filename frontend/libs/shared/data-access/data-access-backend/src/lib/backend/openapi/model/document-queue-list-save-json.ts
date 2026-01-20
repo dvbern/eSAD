@@ -7,11 +7,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { DocumentQueueSaveJson } from './document-queue-save-json';
+import { DocumentQueueSpssSaveJson } from './document-queue-spss-save-json';
 
 
 export interface DocumentQueueListSaveJson { 
-    list: Array<DocumentQueueSaveJson>;
+    list: Array<DocumentQueueSpssSaveJson>;
 }
 
 

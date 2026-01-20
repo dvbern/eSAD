@@ -1,7 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder.external;
 
-import ch.dvbern.oss.hemed.esc.api.features.schule.EscadaDummySchulenIds;
-import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -17,16 +15,20 @@ import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.dvbstarter.shared.types.sozialversicherungsnummer.SozialversicherungsNummer;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfoJson;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
+import ch.dvbern.oss.hemed.esc.api.features.schule.EscadaDummySchulenIds;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseService;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ExternalSystemIdDTO;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ItemSyncResultJson;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ExternalSystemIdDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ItemSyncResultJson;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Land;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
+import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import lombok.RequiredArgsConstructor;
@@ -45,12 +47,14 @@ public class KindExternalSyncHelperService {
     private final KindService kindService;
     private final KlasseService klasseService;
     private final AppClock appClock;
+    private final ConfigService configService;
 
     @NonNull
     public static Kind toEntityForCreate(
         @NonNull KindExternal kindExternal,
         @NonNull Klasse klasseToConnect,
-        @NonNull OffsetDateTime now
+        @NonNull OffsetDateTime now,
+        @NonNull ImportTyp importTyp
     ) {
         Adresse schuelerAdresse = extractAdresse(kindExternal);
         return new Kind(
@@ -58,7 +62,8 @@ public class KindExternalSyncHelperService {
                 kindExternal.getSchuelerId(),
                 true,
                 now,
-                now
+                now,
+                importTyp
             ),
             null,
             mapValidSvnrOrNull(kindExternal),
@@ -67,7 +72,7 @@ public class KindExternalSyncHelperService {
             "TODO", // will be set in AbstractEntityListener
             "TODO", // will be set in AbstractEntityListener
             mapGeschlechtForSchueler(kindExternal.getSchuelerGeschlecht()),
-            mapGeburtsdatum(kindExternal.getSchuelerGeburtsdatum()),
+            mapGeburtsdatum(kindExternal.getSchuelerGeburtsdatum(), importTyp),
             mapNationalitaetNameToCode(kindExternal.getSchuelerStaatcodeISO()),
             kindExternal.getSchuelerErstsprache(),
             kindExternal.getWohntyp(),
@@ -154,11 +159,18 @@ public class KindExternalSyncHelperService {
     }
 
     @NonNull
-    public static LocalDate mapGeburtsdatum(@Nullable String schuelerGeburtsdatum) {
+    public static LocalDate mapGeburtsdatum(@Nullable String schuelerGeburtsdatum, @NonNull ImportTyp importTyp) {
         // geburtsdatum is passed like 2015-05-03T00:00:00
         if (schuelerGeburtsdatum == null) {
             throw new IllegalArgumentException("Geburtsdatum is null");
         }
+
+        // pupil uses a localized date format
+        if (importTyp == ImportTyp.PUPIL) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            return LocalDate.parse(schuelerGeburtsdatum, formatter);
+        }
+
         // use iso date to parse the date
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         LocalDateTime localDateTime = LocalDateTime.parse(schuelerGeburtsdatum, formatter);
@@ -209,7 +221,8 @@ public class KindExternalSyncHelperService {
         @NonNull Kind kind,
         @NonNull KindExternal remoteKindExternal,
         @NonNull KindExternal existingKindExternal,
-        @NonNull OffsetDateTime now
+        @NonNull OffsetDateTime now,
+        @NonNull ImportTyp importTyp
     ) {
         // only update the fields that were not changed locally already
         kind.setSozialversicherungsNummer(determineValueToStore(
@@ -247,8 +260,8 @@ public class KindExternalSyncHelperService {
         kind.setGeburtsdatum(
             Objects.requireNonNull(determineValueToStore(
                 kind.getGeburtsdatum(),
-                mapGeburtsdatum(remoteKindExternal.getSchuelerGeburtsdatum()),
-                mapGeburtsdatum(existingKindExternal.getSchuelerGeburtsdatum())))
+                mapGeburtsdatum(remoteKindExternal.getSchuelerGeburtsdatum(), importTyp),
+                mapGeburtsdatum(existingKindExternal.getSchuelerGeburtsdatum(), importTyp)))
         );
 
         kind.setNationalitaet(determineValueToStore(
@@ -272,7 +285,8 @@ public class KindExternalSyncHelperService {
         kind.setAdresse(determineAdresseUpdate(
                 kind.getAdresse(),
                 remoteKindExternal,
-                existingKindExternal
+                existingKindExternal,
+                importTyp
             )
         );
 
@@ -291,7 +305,9 @@ public class KindExternalSyncHelperService {
         kind.setExternalImportInfo(ExternalImportInfoJson.toEntityOrCreate(
             kind.getExternalImportInfo(),
             remoteKindExternal.getExternalId(),
-            now));
+            now,
+            importTyp
+        ));
 
         return kind;
     }
@@ -299,13 +315,14 @@ public class KindExternalSyncHelperService {
     public static Adresse determineAdresseUpdate(
         @Nullable Adresse adresesInDb,
         @NonNull KindExternal remoteKindExternal,
-        @NonNull KindExternal existingKindExternal
+        @NonNull KindExternal existingKindExternal,
+        @NonNull ImportTyp importTyp
     ) {
         Adresse remoteAdresseExternal = extractAdresse(remoteKindExternal);
         Adresse existingAdresseExternal = extractAdresse(existingKindExternal);
 
         if (adresesInDb == null) {
-            LOG.info("ESCADA: Adresse not found in DB, updating with remote address");
+            LOG.info("{}: Adresse not found in DB, updating with remote address", importTyp.toString().toUpperCase());
             return remoteAdresseExternal;
         }
 
@@ -389,7 +406,8 @@ public class KindExternalSyncHelperService {
     @NonNull
     public ItemSyncResultJson<Kind> updateExistingKind(
         @NonNull ExternalSystemIdDTO idDTO,
-        @NonNull KindExternal remoteKindExternal
+        @NonNull KindExternal remoteKindExternal,
+        @NonNull ImportTyp importTyp
     ) {
         Kind existingKind = kindService.getById(ID.of(idDTO.getInternalId(), Kind.class));
         KindExternal existingkindExternal = kindExternalRepo.getExternalKindForKind(existingKind.getId());
@@ -405,12 +423,13 @@ public class KindExternalSyncHelperService {
             existingKind,
             remoteKindExternal,
             existingkindExternal,
-            appClock.offsetDateTime().now()
+            appClock.offsetDateTime().now(),
+            importTyp
         );
         updatedKind.disableOptimisticLockingCheck();
 
         KindExternal updatedKindExt = toEntityKindExternal(existingkindExternal, remoteKindExternal);
-        ensureNoManualKindWithSameVnrExisting(updatedKindExt, existingkindExternal.getExternalId() );
+        ensureNoManualKindWithSameVnrExisting(updatedKindExt, existingkindExternal.getExternalId());
         kindExternalRepo.persist(updatedKindExt);
 
         String escadaKlasseId =
@@ -418,28 +437,32 @@ public class KindExternalSyncHelperService {
 
         // update klasse if it has changed
         Klasse klasseToConnect = klasseService.getByExternalId(escadaKlasseId);
-        updateSchuleAndKlasse(updatedKind, klasseToConnect);
-        ensureKindAktiv(updatedKind);
+        updateSchuleAndKlasse(updatedKind, klasseToConnect, importTyp);
+        ensureKindAktiv(updatedKind, importTyp);
 
         updatedKind = kindService.persistWithoutDuplicateCheck(updatedKind);
 
-        return ItemSyncResultJson.createUpdateOkItem(idDTO, Kind.class, updatedKind.getName());
+        return ItemSyncResultJson.createUpdateOkItem(
+            idDTO,
+            Kind.class,
+            updatedKind.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo()));
     }
-
-
 
     @NonNull
     @Transactional(TxType.REQUIRES_NEW)
-    public ItemSyncResultJson<Kind> addNewKind(@NonNull KindExternal kindExternalToAdd) {
+    public ItemSyncResultJson<Kind> addNewKind(@NonNull KindExternal kindExternalToAdd, @NonNull ImportTyp importTyp) {
 
         String escadaKlasseId = Objects.requireNonNull(
             kindExternalToAdd.getEscadaKlasseId(),
             "KlasseId must be set for Kind with externalId: " + kindExternalToAdd.getExternalId());
 
         Klasse klasseToConnect = klasseService.getByExternalId(escadaKlasseId);
-        // see ESC-577, the Kind could have existed in escada a long time ago and might reappear now as new bcs we have no external obj
+        // see ESC-577, the Kind could have existed in escada a long time ago and might reappear now as new bcs we
+        // have no external obj
         Optional<Kind> preexistingKindOpt = findExistingKindWithSameId(kindExternalToAdd);
-        ensureNoManualKindWithSameVnrExisting(kindExternalToAdd, preexistingKindOpt.map(Kind::getExternalSystemIdOrNull).orElse(null));
+        ensureNoManualKindWithSameVnrExisting(
+            kindExternalToAdd,
+            preexistingKindOpt.map(Kind::getExternalSystemIdOrNull).orElse(null));
 
         Kind internalKind;
         // normally we would only update the Kind if the values were unchanged versus the 'old' values, here we will
@@ -447,20 +470,22 @@ public class KindExternalSyncHelperService {
         internalKind =
             preexistingKindOpt
                 .map(kind -> {
-                    var kindUpdated =updateKindBasedOnKindExternal(
+                    var kindUpdated = updateKindBasedOnKindExternal(
                         kind,
                         kindExternalToAdd,
                         kindExternalToAdd,
-                        appClock.offsetDateTime().now()
+                        appClock.offsetDateTime().now(),
+                        importTyp
                     );
-                    updateSchuleAndKlasse(kindUpdated, klasseToConnect);
-                    ensureKindAktiv(kindUpdated);
+                    updateSchuleAndKlasse(kindUpdated, klasseToConnect, importTyp);
+                    ensureKindAktiv(kindUpdated, importTyp);
                     return kindUpdated;
                 })
                 .orElseGet(() -> toEntityForCreate(
                     kindExternalToAdd,
                     klasseToConnect,
-                    appClock.offsetDateTime().now()
+                    appClock.offsetDateTime().now(),
+                    importTyp
                 ));
 
         internalKind.disableOptimisticLockingCheck();
@@ -471,10 +496,11 @@ public class KindExternalSyncHelperService {
         var result = ItemSyncResultJson.createAddOkItem(
             kindExternalToAdd,
             internalKind.getId(),
-            internalKind.getName()
+            internalKind.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo())
         );
         LOG.info(
-            "ESCADA: Kind {} added{}, internalId: '{}', externalId: '{}'",
+            "{}: Kind {} added{}, internalId: '{}', externalId: '{}'",
+            importTyp.toString().toUpperCase(),
             result.getFriendlyName(),
             preexistingKindOpt.isEmpty() ? "" : " (preexisting)",
             result.getInternalId(),
@@ -483,20 +509,25 @@ public class KindExternalSyncHelperService {
         return result;
     }
 
-    private static void updateSchuleAndKlasse(@NonNull Kind updatedKind, @NonNull Klasse klasseToConnect) {
+    private static void updateSchuleAndKlasse(
+        @NonNull Kind updatedKind,
+        @NonNull Klasse klasseToConnect,
+        @NonNull ImportTyp importTyp) {
         if (!Objects.equals(klasseToConnect, updatedKind.getKlasse())) {
             LOG.info(
-                "ESCADA: Klasse of Kind {} has changed, updating Klasse from {} to {}",
+                "{}: Klasse of Kind {} has changed, updating Klasse from {} to {}",
+                importTyp.toString().toUpperCase(),
                 updatedKind.getExternalSystemIdOrNull(), updatedKind.getKlasse(), klasseToConnect);
             updatedKind.setKlasse(klasseToConnect); // klasse might have changed
             updatedKind.setSchule(klasseToConnect.getSchule());
         }
     }
 
-    private static void ensureKindAktiv(@NonNull Kind updatedKind) {
+    private static void ensureKindAktiv(@NonNull Kind updatedKind, @NonNull ImportTyp importTyp) {
         if (updatedKind.getKindAktivStatus() == EntityAktivStatus.INAKTIV) {
             LOG.info(
-                "ESCADA: Kind with UUID {} and ExternalID {} was INAKTIV, resetting to AKTIV",
+                "{}: Kind with UUID {} and ExternalID {} was INAKTIV, resetting to AKTIV",
+                importTyp.toString().toUpperCase(),
                 updatedKind.getId().getUUID(),
                 updatedKind.getExternalSystemIdOrNull());
             updatedKind.setKindAktivStatus(EntityAktivStatus.AKTIV);
@@ -520,7 +551,9 @@ public class KindExternalSyncHelperService {
 
     @NonNull
     @Transactional(TxType.REQUIRES_NEW)
-    public ItemSyncResultJson<Kind> deactivateRemovedKind(@NonNull ExternalSystemIdDTO externalSystemIdDTO) {
+    public ItemSyncResultJson<Kind> deactivateRemovedKind(
+        @NonNull ExternalSystemIdDTO externalSystemIdDTO,
+        @NonNull ImportTyp importTyp) {
 
         Kind kind = kindService.getById(ID.of(externalSystemIdDTO.getInternalId(), Kind.class));
         KindExternal kindExternalToDelete = kindExternalRepo.getExternalKindForKind(kind.getId());
@@ -541,9 +574,9 @@ public class KindExternalSyncHelperService {
             }
             if (kind.getSchule() != null
                 && (
-                    kind.getSchule().getExternalSystemIdOrNull() != null
+                kind.getSchule().getExternalSystemIdOrNull() != null
                     || EscadaDummySchulenIds.isDummySchule(kind.getSchule().getId())
-                )
+            )
             ) {
                 kind.setSchule(null);
             }
@@ -555,10 +588,11 @@ public class KindExternalSyncHelperService {
         var result = ItemSyncResultJson.createDeactivateOkItem(
             externalSystemIdDTO,
             Kind.class,
-            kind.getName()
+            kind.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo())
         );
         LOG.info(
-            "ESCADA: Kind {} deactivated, internalId: '{}', externalId: '{}'",
+            "{}: Kind {} deactivated, internalId: '{}', externalId: '{}'",
+            importTyp.toString().toUpperCase(),
             result.getFriendlyName(),
             result.getInternalId(),
             result.getExternalId()

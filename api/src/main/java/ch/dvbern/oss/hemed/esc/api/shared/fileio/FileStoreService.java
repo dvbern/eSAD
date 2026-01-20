@@ -53,33 +53,33 @@ public class FileStoreService  {
     private final ConfigService configService;
     private final S3RequestBuilder s3RequestBuilder;
 
-    private static void logFileUpload(@NonNull FileInfoS3 fileInfoS3, @NonNull PutObjectResponse request) {
+    private static void logFileUpload(@NonNull FileInfo fileInfo, @NonNull PutObjectResponse request) {
         LOG.info(
             "File='{}' uploaded to S3, etag={}",
-            fileInfoS3.getFileIdInBucket(),
+            fileInfo.getFileIdInBucket(),
             request.eTag());
     }
 
     @NonNull
     public Uni<PutObjectResponse> uploadToS3Async(
         @NonNull FileUpload fileUpload,
-        @NonNull FileInfoS3 fileInfoS3
+        @NonNull FileInfo fileInfo
     ) {
         return Uni.createFrom()
             .completionStage(() ->
                 this.createS3AsyncPutRequest(
                     fileUpload,
                     configService.getS3BucketName(),
-                    fileInfoS3.getFileIdInBucket())
+                    fileInfo.getFileIdInBucket())
             )
-            .invoke(request -> logFileUpload(fileInfoS3, request));
+            .invoke(request -> logFileUpload(fileInfo, request));
     }
 
     @NonNull
     public Uni<PutObjectResponse> uploadToS3Async(
         @NonNull String contentType,
         byte[] content,
-        @NonNull FileInfoS3 fileInfoS3
+        @NonNull FileInfo fileInfo
     ) {
         return Uni.createFrom()
             .completionStage(() ->
@@ -87,9 +87,9 @@ public class FileStoreService  {
                     contentType,
                     content,
                     configService.getS3BucketName(),
-                    fileInfoS3.getFileIdInBucket())
+                    fileInfo.getFileIdInBucket())
             )
-            .invoke(request -> logFileUpload(fileInfoS3, request));
+            .invoke(request -> logFileUpload(fileInfo, request));
     }
 
     @NonNull
@@ -198,6 +198,18 @@ public class FileStoreService  {
             return getResponse.asByteArray();
         }
         throw new AppFailureException(AppFailureMessage.internalError("Could not load file from S3 " + fileIdInBucket));
+    }
+
+    public boolean isFilePresent(@NonNull String fileIdInBucket) {
+        CompletableFuture<ResponseBytes<GetObjectResponse>> futureGetBytes =
+            this.getFileBytesAsync(fileIdInBucket);
+        CompletableFuture<ResponseBytes<GetObjectResponse>> loadFileFromS3Future =
+            futureGetBytes.exceptionally(throwable -> {
+                LOG.error("Error while loading file {} ", fileIdInBucket, throwable);
+                return null;
+            });
+        ResponseBytes<GetObjectResponse> getResponse = loadFileFromS3Future.join();
+        return getResponse != null;
     }
 
     @NonNull

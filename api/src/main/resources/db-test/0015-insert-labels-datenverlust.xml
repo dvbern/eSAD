@@ -1,0 +1,16 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="dvbern" id="2025-11-04-1156">
+    <sql>
+      INSERT INTO label
+      (id, timestampMutiert, timestampErstellt, userMutiert, userErstellt, version,
+       namede, namefr, labelTyp,  autolabel, disabled, aktiv)
+      VALUES
+        ('9a1c9a97-b7dc-4e3d-bb22-8e8250d51768', current_timestamp, current_timestamp, 'liquibase', 'liquibase', 0,
+         'Datenverlust', 'Datenverlust', 'NOTIZEN', false, false, true),
+        ('d27ec9f9-322a-4c8b-966c-6b48289b594a', current_timestamp, current_timestamp, 'liquibase', 'liquibase', 0,
+         'Datenverlust', 'Datenverlust', 'AUFGABEN', false, false, true) 
+      ON CONFLICT (id) DO NOTHING;
+    </sql>
+  </changeSet>
+</databaseChangeLog>

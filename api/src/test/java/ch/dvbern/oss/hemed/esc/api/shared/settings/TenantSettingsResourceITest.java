@@ -54,6 +54,7 @@ class TenantSettingsResourceITest extends AbstractITest {
         Assertions.assertThat(result)
             .isNotNull();
         Assertions.assertThat(result.getData().getDefaultLanguage().name()).isEqualTo(AppLanguages.DE.name());
+        Assertions.assertThat(result.getData().getFolgeTermineMaxSlots()).isEqualTo(16);
         Assertions.assertThat(result.getData().getSupportedLanguages()).hasSize(1);
         Assertions.assertThat(result.getData().getEinladungStatusValues()).hasSize(3);
 
@@ -77,6 +78,7 @@ class TenantSettingsResourceITest extends AbstractITest {
         Assertions.assertThat(result)
             .isNotNull();
         Assertions.assertThat(result.getData().getDefaultLanguage().name()).isEqualTo(AppLanguages.DE.name());
+        Assertions.assertThat(result.getData().getFolgeTermineMaxSlots()).isEqualTo(16);
         Assertions.assertThat(result.getData().getSupportedLanguages()).hasSize(1);
     }
 
@@ -98,8 +100,11 @@ class TenantSettingsResourceITest extends AbstractITest {
         TenantSettingSaveJsonSpec saveJson = new TenantSettingSaveJsonSpec(
             AppLanguagesSpec.FR,
             List.of(AppLanguagesSpec.FR, AppLanguagesSpec.DE),
+            42,
             new TenantSettingFeaturesJsonSpec(
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, false),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant)
             ),
             List.of(EinladungStatusSpec.TEILNAHME_BESTAETIGT, EinladungStatusSpec.PRIVATARZT_BESTAETIGT));
@@ -117,12 +122,21 @@ class TenantSettingsResourceITest extends AbstractITest {
             .isNotNull();
         Assertions.assertThat(result.getData().getDefaultLanguage().name()).isEqualTo(AppLanguages.FR.name());
         Assertions.assertThat(result.getData().getSupportedLanguages()).hasSize(2);
+        Assertions.assertThat(result.getData().getFolgeTermineMaxSlots()).isEqualTo(42);
         Assertions.assertThat(result.getData().getFeatures().getEsadIdFeature().getFeatureEnabled())
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
         Assertions.assertThat(result.getData().getFeatures().getLaenderCodeFeature().getFeatureEnabled())
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
-        Assertions.assertThat(result.getData().getEinladungStatusValues().stream().anyMatch(einladungStatus -> einladungStatus == EinladungStatusSpec.TEILNAHME_BESTAETIGT)).isTrue();
-        Assertions.assertThat(result.getData().getEinladungStatusValues().stream().anyMatch(einladungStatus -> einladungStatus == EinladungStatusSpec.PRIVATARZT_BESTAETIGT)).isTrue();
+        Assertions.assertThat(result.getData().getFeatures().getMobileScannerFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData()
+            .getEinladungStatusValues()
+            .stream()
+            .anyMatch(einladungStatus -> einladungStatus == EinladungStatusSpec.TEILNAHME_BESTAETIGT)).isTrue();
+        Assertions.assertThat(result.getData()
+            .getEinladungStatusValues()
+            .stream()
+            .anyMatch(einladungStatus -> einladungStatus == EinladungStatusSpec.PRIVATARZT_BESTAETIGT)).isTrue();
 
         // RESET value in db, not pretty but this should make sure we dont break other tests
         api.tenantSettingsResourceUpdateTenantSettings()

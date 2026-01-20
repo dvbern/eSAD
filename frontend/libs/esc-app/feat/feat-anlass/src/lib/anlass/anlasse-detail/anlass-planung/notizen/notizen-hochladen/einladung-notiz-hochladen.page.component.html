@@ -1,0 +1,11 @@
+<feat-page [heading]="pageTitle() | transloco: { nameKind: anlassKinderStore.nameKind() }"
+           [showNav]="false">
+
+  <feat-notizen-mobile-upload
+    [existingNotiz]="currentNotiz()"
+    [notizenFiles]="notizenFiles() ?? []"
+    [loader]="anlassStore.saveLoader"
+    (saveNotiz)="onSaveNotiz($event)"
+    (removeNotizFile)="onRemoveNotizFile($event)"/>
+
+</feat-page>

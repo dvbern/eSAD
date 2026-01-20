@@ -2,7 +2,7 @@ import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, effect, inject, untracked} from '@angular/core';
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {EntityAktivStatus, KlasseJson, Klassenstufe, SchuleOptionJson} from '@dvb/data-access-backend';
+import {EntityAktivStatus, ImportTyp, KlasseJson, Klassenstufe, SchuleOptionJson} from '@dvb/data-access-backend';
 import {BenutzerStore, KlassenStore, Path, SchulenOptionsStore} from '@dvb/feat-shared';
 import {
   FormButtonsComponent,
@@ -14,7 +14,7 @@ import {
   TextInputDirective,
 } from '@dvb/ui-components';
 import {DirtyMarker} from '@dvb/util-angular';
-import {fromISODateTimeString, hasListEditBerechtigung, isNullish} from '@dvb/util-shared';
+import {fromISODateTimeString, hasListEditBerechtigung, isNotNullish, isNullish} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {KlassenDetailForm} from '../klassen-detail.form';
@@ -53,11 +53,14 @@ export class KlassenDatenComponent implements DirtyMarker {
   canEditList = this.benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
 
   schuleOptions = computed(
-    () => this.schulenOptionsStore.entitiesActiveIncluding(this.store.selectedEntity()?.data.schule)
+    () => this.schulenOptionsStore.entitiesActiveIncluding(this.store.selectedEntity()?.data.schule),
   );
 
   isEscadaObject = computed(() => {
-    return !!this.store.selectedEntity()?.externalImportInfoJson?.aktivInExternalSystem;
+    const externalImportInfo = this.store.selectedEntity()?.externalImportInfoJson;
+    return isNotNullish(externalImportInfo)
+      && externalImportInfo?.aktivInExternalSystem
+      && externalImportInfo?.importTyp === ImportTyp.ESCADA;
   });
 
   getDateLatestImportIfEscadaObject() {

@@ -171,4 +171,24 @@ export class AnlassConfigStore extends signalStore(
       ),
     ),
   );
+
+  downloadAllSqlSkripts = rxMethod<void>(
+    pipe(
+      exhaustMap(() =>
+        this.saveLoader
+          .tapLoading$(
+            this.#anlassConfigService.downloadAllSqlSkripts$('response'),
+            error => this.#appErrorHandlerService.handleError(error),
+          )
+          .pipe(
+            tapResponse({
+              next: result => {
+                handleBlobResponseDownload(result, true);
+              },
+              error: console.error,
+            }),
+          ),
+      ),
+    ),
+  );
 }

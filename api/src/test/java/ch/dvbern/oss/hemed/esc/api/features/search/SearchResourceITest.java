@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -18,6 +19,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
@@ -2388,10 +2390,8 @@ class SearchResourceITest extends AbstractITest {
             Impfstoff impfstoff = fixtureService.createImpfstoff(krankheiten);
             Assertions.assertThat(previousUntersuchung.getUntersuchungImpfungen()).isNotNull();
 
-            untersuchungImpfstatusKrankheitService.persist(UntersuchungImpfstatusKrankheitBuilder.create(builder -> builder.forUntersuchungImpfungen(
-                    previousUntersuchung.getUntersuchungImpfungen())
-                .forKrankheit(Krankheit.MASERN)
-                .withAnzahlImpfungen(2)));
+            Optional<UntersuchungImpfstatusKrankheit> krankheit = untersuchungImpfstatusKrankheitService.findByUntersuchungAndKrankheit(previousUntersuchung.getUntersuchungImpfungen().getId(), Krankheit.MASERN);
+            krankheit.ifPresent(untersuchungImpfstatusKrankheit -> untersuchungImpfstatusKrankheit.setAnzahlImpfungen(2));
 
             untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
                     previousUntersuchung.getUntersuchungImpfungen())

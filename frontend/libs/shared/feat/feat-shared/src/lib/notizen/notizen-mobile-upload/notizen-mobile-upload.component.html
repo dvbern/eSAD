@@ -1,0 +1,46 @@
+<svui-card>
+  <form svuiFormLayout
+        [formGroup]="form.group"
+        (ngSubmit)="submitIfValid()"
+        [mode]="DetailMode.EDIT">
+
+<!--    Titel-->
+    <h2 svuiHeading="formSection">{{ 'notizen.detail.titel' | transloco }}</h2>
+
+    <svui-form-control [label]="('notizen.titel' | transloco) + ': ' + notizTitel()"
+                       [viewValue]="notizTitel()"
+                       [style.grid-column]="'1 / -1'">
+
+    </svui-form-control>
+
+    <!-- Fileupload -->
+    <feat-file-drop
+      (filesToUpload)="onFilesSelected($event)"
+      [acceptedFiletypes]="acceptedFiletypes"
+    ></feat-file-drop>
+
+    <!--messages for whole form -->
+    <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+    <!-- BUTTONS -->
+    <svui-save-cancel-buttons
+      [saving]="loader().isLoading()"
+      [canEdit]="canEditNotiz()"
+      (cancelClicked)="onCancelClicked()"
+    />
+  </form>
+
+</svui-card>
+
+<svui-card>
+  <h3 svuiHeading="card" class="mb-3">{{ 'global.uploaded.files' | transloco }}</h3>
+
+  <feat-upload-table
+    [accepted]="acceptedFiletypes"
+    [uploadTable]="uploadTable"
+    (fileRemove)="onFileDelete($event)"
+    (fileView)="onFileView($event)"
+    (fileDirectDownload)="onFileDirectDownload($event)"
+  >
+  </feat-upload-table>
+</svui-card>

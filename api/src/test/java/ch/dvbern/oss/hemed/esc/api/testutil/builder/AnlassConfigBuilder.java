@@ -25,12 +25,17 @@ import java.util.function.Consumer;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinstand;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Motorik;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.json.AnlassConfigJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.json.AnlassConfigJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
@@ -81,6 +86,8 @@ public class AnlassConfigBuilder {
             RequirementSetting.OPTIONAL,    // untersuchungImpfungEmpfehlung
             RequirementSetting.OPTIONAL,    // untersuchungImpfungAchtung
             RequirementSetting.OPTIONAL,    // untersuchungImpfungBemerkungen
+            EnumSetUtil.toString(EnumSet.allOf(Krankheit.class)), //untersuchungImpfungKrankheitLinksValues
+            EnumSetUtil.toString(EnumSet.noneOf(Krankheit.class)), //untersuchungImpfungKrankheitRechtsValues
             RequirementSetting.OPTIONAL,    // sehenBrilleLinsen
             RequirementSetting.OPTIONAL,    // sehenFarbsehen
             RequirementSetting.OPTIONAL,    // sehenTafel
@@ -120,11 +127,11 @@ public class AnlassConfigBuilder {
             RequirementSetting.OPTIONAL,    // laeusekontrolleBemerkungen
             RequirementSetting.OPTIONAL,    // untersuchungBewegungsapparat
             RequirementSetting.OPTIONAL,    // untersuchungEinbeinstand
-            RequirementSetting.OPTIONAL,    // untersuchungEinbeinstandRechts
-            RequirementSetting.OPTIONAL,    // untersuchungEinbeinstandLinks
+            RequirementSetting.OPTIONAL,    // untersuchungEinbeinstandRechtsLinks
+            EnumSetUtil.toString(EnumSet.allOf(Einbeinstand.class)),    // untersuchungEinbeinstandValues
             RequirementSetting.OPTIONAL,    // untersuchungEinbeinhuepfen
-            RequirementSetting.OPTIONAL,    // untersuchungEinbeinhuepfenRechts
-            RequirementSetting.OPTIONAL,    // untersuchungEinbeinhuepfenLinks
+            RequirementSetting.OPTIONAL,    // untersuchungEinbeinhuepfenRechtsLinks
+            EnumSetUtil.toString(EnumSet.allOf(Einbeinhuepfen.class)),    // untersuchungEinbeinhuepfenValues
             RequirementSetting.OPTIONAL,    // untersuchungFingeropposition
             RequirementSetting.OPTIONAL,    // untersuchungHampelmann
             RequirementSetting.OPTIONAL,    // untersuchungBallFangen
@@ -143,10 +150,13 @@ public class AnlassConfigBuilder {
             RequirementSetting.OPTIONAL,    // untersuchungZeichnenMensch
             RequirementSetting.OPTIONAL,    // untersuchungZeichnenMenschPunkte
             RequirementSetting.OPTIONAL,    // untersuchungMotorik
+            EnumSetUtil.toString(EnumSet.allOf(Motorik.class)),    // untersuchungMotorikValues
             RequirementSetting.OPTIONAL,    // untersuchungMotorikPunkte
             RequirementSetting.OPTIONAL,    // untersuchungKognition
             RequirementSetting.OPTIONAL,    // untersuchungKognitionPunkte
-            RequirementSetting.OPTIONAL,    // untersuchungSprache
+            RequirementSetting.OPTIONAL,    // untersuchungSprachfaehigkeitSingleValue
+            RequirementSetting.OPTIONAL,    // untersuchungSprachfaehigkeitMultiValue
+            EnumSetUtil.toString(EnumSet.allOf(Sprachfaehigkeit.class)),    // untersuchungSprachfaehigkeitValues
             RequirementSetting.OPTIONAL,    // untersuchungSprachePunkte
             RequirementSetting.OPTIONAL,    // untersuchungMundZaehne
             RequirementSetting.OPTIONAL,    // untersuchungHaut
@@ -204,6 +214,8 @@ public class AnlassConfigBuilder {
             requirementSetting,             // untersuchungImpfungEmpfehlung
             requirementSetting,             // untersuchungImpfungAchtung
             requirementSetting,             // untersuchungImpfungBemerkungen
+            EnumSetUtil.toString(EnumSet.allOf(Krankheit.class)),   // untersuchungImpfungKrankheitenLinksValues
+            EnumSetUtil.toString(EnumSet.noneOf(Krankheit.class)),   // untersuchungImpfungKrankheitenRechtsValues
             requirementSetting,             // sehenBrilleLinsen
             requirementSetting,             // sehenFarbsehen
             requirementSetting,             // sehenTafel
@@ -243,11 +255,11 @@ public class AnlassConfigBuilder {
             requirementSetting,             // laeusekontrolleBemerkungen
             requirementSetting,             // untersuchungBewegungsapparat
             requirementSetting,             // untersuchungEinbeinstand
-            requirementSetting,             // untersuchungEinbeinstandRechts
-            requirementSetting,             // untersuchungEinbeinstandLinks
+            requirementSetting,             // untersuchungEinbeinstandRechtsLinks
+            EnumSetUtil.toString(EnumSet.allOf(Einbeinstand.class)),// untersuchungEinbeinstandValues
             requirementSetting,             // untersuchungEinbeinhuepfen
-            requirementSetting,             // untersuchungEinbeinhuepfenRechts
-            requirementSetting,             // untersuchungEinbeinhuepfenLinks
+            requirementSetting,             // untersuchungEinbeinhuepfenRechtsLinks
+            EnumSetUtil.toString(EnumSet.allOf(Einbeinhuepfen.class)),// untersuchungEinbeinhuepfenValues
             requirementSetting,             // untersuchungFingeropposition
             requirementSetting,             // untersuchungHampelmann
             requirementSetting,             // untersuchungBallFangen
@@ -266,10 +278,13 @@ public class AnlassConfigBuilder {
             requirementSetting,             // untersuchungZeichnenMensch
             requirementSetting,             // untersuchungZeichnenMenschPunkte
             requirementSetting,             // untersuchungMotorik
+            EnumSetUtil.toString(EnumSet.allOf(Motorik.class)), // untersuchungMotorikValues
             requirementSetting,             // untersuchungMotorikPunkte
             requirementSetting,             // untersuchungKognition
             requirementSetting,             // untersuchungKognitionPunkte
-            requirementSetting,             // untersuchungSprache
+            requirementSetting,             // untersuchungSprachfaehigkeitSingleValue
+            requirementSetting,             // untersuchungSprachfaehigkeitMultiValue
+            EnumSetUtil.toString(EnumSet.allOf(Sprachfaehigkeit.class)), // untersuchungSprachfaehigkeitValues
             requirementSetting,             // untersuchungSprachePunkte
             requirementSetting,             // untersuchungMundZaehne
             requirementSetting,             // untersuchungHaut
@@ -317,8 +332,29 @@ public class AnlassConfigBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
+    public AnlassConfigBuilder withKrankheitenLinks(@NonNull EnumSet<Krankheit> krankheiten) {
+        this.anlassConfig.setUntersuchungImpfungKrankheitenLinksValues(krankheiten);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public AnlassConfigBuilder withKrankheitenRechts(@NonNull EnumSet<Krankheit> krankheiten) {
+        this.anlassConfig.setUntersuchungImpfungKrankheitenRechtsValues(krankheiten);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
     public AnlassConfigBuilder withGueltigkeitsZeitraum(@NonNull LocalDate datumVon, @NonNull LocalDate datumBis) {
         this.anlassConfig.setGueltigkeitsZeitraum(DateRange.of(datumVon, datumBis));
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public AnlassConfigBuilder withSehenTafel(@NonNull RequirementSetting setting) {
+        this.anlassConfig.setSehenTafel(setting);
         return this;
     }
 

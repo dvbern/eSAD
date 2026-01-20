@@ -6,7 +6,6 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
-import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseService;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.AbstractCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.CsvColumnConfig;
 import ch.dvbern.oss.hemed.esc.api.features.spss.reports.SpssFremdsprachenReport;
@@ -27,7 +26,6 @@ public class SpssReportService {
     private final TL tl;
     private final UntersuchungImpfstatusKrankheitService untersuchungImpfstatusKrankheitService;
     private final UntersuchungImpfungInternService untersuchungImpfungInternService;
-    private final KlasseService klasseService;
 
     @NonNull
     public List<AbstractCsvColumn> getColumns(@NonNull SpssReportType spssReportType) {
@@ -35,7 +33,8 @@ public class SpssReportService {
             tl,
             untersuchungImpfstatusKrankheitService,
             untersuchungImpfungInternService,
-            false);
+            false,
+            true);
         return switch (spssReportType) {
             case KINDERGARTEN -> new SpssKindergartenReport(config).getReport();
             case KLASSE_4 -> new SpssKlasse4Report(config).getReport();

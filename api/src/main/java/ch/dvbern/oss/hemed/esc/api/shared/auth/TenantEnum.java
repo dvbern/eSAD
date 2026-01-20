@@ -12,7 +12,7 @@ public enum TenantEnum {
     DEFAULT(false, null),
     BS(true, Constants.REALM_NAME_BS),
     WIN(true, Constants.REALM_NAME_WIN),
-    BE(false, Constants.REALM_NAME_BE),
+    BE(true, Constants.REALM_NAME_BE),
     ;
 
     @Getter

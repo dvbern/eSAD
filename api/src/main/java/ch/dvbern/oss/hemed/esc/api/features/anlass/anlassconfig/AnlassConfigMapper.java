@@ -156,7 +156,7 @@ public final class AnlassConfigMapper {
             config.getGroesseGewichtGroessePerzentile(),
             config.getGroesseGewichtGewichtPerzentile(),
             config.getGroesseGewichtBmiPerzentile(),
-            config.getUntersuchungImpfungEmpfehlung(),
+            config.getGroesseGewichtEmpfehlung(),
             config.getGroesseGewichtBemerkungen());
         // Triage
         boolean showTabTriage = isAnyVisible(
@@ -173,11 +173,9 @@ public final class AnlassConfigMapper {
         boolean isArztUntersuchungBeurteilungVisible = isAnyVisible(
             config.getUntersuchungBewegungsapparat(),
             config.getUntersuchungEinbeinstand(),
-            config.getUntersuchungEinbeinstandRechts(),
-            config.getUntersuchungEinbeinstandLinks(),
+            config.getUntersuchungEinbeinstandRechtsLinks(),
             config.getUntersuchungEinbeinhuepfen(),
-            config.getUntersuchungEinbeinhuepfenRechts(),
-            config.getUntersuchungEinbeinhuepfenLinks(),
+            config.getUntersuchungEinbeinhuepfenRechtsLinks(),
             config.getUntersuchungFingeropposition(),
             config.getUntersuchungHampelmann(),
             config.getUntersuchungBallFangen(),
@@ -199,7 +197,8 @@ public final class AnlassConfigMapper {
             config.getUntersuchungKognitionPunkte(),
             config.getUntersuchungMotorik(),
             config.getUntersuchungMotorikPunkte(),
-            config.getUntersuchungSprache(),
+            config.getUntersuchungSprachfaehigkeitSingleValue(),
+            config.getUntersuchungSprachfaehigkeitMultiValue(),
             config.getUntersuchungSprachePunkte(),
             config.getUntersuchungMundZaehne(),
             config.getUntersuchungHaut(),
@@ -325,7 +324,7 @@ public final class AnlassConfigMapper {
     }
 
     private static boolean isAnyVisible(@NonNull RequirementSetting... settings) {
-        return  Arrays.stream(settings).anyMatch(RequirementSetting::isVisible);
+        return Arrays.stream(settings).anyMatch(RequirementSetting::isVisible);
     }
 
     private static boolean isAnyVisible(Boolean... settings) {

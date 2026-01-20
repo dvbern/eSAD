@@ -112,8 +112,10 @@
           <td>
             @if (item.documentQueueParams && item.documentQueueParams.spssReportType) {
               {{ 'reports.spss.' + item.documentQueueParams.spssReportType | transloco }}
+            } @else if (item.documentQueueCsvParams && item.documentQueueCsvParams.csvReportType) {
+              {{ 'reports.csv.' + item.documentQueueCsvParams.csvReportType | transloco }}
             } @else {
-              {{ 'reports.spss.unbekannt' | transloco }}
+              {{ 'reports.unbekannt' | transloco }}
             }
           </td>
           <td>{{ 'DocumentQueueStatus.' + item.status | transloco }}</td>

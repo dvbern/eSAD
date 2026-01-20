@@ -121,27 +121,32 @@ export class UntersuchungPageComponent {
     event.preventDefault();
   }
 
-  addTab(einladungId: BackendEntityId) {
+  async addTab(einladungId: BackendEntityId) {
     if (!this.anlassKinderStore.isEinladungMarkedForUntersuchung(einladungId)) {
-      this.anlassKinderStore.markEinladungForUntersuchung(einladungId);
+      const alreadyOpenTabsIds = [...this.anlassKinderStore.selectedIdsForUntersuchung(), einladungId].join(',');
 
-      const alreadyOpenTabsIds = this.anlassKinderStore.selectedIdsForUntersuchung().join(',');
-
-      this.untersuchungStore.addTab(einladungId, alreadyOpenTabsIds, this.activatedRoute);
+      const success = await this.untersuchungStore.addTab(einladungId, alreadyOpenTabsIds, this.activatedRoute);
+      if (success) {
+        this.anlassKinderStore.markEinladungForUntersuchung(einladungId);
+      }
     }
   }
 
   closeTab(einladungId: BackendEntityId, event: MouseEvent): void {
     event.preventDefault();
     event.stopImmediatePropagation();
-    this.closeTabInternal(einladungId);
+    void this.closeTabInternal(einladungId);
   }
 
-  private closeTabInternal(einladungId: BackendEntityId): void {
+  private async closeTabInternal(einladungId: BackendEntityId): Promise<void> {
     if (this.anlassKinderStore.isEinladungMarkedForUntersuchung(einladungId)) {
-      this.anlassKinderStore.unmarkEinladungForUntersuchung(einladungId);
-      const alreadyOpenTabsIds = this.anlassKinderStore.selectedIdsForUntersuchung().join(',');
-      this.untersuchungStore.closeTab(einladungId, alreadyOpenTabsIds, this.activatedRoute);
+      const remainingIds = this.anlassKinderStore.selectedIdsForUntersuchung().filter(id => id !== einladungId);
+      const alreadyOpenTabsIds = remainingIds.join(',');
+
+      const success = await this.untersuchungStore.closeTab(einladungId, alreadyOpenTabsIds, this.activatedRoute);
+      if (success) {
+        this.anlassKinderStore.unmarkEinladungForUntersuchung(einladungId);
+      }
     }
   }
 
@@ -162,7 +167,7 @@ export class UntersuchungPageComponent {
           anlassId: requireValue(this.anlassStore.selectedEntity()).id,
           einladungId: einladungId,
           onSuccess: () => {
-            this.closeTabInternal(einladungId);
+            void this.closeTabInternal(einladungId);
             this.#appNotificationStore.addSuccessNotification(
               this.#transloco.translate('untersuchung.tab.abschliessen.success', {
                 kindname: kindname,

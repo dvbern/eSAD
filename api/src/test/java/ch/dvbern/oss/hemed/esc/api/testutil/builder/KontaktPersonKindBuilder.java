@@ -28,6 +28,7 @@ import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfo;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKindMapper;
@@ -123,8 +124,12 @@ public class KontaktPersonKindBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public KontaktPersonKindBuilder withExternalImportInfo(@NonNull String externalId, boolean aktiv, @NonNull OffsetDateTime now) {
-        ExternalImportInfo importInfo = new ExternalImportInfo(externalId, aktiv, now, now);
+    public KontaktPersonKindBuilder withExternalImportInfo(
+        @NonNull String externalId,
+        boolean aktiv,
+        @NonNull OffsetDateTime now,
+        @NonNull ImportTyp importTyp) {
+        ExternalImportInfo importInfo = new ExternalImportInfo(externalId, aktiv, now, now, importTyp);
         this.kontaktPerson.setExternalImportInfo(importInfo);
         return this;
     }

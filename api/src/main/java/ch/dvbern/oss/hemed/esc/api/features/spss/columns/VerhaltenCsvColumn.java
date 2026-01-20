@@ -22,6 +22,9 @@ public class VerhaltenCsvColumn extends AbstractCsvColumn {
                 if (untersuchungArzt.getVerhalten() == null) {
                     return "";
                 }
+                if (!config.forSpssReport()) {
+                    return config.tl().translateValue(untersuchungArzt.getVerhalten());
+                }
                 return switch (untersuchungArzt.getVerhalten()) {
                     case Verhalten.UNAUFFAELLIG -> "1";
                     case Verhalten.AUFFAELLIG -> "2";

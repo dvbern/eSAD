@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+  <changeSet id="1764175916514-1" author="Franziska Herger">
+    <sql>
+      INSERT INTO benutzer (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, email,
+                            keycloakid, nachname, vorname, fachrollen, lastusedip, lastusedsessionid,
+                            lastusedsessiontimestamp, oidcissuer, aktiv)
+      VALUES ('03a61ae1-41a1-4b2f-bc8c-8b4caf2cc85e',
+              '2024-12-11 12:00:00.118393',
+              '2024-12-11 12:00:00.202890',
+              '11111111-1111-1111-1111-111111111111',
+              '11111111-1111-1111-1111-111111111111',
+              0,
+              'file-ingress-client@dvbern.ch',
+              null,
+              'Serviceaccount',
+              'FileIngress',
+              null,
+              null,
+              null,
+              null,
+              null,
+              false);
+
+      -- add Berechtigung to  do escada push
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, benutzer_id, berechtigung)
+      VALUES ('95658423-3c19-4769-b365-63eec1a8c928',
+              '2024-12-11 12:00:00.118393',
+              '2024-12-11 12:00:00.202890',
+              '11111111-1111-1111-1111-111111111111',
+              '11111111-1111-1111-1111-111111111111',
+              1,
+              '03a61ae1-41a1-4b2f-bc8c-8b4caf2cc85e',
+              'FILE_INGRESS_PUSH');
+    </sql>
+  </changeSet>
+
+</databaseChangeLog>
+
+

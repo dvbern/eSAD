@@ -1,0 +1,21 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="1765524756104-5">
+    <sql>
+      alter table if exists UntersuchungArztBeurteilung alter column sprachfaehigkeitPunkte set data type numeric (30,1);
+      alter table if exists UntersuchungArztBeurteilung_AUD alter column sprachfaehigkeitPunkte set data type numeric (30,1);
+
+      alter table if exists UntersuchungArztBeurteilung alter column motorikPunkte set data type numeric (30,1);
+      alter table if exists UntersuchungArztBeurteilung_AUD alter column motorikPunkte set data type numeric (30,1);
+
+      alter table if exists UntersuchungArztBeurteilung alter column kognitionPunkte set data type numeric (30,1);
+      alter table if exists UntersuchungArztBeurteilung_AUD alter column kognitionPunkte set data type numeric (30,1);
+
+      alter table if exists UntersuchungArztBeurteilung alter column lesefitPunkte set data type numeric (30,1);
+      alter table if exists UntersuchungArztBeurteilung_AUD alter column lesefitPunkte set data type numeric (30,1);
+
+      alter table if exists UntersuchungArztBeurteilung alter column zeichnenMenschPunkte set data type numeric (30,1);
+      alter table if exists UntersuchungArztBeurteilung_AUD alter column zeichnenMenschPunkte set data type numeric (30,1);
+    </sql>
+  </changeSet>
+</databaseChangeLog>

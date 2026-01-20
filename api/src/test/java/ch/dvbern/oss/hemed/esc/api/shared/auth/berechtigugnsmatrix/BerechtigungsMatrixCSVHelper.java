@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import com.google.common.collect.Streams;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.csv.CSVFormat;
@@ -39,24 +40,23 @@ public class BerechtigungsMatrixCSVHelper {
     }
 
     public static String @NonNull [] getHeaderStrings() {
-        String[] colNames = Streams.concat(
+        return Streams.concat(
                 Stream.of("Berechtigung"),
                 Arrays.stream(FachRolle.values()).map(FachRolle::name)
             )
             .toArray(String[]::new);
-        return colNames;
     }
 
-    public static void writeBerechtigungenToCSV(Path path) throws IOException {
+    public static void writeBerechtigungenToCSV(@NonNull Path path, @NonNull TenantEnum tenant) throws IOException {
         try (FileWriter fileWriter = new FileWriter(path.toFile(), StandardCharsets.UTF_8);
             CSVPrinter csvPrinter = new CSVPrinter(fileWriter, getCsvFormat())) {
             for (Berechtigung berechtigung : Berechtigung.values()) {
-                List<String> record = new ArrayList<>();
-                record.add(berechtigung.name());
+                List<String> csvRecord = new ArrayList<>();
+                csvRecord.add(berechtigung.name());
                 for (FachRolle fachRolle : FachRolle.values()) {
-                    record.add(fachRolle.hasBerechtigung(berechtigung) ? "x" : "");
+                    csvRecord.add(fachRolle.hasBerechtigung(berechtigung, tenant) ? "x" : "");
                 }
-                csvPrinter.printRecord(record);
+                csvPrinter.printRecord(csvRecord);
             }
             fileWriter.flush();
 

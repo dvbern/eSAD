@@ -22,9 +22,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinstand;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Motorik;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -177,6 +182,16 @@ public class AnlassConfigSaveJson {
     @NonNull
     @Schema(required = true)
     private RequirementSetting untersuchungImpfungBemerkungen;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private List<Krankheit> untersuchungImpfungKrankheitenLinksValues;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private List<Krankheit> untersuchungImpfungKrankheitenRechtsValues;
 
     // Sehen
 
@@ -388,12 +403,12 @@ public class AnlassConfigSaveJson {
     @NotNull
     @NonNull
     @Schema(required = true)
-    private RequirementSetting untersuchungEinbeinstandRechts;
+    private RequirementSetting untersuchungEinbeinstandRechtsLinks;
 
     @NotNull
     @NonNull
     @Schema(required = true)
-    private RequirementSetting untersuchungEinbeinstandLinks;
+    private List<Einbeinstand> untersuchungEinbeinstandValues;
 
     @NotNull
     @NonNull
@@ -403,12 +418,12 @@ public class AnlassConfigSaveJson {
     @NotNull
     @NonNull
     @Schema(required = true)
-    private RequirementSetting untersuchungEinbeinhuepfenRechts;
+    private RequirementSetting untersuchungEinbeinhuepfenRechtsLinks;
 
     @NotNull
     @NonNull
     @Schema(required = true)
-    private RequirementSetting untersuchungEinbeinhuepfenLinks;
+    private List<Einbeinhuepfen> untersuchungEinbeinhuepfenValues;
 
     @NotNull
     @NonNull
@@ -503,6 +518,11 @@ public class AnlassConfigSaveJson {
     @NotNull
     @NonNull
     @Schema(required = true)
+    private List<Motorik> untersuchungMotorikValues;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
     private RequirementSetting untersuchungMotorikPunkte;
 
     @NotNull
@@ -518,7 +538,17 @@ public class AnlassConfigSaveJson {
     @NotNull
     @NonNull
     @Schema(required = true)
-    private RequirementSetting untersuchungSprache;
+    private RequirementSetting untersuchungSprachfaehigkeitSingleValue;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting untersuchungSprachfaehigkeitMultiValue;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private List<Sprachfaehigkeit> untersuchungSprachfaehigkeitValues;
 
     @NotNull
     @NonNull

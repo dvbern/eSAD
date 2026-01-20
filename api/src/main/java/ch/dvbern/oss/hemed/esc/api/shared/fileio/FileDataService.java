@@ -13,7 +13,7 @@ public class FileDataService {
     private final FileDataRepo fileDataRepo;
 
     @NonNull
-    public FileInfoS3 getFileInfoS3ByFileIdInBucket(@NonNull String fileIdInBucket) {
+    public FileInfo getFileInfoS3ByFileIdInBucket(@NonNull String fileIdInBucket) {
         return fileDataRepo.getByFileIdInBucket(fileIdInBucket).getFileInfoBucket();
     }
 }

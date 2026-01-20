@@ -23,5 +23,7 @@ public enum Einbeinhuepfen {
     UNSICHER_UNGEUEBT,
     NICHT_MOEGLICH,
     ANDERES,
+    MIN_DREIMAL,
+    MAX_DREIMAL,
     NICHT_GEPRUEFT
 }

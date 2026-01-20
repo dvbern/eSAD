@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.settings;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.features.TenantSettingsFeatureMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
@@ -29,11 +30,13 @@ public final class TenantSettingsMapper {
             new TenantSettingSaveJson(
                 settings.getDefaultLanguage(),
                 settings.getSupportedLanguages(),
+                settings.getFolgeTermineMaxSlots(),
                 tenantSettingsFeatureMapper.toJson(
                     settings.getTenantSettingFeatures()
                 ),
                 EnumSetUtil.toList(settings.getEinladungStatusValues())
-            )
+            ),
+            FachRolle.getFachrollenWithBerechtigung(tenantProducer.produceTenant())
         );
     }
 
@@ -41,6 +44,7 @@ public final class TenantSettingsMapper {
         existing.setDefaultLanguage(saveJson.getDefaultLanguage());
         existing.setSupportedLanguages(saveJson.getSupportedLanguages());
         existing.setEinladungStatusValues(saveJson.getEinladungStatusValues());
+        existing.setFolgeTermineMaxSlots(saveJson.getFolgeTermineMaxSlots());
         tenantSettingsFeatureMapper.toEntity(existing.getTenantSettingFeatures(), saveJson.getFeatures());
     }
 

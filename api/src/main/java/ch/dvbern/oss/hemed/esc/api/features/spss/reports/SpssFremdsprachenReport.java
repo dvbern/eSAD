@@ -49,7 +49,7 @@ import ch.dvbern.oss.hemed.esc.api.features.spss.columns.GewichtWertCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.GroesseBeurteilungCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.GroesseWertCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.HasNoFragebogenCsvColumn;
-import ch.dvbern.oss.hemed.esc.api.features.spss.columns.HautCsvColumn;
+import ch.dvbern.oss.hemed.esc.api.features.spss.columns.HautSelectedCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.HerzauskultationCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.HoerenBeurteilungCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.HoerenOtoskopieLinksCsvColumn;
@@ -361,9 +361,9 @@ public class SpssFremdsprachenReport {
             new MundAndZaehneCsvColumn(config, "Mund_Adenoidhyperplasie_F", MundAndZaehne.ADENOIDHYPERPLASIE),
             new MundAndZaehneCsvColumn(config, "Mund_Anderes_F", MundAndZaehne.ANDERES),
             new MundAndZaehneCsvColumn(config, "Mund_NichtGeprüft_F", MundAndZaehne.NICHT_GEPRUEFT),
-            new HautCsvColumn(config, "HAUTNOF", Haut.GROBKURSORISCH_UNAUFFAELLIG),
-            new HautCsvColumn(config, "HAUTANDEF", Haut.ANDERES),
-            new HautCsvColumn(config, "HAUTNGF", Haut.NICHT_GEPRUEFT),
+            new HautSelectedCsvColumn(config, "HAUTNOF", Haut.GROBKURSORISCH_UNAUFFAELLIG),
+            new HautSelectedCsvColumn(config, "HAUTANDEF", Haut.ANDERES),
+            new HautSelectedCsvColumn(config, "HAUTNGF", Haut.NICHT_GEPRUEFT),
             new HerzauskultationCsvColumn(config, "AUSKULTF"),
             new BlutdruckCsvColumn(config, "Blutdruck_Beurteilung_F"),
             new BlutdruckSystolischCsvColumn(config, "Blutdruck_Systolisch_F"),

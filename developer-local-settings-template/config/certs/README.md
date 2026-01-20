@@ -8,6 +8,7 @@ add to host file Windows:(C:\Windows\System32\drivers\etc) or Linux/Mac:(/etc/ho
    ```
 127.0.0.1 local-esc-bs.localhost
 127.0.0.1 local-esc-win.localhost
+127.0.0.1 local-esc-be.localhost
    ```
 
 Install mkcert
@@ -24,4 +25,5 @@ The scripts are located in the [scripts/certs](../../../scripts/certs) directory
   cd  developer-local-settings/config
   mkcert -key-file certs/local-esc-bs.localhost.key -cert-file certs/local-esc-bs.localhost.pem local-esc-bs.localhost
   mkcert -key-file certs/local-esc-win.localhost.key -cert-file certs/local-esc-win.localhost.pem local-esc-win.localhost
+  mkcert -key-file certs/local-esc-be.localhost.key -cert-file certs/local-esc-be.localhost.pem local-esc-be.localhost
   ```

@@ -31,6 +31,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.json.AnlassConfi
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.skripthelper.AnlassConfigSkriptJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.skripthelper.AnlassConfigSkriptMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import io.smallrye.faulttolerance.api.RateLimit;
 import io.vertx.core.http.HttpServerResponse;
@@ -69,6 +70,7 @@ public class AnlassConfigResource {
 
     private final AnlassConfigMapper anlassConfigMapper;
     private final AnlassConfigSkriptMapper anlassConfigSkriptMapper;
+    private final TenantProducer tenantProducer;
 
     @Context
     private HttpServerResponse response;
@@ -125,6 +127,21 @@ public class AnlassConfigResource {
         AnlassConfigSkriptJson sqlSkripts = anlassConfigSkriptMapper.getSqlSkripts(anlassConfigId);
         byte[] content = sqlSkripts.getFileContent().getBytes(StandardCharsets.UTF_8);
         FileInfo fileInfo = FileDownloadUtil.buildFileInfo("anlassconfig-skripts.sql", "text", content.length);
+        return FileDownloadUtil.buildFileResponse("attachment", content, fileInfo);
+    }
+
+    @GET
+    @Path("/script")
+    @Consumes(MediaType.WILDCARD)
+    @APIResponse(content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM,
+        schema = @Schema(type = SchemaType.STRING, format = "binary")), description = "OK", responseCode = "200")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @RolesAllowed(BerechtigungName.SUPPORT)
+    @NonNull
+    public Response downloadAllSqlSkripts() {
+        String skript = anlassConfigSkriptMapper.getLiquibaseSkript();
+        byte[] content = skript.getBytes(StandardCharsets.UTF_8);
+            FileInfo fileInfo = FileDownloadUtil.buildFileInfo("XXXX-update-anlassconfig " + tenantProducer.produceTenant() + ".xml", "text", content.length);
         return FileDownloadUtil.buildFileResponse("attachment", content, fileInfo);
     }
 }

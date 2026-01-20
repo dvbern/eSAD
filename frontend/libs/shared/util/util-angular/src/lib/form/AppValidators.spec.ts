@@ -1,7 +1,8 @@
 import {TestBed} from '@angular/core/testing';
 import {NonNullableFormBuilder} from '@angular/forms';
-import {toDateStr} from '@dvb/util-shared';
+import {toDateStr, toISODateString} from '@dvb/util-shared';
 import {AppValidatorKeys, AppValidators} from './AppValidators';
+import {ISODateString} from "@dvb/data-access-types";
 
 describe('AppValidators', () => {
   let fb: NonNullableFormBuilder;
@@ -435,4 +436,191 @@ describe('AppValidators', () => {
 
   });
 
+  describe('datumBisIsAfterDatumVon', () => {
+    it('works with undefined', () => {
+      const group = fb.group({
+          datumVon: fb.control<ISODateString | undefined>(undefined),
+          datumBis: fb.control<ISODateString | undefined>(undefined)
+        },
+        {validators: [AppValidators.datumBisIsAfterDatumVon('datumVon', 'datumBis')]});
+
+      group.updateValueAndValidity();
+
+      expect(group.valid).toBe(true);
+      expect(group.errors).toBeNull();
+    });
+
+    it('works with valid input: 01.01.2025, 31.05.2025', () => {
+      const group = fb.group({
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,1,1))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
+        },
+        {validators: [AppValidators.datumBisIsAfterDatumVon('datumVon', 'datumBis')]});
+
+      group.updateValueAndValidity();
+
+      expect(group.valid).toBe(true);
+      expect(group.errors).toBeNull();
+    });
+
+    it('fails with invalid input: 31.05.2025, 01.01.2025', () => {
+      const group = fb.group({
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,1,1))),
+        },
+        {validators: [AppValidators.datumBisIsAfterDatumVon('datumVon', 'datumBis')]});
+
+      group.updateValueAndValidity();
+
+      expect(group.valid).toBe(false);
+      expect(group.errors).toEqual({[AppValidatorKeys.datumVonAfterDatumBis]: true});
+    });
+
+    it('fails with equal input: 31.05.2025', () => {
+      const group = fb.group({
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
+        },
+        {validators: [AppValidators.datumBisIsAfterDatumVon('datumVon', 'datumBis')]});
+
+      group.updateValueAndValidity();
+
+      expect(group.valid).toBe(false);
+      expect(group.errors).toEqual({[AppValidatorKeys.datumVonAfterDatumBis]: true});
+    });
+
+    it('works if only datumVon is provided', () => {
+      const group = fb.group({
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
+          datumBis: fb.control<ISODateString | undefined>(undefined),
+        },
+        {validators: [AppValidators.datumBisIsAfterDatumVon('datumVon', 'datumBis')]});
+
+      group.updateValueAndValidity();
+
+      expect(group.valid).toBe(true);
+      expect(group.errors).toBeNull();
+    });
+
+    it('works if only datumBis is provided', () => {
+      const group = fb.group({
+          datumVon: fb.control<ISODateString | undefined>(undefined),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
+        },
+        {validators: [AppValidators.datumBisIsAfterDatumVon('datumVon', 'datumBis')]});
+
+      group.updateValueAndValidity();
+
+      expect(group.valid).toBe(true);
+      expect(group.errors).toBeNull();
+    });
+
+    it('works with Invalid Inputs 31.02.2025', () => {
+      const group = fb.group({
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,2,31))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
+        },
+        {validators: [AppValidators.datumBisIsAfterDatumVon('datumVon', 'datumBis')]});
+
+      group.updateValueAndValidity();
+
+      expect(group.valid).toBe(true);
+      expect(group.errors).toBeNull();
+    });
+  });
+
+  describe('dateRangeIsMaximumNumberOfYears', () => {
+    it('works with undefined', () => {
+      const group = fb.group({
+          datumVon: fb.control<ISODateString | undefined>(undefined),
+          datumBis: fb.control<ISODateString | undefined>(undefined)
+        },
+        {validators: [AppValidators.dateRangeIsMaximumNumberOfYears('datumVon', 'datumBis', 5)]});
+
+      group.updateValueAndValidity();
+
+      expect(group.valid).toBe(true);
+      expect(group.errors).toBeNull();
+    });
+
+    it('works with valid input: 01.01.2025, 31.05.2025', () => {
+      const group = fb.group({
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,1,1))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31)))
+        },
+        {validators: [AppValidators.dateRangeIsMaximumNumberOfYears('datumVon', 'datumBis', 5)]});
+
+      group.updateValueAndValidity();
+
+      expect(group.valid).toBe(true);
+      expect(group.errors).toBeNull();
+    });
+
+    it('fails with invalid input: 01.01.2025, 31.05.2030', () => {
+      const group = fb.group({
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,1,1))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2030,5,31)))
+        },
+        {validators: [AppValidators.dateRangeIsMaximumNumberOfYears('datumVon', 'datumBis', 5)]});
+
+      group.updateValueAndValidity();
+
+      group.updateValueAndValidity();
+
+      expect(group.valid).toBe(false);
+      expect(group.errors).toEqual({[AppValidatorKeys.dateRangeIsMaximumNumberOfYears]: {"maximalYears": 5}});
+    });
+
+    it('works with dates wxactly 5 years apart  input: 31.05.2025, 31.05.2030', () => {
+      const group = fb.group({
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2030,5,31))),
+        },
+        {validators: [AppValidators.dateRangeIsMaximumNumberOfYears('datumVon', 'datumBis', 5)]});
+
+      group.updateValueAndValidity();
+
+      expect(group.valid).toBe(true);
+      expect(group.errors).toBeNull();
+    });
+
+    it('works if only datumVon is provided', () => {
+      const group = fb.group({
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
+          datumBis: fb.control<ISODateString | undefined>(undefined),
+        },
+        {validators: [AppValidators.dateRangeIsMaximumNumberOfYears('datumVon', 'datumBis', 5)]});
+
+      group.updateValueAndValidity();
+
+      expect(group.valid).toBe(true);
+      expect(group.errors).toBeNull();
+    });
+
+    it('works if only datumBis is provided', () => {
+      const group = fb.group({
+          datumVon: fb.control<ISODateString | undefined>(undefined),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
+        },
+        {validators: [AppValidators.dateRangeIsMaximumNumberOfYears('datumVon', 'datumBis', 5)]});
+
+      group.updateValueAndValidity();
+
+      expect(group.valid).toBe(true);
+      expect(group.errors).toBeNull();
+    });
+
+    it('works with Invalid Inputs 31.02.2025', () => {
+      const group = fb.group({
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,2,31))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,2,31))),
+        },
+        {validators: [AppValidators.dateRangeIsMaximumNumberOfYears('datumVon', 'datumBis', 5)]});
+
+      group.updateValueAndValidity();
+
+      expect(group.valid).toBe(true);
+      expect(group.errors).toBeNull();
+    });
+  });
 });

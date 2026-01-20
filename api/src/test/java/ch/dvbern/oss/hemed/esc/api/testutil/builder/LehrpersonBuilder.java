@@ -28,6 +28,7 @@ import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfo;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.Lehrperson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.LehrpersonMapper;
@@ -107,8 +108,12 @@ public class LehrpersonBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public LehrpersonBuilder withExternalImportInfo(@NonNull String externalId, boolean aktiv, @NonNull OffsetDateTime now) {
-        ExternalImportInfo importInfo = new ExternalImportInfo(externalId, aktiv, now, now);
+    public LehrpersonBuilder withExternalImportInfo(
+        @NonNull String externalId,
+        boolean aktiv,
+        @NonNull OffsetDateTime now,
+        @NonNull ImportTyp importTyp) {
+        ExternalImportInfo importInfo = new ExternalImportInfo(externalId, aktiv, now, now, importTyp);
         this.lehrperson.setExternalImportInfo(importInfo);
         return this;
     }

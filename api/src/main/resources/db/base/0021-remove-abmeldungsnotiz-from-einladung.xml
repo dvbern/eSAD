@@ -1,0 +1,30 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="1764773901600-1">
+    <dropForeignKeyConstraint baseTableName="einladung" constraintName="fk_einladung_notiz_abmeldung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1764773901600-2">
+    <sql>
+      UPDATE notiz
+      SET typ = 'ABMELDUNG'
+      WHERE notiz.id IN (
+        SELECT einladung.abmeldungsnotiz_id
+        FROM einladung
+        WHERE einladung.abmeldungsnotiz_id is not null
+      );
+        
+      INSERT INTO einladung_notiz (einladung_id, notiz_id)
+      SELECT e.id, e.abmeldungsnotiz_id
+      FROM Einladung e where e.abmeldungsnotiz_id is not null;
+    </sql>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1764773901600-3">
+    <dropUniqueConstraint constraintName="uc_einladungabmeldungsnotiz_id_col" tableName="einladung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1764773901600-4">
+    <dropColumn columnName="abmeldungsnotiz_id" tableName="einladung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1764773901600-5">
+    <dropColumn columnName="abmeldungsnotiz_id" tableName="einladung_aud"/>
+  </changeSet>
+</databaseChangeLog>

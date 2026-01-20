@@ -91,8 +91,8 @@
             {{ 'kinder.filter.erweitert.verantwortliche.mpa.unassigned' | transloco }}
           </ng-option>
           <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-          @if (benutzerOptionsStore.mpaOptions()) {
-            @for (each of benutzerOptionsStore.mpaOptions(); track each) {
+          @if (benutzerOptionsStore.mpaOrPfpOptions()) {
+            @for (each of benutzerOptionsStore.mpaOrPfpOptions(); track each) {
               <ng-option [value]="each.id">
                 {{ each.fullName }}
               </ng-option>
@@ -393,8 +393,8 @@
           [placeholder]="'global.select.bitte-auswaehlen' | transloco"
         >
           <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-          @if (benutzerOptionsStore.mpaOptions()) {
-            @for (each of benutzerOptionsStore.mpaOptions(); track each.id) {
+          @if (benutzerOptionsStore.mpaOrPfpOptions()) {
+            @for (each of benutzerOptionsStore.mpaOrPfpOptions(); track each.id) {
               <ng-option [value]="each.id">
                 {{ each.fullName }}
               </ng-option>

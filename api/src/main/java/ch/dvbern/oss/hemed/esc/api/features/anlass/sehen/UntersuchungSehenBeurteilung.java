@@ -37,7 +37,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAusprae
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungSehenUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungSehenBeurteilungPresentIfReq;
@@ -67,7 +67,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckUntersuchungSehenBeurteilungPresentIfReq
-public class UntersuchungSehenBeurteilung extends AbstractTenantEntity<UntersuchungSehenBeurteilung>
+public class UntersuchungSehenBeurteilung extends AbstractEntity<UntersuchungSehenBeurteilung>
     implements EntityWithOptimisticLocking {
 
     @Serial

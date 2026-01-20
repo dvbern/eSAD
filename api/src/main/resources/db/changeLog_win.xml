@@ -48,19 +48,38 @@
   <include file="db/base/0010-add-new-feature-flag-esadid.xml"/>
   <include file="db/base/0011-add-showfragebogen-and-showanmeldung.xml"/>
   <include file="db/win/0016-update-showfragebogen-showanmeldung-showimpfausweis-to-anlassconfig.xml"/>
-  <include file="db/base/0012-add-anmeldung-bestaetigung.xml" />
-  <include file="db/base/0013-create-einladung-notizen-and-add-notiz-typ.xml" />
+  <include file="db/base/0012-add-anmeldung-bestaetigung.xml"/>
+  <include file="db/base/0013-create-einladung-notizen-and-add-notiz-typ.xml"/>
   <include file="db/base/0014-insert-anmeldung-bestaetigung-label.xml"/>
   <include file="db/base/0015-add-new-untersuchung-properties.xml"/>
   <include file="db/base/0016-change-enum-list-db-len.xml"/>
   <include file="db/base/0016-add-einladungstatus-to-tenant-setting.xml"/>
   <include file="db/win/0017-add-einladungstatus-to-tenant-setting-win.xml"/>
+  <include file="db/base/0017-update-anlassconfig.xml"/>
+  <include file="db/base/0017-tenant-setting-folgetermin-max-slots.xml"/>
+  <include file="db/base/0018-remove-tenant.xml"/>
+  <include file="db/win/0018-rename-einladungstatus.xml"/>
+  <include file="db/base/0019-change-fileinfo-aud-fix.xml"/>
+  <include file="db/base/0020-insert-file-ingress-service-user.xml"/>
+  <include file="db/win/0019-add-file-ingress-berechtigung-systemadmin-win.xml"/>
+  <include file="db/base/0021-remove-abmeldungsnotiz-from-einladung.xml"/>
+  <include file="db/base/0022-change-punkte-to-big-decimal.xml"/>
+  <include file="db/win/0020-update-anlassconfig-WIN.xml"/>
+  <include file="db/base/0023-add-mobilescanner-feature.xml"/>
+  <include file="db/base/0024-insert-fsme-impfstoff.xml"/>
+  <include file="db/base/0025-externalimportinfo-add-importtyp.xml"/>
+  <include file="db/base/0026-add-krankheiten-to-anlass-config.xml"/>
+  <include file="db/win/0021-update-impfungkrankheitenvalues-WIN.xml"/>
+  <include file="db/base/0027-add-feature-massenimport-to-tenantsetting.xml"/>
+  <include file="db/base/0028-modify-document-queue.xml"/>
+  <include file="/db/base/0026-add-pupilsyncevent.xml"/>
+  <include file="/db/win/0022-add-pupil-benuzter-and-berechtigungen-win.xml"/>
 
   <!--  The following scripts only run in the 'test' context-->
   <include file="db-test/0011-insert-test-benutzer-admin-win.xml" context="@test"/>
   <include file="db-test/0012-insert-test-benutzer-lausbeauftragte-win.xml" context="@test"/>
   <include file="db-test/0014-insert-test-benutzer-pfp-win.xml" context="@test"/>
-  
+
   <!-- The following scripts only run in the 'dev' context
 	  To use it, insert the following in your .env:
 	  _DEV_QUARKUS_LIQUIBASE_CONTEXTS=dev,test
@@ -73,7 +92,6 @@
   <include file="db-dev/0005-insert-example-impfstoffchargen.xml" context="@dev"/>
   <include file="db-dev/0006-insert-example-anlass.xml" context="@dev"/>
   <include file="db-dev/0007-insert-example-aerzte.xml" context="@dev"/>
-  <include file="/db-dev/0008-update-anlasstypen-win.xml" context="@dev"/>
-  <include file="/db-dev/0008-update-anlasstypen-win-v2.xml" context="@dev"/>
+  <include file="db-dev/0008-update-anlasstypen-win-v2.xml" context="@dev"/>
 
 </databaseChangeLog>

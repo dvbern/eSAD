@@ -22,12 +22,16 @@ public class BMIBeurteilungCsvColumn extends AbstractCsvColumn {
                 if (untersuchungGroesseGewicht.getBmiPerzentile() == null) {
                     return "";
                 }
+                if (!config.forSpssReport()) {
+                    return config.tl().translateValue(untersuchungGroesseGewicht.getBmiPerzentile());
+                }
                 return switch (untersuchungGroesseGewicht.getBmiPerzentile()) {
                     case PerzentileBmi.NORMAL -> "1";
                     case PerzentileBmi.PERZENTILE_TIEF -> "2";
                     case PerzentileBmi.PERZENTILE_HOCH -> "3";
                     case PerzentileBmi.NICHT_GEPRUEFT -> "4";
-                    default -> throw new IllegalStateException("Unexpected value for BmiPerzentile: " + untersuchungGroesseGewicht.getBmiPerzentile());
+                    default -> throw new IllegalStateException("Unexpected value for BmiPerzentile: "
+                        + untersuchungGroesseGewicht.getBmiPerzentile());
                 };
             }
         );

@@ -8,8 +8,8 @@
 
   >
     <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
-      <div class="file_drop__zone d-flex flex-column align-items-center">
-        <button svuiIconOnlyButton="secondary"
+      <div class="file_drop__zone d-flex flex-column align-items-center justify-content-center">
+      <button svuiIconOnlyButton="secondary"
                 type="button"
                 [tooltip]="'global.tooltip.icon.upload' | transloco"
                 [icon]="'upload'"
@@ -58,7 +58,7 @@
               <td class="text-end">
                 <button svuiIconOnlyButton="primary"
                         type="button"
-                        [tooltip]="'global.tooltip.icon.loeschen'"
+                        [tooltip]="'global.tooltip.icon.loeschen' | transloco"
                         [icon]="'loeschen'"
                         (click)="removeFileFromUpload(file)"
                         style="margin-left: 10px">

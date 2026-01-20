@@ -43,11 +43,17 @@ public class EdokidId implements Serializable {
     private final int eintrittsjahr;
 
     public EdokidId(char character, @NonNull String laufnummer, @NonNull String schulhausnummer, int eintrittsjahr) {
+        this(character, laufnummer, schulhausnummer, eintrittsjahr, false);
+    }
 
+    public EdokidId(char character, @NonNull String laufnummer, @NonNull String schulhausnummer, int eintrittsjahr, boolean validateOnlyLength) {
         this.eintrittsjahr = eintrittsjahr;
         this.character = character;
         this.nummer = laufnummer;
         this.schulhausnummer = schulhausnummer;
+        if (validateOnlyLength) {
+            return;
+        }
         if (!isValid()) {
             throw new AppValidationException(AppValidationMessage.invalidEdokidNummer(this.toString()));
         }
@@ -55,17 +61,25 @@ public class EdokidId implements Serializable {
 
     @Nullable
     public static EdokidId parse(@IgnoreForIdClassTest @Nullable String edokidId) {
+        return EdokidId.parse(edokidId, false);
+    }
+
+    @Nullable
+    public static EdokidId parse(@IgnoreForIdClassTest @Nullable String edokidId, boolean validateOnlyLength) {
         if (edokidId == null) {
             return null;
         }
         try {
             String normalized = StringUtils.normalizeSpace(edokidId);
             normalized = normalized.replace(" ", "");
+            if (normalized.length() != 9) {
+                throw new AppValidationException(AppValidationMessage.invalidEdokidNummer(edokidId));
+            }
             char character = normalized.charAt(0);
             String laufnummer = normalized.substring(1, 4);
             String schulhausnummer = normalized.substring(4, 7);
             int eintrittsjahr = Integer.parseInt(normalized.substring(7));
-            return new EdokidId(character, laufnummer, schulhausnummer, eintrittsjahr);
+            return new EdokidId(character, laufnummer, schulhausnummer, eintrittsjahr, validateOnlyLength);
 
         } catch (AppValidationException e) {
             throw e;
@@ -102,16 +116,20 @@ public class EdokidId implements Serializable {
         return character
             + nummer
             + schulhausnummer
-            + eintrittsjahr;
+            + getFormattedEintrittsjahr();
     }
 
     @NonNull
     public String toFormattedString() {
-        StringBuilder sb = new StringBuilder(character + nummer + schulhausnummer + eintrittsjahr);
+        StringBuilder sb = new StringBuilder(character + nummer + schulhausnummer + getFormattedEintrittsjahr());
         sb.insert(2, EDOKIDID_SEPERATOR);
         sb.insert(5, EDOKIDID_SEPERATOR);
         sb.insert(9, EDOKIDID_SEPERATOR);
         return sb.toString();
+    }
+
+    private String getFormattedEintrittsjahr() {
+        return String.format("%02d", eintrittsjahr);
     }
 
 }

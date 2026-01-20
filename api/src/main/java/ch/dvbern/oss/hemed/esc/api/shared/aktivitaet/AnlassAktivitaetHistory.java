@@ -1,7 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.aktivitaet;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Index;
@@ -22,7 +22,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AnlassAktivitaetHistory extends AbstractTenantEntity<AnlassAktivitaetHistory> {
+public class AnlassAktivitaetHistory extends AbstractEntity<AnlassAktivitaetHistory> {
 
     @Serial
     private static final long serialVersionUID = 3519510810266363137L;

@@ -7,10 +7,8 @@
 }
 
 .svui_kacheln {
-  @include layout.flex($wrap: wrap, $gap: spacing.$row-gap spacing.$gutter-width-inline-elements);
+  @include layout.flex($wrap: wrap, $gap: spacing.$row-gap spacing.$gutter-width-inline-elements, $align-items: end);
   margin-top: spacing.$row-gap;
-  align-items: end;
-
 
   // make text inputs the same size as a radio/checkbox kachel
   ::ng-deep {

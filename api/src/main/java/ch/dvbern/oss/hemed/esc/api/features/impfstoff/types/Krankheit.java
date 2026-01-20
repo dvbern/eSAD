@@ -2,17 +2,28 @@ package ch.dvbern.oss.hemed.esc.api.features.impfstoff.types;
 
 public enum Krankheit {
 
-    POLIO,
-    DIPHTERIE,
-    TETANUS,
-    PERTUSSIS,
-    HEPATITIS_B,
-    VARIZELLEN,
-    MASERN,
-    MUMPS,
-    ROETELN,
-    HPV,
-    MENINGOKOKKEN_A_C_W_Y,
-    MENINGOKOKKEN_B,
+    DIPHTERIE(false),
+    TETANUS(false),
+    PERTUSSIS(false),
+    POLIO(false),
+    HEPATITIS_B(true),
+    HPV(true),
+    FSME(false),
+    MASERN(true),
+    MUMPS(true),
+    ROETELN(true),
+    VARIZELLEN(true),
+    MENINGOKOKKEN_A_C_W_Y(false),
+    MENINGOKOKKEN_B(false)
+    ;
 
+    private final boolean benoetigtAuffrischung;
+
+    Krankheit(boolean benoetigtAuffrischung) {
+        this.benoetigtAuffrischung = benoetigtAuffrischung;
+    }
+
+    public boolean benoetigtAuffrischung() {
+        return benoetigtAuffrischung;
+    }
 }

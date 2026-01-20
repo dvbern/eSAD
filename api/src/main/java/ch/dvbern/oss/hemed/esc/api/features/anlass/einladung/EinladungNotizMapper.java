@@ -40,7 +40,6 @@ import ch.dvbern.oss.hemed.esc.api.shared.notizen.AutoNotizService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 @JaxMapper
@@ -68,32 +67,36 @@ public class EinladungNotizMapper {
         return autoNotizService.createEinladungNotiz(einladung, notiz, fileUploads);
     }
 
-    @Nullable
-    public Notiz createOrUpdateAbmeldungsNotiz(
+    public void createOrUpdateAbmeldungsNotiz(
         @NonNull Einladung einladung,
         @NonNull EinladungSaveJson einladungSaveJson
     ) {
+        Notiz abmeldungsNotiz = einladung.getAbmeldungsNotiz().orElse(null);
+
         // ABGESAGT -> NICHT-ABGESAGT: delete
         if (einladung.getEinladungStatus() == EinladungStatus.TEILNAHME_ABGESAGT
             && einladungSaveJson.getEinladungStatus() != EinladungStatus.TEILNAHME_ABGESAGT
-            && einladung.getAbmeldungsNotiz() != null
+            && abmeldungsNotiz != null
         ) {
-            notizService.remove(einladung.getAbmeldungsNotiz().getId());
-            return null;
+            einladung.getNotizen().remove(abmeldungsNotiz);
+            notizService.remove(abmeldungsNotiz.getId());
+            return;
         }
+
         // Bleibt NICHT-ABGESAGT -> noop
         if (einladungSaveJson.getEinladungStatus() != EinladungStatus.TEILNAHME_ABGESAGT) {
-            return null;
+            return;
         }
+
         // Bleibt ABGESAGT -> update
-        if (einladung.getAbmeldungsNotiz() != null) {
-            Notiz existingNotiz = notizService.getById(einladung.getAbmeldungsNotiz().getId());
+        if (abmeldungsNotiz != null) {
+            Notiz existingNotiz = notizService.getById(abmeldungsNotiz.getId());
 
             String notizTitel = getAbmeldungsNotizTitel(einladung);
             existingNotiz.setTitel(notizTitel);
             existingNotiz.setBemerkungen(getAbmeldungsnotizBemerkung(einladungSaveJson));
-
-            return notizService.persistWithOptimisticLocking(existingNotiz, einladungSaveJson.getVersionAbmeldungsNotiz());
+            notizService.persistWithOptimisticLocking(existingNotiz, einladungSaveJson.getVersionAbmeldungsNotiz());
+            return;
         }
         // Neu ABGESAGT -> create
         String notizTitel = getAbmeldungsNotizTitel(einladung);
@@ -108,7 +111,8 @@ public class EinladungNotizMapper {
             0L // version
         );
         Notiz entityForCreate = notizMapper.toEntityForCreate(notizSaveJson, einladung.getDossier().getId());
-        return autoNotizService.createNotizWithLabel(entityForCreate, Label.ID_LABEL_ABMELDUNGSGRUND);
+        Notiz notiz = autoNotizService.createNotizWithLabel(entityForCreate, Label.ID_LABEL_ABMELDUNGSGRUND);
+        einladung.getNotizen().add(notiz);
     }
 
     @NonNull

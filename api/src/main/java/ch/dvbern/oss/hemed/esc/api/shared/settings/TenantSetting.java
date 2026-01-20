@@ -10,16 +10,14 @@ import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.features.TenantSettingFeatures;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Index;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -34,17 +32,13 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
 
 @Entity
-@Table(uniqueConstraints = {
-    @UniqueConstraint(name = "uc_tenantsetting_tenant", columnNames = { "tenant" })
-}, indexes = {
-    @Index(name = "ix_tenantsetting_tenant", columnList = "tenant, id")
-})
+@Table
 @Audited
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TenantSetting extends AbstractTenantEntity<TenantSetting> {
+public class TenantSetting extends AbstractEntity<TenantSetting> {
 
     @Serial
     private static final long serialVersionUID = -2616852567861298939L;
@@ -59,6 +53,10 @@ public class TenantSetting extends AbstractTenantEntity<TenantSetting> {
     @NonNull
     @Column(nullable = false)
     private String supportedLanguages;
+
+    @NotNull
+    @Column(nullable = false)
+    private int folgeTermineMaxSlots;
 
     @Valid
     @NotNull

@@ -52,8 +52,9 @@ public class NotizService {
     ) {
         Notiz savedNotiz = notizRepo.persistWithOptimisticLocking(notiz, versionFromFrontend);
         for (FileUpload fileUpload : fileUploads) {
-            savedNotiz = this.addUploadedFile(savedNotiz.getId(), fileUpload);
+            savedNotiz = this.addUploadedFileAndFlush(savedNotiz.getId(), fileUpload);
         }
+        notizRepo.flush();
         return savedNotiz;
     }
 
@@ -88,15 +89,23 @@ public class NotizService {
         return notizRepo.findAllForKind(kindID);
     }
 
+
+    @NonNull
+    public Notiz addUploadedFileAndFlush(@NonNull ID<Notiz> notizID, @NonNull FileUpload file) {
+        Notiz updatedNotiz = addUploadedFile(notizID, file);
+        notizRepo.flush();
+        return updatedNotiz;
+    }
+
     @NonNull
     public Notiz addUploadedFile(@NonNull ID<Notiz> notizID, @NonNull FileUpload file) {
         fileValidationService.requireFiletypeIsAllowed(file, FileTyp.NOTIZUPLOAD);
-        FileInfoS3 fileInfoS3 = saveNotizAttachmentInFilestorage(file);
+        FileInfo fileInfo = saveNotizAttachmentInFilestorage(file);
         Notiz notiz = notizRepo.getById(notizID);
         notiz.disableOptimisticLockingCheck();
         FileTyp fileTyp = FileNameUtil.getTypFromLabel(notiz.getLabels(), FileTyp.NOTIZUPLOAD);
         String nameVorname = notiz.getDossier().getKind().getNameVorname();
-        String originalFileName = fileInfoS3.getFileName().getFileName();
+        String originalFileName = fileInfo.getFileName().getFileName();
         CleanFileName calculatedFileName = FileNameUtil.calculateAutomaticFilename(
             notiz.getFiles(),
             appClock.getToday(),
@@ -104,18 +113,20 @@ public class NotizService {
             fileTyp,
             originalFileName);
 
-        FileData filedata = new FileData(fileTyp, calculatedFileName, fileInfoS3);
+        FileData filedata = new FileData(fileTyp, calculatedFileName, fileInfo);
 
         return notizRepo.addUploadedFile(notizID, filedata);
     }
 
     public void removeUploadedFile(@NonNull Notiz loadedNotiz, @NonNull ID<FileData> fileId) {
-        FileInfoS3 fileToRemove = findUploadedFileInfoS3(loadedNotiz.getId(), fileId);
+        FileInfo fileToRemove = findUploadedFileInfo(loadedNotiz.getId(), fileId);
         loadedNotiz.disableOptimisticLockingCheck();
         boolean removedFromList = loadedNotiz.getFiles().removeIf(fileData -> fileId.equals(fileData.getId()));
         if (!removedFromList) {
             throw new AppFailureException(AppFailureMessage.entityNotFound(fileId, "File not found"));
         }
+
+        notizRepo.flush();
 
         Uni<DeleteObjectResponse> deleteObjectResponseUni =
             fileStoreService.deleteInS3Async(fileToRemove.getFileIdInBucket());
@@ -126,18 +137,18 @@ public class NotizService {
     }
 
     @NonNull
-    private FileInfoS3 saveNotizAttachmentInFilestorage(@NonNull FileUpload fileUpload) {
+    private FileInfo saveNotizAttachmentInFilestorage(@NonNull FileUpload fileUpload) {
         // prepare the file info Embeddable
-        FileInfoS3 fileInfoS3 = FileInfoS3Mapper.mapFileUploadToFileInfoS3(fileUpload, FileTyp.NOTIZUPLOAD);
+        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfo(fileUpload, FileTyp.NOTIZUPLOAD);
         // upload the file to S3
-        Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileUpload, fileInfoS3);
+        Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileUpload, fileInfo);
         PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
-        LOG.info("Uploaded file to S3, fileIdInBucket: {}, putObjectResponse: {}", fileInfoS3.getFileIdInBucket(), putObjectResponse);
-        return fileInfoS3;
+        LOG.info("Uploaded file to S3, fileIdInBucket: {}, putObjectResponse: {}", fileInfo.getFileIdInBucket(), putObjectResponse);
+        return fileInfo;
     }
 
     @NonNull
-    public FileInfoS3 findUploadedFileInfoS3(@NonNull ID<Notiz> notizId, @NonNull ID<FileData> fileId) {
+    public FileInfo findUploadedFileInfo(@NonNull ID<Notiz> notizId, @NonNull ID<FileData> fileId) {
         return getById(notizId).getFiles().stream()
             .filter(fileData -> fileData.getId().equals(fileId))
             .findFirst()

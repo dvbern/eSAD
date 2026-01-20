@@ -7,7 +7,7 @@ import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.labels.types.LabelTyp;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.mandant.TranslatedString;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -42,7 +42,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Label extends AbstractTenantEntity<Label> implements EntityWithOptimisticLocking {
+public class Label extends AbstractEntity<Label> implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 8005202370526715032L;
@@ -65,6 +65,8 @@ public class Label extends AbstractTenantEntity<Label> implements EntityWithOpti
         ID.of(UUID.fromString("4db33316-7779-4c2e-851a-139e18458e7c"), Label.class);
     public static final ID<Label> ID_LABEL_ANMELDUNG_BESTAETIGUNG =
         ID.of(UUID.fromString("e84f6525-0f70-4440-bb62-11fd25fea5b1"), Label.class);
+    public static final ID<Label> ID_LABEL_DATENVERLUST_NOTIZ =
+        ID.of(UUID.fromString("9a1c9a97-b7dc-4e3d-bb22-8e8250d51768"), Label.class);
 
     @NonNull
     @NotNull

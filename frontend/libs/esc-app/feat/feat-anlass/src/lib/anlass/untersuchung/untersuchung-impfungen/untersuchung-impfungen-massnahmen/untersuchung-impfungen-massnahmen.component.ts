@@ -17,13 +17,18 @@ import {
   TextareaDirective, TitleComponent,
 } from '@dvb/ui-components';
 import { DirtyMarker } from '@dvb/util-angular';
-import { hasImpfungenEditBerechtigung, requireValue } from '@dvb/util-shared';
+import {hasImpfungenEditBerechtigung, isNotNullish, requireValue} from '@dvb/util-shared';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
 import { AnlassStore } from '../../../anlass.store';
 import { UntersuchungStore } from '../../untersuchung.store';
 import { UntersuchungImpfungenStore } from '../untersuchung-impfungen.store';
 import { EmpfehlungSubFormType, UntersuchungImpfungenMassnahmenForm } from './untersuchung-impfungen-massnahmen.form';
+import {DatePipe} from "@angular/common";
+import {requireValidBackendEntityId} from "@dvb/data-access-types";
+import {
+  UntersuchungImpfFolgetermineComponent
+} from "../untersuchung-impf-folgetermine/untersuchung-impf-folgetermine.component";
 
 @Component({
   selector: 'feat-untersuchung-impfungen-massnahmen',
@@ -46,6 +51,7 @@ import { EmpfehlungSubFormType, UntersuchungImpfungenMassnahmenForm } from './un
     KachelControlComponent,
     KachelFormSectionComponent,
     TitleComponent,
+    UntersuchungImpfFolgetermineComponent,
   ],
   templateUrl: './untersuchung-impfungen-massnahmen.component.html',
   styleUrl: './untersuchung-impfungen-massnahmen.component.scss',
@@ -97,6 +103,7 @@ export class UntersuchungImpfungenMassnahmenComponent implements DirtyMarker {
     if (massnahmen) {
       this.form.resetForm(massnahmen.data);
     }
+    this.form.getAndResetImpfFolgetermin();
   }
 
   async submitIfValid(): Promise<void> {
@@ -107,6 +114,16 @@ export class UntersuchungImpfungenMassnahmenComponent implements DirtyMarker {
         einladungId: requireValue(this.untersuchungStore.currentTab()).einladungID,
         untersuchungImpfungenMassnahmenSaveJson: payload,
       });
+
+      const anlassId = this.form.getAndResetImpfFolgetermin();
+
+      if(isNotNullish(anlassId)){
+        this.impfungenStore.addKindToFolgetermin({
+          folgeTerminAnlassId : requireValidBackendEntityId(anlassId),
+          kindId: requireValidBackendEntityId(this.untersuchungStore.currentDossier()?.kind.id),
+          currentAnlassId: requireValidBackendEntityId(this.anlassStore.selectedEntity()?.id),
+        });
+      }
     }
   }
 

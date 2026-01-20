@@ -519,7 +519,7 @@ public final class KinderdossierAnlassPrinter {
             anlassConfig.getUntersuchungEinbeinhuepfen(),
             anlassConfig.getUntersuchungFingeropposition(),
             anlassConfig.getUntersuchungMotorik(),
-            anlassConfig.getUntersuchungSprache(),
+            anlassConfig.getUntersuchungSprachfaehigkeitMultiValue(),
             anlassConfig.getUntersuchungMundZaehne(),
             anlassConfig.getUntersuchungHaut(),
             anlassConfig.getUntersuchungHerz(),
@@ -624,12 +624,12 @@ public final class KinderdossierAnlassPrinter {
         }
 
         // sprachfaehigkeit
-        if (anlassConfig.getUntersuchungSprache().isVisible()) {
+        if (anlassConfig.getUntersuchungSprachfaehigkeitMultiValue().isVisible()) {
             basePrinter.addKeyValue(
                 "printer.kinderdossier.anlass.sprachfaehigkeit",
                 KinderdossierPrintUtil.extractUntersuchungArzt(
                     einladung,
-                    untersuchungArzt -> untersuchungArzt.getSprachfaehigkeit()
+                    untersuchungArzt -> untersuchungArzt.getSprachfaehigkeitMultiValue()
                         .stream()
                         .map(basePrinter::translateValue)
                         .collect(Collectors.joining(", "))),

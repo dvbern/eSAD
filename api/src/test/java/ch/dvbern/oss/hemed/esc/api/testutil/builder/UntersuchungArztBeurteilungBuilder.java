@@ -1,15 +1,15 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.json.UntersuchungArztBeurteilungJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilungMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.json.UntersuchungArztBeurteilungJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Blutdruck;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
@@ -21,6 +21,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.MundAndZaehne;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Verhalten;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungArztBeurteilungJsonSpecMapper;
@@ -83,7 +84,16 @@ public class UntersuchungArztBeurteilungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungArztBeurteilungBuilder withHerzauskultation(@Nullable Herzauskultation herzauskultation, @Nullable String bemerkung) {
+    public UntersuchungArztBeurteilungBuilder withMotorikPunkte(@Nullable BigDecimal motorikPunkte) {
+        this.untersuchungArzt.setMotorikPunkte(motorikPunkte);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungArztBeurteilungBuilder withHerzauskultation(
+        @Nullable Herzauskultation herzauskultation,
+        @Nullable String bemerkung) {
         this.untersuchungArzt.setHerzauskultation(herzauskultation);
         this.untersuchungArzt.setHerzauskultationBemerkung(bemerkung);
         return this;
@@ -113,7 +123,9 @@ public class UntersuchungArztBeurteilungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungArztBeurteilungBuilder withMundAndZaehne(@Nullable Collection<MundAndZaehne> mundAndZaehne, @Nullable String bemerkung) {
+    public UntersuchungArztBeurteilungBuilder withMundAndZaehne(
+        @Nullable Collection<MundAndZaehne> mundAndZaehne,
+        @Nullable String bemerkung) {
         this.untersuchungArzt.setMundAndZaehne(EnumSetUtil.toEnumSet(mundAndZaehne, MundAndZaehne.class));
         this.untersuchungArzt.setMundAndZaehneBemerkung(bemerkung);
         return this;
@@ -121,15 +133,22 @@ public class UntersuchungArztBeurteilungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungArztBeurteilungBuilder withSprachfaehigkeit(@Nullable Collection<Sprachfaehigkeit> sprachfaehigkeit) {
-        this.untersuchungArzt.setSprachfaehigkeit(EnumSetUtil.toEnumSet(sprachfaehigkeit, Sprachfaehigkeit.class));
+    public UntersuchungArztBeurteilungBuilder withSprachfaehigkeit(
+        @Nullable Collection<Sprachfaehigkeit> sprachfaehigkeit) {
+        this.untersuchungArzt.setSprachfaehigkeitMultiValue(EnumSetUtil.toEnumSet(
+            sprachfaehigkeit,
+            Sprachfaehigkeit.class));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungArztBeurteilungBuilder withSprachfaehigkeit(@Nullable Collection<Sprachfaehigkeit> sprachfaehigkeit, @Nullable String bemerkung) {
-        this.untersuchungArzt.setSprachfaehigkeit(EnumSetUtil.toEnumSet(sprachfaehigkeit, Sprachfaehigkeit.class));
+    public UntersuchungArztBeurteilungBuilder withSprachfaehigkeit(
+        @Nullable Collection<Sprachfaehigkeit> sprachfaehigkeit,
+        @Nullable String bemerkung) {
+        this.untersuchungArzt.setSprachfaehigkeitMultiValue(EnumSetUtil.toEnumSet(
+            sprachfaehigkeit,
+            Sprachfaehigkeit.class));
         this.untersuchungArzt.setSprachfaehigkeitBemerkung(bemerkung);
         return this;
     }
@@ -143,7 +162,8 @@ public class UntersuchungArztBeurteilungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungArztBeurteilungBuilder withBewegungsapparat(@Nullable Collection<Bewegungsapparat> bewegungsapparat) {
+    public UntersuchungArztBeurteilungBuilder withBewegungsapparat(
+        @Nullable Collection<Bewegungsapparat> bewegungsapparat) {
         this.untersuchungArzt.setBewegungsapparat(EnumSetUtil.toEnumSet(bewegungsapparat, Bewegungsapparat.class));
         return this;
     }
@@ -168,7 +188,9 @@ public class UntersuchungArztBeurteilungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungArztBeurteilungBuilder withEinbeinstand(@Nullable Einbeinstand einbeinstand, @Nullable String bemerkung) {
+    public UntersuchungArztBeurteilungBuilder withEinbeinstand(
+        @Nullable Einbeinstand einbeinstand,
+        @Nullable String bemerkung) {
         this.untersuchungArzt.setEinbeinstand(einbeinstand);
         this.untersuchungArzt.setEinbeinstandBemerkung(bemerkung);
         return this;
@@ -183,7 +205,9 @@ public class UntersuchungArztBeurteilungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungArztBeurteilungBuilder withEinbeinhuepfen(@Nullable Einbeinhuepfen einbeinhuepfen, @Nullable String bemerkung) {
+    public UntersuchungArztBeurteilungBuilder withEinbeinhuepfen(
+        @Nullable Einbeinhuepfen einbeinhuepfen,
+        @Nullable String bemerkung) {
         this.untersuchungArzt.setEinbeinhuepfen(einbeinhuepfen);
         this.untersuchungArzt.setEinbeinhuepfenBemerkung(bemerkung);
         return this;
@@ -191,14 +215,17 @@ public class UntersuchungArztBeurteilungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungArztBeurteilungBuilder withFingeropposition(@Nullable Collection<Fingeropposition> fingeropposition) {
+    public UntersuchungArztBeurteilungBuilder withFingeropposition(
+        @Nullable Collection<Fingeropposition> fingeropposition) {
         this.untersuchungArzt.setFingeropposition(EnumSetUtil.toEnumSet(fingeropposition, Fingeropposition.class));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungArztBeurteilungBuilder withFingeropposition(@Nullable Collection<Fingeropposition> fingeropposition, @Nullable String bemerkung) {
+    public UntersuchungArztBeurteilungBuilder withFingeropposition(
+        @Nullable Collection<Fingeropposition> fingeropposition,
+        @Nullable String bemerkung) {
         this.untersuchungArzt.setFingeropposition(EnumSetUtil.toEnumSet(fingeropposition, Fingeropposition.class));
         this.untersuchungArzt.setFingeroppositionBemerkung(bemerkung);
         return this;
@@ -212,13 +239,15 @@ public class UntersuchungArztBeurteilungBuilder {
     }
 
     @NonNull
-    public static UntersuchungArztBeurteilungJson createJax(@NonNull Consumer<UntersuchungArztBeurteilungBuilder> block) {
+    public static UntersuchungArztBeurteilungJson createJax(
+        @NonNull Consumer<UntersuchungArztBeurteilungBuilder> block) {
         UntersuchungArztBeurteilung entity = create(block);
         return UntersuchungArztBeurteilungMapper.toJson(entity);
     }
 
     @NonNull
-    public static UntersuchungArztBeurteilungJsonSpec createJaxSpec(@NonNull Consumer<UntersuchungArztBeurteilungBuilder> block) {
+    public static UntersuchungArztBeurteilungJsonSpec createJaxSpec(
+        @NonNull Consumer<UntersuchungArztBeurteilungBuilder> block) {
         UntersuchungArztBeurteilungJson json = createJax(block);
         return UntersuchungArztBeurteilungJsonSpecMapper.INSTANCE.untersuchungArztJsonToUntersuchungArztJsonSpec(json);
     }

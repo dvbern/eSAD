@@ -1,5 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {
+  UntersuchungHoerenAudiogrammServiceGetUntersuchungHoerenAudiogrammRequestParams,
   UntersuchungHoerenOtoskopieJson,
   UntersuchungHoerenOtoskopieSaveJson,
   UntersuchungHoerenOtoskopieService,
@@ -63,12 +64,12 @@ export class UntersuchungHoerenOtoskopieStore extends signalStore(
     ),
   );
 
-  loadDefaultHoerenOtoskopie = rxMethod<AnlassEinladungenId>(
+  loadDefaultHoerenOtoskopie = rxMethod<UntersuchungHoerenOtoskopieServiceGetUntersuchungHoerenOtoskopieRequestParams>(
     pipe(
       switchMap(params => this.defaultLoader.tapLoading$(
         this.#hoerenOtoskopieService.getDefaultUntersuchungHoerenOtoskopieForAnlassConfig$({
           anlassId: params.anlassId,
-          einladungId: params.einladungIds[0],
+          einladungId: params.einladungId,
         }),
         error => this.#appErrorHandlerService.handleError(error))),
       tapResponse({

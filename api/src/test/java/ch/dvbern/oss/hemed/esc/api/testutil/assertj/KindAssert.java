@@ -20,6 +20,7 @@ package ch.dvbern.oss.hemed.esc.api.testutil.assertj;
 
 import java.util.Objects;
 
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.external.KindExternal;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.external.KindExternalSyncHelperService;
@@ -57,7 +58,7 @@ public class KindAssert extends AbstractAssert<KindAssert, Kind> {
             failIfDifferent(actual.getVorname(), otherKind.getSchuelerVorname(), "Vorname");
         }
 
-        if (!Objects.equals(actual.getGeburtsdatum(), mapGeburtsdatum(otherKind.getSchuelerGeburtsdatum()))) {
+        if (!Objects.equals(actual.getGeburtsdatum(), mapGeburtsdatum(otherKind.getSchuelerGeburtsdatum(), ImportTyp.ESCADA))) {
             failIfDifferent(actual.getGeburtsdatum(), otherKind.getSchuelerGeburtsdatum(), "Geburtsdatum");
         }
 

@@ -109,7 +109,7 @@ export function hasKinderMedizinischeDatenEditBerechtigung(): RoleMatcher {
 
 export function hasDownloadDossierBerechtigung(): RoleMatcher {
   return withOneOfMatchers(
-    withAllOfBerechtigungen(Berechtigung.KOMPLETTER_EXPORT),
+    withAllOfBerechtigungen(Berechtigung.KINDER_LESEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH, Berechtigung.KOMPLETTER_EXPORT),
     withOneOfBerechtigungen(Berechtigung.SUPPORT),
   );
 }
@@ -397,6 +397,21 @@ export function hasAufgabenEditBerechtigungen(): RoleMatcher {
 export function hasReportsViewBerechtigung(): RoleMatcher {
   return withOneOfMatchers(
     withAllOfBerechtigungen(Berechtigung.SPSS_EXPORT),
+    withAllOfBerechtigungen(Berechtigung.INDIVIDUELLE_REPORTS),
+    withOneOfBerechtigungen(Berechtigung.SUPPORT),
+  );
+}
+
+export function hasSpssReportsViewBerechtigung(): RoleMatcher {
+  return withOneOfMatchers(
+    withAllOfBerechtigungen(Berechtigung.SPSS_EXPORT),
+    withOneOfBerechtigungen(Berechtigung.SUPPORT),
+  );
+}
+
+export function hasIndividuelleReportsViewBerechtigung(): RoleMatcher {
+  return withOneOfMatchers(
+    withAllOfBerechtigungen(Berechtigung.INDIVIDUELLE_REPORTS),
     withOneOfBerechtigungen(Berechtigung.SUPPORT),
   );
 }

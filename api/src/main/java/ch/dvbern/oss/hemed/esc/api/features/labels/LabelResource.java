@@ -62,6 +62,16 @@ public class LabelResource {
         return new LabelListJson(labelMapper.filterByType(type));
     }
 
+    @GET
+    @NonNull
+    @Path("/{labelID}")
+    @RateLimit(RateLimitConst.DEFAULT_LIMIT)
+    @RolesAllowed(BerechtigungName.LABELS_LESEN)
+    public LabelJson getById(@NotNull @NonNull @PathParam("labelID") ID<Label> labelID) {
+        return (labelMapper.getById(labelID));
+    }
+
+
     @POST
     @NonNull
     @Counted(name = "createLabelCount")

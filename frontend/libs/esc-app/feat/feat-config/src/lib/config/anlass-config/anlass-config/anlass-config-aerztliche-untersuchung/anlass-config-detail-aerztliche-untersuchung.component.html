@@ -43,14 +43,14 @@
     </ng-select>
   </svui-form-control>
 
-  <!-- untersuchungEinbeinstandRechts -->
-  <svui-form-control [label]="'anlassconfig.label.untersuchungEinbeinstandRechts' | transloco"
-                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungEinbeinstandRechts | transloco">
+  <!-- untersuchungEinbeinstandRechtsLinks -->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungEinbeinstandRechtsLinks' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungEinbeinstandRechtsLinks | transloco">
     <ng-select
       svuiNgSelect
       bindLabel='dummy'
       appendTo="body"
-      [formControl]="form.group.controls.untersuchungEinbeinstandRechts"
+      [formControl]="form.group.controls.untersuchungEinbeinstandRechtsLinks"
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
       [multiple]="false"
     >
@@ -62,20 +62,22 @@
     </ng-select>
   </svui-form-control>
 
-  <!-- untersuchungEinbeinstandLinks -->
-  <svui-form-control [label]="'anlassconfig.label.untersuchungEinbeinstandLinks' | transloco"
-                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungEinbeinstandLinks | transloco">
+  <!-- untersuchungEinbeinstandValues -->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungEinbeinstandValues' | transloco"
+                     [viewValue]="form.group.getRawValue().untersuchungEinbeinstandValues | translatedEnumViewValuePipe:'Einbeinstand'"
+  >
     <ng-select
       svuiNgSelect
       bindLabel='dummy'
       appendTo="body"
-      [formControl]="form.group.controls.untersuchungEinbeinstandLinks"
+      [formControl]="form.group.controls.untersuchungEinbeinstandValues"
+      [allowBadgesToWrap]="true"
+      [multiple]="true"
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
     >
-      @for (requirement of requirementSettingOptions; track requirement) {
-        <ng-option [value]="requirement">
-          {{ 'RequirementSetting.' + requirement | transloco }}
+      @for (value of einbeinstandValues; track value) {
+        <ng-option [value]="value">
+          {{ 'Einbeinstand.' + value | transloco }}
         </ng-option>
       }
     </ng-select>
@@ -100,14 +102,14 @@
     </ng-select>
   </svui-form-control>
 
-  <!-- untersuchungEinbeinhuepfenRechts -->
-  <svui-form-control [label]="'anlassconfig.label.untersuchungEinbeinhuepfenRechts' | transloco"
-                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungEinbeinhuepfenRechts | transloco">
+  <!-- untersuchungEinbeinhuepfenRechtsLinks -->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungEinbeinhuepfenRechtsLinks' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungEinbeinhuepfenRechtsLinks | transloco">
     <ng-select
       svuiNgSelect
       bindLabel='dummy'
       appendTo="body"
-      [formControl]="form.group.controls.untersuchungEinbeinhuepfenRechts"
+      [formControl]="form.group.controls.untersuchungEinbeinhuepfenRechtsLinks"
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
       [multiple]="false"
     >
@@ -119,20 +121,22 @@
     </ng-select>
   </svui-form-control>
 
-  <!-- untersuchungEinbeinhuepfenLinks -->
-  <svui-form-control [label]="'anlassconfig.label.untersuchungEinbeinhuepfenLinks' | transloco"
-                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungEinbeinhuepfenLinks | transloco">
+  <!-- untersuchungEinbeinhuepfenValues -->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungEinbeinhuepfenValues' | transloco"
+                     [viewValue]="form.group.getRawValue().untersuchungEinbeinhuepfenValues | translatedEnumViewValuePipe:'Einbeinhuepfen'"
+  >
     <ng-select
       svuiNgSelect
       bindLabel='dummy'
       appendTo="body"
-      [formControl]="form.group.controls.untersuchungEinbeinhuepfenLinks"
+      [formControl]="form.group.controls.untersuchungEinbeinhuepfenValues"
+      [allowBadgesToWrap]="true"
+      [multiple]="true"
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
     >
-      @for (requirement of requirementSettingOptions; track requirement) {
-        <ng-option [value]="requirement">
-          {{ 'RequirementSetting.' + requirement | transloco }}
+      @for (value of einbeinhuepfenValues; track value) {
+        <ng-option [value]="value">
+          {{ 'Einbeinhuepfen.' + value | transloco }}
         </ng-option>
       }
     </ng-select>
@@ -310,7 +314,7 @@
   </svui-form-control>
 
   <!--  untersuchungLesefitPunkte-->
-  <svui-form-control [label]="'anlassconfig.label. untersuchungLesefitPunkte' | transloco"
+  <svui-form-control [label]="'anlassconfig.label.untersuchungLesefitPunkte' | transloco"
                      [viewValue]="'RequirementSetting.' + form.group.getRawValue(). untersuchungLesefitPunkte | transloco">
     <ng-select
       svuiNgSelect
@@ -443,7 +447,7 @@
   </svui-form-control>
 
   <!--  untersuchungZeichnenMenschPunkte-->
-  <svui-form-control [label]="'anlassconfig.label. untersuchungZeichnenMenschPunkte' | transloco"
+  <svui-form-control [label]="'anlassconfig.label.untersuchungZeichnenMenschPunkte' | transloco"
                      [viewValue]="'RequirementSetting.' + form.group.getRawValue(). untersuchungZeichnenMenschPunkte | transloco">
     <ng-select
       svuiNgSelect
@@ -475,6 +479,27 @@
       @for (requirement of requirementSettingOptions; track requirement) {
         <ng-option [value]="requirement">
           {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungMotorikValues -->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungMotorikValues' | transloco"
+                     [viewValue]="form.group.getRawValue().untersuchungMotorikValues | translatedEnumViewValuePipe:'Motorik'"
+  >
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungMotorikValues"
+      [allowBadgesToWrap]="true"
+      [multiple]="true"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+    >
+      @for (value of motorikValues; track value) {
+        <ng-option [value]="value">
+          {{ 'Motorik.' + value | transloco }}
         </ng-option>
       }
     </ng-select>
@@ -537,14 +562,14 @@
     </ng-select>
   </svui-form-control>
 
-  <!-- Untersuchung Sprache-->
-  <svui-form-control [label]="'anlassconfig.label.untersuchungSprache' | transloco"
-                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungSprache | transloco">
+  <!-- untersuchungSprachfaehigkeitSingleValue-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungSprachfaehigkeitSingleValue' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungSprachfaehigkeitSingleValue | transloco">
     <ng-select
       svuiNgSelect
       bindLabel='dummy'
       appendTo="body"
-      [formControl]="form.group.controls.untersuchungSprache"
+      [formControl]="form.group.controls.untersuchungSprachfaehigkeitSingleValue"
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
       [multiple]="false"
     >
@@ -556,14 +581,54 @@
     </ng-select>
   </svui-form-control>
 
-  <!-- untersuchungSprachePunkte-->
-  <svui-form-control [label]="'anlassconfig.label.untersuchungSprachePunkte' | transloco"
-                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungSprachePunkte | transloco">
+  <!--  untersuchungSprachfaehigkeitMultiValue-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungSprachfaehigkeitMultiValue' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue(). untersuchungSprachfaehigkeitMultiValue | transloco">
     <ng-select
       svuiNgSelect
       bindLabel='dummy'
       appendTo="body"
-      [formControl]="form.group.controls.untersuchungSprachePunkte"
+      [formControl]="form.group.controls. untersuchungSprachfaehigkeitMultiValue"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungSprachfaehigkeitValues -->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungSprachfaehigkeitValues' | transloco"
+                     [viewValue]="form.group.getRawValue().untersuchungSprachfaehigkeitValues | translatedEnumViewValuePipe:'Sprachfaehigkeit'"
+  >
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungSprachfaehigkeitValues"
+      [allowBadgesToWrap]="true"
+      [multiple]="true"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+    >
+      @for (value of sprachfaehigkeitValues; track value) {
+        <ng-option [value]="value">
+          {{ 'Sprachfaehigkeit.' + value | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungSprachfaehigkeitPunkte-->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungSprachePunkte' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungSprachfaehigkeitPunkte | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungSprachfaehigkeitPunkte"
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
       [multiple]="false"
     >

@@ -6,6 +6,7 @@ import java.time.OffsetDateTime;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
@@ -54,9 +55,13 @@ public class DuplikatKindJson {
     @Schema(required = false)
     private OffsetDateTime timestampLatestImport;
 
+    @Nullable
+    @Schema(required = false)
+    private ImportTyp importTyp;
+
     @NotNull
     @Schema(required = true)
-    private final boolean escada;
+    private final boolean external;
 
     @Nullable
     @Schema(required = false)

@@ -13,6 +13,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungInternBuilder;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -64,4 +65,51 @@ class KrankheitImpfungVerabreichtCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEqualTo("1");
     }
+
+    @Test
+    void extractorCsv() {
+        // ARRANGE
+        Krankheit krankheit = Krankheit.DIPHTERIE;
+        final KrankheitImpfungVerabreichtCsvColumn column =
+            new KrankheitImpfungVerabreichtCsvColumn(configForCsv, null, krankheit);
+        final Einladung einladung = new Einladung();
+        einladung.setAnlass(new Anlass());
+
+        when(tlMock.translate("printer.boolean.true")).thenReturn("Ja");
+        when(tlMock.translate("printer.boolean.false")).thenReturn("Nein");
+
+        // without Untersuchung -> empty string
+        assertThat(column.extract(einladung)).isEqualTo("Nein");
+
+        // without UntersuchungImpfungen -> empty string
+        Untersuchung untersuchung = new Untersuchung();
+        einladung.setUntersuchung(untersuchung);
+        untersuchung.setEinladung(einladung);
+        assertThat(column.extract(einladung)).isEqualTo("Nein");
+
+        // without UntersuchungImpfstatusKrankheit
+        UntersuchungImpfungen untersuchungImpfungen = new UntersuchungImpfungen();
+        untersuchung.setUntersuchungImpfungen(untersuchungImpfungen);
+        untersuchungImpfungen.setUntersuchung(untersuchung);
+        assertThat(column.extract(einladung)).isEqualTo("Nein");
+
+        UntersuchungImpfungIntern untersuchungImpfungIntern =
+            UntersuchungImpfungInternBuilder.create(builder
+                -> builder.forUntersuchungImpfungen(untersuchungImpfungen)
+                .withImpfStatus(ImpfStatus.DURCHGEFUEHRT));
+        when(untersuchungImpfungInternServiceMock.findByUntersuchung(any()))
+            .thenReturn(List.of(untersuchungImpfungIntern));
+
+        assertThat(column.extract(einladung)).isEqualTo("Nein");
+
+        Set<UntersuchungImpfungKrankheitImmunitaet> krankheitImmunitaetsList = new HashSet<>();
+        krankheitImmunitaetsList.add(new UntersuchungImpfungKrankheitImmunitaet(
+            untersuchungImpfungIntern,
+            krankheit,
+            false));
+        untersuchungImpfungIntern.setKrankheitenImmunitaeten(krankheitImmunitaetsList);
+
+        assertThat(column.extract(einladung)).isEqualTo("Ja");
+    }
+
 }

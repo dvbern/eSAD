@@ -1,0 +1,55 @@
+<svui-title [context]="'formSection'"
+            class="mb-3">{{ 'untersuchung.tab.impfungen.massnahmen.folgetermin.impfen' | transloco }}
+</svui-title>
+<svui-form-control
+  [label]="'untersuchung.tab.impfungen.massnahmen.folgetermin.impfen' | transloco"
+  [topLabelVisibility]="'hidden'"
+  size="full"
+  [viewValue]="''">
+  <ng-select
+    appendTo="body"
+    svuiNgSelect
+    bindLabel='dummy'
+    [formControl]="form().group.controls.folgeTerminImpfen"
+    [clearable]="false"
+    [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+  >
+    @for (anlass of anlaesseWithOpenEinladungenSlots(); track anlass) {
+      <ng-option [value]="anlass.anlassId">
+          <div>
+            <span class="impftermin-titel">{{ anlass.titel }}</span>
+            {{ anlass.datum | date : 'dd.MM.yyyy' }}
+            @if (anlass.zeitVon) {
+              {{ anlass.zeitVon | date : 'HH:mm' }}
+            }
+            @if (anlass.zeitVon && anlass.zeitBis) {
+              - {{ anlass.zeitBis | date : 'HH:mm' }}
+            }
+          </div>
+        <div class="fs-6 impftermin-slots">
+          {{ 'untersuchung.tab.impfungen.massnahmen.folgetermin.openslots' | transloco : {openslots: anlass.offeneSlots} }}
+        </div>
+
+      </ng-option>
+    }
+  </ng-select>
+</svui-form-control>
+
+
+@if(imfanlaesseScheduled()?.length){
+  {{ 'untersuchung.tab.impfungen.massnahmen.folgetermin.alreadyadded' | transloco  }}
+  <ul>
+    @for (anlass of imfanlaesseScheduled(); track anlass) {
+      <li>
+        <span class="impftermin-titel">{{ anlass.titel }}</span>
+        {{ anlass.datum | date : 'dd.MM.yyyy' }}
+        @if (anlass.zeitVon) {
+          {{ anlass.zeitVon | date : 'HH:mm' }}
+        }
+        @if (anlass.zeitVon && anlass.zeitBis) {
+          - {{ anlass.zeitBis | date : 'HH:mm' }}
+        }
+      </li>
+    }
+  </ul>
+}

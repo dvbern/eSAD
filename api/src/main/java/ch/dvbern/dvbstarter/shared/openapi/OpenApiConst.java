@@ -40,6 +40,8 @@ public class OpenApiConst {
         public static final String TAG_DUPLIKATE = "Duplikate";
         public static final String TAG_EINLADUNGEN = "Einladungen";
         public static final String TAG_ESCADA = "Escada";
+        public static final String TAG_FILE_INGRESS = "FileIngress";
+        public static final String TAG_PUPIL = "Pupil";
         public static final String TAG_IMPFSTOFF_CHARGEN = "Impfstoff-Chargen";
         public static final String TAG_IMPFSTOFFE = "Impfstoffe";
         public static final String TAG_INFOMATERIAL = "Infomaterial";
@@ -50,6 +52,7 @@ public class OpenApiConst {
         public static final String TAG_KONTAKTPERSON_SCHULE = "Kontaktperson-Schule";
         public static final String TAG_LABELS = "Labels";
         public static final String TAG_LEHRPERSON = "Lehrperson";
+        public static final String TAG_MASSENIMPORT = "Massenimport";
         public static final String TAG_NOTIZEN = "Notizen";
         public static final String TAG_PLZ = "Plz";
         public static final String TAG_PRINTER = "Printer";

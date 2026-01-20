@@ -34,6 +34,6 @@ public class KrankheitAnzahlImpfungenCsvColumn extends AbstractCsvColumn {
     @Override
     @NonNull
     protected String getDefaultHeaderKey() {
-        return "CsvColumn.krankheitAnzahlImpfungen";
+        return "CsvColumn.krankheitAnzahlImpfungen." + this.krankheit;
     }
 }

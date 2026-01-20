@@ -31,6 +31,13 @@ export class FileDropComponent {
   public selectedFiles: File[] = []; // list of 'File' objects to emit to parent component
   public files: NgxFileDropEntry[] = [];
 
+  // is used in notizen-mobile-app to clear the table
+  public clear(): void {
+    this.files = [];
+    this.selectedFiles = [];
+    this.cdRef.detectChanges();
+  }
+
   public dropped(inputFiles: NgxFileDropEntry[]): void {
     if (!this.multiple() && this.files.length >= 1) {
       this.#appNotificationStore.addDangerNotification(

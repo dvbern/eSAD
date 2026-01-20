@@ -32,20 +32,25 @@ public class KindService {
     private final DuplikatService duplikatService;
     private final RemoveKindService removeKindService;
 
+    @NonNull
+    public Kind persistAndFlushWithoutDuplicateCheck(@NonNull Kind kind) {
+        kindRepo.persistAndFlush(kind);
+        return kind;
+    }
 
     @NonNull
     public Kind persistWithoutDuplicateCheck(@NonNull Kind kind) {
-        return persistWithoutDuplicateCheck(kind, null);
+        kindRepo.persist(kind);
+        return kind;
     }
 
     @NonNull
     public Kind persistWithoutDuplicateCheck(@NonNull Kind kind, @Nullable Long versionFromFrontend) {
-        if (versionFromFrontend != null) {
-           kindRepo.persistWithOptimisticLocking(kind, versionFromFrontend);
-        } else {
-            kindRepo.persist(kind);
+        if (versionFromFrontend == null) {
+            persistAndFlushWithoutDuplicateCheck(kind);
+            return kind;
         }
-        return kind;
+        return kindRepo.persistWithOptimisticLocking(kind, versionFromFrontend);
     }
 
     @Transactional(TxType.REQUIRES_NEW)
@@ -86,7 +91,10 @@ public class KindService {
         }
     }
 
-    public Kind persistWithDuplicateCheck(@NonNull Kind kind, @Nullable Long versionFromFrontend, @NonNull KindSaveModeDuplikat kindSaveMode) {
+    public Kind persistWithDuplicateCheck(
+        @NonNull Kind kind,
+        @Nullable Long versionFromFrontend,
+        @NonNull KindSaveModeDuplikat kindSaveMode) throws KindDuplikatException {
         return persistInternal(
             kind,
             kindSaveMode == KindSaveModeDuplikat.MARK_AS_FALSE_POSITIVE,
@@ -96,7 +104,11 @@ public class KindService {
     }
 
     @NonNull
-    private Kind persistInternal(@NonNull Kind kind, boolean forceSaveAkzeptiereDuplikate, boolean withOptimisticLocking, @Nullable Long versionFromFrontend) {
+    private Kind persistInternal(
+        @NonNull Kind kind,
+        boolean forceSaveAkzeptiereDuplikate,
+        boolean withOptimisticLocking,
+        @Nullable Long versionFromFrontend) {
         kind.setNormalizedName(StringNormalizerUtil.normalizeAndStripDiarcritics(kind.getName()));
         kind.setNormalizedVorname(StringNormalizerUtil.normalizeAndStripDiarcritics(kind.getVorname()));
         // check unique key constraints first (note that this will be rolled back if kind is new duplicate)
@@ -141,7 +153,6 @@ public class KindService {
     public List<ID<Kind>> findAllIds() {
         return kindRepo.findAllIds();
     }
-
 
     @NonNull
     public Kind getById(@NonNull ID<Kind> kindId) {

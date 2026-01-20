@@ -22,7 +22,7 @@
 
     <groupId>ch.dvbern.oss.hemed.esc</groupId>
     <artifactId>esc-api</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>26.1.0-SNAPSHOT</version>
 
     <!-- <editor-fold desc="properties" defaultstate="collapsed"> -->
     <properties>
@@ -121,12 +121,12 @@
             <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi</artifactId>
-                <version>5.4.0</version>
+                <version>5.4.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-scratchpad</artifactId>
-                <version>5.4.0</version>
+                <version>5.4.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.xmlbeans</groupId>
@@ -668,8 +668,7 @@
 
                     <!-- target state -->
                     <referenceUrl>hibernate:ejb3:LiquibasePU</referenceUrl>
-
-<!--                            <verbose>true</verbose>-->
+                    
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -806,6 +805,9 @@
                                         <serializationLibrary>jackson</serializationLibrary>
                                         <containerDefaultToNull>true</containerDefaultToNull>
                                         <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                                        <headerVars>
+                                            <hideVersion>true</hideVersion>
+                                        </headerVars>
                                         <additionalModelTypeAnnotations>@lombok.AllArgsConstructor</additionalModelTypeAnnotations>
                                     </configOptions>
                                     <typeMappings>

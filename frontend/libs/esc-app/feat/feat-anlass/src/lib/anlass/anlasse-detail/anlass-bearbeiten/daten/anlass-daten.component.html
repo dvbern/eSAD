@@ -177,8 +177,8 @@
       [compareWith]="compareFnBenutzer"
     >
       <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-      @if (benutzerOptionsStore.mpaOptionsIncluding(store.mpaOfCurrentAnlass())) {
-        @for (item of benutzerOptionsStore.mpaOptionsIncluding(store.mpaOfCurrentAnlass()); track item.id; ) {
+      @if (benutzerOptionsStore.mpaOrPfpOptionsIncluding(store.mpaOfCurrentAnlass())) {
+        @for (item of benutzerOptionsStore.mpaOrPfpOptionsIncluding(store.mpaOfCurrentAnlass()); track item.id; ) {
           <ng-option [value]="item" [disabled]="!item.aktiv">
               <span class="w-100 d-flex justify-content-between">
                 <span>{{ item.fullName }}</span>

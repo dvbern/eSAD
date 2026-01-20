@@ -39,6 +39,9 @@ const ErrorMessageTranslations: TranslationMap<typeof AppValidatorKeys> | Record
   zeitVonAfterZeitBis: 'ui.validation-error.zeitVonAfterZeitBis',
   zeroDecimalPlaces: "ui.validation-error.zeroDecimalPlaces",
   changeSchuljahr: "ui.validation-error.changeSchuljahr",
+  einmalAuswahlKrankheiten: "ui.validation-error.einmalAuswahlKrankheiten",
+  datumVonAfterDatumBis: "ui.validation-error.datumVonAfterDatumBis",
+  dateRangeIsMaximumNumberOfYears: "ui.validation-error.dateRangeIsMaximumNumberOfYears"
 };
 
 function translationIsDefined(messageKey: string): messageKey is keyof typeof ErrorMessageTranslations {

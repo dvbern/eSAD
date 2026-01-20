@@ -1,5 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.features.example.developer;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -10,7 +11,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueue;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueueMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueueRepo;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueListJson;
-import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueSpssSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
@@ -18,12 +19,16 @@ import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupport;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.DocumentQueueApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.SuperAdminRunnerApiSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.CsvReportTypeSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DocumentQueueCsvListSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DocumentQueueCsvParamsSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DocumentQueueCsvSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DocumentQueueDisplayJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DocumentQueueIDListJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DocumentQueueListJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DocumentQueueListSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DocumentQueueParamsSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DocumentQueueSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DocumentQueueSpssSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FileTypSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SpssReportTypeSpec;
 import io.quarkus.test.TestTransaction;
@@ -60,7 +65,7 @@ class DocumentQueueResourceITest extends AbstractITest {
     @TestAsAdminBS
     void addPlaygroundDocumentQueue() {
         // ARRANGE & ACT
-        api.documentQueueResourceCreate().body(new DocumentQueueSaveJsonSpec(FileTypSpec.PLAYGROUND, null))
+        api.documentQueueResourceCreate().body(new DocumentQueueSpssSaveJsonSpec(FileTypSpec.PLAYGROUND, null))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -88,7 +93,7 @@ class DocumentQueueResourceITest extends AbstractITest {
 
     private void queueTooManyForSingleUser() {
         for (int i = 0; i < 11; i++) {
-            DocumentQueueSaveJson queueJobTooMany = new DocumentQueueSaveJson(FileTyp.PLAYGROUND, null);
+            DocumentQueueSpssSaveJson queueJobTooMany = new DocumentQueueSpssSaveJson(FileTyp.PLAYGROUND, null);
             this.documentQueueMapper.create(queueJobTooMany);
         }
     }
@@ -97,7 +102,7 @@ class DocumentQueueResourceITest extends AbstractITest {
     @TestAsSupport
     void findAllDocumentQueue() {
         // ARRANGE
-        api.documentQueueResourceCreate().body(new DocumentQueueSaveJsonSpec(FileTypSpec.PLAYGROUND_ERROR, null))
+        api.documentQueueResourceCreate().body(new DocumentQueueSpssSaveJsonSpec(FileTypSpec.PLAYGROUND_ERROR, null))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -138,7 +143,7 @@ class DocumentQueueResourceITest extends AbstractITest {
             documentQueueRepo.remove(document.getId());
         }
 
-        api.documentQueueResourceCreate().body(new DocumentQueueSaveJsonSpec(FileTypSpec.PLAYGROUND, null))
+        api.documentQueueResourceCreate().body(new DocumentQueueSpssSaveJsonSpec(FileTypSpec.PLAYGROUND, null))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -180,9 +185,9 @@ class DocumentQueueResourceITest extends AbstractITest {
     @TestAsSupport
     void addMultiplePlaygroundDocumentQueue() {
         // ARRANGE & ACT
-        List<DocumentQueueSaveJsonSpec> documentQueueSaveJsons = Arrays.asList(
-            new DocumentQueueSaveJsonSpec(FileTypSpec.PLAYGROUND, null),
-            new DocumentQueueSaveJsonSpec(
+        List<DocumentQueueSpssSaveJsonSpec> documentQueueSaveJsons = Arrays.asList(
+            new DocumentQueueSpssSaveJsonSpec(FileTypSpec.PLAYGROUND, null),
+            new DocumentQueueSpssSaveJsonSpec(
                 FileTypSpec.SPSS_REPORT,
                 new DocumentQueueParamsSpec(SpssReportTypeSpec.KINDERGARTEN)));
 
@@ -192,7 +197,7 @@ class DocumentQueueResourceITest extends AbstractITest {
         DocumentQueueListJson documentQueue = documentQueueMapper.findAll();
         int currentSize = documentQueue.getList().size();
 
-        api.documentQueueResourceCreateMultiple().body(documentQueueListSaveJsonSpec)
+        api.documentQueueResourceCreateMultipleSpss().body(documentQueueListSaveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -203,6 +208,36 @@ class DocumentQueueResourceITest extends AbstractITest {
 
         assertThat(documentQueue).isNotNull();
         assertThat(documentQueue.getList()).hasSize(currentSize + 2);
+    }
+
+    @Test
+    @TestAsSupport
+    void addCsvDocumentQueue() {
+        // ARRANGE & ACT
+        List<DocumentQueueCsvSaveJsonSpec> documentQueueCsvSaveJsons = Arrays.asList(
+            new DocumentQueueCsvSaveJsonSpec(
+                FileTypSpec.CSV_REPORT,
+                LocalDate.of(2025, 11, 1),
+                LocalDate.of(2025, 12,31),
+                new DocumentQueueCsvParamsSpec(CsvReportTypeSpec.SCHULUNTERSUCHUNG)));
+
+        DocumentQueueCsvListSaveJsonSpec documentQueueCsvListSaveJsonSpec =
+            new DocumentQueueCsvListSaveJsonSpec(documentQueueCsvSaveJsons);
+
+        DocumentQueueListJson documentQueue = documentQueueMapper.findAll();
+        int currentSize = documentQueue.getList().size();
+
+        api.documentQueueResourceCreateMultipleCsv().body(documentQueueCsvListSaveJsonSpec)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.CREATED.getStatusCode());
+
+        // ASSERT
+        documentQueue = documentQueueMapper.findAll();
+
+        assertThat(documentQueue).isNotNull();
+        assertThat(documentQueue.getList()).hasSize(currentSize + 1);
     }
 
     @Test
@@ -218,7 +253,7 @@ class DocumentQueueResourceITest extends AbstractITest {
             documentQueueRepo.remove(document.getId());
         }
 
-        api.documentQueueResourceCreate().body(new DocumentQueueSaveJsonSpec(FileTypSpec.PLAYGROUND, null))
+        api.documentQueueResourceCreate().body(new DocumentQueueSpssSaveJsonSpec(FileTypSpec.PLAYGROUND, null))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()

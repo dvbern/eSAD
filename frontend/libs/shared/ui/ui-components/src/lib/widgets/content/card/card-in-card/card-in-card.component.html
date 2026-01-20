@@ -1,3 +1,4 @@
-<div class="border rounded p-3">
-  <ng-content/>
-</div>
+  <div [class.border]="renderBorder()" [class.rounded]="renderBorder()" [class.p-3]="renderBorder()" >
+    <ng-content/>
+  </div>
+

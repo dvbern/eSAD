@@ -51,7 +51,7 @@ public class UntersuchungLaeusekontrolleMapper {
         }
         existingLaeusekontrolle.getBeurteilung().clear();
         if (saveJson.getBeurteilung() != null) {
-            existingLaeusekontrolle.getBeurteilung().addAll(EnumSetUtil.toEnumSet(saveJson.getBeurteilung(), LaeusekontrolleBeurteilung.class));
+            existingLaeusekontrolle.setBeurteilung(EnumSetUtil.toEnumSet(saveJson.getBeurteilung(), LaeusekontrolleBeurteilung.class));
         }
         existingLaeusekontrolle.setBemerkungen(saveJson.getBemerkungen());
         return existingLaeusekontrolle;

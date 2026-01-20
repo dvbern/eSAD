@@ -80,12 +80,12 @@ export class UntersuchungHoerenAudiogrammStore extends signalStore(
     ),
   );
 
-  loadDefaultHoerenAudiogramm = rxMethod<AnlassEinladungenId>(
+  loadDefaultHoerenAudiogramm = rxMethod<UntersuchungHoerenAudiogrammServiceGetUntersuchungHoerenAudiogrammRequestParams>(
     pipe(
       switchMap(params => this.defaultLoader.tapLoading$(this.#hoerenService.getDefaultUntersuchungHoerenAudiogrammForAnlassConfig$(
           {
             anlassId: params.anlassId,
-            einladungId: params.einladungIds[0],
+            einladungId: params.einladungId,
           }),
         error => this.#appErrorHandlerService.handleError(error))),
       tapResponse({

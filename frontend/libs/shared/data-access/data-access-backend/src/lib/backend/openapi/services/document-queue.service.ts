@@ -18,20 +18,25 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 import { BackendEntityId } from '@dvb/data-access-types';
+import { DocumentQueueCsvListSaveJson } from '../model/document-queue-csv-list-save-json';
 import { DocumentQueueIDListJson } from '../model/document-queue-id-list-json';
 import { DocumentQueueListJson } from '../model/document-queue-list-json';
 import { DocumentQueueListSaveJson } from '../model/document-queue-list-save-json';
-import { DocumentQueueSaveJson } from '../model/document-queue-save-json';
+import { DocumentQueueSpssSaveJson } from '../model/document-queue-spss-save-json';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 
 
 export interface DocumentQueueServiceCreateRequestParams {
-    documentQueueSaveJson: DocumentQueueSaveJson;
+    documentQueueSpssSaveJson: DocumentQueueSpssSaveJson;
 }
 
-export interface DocumentQueueServiceCreateMultipleRequestParams {
+export interface DocumentQueueServiceCreateMultipleCsvRequestParams {
+    documentQueueCsvListSaveJson: DocumentQueueCsvListSaveJson;
+}
+
+export interface DocumentQueueServiceCreateMultipleSpssRequestParams {
     documentQueueListSaveJson: DocumentQueueListSaveJson;
 }
 
@@ -118,9 +123,9 @@ export class DocumentQueueService {
     public create$(requestParameters?: DocumentQueueServiceCreateRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
     public create$(requestParameters?: DocumentQueueServiceCreateRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
     public create$(requestParameters?: DocumentQueueServiceCreateRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        const documentQueueSaveJson = requestParameters?.documentQueueSaveJson;
-        if (documentQueueSaveJson === null || documentQueueSaveJson === undefined) {
-            throw new Error('Required parameter documentQueueSaveJson was null or undefined when calling create.');
+        const documentQueueSpssSaveJson = requestParameters?.documentQueueSpssSaveJson;
+        if (documentQueueSpssSaveJson === null || documentQueueSpssSaveJson === undefined) {
+            throw new Error('Required parameter documentQueueSpssSaveJson was null or undefined when calling create.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -177,7 +182,7 @@ export class DocumentQueueService {
         return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: documentQueueSaveJson,
+                body: documentQueueSpssSaveJson,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -189,18 +194,18 @@ export class DocumentQueueService {
     }
 
     /**
-     * Create Multiple
+     * Create Multiple Csv
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createMultiple$(requestParameters?: DocumentQueueServiceCreateMultipleRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public createMultiple$(requestParameters?: DocumentQueueServiceCreateMultipleRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public createMultiple$(requestParameters?: DocumentQueueServiceCreateMultipleRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public createMultiple$(requestParameters?: DocumentQueueServiceCreateMultipleRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        const documentQueueListSaveJson = requestParameters?.documentQueueListSaveJson;
-        if (documentQueueListSaveJson === null || documentQueueListSaveJson === undefined) {
-            throw new Error('Required parameter documentQueueListSaveJson was null or undefined when calling createMultiple.');
+    public createMultipleCsv$(requestParameters?: DocumentQueueServiceCreateMultipleCsvRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public createMultipleCsv$(requestParameters?: DocumentQueueServiceCreateMultipleCsvRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public createMultipleCsv$(requestParameters?: DocumentQueueServiceCreateMultipleCsvRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public createMultipleCsv$(requestParameters?: DocumentQueueServiceCreateMultipleCsvRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const documentQueueCsvListSaveJson = requestParameters?.documentQueueCsvListSaveJson;
+        if (documentQueueCsvListSaveJson === null || documentQueueCsvListSaveJson === undefined) {
+            throw new Error('Required parameter documentQueueCsvListSaveJson was null or undefined when calling createMultipleCsv.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -253,7 +258,87 @@ export class DocumentQueueService {
             }
         }
 
-        let localVarPath = `/api/documentqueue/create-multiple`;
+        let localVarPath = `/api/documentqueue/create-multiple-csv`;
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: documentQueueCsvListSaveJson,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Create Multiple Spss
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public createMultipleSpss$(requestParameters?: DocumentQueueServiceCreateMultipleSpssRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public createMultipleSpss$(requestParameters?: DocumentQueueServiceCreateMultipleSpssRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public createMultipleSpss$(requestParameters?: DocumentQueueServiceCreateMultipleSpssRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public createMultipleSpss$(requestParameters?: DocumentQueueServiceCreateMultipleSpssRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const documentQueueListSaveJson = requestParameters?.documentQueueListSaveJson;
+        if (documentQueueListSaveJson === null || documentQueueListSaveJson === undefined) {
+            throw new Error('Required parameter documentQueueListSaveJson was null or undefined when calling createMultipleSpss.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (SecurityScheme) required
+        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
+        if (localVarCredential) {
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/documentqueue/create-multiple-spss`;
         return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

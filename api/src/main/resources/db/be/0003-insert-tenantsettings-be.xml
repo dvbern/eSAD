@@ -1,0 +1,8 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="dvbern" id="2026-01-15-10-05">
+    <sql>
+      INSERT INTO tenantsetting (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, defaultlanguage, supportedlanguages, esadidfeature, laendercodefeature, einladungstatusvalues, folgeterminemaxslots, mobilescannerfeature, massenimportfeature) VALUES ('3fb2a181-f30a-42a0-917b-0a2f5e0c2e6a', '2026-01-15 09:44:35.548910 +00:00', '2026-01-15 09:44:35.548910 +00:00', 'liquibase', 'liquibase', 0, 'DE', 'DE', 'ENABLED', 'ENABLED', 'TEILNAHME_BESTAETIGT,TEILNAHME_ABGESAGT,NACHZUEGLER', 16, 'ENABLED_FOR_DEVELOPMENT', 'DISABLED');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

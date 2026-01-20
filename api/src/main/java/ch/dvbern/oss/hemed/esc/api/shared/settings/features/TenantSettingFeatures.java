@@ -18,6 +18,7 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.settings.features;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
@@ -39,6 +40,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 @NoArgsConstructor
 public class TenantSettingFeatures implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 5841559114145142309L;
 
     @NotNull
     @NonNull
@@ -51,4 +54,16 @@ public class TenantSettingFeatures implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     private FeatureEnabledSetting laenderCodeFeature;
+
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private FeatureEnabledSetting mobileScannerFeature;
+
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private FeatureEnabledSetting massenimportFeature;
 }

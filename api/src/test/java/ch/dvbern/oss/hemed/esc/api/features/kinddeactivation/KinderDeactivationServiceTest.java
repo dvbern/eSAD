@@ -30,6 +30,7 @@ import java.util.UUID;
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateConst;
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateUtil;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.DossierService;
@@ -82,8 +83,13 @@ class KinderDeactivationServiceTest extends AbstractITest {
         // create some manually created Kinder that should be deleted
         List<ID<Kind>> manualKinderToBeDeleted = createKinder(
             2,
-            cutoffGeburtsdatum.minusDays(1), null, true,
-            null, null, shortTimeAgo // last import timestamp is irrelevant for manually created (should not be set anyway)
+            cutoffGeburtsdatum.minusDays(1),
+            null,
+            true,
+            null,
+            null,
+            shortTimeAgo
+            // last import timestamp is irrelevant for manually created (should not be set anyway)
         ).stream().map(Kind::getId).toList();
 
         // create some manually created Kinder that should not be deleted because of age
@@ -447,7 +453,13 @@ class KinderDeactivationServiceTest extends AbstractITest {
         List<Kind> createdKinder = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             Kind k =
-                createKindWithAnlassAndNotiz(geburtsdatum, externalId, externalAktiv, lastNotizDate, lastAnlassDate, lastImportDate);
+                createKindWithAnlassAndNotiz(
+                    geburtsdatum,
+                    externalId,
+                    externalAktiv,
+                    lastNotizDate,
+                    lastAnlassDate,
+                    lastImportDate);
             createdKinder.add(k);
         }
         return createdKinder;
@@ -463,16 +475,21 @@ class KinderDeactivationServiceTest extends AbstractITest {
     ) {
         Klasse klasse = fixtureService.createKlasse();
         Kind kind;
-        if (externalAktiv != null && externalId != null ) {
+        if (externalAktiv != null && externalId != null) {
             Assertions.assertThat(lastImportDate).as("lastImportDate must be set if externalAktiv is set").isNotNull();
             OffsetDateTime lastImportTimestamp = OffsetDateTime.ofInstant(
-                    lastImportDate.atStartOfDay().atZone(DateConst.ZONE_ID).toInstant(),
-                    DateConst.ZONE_ID);
+                lastImportDate.atStartOfDay().atZone(DateConst.ZONE_ID).toInstant(),
+                DateConst.ZONE_ID);
             boolean primitiveExternalAktiv = externalAktiv;
             kind = KindBuilder.create(builder -> builder
                 .withKlasse(klasse)
                 .withGeburtsdatum(geburtsdatum)
-                .withExternalImportInfo(externalId, primitiveExternalAktiv, getAppClock().offsetDateTime().now(), lastImportTimestamp)
+                .withExternalImportInfo(
+                    externalId,
+                    primitiveExternalAktiv,
+                    getAppClock().offsetDateTime().now(),
+                    lastImportTimestamp,
+                    ImportTyp.ESCADA)
             );
         } else {
             kind = KindBuilder.create(builder -> builder

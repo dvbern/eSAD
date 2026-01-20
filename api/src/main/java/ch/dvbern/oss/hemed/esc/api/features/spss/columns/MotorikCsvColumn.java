@@ -19,13 +19,18 @@ public class MotorikCsvColumn extends AbstractCsvColumn {
         return ExtractorForCsvUtil.extractUntersuchungArztBeurteilung(
             einladung,
             untersuchungArzt -> {
-                if (untersuchungArzt.getMotorik() == null) {
+                Motorik motorik = untersuchungArzt.getMotorik();
+                if (motorik == null) {
                     return "";
                 }
-                return switch (untersuchungArzt.getMotorik()) {
+                if (!config.forSpssReport()) {
+                    return config.tl().translateValue(motorik);
+                }
+                return switch (motorik) {
                     case Motorik.NORMAL -> "1";
                     case Motorik.AUFFAELLIG -> "2";
                     case Motorik.NICHT_GEPRUEFT -> "3";
+                    default -> throw new IllegalStateException("Unexpected value for Motorik: " + motorik);
                 };
             }
         );

@@ -1,0 +1,8 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="gema (generated)" id="1765359881635-5">
+      <sql>
+        INSERT INTO impfstoff (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, krankheiten, name, impfstoffaktivstatus) VALUES ('75036cf9-ad11-4090-aa5f-b9b1029320fb', '2025-12-10 10:38:52.774897 +00:00', '2025-12-10 10:38:52.774897 +00:00', 'liquibase', 'liquibase', 0, 'FSME', 'FSME-Immun CC', 'AKTIV');
+      </sql>
+    </changeSet>
+</databaseChangeLog>

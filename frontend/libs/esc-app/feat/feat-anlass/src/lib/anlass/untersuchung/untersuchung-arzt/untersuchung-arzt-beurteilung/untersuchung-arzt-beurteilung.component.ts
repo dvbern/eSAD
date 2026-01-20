@@ -1,16 +1,26 @@
-
-import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
-import {FormArray, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked } from '@angular/core';
+import { FormArray, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import {
+  Aussprache,
+  BallFangen,
+  BallWerfen,
   Blutdruck,
-  Einbeinstand,
+  FigurNachmalen,
+  Hampelmann,
   Haut,
   Herzauskultation,
-  Motorik,
+  Kognition,
+  Lesefit,
+  NameSchreiben,
   RequirementSetting,
+  Stifthaltung,
   Verhalten,
+  Verhaltensfragebogen,
+  ZahlenNachsprechen,
+  Zeichnen,
+  ZeichnenMensch,
 } from '@dvb/data-access-backend';
-import {BenutzerStore} from '@dvb/feat-shared';
+import { BenutzerStore } from '@dvb/feat-shared';
 import {
   CheckboxDirective,
   FormControlComponent,
@@ -22,18 +32,19 @@ import {
   TextareaDirective,
   TextInputDirective,
 } from '@dvb/ui-components';
-import {DirtyMarker} from '@dvb/util-angular';
-import {hasAerztlicheUntersuchungEditBerechtigung, isNotNullish, requireValue} from '@dvb/util-shared';
-import {TranslocoPipe} from '@jsverse/transloco';
-import {AnlassStore} from '../../../anlass.store';
-import {UntersuchungStore} from '../../untersuchung.store';
-import {hasSomeNotNullishValueIgnoringVersion} from '../../untersuchung.util';
-import {UntersuchungArztStore} from '../untersuchung-arzt.store';
+import { DirtyMarker } from '@dvb/util-angular';
+import { hasAerztlicheUntersuchungEditBerechtigung, isNotNullish, requireValue } from '@dvb/util-shared';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { AnlassStore } from '../../../anlass.store';
+import { UntersuchungStore } from '../../untersuchung.store';
+import { hasSomeNotNullishValueIgnoringVersion } from '../../untersuchung.util';
+import { UntersuchungArztStore } from '../untersuchung-arzt.store';
 import {
   BewegungsapparatSubFormType,
+  EinverstaendniserklaerungSubFormType,
   FingeroppositionSubFormType,
   MundAndZaehneSubFormType,
-  SprachfaehigkeitSubFormType,
+  SprachfaehigkeitMultiValueSubFormType,
   UntersuchungArztBeurteilungForm,
 } from './untersuchung-arzt-beurteilung.form';
 
@@ -50,14 +61,13 @@ import {
     FormControlComponent,
     TextareaDirective,
     CheckboxDirective,
-    TextInputDirective
-],
+    TextInputDirective,
+  ],
   templateUrl: './untersuchung-arzt-beurteilung.component.html',
   styleUrl: './untersuchung-arzt-beurteilung.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UntersuchungArztBeurteilungComponent implements DirtyMarker {
-
   readonly anlassStore = inject(AnlassStore);
   readonly untersuchungStore = inject(UntersuchungStore);
   readonly store = inject(UntersuchungArztStore);
@@ -66,12 +76,16 @@ export class UntersuchungArztBeurteilungComponent implements DirtyMarker {
 
   protected readonly RequirementSetting = RequirementSetting;
 
-  canEdit = computed(() => this.benutzerStore.createHasRequiredRoleSig(hasAerztlicheUntersuchungEditBerechtigung())()
-    && this.anlassStore.canUserEditAnlassInCurrentState());
+  canEdit = computed(
+    () =>
+      this.benutzerStore.createHasRequiredRoleSig(hasAerztlicheUntersuchungEditBerechtigung())() &&
+      this.anlassStore.canUserEditAnlassInCurrentState(),
+  );
 
   form = new UntersuchungArztBeurteilungForm({
     fb: inject(NonNullableFormBuilder),
     destroyRef: this.destroyRef,
+    anlassStore: this.anlassStore,
   });
 
   // single selection items, multiselects are created in form
@@ -79,8 +93,19 @@ export class UntersuchungArztBeurteilungComponent implements DirtyMarker {
   blutdruckItems = Object.values(Blutdruck);
   herzauskultationItems = Object.values(Herzauskultation);
   hautItems = Object.values(Haut);
-  motorikItems = Object.values(Motorik);
-  einbeinstandItems = Object.values(Einbeinstand);
+  hampelmannItems = Object.values(Hampelmann);
+  ballFangenItems = Object.values(BallFangen);
+  ballWerfenItems = Object.values(BallWerfen);
+  nameSchreibenItems = Object.values(NameSchreiben);
+  figurNachmalenItems = Object.values(FigurNachmalen);
+  stifthaltungItems = Object.values(Stifthaltung);
+  ausspracheItems = Object.values(Aussprache);
+  lesefitItems = Object.values(Lesefit);
+  zahlenNachsprechenItems = Object.values(ZahlenNachsprechen);
+  zeichnenItems = Object.values(Zeichnen);
+  zeichnenMenschItems = Object.values(ZeichnenMensch);
+  kognitionItems = Object.values(Kognition);
+  verhaltensfragebogenItems = Object.values(Verhaltensfragebogen);
 
   constructor() {
     effect(() => {
@@ -137,8 +162,12 @@ export class UntersuchungArztBeurteilungComponent implements DirtyMarker {
     }
   }
 
-  getSprachfaehigkeitArray(): FormArray<SprachfaehigkeitSubFormType> {
-    return this.form.group.controls.sprachfaehigkeitArray;
+  getEinverstaendniserklaerungArray(): FormArray<EinverstaendniserklaerungSubFormType> {
+    return this.form.group.controls.einverstaendniserklaerungArray;
+  }
+
+  getSprachfaehigkeitMultiValueArray(): FormArray<SprachfaehigkeitMultiValueSubFormType> {
+    return this.form.group.controls.sprachfaehigkeitMultiValueArray;
   }
 
   getBewegungsapparatArray(): FormArray<BewegungsapparatSubFormType> {

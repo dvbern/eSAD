@@ -1,10 +1,21 @@
 
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {ConfirmService, DocumentQueueComponent, DocumentQueueStore, PageComponent} from '@dvb/feat-shared';
+import {
+  BenutzerStore,
+  ConfirmService,
+  DocumentQueueComponent,
+  DocumentQueueStore,
+  PageComponent
+} from '@dvb/feat-shared';
 import {IconOnlyButtonComponent, PageHeaderButtonsComponent} from '@dvb/ui-components';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {SpssFormComponent} from './spss-form/spss-form.component';
+import {
+  hasIndividuelleReportsViewBerechtigung,
+  hasSpssReportsViewBerechtigung
+} from "@dvb/util-shared";
+import {IndividuelleReportsFormComponent} from "./individuelle-reports-form/individuelle-reports-form.component";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush, selector: 'feat-reports',
@@ -16,8 +27,9 @@ import {SpssFormComponent} from './spss-form/spss-form.component';
     DocumentQueueComponent,
     SpssFormComponent,
     IconOnlyButtonComponent,
-    PageHeaderButtonsComponent
-],
+    PageHeaderButtonsComponent,
+    IndividuelleReportsFormComponent
+  ],
   templateUrl: './reports.component.html',
 })
 export class ReportsComponent {
@@ -25,6 +37,10 @@ export class ReportsComponent {
   readonly #confirmService = inject(ConfirmService);
   readonly #translationService = inject(TranslocoService);
   readonly documentQueueStore = inject(DocumentQueueStore);
+  readonly #benutzerStore = inject(BenutzerStore);
+
+  public canViewSpssReports = this.#benutzerStore.createHasRequiredRoleSig(hasSpssReportsViewBerechtigung());
+  public canViewIndividuelleReports = this.#benutzerStore.createHasRequiredRoleSig(hasIndividuelleReportsViewBerechtigung());
 
   public deleteGeneratedDocsManually(): void {
     this.#confirmService.confirm({

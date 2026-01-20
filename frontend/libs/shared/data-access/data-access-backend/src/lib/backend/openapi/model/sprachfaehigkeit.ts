@@ -9,7 +9,7 @@
  */
 
 
-export type Sprachfaehigkeit = 'GROBKURSORISCH_NORMAL' | 'ENTWICKLUNGSVERZOEGERUNG' | 'ARTIKULATIONSFEHLER' | 'DEUTSCHKENNTNISSE_MINIM' | 'ANDERES' | 'NICHT_GEPRUEFT';
+export type Sprachfaehigkeit = 'GROBKURSORISCH_NORMAL' | 'ENTWICKLUNGSVERZOEGERUNG' | 'ARTIKULATIONSFEHLER' | 'DEUTSCHKENNTNISSE_MINIM' | 'ANDERES' | 'AUFFAELLIG' | 'GRENZWERTIG' | 'GUT' | 'NICHT_GEPRUEFT';
 
 export const Sprachfaehigkeit = {
     GROBKURSORISCH_NORMAL: 'GROBKURSORISCH_NORMAL' as Sprachfaehigkeit,
@@ -17,6 +17,9 @@ export const Sprachfaehigkeit = {
     ARTIKULATIONSFEHLER: 'ARTIKULATIONSFEHLER' as Sprachfaehigkeit,
     DEUTSCHKENNTNISSE_MINIM: 'DEUTSCHKENNTNISSE_MINIM' as Sprachfaehigkeit,
     ANDERES: 'ANDERES' as Sprachfaehigkeit,
+    AUFFAELLIG: 'AUFFAELLIG' as Sprachfaehigkeit,
+    GRENZWERTIG: 'GRENZWERTIG' as Sprachfaehigkeit,
+    GUT: 'GUT' as Sprachfaehigkeit,
     NICHT_GEPRUEFT: 'NICHT_GEPRUEFT' as Sprachfaehigkeit
 } as const;
 

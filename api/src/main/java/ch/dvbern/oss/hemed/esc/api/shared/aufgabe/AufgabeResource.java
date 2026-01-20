@@ -12,7 +12,8 @@ import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.AufgabeSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.NumOfOffeneFaelligeAufgabeJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3;
+
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.UploadItemSchema;
 import io.smallrye.common.annotation.Blocking;
@@ -156,7 +157,7 @@ public class AufgabeResource {
         @PathParam("aufgabeId") @NotNull @NonNull ID<Aufgabe> aufgabeId,
         @NotNull @NonNull @PathParam("fileId") ID<FileData> fileId
     ) {
-        FileInfoS3 fileInfoS3 = aufgabeService.findUploadedFileInfoS3(aufgabeId, fileId);
+        FileInfo fileInfoS3 = aufgabeService.findUploadedFileInfoS3(aufgabeId, fileId);
         return FileDownloadUtil.getBufferRestMultiWithInfo(fileInfoS3, fileStoreService);
     }
 
@@ -176,7 +177,7 @@ public class AufgabeResource {
         @PathParam("aufgabeId") @NotNull @NonNull ID<Aufgabe> aufgabeId,
         @NotNull @NonNull @PathParam("fileId") ID<FileData> fileId
     ) {
-        FileInfoS3 fileInfo = aufgabeService.findUploadedFileInfoS3(aufgabeId, fileId);
+        FileInfo fileInfo = aufgabeService.findUploadedFileInfoS3(aufgabeId, fileId);
         var content = fileStoreService.getFileBytesSync(fileInfo.getFileIdInBucket());
         return FileDownloadUtil.buildFileResponse("attachment", content, fileInfo);
     }

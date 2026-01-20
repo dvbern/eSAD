@@ -16,8 +16,10 @@ export class BenutzerOptionsStore extends signalStore(
     arztOptions: computed((): BenutzerOptionJson[] => {
       return entities().filter(benutzerOption => benutzerOption.fachrollen.includes(FachRolle.SCHULAERZTIN))
     }),
-    mpaOptions: computed((): BenutzerOptionJson[] => {
-      return entities().filter(benutzerOption => benutzerOption.fachrollen.includes(FachRolle.MPA))
+    mpaOrPfpOptions: computed((): BenutzerOptionJson[] => {
+      return entities()
+        .filter(benutzerOption => benutzerOption.fachrollen.includes(FachRolle.MPA)
+          || benutzerOption.fachrollen.includes(FachRolle.PFP))
     }),
     supportOptions: computed((): BenutzerOptionJson[] => {
       return entities().filter(benutzerOption => benutzerOption.fachrollen.includes(FachRolle.SUPPORT));
@@ -45,11 +47,11 @@ export class BenutzerOptionsStore extends signalStore(
       }
       return [...store.arztOptions(), current];
     },
-    mpaOptionsIncluding(current: BenutzerOptionJson | Nullish): BenutzerOptionJson[] {
-      if (isNullish(current) || this.contains(store.mpaOptions(), current)) {
-        return store.mpaOptions();
+    mpaOrPfpOptionsIncluding(current: BenutzerOptionJson | Nullish): BenutzerOptionJson[] {
+      if (isNullish(current) || this.contains(store.mpaOrPfpOptions(), current)) {
+        return store.mpaOrPfpOptions();
       }
-      return [...store.mpaOptions(), current];
+      return [...store.mpaOrPfpOptions(), current];
     },
     entitiesIncluding(current: BenutzerOptionJson | Nullish): BenutzerOptionJson[] {
       if (isNullish(current) || this.contains(store.entities(), current)) {

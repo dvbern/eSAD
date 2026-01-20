@@ -21,7 +21,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.fileio;
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileNameConverter;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -41,7 +41,7 @@ import java.io.Serial;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileData extends AbstractTenantEntity<FileData> {
+public class FileData extends AbstractEntity<FileData> {
 
     @Serial
     private static final long serialVersionUID = 8771476062006091782L;
@@ -62,6 +62,6 @@ public class FileData extends AbstractTenantEntity<FileData> {
     @NotNull
     @NonNull
     @Embedded
-    private FileInfoS3 fileInfoBucket;
+    private FileInfo fileInfoBucket;
 
 }

@@ -1,10 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.shared.fileio;
 
-import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
-import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
-import io.quarkus.test.junit.QuarkusTest;
-import io.vertx.mutiny.core.buffer.Buffer;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -13,6 +8,12 @@ import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
+import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import io.quarkus.test.junit.QuarkusTest;
+import io.vertx.mutiny.core.buffer.Buffer;
 import lombok.RequiredArgsConstructor;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 import org.junit.jupiter.api.Test;
@@ -36,10 +37,10 @@ class FileStoreServiceTest extends AbstractITest {
     @TestAsAdminBS
     void testUploadAndDeleteFile() {
         FileUpload fileUpload = TestUtil.fileToFileUpload(TestUtil.loadTestSimpleEscadaFile(), "test-file.txt");
-        FileInfoS3 fileInfoS3 = FileInfoS3Mapper.mapFileUploadToFileInfoS3(fileUpload, FileTyp.ESCADA_SYNC);
-        String fileIdInBucket = fileInfoS3.getFileIdInBucket();
+        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfo(fileUpload, FileTyp.ESCADA_SYNC);
+        String fileIdInBucket = fileInfo.getFileIdInBucket();
         PutObjectResponse putObjectResponse =
-            fileStoreService.uploadToS3Async(fileUpload, fileInfoS3).await().atMost(TIMEOUT);
+            fileStoreService.uploadToS3Async(fileUpload, fileInfo).await().atMost(TIMEOUT);
 
         assertThat(putObjectResponse).isNotNull();
         assertThat(putObjectResponse.eTag()).isNotNull();
@@ -66,11 +67,11 @@ class FileStoreServiceTest extends AbstractITest {
     void getFileAsync() throws ExecutionException, InterruptedException, IOException {
         // Arrange
         FileUpload fileUpload = TestUtil.fileToFileUpload(TestUtil.loadTestSimpleEscadaFile(), "test-file.csv");
-        FileInfoS3 fileInfoS3 = FileInfoS3Mapper.mapFileUploadToFileInfoS3(fileUpload, FileTyp.ESCADA_SYNC);
-        String fileIdInBucket = fileInfoS3.getFileIdInBucket();
+        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfo(fileUpload, FileTyp.ESCADA_SYNC);
+        String fileIdInBucket = fileInfo.getFileIdInBucket();
         byte[] originalBytes = Files.readAllBytes(fileUpload.filePath());
         PutObjectResponse putObjectResponse =
-            fileStoreService.uploadToS3Async(fileUpload, fileInfoS3).await().atMost(TIMEOUT);
+            fileStoreService.uploadToS3Async(fileUpload, fileInfo).await().atMost(TIMEOUT);
 
         // Act
         // await the completion stage
@@ -98,11 +99,11 @@ class FileStoreServiceTest extends AbstractITest {
     void getFileBytesAsync() throws IOException, ExecutionException, InterruptedException, TimeoutException {
         // Arrange
         FileUpload fileUpload = TestUtil.fileToFileUpload(TestUtil.loadTestSimpleEscadaFile(), "test-file.csv");
-        FileInfoS3 fileInfoS3 = FileInfoS3Mapper.mapFileUploadToFileInfoS3(fileUpload, FileTyp.ESCADA_SYNC);
-        String fileIdInBucket = fileInfoS3.getFileIdInBucket();
+        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfo(fileUpload, FileTyp.ESCADA_SYNC);
+        String fileIdInBucket = fileInfo.getFileIdInBucket();
         byte[] originalBytes = Files.readAllBytes(fileUpload.filePath());
         PutObjectResponse putObjectResponse =
-            fileStoreService.uploadToS3Async(fileUpload, fileInfoS3).await().atMost(TIMEOUT);
+            fileStoreService.uploadToS3Async(fileUpload, fileInfo).await().atMost(TIMEOUT);
 
         // Act
         ResponseBytes<GetObjectResponse> response =

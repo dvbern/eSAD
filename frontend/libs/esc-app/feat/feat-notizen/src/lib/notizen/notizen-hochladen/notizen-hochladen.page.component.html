@@ -1,0 +1,12 @@
+<feat-page [heading]="pageTitle | transloco: {nameKind: kind()?.vorname + ' ' + kind()?.name }"
+           [showNav]="false">
+
+  <feat-notizen-mobile-upload
+    [existingNotiz]="notizenListStore.selectedEntity()"
+    [notizenFiles]="notizenListStore.notizenFiles()"
+    [loader]="notizenListStore.saveLoader"
+    (saveNotiz)="onSaveNotiz($event)"
+    (removeNotizFile)="onRemoveNotizFile($event)"
+  />
+
+</feat-page>

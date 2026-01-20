@@ -66,45 +66,63 @@ export class UntersuchungStore extends signalStore(
   readonly hiddenTabsLoader = new Loader();
   readonly loadEinladungLoader = new Loader();
 
-  addTab(id: BackendEntityId, alreadyOpenEinladungenIds: string, activatedRoute: ActivatedRoute): void {
+  async addTab(id: BackendEntityId, alreadyOpenEinladungenIds: string, activatedRoute: ActivatedRoute): Promise<boolean> {
+    // find the TabInfo object to move from the hidden tabs to the open tabs, then try to navigate there
     const tabToOpen = this.hiddenTabs().find(tab => tab.einladungID === id);
     if (tabToOpen) {
-      const remainingHiddenTabs = this.hiddenTabs().filter(tab => tab.einladungID !== tabToOpen.einladungID);
+      // wait and check if the navigation was really performed (could be canceled due to dirty check)
+      const navigationSuccessful = await this.reloadUntersuchung(id, alreadyOpenEinladungenIds, activatedRoute);
 
-      patchState(this,
-        {
-          currentTabId: id,
-          tabList: [...this.tabList(), tabToOpen],
-          hiddenTabs: remainingHiddenTabs,
-        },
-      );
-      this.reloadUntersuchung(id, alreadyOpenEinladungenIds, activatedRoute);
+      // now we know if we really did navigate away, so apply needed store changes
+      if (navigationSuccessful) {
+        const remainingHiddenTabs = this.hiddenTabs().filter(tab => tab.einladungID !== tabToOpen.einladungID);
+
+        patchState(this,
+          {
+            currentTabId: id,
+            tabList: [...this.tabList(), tabToOpen], // add the new tab to the list
+            hiddenTabs: remainingHiddenTabs, // update list of hidden tabs, it no longer contains the added child
+          },
+        );
+      }
+      return navigationSuccessful;
     }
+    return false;
   }
 
-  closeTab(id: BackendEntityId, alreadyOpenEinladungenIds: string, activatedRoute: ActivatedRoute): void {
+  async closeTab(id: BackendEntityId, alreadyOpenEinladungenIds: string, activatedRoute: ActivatedRoute): Promise<boolean> {
     const tabToClose = this.tabList().find(tab => tab.einladungID === id);
     if (tabToClose) {
       const remainingTabList = this.tabList().filter(tab => tab.einladungID !== tabToClose.einladungID);
+      const wasLastOpenTab = remainingTabList.length === 0;
 
-      patchState(this,
-        {
-          tabList: remainingTabList,
-          hiddenTabs: [...this.hiddenTabs(), tabToClose],
-        },
-      );
-
-      const wasLastOpenTab = this.tabList().length === 0;
+      let navigationSuccessful = false;
+      let nextTabId;
       if (wasLastOpenTab) {
-        this.setCurrentTabId(undefined);
-        this.goToAnlassplanung(activatedRoute);
+        navigationSuccessful = await this.goToAnlassplanung(activatedRoute);
+        nextTabId = undefined; // Kein zu oeffnendes Tab mehr vorhanden
       } else {
+        nextTabId = this.currentTabId();
         if (id === this.currentTabId()) {
-          this.setCurrentTabId(this.tabList()[0].einladungID);
+          nextTabId = remainingTabList[0].einladungID;
         }
-        this.reloadUntersuchung(requireValue(this.currentTabId()), alreadyOpenEinladungenIds, activatedRoute);
+        navigationSuccessful = await this.reloadUntersuchung(requireValue(nextTabId), alreadyOpenEinladungenIds, activatedRoute);
       }
+
+      // now we know if we really did navigate away, so apply needed store changes
+      if (navigationSuccessful) {
+        patchState(this,
+          {
+            tabList: remainingTabList,
+            hiddenTabs: [...this.hiddenTabs(), tabToClose],
+          },
+        );
+
+        this.setCurrentTabId(nextTabId);
+      }
+      return navigationSuccessful;
     }
+    return false;
   }
 
   loadTabList = rxMethod<AnlassEinladungenId>(
@@ -227,8 +245,8 @@ export class UntersuchungStore extends signalStore(
     ),
   );
 
-  private reloadUntersuchung(id: BackendEntityId, einladungIds: string, activatedRoute: ActivatedRoute) {
-    this.router.navigate([
+  private reloadUntersuchung(id: BackendEntityId, einladungIds: string, activatedRoute: ActivatedRoute): Promise<boolean> {
+    return this.router.navigate([
         Path.RELATIVE_ONE_UP,
         Path.ANLASS_UNTERSUCHUNG,
         Path.ANLASS_UNTERSUCHUNG_EINLADUNG,
@@ -237,8 +255,8 @@ export class UntersuchungStore extends signalStore(
       {relativeTo: activatedRoute, queryParams: {einladungIds: einladungIds}});
   }
 
-  private goToAnlassplanung(activatedRoute: ActivatedRoute) {
-    this.router.navigate([
+  private goToAnlassplanung(activatedRoute: ActivatedRoute): Promise<boolean> {
+    return this.router.navigate([
         Path.RELATIVE_ONE_UP,
         Path.ANLASS_PLANUNG,
       ],

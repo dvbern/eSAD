@@ -114,12 +114,29 @@
   <include file="db/base/0010-add-new-feature-flag-esadid.xml"/>
   <include file="db/base/0011-add-showfragebogen-and-showanmeldung.xml"/>
   <include file="db/bs/0077-update-showfragebogen-showanmeldung-showimpfausweis-to-anlassconfig.xml"/>
-  <include file="db/base/0012-add-anmeldung-bestaetigung.xml" />
-  <include file="db/base/0013-create-einladung-notizen-and-add-notiz-typ.xml" />
+  <include file="db/base/0012-add-anmeldung-bestaetigung.xml"/>
+  <include file="db/base/0013-create-einladung-notizen-and-add-notiz-typ.xml"/>
   <include file="db/base/0014-insert-anmeldung-bestaetigung-label.xml"/>
   <include file="db/base/0015-add-new-untersuchung-properties.xml"/>
   <include file="db/base/0016-change-enum-list-db-len.xml"/>
   <include file="db/base/0016-add-einladungstatus-to-tenant-setting.xml"/>
+  <include file="db/base/0017-update-anlassconfig.xml"/>
+  <include file="db/base/0017-tenant-setting-folgetermin-max-slots.xml"/>
+  <include file="db/base/0018-remove-tenant.xml"/>
+  <include file="db/base/0019-change-fileinfo-aud-fix.xml"/>
+  <include file="db/base/0020-insert-file-ingress-service-user.xml"/>
+  <include file="db/bs/0078-add-file-ingress-berechtigung-systemadmin-bs.xml"/>
+  <include file="db/base/0021-remove-abmeldungsnotiz-from-einladung.xml"/>
+  <include file="db/base/0022-change-punkte-to-big-decimal.xml"/>
+  <include file="db/bs/0079-update-anlassconfig-BS.xml"/>
+  <include file="db/base/0023-add-mobilescanner-feature.xml"/>
+  <include file="db/base/0024-insert-fsme-impfstoff.xml"/>
+  <include file="db/base/0026-add-krankheiten-to-anlass-config.xml"/>
+  <include file="db/base/0025-externalimportinfo-add-importtyp.xml"/>
+  <include file="db/bs/0080-migrate-escada-externalimportinfo.xml"/>
+  <include file="db/base/0027-add-feature-massenimport-to-tenantsetting.xml"/>
+  <include file="db/base/0028-modify-document-queue.xml"/>
+  <include file="/db/base/0026-add-pupilsyncevent.xml"/>
   
   <!--  The following scripts only run in the 'test' context-->
   <include file="db-test/0001-insert-test-benutzer-support.xml" context="@test"/>
@@ -134,6 +151,7 @@
   <include file="db-test/0012-insert-test-benutzer-lausbeauftragte-win.xml" context="@test"/>
   <include file="db-test/0013-update-anlassconfig-all-optional.xml" context="@test"/>
   <include file="db-test/0014-insert-test-benutzer-pfp-win.xml" context="@test"/>
+  <include file="db-test/0015-insert-labels-datenverlust.xml" context="@test"/>
 
   <!-- The following scripts only run in the 'dev' context
 	  To use it, insert the following in your .env:

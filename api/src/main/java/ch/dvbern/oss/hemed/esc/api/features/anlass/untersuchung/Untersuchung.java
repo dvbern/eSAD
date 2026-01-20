@@ -16,7 +16,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassna
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBemerkungFragebogen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -57,7 +57,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Untersuchung extends AbstractTenantEntity<Untersuchung> {
+public class Untersuchung extends AbstractEntity<Untersuchung> {
 
     @Serial
     private static final long serialVersionUID = 7816034792129549030L;

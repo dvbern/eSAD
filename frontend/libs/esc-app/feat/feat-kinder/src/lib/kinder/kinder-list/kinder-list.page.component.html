@@ -1,18 +1,40 @@
 <feat-page [heading]="'kinder.list.page.title' | transloco">
 
-  <svui-page-header-list-summary [items]="summaryItems()"/>
+  <svui-buttons-right-container
+    style="padding-bottom: 15px;">
+    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; width: 100%;">
 
-  <svui-page-header-buttons
-    [showFilterPopup]="true"
-    [activeFilterCount]="itemTable.numberOfFilters() + kinderSummaryStore.manualErweiterteFilterCount()"
-    [activeErweiterteFilterCount]="kinderSummaryStore.manualErweiterteFilterCount()"
-    (resetFilter)="itemTable.resetFilters(); tableFilterForm.reset(); kinderSummaryStore.resetErweiterteFilter()"
-    (filter)="openFilter()"
-  />
+      <!--LIST SUMMARY-->
+      <svui-page-header-list-summary [items]="summaryItems()"/>
 
-  @if (canEditKind()) {
-    <svui-page-header-add-button [addRouterLink]="Path.CREATE"/>
-  }
+      <!--FILTER-->
+      <svui-page-header-buttons
+        [showFilterPopup]="true"
+        [activeFilterCount]="itemTable.numberOfFilters() + kinderSummaryStore.manualErweiterteFilterCount()"
+        [activeErweiterteFilterCount]="kinderSummaryStore.manualErweiterteFilterCount()"
+        (resetFilter)="itemTable.resetFilters(); tableFilterForm.reset(); kinderSummaryStore.resetErweiterteFilter()"
+        (filter)="openFilter()"
+      />
+
+      @if (canEditKind()) {
+
+        <!--ADD BUTTON-->
+        <svui-page-header-add-button [addRouterLink]="Path.CREATE"/>
+
+        <!--MASSENIMPORT BUTTON-->
+        @if (tenantSettingsStore.isMassenimportVisible()) {
+          <button
+            svuiButton="primary"
+            type="button"
+            [disabled]="!canEditKind() || !tenantSettingsStore.isMassenimportVisible()"
+            (click)="openImport()">
+            {{ 'kinder.list.import' | transloco }}
+          </button>
+        }
+      }
+    </div>
+  </svui-buttons-right-container>
+
 
   <svui-card [innerSpacing]="'topBottom'">
     <table

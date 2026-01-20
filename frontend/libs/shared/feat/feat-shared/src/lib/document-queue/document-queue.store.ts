@@ -1,11 +1,12 @@
 import {withDevtools} from '@angular-architects/ngrx-toolkit';
 import {inject, Injectable} from '@angular/core';
 import {
+  DocumentQueueCsvListSaveJson,
   DocumentQueueDisplayJson,
   DocumentQueueIDListJson,
   DocumentQueueListSaveJson,
-  DocumentQueueSaveJson,
   DocumentQueueService,
+  DocumentQueueSpssSaveJson,
   SuperAdminRunnerService,
 } from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
@@ -54,8 +55,10 @@ export class DocumentQueueStore extends signalStore(
 
   deleteGeneratedDocsManually = rxMethod<DocumentQueueIDListJson>(
     pipe(
-      exhaustMap((list) =>
-        this.loader.tapLoading$(this.#documentQueueService.removeDocumentQueueItems$({documentQueueIDListJson: list}), error => {
+      exhaustMap(list =>
+        this.loader.tapLoading$(
+          this.#documentQueueService.removeDocumentQueueItems$({ documentQueueIDListJson: list }),
+          error => {
             this.#appErrorHandlerService.handleError(error);
           },
         ),
@@ -63,7 +66,9 @@ export class DocumentQueueStore extends signalStore(
       tapResponse({
         next: listJson => {
           patchState(this, setAllEntities(listJson.list));
-          this.#appNotificationStore.addSuccessNotification(this.#transloco.translate('reports.action.manual.deletion.success'));
+          this.#appNotificationStore.addSuccessNotification(
+            this.#transloco.translate('reports.action.manual.deletion.success'),
+          );
         },
         error: console.error,
       }),
@@ -88,8 +93,7 @@ export class DocumentQueueStore extends signalStore(
 
   download = rxMethod<BackendEntityId>(
     pipe(
-      exhaustMap((id) =>
-        this.#documentQueueService.downloadFile$({ documentQueueId: id }, 'response')),
+      exhaustMap(id => this.#documentQueueService.downloadFile$({ documentQueueId: id }, 'response')),
       tapResponse({
         next: result => {
           handleBlobResponseDownload(result, true);
@@ -99,25 +103,43 @@ export class DocumentQueueStore extends signalStore(
     ),
   );
 
-  createDocumentQueue = rxMethod<DocumentQueueSaveJson>(
-    pipe(
-      exhaustMap((documentQueueSaveJson) => this.#documentQueueService.create$({ documentQueueSaveJson })),
-    ),
+  createDocumentQueue = rxMethod<DocumentQueueSpssSaveJson>(
+    pipe(exhaustMap(documentQueueSpssSaveJson => this.#documentQueueService.create$({ documentQueueSpssSaveJson }))),
   );
 
   forceTriggerBatchJob = rxMethod<void>(
-    pipe(
-      exhaustMap(() => this.#superAdminRunnerService.triggerDocumentQueueJob$()),
-    ),
+    pipe(exhaustMap(() => this.#superAdminRunnerService.triggerDocumentQueueJob$())),
   );
 
-  createMultipleDocumentQueue = rxMethod<{
-    documentQueueListSaveJson: DocumentQueueListSaveJson,
+  createMultipleSpssDocumentQueue = rxMethod<{
+    documentQueueListSaveJson: DocumentQueueListSaveJson;
     onSuccess: () => void;
   }>(
     pipe(
-      exhaustMap(({ documentQueueListSaveJson, onSuccess }) => this.saveLoader.tapLoading$(
-        this.#documentQueueService.createMultiple$({ documentQueueListSaveJson }),
+      exhaustMap(({ documentQueueListSaveJson, onSuccess }) =>
+        this.saveLoader
+          .tapLoading$(this.#documentQueueService.createMultipleSpss$({ documentQueueListSaveJson }), error =>
+            this.#appErrorHandlerService.handleError(error),
+          )
+          .pipe(
+            tapResponse({
+              next: () => {
+                onSuccess();
+              },
+              error: console.error,
+            }),
+          ),
+      ),
+    ),
+  );
+
+  createMultipleCsvDocumentQueue = rxMethod<{
+    documentQueueCsvListSaveJson: DocumentQueueCsvListSaveJson,
+    onSuccess: () => void;
+  }>(
+    pipe(
+      exhaustMap(({ documentQueueCsvListSaveJson, onSuccess }) => this.saveLoader.tapLoading$(
+        this.#documentQueueService.createMultipleCsv$({ documentQueueCsvListSaveJson }),
         error => this.#appErrorHandlerService.handleError(error))
         .pipe(
           tapResponse({

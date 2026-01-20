@@ -205,16 +205,30 @@ public class BenutzerService {
 
     @Nullable
     public Benutzer getBenutzerIfCorrectRole(@Nullable BenutzerOptionJson benutzerOptionJson, FachRolle fachRolle) {
+        return getBenutzerIfOneOfRolesIsCorrect(benutzerOptionJson, List.of(fachRolle));
+    }
+
+    @Nullable
+    public Benutzer getBenutzerIfOneOfRolesIsCorrect(@Nullable BenutzerOptionJson benutzerOptionJson, List<FachRolle> fachRollen) {
         if (benutzerOptionJson == null) {
             return null;
         }
         Benutzer benutzer = getById(benutzerOptionJson.getId());
-        boolean correctRole = benutzer.getFachRollen().contains(fachRolle);
-        Validate.isTrue(correctRole);
+        Set<FachRolle> fachRollenBenutzer = EnumSet.copyOf(benutzer.getFachRollen());
+        boolean benutzerHasCorrectRole = fachRollen.stream().anyMatch(fachRollenBenutzer::contains);
+
+        Validate.isTrue(benutzerHasCorrectRole);
         return benutzer;
     }
 
     public boolean hasCallerBerechtigung(@NonNull Berechtigung role) {
         return securityIdentity.hasRole(role.getBerechtigungName());
+    }
+
+    public boolean hasCallerBerechtigungen(@NonNull List<Berechtigung> roles) {
+        return roles.stream().allMatch(role -> securityIdentity.hasRole(role.getBerechtigungName()));
+    }
+    public boolean hasAnyOfCallerBerechtigungen(@NonNull List<Berechtigung> anyOfRoles) {
+        return anyOfRoles.stream().anyMatch(role -> securityIdentity.hasRole(role.getBerechtigungName()));
     }
 }

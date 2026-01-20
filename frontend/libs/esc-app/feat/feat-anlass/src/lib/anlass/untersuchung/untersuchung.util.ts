@@ -5,10 +5,10 @@ import {isNotNullish} from '@dvb/util-shared';
 import {distinctUntilChanged} from 'rxjs';
 
 export function markAllMultiCheckboxesAsTouched(formArray: FormArray<FormGroup>, destroyRef: DestroyRef) {
-  formArray.valueChanges.pipe(distinctUntilChanged(),  takeUntilDestroyed(destroyRef))
+  formArray.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(destroyRef))
     .subscribe({
       next: () => {
-        if(formArray.touched) {
+        if (formArray.touched) {
           formArray.markAllAsTouched();
         }
       },
@@ -16,7 +16,10 @@ export function markAllMultiCheckboxesAsTouched(formArray: FormArray<FormGroup>,
     });
 }
 
-export function checkIfArrayContainsCheckedValue<T>(controls: FormGroup<{ resultat: FormControl<T>; isChecked: FormControl<boolean>; }>[], filterValues: T[]) {
+export function checkIfArrayContainsCheckedValue<T>(controls: FormGroup<{
+  resultat: FormControl<T>;
+  isChecked: FormControl<boolean>;
+}>[], filterValues: T[]) {
   return controls.some(group => {
     const resultat = group.controls.resultat?.getRawValue();
     const isChecked = group.controls.isChecked?.value;
@@ -24,13 +27,13 @@ export function checkIfArrayContainsCheckedValue<T>(controls: FormGroup<{ result
   });
 }
 
-
 /**
  * because version is always set and is never nullish but rather 0 we have to ignore it when checking if the
  * config has a value that is different from nullish
  */
 export function hasSomeNotNullishValueIgnoringVersion(defaultUntersuchungsValues: { version: number }): boolean {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { version, ...defaultProperties } = defaultUntersuchungsValues;
+  const {version, ...defaultProperties} = defaultUntersuchungsValues;
+
   return Object.values(defaultProperties).some(isNotNullish);
 }

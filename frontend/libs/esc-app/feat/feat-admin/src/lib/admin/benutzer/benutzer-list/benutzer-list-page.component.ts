@@ -2,7 +2,7 @@
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {BenutzerJson, FachRolle} from '@dvb/data-access-backend';
-import {BenutzerStore, PageComponent, Path, TranslatedStringPipe} from '@dvb/feat-shared';
+import { BenutzerStore, PageComponent, Path, TenantSettingsStore, TranslatedStringPipe } from '@dvb/feat-shared';
 import {
   CardComponent,
   CollapsibleMenuComponent,
@@ -56,10 +56,12 @@ export class BenutzerListPageComponent {
 
   readonly benutzerListStore = inject(BenutzerListStore);
   readonly benutzerStore = inject(BenutzerStore);
+  readonly tenantSettingsStore = inject(TenantSettingsStore);
+
   readonly transloco = inject(TranslocoService);
 
   readonly Path = Path;
-  readonly rollen = Object.values(FachRolle);
+  readonly rollen = this.tenantSettingsStore.settings()?.fachrollen;
 
   benutzerTranslated = this.transloco.translate('benutzer.list.summary.benutzer');
 

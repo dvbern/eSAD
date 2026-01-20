@@ -106,6 +106,7 @@ export class DuplikatListPageComponent implements OnInit {
 
   reloadDuplikate(): void {
     this.duplikatStore.reloadDuplikate();
+    this.duplikatStore.reloadResultsAFewTime()
   }
 
   getKindLabel(kind: DuplikatKindJson): string {

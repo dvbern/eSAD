@@ -19,6 +19,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder.external;
 
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.klasseexternal.KlasseExternal;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import jakarta.persistence.Transient;
 import java.io.Serial;
 import java.util.Comparator;
@@ -27,8 +28,7 @@ import java.util.stream.Stream;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.HasExternalId;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.HasExternalId;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -66,7 +66,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class KindExternal extends AbstractTenantEntity<KindExternal> implements HasExternalId {
+public class KindExternal extends AbstractEntity<KindExternal> implements HasExternalId {
 
     // Null-safe comparator for all fields except schuelerId
     public static final Comparator<KindExternal> KIND_EXTERNAL_DATA_COMPARATOR = Comparator
@@ -198,6 +198,14 @@ public class KindExternal extends AbstractTenantEntity<KindExternal> implements 
         }
         var strings = Stream.of(schuelerVorname, schuelerName).filter(Objects::nonNull).toList();
         return String.join(" ", strings);
+    }
+
+    @Nullable
+    public String getFullNameIfAllowed(boolean escadaRedactPersonalInfo) {
+        if (escadaRedactPersonalInfo) {
+            return null;
+        }
+        return this.getFullName();
     }
 
 }

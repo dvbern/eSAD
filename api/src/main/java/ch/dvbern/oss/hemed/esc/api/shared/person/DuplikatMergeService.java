@@ -50,7 +50,6 @@ public class DuplikatMergeService {
     private final KinderdossierPrintService kinderdossierPrintService;
     private final EntityManager entityManager;
 
-
     @NonNull
     public Duplikat merge(@NonNull ID<Duplikat> duplikatId, @NonNull ID<Kind> basisKindId) {
         Duplikat duplikat = duplikatService.getById(duplikatId);
@@ -76,8 +75,8 @@ public class DuplikatMergeService {
         // ExternalImportInfo umhaengen wenn basiskind nicht aus escada
         ExternalImportInfo otherKindExternalImportInfo = otherKind.getExternalImportInfo();
         if (basisKind.getExternalSystemIdOrNull() == null
-                && otherKindExternalImportInfo != null
-                && otherKind.getExternalSystemIdOrNull() != null
+            && otherKindExternalImportInfo != null
+            && otherKind.getExternalSystemIdOrNull() != null
         ) {
             // Wir uebernehmen die ExternalSystemId des anderen Kindes
             basisKind.setExternalImportInfo(
@@ -85,7 +84,8 @@ public class DuplikatMergeService {
                     otherKindExternalImportInfo.getIdInExternalSystem(),
                     otherKindExternalImportInfo.getAktivInExternalSystem(),
                     otherKindExternalImportInfo.getTimestampFirstImport(),
-                    otherKindExternalImportInfo.getTimestampLatestImport()
+                    otherKindExternalImportInfo.getTimestampLatestImport(),
+                    otherKindExternalImportInfo.getImportTyp()
                 )
             );
         }
@@ -93,7 +93,8 @@ public class DuplikatMergeService {
         if (basisKind.getSozialversicherungsNummer() == null && otherKind.getSozialversicherungsNummer() != null) {
             // Wir uebernehmen die AHV-Nummer des anderen Kindes
             SozialversicherungsNummer sozialversicherungsNummer = otherKind.getSozialversicherungsNummer();
-            otherKind.setSozialversicherungsNummer(null); // VNR des anderen Kindes auf null setzen, damit sie eindeutig ist
+            otherKind.setSozialversicherungsNummer(null); // VNR des anderen Kindes auf null setzen, damit sie
+            // eindeutig ist
             kindService.persistWithoutDuplicateCheck(otherKind);
             entityManager.flush();
             basisKind.setSozialversicherungsNummer(sozialversicherungsNummer);

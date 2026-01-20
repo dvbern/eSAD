@@ -148,7 +148,7 @@ class AnlassConfigMapperITest extends AbstractITest {
         assertEquals(RequirementSetting.OPTIONAL, saveJson.getUntersuchungEinbeinhuepfen());
         assertEquals(RequirementSetting.OPTIONAL, saveJson.getUntersuchungFingeropposition());
         assertEquals(RequirementSetting.OPTIONAL, saveJson.getUntersuchungMotorik());
-        assertEquals(RequirementSetting.OPTIONAL, saveJson.getUntersuchungSprache());
+        assertEquals(RequirementSetting.OPTIONAL, saveJson.getUntersuchungSprachfaehigkeitMultiValue());
         assertEquals(RequirementSetting.OPTIONAL, saveJson.getUntersuchungMundZaehne());
         assertEquals(RequirementSetting.OPTIONAL, saveJson.getUntersuchungHaut());
         assertEquals(RequirementSetting.OPTIONAL, saveJson.getUntersuchungHerz());

@@ -22,13 +22,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassArt;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
@@ -48,25 +51,20 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.AnlassApiSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassListJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassSaveJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassStatusSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassTypSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppValidationErrorJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SchulInformationenListJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.*;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Slf4j
 @QuarkusTest
 @RequiredArgsConstructor
 class AnlassResourceITest extends AbstractITest {
@@ -673,5 +671,331 @@ class AnlassResourceITest extends AbstractITest {
                 .getId()
                 .equals(jsonSpec.getData().getWeiterePerson().getId()));
         Assertions.assertThat(result.getTotalRecords()).isEqualTo(3);
+    }
+
+    @Test
+    @TestAsAdminBS
+    void findAnlaesseWithAvailableSlots(){
+        // ARRANGE
+
+        // Base Data To create Anlass
+        AnlassConfig configImpftermin = anlassConfigService.getByAnlassTypAndStichtag(AnlassTyp.IMPFTERMIN, appClock.offsetDateTime().now().toLocalDate());
+        AnlassConfig configImpfaktion = anlassConfigService.getByAnlassTypAndStichtag(AnlassTyp.IMPFAKTION, appClock.offsetDateTime().now().toLocalDate());
+        AnlassConfig configKlasse8 = anlassConfigService.getByAnlassTypAndStichtag(AnlassTyp.KLASSE_8, appClock.offsetDateTime().now().toLocalDate());
+        Klasse klasse = fixtureService.createKlasse();
+        List<Dossier> kinderDossiers = IntStream.range(0,20)
+            .mapToObj(i -> fixtureService.createDossier(fixtureService.createKind(klasse)))
+            .toList();
+
+        Dossier searchForKinderWithDossier = fixtureService.createDossier(fixtureService.createKind(klasse));
+
+        // Anlaesse should be returned
+        // less than 16 kinder eingeladen
+        Anlass anlass1 = anlassService.persist(AnlassBuilder.create(builder -> builder.withTitle("Impftermin 1").withAnlassConfig(configImpftermin)));
+        IntStream.range(0,15).forEach(i -> fixtureService.createEinladung(anlass1, kinderDossiers.get(i)));
+
+        Anlass anlass2 = anlassService.persist(AnlassBuilder.create(builder -> builder.withTitle("Impftermin 2").withAnlassConfig(configImpftermin)));
+        IntStream.range(0,5).forEach(i -> fixtureService.createEinladung(anlass2, kinderDossiers.get(i)));
+
+        // no kinder eingeladen
+        Anlass anlass3 = anlassService.persist(AnlassBuilder.create(builder -> builder.withTitle("Impftermin 3").withAnlassConfig(configImpftermin)));
+
+        // Anlass scheduled later today
+        LocalDateTime anlassLaterToday = appClock.offsetDateTime().now().toLocalDateTime().plusHours(1);
+        Anlass anlass4 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 4").withAnlassConfig(configImpftermin)
+                .withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate())
+                .withZeitVonBis(
+                    new DateTimeRange(anlassLaterToday, anlassLaterToday.plusHours(2))
+                )
+        ));
+
+        // Anlass scheduled tomorrow
+        Anlass anlass5 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 5")
+                .withAnlassConfig(configImpftermin)
+                .withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate().plusDays(1)))
+        );
+
+        // anlaesse with status pending
+        Anlass anlass6 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 6").withAnlassConfig(configImpftermin).withAnlassStatus(AnlassStatus.IN_PLANUNG)
+        ));
+        Anlass anlass7 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 7").withAnlassConfig(configImpftermin).withAnlassStatus(AnlassStatus.AUFGEBOTEN)
+        ));
+        Anlass anlass8 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 8").withAnlassConfig(configImpftermin).withAnlassStatus(AnlassStatus.BEREIT)
+        ));
+
+        // different anlasstype included in request
+        Anlass anlass9 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impfaktion 9").withAnlassConfig(configImpfaktion).withAnlassStatus(AnlassStatus.BEREIT)
+        ));
+
+        // Anlaesse should be filtered out
+        // anlass with 16 or more kinder eingeladen
+        Anlass anlass2_1 = anlassService.persist(AnlassBuilder.create(builder -> builder.withTitle("Impftermin 2.1").withAnlassConfig(configImpftermin)));
+        IntStream.range(0,16).forEach(i -> fixtureService.createEinladung(anlass2_1, kinderDossiers.get(i)));
+
+        // anlaesse with status finished or closed
+        anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 2.2").withAnlassConfig(configImpftermin).withAnlassStatus(AnlassStatus.DURCHGEFUEHRT)
+        ));
+        anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 2.3").withAnlassConfig(configImpftermin).withAnlassStatus(AnlassStatus.ABGESAGT)
+        ));
+        anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 2.4").withAnlassConfig(configImpftermin).withAnlassStatus(AnlassStatus.ABGESCHLOSSEN)
+        ));
+
+        anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 2.5").withAnlassConfig(configImpftermin).withDatumSetSchuljahr(LocalDate.now())
+        ));
+
+        anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 2.6").withAnlassConfig(configImpftermin).withDatumSetSchuljahr(LocalDate.now().minusDays(1))
+        ));
+
+        // Anlass today without time von
+        anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 2.7").withAnlassConfig(configImpftermin)
+                .withDatumSetSchuljahr(LocalDate.now())
+        ));
+
+        // Anlass today already started
+        LocalDateTime anlassStartedTime = appClock.offsetDateTime().now().toLocalDateTime().plusMinutes(59);
+        anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 2.8").withAnlassConfig(configImpftermin)
+                .withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate())
+                .withZeitVonBis(
+                    new DateTimeRange(anlassStartedTime, anlassStartedTime.plusHours(2))
+                )
+        ));
+
+        // Anlass was yesterday
+        anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 2.9").withAnlassConfig(configImpftermin).withDatumSetSchuljahr(LocalDate.now().minusDays(1))
+        ));
+
+        // Anlass with different type
+        anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 2.10").withAnlassConfig(configKlasse8).withDatumSetSchuljahr(LocalDate.now().minusDays(1))
+        ));
+
+        // kind already added to anlass
+        Anlass anlass2_11 = anlassService.persist(AnlassBuilder.create(builder -> builder.withTitle("Impftermin 2.11").withAnlassConfig(configImpftermin)));
+        fixtureService.createEinladung(anlass2_11, searchForKinderWithDossier);
+
+        // ACT
+        AnlassWithOpenSlotsListJsonSpec result =
+            api.anlassResourceSearchAnlassTermineWithAvailableSlots()
+           .anlassTypQuery(AnlassTyp.IMPFTERMIN.toString(), AnlassTyp.IMPFAKTION.toString() )
+           .kindIdQuery(searchForKinderWithDossier.getKind().getId().getUUID())
+           .execute(ResponseBody::prettyPeek)
+           .then()
+           .assertThat()
+           .statusCode(Status.OK.getStatusCode())
+           .extract().as(AnlassWithOpenSlotsListJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(result.getMaximalAnzahlSlots()).isEqualTo(16);
+
+        Assertions.assertThatList(result.getAnlaesseWithOpenEinladungenSlots())
+            .hasSize(9)
+            .extracting(
+                AnlassWithOpenSlotsOptionJsonSpec::getTitel,
+                AnlassWithOpenSlotsOptionJsonSpec::getOffeneSlots,
+                AnlassWithOpenSlotsOptionJsonSpec::getAnlassTyp,
+                AnlassWithOpenSlotsOptionJsonSpec::getAnlassId
+            )
+            .containsExactlyInAnyOrderElementsOf(
+                List.of(
+                    tuple("Impftermin 1", 1,  AnlassTypSpec.IMPFTERMIN, anlass1.getId().getUUID().toString()),
+                    tuple("Impftermin 2", 11, AnlassTypSpec.IMPFTERMIN, anlass2.getId().getUUID().toString()),
+                    tuple("Impftermin 3", 16, AnlassTypSpec.IMPFTERMIN, anlass3.getId().getUUID().toString()),
+                    tuple("Impftermin 4", 16, AnlassTypSpec.IMPFTERMIN, anlass4.getId().getUUID().toString()),
+                    tuple("Impftermin 5", 16, AnlassTypSpec.IMPFTERMIN, anlass5.getId().getUUID().toString()),
+                    tuple("Impftermin 6", 16, AnlassTypSpec.IMPFTERMIN, anlass6.getId().getUUID().toString()),
+                    tuple("Impftermin 7", 16, AnlassTypSpec.IMPFTERMIN, anlass7.getId().getUUID().toString()),
+                    tuple("Impftermin 8", 16, AnlassTypSpec.IMPFTERMIN, anlass8.getId().getUUID().toString()),
+                    tuple("Impfaktion 9", 16, AnlassTypSpec.IMPFAKTION, anlass9.getId().getUUID().toString())
+                )
+            );
+    }
+
+    @Test
+    @TestAsAdminBS
+    void findScheduledAnlaesseForKind() {
+        // ARRANGE
+        // Base Data To create Anlass
+        AnlassConfig configImpftermin = anlassConfigService.getByAnlassTypAndStichtag(AnlassTyp.IMPFTERMIN, appClock.offsetDateTime().now().toLocalDate());
+        AnlassConfig configKlasse8 = anlassConfigService.getByAnlassTypAndStichtag(AnlassTyp.KLASSE_8, appClock.offsetDateTime().now().toLocalDate());
+        Klasse klasse = fixtureService.createKlasse();
+        Dossier dossierForSearch = fixtureService.createDossier(fixtureService.createKind(klasse));
+        Dossier otherDossier = fixtureService.createDossier(fixtureService.createKind(klasse));
+
+        // Anlaesse should be found
+        Anlass anlass1 = anlassService.persist(AnlassBuilder.create(builder -> builder.withTitle("Impftermin 1").withAnlassConfig(configImpftermin)));
+        fixtureService.createEinladung(anlass1,dossierForSearch);
+
+        Anlass anlass2 = anlassService.persist(AnlassBuilder.create(builder -> builder.withTitle("Impftermin 2").withAnlassConfig(configImpftermin)));
+        fixtureService.createEinladung(anlass2,dossierForSearch);
+        fixtureService.createEinladung(anlass2,otherDossier);
+
+        LocalDateTime anlassLaterToday = appClock.offsetDateTime().now().toLocalDateTime().plusHours(1);
+        Anlass anlass3 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 3").withAnlassConfig(configImpftermin)
+                .withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate())
+                .withZeitVonBis(
+                    new DateTimeRange(anlassLaterToday, anlassLaterToday.plusHours(2))
+                )
+        ));
+        fixtureService.createEinladung(anlass3,dossierForSearch);
+
+
+        // Anlass scheduled tomorrow
+        Anlass anlass4 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 4")
+                .withAnlassConfig(configImpftermin)
+                .withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate().plusDays(1)))
+        );
+        fixtureService.createEinladung(anlass4,dossierForSearch);
+
+        // anlaesse with status pending
+        Anlass anlass5 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 5").withAnlassConfig(configImpftermin).withAnlassStatus(AnlassStatus.IN_PLANUNG)
+        ));
+        fixtureService.createEinladung(anlass5,dossierForSearch);
+
+        Anlass anlass6 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 6").withAnlassConfig(configImpftermin).withAnlassStatus(AnlassStatus.AUFGEBOTEN)
+        ));
+        fixtureService.createEinladung(anlass6,dossierForSearch);
+
+        Anlass anlass7 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 7").withAnlassConfig(configImpftermin).withAnlassStatus(AnlassStatus.BEREIT)
+        ));
+        fixtureService.createEinladung(anlass7,dossierForSearch);
+
+        // Anlass today without time von
+        Anlass anlass8 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 8").withAnlassConfig(configImpftermin)
+                .withDatumSetSchuljahr(LocalDate.now())
+        ));
+        fixtureService.createEinladung(anlass8,dossierForSearch);
+
+        // Anlass today already started
+        LocalDateTime anlassStartedTime = LocalDateTime.now().minusHours(1);
+        Anlass anlass9 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 9").withAnlassConfig(configImpftermin)
+                .withDatumSetSchuljahr(LocalDate.now())
+                .withZeitVonBis(
+                    new DateTimeRange(anlassStartedTime, anlassStartedTime.plusHours(2))
+                )
+        ));
+        fixtureService.createEinladung(anlass9,dossierForSearch);
+
+        // Anlass later today
+        LocalDateTime anlassTimeLater = LocalDateTime.now().plusHours(59);
+        Anlass anlass10 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 10").withAnlassConfig(configImpftermin)
+                .withDatumSetSchuljahr(LocalDate.now())
+                .withZeitVonBis(
+                    new DateTimeRange(anlassTimeLater, anlassTimeLater.plusHours(2))
+                )
+        ));
+        fixtureService.createEinladung(anlass10,dossierForSearch);
+
+        // Einzelanlass with where kind is already eingeladen
+        Anlass anlass11 = anlassService.persist(AnlassBuilder.create(builder -> builder
+            .withTitle("Impftermin 11")
+            .withAnlassArt(AnlassArt.EINZEL_ANLASS)
+            .withAnlassConfig(configImpftermin))
+        );
+        fixtureService.createEinladung(anlass11,dossierForSearch);
+
+        // Anlaesse should not be found
+        // kind not invited
+        Anlass anlass2_1 = anlassService.persist(AnlassBuilder.create(builder -> builder.withTitle("Impftermin 2.1").withAnlassConfig(configImpftermin)));
+        fixtureService.createEinladung(anlass2_1,otherDossier);
+
+        // empty anlass
+        anlassService.persist(AnlassBuilder.create(builder -> builder.withTitle("Impftermin 2.2").withAnlassConfig(configImpftermin)));
+
+        // anlaesse with status finished or closed
+        Anlass anlass2_2 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 2.2").withAnlassConfig(configImpftermin).withAnlassStatus(AnlassStatus.DURCHGEFUEHRT)
+        ));
+        fixtureService.createEinladung(anlass2_2,dossierForSearch);
+
+        Anlass anlass2_3 =anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 2.3").withAnlassConfig(configImpftermin).withAnlassStatus(AnlassStatus.ABGESAGT)
+        ));
+        fixtureService.createEinladung(anlass2_3,dossierForSearch);
+
+        Anlass anlass2_4 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 2.4").withAnlassConfig(configImpftermin).withAnlassStatus(AnlassStatus.ABGESCHLOSSEN)
+        ));
+        fixtureService.createEinladung(anlass2_4,dossierForSearch);
+
+        Anlass anlass2_6 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 2.5").withAnlassConfig(configImpftermin).withDatumSetSchuljahr(LocalDate.now().minusDays(1))
+        ));
+        fixtureService.createEinladung(anlass2_6,dossierForSearch);
+
+        // Anlass was yesterday
+        Anlass anlass2_7 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 2.6").withAnlassConfig(configImpftermin).withDatumSetSchuljahr(LocalDate.now().minusDays(1))
+        ));
+        fixtureService.createEinladung(anlass2_7,dossierForSearch);
+
+        // Anlass with different type
+        Anlass anlass2_8 = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 2.7").withAnlassConfig(configKlasse8).withDatumSetSchuljahr(LocalDate.now().minusDays(1))
+        ));
+        fixtureService.createEinladung(anlass2_8,dossierForSearch);
+
+        // Excluded anlass
+        Anlass excludedAnlass = anlassService.persist(AnlassBuilder.create(
+            b -> b.withTitle("Impftermin 2.8").withAnlassConfig(configImpftermin).withDatumSetSchuljahr(LocalDate.now().minusDays(1))
+        ));
+        fixtureService.createEinladung(excludedAnlass,dossierForSearch);
+
+        // ACT
+        AnlassWithDateTimeListJsonSpec result =
+            api.anlassResourceFindScheduledAnlaesseForKind()
+            .anlassTypQuery(AnlassTyp.IMPFTERMIN.toString())
+            .kindIdQuery(dossierForSearch.getKind().getId().getUUID())
+            .excludeAnlassIdsQuery(excludedAnlass.getId().getUUID())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(AnlassWithDateTimeListJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThatList(result.getAnlaesseWithDateTime())
+            .hasSize(11)
+            .extracting(
+                AnlassWithDateTimeJsonSpec::getTitel,
+                AnlassWithDateTimeJsonSpec::getAnlassId
+            )
+            .containsExactlyInAnyOrderElementsOf(
+                List.of(
+                    tuple("Impftermin 1", anlass1.getId().getUUID().toString()),
+                    tuple("Impftermin 2", anlass2.getId().getUUID().toString()),
+                    tuple("Impftermin 3", anlass3.getId().getUUID().toString()),
+                    tuple("Impftermin 4", anlass4.getId().getUUID().toString()),
+                    tuple("Impftermin 5", anlass5.getId().getUUID().toString()),
+                    tuple("Impftermin 6", anlass6.getId().getUUID().toString()),
+                    tuple("Impftermin 7", anlass7.getId().getUUID().toString()),
+                    tuple("Impftermin 8", anlass8.getId().getUUID().toString()),
+                    tuple("Impftermin 9", anlass9.getId().getUUID().toString()),
+                    tuple("Impftermin 10", anlass10.getId().getUUID().toString()),
+                    tuple("Impftermin 11", anlass11.getId().getUUID().toString())
+                )
+            );
     }
 }

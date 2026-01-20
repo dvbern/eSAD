@@ -1,5 +1,14 @@
 package ch.dvbern.oss.hemed.esc.api.testutil;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.time.OffsetDateTime;
+import java.util.Objects;
+import java.util.function.Supplier;
+
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil;
@@ -14,17 +23,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.text.RandomStringGenerator;
 import org.apache.commons.text.RandomStringGenerator.Builder;
+import org.assertj.core.api.Assertions;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.time.OffsetDateTime;
-import java.util.Objects;
 
 @UtilityClass
 public class TestUtil {
@@ -64,7 +66,7 @@ public class TestUtil {
 
     @NonNull
     public static String getRandomString(@NonNull String prefix) {
-        char[][] pairs = {{'a', 'z'}, {'A', 'Z'}};
+        char[][] pairs = { { 'a', 'z' }, { 'A', 'Z' } };
         RandomStringGenerator generator = new Builder()
             .withinRange(pairs)
             .get();
@@ -85,15 +87,14 @@ public class TestUtil {
     }
 
     @NonNull
-    public static File loadShortEscadaFile() {
-        String filePath = "/EscadaTest/testdata.csv";
+    public static File loadComplexEscadaFile() {
+        String filePath = "/EscadaTest/csv_pseudonymisiert.csv";
         return loadTestfile(filePath);
     }
 
-
     @NonNull
-    public static File loadComplexEscadaFile() {
-        String filePath = "/EscadaTest/csv_pseudonymisiert.csv";
+    public static File loadComplexPupilFile() {
+        String filePath = "/PupilTest/csv_pseudonymisiert.csv";
         return loadTestfile(filePath);
     }
 
@@ -159,6 +160,26 @@ public class TestUtil {
         }
     }
 
+    @NonNull
+    public static File loadTestfileWithFilename(@NonNull String filePath, @NonNull String desiredFilename) {
+
+        try (InputStream inputStream = TestUtil.class.getResourceAsStream(filePath)) {
+            Objects.requireNonNull(inputStream, filePath + " was not found");
+
+            File tempFile =
+                File.createTempFile(desiredFilename, '.' + FilenameUtils.getExtension(filePath));
+            tempFile.deleteOnExit();
+
+            File f = new File(tempFile.getParent(), desiredFilename);
+            f.deleteOnExit();
+
+            FileUtils.copyInputStreamToFile(inputStream, f);
+            return f;
+        } catch (IOException e) {
+            throw new AppFailureException(AppFailureMessage.internalError("Could not load test file"), e);
+        }
+    }
+
     public static FileUpload fileToFileUpload(@NonNull File file, @Nullable String originalFilename) {
         return new FileUpload() {
             @Override
@@ -191,5 +212,27 @@ public class TestUtil {
                 return Charset.defaultCharset().name();
             }
         };
+    }
+
+    @SuppressWarnings("java:S2925" /* we could use Awaitability here but the gain seems marginal
+    when considered as a tradeoff against an additional dependency*/)
+    public static void waitForConditionOrAssertFails(
+        @NonNull Supplier<Boolean> condition,
+        int maxRetries,
+        int waitInMillis,
+        @NonNull String messageToAssertFailure
+    ) throws InterruptedException {
+        boolean success = false;
+        for (int i = 0; i < maxRetries; i++) {
+            if (condition.get()) {
+                success = true;
+                break;
+            }
+            Thread.sleep(waitInMillis);
+        }
+
+        Assertions.assertThat(success)
+            .as(messageToAssertFailure)
+            .isTrue();
     }
 }

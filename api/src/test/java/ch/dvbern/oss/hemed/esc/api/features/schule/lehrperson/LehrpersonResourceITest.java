@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
@@ -49,7 +50,8 @@ class LehrpersonResourceITest extends AbstractITest {
                 builder.withExternalImportInfo(
                     UUID.randomUUID().toString(),
                     false,
-                    getAppClock().offsetDateTime().now());
+                    getAppClock().offsetDateTime().now(),
+                    ImportTyp.ESCADA);
             });
         lehrpersonService.persist(lpInaktiv);
 

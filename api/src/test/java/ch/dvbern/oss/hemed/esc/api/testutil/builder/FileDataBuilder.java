@@ -3,7 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +26,12 @@ public class FileDataBuilder {
 
     @NonNull
     public static FileData defaultPdfFileData() {
-        FileInfoS3 fileInfoS3 = FileInfoS3.of(new CleanFileName("pdf.pdf"), MediaType.application("pdf"), 100);
-        fileInfoS3.setFileIdInBucket("pdf");
+        FileInfo fileInfo = FileInfo.of(new CleanFileName("pdf.pdf"), MediaType.application("pdf"), 100);
+        fileInfo.setFileIdInBucket("pdf");
         FileData fileData = new FileData(
             FileTyp.NOTIZUPLOAD,
             new CleanFileName(TestUtil.getRandomString("FileName")),
-            fileInfoS3
+            fileInfo
         );
 
         fileData.setTimestampErstellt(OffsetDateTime.now());
@@ -40,15 +40,15 @@ public class FileDataBuilder {
 
     @NonNull
     public static FileData defaultWordFileData() {
-        FileInfoS3 fileInfoS3 = FileInfoS3.of(
+        FileInfo fileInfo = FileInfo.of(
             new CleanFileName("word.docx"),
             MediaType.application("vnd.openxmlformats-officedocument.wordprocessingml.document"),
             100);
-        fileInfoS3.setFileIdInBucket("word");
+        fileInfo.setFileIdInBucket("word");
         FileData fileData = new FileData(
             FileTyp.BRIEFVORLAGE,
             new CleanFileName(TestUtil.getRandomString("FileName")),
-            fileInfoS3
+            fileInfo
         );
 
         fileData.setTimestampErstellt(OffsetDateTime.now());
@@ -57,12 +57,12 @@ public class FileDataBuilder {
 
     @NonNull
     public static FileData defaultImgFileData() {
-        FileInfoS3 fileInfoS3 = FileInfoS3.of(new CleanFileName("picture.jpg"), MediaType.image("jpeg"), 100);
-        fileInfoS3.setFileIdInBucket("picture");
+        FileInfo fileInfo = FileInfo.of(new CleanFileName("picture.jpg"), MediaType.image("jpeg"), 100);
+        fileInfo.setFileIdInBucket("picture");
         FileData fileData = new FileData(
             FileTyp.NOTIZUPLOAD,
             new CleanFileName(TestUtil.getRandomString("FileName")),
-            fileInfoS3
+            fileInfo
         );
 
         fileData.setTimestampErstellt(OffsetDateTime.now());

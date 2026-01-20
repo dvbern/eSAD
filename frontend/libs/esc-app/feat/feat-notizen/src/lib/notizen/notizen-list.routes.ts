@@ -1,20 +1,18 @@
+import {inject} from '@angular/core';
 import {ActivatedRouteSnapshot, Route} from '@angular/router';
-import {inject} from "@angular/core";
-import {LabelsStore} from "@dvb/feat-shared";
-import {NotizenListStore} from "./notizen-list.store";
-import {confirmOnDirty} from "@dvb/util-angular";
-import {requireValidBackendEntityId} from "@dvb/data-access-types";
-import {NotizenListePageComponent} from "./notizen-list/notizen-liste.page.component";
-import {DossierStore} from "@dvb/feat-kinder";
-import {NotizDetailPageComponent} from "./notiz-details/notiz-detail.page.component";
+import {requireValidBackendEntityId} from '@dvb/data-access-types';
+import {DossierStore} from '@dvb/feat-kinder';
+import {LabelsStore, Path} from '@dvb/feat-shared';
+import {confirmOnDirty} from '@dvb/util-angular';
+import {NotizDetailPageComponent} from './notiz-details/notiz-detail.page.component';
+import {NotizenHochladenPageComponent} from './notizen-hochladen/notizen-hochladen.page.component';
+import {NotizenListStore} from './notizen-list.store';
+import {NotizenListePageComponent} from './notizen-list/notizen-liste.page.component';
 
 export const notizenListRoutes: Route[] = [
   {
     path: '',
-    providers: [
-      DossierStore,
-      NotizenListStore
-    ],
+    providers: [DossierStore, NotizenListStore],
     resolve: {
       notizen: () => inject(NotizenListStore).loadNotizen(),
       _labels: () => inject(LabelsStore).loadLabelsList(),
@@ -27,15 +25,24 @@ export const notizenListRoutes: Route[] = [
       },
       {
         path: ':notizId',
-        component: NotizDetailPageComponent,
         resolve: {
           _store: (route: ActivatedRouteSnapshot) => {
             const param = requireValidBackendEntityId(route.params['notizId']);
             inject(NotizenListStore).setSelectedEntityId(param);
           },
         },
-        canDeactivate: [confirmOnDirty()],
+        children: [
+          {
+            path: '',
+            component: NotizDetailPageComponent,
+            canDeactivate: [confirmOnDirty()],
+          },
+          {
+            path: Path.UPLOAD,
+            component: NotizenHochladenPageComponent,
+          },
+        ],
       },
     ],
-  }
+  },
 ];

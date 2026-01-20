@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 # Multiple domains separated by spaces
-domains="local-esc-bs.localhost local-esc-win.localhost"
+domains="local-esc-bs.localhost local-esc-win.localhost local-esc-be.localhost"
 # For now, use the first domain as the cert alias for backward compatibility
 cert_alias=$(echo ${domains} | cut -d' ' -f1)
 

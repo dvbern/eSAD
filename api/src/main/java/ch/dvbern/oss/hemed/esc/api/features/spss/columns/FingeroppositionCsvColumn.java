@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Fingeropposition;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -22,14 +23,20 @@ public class FingeroppositionCsvColumn extends AbstractCsvColumn {
     public String extract(@NonNull Einladung einladung) {
         return ExtractorForCsvUtil.extractUntersuchungArztBeurteilung(
             einladung,
-            untersuchungArzt ->
-                untersuchungArzt.getFingeropposition().contains(fingeropposition) ? "1" : ""
+            untersuchungArzt -> {
+                if (config.forSpssReport()) {
+                    return untersuchungArzt.getFingeropposition().contains(fingeropposition) ? "1" : "";
+                }
+                return PrintUtil.trimToPlaceholder(
+                    untersuchungArzt.getFingeropposition().contains(fingeropposition),
+                    config.tl());
+            }
         );
     }
 
     @Override
     @NonNull
     protected String getDefaultHeaderKey() {
-        return "CsvColumn.fingeropposition";
+        return "CsvColumn.fingeropposition." + this.fingeropposition;
     }
 }

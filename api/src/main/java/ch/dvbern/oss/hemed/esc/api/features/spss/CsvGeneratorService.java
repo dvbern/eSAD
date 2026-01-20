@@ -16,6 +16,7 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.AbstractCsvColumn;
+import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class CsvGeneratorService {
     private final EinladungService einladungService;
     private final CsvService csvService;
     private final SpssReportService spssReportService;
+    private final CsvReportService csvReportService;
 
     @Transactional(TxType.NOT_SUPPORTED)
     public byte[] generateSpssReport(
@@ -68,12 +70,62 @@ public class CsvGeneratorService {
         return outputStream.toByteArray();
     }
 
+    @Transactional(TxType.NOT_SUPPORTED)
+    public byte[] generateCsvReport(
+        @NonNull CsvReportType csvReportType,
+        @NonNull DateRange zeitraum,
+        @NonNull EmailAddress triggeringUser
+    ) {
+        List<ID<Einladung>> einladungIdList =
+            einladungService.findAllForCsvReport(zeitraum);
+
+        List<AbstractCsvColumn> columns = csvReportService.getColumns(csvReportType);
+        CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader(CsvReportService.extractHeaders(columns)).get();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        StringBuilder einladungIdsSB = new StringBuilder();
+        try (final CSVPrinter printer = new CSVPrinter(
+            new OutputStreamWriter(outputStream, StandardCharsets.UTF_8),
+            csvFormat)
+        ) {
+            for (ID<Einladung> id : einladungIdList) {
+                csvService.processEinladung(id, columns, printer);
+                einladungIdsSB.append(id.getUUID().toString()).append(',');
+            }
+        } catch (IOException e) {
+            throw new AppFailureException(AppFailureMessage.internalError("Error while generating CSV Report"), e);
+        }
+
+        String printedIds = einladungIdsSB.isEmpty() ?
+            einladungIdsSB.toString() :
+            einladungIdsSB.substring(0, einladungIdsSB.length() - 1); // cut final ','
+        logCsvReportGenerated(printedIds, csvReportType, triggeringUser);
+
+        return outputStream.toByteArray();
+    }
+
     private void logSpssReportGenerated(
         @NonNull String printedIds,
         @NonNull SpssReportType type,
         @NonNull EmailAddress emailAddress
     ) {
         String template = "ESC-SPSS: Generation of SPSS Report typ=${type} "
+            + "for einladungsIds=${einladungsIds}; triggering user was "
+            + "username=${emailAddress}";
+        Map<String, String> params = new HashMap<>();
+        params.put("type", type.name());
+        params.put("einladungsIds", printedIds);
+        params.put("emailAddress", emailAddress.toString());
+
+        String result = StringSubstitutor.replace(template, params, "${", "}");
+        LOG.info(result);
+    }
+
+    private void logCsvReportGenerated(
+        @NonNull String printedIds,
+        @NonNull CsvReportType type,
+        @NonNull EmailAddress emailAddress
+    ) {
+        String template = "ESC-CSV: Generation of CSV Report typ=${type} "
             + "for einladungsIds=${einladungsIds}; triggering user was "
             + "username=${emailAddress}";
         Map<String, String> params = new HashMap<>();

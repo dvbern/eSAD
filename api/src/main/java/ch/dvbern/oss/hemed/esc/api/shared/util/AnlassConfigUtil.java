@@ -229,7 +229,8 @@ public final class AnlassConfigUtil {
                 .append(START_STRING)
                 .append(config.getId().getId())
                 .append(START_STRING)
-                .append(';');
+                .append(';')
+                .append('\n');
         } catch (IllegalAccessException e) {
             throw new AppFailureException(AppFailureMessage.internalError("Failed to access field via reflection"), e);
         }

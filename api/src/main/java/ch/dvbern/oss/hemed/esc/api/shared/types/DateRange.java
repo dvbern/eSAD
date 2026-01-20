@@ -72,7 +72,7 @@ public class DateRange implements Serializable, Comparable<DateRange> {
         this.datumBis = checkNotNull(datumBis);
     }
 
-    protected DateRange() {
+    public DateRange() {
         this(DateConst.BEGIN_OF_TIME, DateConst.END_OF_TIME);
     }
 

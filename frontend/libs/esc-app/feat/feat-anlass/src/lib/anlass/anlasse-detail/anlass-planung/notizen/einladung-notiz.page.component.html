@@ -1,14 +1,14 @@
 <feat-page [heading]="pageTitle() | transloco : { nameKind: anlassKinderStore.nameKind() }"
-           [backLink]="{label: 'global.back' | transloco, routerLink: Path.RELATIVE_THREE_UP + '/' + Path.ANLASS_PLANUNG}">
-
+           [backLink]="{label: 'global.back' | transloco, routerLink: Path.RELATIVE_FOUR_UP + '/' + Path.ANLASS_PLANUNG}">
   <feat-notizen
     [kindId]="this.kindId()"
     [initialNotiz]="defaultNotizSig()"
     [existingNotiz]="currentNotiz()"
     [notizenFiles]="notizenFiles() ?? []"
     [loader]="anlassKinderStore.saveLoader"
+    [notizTyp]="notizTyp()"
     (saveNotiz)="onSaveNotiz($event)"
+    (saveNotizSilent)="onSaveNotizSilent($event)"
     (removeNotizFile)="onRemoveNotizFile($event)"
   />
-
 </feat-page>

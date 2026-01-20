@@ -115,8 +115,10 @@ public class EinladungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public EinladungBuilder withAbmeldungsNotiz(@NonNull Notiz abmeldungsNotiz) {
-        this.einladung.setAbmeldungsNotiz(abmeldungsNotiz);
+    public EinladungBuilder withNotiz(@NonNull Notiz notiz) {
+        ArrayList<Notiz> notizen = new ArrayList<>(this.einladung.getNotizen());
+        notizen.add(notiz);
+        this.einladung.setNotizen(notizen);
         return this;
     }
 
@@ -124,33 +126,6 @@ public class EinladungBuilder {
     @CanIgnoreReturnValue
     public EinladungBuilder withArtAbmeldung(@NonNull ArtAbmeldung artAbmeldung) {
         this.einladung.setArtAbmeldung(artAbmeldung);
-        return this;
-    }
-
-    @NonNull
-    @CanIgnoreReturnValue
-    public EinladungBuilder withImpfausweis(@NonNull Notiz impfausweis) {
-        ArrayList<Notiz> notizen = new ArrayList<>(this.einladung.getNotizen());
-        notizen.add(impfausweis);
-        this.einladung.setNotizen(notizen);
-        return this;
-    }
-
-    @NonNull
-    @CanIgnoreReturnValue
-    public EinladungBuilder withFrageBogen(@NonNull Notiz frageBogen) {
-        ArrayList<Notiz> notizen = new ArrayList<>(this.einladung.getNotizen());
-        notizen.add(frageBogen);
-        this.einladung.setNotizen(notizen);
-        return this;
-    }
-
-    @NonNull
-    @CanIgnoreReturnValue
-    public EinladungBuilder withAnmeldungBestaetigung(@NonNull Notiz anmeldungBestaetigung) {
-        ArrayList<Notiz> notizen = new ArrayList<>(this.einladung.getNotizen());
-        notizen.add(anmeldungBestaetigung);
-        this.einladung.setNotizen(notizen);
         return this;
     }
 

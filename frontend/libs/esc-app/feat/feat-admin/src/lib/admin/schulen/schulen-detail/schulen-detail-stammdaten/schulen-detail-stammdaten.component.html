@@ -103,7 +103,7 @@
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
       [compareWith]="compareBenutzerFn"
     >
-      @for (each of benutzerOptionsStore.mpaOptionsIncluding(form.group.value.zustaendigMPA); track each) {
+      @for (each of benutzerOptionsStore.mpaOrPfpOptionsIncluding(form.group.value.zustaendigMPA); track each) {
         <ng-option [value]="each" [disabled]="!each.aktiv">
           {{ each.fullName }}
         </ng-option>

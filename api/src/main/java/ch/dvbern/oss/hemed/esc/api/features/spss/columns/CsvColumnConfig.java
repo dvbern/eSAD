@@ -14,6 +14,8 @@ public record CsvColumnConfig(
     @NonNull
     UntersuchungImpfungInternService untersuchungImpfungInternService,
 
-    boolean shouldTranslateHeader
+    boolean shouldTranslateHeader,
+
+    boolean forSpssReport
 ) {
 }

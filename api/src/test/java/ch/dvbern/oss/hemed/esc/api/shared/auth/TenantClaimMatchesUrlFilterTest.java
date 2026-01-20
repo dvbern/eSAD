@@ -149,7 +149,7 @@ class TenantClaimMatchesUrlFilterTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"bs", "win"})
+    @ValueSource(strings = {"bs", "win", "be"})
     void should_allow_request_when_tenant_matches(String tenanturlPart) {
         // ARRANGE
         URI absolutePath = URI.create(String.format("https://local-esc-%s.localhost:4443/kinder", tenanturlPart));

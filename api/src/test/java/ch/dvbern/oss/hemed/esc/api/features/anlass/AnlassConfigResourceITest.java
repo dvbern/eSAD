@@ -19,12 +19,14 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
 import java.time.LocalDate;
+import java.util.EnumSet;
 
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateConst;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassConfigBuilder;
@@ -130,12 +132,15 @@ class AnlassConfigResourceITest extends AbstractITest {
         AnlassConfig config = fixtureService.createAnlassConfigAllOptional(2025, AnlassTyp.KINDERGARTEN);
         AnlassTyp newAnlassTyp = AnlassTyp.KLASSE_4;
         RequirementSetting newSehenTafelSetting = RequirementSetting.REQUIRED;
-
-        config.setAnlassTyp(newAnlassTyp);
-        config.setSehenTafel(newSehenTafelSetting);
+        EnumSet<PerzentileBmi> newPerzentileBmiSettings = EnumSet.of(PerzentileBmi.PERZENTILE_HOCH, PerzentileBmi.UEBERGEWICHT);
 
         AnlassConfigSaveJsonSpec saveJsonSpec = AnlassConfigBuilder.createJaxSpec(builder ->
-            builder.forAnlassConfig(config)).getData();
+            builder
+                .forAnlassConfig(config)
+                .withAnlassTyp(newAnlassTyp)
+                .withSehenTafel(newSehenTafelSetting)
+                .withGroesseGewichtBmiPerzentileValues(newPerzentileBmiSettings)
+        ).getData();
         // ACT
         AnlassConfigListJsonSpec list = api
             .anlassConfigResourceUpdateAnlassConfig()
@@ -159,5 +164,7 @@ class AnlassConfigResourceITest extends AbstractITest {
             AnlassTypSpec.KINDERGARTEN,
             result.getData().getAnlassTyp()); // Should keep the previous anlasstyp
         assertEquals(newSehenTafelSetting.toString(), result.getData().getSehenTafel().toString());
+        assertThat(result.getData().getGroesseGewichtBmiPerzentileValues())
+            .hasToString(newPerzentileBmiSettings.toString());
     }
 }

@@ -7,7 +7,7 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.labels.types.LabelTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.mandant.TranslatedString;
 import org.apache.commons.lang3.StringUtils;
@@ -44,22 +44,22 @@ class FileNameUtilTest {
         // ARRANGE
         LocalDate today = this.appClock.getToday();
         FileTyp fileTyp = FileTyp.IMPFAUSWEIS;
-        FileInfoS3 fileInfoS3 = FileInfoS3.of(CleanFileName.parse("File.pdf"), MediaType.TEXT_PLAIN, 92378L);
+        FileInfo fileInfo = FileInfo.of(CleanFileName.parse("File.pdf"), MediaType.TEXT_PLAIN, 92378L);
         List<FileData> files = List.of(
             new FileData(
                 FileTyp.IMPFAUSWEIS,
                 new CleanFileName("12-03-2025_Max-Mustermann_Impfausweis.pdf"),
-                fileInfoS3).setTimestampErstellt(
+                fileInfo).setTimestampErstellt(
                 OffsetDateTime.now(this.clockProvider.getClock()).minusMinutes(2)),
             new FileData(
                 FileTyp.IMPFAUSWEIS,
                 new CleanFileName("12-03-2025_Max-Mustermann_Impfausweis_2.pdf"),
-                fileInfoS3).setTimestampErstellt(
+                fileInfo).setTimestampErstellt(
                 OffsetDateTime.now(this.clockProvider.getClock()).minusMinutes(1)),
             new FileData(
                 FileTyp.IMPFAUSWEIS,
                 new CleanFileName("12-03-2025_Max-Mustermann_Impfausweis_3.pdf"),
-                fileInfoS3).setTimestampErstellt(
+                fileInfo).setTimestampErstellt(
                 OffsetDateTime.now(this.clockProvider.getClock())));
         String formattedName = "Max-Mustermann";
         if (listSize != 0) {
@@ -110,17 +110,17 @@ class FileNameUtilTest {
         LocalDate today = this.appClock.getToday();
 
         FileTyp fileTyp = FileTyp.IMPFAUSWEIS;
-        FileInfoS3 fileInfoS3 = FileInfoS3.of(CleanFileName.parse("File.pdf"), MediaType.TEXT_PLAIN, 92378L);
+        FileInfo fileInfo = FileInfo.of(CleanFileName.parse("File.pdf"), MediaType.TEXT_PLAIN, 92378L);
         List<FileData> files = List.of(
             new FileData(
                 fileTyp,
                 new CleanFileName("12-03-2025_Mustermann-Max_Impfausweis.pdf"),
-                fileInfoS3).setTimestampErstellt(
+                fileInfo).setTimestampErstellt(
                 OffsetDateTime.now(this.clockProvider.getClock())));
 
 
         // ACT
-        String originalFileName = fileInfoS3.getFileName().getFileName();
+        String originalFileName = fileInfo.getFileName().getFileName();
         CleanFileName calculatedFileName = FileNameUtil.calculateAutomaticFilename(
             files,
             today,
@@ -128,7 +128,7 @@ class FileNameUtilTest {
             fileTyp,
             originalFileName);
 
-        FileData result = new FileData(fileTyp, calculatedFileName, fileInfoS3);
+        FileData result = new FileData(fileTyp, calculatedFileName, fileInfo);
         // ASSERT
         assertThat(result.getFileTyp()).isEqualTo(fileTyp);
         assertThat(result.getFileInfoBucket().getFileName().getFileName()).isEqualTo("File.pdf");

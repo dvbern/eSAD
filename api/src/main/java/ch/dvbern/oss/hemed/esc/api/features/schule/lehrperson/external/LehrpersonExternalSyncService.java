@@ -10,9 +10,10 @@ import java.util.concurrent.TimeUnit;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.Lehrperson;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ExternalSystemIdDTO;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ImportPlanDTO;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ItemSyncResultJson;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ExternalSystemIdDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ImportPlanDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ItemSyncResultJson;
 import io.smallrye.context.api.ManagedExecutorConfig;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -28,16 +29,18 @@ public class LehrpersonExternalSyncService {
 
     private final LehrpersonExternalSyncHelperService syncHelperService;
     private final ManagedExecutor concurrentEscadaExecutor;
+    private final ConfigService configService;
 
     // IMPORANT: for the @ManagedExecutorConfig annotation to work, it must be directly on the @Inject.
     // do NOT use private final quarkus magic or you will exhaust all db connections
     @Inject
     public LehrpersonExternalSyncService(
         LehrpersonExternalSyncHelperService syncHelperService,
-        @ManagedExecutorConfig(maxAsync = 9) ManagedExecutor concurrentEscadaExecutor
-    ) {
+        @ManagedExecutorConfig(maxAsync = 9) ManagedExecutor concurrentEscadaExecutor,
+        ConfigService configService) {
         this.syncHelperService = syncHelperService;
         this.concurrentEscadaExecutor = concurrentEscadaExecutor;
+        this.configService = configService;
     }
 
     @NonNull
@@ -77,7 +80,7 @@ public class LehrpersonExternalSyncService {
                         return ItemSyncResultJson.<Lehrperson>createAddErrorItem(
                             lehrpersonExternalToAdd,
                             Objects.toString(
-                                lehrpersonExternalToAdd.getKlasseLehrpersonName(),
+                                lehrpersonExternalToAdd.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo()),
                                 lehrpersonExternalToAdd.getExternalId()),
                             e);
                     }

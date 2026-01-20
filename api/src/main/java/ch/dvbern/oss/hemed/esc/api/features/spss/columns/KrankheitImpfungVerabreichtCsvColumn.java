@@ -6,6 +6,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungKrankheitImmunitaet;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -29,7 +30,7 @@ public class KrankheitImpfungVerabreichtCsvColumn extends AbstractCsvColumn {
             ExtractorForCsvUtil.untersuchungImpfungKrankheitImmunitaetList(einladung, krankheit, config);
 
         if (krankheitImmunitaetList.isEmpty()) {
-            return "";
+            return config.forSpssReport() ? "" : printBoolean(false);
         }
 
         // If any immunitaet comes from an Impfung which has been durchgefuehrt, we can return 1
@@ -37,12 +38,21 @@ public class KrankheitImpfungVerabreichtCsvColumn extends AbstractCsvColumn {
             .map(UntersuchungImpfungKrankheitImmunitaet::getImpfung)
             .filter(impfung -> impfung.getImpfStatus() == ImpfStatus.DURCHGEFUEHRT)
             .toList()
-            .isEmpty() ? "" : "1";
+            .isEmpty() ? "" : formatPositivResponse();
+    }
+
+    @NonNull
+    private String formatPositivResponse() {
+        return config.forSpssReport() ? "1" : PrintUtil.trimToPlaceholder(true, config.tl());
+    }
+
+    String printBoolean(boolean input) {
+        return PrintUtil.trimToPlaceholder(input, config.tl());
     }
 
     @Override
     @NonNull
     protected String getDefaultHeaderKey() {
-        return "CsvColumn.krankheitImpfungVerabreicht";
+        return "CsvColumn.krankheitImpfungVerabreicht." + this.krankheit;
     }
 }

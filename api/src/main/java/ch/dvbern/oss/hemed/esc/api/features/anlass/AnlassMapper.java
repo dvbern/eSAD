@@ -27,13 +27,13 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassListJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassOptionJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.*;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleMapper;
 import ch.dvbern.oss.hemed.esc.api.features.schule.json.SchulInformationenJson;
@@ -45,8 +45,10 @@ import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateTimeRange;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+@Slf4j
 @JaxMapper
 @RequiredArgsConstructor
 public final class AnlassMapper {
@@ -57,6 +59,7 @@ public final class AnlassMapper {
     private final LehrpersonMapper lehrpersonMapper;
     private final AktivitaetHistoryService aktivitaetHistoryService;
     private final AuthorizerService authorizerService;
+    private final TenantSettingsService tenantSettingsService;
 
     @NonNull
     public static AnlassJson toJson(@NonNull Anlass anlass) {
@@ -187,7 +190,7 @@ public final class AnlassMapper {
     @NonNull
     public AnlassJson changeAnlassStatus(@NonNull ID<Anlass> anlassID, @NonNull AnlassStatus status) {
         Anlass entity = anlassService.changeAnlassStatus(anlassID, status);
-        return toJson(anlassService.persist(entity));
+        return toJson(entity);
     }
 
     public void remove(@NonNull ID<Anlass> anlassID) {
@@ -228,5 +231,32 @@ public final class AnlassMapper {
         });
 
         return schulInformationenJsonList;
+    }
+
+    @NonNull
+    public AnlassWithOpenSlotsListJson searchAnlassTermineWithAvailableSlots(@NonNull List<AnlassTyp> anlassTypen, @NonNull ID<Kind> kindId) {
+
+        int maxEinladungenPerAnlass = this.tenantSettingsService.getTenantSetting().getFolgeTermineMaxSlots();
+
+        List<AnlassWithOpenSlotsOptionJson> options = anlassService.findFutureGruppenAnlaesseOfTypeHavingLessThanMaxEinladungen(anlassTypen, kindId, maxEinladungenPerAnlass)
+            .stream()
+            .filter(anlasOption -> authorizerService.hasReadAuthorizationAnlassListe(anlasOption.getAnlassTyp()))
+            .toList();
+
+        return new AnlassWithOpenSlotsListJson(options, maxEinladungenPerAnlass);
+    }
+
+    @NonNull
+    public AnlassWithDateTimeListJson findScheduledAnlaesseOfTypeForKind(
+        @NonNull List<AnlassTyp> anlassTypen,
+        @NonNull ID<Kind> kindId,
+        @NonNull List<ID<Anlass>> excludeAnlassIds
+    ){
+        List<AnlassWithDateTimeJson> kindAnlaesse = anlassService.findScheduledAnlaesseOfTypeForKind(anlassTypen, kindId, excludeAnlassIds)
+            .stream()
+            .filter(anlass -> authorizerService.hasReadAuthorizationAnlassListe(anlass.getAnlassTyp()))
+            .toList();
+
+        return new AnlassWithDateTimeListJson(kindAnlaesse);
     }
 }

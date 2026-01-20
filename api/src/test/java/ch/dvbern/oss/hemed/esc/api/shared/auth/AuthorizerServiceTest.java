@@ -118,7 +118,6 @@ class AuthorizerServiceTest {
         Anlass anlass = fixtureService.createAnlass(AnlassTyp.IMPFTERMIN);
         // ACT / ASSERT
         assertThrows(Exception.class, () -> authorizerService.requireReadAuthorizationAnlass(anlass.getId()));
-        assertThrows(Exception.class, () -> authorizerService.requireWriteAuthorizationAnlassLaeuse(anlass.getId()));
     }
 
     @Test
@@ -128,8 +127,6 @@ class AuthorizerServiceTest {
         Anlass anlass = fixtureService.createAnlass(AnlassTyp.LAEUSEKONTROLLE);
         // ACT / ASSERT
         assertThatCode(() -> authorizerService.requireReadAuthorizationAnlass(anlass.getId()))
-            .doesNotThrowAnyException();
-        assertThatCode(() -> authorizerService.requireWriteAuthorizationAnlassLaeuse(anlass.getId()))
             .doesNotThrowAnyException();
     }
 

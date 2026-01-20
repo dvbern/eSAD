@@ -17,6 +17,6 @@ public class DocumentQueueListSaveJson {
     @NotNull
     @NonNull
     @Schema(required = true)
-    private final List<DocumentQueueSaveJson> list;
+    private final List<DocumentQueueSpssSaveJson> list;
 
 }

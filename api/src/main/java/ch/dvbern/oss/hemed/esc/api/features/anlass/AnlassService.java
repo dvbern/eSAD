@@ -10,14 +10,17 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDur
 import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithDateTimeJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDaten;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDatenService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithOpenSlotsOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmenService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.NachkontrolleService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
@@ -48,6 +51,12 @@ public class AnlassService {
     @NonNull
     public Anlass persist(@NonNull Anlass anlass) {
         anlassRepo.persist(anlass);
+        return anlass;
+    }
+
+    @NonNull
+    public Anlass persistAndFlush(@NonNull Anlass anlass) {
+        anlassRepo.persistAndFlush(anlass);
         return anlass;
     }
 
@@ -92,7 +101,7 @@ public class AnlassService {
         if (status == AnlassStatus.ABGESCHLOSSEN) {
             onAnlassAbgeschlossen(anlass);
         }
-        return persist(anlass);
+        return persistAndFlush(anlass);
     }
 
     private void onAnlassDurchgefuehrt(@NonNull Anlass anlass) {
@@ -154,5 +163,23 @@ public class AnlassService {
         if (anlass.getAnlassStatus() != AnlassStatus.ABGESCHLOSSEN) {
             throw new AppFailureException(AppFailureMessage.anlassIsNotAbgeschlossen());
         }
+    }
+
+    @NonNull
+    public List<AnlassWithOpenSlotsOptionJson> findFutureGruppenAnlaesseOfTypeHavingLessThanMaxEinladungen(
+        @NonNull List<AnlassTyp> anlassTypen,
+        @NonNull ID<Kind> kindId,
+        int maxEinladungen
+    ) {
+        return anlassRepo.findFutureGruppenAnlaesseOfTypeHavingLessThanMaxEinladungen(anlassTypen, kindId, maxEinladungen);
+    }
+
+    @NonNull
+    public List<AnlassWithDateTimeJson> findScheduledAnlaesseOfTypeForKind(
+        @NonNull List<AnlassTyp> anlassTypen,
+        @NonNull ID<Kind> kindId,
+        @NonNull List<ID<Anlass>> excludeAnlassIds
+    ) {
+        return anlassRepo.findScheduledAnlaesseOfTypeForKind(kindId, anlassTypen, excludeAnlassIds);
     }
 }

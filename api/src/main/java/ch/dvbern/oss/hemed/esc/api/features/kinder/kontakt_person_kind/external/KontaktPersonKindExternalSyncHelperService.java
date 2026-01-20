@@ -12,13 +12,15 @@ import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfoJson;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKindService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.types.KontaktPersonKindBeziehung;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ExternalSystemIdDTO;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ItemSyncResultJson;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ExternalSystemIdDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ItemSyncResultJson;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Land;
@@ -41,6 +43,7 @@ public class KontaktPersonKindExternalSyncHelperService {
     private final KontaktPersonKindService kontaktPersonKindService;
     private final KindService kindService;
     private final AppClock appClock;
+    private final ConfigService configService;
 
     @NonNull
     public static KontaktPersonKind toEntityForCreate(
@@ -53,7 +56,9 @@ public class KontaktPersonKindExternalSyncHelperService {
             ExternalImportInfoJson.toEntityOrCreate(
                 null,
                 kontaktPersonKindExternal.getExternalId(),
-                now),
+                now,
+                ImportTyp.ESCADA
+            ),
             kinder,
             Objects.toString(kontaktPersonKindExternal.getAdressierungName(), "N/A"),
             Objects.toString(kontaktPersonKindExternal.adressierungVorname, "N/A"),
@@ -120,7 +125,9 @@ public class KontaktPersonKindExternalSyncHelperService {
         kontaktPersonKind.setExternalImportInfo(ExternalImportInfoJson.toEntityOrCreate(
             kontaktPersonKind.getExternalImportInfo(),
             updatedExternal.getExternalId(),
-            now));
+            now,
+            ImportTyp.ESCADA
+        ));
 
         return kontaktPersonKind;
     }
@@ -156,7 +163,7 @@ public class KontaktPersonKindExternalSyncHelperService {
         var result = ItemSyncResultJson.createAddOkItem(
             kontaktPersonKindExternalToAdd,
             internalKpKindToStore.getId(),
-            internalKpKindToStore.getName()
+            internalKpKindToStore.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo())
         );
         LOG.info(
             "ESCADA: KontaktPersonKind {} added{}, internalId: '{}', externalId: '{}'",
@@ -232,7 +239,7 @@ public class KontaktPersonKindExternalSyncHelperService {
         return ItemSyncResultJson.createUpdateOkItem(
             idDTO,
             KontaktPersonKind.class,
-            updatedKontaktPerson.getName()
+            updatedKontaktPerson.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo())
         );
     }
 
@@ -264,7 +271,7 @@ public class KontaktPersonKindExternalSyncHelperService {
         var result = ItemSyncResultJson.createDeactivateOkItem(
             externalSystemIdDTO,
             KontaktPersonKind.class,
-            kontaktPerson.getName());
+            kontaktPerson.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo()));
 
         LOG.info(
             "ESCADA: KontaktPersonKind {} deactivated, internalId: '{}', externalId: '{}'",

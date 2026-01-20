@@ -37,6 +37,10 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIn
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBemerkungFragebogen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinstand;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Motorik;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
@@ -489,6 +493,8 @@ public final class MergeSourceDummyDataCreator {
             RequirementSetting.OPTIONAL,    // untersuchungImpfungEmpfehlung
             RequirementSetting.OPTIONAL,    // untersuchungImpfungAchtung
             RequirementSetting.OPTIONAL,    // untersuchungImpfungBemerkungen
+            EnumSetUtil.toString(EnumSet.allOf(Krankheit.class)), // untersuchungImpfungKrankheitenLinksValues
+            EnumSetUtil.toString(EnumSet.allOf(Krankheit.class)), // untersuchungImpfungKrankheitenRechtsValues
             RequirementSetting.OPTIONAL,    // sehenBrilleLinsen
             RequirementSetting.OPTIONAL,    // sehenFarbsehen
             RequirementSetting.OPTIONAL,    // sehenTafel
@@ -528,11 +534,11 @@ public final class MergeSourceDummyDataCreator {
             RequirementSetting.OPTIONAL,    // laeusekontrolleBemerkungen
             RequirementSetting.OPTIONAL,    // untersuchungBewegungsapparat
             RequirementSetting.OPTIONAL,    // untersuchungEinbeinstand
-            RequirementSetting.OPTIONAL,    // untersuchungEinbeinstandRechts
-            RequirementSetting.OPTIONAL,    // untersuchungEinbeinstandLinks
+            RequirementSetting.OPTIONAL,    // untersuchungEinbeinstandRechtsLinks
+            EnumSetUtil.toString(EnumSet.allOf(Einbeinstand.class)),// untersuchungEinbeinstandValues
             RequirementSetting.OPTIONAL,    // untersuchungEinbeinhuepfen
-            RequirementSetting.OPTIONAL,    // untersuchungEinbeinhuepfenRechts
-            RequirementSetting.OPTIONAL,    // untersuchungEinbeinhuepfenLinks
+            RequirementSetting.OPTIONAL,    // untersuchungEinbeinhuepfenRechtsLinks
+            EnumSetUtil.toString(EnumSet.allOf(Einbeinhuepfen.class)),// untersuchungEinbeinhuepfenValues
             RequirementSetting.OPTIONAL,    // untersuchungFingeropposition
             RequirementSetting.OPTIONAL,    // untersuchungHampelmann
             RequirementSetting.OPTIONAL,    // untersuchungBallFangen
@@ -551,10 +557,13 @@ public final class MergeSourceDummyDataCreator {
             RequirementSetting.OPTIONAL,    // untersuchungZeichnenMensch
             RequirementSetting.OPTIONAL,    // untersuchungZeichnenMenschPunkte
             RequirementSetting.OPTIONAL,    // untersuchungMotorik
+            EnumSetUtil.toString(EnumSet.allOf(Motorik.class)),// untersuchungMotorikValues
             RequirementSetting.OPTIONAL,    // untersuchungMotorikPunkte
             RequirementSetting.OPTIONAL,    // untersuchungKognition
             RequirementSetting.OPTIONAL,    // untersuchungKognitionPunkte
-            RequirementSetting.OPTIONAL,    // untersuchungSprache
+            RequirementSetting.OPTIONAL,    // untersuchungSprachfaehigkeitSingleValue
+            RequirementSetting.OPTIONAL,    // untersuchungSprachfaehigkeitMultiValue
+            EnumSetUtil.toString(EnumSet.allOf(Sprachfaehigkeit.class)),// untersuchungSprachfeahigkeitValues
             RequirementSetting.OPTIONAL,    // untersuchungSprachePunkte
             RequirementSetting.OPTIONAL,    // untersuchungMundZaehne
             RequirementSetting.OPTIONAL,    // untersuchungHaut

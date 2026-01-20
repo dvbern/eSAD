@@ -19,24 +19,39 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung;
 
 import java.io.Serial;
+import java.math.BigDecimal;
 import java.util.EnumSet;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Aussprache;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.BallFangen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.BallWerfen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Blutdruck;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinstand;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einverstaendniserklaerung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.FigurNachmalen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Fingeropposition;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Hampelmann;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Haut;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Herzauskultation;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Kognition;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Lesefit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Motorik;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.MundAndZaehne;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.NameSchreiben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Stifthaltung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Verhalten;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Verhaltensfragebogen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.ZahlenNachsprechen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Zeichnen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.ZeichnenMensch;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungArztUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungArztBeurteilungPresentIfReq;
@@ -46,6 +61,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
@@ -65,7 +82,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckUntersuchungArztBeurteilungPresentIfReq
-public class UntersuchungArztBeurteilung extends AbstractTenantEntity<UntersuchungArztBeurteilung>
+public class UntersuchungArztBeurteilung extends AbstractEntity<UntersuchungArztBeurteilung>
     implements EntityWithOptimisticLocking {
 
     @Serial
@@ -75,6 +92,18 @@ public class UntersuchungArztBeurteilung extends AbstractTenantEntity<Untersuchu
     @NonNull
     @OneToOne(optional = false, mappedBy = "untersuchungArztBeurteilung")
     private Untersuchung untersuchung;
+
+    @Nullable
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private String einverstaendniserklaerung;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private Verhaltensfragebogen verhaltensfragebogen;
 
     @Nullable
     @Enumerated(EnumType.STRING)
@@ -127,11 +156,16 @@ public class UntersuchungArztBeurteilung extends AbstractTenantEntity<Untersuchu
     private String mundAndZaehneBemerkung;
 
     @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private Sprachfaehigkeit sprachfaehigkeitSingleValue;
+
+    @Nullable
     @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
     @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
-    private String sprachfaehigkeit;
+    private String sprachfaehigkeitMultiValue;
 
     @Nullable
     @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
@@ -139,9 +173,32 @@ public class UntersuchungArztBeurteilung extends AbstractTenantEntity<Untersuchu
     private String sprachfaehigkeitBemerkung;
 
     @Nullable
+    @Min(0)
+    @Max(99)
+    @Column(nullable = true, scale = DbConst.DB_ZAHL_SCALE_1)
+    private BigDecimal sprachfaehigkeitPunkte;
+
+    @Nullable
     @Enumerated(EnumType.STRING)
     @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
     private Motorik motorik;
+
+    @Nullable
+    @Min(0)
+    @Max(99)
+    @Column(nullable = true, scale = DbConst.DB_ZAHL_SCALE_1)
+    private BigDecimal motorikPunkte;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private Kognition kognition;
+
+    @Nullable
+    @Min(0)
+    @Max(99)
+    @Column(nullable = true, scale = DbConst.DB_ZAHL_SCALE_1)
+    private BigDecimal kognitionPunkte;
 
     @Nullable
     @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
@@ -161,6 +218,16 @@ public class UntersuchungArztBeurteilung extends AbstractTenantEntity<Untersuchu
     private Einbeinstand einbeinstand;
 
     @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private Einbeinstand einbeinstandRechts;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private Einbeinstand einbeinstandLinks;
+
+    @Nullable
     @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String einbeinstandBemerkung;
@@ -169,6 +236,16 @@ public class UntersuchungArztBeurteilung extends AbstractTenantEntity<Untersuchu
     @Enumerated(EnumType.STRING)
     @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
     private Einbeinhuepfen einbeinhuepfen;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private Einbeinhuepfen einbeinhuepfenRechts;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private Einbeinhuepfen einbeinhuepfenLinks;
 
     @Nullable
     @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
@@ -187,6 +264,98 @@ public class UntersuchungArztBeurteilung extends AbstractTenantEntity<Untersuchu
     @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String fingeroppositionBemerkung;
 
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private Hampelmann hampelmann;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private BallFangen ballFangen;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private BallWerfen ballWerfen;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private NameSchreiben nameSchreiben;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private FigurNachmalen figurNachmalen;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private Stifthaltung stifthaltung;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private Aussprache aussprache;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private Lesefit lesefit;
+
+    @Nullable
+    @Min(0)
+    @Max(99)
+    @Column(nullable = true, scale = DbConst.DB_ZAHL_SCALE_1)
+    private BigDecimal lesefitPunkte;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private ZahlenNachsprechen zahlenNachsprechen4;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private ZahlenNachsprechen zahlenNachsprechen5;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private Zeichnen zeichnenKreis;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private Zeichnen zeichnenViereck;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private Zeichnen zeichnenDreieck;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
+    private ZeichnenMensch zeichnenMensch;
+
+    @Nullable
+    @Min(0)
+    @Max(99)
+    @Column(nullable = true, scale = DbConst.DB_ZAHL_SCALE_1)
+    private BigDecimal zeichnenMenschPunkte;
+
+    // Einverstaendniserklaerung
+    public void setEinverstaendniserklaerung(@Nullable EnumSet<Einverstaendniserklaerung> einverstaendnisErklaerung) {
+        this.einverstaendniserklaerung = EnumSetUtil.toString(einverstaendnisErklaerung);
+    }
+
+    @NonNull
+    public EnumSet<Einverstaendniserklaerung> getEinverstaendniserklaerung() {
+        return EnumSetUtil.fromString(Einverstaendniserklaerung.class, einverstaendniserklaerung);
+    }
+
     // MundAndZaehne
     public void setMundAndZaehne(@Nullable EnumSet<MundAndZaehne> mundAndZaehneList) {
         this.mundAndZaehne = EnumSetUtil.toString(mundAndZaehneList);
@@ -198,13 +367,13 @@ public class UntersuchungArztBeurteilung extends AbstractTenantEntity<Untersuchu
     }
 
     // Sprachfaehigkeit
-    public void setSprachfaehigkeit(@Nullable EnumSet<Sprachfaehigkeit> sprachfaehigkeitList) {
-        this.sprachfaehigkeit = EnumSetUtil.toString(sprachfaehigkeitList);
+    public void setSprachfaehigkeitMultiValue(@Nullable EnumSet<Sprachfaehigkeit> sprachfaehigkeitList) {
+        this.sprachfaehigkeitMultiValue = EnumSetUtil.toString(sprachfaehigkeitList);
     }
 
     @NonNull
-    public EnumSet<Sprachfaehigkeit> getSprachfaehigkeit() {
-        return EnumSetUtil.fromString(Sprachfaehigkeit.class, sprachfaehigkeit);
+    public EnumSet<Sprachfaehigkeit> getSprachfaehigkeitMultiValue() {
+        return EnumSetUtil.fromString(Sprachfaehigkeit.class, sprachfaehigkeitMultiValue);
     }
 
     // Bewegungsapparat
@@ -255,7 +424,7 @@ public class UntersuchungArztBeurteilung extends AbstractTenantEntity<Untersuchu
             config, arzt, Fingeropposition.NICHT_GEPRUEFT));
         arzt.setMotorik(UntersuchungArztUtil.getMotorik(
             config, arzt, Motorik.NICHT_GEPRUEFT));
-        arzt.setSprachfaehigkeit(UntersuchungArztUtil.getSprachfaehigkeit(
+        arzt.setSprachfaehigkeitMultiValue(UntersuchungArztUtil.getSprachfaehigkeit(
             config, arzt, Sprachfaehigkeit.NICHT_GEPRUEFT));
         arzt.setMundAndZaehne(UntersuchungArztUtil.getMundAndZaehne(
             config, arzt, MundAndZaehne.NICHT_GEPRUEFT));

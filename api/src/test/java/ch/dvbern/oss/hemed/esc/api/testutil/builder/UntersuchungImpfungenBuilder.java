@@ -95,6 +95,13 @@ public class UntersuchungImpfungenBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
+    public UntersuchungImpfungenBuilder withImpfausweisZweiPlusEinsSchema(boolean zweiPlusEinsSchema) {
+        this.impfungen.setImpfausweisZweiPlusEinsSchema(zweiPlusEinsSchema);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
     public UntersuchungImpfungenBuilder withCheckEinwilligungVorhanden(boolean check) {
         this.impfungen.setCheckEinwilligungVorhanden(check);
         return this;
@@ -123,7 +130,7 @@ public class UntersuchungImpfungenBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungImpfungenBuilder withUntersuchungImpfungenMassnahmen(@NonNull
+    public UntersuchungImpfungenBuilder withUntersuchungImpfungenMassnahmen(@Nullable
     UntersuchungImpfungenMassnahmen untersuchungImpfungenMassnahmen) {
         this.impfungen.setUntersuchungImpfungenMassnahmen(untersuchungImpfungenMassnahmen);
         return this;

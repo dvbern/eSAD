@@ -3,6 +3,7 @@
 # Copy File second time and rename to "prepared-escada-curl-request-dev(.sh/.ps1)" to save the import for dev
 # Change Client Secret and Password to according values
 # Potentially change testdata.csv to prefered file
+# Client -> ClientScopes -> add ESC-FACHROLLE scope, damit der tenant gemappt wird
 
 # Define Keycloak parameters
 $KEYCLOAK_URL="https://local-esc-bs.localhost:8989"

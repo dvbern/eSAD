@@ -57,17 +57,17 @@ export class KindAnlaesseComponent {
   public einladungStatusColor(status: EinladungStatus): BadgeColor {
     switch (status) {
       case 'TEILNAHME_BESTAETIGT':
+      case 'PRIVATARZT_BESTAETIGT':
+      case 'PRIVATARZT_MUENDL_BESTAETIGT':
       case 'UNTERSUCHUNG_JA':
-      case 'KEINE_ANMELDUNG':
         return 'green';
 
       case 'TEILNAHME_ABGESAGT':
-      case 'PRIVATARZT_BESTAETIGT':
-      case 'PRIVATARZT_MUENDLICH_BESTAETIGT':
-      case 'PRIVATARZT_OFFEN':
+      case 'KEINE_ANMELDUNG':
         return 'red';
 
       case 'NACHZUEGLER':
+      case 'PRIVATARZT_OFFEN':
         return 'orange';
 
       default:

@@ -121,9 +121,9 @@ public class UntersuchungArztUtil {
         @Nullable UntersuchungArztBeurteilung arztBeurteilung,
         @NonNull Sprachfaehigkeit defaultWert
     ) {
-        if (config.getUntersuchungSprache().isVisible()) {
-            if (arztBeurteilung != null && !arztBeurteilung.getSprachfaehigkeit().isEmpty()) {
-                return arztBeurteilung.getSprachfaehigkeit();
+        if (config.getUntersuchungSprachfaehigkeitMultiValue().isVisible()) {
+            if (arztBeurteilung != null && !arztBeurteilung.getSprachfaehigkeitMultiValue().isEmpty()) {
+                return arztBeurteilung.getSprachfaehigkeitMultiValue();
             }
             return EnumSet.of(defaultWert);
         }

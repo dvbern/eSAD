@@ -26,7 +26,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.types.Laeusek
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungLaeusekontrolleUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungLaeusekontrollePresentIfReq;
@@ -53,7 +53,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckUntersuchungLaeusekontrollePresentIfReq
-public class UntersuchungLaeusekontrolle extends AbstractTenantEntity<UntersuchungLaeusekontrolle>
+public class UntersuchungLaeusekontrolle extends AbstractEntity<UntersuchungLaeusekontrolle>
     implements EntityWithOptimisticLocking {
 
     @Serial

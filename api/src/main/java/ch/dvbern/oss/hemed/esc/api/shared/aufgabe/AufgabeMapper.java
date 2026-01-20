@@ -195,7 +195,7 @@ public class AufgabeMapper {
         }
         Aufgabe updatedAufgabe = aufgabeService.addUploadedFile(aufgabeID, file);
         updatedAufgabe.disableOptimisticLockingCheck();
-        return toJson(aufgabeService.persist(updatedAufgabe));
+        return toJson(aufgabeService.persistAndFlush(updatedAufgabe));
     }
 
     @NonNull

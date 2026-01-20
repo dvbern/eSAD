@@ -1,7 +1,12 @@
 import {withDevtools} from '@angular-architects/ngrx-toolkit';
 import {inject, Injectable} from '@angular/core';
 import {
+  AnlassService,
+  AnlassTyp,
+  AnlassWithDateTimeJson,
+  AnlassWithOpenSlotsListJson,
   BenutzerOptionJson,
+  EinladungenService,
   UntersuchungImpfstatusListSaveJson,
   UntersuchungImpfungenChecklisteSaveJson,
   UntersuchungImpfungenDoppelkontrolleSaveJson,
@@ -14,15 +19,16 @@ import {
   UntersuchungImpfungInternJson,
   UntersuchungImpfungInternSaveJson,
 } from '@dvb/data-access-backend';
-import {BackendEntityId} from '@dvb/data-access-types';
+import {BackendEntityId, requireValidBackendEntityId} from '@dvb/data-access-types';
 import {AppErrorHandlerService, AppNotificationStore, Loader} from '@dvb/util-angular';
 import {ensurePropsFlat, requireValue} from '@dvb/util-shared';
 import {TranslocoService} from '@jsverse/transloco';
 import {tapResponse} from '@ngrx/operators';
 import {EmptyFeatureResult, patchState, signalStore, SignalStoreFeature, withMethods, withState} from '@ngrx/signals';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
-import {exhaustMap, map, pipe, switchMap, tap} from 'rxjs';
+import {exhaustMap, filter, map, pipe, switchMap, take, tap} from 'rxjs';
 import {UntersuchungStore} from '../untersuchung.store';
+import {toObservable} from "@angular/core/rxjs-interop";
 
 type UntersuchungState = {
   impfausweis: UntersuchungImpfungenImpfausweisSaveJson | undefined,
@@ -32,6 +38,8 @@ type UntersuchungState = {
   massnahmen: UntersuchungImpfungenMassnahmenJson | undefined,
   impfstatusList: UntersuchungImpfstatusListSaveJson | undefined,
   impfungenInternList: UntersuchungImpfungInternJson[],
+  imfanlaesseScheduled: AnlassWithDateTimeJson[],
+  impffolgetermine: AnlassWithOpenSlotsListJson,
 };
 
 const initialState: UntersuchungState = {
@@ -42,6 +50,11 @@ const initialState: UntersuchungState = {
   massnahmen: undefined,
   impfstatusList: undefined,
   impfungenInternList: [],
+  imfanlaesseScheduled: [],
+  impffolgetermine: {
+    maximalAnzahlSlots: 0,
+    anlaesseWithOpenEinladungenSlots: []
+  }
 };
 
 @Injectable()
@@ -79,14 +92,18 @@ export class UntersuchungImpfungenStore extends signalStore(
   })),
 ) {
   readonly #impfungenService = inject(UntersuchungImpfungenService);
+  readonly #anlassService = inject(AnlassService);
+  readonly #einladungenService = inject(EinladungenService);
   readonly #appErrorHandlerService = inject(AppErrorHandlerService);
   readonly #untersuchungStore = inject(UntersuchungStore);
+
   readonly #appNotificationStore = inject(AppNotificationStore);
   readonly #transloco = inject(TranslocoService);
 
   readonly loader = new Loader();
   readonly saveImpfungenLoader = new Loader();
   readonly saveMassnahmenLoader = new Loader();
+  readonly impffolgetermineLoader = new Loader();
 
   loadUntersuchungImpfungenData = rxMethod<{ anlassId: BackendEntityId, einladungId: BackendEntityId }>(
     pipe(
@@ -135,13 +152,20 @@ export class UntersuchungImpfungenStore extends signalStore(
                 impfausweisUnvollstaendig: payload.impfausweisUnvollstaendig,
               },
             },
-          }),
+          }).pipe(
+            map(impfungen => ({ result: impfungen , params: payload }))
+          ),
           error => this.#appErrorHandlerService.handleError(error),
         ),
       ),
       tapResponse({
-        next: result => {
+        next: ({params, result}) => {
           this.patchImpfausweis(result);
+          // we have to reload checkmark state
+          this.#untersuchungStore.loadTabsSaved({
+            anlassId: params.anlassId,
+            einladungId: params.einladungId,
+          });
           this.#appNotificationStore.addSuccessNotification(this.#transloco.translate(
             'untersuchung.impfungen.impfausweisUnvollstaendig.changed'));
         },
@@ -162,21 +186,29 @@ export class UntersuchungImpfungenStore extends signalStore(
             anlassId: payload.anlassId,
             einladungId: payload.einladungId,
             untersuchungImpfungenSaveJson: {
-              ... this.prepareUntersuchungSaveJson(),
+              ...this.prepareUntersuchungSaveJson(),
               impfausweis: {
                 ...requireValue(this.impfausweis()),
                 impfausweisNichtVorhanden: payload.impfausweisNichtVorhanden,
               },
             },
-          }),
+          }).pipe(
+            map(impfungen => ({ result: impfungen, params: payload }))
+          ),
           error => this.#appErrorHandlerService.handleError(error),
         ),
       ),
       tapResponse({
-        next: result => {
+        next: ({ params, result }) => {
           this.patchImpfausweis(result);
-          this.#appNotificationStore.addSuccessNotification(this.#transloco.translate(
-            'untersuchung.impfungen.impfausweisNichtVorhanden.changed'));
+          // we have to reload checkmark state
+          this.#untersuchungStore.loadTabsSaved({
+            anlassId: params.anlassId,
+            einladungId: params.einladungId,
+          });
+          this.#appNotificationStore.addSuccessNotification(
+            this.#transloco.translate('untersuchung.impfungen.impfausweisNichtVorhanden.changed'),
+          );
         },
         error: console.error,
       }),
@@ -195,21 +227,29 @@ export class UntersuchungImpfungenStore extends signalStore(
             anlassId: payload.anlassId,
             einladungId: payload.einladungId,
             untersuchungImpfungenSaveJson: {
-              ... this.prepareUntersuchungSaveJson(),
+              ...this.prepareUntersuchungSaveJson(),
               impfausweis: {
                 ...requireValue(this.impfausweis()),
                 impfausweisZweiPlusEinsSchema: payload.impfausweisZweiPlusEinsSchema,
               },
             },
-          }),
+          }).pipe(
+            map(impfungen => ({ result: impfungen, params: payload }))
+          ),
           error => this.#appErrorHandlerService.handleError(error),
         ),
       ),
       tapResponse({
-        next: result => {
+        next: ({ params, result }) => {
           this.patchImpfausweis(result);
-          this.#appNotificationStore.addSuccessNotification(this.#transloco.translate(
-            'untersuchung.impfungen.impfausweisZweiPlusEinsSchema.changed'));
+          // we have to reload checkmark state
+          this.#untersuchungStore.loadTabsSaved({
+            anlassId: params.anlassId,
+            einladungId: params.einladungId,
+          });
+          this.#appNotificationStore.addSuccessNotification(
+            this.#transloco.translate('untersuchung.impfungen.impfausweisZweiPlusEinsSchema.changed'),
+          );
         },
         error: console.error,
       }),
@@ -319,13 +359,23 @@ export class UntersuchungImpfungenStore extends signalStore(
   saveMassnahmen = rxMethod<UntersuchungImpfungenServiceSaveUntersuchungMassnahmenRequestParams>(
     pipe(
       exhaustMap(params =>
-        this.saveMassnahmenLoader.tapLoading$(this.#impfungenService.saveUntersuchungMassnahmen$(params), error =>
-          this.#appErrorHandlerService.handleError(error),
+        this.saveMassnahmenLoader.tapLoading$(
+          this.#impfungenService.saveUntersuchungMassnahmen$(params).pipe(
+            map(massnahmen => ({ massnahmen, params }))
+          ),
+          error => this.#appErrorHandlerService.handleError(error),
         ),
       ),
       tapResponse({
-        next: massnahmen => {
-          patchState(this, { massnahmen: massnahmen });
+        next: ({ massnahmen, params }) => {
+
+          patchState(this, {massnahmen: massnahmen});
+          // have to reload checkmark state and whole impfungData for version number
+          this.#untersuchungStore.loadTabsSaved({
+            anlassId: params.anlassId,
+            einladungId: params.einladungId,
+          });
+          this.loadUntersuchungImpfungenData({anlassId: params.anlassId, einladungId: params.einladungId});
           this.#appNotificationStore.addSuccessNotification(this.#transloco.translate('global.data.saved'));
         },
         error: console.error,
@@ -439,16 +489,24 @@ export class UntersuchungImpfungenStore extends signalStore(
               einladungId: payload.einladungId,
               impfungInternId: requireValue(payload.impfungId),
               untersuchungImpfungInternSaveJson: payload.impfung,
-            }),
+            }).pipe(
+              map(result => ({ params: payload, result  }))
+            ),
             error => this.#appErrorHandlerService.handleError(error),
           )
           .pipe(
             tapResponse({
-              next: result => {
+              next: ({params, result}) => {
                 patchState(this, {
                   impfungenInternList: this.impfungenInternList().map(impfung =>
                     impfung.id === result.id ? result : impfung,
                   ),
+                }
+                );
+                // we have to reload checkmark state
+                this.#untersuchungStore.loadTabsSaved({
+                  anlassId: params.anlassId,
+                  einladungId: params.einladungId,
                 });
               },
               error: console.error,
@@ -512,6 +570,98 @@ export class UntersuchungImpfungenStore extends signalStore(
           this.patchChecklist(result);
           this.#appNotificationStore.addSuccessNotification(this.#transloco.translate(
             'untersuchung.impfungen.checklist.changed'));
+        },
+        error: console.error,
+      }),
+    ),
+  );
+
+  addKindToFolgetermin = rxMethod<{
+    folgeTerminAnlassId: BackendEntityId,
+    kindId: BackendEntityId,
+    currentAnlassId: BackendEntityId,
+  }>(
+    pipe(
+      exhaustMap(({folgeTerminAnlassId, kindId, currentAnlassId}) =>
+        this.impffolgetermineLoader.tapLoading$(
+          this.#einladungenService.createEinladungenForAnlass$({
+            anlassId: folgeTerminAnlassId,
+            kindIdListJson: {kinderIdList: [kindId]}
+          }),
+          error => this.#appErrorHandlerService.handleError(error),
+        ).pipe(
+          tapResponse({
+            next: () => {
+              this.#appNotificationStore.addSuccessNotification(this.#transloco.translate('untersuchung.tab.impfungen.massnahmen.folgetermin.success'));
+              this.#loadImpffolgetermin({kindId: requireValidBackendEntityId(kindId)});
+              this.#loadScheduledImpftermine({kindId, excludedAnlassId: currentAnlassId});
+            },
+            error: console.error,
+          }),
+        ),
+      ),
+    ),
+  );
+
+  initializeFolgeTermine = rxMethod<{ currentAnlassId: BackendEntityId }>(
+    pipe(
+      switchMap( ({ currentAnlassId }) =>
+        toObservable(this.#untersuchungStore.currentDossier).pipe(
+          map(dossier => dossier?.kind.id),
+          filter((id): id is BackendEntityId => !!id),
+          take(1),
+          map(kindId => ({ currentAnlassId, kindId }))
+        )
+      ),
+      tapResponse({
+        next: ( { currentAnlassId, kindId }) => {
+          this.#loadImpffolgetermin({kindId: requireValidBackendEntityId(kindId)});
+          this.#loadScheduledImpftermine({kindId, excludedAnlassId: currentAnlassId});
+        },
+        error: console.error,
+      })
+    ),
+  );
+
+  #loadImpffolgetermin = rxMethod<{ kindId: BackendEntityId }>(
+    pipe(
+      switchMap(({ kindId }) =>
+        this.impffolgetermineLoader.tapLoading$(
+          this.#anlassService.searchAnlassTermineWithAvailableSlots$({
+            kindId,
+            anlassTyp: [AnlassTyp.IMPFAKTION, AnlassTyp.IMPFTERMIN, AnlassTyp.IMPFSPRECHSTUNDE]
+          }),
+          error => this.#appErrorHandlerService.handleError(error),
+        ),
+      ),
+      tapResponse({
+        next: result => {
+          patchState(this, {
+            impffolgetermine: result
+          });
+        },
+        error: console.error,
+      }),
+    ),
+  );
+
+  #loadScheduledImpftermine = rxMethod<{ kindId: BackendEntityId, excludedAnlassId: BackendEntityId }>(
+    pipe(
+      switchMap(({ kindId, excludedAnlassId }) =>
+        this.impffolgetermineLoader.tapLoading$(
+          this.#anlassService.findScheduledAnlaesseForKind$({
+            kindId,
+            excludeAnlassIds: [excludedAnlassId],
+            anlassTyp: [AnlassTyp.IMPFAKTION, AnlassTyp.IMPFTERMIN, AnlassTyp.IMPFSPRECHSTUNDE]
+          }),
+          error => this.#appErrorHandlerService.handleError(error),
+        ),
+      ),
+      tapResponse({
+        next: result => {
+          patchState(this, {
+            imfanlaesseScheduled: result.anlaesseWithDateTime
+          });
         },
         error: console.error,
       }),

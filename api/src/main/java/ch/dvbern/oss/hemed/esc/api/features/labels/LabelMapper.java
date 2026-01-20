@@ -15,6 +15,7 @@ import ch.dvbern.oss.hemed.esc.api.features.labels.json.LabelSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.labels.types.LabelTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.mandant.TranslatedString;
 import ch.dvbern.oss.hemed.esc.api.shared.mandant.TranslatedStringMapper;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -126,5 +127,10 @@ public final class LabelMapper {
         if (added || removed) {
             throw new AppValidationException(AppValidationMessage.autoLabelsCannotBeAddedOrRemovedFromNotizOrAufgabe());
         }
+    }
+
+    @NotNull @NonNull
+    public LabelJson getById(@NotNull @NonNull ID<Label> labelID) {
+        return LabelMapper.toJson(labelService.getById(labelID));
     }
 }

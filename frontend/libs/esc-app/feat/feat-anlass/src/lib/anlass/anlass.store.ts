@@ -69,6 +69,18 @@ export class AnlassStore extends signalStore(
       groesseGewichtBmiPerzentileValues: computed(() => {
         return selectedEntity()?.anlassConfig.data.groesseGewichtBmiPerzentileValues;
       }),
+      untersuchungEinbeinstandValues: computed(() => {
+        return selectedEntity()?.anlassConfig.data.untersuchungEinbeinstandValues;
+      }),
+      untersuchungEinbeinhuepfenValues: computed(() => {
+        return selectedEntity()?.anlassConfig.data.untersuchungEinbeinhuepfenValues;
+      }),
+      untersuchungMotorikValues: computed(() => {
+        return selectedEntity()?.anlassConfig.data.untersuchungMotorikValues;
+      }),
+      untersuchungSprachfaehigkeitValues: computed(() => {
+        return selectedEntity()?.anlassConfig.data.untersuchungSprachfaehigkeitValues;
+      }),
       showFragebogen: computed(() => {
         return selectedEntity()?.anlassConfig.data.showFragebogen;
       }),

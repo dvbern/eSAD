@@ -23,7 +23,7 @@ class BerechtigungTest {
         Arrays.stream(FachRolle.values()).forEach(
             fachRolle -> {
                 System.out.println(String.format("================ %s ================", fachRolle.name()));
-                fachRolle.getBerechtigungen().forEach(
+                fachRolle.getBerechtigungen(TenantEnum.BS).forEach(
                     rolle -> {
                         Assertions.assertThat(rolle.getBerechtigungName()).isNotNull();
                         System.out.println(rolle.getBerechtigungName());

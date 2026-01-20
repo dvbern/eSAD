@@ -81,4 +81,5 @@ export enum Path {
   TABLE = 'table',
   TENANT_CONFIG = 'tenant-config',
   TYPORGRAPHY = 'typography',
+  UPLOAD = 'upload',
 }

@@ -12,7 +12,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.Impfstoff;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffCharge;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungImpfungIntern;
 import jakarta.persistence.CascadeType;
@@ -56,7 +56,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckUntersuchungImpfungIntern
-public class UntersuchungImpfungIntern extends AbstractTenantEntity<UntersuchungImpfungIntern>
+public class UntersuchungImpfungIntern extends AbstractEntity<UntersuchungImpfungIntern>
         implements EntityWithOptimisticLocking {
 
     @Serial

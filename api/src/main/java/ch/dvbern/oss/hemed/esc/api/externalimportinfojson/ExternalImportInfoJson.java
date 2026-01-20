@@ -35,13 +35,19 @@ public class ExternalImportInfoJson {
     @Schema(required = true)
     private OffsetDateTime timestampLatestImport;
 
+    @NonNull
+    @NotNull
+    @Schema(required = true)
+    private ImportTyp importTyp;
+
     @Nullable
     public static ExternalImportInfoJson toJson(@Nullable ExternalImportInfo entity) {
         if (entity == null ||
             entity.getIdInExternalSystem() == null ||
             entity.getTimestampFirstImport() == null ||
             entity.getTimestampLatestImport() == null ||
-            entity.getAktivInExternalSystem() == null
+            entity.getAktivInExternalSystem() == null ||
+            entity.getImportTyp() == null
         ) {
             return null;
         }
@@ -49,7 +55,8 @@ public class ExternalImportInfoJson {
             entity.getIdInExternalSystem(),
             entity.getAktivInExternalSystem(),
             entity.getTimestampFirstImport(),
-            entity.getTimestampLatestImport()
+            entity.getTimestampLatestImport(),
+            entity.getImportTyp()
         );
     }
 
@@ -57,7 +64,8 @@ public class ExternalImportInfoJson {
     public static ExternalImportInfo toEntityOrCreate(
         @Nullable ExternalImportInfo externalImportInfo,
         @NonNull String idInExternalSystem,
-        @NonNull OffsetDateTime now
+        @NonNull OffsetDateTime now,
+        @NonNull ImportTyp importTyp
     ) {
         if (externalImportInfo == null || externalImportInfo.getTimestampFirstImport() == null) {
             externalImportInfo = new ExternalImportInfo();
@@ -66,6 +74,7 @@ public class ExternalImportInfoJson {
         externalImportInfo.setIdInExternalSystem(idInExternalSystem);
         externalImportInfo.setAktivInExternalSystem(true);
         externalImportInfo.setTimestampLatestImport(now);
+        externalImportInfo.setImportTyp(importTyp);
         return externalImportInfo;
     }
 }

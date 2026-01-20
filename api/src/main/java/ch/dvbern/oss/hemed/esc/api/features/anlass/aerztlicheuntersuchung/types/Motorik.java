@@ -22,5 +22,8 @@ public enum Motorik {
 
     NORMAL,
     AUFFAELLIG,
+    AUFFAELLIG_PUNKTE,
+    GRENZWERTIG,
+    GUT,
     NICHT_GEPRUEFT
 }

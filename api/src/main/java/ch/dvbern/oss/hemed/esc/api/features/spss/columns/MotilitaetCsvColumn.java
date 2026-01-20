@@ -19,6 +19,11 @@ public class MotilitaetCsvColumn extends AbstractCsvColumn {
                 if (sehen.getMotilitaet() == null) {
                     return "";
                 }
+
+                if (!config.forSpssReport()) {
+                    return config.tl().translateValue(sehen.getMotilitaet());
+                }
+
                 return switch (sehen.getMotilitaet()) {
                     case NORMAL -> "1";
                     case PATHOLOGISCH -> "2";
@@ -31,6 +36,6 @@ public class MotilitaetCsvColumn extends AbstractCsvColumn {
     @Override
     @NonNull
     protected String getDefaultHeaderKey() {
-        return "CsvColumn.fernvisusLinks";
+        return "CsvColumn.motilitaet";
     }
 }

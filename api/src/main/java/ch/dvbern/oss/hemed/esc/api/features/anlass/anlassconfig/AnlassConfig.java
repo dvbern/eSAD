@@ -22,13 +22,19 @@ import java.io.Serial;
 import java.util.EnumSet;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinstand;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Motorik;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckAnlassConfigImpfungKrankheitenUniqueness;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -59,7 +65,8 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AnlassConfig extends AbstractTenantEntity<AnlassConfig> {
+@CheckAnlassConfigImpfungKrankheitenUniqueness
+public class AnlassConfig extends AbstractEntity<AnlassConfig> {
 
     @Serial
     private static final long serialVersionUID = 5285023727443911252L;
@@ -212,6 +219,20 @@ public class AnlassConfig extends AbstractTenantEntity<AnlassConfig> {
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
     private RequirementSetting untersuchungImpfungBemerkungen;
+
+    @Nullable
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LIST_LENGTH)
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private String untersuchungImpfungKrankheitenLinksValues;
+
+    @Nullable
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LIST_LENGTH)
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private String untersuchungImpfungKrankheitenRechtsValues;
 
     // Sehen
 
@@ -464,13 +485,14 @@ public class AnlassConfig extends AbstractTenantEntity<AnlassConfig> {
     @NonNull
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
-    private RequirementSetting untersuchungEinbeinstandRechts;
+    private RequirementSetting untersuchungEinbeinstandRechtsLinks;
 
-    @NotNull
-    @NonNull
-    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
-    @Enumerated(EnumType.STRING)
-    private RequirementSetting untersuchungEinbeinstandLinks;
+    @Nullable
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private String untersuchungEinbeinstandValues;
 
     @NotNull
     @NonNull
@@ -482,13 +504,14 @@ public class AnlassConfig extends AbstractTenantEntity<AnlassConfig> {
     @NonNull
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
-    private RequirementSetting untersuchungEinbeinhuepfenRechts;
+    private RequirementSetting untersuchungEinbeinhuepfenRechtsLinks;
 
-    @NotNull
-    @NonNull
-    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
-    @Enumerated(EnumType.STRING)
-    private RequirementSetting untersuchungEinbeinhuepfenLinks;
+    @Nullable
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private String untersuchungEinbeinhuepfenValues;
 
     @NotNull
     @NonNull
@@ -598,6 +621,13 @@ public class AnlassConfig extends AbstractTenantEntity<AnlassConfig> {
     @Enumerated(EnumType.STRING)
     private RequirementSetting untersuchungMotorik;
 
+    @Nullable
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private String untersuchungMotorikValues;
+
     @NotNull
     @NonNull
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
@@ -620,7 +650,20 @@ public class AnlassConfig extends AbstractTenantEntity<AnlassConfig> {
     @NonNull
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
-    private RequirementSetting untersuchungSprache;
+    private RequirementSetting untersuchungSprachfaehigkeitSingleValue;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting untersuchungSprachfaehigkeitMultiValue;
+
+    @Nullable
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private String untersuchungSprachfaehigkeitValues;
 
     @NotNull
     @NonNull
@@ -728,14 +771,79 @@ public class AnlassConfig extends AbstractTenantEntity<AnlassConfig> {
     @Column(nullable = false)
     private boolean showMassnahmenAnderes;
 
-
     // groesseGewichtBmiPerzentileValues
-    public void setGroesseGewichtBmiPerzentileValues(@Nullable EnumSet<PerzentileBmi> groesseGewichtBmiPerzentileValues) {
+    public void setGroesseGewichtBmiPerzentileValues(
+        @Nullable EnumSet<PerzentileBmi> groesseGewichtBmiPerzentileValues) {
         this.groesseGewichtBmiPerzentileValues = EnumSetUtil.toString(groesseGewichtBmiPerzentileValues);
     }
 
     @NonNull
     public EnumSet<PerzentileBmi> getGroesseGewichtBmiPerzentileValues() {
         return EnumSetUtil.fromString(PerzentileBmi.class, groesseGewichtBmiPerzentileValues);
+    }
+
+    // untersuchungEinbeinstandValues
+    public void setUntersuchungEinbeinstandValues(@Nullable EnumSet<Einbeinstand> untersuchungEinbeinstandValues) {
+        this.untersuchungEinbeinstandValues = EnumSetUtil.toString(untersuchungEinbeinstandValues);
+    }
+
+    @NonNull
+    public EnumSet<Einbeinstand> getUntersuchungEinbeinstandValues() {
+        return EnumSetUtil.fromString(Einbeinstand.class, untersuchungEinbeinstandValues);
+    }
+
+    // untersuchungEinbeinhuepfenValues
+    public void setUntersuchungEinbeinhuepfenValues(
+        @Nullable EnumSet<Einbeinhuepfen> untersuchungEinbeinhuepfenValues) {
+        this.untersuchungEinbeinhuepfenValues = EnumSetUtil.toString(untersuchungEinbeinhuepfenValues);
+    }
+
+    @NonNull
+    public EnumSet<Einbeinhuepfen> getUntersuchungEinbeinhuepfenValues() {
+        return EnumSetUtil.fromString(Einbeinhuepfen.class, untersuchungEinbeinhuepfenValues);
+    }
+
+    // untersuchungMotorikValues
+    public void setUntersuchungMotorikValues(@Nullable EnumSet<Motorik> untersuchungMotorikValues) {
+        this.untersuchungMotorikValues = EnumSetUtil.toString(untersuchungMotorikValues);
+    }
+
+    @NonNull
+    public EnumSet<Motorik> getUntersuchungMotorikValues() {
+        return EnumSetUtil.fromString(Motorik.class, untersuchungMotorikValues);
+    }
+
+    // untersuchungSprachfaehigkeitValues
+    public void setUntersuchungSprachfaehigkeitValues(@Nullable EnumSet<Sprachfaehigkeit> untersuchungSpracheValues) {
+        this.untersuchungSprachfaehigkeitValues = EnumSetUtil.toString(untersuchungSpracheValues);
+    }
+
+    @NonNull
+    public EnumSet<Sprachfaehigkeit> getUntersuchungSprachfaehigkeitValues() {
+        return EnumSetUtil.fromString(Sprachfaehigkeit.class, untersuchungSprachfaehigkeitValues);
+    }
+
+    // Impfungen Krankheiten Links
+    public void setUntersuchungImpfungKrankheitenLinksValues(
+        @NonNull EnumSet<Krankheit> untersuchungImpfungKrankheitenLinksValues) {
+        this.untersuchungImpfungKrankheitenLinksValues =
+            EnumSetUtil.toString(untersuchungImpfungKrankheitenLinksValues);
+    }
+
+    @NonNull
+    public EnumSet<Krankheit> getUntersuchungImpfungKrankheitenLinksValues() {
+        return EnumSetUtil.fromString(Krankheit.class, untersuchungImpfungKrankheitenLinksValues);
+    }
+
+    // Impfungen Krankheiten Rechts
+    public void setUntersuchungImpfungKrankheitenRechtsValues(
+        @NonNull EnumSet<Krankheit> untersuchungImpfungKrankheitenRechtsValues) {
+        this.untersuchungImpfungKrankheitenRechtsValues =
+            EnumSetUtil.toString(untersuchungImpfungKrankheitenRechtsValues);
+    }
+
+    @NonNull
+    public EnumSet<Krankheit> getUntersuchungImpfungKrankheitenRechtsValues() {
+        return EnumSetUtil.fromString(Krankheit.class, untersuchungImpfungKrankheitenRechtsValues);
     }
 }

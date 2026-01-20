@@ -252,6 +252,27 @@
       }
     </ng-select>
   </svui-form-control>
+
+  <!--  showimpfungendoppelkontrolle-->
+  <svui-form-control [label]="'anlassconfig.label.showImpfungenDoppelkontrolle' | transloco"
+                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showImpfungenDoppelkontrolle | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.showImpfungenDoppelkontrolle"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      <ng-option [value]="true">
+        {{ 'RequirementSetting.boolean.true' | transloco }}
+      </ng-option>
+      <ng-option [value]="false">
+        {{ 'RequirementSetting.boolean.false' | transloco }}
+      </ng-option>
+    </ng-select>
+  </svui-form-control>
+
   <!-- checkDoppelkontrolleImpfentscheidDurchgefuehrt-->
   <svui-form-control [label]="'anlassconfig.label.checkDoppelkontrolleImpfentscheidDurchgefuehrt' | transloco"
                      [viewValue]="'RequirementSetting.' + form.group.getRawValue().checkDoppelkontrolleImpfentscheidDurchgefuehrt | transloco">
@@ -328,6 +349,47 @@
     </ng-select>
   </svui-form-control>
 
+  <!-- untersuchungImpfungKrankheitenLinks Values -->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungImpfungKrankheitenLinksValues' | transloco"
+                     [viewValue]="form.group.getRawValue().untersuchungImpfungKrankheitenLinksValues | translatedEnumViewValuePipe:'Krankheit'"
+  >
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungImpfungKrankheitenLinksValues"
+      [allowBadgesToWrap]="true"
+      [multiple]="true"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+    >
+      @for (value of krankheiten; track value) {
+        <ng-option [value]="value">
+          {{ 'Krankheit.' + value | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- untersuchungImpfungKrankheitenRechts Values -->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungImpfungKrankheitenRechtsValues' | transloco"
+                     [viewValue]="form.group.getRawValue().untersuchungImpfungKrankheitenRechtsValues | translatedEnumViewValuePipe:'Krankheit'"
+  >
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungImpfungKrankheitenRechtsValues"
+      [allowBadgesToWrap]="true"
+      [multiple]="true"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+    >
+      @for (value of krankheiten; track value) {
+        <ng-option [value]="value">
+          {{ 'Krankheit.' + value | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
 
   <!--messages for whole form -->
   <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>

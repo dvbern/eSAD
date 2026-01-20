@@ -6,10 +6,10 @@ import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassListJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.*;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.schule.json.SchulInformationenListJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
@@ -19,12 +19,7 @@ import io.vertx.core.http.HttpServerResponse;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +50,7 @@ public class AnlassResource {
         @NotNull @NonNull @Valid AnlassSaveJson anlassJson
     ) {
         AnlassJson newAnlassJson = anlassMapper.create(anlassJson);
-        authorizerService.requireWriteAuthorizationAnlassLaeuse(newAnlassJson.getId());
+        authorizerService.requireWriteAuthorizationAnlass(newAnlassJson.getId());
         response.setStatusCode(Status.CREATED.getStatusCode());
         return newAnlassJson;
     }
@@ -69,7 +64,6 @@ public class AnlassResource {
         @NotNull @NonNull @Valid AnlassSaveJson anlassJson
     ) {
         authorizerService.requireWriteAuthorizationAnlass(anlassID);
-        authorizerService.requireWriteAuthorizationAnlassLaeuse(anlassID);
         return anlassMapper.update(anlassID, anlassJson);
     }
 
@@ -82,7 +76,6 @@ public class AnlassResource {
         @NotNull @NonNull @PathParam("status") AnlassStatus status
     ) {
         authorizerService.requireWriteAuthorizationAnlass(anlassID);
-        authorizerService.requireWriteAuthorizationAnlassLaeuse(anlassID);
         return anlassMapper.changeAnlassStatus(anlassID, status);
     }
 
@@ -91,7 +84,6 @@ public class AnlassResource {
     @RolesAllowed({ BerechtigungName.ANLASSPLANUNG_SCHREIBEN, BerechtigungName.ANLASSPLANUNG_SCHREIBEN_LAEUSE })
     public void removeAnlass(@NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassID) {
         authorizerService.requireWriteAuthorizationAnlass(anlassID);
-        authorizerService.requireWriteAuthorizationAnlassLaeuse(anlassID);
         anlassMapper.remove(anlassID);
     }
 
@@ -131,5 +123,28 @@ public class AnlassResource {
     @RolesAllowed({ BerechtigungName.ANLASSLISTE_LESEN, BerechtigungName.ANLASSLISTE_LESEN_LAEUSE })
     public AnlassListJson findAllForUser(@NonNull @NotNull @PathParam("benutzerID") ID<Benutzer> benutzerID) {
         return anlassMapper.findAllForUser(benutzerID);
+    }
+
+    @GET
+    @Path("/search-with-available-slots")
+    @RateLimit(RateLimitConst.DEFAULT_LIMIT)
+    @RolesAllowed({ BerechtigungName.ANLASSLISTE_LESEN, BerechtigungName.ANLASSLISTE_LESEN_LAEUSE })
+    public @NonNull AnlassWithOpenSlotsListJson searchAnlassTermineWithAvailableSlots(
+        @NonNull @NotNull @QueryParam("kindId") ID<Kind> kindId,
+        @NonNull @NotNull @QueryParam("anlassTyp") List<AnlassTyp> anlassTypen
+    ) {
+        return anlassMapper.searchAnlassTermineWithAvailableSlots(anlassTypen, kindId);
+    }
+
+    @GET
+    @Path("/search-sheduled-for-kind")
+    @RateLimit(RateLimitConst.DEFAULT_LIMIT)
+    @RolesAllowed({ BerechtigungName.ANLASSLISTE_LESEN, BerechtigungName.ANLASSLISTE_LESEN_LAEUSE })
+    public @NonNull AnlassWithDateTimeListJson findScheduledAnlaesseForKind(
+        @NonNull @NotNull @QueryParam("kindId") ID<Kind> kindId,
+        @NonNull @NotNull @QueryParam("excludeAnlassIds") List<ID<Anlass>> excludeAnlassIds,
+        @NonNull @NotNull @QueryParam("anlassTyp") List<AnlassTyp> anlassTypen
+    ) {
+        return anlassMapper.findScheduledAnlaesseOfTypeForKind(anlassTypen, kindId, excludeAnlassIds);
     }
 }

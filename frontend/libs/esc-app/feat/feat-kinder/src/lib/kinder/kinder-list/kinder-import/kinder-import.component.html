@@ -1,0 +1,129 @@
+<!--
+  ~ Copyright (C) 2025 DV Bern AG, Switzerland
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<feat-dialogs-modal [modalTitle]="'kinder.list.import.modal.title' | transloco">
+  <form svuiFormLayout
+        [mode]="DetailMode.EDIT"
+        [formType]="'kacheln'"
+        [formGroup]="form.group"
+        (ngSubmit)="submitIfValid()"
+        style="align-items: end;">
+
+
+    <!-- Import with Klasse selected or Klasse in Excel -->
+    <svui-form-group [label]="'kinder.list.import.type' | transloco"
+                     [direction]="'horizontal'"
+                     [viewValue]="form.group.getRawValue().standardImport ?
+                     ('kinder.list.import.type.selectKlasse' | transloco) :
+                     ('kinder.list.import.type.klasseInExcel' | transloco)">
+      <svui-single-radio-wrapper [label]="'kinder.list.import.type.selectKlasse' | transloco">
+        <input svuiRadio
+               type="radio"
+               name="importType"
+               [formControl]="form.controlAt('standardImport')"
+               [value]="true"
+        />
+      </svui-single-radio-wrapper>
+      <svui-single-radio-wrapper [label]="'kinder.list.import.type.klasseInExcel' | transloco">
+        <input svuiRadio
+               type="radio"
+               name="importType"
+               [formControl]="form.controlAt('standardImport')"
+               [value]="false"
+        />
+      </svui-single-radio-wrapper>
+    </svui-form-group>
+
+    <p>{{ 'kinder.list.import.vorlage.text' | transloco }}</p>
+    <button class="svui_upload-table--name-as-link svui_upload-table--maxlength text-start" type="button"
+            (click)="downloadImportTemplate(form.isStandardImportSelected())"
+            [title]="'kinder.list.import.vorlage.download' | transloco">
+      {{ 'kinder.list.import.vorlage.download' | transloco }}
+    </button>
+    @if (form.isStandardImportSelected()) {
+      <p>{{ 'kinder.list.import.type.selectKlasse.text' | transloco }}</p>
+    } @else {
+      <p>{{ 'kinder.list.import.type.klasseInExcel.text' | transloco }}</p>
+    }
+
+    <!-- Schule -->
+    <svui-form-control [label]="'anlass.detail.schule' | transloco"
+                       [viewValue]="form.group.value.schule?.bezeichnung"
+                       [size]="'half'">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.schule"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        [compareWith]="compareFnSchule"
+        [searchable]="true">
+        <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+        @if (schuleOptions()) {
+          @for (item of schuleOptions(); track item.id; let index = $index) {
+            <ng-option [value]="item">
+              <span class="w-100 d-flex justify-content-between">
+                <span>{{ item.bezeichnung }}</span>
+              </span>
+            </ng-option>
+          }
+        }
+      </ng-select>
+    </svui-form-control>
+
+    @if (form.isStandardImportSelected()) {
+      <!-- Klasse -->
+      <svui-form-control [label]="'anlass.detail.klasse' | transloco"
+                         [viewValue]="form.group.value.klasse?.bezeichnung"
+                         [size]="'half'">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.klasse"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          [compareWith]="compareFnKlasse"
+          [searchable]="true">
+          <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+          @if (klassenOptions()) {
+            @for (item of klassenOptions(); track item.id; let index = $index) {
+              <ng-option [value]="item">
+              <span class="w-100 d-flex justify-content-between">
+                <span>{{ item.bezeichnung }}</span>
+              </span>
+              </ng-option>
+            }
+          }
+        </ng-select>
+      </svui-form-control>
+    }
+
+    <!-- Fileupload -->
+    <feat-file-drop
+      (filesToUpload)="onFilesSelected($event)"
+      [acceptedFiletypes]="acceptedFiletypes"
+      [multiple]="false"
+    />
+
+    <!--messages for whole form -->
+    <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+    <!-- BUTTONS -->
+    <svui-save-cancel-buttons
+      (cancelClicked)="onCancelClicked()"
+      [saving]="store.importLoader.isLoading()"
+      [canEdit]="canEdit()"/>
+
+  </form>
+</feat-dialogs-modal>

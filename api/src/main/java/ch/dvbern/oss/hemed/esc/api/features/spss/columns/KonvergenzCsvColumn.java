@@ -19,6 +19,11 @@ public class KonvergenzCsvColumn extends AbstractCsvColumn {
                 if (sehen.getKonvergenz() == null) {
                     return "";
                 }
+
+                if (!config.forSpssReport()) {
+                    return config.tl().translateValue(sehen.getKonvergenz());
+                }
+
                 return switch (sehen.getKonvergenz()) {
                     case UNAUFFAELLIG -> "1";
                     case AUFFAELLIG -> "2";
@@ -31,6 +36,6 @@ public class KonvergenzCsvColumn extends AbstractCsvColumn {
     @Override
     @NonNull
     protected String getDefaultHeaderKey() {
-        return "CsvColumn.inspektion";
+        return "CsvColumn.konvergenz";
     }
 }

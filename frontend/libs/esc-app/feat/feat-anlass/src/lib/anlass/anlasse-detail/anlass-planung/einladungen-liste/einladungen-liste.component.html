@@ -1,7 +1,6 @@
 <svui-card style="margin-top: 15px;">
   <svui-card-header [heading]="'anlass.kinder.eingeladen' | transloco: {anzahl: itemTable.filteredListSize()}">
-    <svui-summary-values [map]="store.getTeilnehmerMap()"
-    />
+    <svui-summary-values [map]="store.getTeilnehmerMap()" itemFlow="flex"/>
   </svui-card-header>
 
   <table
@@ -13,23 +12,51 @@
   >
     <!-- col widths -->
     <colgroup>
+      <!-- checkbox-->
       <col svuiColWidth [colWidth]="'checkbox'">
+      <!-- name-->
       <col svuiColWidth [colWidth]="'text-medium'">
+      <!-- vorname-->
       <col svuiColWidth [colWidth]="'text-medium'">
+      <!-- geschlecht-->
       <col svuiColWidth [colWidth]="'select-small'">
+      <!-- geburtsdatum-->
       <col svuiColWidth [colWidth]="'date'">
-      <col svuiColWidth [colWidth]="'text-small'">
-      <col svuiColWidth [colWidth]="'text-medium'">
+      @if (!isAnlassStatusBereit()) {
+        <!-- sprache-->
+        <col svuiColWidth [colWidth]="'text-small'">
+        <!-- idnummer-->
+        <col svuiColWidth [colWidth]="'text-medium'">
+      }
+      <!-- klassenstufe-->
       <col svuiColWidth [colWidth]="'select-medium'">
-      <col svuiColWidth [colWidth]="'select-medium'">
+      <!-- nachkontrolle-->
+      @if (!anlassStore.isAbgeschlossen()) {
+        <col svuiColWidth [colWidth]="'select-medium'">
+      }
+      <!-- einladungstatus-->
       <col svuiColWidth [colWidth]="'select-medium'">
       @if (isAnlassStatusBereit()) {
+        <!-- naechstestation-->
         <col svuiColWidth [colWidth]="'select-medium'">
+        <!-- naechstestationSeit-->
         <col svuiColWidth [colWidth]="'options'">
       }
+      <!-- impfausweis-->
+      @if (anlassStore.showImpfausweis()) {
+        <col svuiColWidth [colWidth]="'options'">
+      }
+      <!-- fragebogen-->
+      @if (anlassStore.showFragebogen()) {
+        <col svuiColWidth [colWidth]="'options'">
+      }
+      <!-- anmeldungsbesestaetigung-->
+      @if (anlassStore.showAnmeldungBestaetigung()) {
+        <col svuiColWidth [colWidth]="'options'">
+      }
+      <!-- actions-->
       <col svuiColWidth [colWidth]="'options'">
-      <col svuiColWidth [colWidth]="'options'">
-      <col svuiColWidth [colWidth]="'options'">
+
     </colgroup>
     <thead>
     <!-- Headers for sorting -->
@@ -362,7 +389,6 @@
                 [clearable]="false"
                 [formControl]="einladungStatusForm.controls[item.id]"
                 (change)="einladungsstatusChanged(item, $event)"
-                [disabled]="store.loader.isLoading() || !anlassStore.canUserEditAnlassInCurrentState()"
                 [placeholder]="'global.select.bitte-auswaehlen' | transloco ">
                 @for (status of einladungStatusValues; track status) {
                   <ng-option [value]="status">
@@ -385,7 +411,7 @@
             </td>
           }
           @if (anlassStore.showImpfausweis()) {
-            <td>
+            <td class="text-center">
               @if (hasNotizFile(item.data.notizen, NotizTyp.IMPFAUSWEIS)) {
                 <button svuiIconOnlyButton="success"
                         type="button"
@@ -406,7 +432,7 @@
             </td>
           }
           @if (anlassStore.showFragebogen()) {
-            <td>
+            <td class="text-center">
               @if (hasNotizFile(item.data.notizen, NotizTyp.FRAGEBOGEN)) {
                 <button svuiIconOnlyButton="success"
                         type="button"
@@ -427,7 +453,7 @@
             </td>
           }
           @if (anlassStore.showAnmeldungBestaetigung()) {
-            <td>
+            <td class="text-center">
               @if (hasNotizFile(item.data.notizen, NotizTyp.ANMELDUNG_BESTAETIGUNG)) {
                 <button svuiIconOnlyButton="success"
                         type="button"

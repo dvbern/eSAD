@@ -3,6 +3,7 @@ import {NonNullableFormBuilder} from '@angular/forms';
 import {AnlassConfigJson, AnlassTyp} from '@dvb/data-access-backend';
 import {BenutzerStore, PageComponent, Path, TenantSettingsStore} from '@dvb/feat-shared';
 import {
+  IconOnlyButtonComponent,
   PageHeaderAddButtonComponent,
   PageHeaderButtonsComponent,
   PageHeaderListSummaryComponent,
@@ -24,6 +25,7 @@ import {AnlassConfigListComponent} from './list/anlass-config-list.component';
     PageHeaderButtonsComponent,
     PageHeaderListSummaryComponent,
     AnlassConfigListComponent,
+    IconOnlyButtonComponent,
   ],
   templateUrl: './anlass-config-list.page.component.html',
   styleUrl: './anlass-config-list.page.component.scss',
@@ -37,11 +39,11 @@ export class AnlassConfigListPageComponent extends FilterSessionStorage<AnlassCo
   readonly #translocoService = inject(TranslocoService);
 
   pageTitle = computed(() => {
-    const mandant = isNotNullish(this.tenantSettingsStore.settings()) ?
-      this.tenantSettingsStore.settings()?.tenant :
-      '?';
+    const mandant = isNotNullish(this.tenantSettingsStore.settings())
+      ? this.tenantSettingsStore.settings()?.tenant
+      : '?';
 
-    return this.#translocoService.translate('anlassconfig.list.page.title', {mandant});
+    return this.#translocoService.translate('anlassconfig.list.page.title', { mandant });
   });
 
   canEditList = this.benutzerStore.createHasRequiredRoleSig(hasConfigEditBerechtigung());
@@ -53,7 +55,7 @@ export class AnlassConfigListPageComponent extends FilterSessionStorage<AnlassCo
       rawListSignal: this.store.entities,
       lazyLoadOnSortOrFilter: () => this.setSessionStorageFilter(this.tableFilterForm.valueOnValid()),
     },
-    {frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll'},
+    { frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll' },
   );
 
   readonly tableFilterForm = new AnlassConfigListFilterForm({
@@ -97,4 +99,7 @@ export class AnlassConfigListPageComponent extends FilterSessionStorage<AnlassCo
     }
   }
 
+  async downloadAllSqlSkripts(): Promise<void> {
+    this.store.downloadAllSqlSkripts();
+  }
 }

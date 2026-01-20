@@ -28,7 +28,7 @@ import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Fachrichtung;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.HpvTeilnahme;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Organisation;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -55,7 +55,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Arzt extends AbstractTenantEntity<Arzt> implements EntityWithOptimisticLocking {
+public class Arzt extends AbstractEntity<Arzt> implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 7908264470040862763L;

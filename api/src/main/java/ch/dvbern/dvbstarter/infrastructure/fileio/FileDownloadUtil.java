@@ -24,7 +24,6 @@ import java.util.Map;
 
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import com.google.common.net.UrlEscapers;
 import io.smallrye.mutiny.Multi;
@@ -46,12 +45,14 @@ public class FileDownloadUtil {
     public static final String CONTENT_DISPOSITION = "Content-Disposition";
     public static final String FILENAME = ";filename=";
     public static final String MIME_TYPE_DOCX = "vnd.openxmlformats-officedocument.wordprocessingml.document";
+    public static final String MIME_TYPE_XLSX = "vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
     @NonNull
     public static Multi<Buffer> getBufferRestMultiWithInfo(
-        @NonNull FileInfoS3 fileInfoBucket,
+        @NonNull FileInfo fileInfoBucket,
         @NonNull FileStoreService fileStoreService,
-        @NonNull String disposition) {
+        @NonNull String disposition
+    ) {
         String fileId = fileInfoBucket.getFileIdInBucket();
         final String filename = urlEscapeAndQuoteFilename(fileInfoBucket.getFileName().getFileName());
         final String contentType = fileInfoBucket.getMediaType().toString();
@@ -72,7 +73,7 @@ public class FileDownloadUtil {
      * Create the response with the file from the storage but keep the original filename and content type
      */
     public Multi<Buffer> getBufferMultiWithInfo(
-        @NonNull FileInfoS3 fileInfoBucket,
+        @NonNull FileInfo fileInfoBucket,
         @NonNull FileStoreService fileStoreService,
         @NonNull String disposition
     ) {
@@ -92,7 +93,7 @@ public class FileDownloadUtil {
 
     @NonNull
     public static Multi<Buffer> getBufferRestMultiWithInfo(
-        @NonNull FileInfoS3 fileInfoBucket,
+        @NonNull FileInfo fileInfoBucket,
         @NonNull FileStoreService fileStoreService
     ) {
         return getBufferRestMultiWithInfo(fileInfoBucket, fileStoreService, "attachment");

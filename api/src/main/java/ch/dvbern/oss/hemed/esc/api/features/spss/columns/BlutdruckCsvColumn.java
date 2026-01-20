@@ -22,6 +22,9 @@ public class BlutdruckCsvColumn extends AbstractCsvColumn {
                 if (untersuchungArzt.getBlutdruck() == null) {
                     return "";
                 }
+                if (!config.forSpssReport()) {
+                    return config.tl().translateValue(untersuchungArzt.getBlutdruck());
+                }
                 return switch (untersuchungArzt.getBlutdruck()) {
                     case Blutdruck.NORMAL -> "1";
                     case Blutdruck.AUFFAELLIG -> "2";

@@ -83,12 +83,12 @@ export class UntersuchungSehenStore extends signalStore(
     ),
   );
 
-  loadDefaultSehenBeurteilung = rxMethod<AnlassEinladungenId>(
+  loadDefaultSehenBeurteilung = rxMethod<UntersuchungMassnahmenServiceGetUntersuchungMassnahmenSehenRequestParams>(
     pipe(
       switchMap(params => this.defaultLoader.tapLoading$(this.#sehenService.getDefaultUntersuchungSehenBeurteilungForAnlassConfig$(
           {
             anlassId: params.anlassId,
-            einladungId: params.einladungIds[0],
+            einladungId: params.einladungId,
           }),
         error => this.#appErrorHandlerService.handleError(error))),
       tapResponse({

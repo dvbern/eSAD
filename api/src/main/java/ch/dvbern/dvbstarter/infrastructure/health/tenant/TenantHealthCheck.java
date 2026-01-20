@@ -72,7 +72,8 @@ public class TenantHealthCheck extends AbstractTenantHealthCheck implements Heal
 
         tenantesToCheckHealthFor = List.of(
             new TenantInfos(TenantEnum.BS, Benutzer.SYSTEM_ADMIN_BS_ID),
-            new TenantInfos(TenantEnum.WIN, Benutzer.SYSTEM_ADMIN_WIN_ID)
+            new TenantInfos(TenantEnum.WIN, Benutzer.SYSTEM_ADMIN_WIN_ID),
+            new TenantInfos(TenantEnum.BE, Benutzer.SYSTEM_ADMIN_BE_ID)
         );
     }
 

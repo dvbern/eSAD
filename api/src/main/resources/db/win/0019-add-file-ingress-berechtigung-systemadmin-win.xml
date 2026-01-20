@@ -1,0 +1,10 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <!-- Neue Berechtigung fuer Systemadmin WIN -->
+  <changeSet id="1764175790310-1" author="Franziska Herger">
+    <sql>
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, berechtigung, benutzer_id) VALUES ('70b842ea-69c2-41f0-8fbb-13d6fa8490f2', '2025-03-28 08:45:50.889111 +00:00', '2025-03-28 08:45:50.889111 +00:00', '11111111-1111-1111-1111-111111111114', '11111111-1111-1111-1111-111111111114', 0, 'FILE_INGRESS_PUSH', '11111111-1111-1111-1111-111111111114');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

@@ -43,4 +43,16 @@ public class TenantSettingFeaturesJson {
     @Schema(required = true)
     private final TenantSettingFeatureStateJson laenderCodeFeature;
 
+    @NotNull
+    @NonNull
+    @Valid
+    @Schema(required = true)
+    private final TenantSettingFeatureStateJson mobileScannerFeature;
+
+    @NotNull
+    @NonNull
+    @Valid
+    @Schema(required = true)
+    private final TenantSettingFeatureStateJson massenimportFeature;
+
 }

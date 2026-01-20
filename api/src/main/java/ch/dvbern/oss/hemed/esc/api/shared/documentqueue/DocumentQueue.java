@@ -1,14 +1,16 @@
 package ch.dvbern.oss.hemed.esc.api.shared.documentqueue;
 
 import java.io.Serial;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
+import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckDocumentQueueCsv;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -42,7 +44,8 @@ import org.hibernate.envers.Audited;
         @Index(name = "ix_documentqueue_benutzer", columnList = "benutzer_id, id"),
     }
 )
-public class DocumentQueue extends AbstractTenantEntity<DocumentQueue> {
+@CheckDocumentQueueCsv
+public class DocumentQueue extends AbstractEntity<DocumentQueue> {
     @Serial
     private static final long serialVersionUID = 2378252098966219560L;
 
@@ -73,6 +76,14 @@ public class DocumentQueue extends AbstractTenantEntity<DocumentQueue> {
     @Nullable
     @Column(nullable = true, length = DbConst.DB_FREITEXT_LENGTH)
     private String lastError;
+
+    @Nullable
+    @Column(nullable = true)
+    private LocalDate datumVon;
+
+    @Nullable
+    @Column(nullable = true)
+    private LocalDate datumBis;
 
     @Nullable
     @OneToOne

@@ -2,11 +2,22 @@ import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {BenutzerOptionJson, EntityAktivStatus, QuartierOptionJson, SchuleJson} from '@dvb/data-access-backend';
-import {BenutzerOptionsStore, QuartiereOptionsStore, SchulenStore} from '@dvb/feat-shared';
-import {AdresseComponent, AdresseForm} from '@dvb/feat-shared';
-import {BenutzerStore} from '@dvb/feat-shared';
-import {Path} from '@dvb/feat-shared';
+import {
+  BenutzerOptionJson,
+  EntityAktivStatus,
+  ImportTyp,
+  QuartierOptionJson,
+  SchuleJson,
+} from '@dvb/data-access-backend';
+import {
+  AdresseComponent,
+  AdresseForm,
+  BenutzerOptionsStore,
+  BenutzerStore,
+  Path,
+  QuartiereOptionsStore,
+  SchulenStore,
+} from '@dvb/feat-shared';
 import {
   FormButtonsComponent,
   FormControlComponent,
@@ -19,7 +30,7 @@ import {
   TextInputDirective,
 } from '@dvb/ui-components';
 import {DetailMode, DirtyMarker} from '@dvb/util-angular';
-import {fromISODateTimeString, hasListEditBerechtigung, isNullish} from '@dvb/util-shared';
+import {fromISODateTimeString, hasListEditBerechtigung, isNotNullish, isNullish} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {SchulenStammdatenForm} from './schulen-detail-stammdaten.form';
@@ -60,7 +71,10 @@ export class SchulenDetailStammdatenComponent implements DirtyMarker {
   canEditList = this.benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
 
   isEscadaObject = computed(() => {
-    return !!this.store.selectedEntity()?.externalImportInfoJson?.aktivInExternalSystem;
+    const externalImportInfo = this.store.selectedEntity()?.externalImportInfoJson;
+    return isNotNullish(externalImportInfo)
+      && externalImportInfo?.aktivInExternalSystem
+      && externalImportInfo?.importTyp === ImportTyp.ESCADA;
   });
 
   getDateLatestImportIfEscadaObject() {

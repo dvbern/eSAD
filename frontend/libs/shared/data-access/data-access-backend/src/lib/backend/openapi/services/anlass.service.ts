@@ -21,6 +21,9 @@ import { AnlassJson } from '../model/anlass-json';
 import { AnlassListJson } from '../model/anlass-list-json';
 import { AnlassSaveJson } from '../model/anlass-save-json';
 import { AnlassStatus } from '../model/anlass-status';
+import { AnlassTyp } from '../model/anlass-typ';
+import { AnlassWithDateTimeListJson } from '../model/anlass-with-date-time-list-json';
+import { AnlassWithOpenSlotsListJson } from '../model/anlass-with-open-slots-list-json';
 import { BackendEntityId } from '@dvb/data-access-types';
 import { SchulInformationenListJson } from '../model/schul-informationen-list-json';
 
@@ -41,6 +44,12 @@ export interface AnlassServiceFindAllForUserRequestParams {
     benutzerID: BackendEntityId;
 }
 
+export interface AnlassServiceFindScheduledAnlaesseForKindRequestParams {
+    anlassTyp: Array<AnlassTyp>;
+    excludeAnlassIds: Array<BackendEntityId>;
+    kindId: BackendEntityId;
+}
+
 export interface AnlassServiceGetAnlassRequestParams {
     anlassId: BackendEntityId;
 }
@@ -51,6 +60,11 @@ export interface AnlassServiceGetSchulInformationenForAnlassRequestParams {
 
 export interface AnlassServiceRemoveAnlassRequestParams {
     anlassId: BackendEntityId;
+}
+
+export interface AnlassServiceSearchAnlassTermineWithAvailableSlotsRequestParams {
+    anlassTyp: Array<AnlassTyp>;
+    kindId: BackendEntityId;
 }
 
 export interface AnlassServiceUpdateAnlassRequestParams {
@@ -417,6 +431,104 @@ export class AnlassService {
     }
 
     /**
+     * Find Scheduled Anlaesse For Kind
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public findScheduledAnlaesseForKind$(requestParameters?: AnlassServiceFindScheduledAnlaesseForKindRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AnlassWithDateTimeListJson>;
+    public findScheduledAnlaesseForKind$(requestParameters?: AnlassServiceFindScheduledAnlaesseForKindRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AnlassWithDateTimeListJson>>;
+    public findScheduledAnlaesseForKind$(requestParameters?: AnlassServiceFindScheduledAnlaesseForKindRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AnlassWithDateTimeListJson>>;
+    public findScheduledAnlaesseForKind$(requestParameters?: AnlassServiceFindScheduledAnlaesseForKindRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const anlassTyp = requestParameters?.anlassTyp;
+        if (anlassTyp === null || anlassTyp === undefined) {
+            throw new Error('Required parameter anlassTyp was null or undefined when calling findScheduledAnlaesseForKind.');
+        }
+        const excludeAnlassIds = requestParameters?.excludeAnlassIds;
+        if (excludeAnlassIds === null || excludeAnlassIds === undefined) {
+            throw new Error('Required parameter excludeAnlassIds was null or undefined when calling findScheduledAnlaesseForKind.');
+        }
+        const kindId = requestParameters?.kindId;
+        if (kindId === null || kindId === undefined) {
+            throw new Error('Required parameter kindId was null or undefined when calling findScheduledAnlaesseForKind.');
+        }
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        if (anlassTyp) {
+            anlassTyp.forEach((element) => {
+                localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+                  <any>element, 'anlassTyp');
+            })
+        }
+        if (excludeAnlassIds) {
+            excludeAnlassIds.forEach((element) => {
+                localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+                  <any>element, 'excludeAnlassIds');
+            })
+        }
+        if (kindId !== undefined && kindId !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>kindId, 'kindId');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (SecurityScheme) required
+        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
+        if (localVarCredential) {
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/anlaesse/search-sheduled-for-kind`;
+        return this.httpClient.request<AnlassWithDateTimeListJson>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                params: localVarQueryParameters,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * Get Anlass
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -618,6 +730,94 @@ export class AnlassService {
         return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Search Anlass Termine With Available Slots
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public searchAnlassTermineWithAvailableSlots$(requestParameters?: AnlassServiceSearchAnlassTermineWithAvailableSlotsRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AnlassWithOpenSlotsListJson>;
+    public searchAnlassTermineWithAvailableSlots$(requestParameters?: AnlassServiceSearchAnlassTermineWithAvailableSlotsRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AnlassWithOpenSlotsListJson>>;
+    public searchAnlassTermineWithAvailableSlots$(requestParameters?: AnlassServiceSearchAnlassTermineWithAvailableSlotsRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AnlassWithOpenSlotsListJson>>;
+    public searchAnlassTermineWithAvailableSlots$(requestParameters?: AnlassServiceSearchAnlassTermineWithAvailableSlotsRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const anlassTyp = requestParameters?.anlassTyp;
+        if (anlassTyp === null || anlassTyp === undefined) {
+            throw new Error('Required parameter anlassTyp was null or undefined when calling searchAnlassTermineWithAvailableSlots.');
+        }
+        const kindId = requestParameters?.kindId;
+        if (kindId === null || kindId === undefined) {
+            throw new Error('Required parameter kindId was null or undefined when calling searchAnlassTermineWithAvailableSlots.');
+        }
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        if (anlassTyp) {
+            anlassTyp.forEach((element) => {
+                localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+                  <any>element, 'anlassTyp');
+            })
+        }
+        if (kindId !== undefined && kindId !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>kindId, 'kindId');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (SecurityScheme) required
+        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
+        if (localVarCredential) {
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/anlaesse/search-with-available-slots`;
+        return this.httpClient.request<AnlassWithOpenSlotsListJson>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

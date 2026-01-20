@@ -7,20 +7,36 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { Zeichnen } from './zeichnen';
+import { Aussprache } from './aussprache';
+import { NameSchreiben } from './name-schreiben';
+import { Herzauskultation } from './herzauskultation';
+import { ZeichnenMensch } from './zeichnen-mensch';
+import { FigurNachmalen } from './figur-nachmalen';
+import { Hampelmann } from './hampelmann';
+import { Haut } from './haut';
+import { BallWerfen } from './ball-werfen';
 import { Einbeinhuepfen } from './einbeinhuepfen';
-import { Einbeinstand } from './einbeinstand';
-import { Verhalten } from './verhalten';
+import { ZahlenNachsprechen } from './zahlen-nachsprechen';
 import { Blutdruck } from './blutdruck';
 import { MundAndZaehne } from './mund-and-zaehne';
-import { Motorik } from './motorik';
-import { Haut } from './haut';
-import { Herzauskultation } from './herzauskultation';
-import { Sprachfaehigkeit } from './sprachfaehigkeit';
+import { BallFangen } from './ball-fangen';
+import { Stifthaltung } from './stifthaltung';
 import { Bewegungsapparat } from './bewegungsapparat';
+import { Einbeinstand } from './einbeinstand';
+import { Kognition } from './kognition';
+import { Lesefit } from './lesefit';
+import { Verhalten } from './verhalten';
+import { Einverstaendniserklaerung } from './einverstaendniserklaerung';
+import { Motorik } from './motorik';
+import { Sprachfaehigkeit } from './sprachfaehigkeit';
+import { Verhaltensfragebogen } from './verhaltensfragebogen';
 import { Fingeropposition } from './fingeropposition';
 
 
 export interface UntersuchungArztBeurteilungSaveJson { 
+    einverstaendniserklaerung?: Array<Einverstaendniserklaerung>;
+    verhaltensfragebogen?: Verhaltensfragebogen;
     verhalten?: Verhalten;
     blutdruck?: Blutdruck;
     blutdruckSystolisch?: number;
@@ -31,17 +47,42 @@ export interface UntersuchungArztBeurteilungSaveJson {
     hautBemerkung?: string;
     mundAndZaehne?: Array<MundAndZaehne>;
     mundAndZaehneBemerkung?: string;
-    sprachfaehigkeit?: Array<Sprachfaehigkeit>;
+    sprachfaehigkeitSingleValue?: Sprachfaehigkeit;
+    sprachfaehigkeitMultiValue?: Array<Sprachfaehigkeit>;
     sprachfaehigkeitBemerkung?: string;
+    sprachfaehigkeitPunkte?: number;
     motorik?: Motorik;
+    motorikPunkte?: number;
+    kognition?: Kognition;
+    kognitionPunkte?: number;
     bewegungsapparat?: Array<Bewegungsapparat>;
     bewegungsapparatBemerkung?: string;
     einbeinstand?: Einbeinstand;
+    einbeinstandRechts?: Einbeinstand;
+    einbeinstandLinks?: Einbeinstand;
     einbeinstandBemerkung?: string;
     einbeinhuepfen?: Einbeinhuepfen;
+    einbeinhuepfenRechts?: Einbeinhuepfen;
+    einbeinhuepfenLinks?: Einbeinhuepfen;
     einbeinhuepfenBemerkung?: string;
     fingeropposition?: Array<Fingeropposition>;
     fingeroppositionBemerkung?: string;
+    hampelmann?: Hampelmann;
+    ballFangen?: BallFangen;
+    ballWerfen?: BallWerfen;
+    nameSchreiben?: NameSchreiben;
+    figurNachmalen?: FigurNachmalen;
+    stifthaltung?: Stifthaltung;
+    aussprache?: Aussprache;
+    lesefit?: Lesefit;
+    lesefitPunkte?: number;
+    zahlenNachsprechen4?: ZahlenNachsprechen;
+    zahlenNachsprechen5?: ZahlenNachsprechen;
+    zeichnenKreis?: Zeichnen;
+    zeichnenViereck?: Zeichnen;
+    zeichnenDreieck?: Zeichnen;
+    zeichnenMensch?: ZeichnenMensch;
+    zeichnenMenschPunkte?: number;
     version: number;
 }
 export namespace UntersuchungArztBeurteilungSaveJson {

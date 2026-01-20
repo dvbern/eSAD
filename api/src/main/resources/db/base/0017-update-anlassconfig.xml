@@ -1,0 +1,366 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <!-- AnlassConfig: Rechts und Links zusammenfassen zu RechtsLinks -->
+  <changeSet author="hefr (generated)" id="1763544386616-11">
+    <renameColumn tableName="anlassconfig" oldColumnName="untersuchungeinbeinhuepfenrechts" newColumnName="untersuchungeinbeinhuepfenrechtslinks"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763544386616-12">
+    <renameColumn tableName="anlassconfig_aud" oldColumnName="untersuchungeinbeinhuepfenrechts" newColumnName="untersuchungeinbeinhuepfenrechtslinks"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763544386616-13">
+    <renameColumn tableName="anlassconfig" oldColumnName="untersuchungeinbeinstandrechts" newColumnName="untersuchungeinbeinstandrechtslinks"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763544386616-14">
+    <renameColumn tableName="anlassconfig_aud" oldColumnName="untersuchungeinbeinstandrechts" newColumnName="untersuchungeinbeinstandrechtslinks"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763544386616-17">
+    <dropColumn columnName="untersuchungeinbeinhuepfenlinks" tableName="anlassconfig"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763544386616-18">
+    <dropColumn columnName="untersuchungeinbeinhuepfenlinks" tableName="anlassconfig_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763544386616-21">
+    <dropColumn columnName="untersuchungeinbeinstandlinks" tableName="anlassconfig"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763544386616-22">
+    <dropColumn columnName="untersuchungeinbeinstandlinks" tableName="anlassconfig_aud"/>
+  </changeSet>
+  <!-- AnlassConfig: Konfigurierbare Enumlisten -->
+  <changeSet author="hefr (generated)" id="1763625453170-39">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungeinbeinhuepfenvalues" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763625453170-40">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungeinbeinhuepfenvalues" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763625453170-41">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungeinbeinstandvalues" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763625453170-42">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungeinbeinstandvalues" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763625453170-43">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungmotorikvalues" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763625453170-44">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungmotorikvalues" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763625453170-45">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungsprachfaehigkeitvalues" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763625453170-46">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungsprachfaehigkeitvalues" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763625453170-45a">
+    <renameColumn tableName="anlassconfig" oldColumnName="untersuchungsprache" newColumnName="untersuchungsprachfaehigkeitmultivalue"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763625453170-46b">
+    <renameColumn tableName="anlassconfig_aud" oldColumnName="untersuchungsprache" newColumnName="untersuchungsprachfaehigkeitmultivalue"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763625453170-45c">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungsprachfaehigkeitsinglevalue" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      update anlassconfig set untersuchungsprachfaehigkeitsinglevalue = 'NOT_VISIBLE' where untersuchungsprachfaehigkeitsinglevalue is null;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungsprachfaehigkeitsinglevalue"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763625453170-46d">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungsprachfaehigkeitsinglevalue" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <!-- Untersuchung Arzt -->
+  <changeSet author="hefr (generated)" id="1763630598080-39">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="aussprache" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-40">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="aussprache" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-41">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="ballfangen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-42">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="ballfangen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-43">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="ballwerfen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-44">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="ballwerfen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-45">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="einbeinhuepfenlinks" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-46">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="einbeinhuepfenlinks" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-47">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="einbeinhuepfenrechts" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-48">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="einbeinhuepfenrechts" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-49">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="einbeinstandlinks" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-50">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="einbeinstandlinks" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-51">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="einbeinstandrechts" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-52">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="einbeinstandrechts" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-53">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="einverstaendniserklaerung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-54">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="einverstaendniserklaerung" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-55">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="figurnachmalen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-56">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="figurnachmalen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-57">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="hampelmann" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-58">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="hampelmann" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-59">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="kognition" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-60">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="kognition" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-61">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="kognitionpunkte" type="INTEGER"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-62">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="kognitionpunkte" type="INTEGER"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-63">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="lesefit" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-64">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="lesefit" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-65">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="lesefitpunkte" type="INTEGER"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-66">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="lesefitpunkte" type="INTEGER"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-67">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="motorikpunkte" type="INTEGER"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-68">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="motorikpunkte" type="INTEGER"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-69">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="nameschreiben" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-70">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="nameschreiben" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-71">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="sprachfaehigkeitpunkte" type="INTEGER"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-72">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="sprachfaehigkeitpunkte" type="INTEGER"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-73">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="stifthaltung" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-74">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="stifthaltung" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-75">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="verhaltensfragebogen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-76">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="verhaltensfragebogen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-77">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="zahlennachsprechen4" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-78">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="zahlennachsprechen4" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-79">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="zahlennachsprechen5" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-80">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="zahlennachsprechen5" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-81">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="zeichnendreieck" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-82">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="zeichnendreieck" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-83">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="zeichnenkreis" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-84">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="zeichnenkreis" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-85">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="zeichnenmensch" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-86">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="zeichnenmensch" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-87">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="zeichnenmenschpunkte" type="INTEGER"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-88">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="zeichnenmenschpunkte" type="INTEGER"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-89">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="zeichnenviereck" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-90">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="zeichnenviereck" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-91">
+    <renameColumn tableName="untersuchungarztbeurteilung" oldColumnName="sprachfaehigkeit" newColumnName="sprachfaehigkeitmultivalue"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-92">
+    <renameColumn tableName="untersuchungarztbeurteilung_aud" oldColumnName="sprachfaehigkeit" newColumnName="sprachfaehigkeitmultivalue"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-93">
+    <addColumn tableName="untersuchungarztbeurteilung">
+      <column name="sprachfaehigkeitsinglevalue" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1763630598080-94">
+    <addColumn tableName="untersuchungarztbeurteilung_aud">
+      <column name="sprachfaehigkeitsinglevalue" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+</databaseChangeLog>

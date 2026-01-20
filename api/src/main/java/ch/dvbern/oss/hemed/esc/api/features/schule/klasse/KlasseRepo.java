@@ -1,6 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.features.schule.klasse;
 
-import jakarta.persistence.LockModeType;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +15,7 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.QLehrperson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -35,6 +35,16 @@ public class KlasseRepo extends BaseRepo<Klasse> {
         return db.selectFrom(QKlasse.klasse)
             .where(QKlasse.klasse.schule.id.eq(schuleID.getUUID()))
             .orderBy(QKlasse.klasse.bezeichnung.asc())
+            .fetch();
+    }
+
+    @NonNull
+    public List<Klasse> findBySchuleAndBezeichnung(@NonNull ID<Schule> schuleID, @NonNull String bezeichnung) {
+        return db.selectFrom(QKlasse.klasse)
+            .where(QKlasse.klasse.schule.id.eq(schuleID.getUUID()).and(
+                QKlasse.klasse.bezeichnung.eq(bezeichnung)
+            ))
+            .orderBy(QKlasse.klasse.timestampErstellt.asc())
             .fetch();
     }
 
@@ -67,7 +77,7 @@ public class KlasseRepo extends BaseRepo<Klasse> {
 
     @NonNull
     public Klasse getByExternalIdLockedQuery(@IgnoreForIdClassTest @NonNull String externalId) {
-        return  db.select(QKlasse.klasse)
+        return db.select(QKlasse.klasse)
             .from(QKlasse.klasse)
             .where(QKlasse.klasse.externalImportInfo.idInExternalSystem.eq(externalId))
             .setLockMode(LockModeType.PESSIMISTIC_WRITE)

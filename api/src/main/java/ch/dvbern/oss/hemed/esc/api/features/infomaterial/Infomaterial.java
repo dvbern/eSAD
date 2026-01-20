@@ -3,7 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.infomaterial;
 import java.io.Serial;
 
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.mandant.TranslatedString;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -25,7 +25,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Infomaterial extends AbstractTenantEntity<Infomaterial> implements EntityWithOptimisticLocking {
+public class Infomaterial extends AbstractEntity<Infomaterial> implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = -2616852567861298939L;

@@ -1,6 +1,9 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle;
 
+import java.util.List;
+
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.types.LaeusekontrolleBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
@@ -9,12 +12,14 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungLaeusekontrolleB
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.UntersuchungLaeusekontrolleApiSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LaeusekontrolleBeurteilungSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungLaeusekontrolleJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungLaeusekontrolleSaveJsonSpec;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
+import org.assertj.core.api.Assert;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -97,12 +102,16 @@ class UntersuchungLaeusekontrolleResourceITest extends AbstractITest {
         Assertions.assertThat(existingLaeusekontrolle.getBemerkungen())
             .isNotNull()
             .isEqualTo("Läuse Bemerkungen SU");
+        Assertions.assertThat(existingLaeusekontrolle.getBeurteilung())
+            .isNotEmpty()
+            .contains(LaeusekontrolleBeurteilung.LAEUSE_VORHANDEN);
 
         // ACT
         UntersuchungLaeusekontrolleSaveJsonSpec saveJsonSpec =
             UntersuchungLaeusekontrolleBuilder.createJaxSpec(builder -> builder
                 .forUntersuchungLaeusekontrolle(existingLaeusekontrolle)
-                .withBemerkung("Test updateUntersuchungLaeusekontrolle")).getData();
+                .withBemerkung("Test updateUntersuchungLaeusekontrolle")
+                .withBeurteilung(List.of(LaeusekontrolleBeurteilung.NISSEN_VORHANDEN))).getData();
         UntersuchungLaeusekontrolleJsonSpec result = api
             .untersuchungLaeusekontrolleResourceSaveUntersuchungLaeusekontrolle()
             .anlassIdPath(einladung.getAnlass().getId().getId())
@@ -120,6 +129,10 @@ class UntersuchungLaeusekontrolleResourceITest extends AbstractITest {
         Assertions.assertThat(result.getData().getBemerkungen())
             .isNotNull()
             .isEqualTo("Test updateUntersuchungLaeusekontrolle");
+        Assertions.assertThat(result.getData().getBeurteilung())
+            .isNotEmpty()
+            .contains(LaeusekontrolleBeurteilungSpec.NISSEN_VORHANDEN)
+            .doesNotContain(LaeusekontrolleBeurteilungSpec.LAEUSE_VORHANDEN);
     }
 }
 

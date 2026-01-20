@@ -16,7 +16,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckEinladungNotizUniqueness;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -48,7 +48,6 @@ import org.hibernate.envers.Audited;
         @Index(name = "ix_einladung_anlass", columnList = "anlass_id, id"),
         @Index(name = "ix_einladung_dossier", columnList = "dossier_id, id"),
         @Index(name = "ix_einladung_untersuchung", columnList = "untersuchung_id, id"),
-        @Index(name = "ix_einladung_notiz_abmeldung", columnList = "abmeldungsnotiz_id, id")
     },
     uniqueConstraints = @UniqueConstraint(name = "uc_einladung_anlass_dossier",
         columnNames = { "anlass_id", "dossier_id" })
@@ -59,7 +58,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckEinladungNotizUniqueness
-public class Einladung extends AbstractTenantEntity<Einladung> implements EntityWithOptimisticLocking {
+public class Einladung extends AbstractEntity<Einladung> implements EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 5285023727443911252L;
@@ -120,11 +119,6 @@ public class Einladung extends AbstractTenantEntity<Einladung> implements Entity
     )
     private List<Notiz> notizen = List.of();
 
-    @Nullable
-    @OneToOne(optional = true, cascade = CascadeType.REMOVE)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_einladung_notiz_abmeldung"), nullable = true, updatable = true)
-    private Notiz abmeldungsNotiz;
-
     @NotNull
     @Column(nullable = false)
     private boolean spssExported = false;
@@ -150,7 +144,6 @@ public class Einladung extends AbstractTenantEntity<Einladung> implements Entity
             null,
             null,
             List.of(),
-            null,
             false,
             null,
             null
@@ -159,22 +152,28 @@ public class Einladung extends AbstractTenantEntity<Einladung> implements Entity
 
     @NonNull
     public Optional<Notiz> getImpfausweisNotiz() {
-        return notizen.stream()
-            .filter(notiz -> notiz.getTyp() == NotizTyp.IMPFAUSWEIS)
-            .findFirst();
+        return getNotizByType(NotizTyp.IMPFAUSWEIS);
     }
 
     @NonNull
     public Optional<Notiz> getFragebogenNotiz() {
-        return notizen.stream()
-            .filter(notiz -> notiz.getTyp() == NotizTyp.FRAGEBOGEN)
-            .findFirst();
+        return getNotizByType(NotizTyp.FRAGEBOGEN);
     }
 
     @NonNull
     public Optional<Notiz> getAnmeldungBestaetigungNotiz() {
+        return getNotizByType(NotizTyp.ANMELDUNG_BESTAETIGUNG);
+    }
+
+    @NonNull
+    public Optional<Notiz> getAbmeldungsNotiz() {
+        return getNotizByType(NotizTyp.ABMELDUNG);
+    }
+
+    @NonNull
+    private Optional<Notiz> getNotizByType(@NonNull NotizTyp notizTyp) {
         return notizen.stream()
-            .filter(notiz -> notiz.getTyp() == NotizTyp.ANMELDUNG_BESTAETIGUNG)
+            .filter(notiz -> notiz.getTyp() == notizTyp)
             .findFirst();
     }
 }

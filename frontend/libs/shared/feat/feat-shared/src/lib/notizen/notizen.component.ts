@@ -1,6 +1,7 @@
-import { Location } from '@angular/common';
+import {Location} from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, effect, inject, input, output, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
 import {
   BenutzerOptionJson,
   FileDataJson,
@@ -8,6 +9,7 @@ import {
   NotizJson,
   NotizSaveJson,
   NotizStatus,
+  NotizTyp,
 } from '@dvb/data-access-backend';
 import {BackendEntityId, requireValidBackendEntityId} from '@dvb/data-access-types';
 import {
@@ -25,8 +27,9 @@ import {
   TextInputDirective,
 } from '@dvb/ui-components';
 import {DetailMode, DirtyMarker, Loader, TableModel} from '@dvb/util-angular';
-import {compareFn, hasNotizEditBerechtigung, Nullish, requireValue} from '@dvb/util-shared';
+import {compareFn, hasNotizEditBerechtigung, isNotNullish, Nullish, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {BenutzerOptionsStore} from '../admin-shared/benutzer-options.store';
 import {LabelsStore} from '../admin-shared/labels.store';
@@ -34,14 +37,16 @@ import {BenutzerStore} from '../benutzer/benutzer/benutzer.store';
 import {globalConstants} from '../constants/global-constants';
 import {Path} from '../core/path';
 import {ConfirmService} from '../dialogs/confirm/confirm.service';
+import {TenantSettingsStore} from '../tenant/tenant-settings.store';
 import {TranslatedStringPipe} from '../translated-strings/view/translated-string.pipe';
-import {FileDropComponent} from '../upload/file-drop/file-drop.component';
-import {UploadTableComponent} from '../upload/upload-table/upload-table.component';
+import {FileDropComponent} from '../upload/file-drop';
+import {MobileUploadComponent} from '../upload/mobile-upload/mobile-upload.component';
+import {UploadTableComponent} from '../upload/upload-table';
+import {NotizenMobileUploadModalComponent} from './modal/notizen-mobile-upload-modal.component';
 import {NotizenFileParams} from './notizen.file.params';
 import {NotizenForm} from './notizen.form';
 import {NotizenSaveParams} from './notizen.save.params';
 import {NotizenStore} from './notizen.store';
-import { QrCodeUploadComponent } from '../upload/qr-code-upload/qr-code-upload.component';
 
 @Component({
   selector: 'feat-notizen',
@@ -66,13 +71,12 @@ import { QrCodeUploadComponent } from '../upload/qr-code-upload/qr-code-upload.c
     PageHeaderEntityInfoComponent,
     SaveCancelButtonsComponent,
     BadgeComponent,
-    QrCodeUploadComponent
-],
+    MobileUploadComponent,
+  ],
   templateUrl: './notizen.component.html',
   styleUrl: './notizen.component.scss',
 })
 export class NotizenComponent implements DirtyMarker {
-
   protected readonly Path = Path;
   protected readonly DetailMode = DetailMode;
   protected readonly compareFn = compareFn<LabelJson>;
@@ -82,18 +86,31 @@ export class NotizenComponent implements DirtyMarker {
   readonly benutzerOptionsStore = inject(BenutzerOptionsStore);
   readonly benutzerStore = inject(BenutzerStore);
   readonly labelsStore = inject(LabelsStore);
+  readonly tenantSettingsStore = inject(TenantSettingsStore);
+  readonly #ngModal = inject(NgbModal);
 
   readonly confirmService = inject(ConfirmService);
   readonly #transloco = inject(TranslocoService);
   readonly location = inject(Location);
+  readonly router = inject(Router);
+  readonly route = inject(ActivatedRoute);
 
   kindId = input<BackendEntityId>();
   initialNotiz = input<NotizSaveJson>();
   existingNotiz = input<NotizJson | Nullish>();
   notizenFiles = input.required<FileDataJson[]>();
   loader = input.required<Loader>();
+  notizTyp = input<NotizTyp | undefined>();
+
+  mode = computed(() => {
+    if (isNotNullish(this.existingNotiz()) && isNotNullish(this.existingNotiz()?.id)) {
+      return 'edit';
+    }
+    return 'create';
+  });
 
   saveNotiz = output<NotizenSaveParams>();
+  saveNotizSilent = output<NotizenSaveParams>();
   removeNotizFile = output<NotizenFileParams>();
 
   fileUploads: File[] | undefined;
@@ -108,11 +125,30 @@ export class NotizenComponent implements DirtyMarker {
 
   canEditNotiz = this.benutzerStore.createHasRequiredRoleSig(hasNotizEditBerechtigung());
 
-  qrData = `${window.location.origin}${this.location.path()}/mobileupload`;
+  qrData = '';
+
+  private setQr(notizId: string) {
+    let baseUrl = this.router.url;
+
+    if (baseUrl.toLowerCase().includes('fragebogen') || baseUrl.toLowerCase().includes('impfausweis')) {
+      this.qrData = `${baseUrl}/${Path.UPLOAD}`;
+      return;
+    }
+
+    if (this.mode() === 'create') {
+      baseUrl = baseUrl.replace(/\/create$/, '');
+      this.qrData = `${baseUrl}/${notizId}/${Path.UPLOAD}`;
+      return;
+    }
+
+    this.qrData = `${baseUrl}/${Path.UPLOAD}`;
+
+  }
 
   uploadTable = new TableModel<FileDataJson>(
     {rawListSignal: this.notizenFiles},
-    {frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll'});
+    {frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll'},
+  );
 
   form = new NotizenForm({
     fb: inject(NonNullableFormBuilder),
@@ -135,6 +171,13 @@ export class NotizenComponent implements DirtyMarker {
         }
       });
     });
+
+    effect(() => {
+      const id = this.existingNotiz()?.id;
+      if (id) {
+        this.setQr(id);
+      }
+    })
   }
 
   async submitIfValid(): Promise<void> {
@@ -147,6 +190,23 @@ export class NotizenComponent implements DirtyMarker {
         fileUploads: this.fileUploads,
       });
       this.fileUploads = undefined;
+    }
+  }
+
+  async submitIfValidSilent(afterSave?: (notizenId: string) => void): Promise<void> {
+    if (await this.form.validate()) {
+      const payload = this.form.valueOnValid();
+      // Add the disabled labels back into the payload to satisfy backend validations.
+      payload.labels = [...payload.labels, ...this.inaktivLabels()];
+      this.saveNotizSilent.emit({
+        notiz: requireValue(payload),
+        fileUploads: this.fileUploads,
+        afterSave,
+      });
+      this.fileUploads = undefined;
+
+      this.form.group.markAsPristine();
+      this.form.group.markAsUntouched();
     }
   }
 
@@ -192,5 +252,47 @@ export class NotizenComponent implements DirtyMarker {
 
   public onCancelClicked(): void {
     this.location.back();
+  }
+
+  public async onMobileClick(): Promise<void> {
+    // 1. Validate before starting the async flow to prevent hanging
+    if (!(await this.form.validate())) {
+      return;
+    }
+
+    try {
+      // 2. Wrap the save in a promise that handles the callback
+      const notizId = await new Promise<string>((resolve, reject) => {
+        this.submitIfValidSilent((id: string) => {
+          if (id) {
+            resolve(id);
+          } else {
+            reject(new Error('No ID returned from save'));
+          }
+        });
+      });
+
+      this.setQr(notizId);
+
+      const ngbModalRef = this.#ngModal.open(NotizenMobileUploadModalComponent, {size: 'm'});
+      ngbModalRef.componentInstance.notizTyp.set(this.notizTyp());
+      ngbModalRef.componentInstance.qrCodeData.set(this.qrData);
+
+      ngbModalRef.result
+        .catch(() => {/* empty since we always just trigger a reload*/
+        })
+        .finally(() => {
+          if (this.mode() === 'create') {
+            this.router.navigate(['../', notizId], {
+              relativeTo: this.route,
+              replaceUrl: true,
+            });
+          } else {
+            window.location.reload();
+          }
+        })
+    } catch (error) {
+      console.error('Failed to prepare mobile upload:', error);
+    }
   }
 }

@@ -20,11 +20,13 @@ package ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.external;
 
 import java.io.Serial;
 import java.util.Comparator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.Lehrperson;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.HasExternalId;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.HasExternalId;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,6 +43,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
@@ -64,7 +67,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class LehrpersonExternal extends AbstractTenantEntity<LehrpersonExternal> implements HasExternalId {
+public class LehrpersonExternal extends AbstractEntity<LehrpersonExternal> implements HasExternalId {
 
     public static final Comparator<LehrpersonExternal> KP_SCHULE_EXTERNAL_DATA_COMPARATOR = Comparator
         .comparing(LehrpersonExternal::getKlasseLehrpersonAnrede, Comparator.nullsFirst(String::compareTo))
@@ -122,5 +125,20 @@ public class LehrpersonExternal extends AbstractTenantEntity<LehrpersonExternal>
     @NonNull
     public String getExternalId() {
         return klasseLehrpersonId;
+    }
+
+    @NonNull
+    public String getFullName() {
+        return Stream.of(klasseLehrpersonVorname, klasseLehrpersonName)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.joining(" "));
+    }
+
+    @Nullable
+    public String getFullNameIfAllowed(boolean redactFullName) {
+        if (redactFullName) {
+            return null;
+        }
+        return this.getFullName();
     }
 }

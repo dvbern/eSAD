@@ -1,0 +1,23 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="gema (generated)" id="1766066222661-15">
+        <addColumn tableName="documentqueue">
+            <column name="datumbis" type="date"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1766066222661-16">
+        <addColumn tableName="documentqueue_aud">
+            <column name="datumbis" type="date"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1766066222661-17">
+        <addColumn tableName="documentqueue">
+            <column name="datumvon" type="date"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1766066222661-18">
+        <addColumn tableName="documentqueue_aud">
+            <column name="datumvon" type="date"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

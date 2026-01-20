@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
@@ -44,7 +45,7 @@ class KontaktPersonKindResourceITest extends AbstractITest {
         KontaktPersonKind mutterInaktiv = KontaktPersonKindBuilder.create(
             builder -> builder
                 .forKind(kind1)
-                .withExternalImportInfo(UUID.randomUUID().toString(), false, getAppClock().offsetDateTime().now()));
+                .withExternalImportInfo(UUID.randomUUID().toString(), false, getAppClock().offsetDateTime().now(), ImportTyp.ESCADA));
         kontaktPersonKindService.persist(mutterInaktiv);
         Kind anotherKind = fixtureService.createKind();
         KontaktPersonKind anotherVater = fixtureService.createKontaktPersonKind(anotherKind);

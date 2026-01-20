@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
-import ch.dvbern.dvbstarter.infrastructure.errorhandling.FailureType;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerRepo;
@@ -13,7 +12,6 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.DossierService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
-import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierNichtMedizinischSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
@@ -45,7 +43,6 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindSaveModeDuplikatSpe
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindSaveResultJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SchuleJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SchuleSaveJsonSpec;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response.Status;
@@ -195,15 +192,18 @@ class DossierResourceITest extends AbstractITest {
         benutzerRepo.persist(createDto);
 
         EntityAktivStatusSaveJsonSpec saveJson = new EntityAktivStatusSaveJsonSpec(EntityAktivStatusSpec.INAKTIV);
-        kindAPI.kindResourceUpdateKindAktivStatus()
+        KindJsonSpec result = kindAPI.kindResourceUpdateKindAktivStatus()
             .kindIdPath(kind.getId().getId())
             .body(saveJson)
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
-            .statusCode(Status.NO_CONTENT.getStatusCode());
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(KindJsonSpec.class);
 
 //        Benutzer zustaendigArztMPA = benutzerService.getById(createDto.getId());
+
+        Assertions.assertThat(result.getData().getKindAktivStatus()).isEqualTo(EntityAktivStatusSpec.INAKTIV);
 
         DossierJsonSpec updatedDossierJson = DossierBuilder.createJaxSpec(
             builder -> builder

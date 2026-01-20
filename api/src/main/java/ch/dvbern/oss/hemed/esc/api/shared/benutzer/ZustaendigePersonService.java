@@ -1,5 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.shared.benutzer;
 
+import java.util.List;
 import java.util.Objects;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
@@ -26,7 +27,7 @@ public class ZustaendigePersonService {
         @NonNull SchuleSaveJson schuleSaveJson
     ) {
         Benutzer arztFromSchuleNew = benutzerService.getBenutzerIfCorrectRole(schuleSaveJson.getZustaendigArzt(), FachRolle.SCHULAERZTIN);
-        Benutzer mpaFromSchuleNew = benutzerService.getBenutzerIfCorrectRole(schuleSaveJson.getZustaendigMPA(), FachRolle.MPA);
+        Benutzer mpaFromSchuleNew = benutzerService.getBenutzerIfOneOfRolesIsCorrect(schuleSaveJson.getZustaendigMPA(), List.of(FachRolle.MPA, FachRolle.PFP));
         if (!Objects.equals(existingSchule.getZustaendigArzt(), arztFromSchuleNew)
                 || !Objects.equals(existingSchule.getZustaendigMPA(), mpaFromSchuleNew)) {
             dossierService.findBySchule(existingSchule.getId()).forEach(dossier -> {

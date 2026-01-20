@@ -27,6 +27,7 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.dvbstarter.shared.types.sozialversicherungsnummer.SozialversicherungsNummer;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfo;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindMapper;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindJson;
@@ -184,8 +185,13 @@ public class KindBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public KindBuilder withExternalImportInfo(@NonNull String externalId, boolean aktiv, @NonNull OffsetDateTime now) {
-        return withExternalImportInfo(externalId, aktiv, now, now);
+    public KindBuilder withExternalImportInfo(
+        @NonNull String externalId,
+        boolean aktiv,
+        @NonNull OffsetDateTime now,
+        @NonNull ImportTyp importTyp
+    ) {
+        return withExternalImportInfo(externalId, aktiv, now, now, importTyp);
     }
 
     @NonNull
@@ -194,9 +200,10 @@ public class KindBuilder {
         @NonNull String externalId,
         boolean aktiv,
         @NonNull OffsetDateTime now,
-        @Nullable OffsetDateTime lastImport
+        @Nullable OffsetDateTime lastImport,
+        @NonNull ImportTyp importTyp
     ) {
-        ExternalImportInfo importInfo = new ExternalImportInfo(externalId, aktiv, now, lastImport);
+        ExternalImportInfo importInfo = new ExternalImportInfo(externalId, aktiv, now, lastImport, importTyp);
         this.kind.setExternalImportInfo(importInfo);
         return this;
     }
@@ -208,7 +215,6 @@ public class KindBuilder {
         return this;
     }
 
-
     @NonNull
     public static Kind create(@NonNull Consumer<KindBuilder> block) {
         KindBuilder builder = new KindBuilder();
@@ -217,15 +223,17 @@ public class KindBuilder {
     }
 
     @NonNull
-    public static KindJson createJax(@NonNull Consumer<KindBuilder> block,
-                                     @NonNull LocalDate now) {
+    public static KindJson createJax(
+        @NonNull Consumer<KindBuilder> block,
+        @NonNull LocalDate now) {
         Kind entity = create(block);
         return KindMapper.toJson(entity, now);
     }
 
     @NonNull
-    public static KindJsonSpec createJaxSpec(@NonNull Consumer<KindBuilder> block,
-                                             @NonNull LocalDate now) {
+    public static KindJsonSpec createJaxSpec(
+        @NonNull Consumer<KindBuilder> block,
+        @NonNull LocalDate now) {
         KindJson json = createJax(block, now);
         return KindJsonSpecMapper.INSTANCE.kindJsonToKindJsonSpec(json);
     }

@@ -18,6 +18,8 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.skripthelper;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
@@ -48,5 +50,28 @@ public final class AnlassConfigSkriptMapper {
     public AnlassConfigSkriptJson getSqlSkripts(@NonNull ID<AnlassConfig> anlassConfigId) {
         AnlassConfig config = anlassConfigService.getById(anlassConfigId);
         return toJson(config);
+    }
+
+    @NonNull
+    public String getLiquibaseSkript() {
+        List<AnlassConfig> anlassConfigs = anlassConfigService.findAll();
+
+        String template = "<?xml version=\"1.1\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+            + "<databaseChangeLog xmlns=\"http://www.liquibase.org/xml/ns/dbchangelog\" xmlns:ext=\"http://www.liquibase.org/xml/ns/dbchangelog-ext\" xmlns:pro=\"http://www.liquibase.org/xml/ns/pro\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd\">\n"
+            + "  <changeSet author=\"dvbern\" id=\"{{timestamp}}\">\n"
+            + "    <sql>\n"
+            + "{{script}}\n"
+            + "    </sql>\n"
+            + "  </changeSet>\n"
+            + "</databaseChangeLog>\n";
+        template = template.replace("{{timestamp}}", "" + System.currentTimeMillis());
+
+        StringBuilder sb = new StringBuilder();
+        for (AnlassConfig config : anlassConfigs) {
+            sb.append(AnlassConfigUtil.createSqlUpdateQuery(config));
+        }
+        template = template.replace("{{script}}", sb.toString());
+
+        return template;
     }
 }

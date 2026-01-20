@@ -9,7 +9,7 @@ import {
   FormErrorMessageComponent,
   FormLayoutComponent,
   HeadingDirective,
-  NgSelectDirective,
+  NgSelectDirective, TextInputDirective,
 } from '@dvb/ui-components';
 import { AppNotificationStore, DetailMode } from '@dvb/util-angular';
 import { isNullish } from '@dvb/util-shared';
@@ -39,6 +39,7 @@ import { TenantSettingsForm } from './tenant-settings.form';
     TranslocoPipe,
     HeadingDirective,
     TranslatedEnumViewValuePipe,
+    TextInputDirective,
   ],
   templateUrl: './tenant-settings-page.component.html',
   styles: ':host { display:block;}',

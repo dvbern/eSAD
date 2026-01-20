@@ -1,11 +1,13 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.external;
 
 import java.io.Serial;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKind;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.HasExternalId;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.HasExternalId;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,6 +24,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
@@ -44,7 +47,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class KontaktPersonKindExternal extends AbstractTenantEntity<KontaktPersonKindExternal>
+public class KontaktPersonKindExternal extends AbstractEntity<KontaktPersonKindExternal>
     implements HasExternalId {
 
     @Serial
@@ -124,5 +127,20 @@ public class KontaktPersonKindExternal extends AbstractTenantEntity<KontaktPerso
     @NonNull
     public String getExternalId() {
         return adressierungId;
+    }
+
+    @NonNull
+    public String getFullName() {
+        return Stream.of(adressierungVorname, adressierungName)
+            .filter(StringUtils::isNotEmpty)
+            .collect(Collectors.joining(" "));
+    }
+
+    @Nullable
+    public String getFullNameIfAllowed(boolean escadaRedactPersonalInfo) {
+        if (escadaRedactPersonalInfo) {
+            return null;
+        }
+        return this.getFullName();
     }
 }

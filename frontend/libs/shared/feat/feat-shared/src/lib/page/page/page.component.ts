@@ -1,5 +1,14 @@
 import {CommonModule} from '@angular/common';
-import {ChangeDetectionStrategy, Component, inject, OnInit, signal, TemplateRef, WritableSignal} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  input,
+  OnInit,
+  signal,
+  TemplateRef,
+  WritableSignal,
+} from '@angular/core';
 import {NavigationEnd, NavigationStart, Router, RouterLink, RouterLinkActive} from '@angular/router';
 import {
   CollapsibleMenuComponent,
@@ -12,6 +21,7 @@ import {
   hasAnlassViewBerechtigung,
   hasAufgabenViewBerechtigungen,
   hasConfigViewBerechtigung,
+  hasKindNotizViewBerechtigung,
   hasKindPageViewBerechtigung,
   hasPlaygroundViewBerechtigung,
   hasReportViewBerechtigung,
@@ -65,9 +75,13 @@ export class PageComponent extends WithHeadingDirective implements OnInit {
   public canViewSystemPage = this.benutzerStore.createHasRequiredRoleSig(hasSystemPageViewBerechtiung());
   public canViewAufgaben = this.benutzerStore.createHasRequiredRoleSig(hasAufgabenViewBerechtigungen());
   public canViewKonfiguration = this.benutzerStore.createHasRequiredRoleSig(hasConfigViewBerechtigung());
+  public canViewNotizen = this.benutzerStore.createHasRequiredRoleSig(hasKindNotizViewBerechtigung());
+
   Path = Path;
   router = inject(Router);
   closeResult: WritableSignal<string> = signal('');
+
+  showNav = input<boolean>(true);
 
   public logout(): void {
     // If the logoutRedirectUrl is not set, we redirect to the application root. Note that a passed logoutRedirectUrl

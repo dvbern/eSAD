@@ -9,7 +9,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationE
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.infomaterial.Infomaterial;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.anlass.anlassflags.AnlassFlags;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import jakarta.persistence.CascadeType;
@@ -54,7 +54,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UntersuchungMassnahmen extends AbstractTenantEntity<UntersuchungMassnahmen>
+public class UntersuchungMassnahmen extends AbstractEntity<UntersuchungMassnahmen>
     implements EntityWithOptimisticLocking {
 
     @Serial

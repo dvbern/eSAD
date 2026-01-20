@@ -130,6 +130,15 @@
     <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
   </svui-form-control>
 
+  <!-- impfungen folgetermin -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenMassnahmeImpfenFolgetermin) {
+    <feat-untersuchung-impf-folgetermine
+      [anlaesseWithOpenEinladungenSlots]="impfungenStore.impffolgetermine().anlaesseWithOpenEinladungenSlots"
+      [imfanlaesseScheduled]="impfungenStore.imfanlaesseScheduled()"
+      [form]="form"
+    >
+    </feat-untersuchung-impf-folgetermine>
+  }
 
   <!-- Save / Cancel Buttons -->
   @if (canEdit()) {

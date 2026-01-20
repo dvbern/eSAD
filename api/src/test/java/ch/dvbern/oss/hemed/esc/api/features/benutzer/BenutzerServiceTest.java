@@ -1,9 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.features.benutzer;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppAuthException;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
@@ -16,6 +13,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerBerechtigung;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminWIN;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import io.quarkus.test.junit.QuarkusTest;
@@ -76,29 +74,65 @@ class BenutzerServiceTest {
 
     @Test
     @TestAsAdminBS
-    void check_system_admin_bs_has_all_roles() {
+    void check_system_admin_bs_has_required_roles() {
+        // ARRANGE
+        Set<Berechtigung> excludedBerechtigungen = EnumSet.of(Berechtigung.PUPIL_PUSH);
+        Set<Berechtigung> expectedBerechtigungen = EnumSet.allOf(Berechtigung.class);
+        expectedBerechtigungen.removeAll(excludedBerechtigungen);
+
+        // ACT
         Optional<Set<Berechtigung>> berechtigungenOfSysAdmin =
             service.findBerechtigungenByEmail(EmailAddress.fromString("bs-esc@dvbern.ch"));
+
+        // ASSERT
         Assertions.assertThat(berechtigungenOfSysAdmin)
             .isPresent()
             .get()
             .asInstanceOf(InstanceOfAssertFactories.set(Berechtigung.class))
-            .containsExactlyInAnyOrder(Berechtigung.values());
-
+            .containsExactlyInAnyOrderElementsOf(expectedBerechtigungen)
+            .doesNotContainAnyElementsOf(excludedBerechtigungen);
     }
 
     @Test
     @TestAsAdminWIN
-    void check_system_admin_be_has_all_roles() {
+    void check_system_admin_win_has_required_roles() {
+        // ARRANGE
+        Set<Berechtigung> excludedBerechtigungen = EnumSet.of(Berechtigung.PUPIL_PUSH);
+        Set<Berechtigung> expectedBerechtigungen = EnumSet.allOf(Berechtigung.class);
+        expectedBerechtigungen.removeAll(excludedBerechtigungen);
+
+        // ACT
         tenantProducer.setCurrentTenant(TenantEnum.WIN); // Default ist BS
         Optional<Set<Berechtigung>> berechtigungenOfSysAdmin =
             service.findBerechtigungenByEmail(EmailAddress.fromString("win-esc@dvbern.ch"));
+
+        // ASSERT
         Assertions.assertThat(berechtigungenOfSysAdmin)
             .isPresent()
             .get()
             .asInstanceOf(InstanceOfAssertFactories.set(Berechtigung.class))
-            .containsExactlyInAnyOrder(Berechtigung.values());
+            .containsExactlyInAnyOrderElementsOf(expectedBerechtigungen)
+            .doesNotContainAnyElementsOf(excludedBerechtigungen);
+    }
 
+    @Test
+    @TestAsAdminBE
+    void check_system_admin_be_has_all_roles() {
+        // ARRANGE
+        Set<Berechtigung> excludedBerechtigungen = EnumSet.of(Berechtigung.PUPIL_PUSH);
+        Set<Berechtigung> expectedBerechtigungen = EnumSet.allOf(Berechtigung.class);
+        expectedBerechtigungen.removeAll(excludedBerechtigungen);
+
+        // ACT
+        tenantProducer.setCurrentTenant(TenantEnum.BE); // Default ist BS
+        Optional<Set<Berechtigung>> berechtigungenOfSysAdmin =
+            service.findBerechtigungenByEmail(EmailAddress.fromString("be-esc@dvbern.ch"));
+        Assertions.assertThat(berechtigungenOfSysAdmin)
+            .isPresent()
+            .get()
+            .asInstanceOf(InstanceOfAssertFactories.set(Berechtigung.class))
+            .containsExactlyInAnyOrderElementsOf(expectedBerechtigungen)
+            .doesNotContainAnyElementsOf(excludedBerechtigungen);
     }
 
     @Test
@@ -118,16 +152,16 @@ class BenutzerServiceTest {
         // ACT
         List<BenutzerBerechtigung> storedBerechtigungen = service.syncBerechtigungenToBenutzer(
             benutzerID,
-            FachRolle.collectAllBerechtigungen(FachRolle.SYSTEM_ADMIN)
+            FachRolle.collectAllBerechtigungen(TenantEnum.BS, FachRolle.SYSTEM_ADMIN)
         );
         // ASSERT
         assertThat(storedBerechtigungen)
             .extracting(BenutzerBerechtigung::getBerechtigung)
-            .containsExactlyInAnyOrderElementsOf(FachRolle.collectAllBerechtigungen(FachRolle.SYSTEM_ADMIN));
+            .containsExactlyInAnyOrderElementsOf(FachRolle.collectAllBerechtigungen(TenantEnum.BS, FachRolle.SYSTEM_ADMIN));
         service.findBerechtigungenByEmail(createDto.getEmail())
             .ifPresentOrElse(
                 berechtigungen -> assertThat(berechtigungen)
-                    .containsExactlyInAnyOrderElementsOf(FachRolle.collectAllBerechtigungen(FachRolle.SYSTEM_ADMIN)),
+                    .containsExactlyInAnyOrderElementsOf(FachRolle.collectAllBerechtigungen(TenantEnum.BS, FachRolle.SYSTEM_ADMIN)),
                 () -> Assertions.fail("No berechtigungen found")
             );
     }

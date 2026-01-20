@@ -30,6 +30,7 @@ import {
   heroChevronUpSolid,
   heroClipboardSolid,
   heroClockSolid,
+  heroDevicePhoneMobileSolid,
   heroDocumentArrowDownSolid,
   heroDocumentTextSolid,
   heroEllipsisVerticalSolid,
@@ -88,6 +89,7 @@ export const IconUseCases = [
   'loeschen',
   'male',
   'menu',
+  'mobile',
   'mpa',
   'neu',
   'next',
@@ -180,6 +182,7 @@ export class IconComponent {
       case 'loeschen': return heroTrashSolid;
       case 'male': return bootstrapGenderMale;
       case 'menu': return heroBars3;
+      case 'mobile' : return heroDevicePhoneMobileSolid;
       case 'mpa': return null;
       case 'neu': return heroPlusSolid;
       case 'next': return heroChevronRightSolid;

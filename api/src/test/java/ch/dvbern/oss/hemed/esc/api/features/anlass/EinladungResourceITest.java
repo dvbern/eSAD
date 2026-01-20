@@ -297,8 +297,8 @@ class EinladungResourceITest extends AbstractITest {
 
         // ASSERT
         Einladung einladungChanged = einladungService.getById(einladung.getId());
-        assertThat(einladungChanged.getAbmeldungsNotiz()).isNotNull();
-        assertThat(einladungChanged.getAbmeldungsNotiz().getBemerkungen())
+        assertThat(einladungChanged.getAbmeldungsNotiz()).isPresent();
+        assertThat(einladungChanged.getAbmeldungsNotiz().get().getBemerkungen())
             .contains("Grund: Kontrolle bei Kinderarzt/Kinderärztin oder Augenarzt/Augenärztin\n"
                 + "Art der Abmeldung: Mail von Lehrperson");
 
@@ -363,51 +363,6 @@ class EinladungResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void updateEinladung_setStatus_toNachzuegler_createsAufgabe_changeAgainClosesAufgabe_changeAgainToNachzuegler_reopensAufgabe() {
-        // ARRANGE Create Einladung and Update to Nachzuegler to create Aufgabe
-        Einladung einladung = fixtureService.createEinladung();
-        assertThat(einladung.getEinladungStatus()).isEqualTo(EinladungStatus.TEILNAHME_BESTAETIGT);
-        EinladungSaveJsonSpec jaxSpec = EinladungBuilder.createJaxSpec(
-            builder -> builder
-                .forEinladung(einladung)
-                .withStatus(EinladungStatus.NACHZUEGLER),
-            appClock.offsetDateTime().now().toLocalDate()).getData();
-        updateEinladung(einladung.getId(), einladung.getAnlass().getId(), jaxSpec);
-        // ASSERT That the Einladung Status was set to NACHZUEGLER and Aufgabe was created
-        Einladung einladungChanged = einladungService.getById(einladung.getId());
-        assertThat(einladungChanged.getEinladungStatus()).isEqualTo(EinladungStatus.NACHZUEGLER);
-        Optional<Aufgabe> aufgabeOptional = aufgabeService.findSingleAufgabeForKindWithLabel(
-            einladungChanged.getDossier().getKind(),
-            Label.ID_LABEL_NACHZUEGLER);
-        assertThat(aufgabeOptional).isPresent();
-        // ARRANGE Update the Einladung to TEILNAHME_BESTAETIGT so the Aufgabe gets closed
-        jaxSpec.setEinladungStatus(EinladungStatusSpec.TEILNAHME_BESTAETIGT);
-        updateEinladung(einladung.getId(), einladung.getAnlass().getId(), jaxSpec);
-        // ASSERT That the Einladung Status was set to TEILNAHME_BESTAETIGT and Aufgabe is closed
-        einladungChanged = einladungService.getById(einladung.getId());
-        aufgabeOptional = aufgabeService.findSingleAufgabeForKindWithLabel(
-            einladungChanged.getDossier().getKind(),
-            Label.ID_LABEL_NACHZUEGLER);
-        assertThat(einladungChanged.getEinladungStatus()).isEqualTo(EinladungStatus.TEILNAHME_BESTAETIGT);
-        assertThat(aufgabeOptional).isPresent();
-        assertThat(aufgabeOptional.get().getAufgabeStatus()).isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
-
-        // ACT Set Status to NACHZUEGLER again so Aufgabe is reopened
-        jaxSpec.setEinladungStatus(EinladungStatusSpec.NACHZUEGLER);
-        updateEinladung(einladung.getId(), einladung.getAnlass().getId(), jaxSpec);
-
-        // ASSERT That the Einladung Status was set to NACHZUEGLER and Aufgabe is reopened
-        einladungChanged = einladungService.getById(einladung.getId());
-        assertThat(einladungChanged.getEinladungStatus()).isEqualTo(EinladungStatus.NACHZUEGLER);
-        aufgabeOptional = aufgabeService.findSingleAufgabeForKindWithLabel(
-            einladungChanged.getDossier().getKind(), Label.ID_LABEL_NACHZUEGLER);
-        assertThat(aufgabeOptional).isPresent();
-        assertThat(aufgabeOptional.get().getAufgabeStatus()).isEqualTo(AufgabeStatus.OFFEN);
-        assertThat(aufgabeOptional.get().getTitel()).isEqualTo("Nachzügler Gerber Emma 2022/23 SU 4.PS Test getAnlass");
-    }
-
-    @Test
-    @TestAsAdminBS
     void updateEinladung_deleteAbmeldungsnotiz_teilnahmestatus_is_not_abgemeldet() {
         // ARRANGE
         Einladung einladung = fixtureService.createEinladungWithStatusAbgesagt();
@@ -423,7 +378,7 @@ class EinladungResourceITest extends AbstractITest {
 
         // ASSERT
         Einladung einladungChanged = einladungService.getById(einladung.getId());
-        assertThat(einladungChanged.getAbmeldungsNotiz()).isNull();
+        assertThat(einladungChanged.getAbmeldungsNotiz()).isNotPresent();
     }
 
     @Test
@@ -444,8 +399,8 @@ class EinladungResourceITest extends AbstractITest {
 
         // ASSERT
         Einladung einladungChanged = einladungService.getById(einladung.getId());
-        assertThat(einladungChanged.getAbmeldungsNotiz()).isNotNull();
-        assertThat(einladungChanged.getAbmeldungsNotiz()
+        assertThat(einladungChanged.getAbmeldungsNotiz()).isPresent();
+        assertThat(einladungChanged.getAbmeldungsNotiz().get()
             .getBemerkungen()).contains(tl.translate("GrundAbmeldung." + GrundAbmeldung.KEINE_ABMELDUNG));
     }
 
@@ -769,6 +724,7 @@ class EinladungResourceITest extends AbstractITest {
         assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
         List<UntersuchungImpfstatusKrankheit> impfStatus =
             List.of(fixtureService.createUntersuchungImpfstatusKrankheit(untersuchung.getUntersuchungImpfungen()));
+        impfStatus.getFirst().setVersion(1L);
 
         // ACT
         UntersuchungTabsSavedJson untersuchungTabsSavedJson =
@@ -1099,8 +1055,8 @@ class EinladungResourceITest extends AbstractITest {
         ID<Notiz> notizAnmeldungBestaetigungId = einladung.getAnmeldungBestaetigungNotiz().get().getId();
         assertThat(notizService.getById(notizAnmeldungBestaetigungId)).isNotNull();
 
-        assertThat(untersuchung.getEinladung().getAbmeldungsNotiz()).isNotNull();
-        ID<Notiz> notizAbmeldungsgrundId = untersuchung.getEinladung().getAbmeldungsNotiz().getId();
+        assertThat(untersuchung.getEinladung().getAbmeldungsNotiz()).isPresent();
+        ID<Notiz> notizAbmeldungsgrundId = untersuchung.getEinladung().getAbmeldungsNotiz().get().getId();
         assertThat(notizService.getById(notizAbmeldungsgrundId)).isNotNull();
 
         // ACT

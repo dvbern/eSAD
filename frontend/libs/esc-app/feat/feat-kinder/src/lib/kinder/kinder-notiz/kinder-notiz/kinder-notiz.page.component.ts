@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, inject, ViewChild} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {LabelJson, NotizSaveJson, NotizStatus, NotizTyp} from '@dvb/data-access-backend';
+import {LabelJson, NotizStatus, NotizTyp} from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
 import {
   BenutzerOptionsStore,
@@ -49,9 +49,10 @@ export class KinderNotizPageComponent implements DirtyMarker {
   protected readonly Path = Path;
   protected readonly requireValue = requireValue;
 
+  mode = computed(() => this.kinderNotizStore.selectedIsNew() ? 'create' : 'edit');
+
   pageTitle = computed(() => {
-    const mode = this.kinderNotizStore.selectedIsNew() ? 'create' : 'edit';
-    return `notizen.detail.${mode}.titel`;
+    return `notizen.detail.${this.mode()}.titel`;
   });
 
   isDirty(): boolean {
@@ -68,7 +69,8 @@ export class KinderNotizPageComponent implements DirtyMarker {
         const label: LabelJson | undefined = this.#labelStore.dispensationsgesuchAutoLabel();
         const labels: LabelJson[] = label ? [label] : [];
         const currentUser = this.#benutzerOptionsStore.getOptionForBenutzer(this.#benutzerStore.benutzer()?.id);
-        const defaultNotiz: NotizSaveJson = {
+
+        return {
           titel: this.#transloco.translate('notiz.dispensationsgesuch.title'),
           bemerkungen: undefined,
           status: NotizStatus.ABGESCHLOSSEN,
@@ -78,13 +80,24 @@ export class KinderNotizPageComponent implements DirtyMarker {
           files: [],
           version: globalConstants.entityPrePersistVersion,
         };
-        return defaultNotiz;
       }
       return undefined;
     },
   );
 
   onSaveNotiz(payload: NotizenSaveParams) {
+    this.saveNotiz(payload, () => {
+      this.afterSuccessfulSaveAndUpload()
+    });
+  }
+
+  onSaveNotizSilent(payload: NotizenSaveParams) {
+    this.saveNotiz(payload, (resultId: string) => {
+      payload.afterSave?.(resultId);
+    });
+  }
+
+  saveNotiz(payload: NotizenSaveParams, onSuccess: (resultId: string) => void): void {
     const kindIdOrUndefined = this.kindId();
     if (!kindIdOrUndefined) {
       return;
@@ -93,21 +106,18 @@ export class KinderNotizPageComponent implements DirtyMarker {
       this.#notificationService.addDangerNotification(this.#transloco.translate('ui.validation-error.max-files'));
       return;
     }
+
     if (this.kinderNotizStore.selectedIsNew()) {
       this.kinderNotizStore.createNotiz({
         notiz: payload.notiz,
         fileUploads: payload.fileUploads ?? [],
-        onSuccess: (_) => {
-          this.afterSuccessfulSaveAndUpload();
-        },
+        onSuccess: (created) => onSuccess(created.id),
       });
     } else {
       this.kinderNotizStore.updateNotiz({
         notiz: payload.notiz,
         fileUploads: payload.fileUploads ?? [],
-        onSuccess: (_) => {
-          this.afterSuccessfulSaveAndUpload();
-        },
+        onSuccess: (updated) => onSuccess(updated.id),
       });
     }
   }

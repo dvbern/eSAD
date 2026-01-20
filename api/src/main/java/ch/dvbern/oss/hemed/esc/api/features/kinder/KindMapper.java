@@ -1,3 +1,21 @@
+/*
+ *
+ * Copyright (C) 2025 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ch.dvbern.oss.hemed.esc.api.features.kinder;
 
 import java.time.LocalDate;
@@ -234,7 +252,9 @@ public final class KindMapper {
         @NonNull KindSaveModeDuplikat kindSaveMode
     ) {
         Kind existingKind = kindService.getById(kindID);
-        KindValidationUtil.throwErrorIfKindIsInactive(existingKind, AppValidationMessage.cannotEditInactiveKind(existingKind));
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            existingKind,
+            AppValidationMessage.cannotEditInactiveKind(existingKind));
         Kind entity = toEntity(existingKind, kindJson);
         KindSaveResultJson resultJson = saveKind(kindSaveMode, entity, kindJson.getVersion());
         if (resultJson.getKindJson() == null) {
@@ -245,11 +265,12 @@ public final class KindMapper {
         return saveKind(KindSaveModeDuplikat.NO_CHECK, entity, null);
     }
 
-    public void changeKindAktivStatus(@NonNull ID<Kind> kindId, @NonNull EntityAktivStatusSaveJson saveJson) {
+    public KindJson changeKindAktivStatus(@NonNull ID<Kind> kindId, @NonNull EntityAktivStatusSaveJson saveJson) {
         Kind kind = kindService.getById(kindId);
         kind.disableOptimisticLockingCheck();
         kind.setKindAktivStatus(saveJson.getEntityAktivStatus());
-        this.kindService.persistWithoutDuplicateCheck(kind);
+        LocalDate now = appClock.offsetDateTime().now().toLocalDate();
+        return KindMapper.toJson(this.kindService.persistAndFlushWithoutDuplicateCheck(kind), now);
     }
 
     @NonNull
@@ -282,8 +303,10 @@ public final class KindMapper {
             kind,
             AppValidationMessage.cannotEditInactiveKind(kind)
         );
+        EdokidId parsedId = EdokidId.parse(esadIdJson.getEsadId(), true);
+        Objects.requireNonNull(parsedId);
         kind.disableOptimisticLockingCheck();
-        kind.setEsadId(esadIdJson.getEsadId());
+        kind.setEsadId(parsedId.toFormattedString());
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
         return toJson(kindService.persistWithoutDuplicateCheck(kind), now);
     }

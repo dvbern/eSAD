@@ -86,7 +86,6 @@ export class UntersuchungGroessegewichtComponent implements DirtyMarker {
 
   perzentileGroesse = Object.values(PerzentileGroesse);
   perzentileGewicht = Object.values(PerzentileGewicht);
-  perzentileBmi = Object.values(PerzentileBmi);
 
   form = new UntersuchungGroesseGewichtForm({
     fb: inject(NonNullableFormBuilder),

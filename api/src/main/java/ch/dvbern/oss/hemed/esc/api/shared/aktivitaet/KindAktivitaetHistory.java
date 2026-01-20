@@ -3,7 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.aktivitaet;
 import java.io.Serial;
 
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Index;
@@ -25,7 +25,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class KindAktivitaetHistory extends AbstractTenantEntity<KindAktivitaetHistory> {
+public class KindAktivitaetHistory extends AbstractEntity<KindAktivitaetHistory> {
 
     @Serial
     private static final long serialVersionUID = 3519510810266363137L;

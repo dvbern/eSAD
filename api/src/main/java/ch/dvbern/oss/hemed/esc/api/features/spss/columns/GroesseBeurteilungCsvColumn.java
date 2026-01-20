@@ -23,6 +23,9 @@ public class GroesseBeurteilungCsvColumn extends AbstractCsvColumn {
                 if (untersuchungGroesseGewicht.getGroessePerzentile() == null) {
                     return "";
                 }
+                if (!config.forSpssReport()) {
+                    return config.tl().translateValue(untersuchungGroesseGewicht.getGroessePerzentile());
+                }
                 return switch (untersuchungGroesseGewicht.getGroessePerzentile()) {
                     case PerzentileGroesse.NORMAL -> "1";
                     case PerzentileGroesse.PERZENTILE_TIEF -> "5";

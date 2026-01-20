@@ -17,6 +17,15 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.arzt.print;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileDownloadUtil;
@@ -30,14 +39,6 @@ import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -47,7 +48,7 @@ import static java.util.Objects.requireNonNull;
 @Service
 public final class ArztExportService {
 
-    private static final String AERZTE_EXPORT_TEMPLATE = "/print-vorlagen/aerzte-export.docx";
+    private static final String AERZTE_EXPORT_TEMPLATE = "/files/print-vorlagen/aerzte-export.docx";
     private static final String AERZTE_EXPORT_FILE_NAME = "export_aerzte_%s";
     static final String TRANSLATION_PREFIX = "printer.arztliste.";
     private static final String MISSING_PLZ = TRANSLATION_PREFIX + "missing.plz";
@@ -63,10 +64,10 @@ public final class ArztExportService {
         @NonNull TL tl,
         @NonNull ExportMode exportMode
     ) {
-        if(exportMode == ExportMode.TEXTDOCUMENT) {
-            return  ArztExportService.generatAearzteExportDoc(aerzte, fileTimeStamp, tl);
+        if (exportMode == ExportMode.TEXTDOCUMENT) {
+            return ArztExportService.generatAearzteExportDoc(aerzte, fileTimeStamp, tl);
         }
-        return  ArztExportService.generatAearzteExportCsv(aerzte, fileTimeStamp, tl);
+        return ArztExportService.generatAearzteExportCsv(aerzte, fileTimeStamp, tl);
     }
 
     @NonNull
@@ -83,14 +84,17 @@ public final class ArztExportService {
             if (inputStream != null) {
                 result = DocMergerUtil.merge(inputStream, mergeSource);
             } else {
-                throw new AppFailureException(AppFailureMessage.internalError("Unable to load ressource : " + AERZTE_EXPORT_TEMPLATE));
+                throw new AppFailureException(AppFailureMessage.internalError("Unable to load ressource : "
+                    + AERZTE_EXPORT_TEMPLATE));
             }
             String fileName = String.format(AERZTE_EXPORT_FILE_NAME, fileTimeStamp) + '.' + "docx";
-            return new PrintResultDTO(result, FileDownloadUtil.buildFileInfo(fileName, FileDownloadUtil.MIME_TYPE_DOCX, result.length));
+            return new PrintResultDTO(
+                result,
+                FileDownloadUtil.buildFileInfo(fileName, FileDownloadUtil.MIME_TYPE_DOCX, result.length));
         } catch (IOException e) {
             throw new AppFailureException(
                 AppFailureMessage.internalError("Unable to load ressource : "
-                + AERZTE_EXPORT_TEMPLATE), e);
+                    + AERZTE_EXPORT_TEMPLATE), e);
         }
     }
 
@@ -124,7 +128,7 @@ public final class ArztExportService {
     @NonNull
     private static ArztMergerDTO toArztMergerDTO(@NonNull Arzt arzt) {
         Optional<Arzt> arztOptional = Optional.of(arzt);
-        String formattedPhone = (arzt.getTelefon() != null) ?  arzt.getTelefon().getFormattedPhoneNumber() : null;
+        String formattedPhone = (arzt.getTelefon() != null) ? arzt.getTelefon().getFormattedPhoneNumber() : null;
 
         return new ArztMergerDTO(
             formatFullName(arzt),
@@ -153,7 +157,8 @@ public final class ArztExportService {
             StringUtils.trimToEmpty(adresse.getOrt())
         );
 
-        String[] addressParts ={ adresse.getStrasseUndNrNonBreakingSpaceSeparated(), adresse.getAdresseZusatz(), plzOrt };
+        String[] addressParts =
+            { adresse.getStrasseUndNrNonBreakingSpaceSeparated(), adresse.getAdresseZusatz(), plzOrt };
 
         String adresseFormat = concatNonEmptyStrings(addressParts, ", ");
 
@@ -170,7 +175,5 @@ public final class ArztExportService {
             .filter(Predicate.not(String::isEmpty))
             .collect(Collectors.joining(delimiter));
     }
-
-
 
 }

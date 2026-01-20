@@ -3,7 +3,7 @@ import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {Path} from '@dvb/feat-shared';
 import {PageComponent} from '@dvb/feat-shared';
 import {CardComponent} from '@dvb/ui-components';
-import {TranslocoPipe} from '@jsverse/transloco';
+import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbNav, NgbNavItem} from '@ng-bootstrap/ng-bootstrap';
 import {DossierStore} from '../dossier.store';
 import {KontaktPersonKindStore} from './kontaktpersonen/kontakt-person-kind.store';
@@ -26,8 +26,15 @@ import {KontaktPersonKindStore} from './kontaktpersonen/kontakt-person-kind.stor
 export class KinderDetailPageComponent {
   readonly store = inject(DossierStore);
   readonly kontaktPersonKindStore = inject(KontaktPersonKindStore);
+  readonly transloco = inject(TranslocoService);
 
-  fullName = computed(() => this.store.nameKind());
+  pageTitle = computed(() => {
+    if (this.store.isNew()) {
+      return this.transloco.translate('kind.create');
+    } else {
+      return this.store.nameKind();
+    }
+  });
 
   protected readonly Path = Path;
 }

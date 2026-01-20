@@ -26,7 +26,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResulta
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungHoerenUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungHoerenOtoskopiePresentIfReq;
@@ -56,7 +56,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckUntersuchungHoerenOtoskopiePresentIfReq
-public class UntersuchungHoerenOtoskopie extends AbstractTenantEntity<UntersuchungHoerenOtoskopie>
+public class UntersuchungHoerenOtoskopie extends AbstractEntity<UntersuchungHoerenOtoskopie>
     implements EntityWithOptimisticLocking {
 
     @Serial

@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -26,12 +27,17 @@ public class KrankheitImpfentscheidCsvColumn extends AbstractCsvColumn {
             einladung,
             krankheit,
             config,
-            impfstatus -> impfstatus.isImpfentscheid() ? "1" : "");
+            impfstatus -> {
+                if (config.forSpssReport()) {
+                    return impfstatus.isImpfentscheid() ? "1" : "";
+                }
+                return PrintUtil.trimToPlaceholder(impfstatus.isImpfentscheid(), config.tl());
+            });
     }
 
     @Override
     @NonNull
     protected String getDefaultHeaderKey() {
-        return "CsvColumn.krankheitImpfentscheid";
+        return "CsvColumn.krankheitImpfentscheid." + this.krankheit;
     }
 }

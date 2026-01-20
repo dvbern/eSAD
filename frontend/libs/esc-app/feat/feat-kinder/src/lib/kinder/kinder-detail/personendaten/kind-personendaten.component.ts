@@ -4,17 +4,16 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
-  Geschlecht,
   EntityAktivStatus,
+  Geschlecht,
+  ImportTyp,
   KindJson,
   KindSaveJson,
   KindSaveModeDuplikat,
   Land,
 } from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
-import {AdresseComponent, AdresseForm} from '@dvb/feat-shared';
-import {BenutzerStore} from '@dvb/feat-shared';
-import {EventBusStore, NavigationService, Path} from '@dvb/feat-shared';
+import {AdresseComponent, AdresseForm, BenutzerStore, EventBusStore, NavigationService, Path} from '@dvb/feat-shared';
 import {
   CheckboxDirective,
   FormButtonsComponent,
@@ -30,7 +29,7 @@ import {
   TextInputDirective,
 } from '@dvb/ui-components';
 import {DetailMode, DirtyMarker} from '@dvb/util-angular';
-import {fromISODateTimeString, hasKindEditBerechtigung, isNullish} from '@dvb/util-shared';
+import {fromISODateTimeString, hasKindEditBerechtigung, isNotNullish, isNullish} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {NgbAlert} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
@@ -93,7 +92,10 @@ export class KindPersonendatenComponent implements DirtyMarker {
   markDuplicatesAsFalsePositives = false;
 
   isEscadaObject = computed(() => {
-    return !!this.dossierStore.selectedKind()?.externalImportInfoJson?.aktivInExternalSystem;
+    const externalImportInfo = this.dossierStore.selectedKind()?.externalImportInfoJson
+    return isNotNullish(externalImportInfo)
+      && externalImportInfo?.aktivInExternalSystem
+      && externalImportInfo?.importTyp === ImportTyp.ESCADA;
   });
 
   getDateLatestImportIfEscadaObject() {

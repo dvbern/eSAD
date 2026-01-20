@@ -20,6 +20,10 @@ public class QuartierCsvColumn extends AbstractCsvColumn {
             return "";
         }
 
+        if (!config.forSpssReport()) {
+            return schule.getQuartier().getQuartierName();
+        }
+
         return switch (schule.getQuartier().getQuartierName()) {
             case "GBW" -> "10";
             case "GBO" -> "11";

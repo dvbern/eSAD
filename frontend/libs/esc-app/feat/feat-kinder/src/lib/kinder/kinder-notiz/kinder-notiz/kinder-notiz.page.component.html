@@ -1,6 +1,5 @@
 <feat-page [heading]="pageTitle() | transloco: { nameKind: dossierStore.nameKind() }"
            [backLink]="{label: 'global.back' | transloco, routerLink: Path.RELATIVE_TWO_UP}">
-
   <feat-notizen
     [kindId]="kindId()"
     [initialNotiz]="defaultNotizSig()"
@@ -8,7 +7,7 @@
     [notizenFiles]="kinderNotizStore.notizenFiles() ?? []"
     [loader]="kinderNotizStore.saveLoader"
     (saveNotiz)="onSaveNotiz($event)"
+    (saveNotizSilent)="onSaveNotizSilent($event)"
     (removeNotizFile)="onRemoveNotizFile($event)"
   />
-
 </feat-page>

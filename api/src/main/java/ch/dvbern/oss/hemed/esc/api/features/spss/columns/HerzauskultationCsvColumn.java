@@ -22,6 +22,9 @@ public class HerzauskultationCsvColumn extends AbstractCsvColumn {
                 if (untersuchungArzt.getHerzauskultation() == null) {
                     return "";
                 }
+                if (!config.forSpssReport()) {
+                    return config.tl().translateValue(untersuchungArzt.getHerzauskultation());
+                }
                 return switch (untersuchungArzt.getHerzauskultation()) {
                     case Herzauskultation.UNAUFFAELLIG -> "1";
                     case Herzauskultation.AKZIDENTELLES_SYSTOLIKUM -> "2";

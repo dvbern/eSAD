@@ -70,11 +70,11 @@ public class KindResource {
     @PUT
     @Path("/{kindId}/kindaktivstatus")
     @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
-    public void updateKindAktivStatus(
+    public KindJson updateKindAktivStatus(
         @NonNull @NotNull @PathParam("kindId") ID<Kind> kindId,
         @NotNull @NonNull @Valid EntityAktivStatusSaveJson saveJson
     ) {
-        kindMapper.changeKindAktivStatus(kindId, saveJson);
+        return kindMapper.changeKindAktivStatus(kindId, saveJson);
     }
 
     @DELETE

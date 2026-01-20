@@ -12,7 +12,13 @@ import {
 import {ISOYearMonthString} from '@dvb/data-access-types';
 import {globalConstants} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensureProps, getDateFromISOYearMonthString, getYearMonthFromISODateString, Nullish} from '@dvb/util-shared';
+import {
+  ensureProps,
+  getDateFromISOYearMonthString,
+  getYearMonthFromISODateString,
+  isNotNullish,
+  Nullish
+} from '@dvb/util-shared';
 import {distinctUntilChanged} from 'rxjs';
 
 type Config = {
@@ -24,12 +30,9 @@ type Config = {
 export type UntersuchungImpfstatusSubFormType = ReturnType<typeof makeSubform>;
 
 function makeForm(config: Config) {
-  const fb = config.fb;
-  const group = fb.group({
-    impfentscheide: fb.group({}),
+  return config.fb.group({
+    impfentscheide: config.fb.group({}),
   });
-  config.krankheiten.forEach(k => group.controls.impfentscheide.addControl(k, makeSubform(config, k)));
-  return group;
 }
 
 function makeSubform(config: Config, krankheit: Krankheit): FormGroup {
@@ -175,5 +178,25 @@ export class UntersuchungImpfstatusListForm extends BaseForm<
         krankheitGroup.controls['anzahlImpfungen'].clearValidators();
       }
     });
+  }
+
+  /**
+   * Krankheiten werden neu über die AnlassConfig definiert und sind eventuell beim Laden der Seite noch nicht vorhanden,
+   * deshalb werden die SubForms über diese Funktion erstellt und die config überschrieben.
+   */
+  createKrankheitenSubForms(krankheiten: Krankheit[], data: UntersuchungImpfstatusListSaveJson | Nullish): void {
+    this.config.krankheiten = krankheiten;
+
+    Object.keys(this.group.controls.impfentscheide.controls)
+      .filter(controlName => !krankheiten.some(krankheit => krankheit === controlName))
+      .forEach(krankheit => this.group.controls.impfentscheide.removeControl(krankheit));
+
+    krankheiten.forEach(krankheit => {
+      this.group.controls.impfentscheide.addControl(krankheit, makeSubform(this.config, krankheit))
+    });
+
+    if (isNotNullish(data)) {
+      this.resetForm(data);
+    }
   }
 }

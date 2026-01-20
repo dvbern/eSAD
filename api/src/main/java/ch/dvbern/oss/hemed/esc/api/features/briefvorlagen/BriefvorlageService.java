@@ -56,13 +56,13 @@ public class BriefvorlageService {
         fileValidationService.requireFiletypeIsAllowed(fileUpload, FileTyp.BRIEFVORLAGE);
 
         // prepare the file info Embeddable
-        FileInfoS3 fileInfoS3 = FileInfoS3Mapper.mapFileUploadToFileInfoS3(fileUpload, FileTyp.BRIEFVORLAGE);
+        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfo(fileUpload, FileTyp.BRIEFVORLAGE);
         // upload the file to S3
-        Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileUpload, fileInfoS3);
+        Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileUpload, fileInfo);
         PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
-        LOG.info("Uploaded file to S3, fileIdInBucket: {}, putObjectResponse: {}", fileInfoS3.getFileIdInBucket(), putObjectResponse);
+        LOG.info("Uploaded file to S3, fileIdInBucket: {}, putObjectResponse: {}", fileInfo.getFileIdInBucket(), putObjectResponse);
 
-        return new FileData(FileTyp.BRIEFVORLAGE, new CleanFileName(fileUpload.fileName()), fileInfoS3);
+        return new FileData(FileTyp.BRIEFVORLAGE, new CleanFileName(fileUpload.fileName()), fileInfo);
     }
 
     public void removeBriefvorlageAttachmentInFilestorage(@NonNull FileData fileData) {
@@ -75,7 +75,7 @@ public class BriefvorlageService {
     }
 
     @NonNull
-    public FileInfoS3 findBriefvorlageFile(@NonNull ID<Briefvorlage> briefvorlageId) {
+    public FileInfo findBriefvorlageFile(@NonNull ID<Briefvorlage> briefvorlageId) {
         return getById(briefvorlageId).getFile().getFileInfoBucket();
     }
 }

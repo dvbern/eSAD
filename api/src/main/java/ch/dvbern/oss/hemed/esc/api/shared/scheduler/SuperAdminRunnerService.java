@@ -56,7 +56,7 @@ public class SuperAdminRunnerService {
     private final KindService kindService;
     private final DuplikatService duplikatService;
 
-    @RunAs(username = "bs-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
+    @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
     public void runBenutzerInaktivierenJob(boolean forcerun) {
         final SchedulerConfig config = schedulerConfigService.getSchedulerConfig(SchedulerTyp.BENUTZER_INAKVIEREN);
         if (!config.isDisabled() || forcerun) {
@@ -214,7 +214,7 @@ public class SuperAdminRunnerService {
         }
         LOG.info(
             "ESC-RELOAD_DUPLIKATE: Finished checking for duplicates. We analyzed {} Kinder and created {} new "
-					+ "Duplikate.",
+                + "Duplikate.",
             ids.size(), successCounter);
     }
 }

@@ -1,5 +1,14 @@
 package ch.dvbern.oss.hemed.esc.api.shared.scheduler;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Stream;
+
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerRepo;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
@@ -25,13 +34,6 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.FileDataBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.KindBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import io.quarkus.test.junit.QuarkusTest;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -182,7 +184,6 @@ class SuperAdminRunnerServiceTest extends AbstractITest {
         assertThat(benutzerAfterJob.isAktiv()).isFalse();
     }
 
-
     @Test
     @TestAsAdminBS
     void runBenutzerInaktivierenJob_shouldNotDeactivateManuallyActivatedWithNullLastUsedSessionTimestamp() {
@@ -219,7 +220,11 @@ class SuperAdminRunnerServiceTest extends AbstractITest {
 
         // deactivated external kind
         var kindInaktivEscada = KindBuilder.create(builder -> builder
-            .withExternalImportInfo(UUID.randomUUID().toString(), false, getAppClock().offsetDateTime().now()));
+            .withExternalImportInfo(
+                UUID.randomUUID().toString(),
+                false,
+                getAppClock().offsetDateTime().now(),
+                ImportTyp.ESCADA));
         kindService.persistWithoutDuplicateCheck(kindInaktivEscada);
 
         // ACT

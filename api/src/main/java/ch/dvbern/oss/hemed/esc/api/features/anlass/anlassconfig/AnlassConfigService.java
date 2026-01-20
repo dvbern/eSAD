@@ -21,10 +21,12 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig;
 import java.time.LocalDate;
 import java.util.List;
 
+import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateConst;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.util.AnlassConfigUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -34,6 +36,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public class AnlassConfigService {
 
     private final AnlassConfigRepo anlassConfigRepo;
+    private final ConfigService configService;
 
     @NonNull
     public List<AnlassConfig> findAll() {
@@ -73,7 +76,11 @@ public class AnlassConfigService {
     @NonNull
     public AnlassConfig updateAnlassConfig(@NonNull AnlassConfig anlassConfig) {
         boolean usedInAtLeastOneAnlass = isUsedInAtLeastOneAnlass(anlassConfig.getId());
-        AnlassConfigUtil.requireAnlassConfigNotYetUsedInAnlass(usedInAtLeastOneAnlass);
+        boolean alwaysEditable = configService.getEnvironment() != DeploymentEnvironment.UAT
+            && configService.getEnvironment() != DeploymentEnvironment.PROD;
+        if (!alwaysEditable) {
+            AnlassConfigUtil.requireAnlassConfigNotYetUsedInAnlass(usedInAtLeastOneAnlass);
+        }
         return persist(anlassConfigRepo.getById(anlassConfig.getId()));
     }
 

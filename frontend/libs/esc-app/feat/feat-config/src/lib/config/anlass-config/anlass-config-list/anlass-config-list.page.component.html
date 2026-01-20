@@ -3,7 +3,15 @@
   <svui-page-header-buttons
     [showFilterPopup]="false"
     [activeFilterCount]="itemTable.numberOfFilters()"
-    (resetFilter)="itemTable.resetFilters(); tableFilterForm.reset()"/>
+    (resetFilter)="itemTable.resetFilters(); tableFilterForm.reset()">
+    <button svuiIconOnlyButton="secondary"
+            type="button"
+            [tooltip]="'anlassconfig.download.scripts' | transloco"
+            [icon]="'herunterladen'"
+            (click)="downloadAllSqlSkripts()"
+    >
+    </button>
+  </svui-page-header-buttons>
 
   @if (canEditList()) {
     <svui-page-header-add-button

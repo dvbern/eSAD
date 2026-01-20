@@ -1,13 +1,12 @@
 <feat-page [heading]="'notizen.detail.edit.titel' | transloco: { nameKind: kind()?.vorname + ' ' + kind()?.name }"
            [backLink]="{label: 'global.back' | transloco, routerLink: Path.RELATIVE_ONE_UP}">
-
   <feat-notizen
     [kindId]="kind()?.id"
     [existingNotiz]="notizenListStore.selectedEntity()"
     [notizenFiles]="notizenListStore.notizenFiles()"
     [loader]="notizenListStore.saveLoader"
     (saveNotiz)="onSaveNotiz($event)"
+    (saveNotizSilent)="onSaveNotizSilent($event)"
     (removeNotizFile)="onRemoveNotizFile($event)"
   />
-
 </feat-page>

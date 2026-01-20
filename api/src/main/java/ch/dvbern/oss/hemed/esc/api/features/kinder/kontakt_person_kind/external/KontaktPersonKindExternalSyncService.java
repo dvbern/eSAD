@@ -10,9 +10,10 @@ import java.util.concurrent.TimeUnit;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKind;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ExternalSystemIdDTO;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ImportPlanDTO;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ItemSyncResultJson;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ExternalSystemIdDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ImportPlanDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ItemSyncResultJson;
 import io.smallrye.context.api.ManagedExecutorConfig;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -27,6 +28,7 @@ import org.eclipse.microprofile.context.ManagedExecutor;
 public class KontaktPersonKindExternalSyncService {
 
     private final KontaktPersonKindExternalSyncHelperService syncHelperService;
+    private final ConfigService configService;
     private final ManagedExecutor concurrentEscadaExecutor;
 
     // IMPORANT: for the @ManagedExecutorConfig annotation to work, it must be directly on the @Inject.
@@ -34,9 +36,11 @@ public class KontaktPersonKindExternalSyncService {
     @Inject
     public KontaktPersonKindExternalSyncService(
         KontaktPersonKindExternalSyncHelperService syncHelperService,
+        ConfigService configService,
         @ManagedExecutorConfig(maxAsync = 9) ManagedExecutor concurrentEscadaExecutor
     ) {
         this.syncHelperService = syncHelperService;
+        this.configService = configService;
         this.concurrentEscadaExecutor = concurrentEscadaExecutor;
     }
 
@@ -77,8 +81,7 @@ public class KontaktPersonKindExternalSyncService {
                         return ItemSyncResultJson.<KontaktPersonKind>createAddErrorItem(
                             kontaktPersonKindExternalToAdd,
                             Objects.toString(
-                                kontaktPersonKindExternalToAdd.getAdressierungName() + " " +
-                                    kontaktPersonKindExternalToAdd.getAdressierungVorname(),
+                                kontaktPersonKindExternalToAdd.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo()),
                                 kontaktPersonKindExternalToAdd.getAdressierungId()),
                             e);
                     }

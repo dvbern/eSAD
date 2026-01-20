@@ -26,6 +26,7 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
@@ -43,6 +44,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftret
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungSehenUtil;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +59,7 @@ public class UntersuchungSehenBeurteilungMapper {
     private final AnlassService anlassService;
     private final UntersuchungService untersuchungService;
     private final UntersuchungSehenBeurteilungService untersuchungSehenBeurteilungService;
+    private final TenantProducer tenantProducer;
 
     @Nullable
     public static UntersuchungSehenBeurteilungJson toJson(
@@ -146,12 +150,14 @@ public class UntersuchungSehenBeurteilungMapper {
     public UntersuchungSehenBeurteilungSaveJson getDefaultUntersuchungSehenForAnlassConfig(
         @NonNull ID<Anlass> anlassID
     ) {
+        TenantEnum tenant = tenantProducer.produceTenant();
+
         AnlassConfig config = anlassService.getById(anlassID).getAnlassConfig();
         boolean isKindergarten = config.getAnlassTyp() == AnlassTyp.KINDERGARTEN;
         boolean isFremdsprachen = config.getAnlassTyp() == AnlassTyp.FREMDSPRACHEN;
         BigDecimal fernvisus = isKindergarten ? BigDecimal.valueOf(0.8) : BigDecimal.valueOf(1.0);
         return new UntersuchungSehenBeurteilungSaveJson(
-            null,
+            tenant == TenantEnum.BS ? null: BrilleLinsenResultat.OHNE_KEINE,
             UntersuchungSehenUtil.getStereoTest(
                 config,
                 null,

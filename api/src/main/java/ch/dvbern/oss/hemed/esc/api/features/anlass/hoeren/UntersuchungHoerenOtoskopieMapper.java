@@ -25,14 +25,14 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoerenOtoskopieJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoerenOtoskopieSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungHoerenUtil;
 import lombok.RequiredArgsConstructor;
@@ -118,19 +118,23 @@ public class UntersuchungHoerenOtoskopieMapper {
             .contains(anlassConfig.getAnlassTyp())) {
             defaultOtoskopieResultat = OtoskopieResultat.NICHT_GEPRUEFT;
         }
+
+        List<OtoskopieResultat> defaultOtoskopieRechts = EnumSetUtil.toList(
+            UntersuchungHoerenUtil.getOtoskopieRechts(
+                anlassConfig.getHoerenOtoskopie(),
+                null,
+                defaultOtoskopieResultat)
+        );
+        List<OtoskopieResultat> defaultOtoskopieLinks = EnumSetUtil.toList(
+            UntersuchungHoerenUtil.getOtoskopieLinks(
+                anlassConfig.getHoerenOtoskopie(),
+                null,
+                defaultOtoskopieResultat));
+        // Warning: it is important for the dirty check to send null values if there is no default value for otoskopie
         return new UntersuchungHoerenOtoskopieSaveJson(
-            EnumSetUtil.toList(
-                UntersuchungHoerenUtil.getOtoskopieRechts(
-                    anlassConfig.getHoerenOtoskopie(),
-                    null,
-                    defaultOtoskopieResultat)
-            ),
+            defaultOtoskopieRechts.isEmpty() ? null : defaultOtoskopieRechts,
             null,
-            EnumSetUtil.toList(
-                UntersuchungHoerenUtil.getOtoskopieLinks(
-                    anlassConfig.getHoerenOtoskopie(),
-                    null,
-                    defaultOtoskopieResultat)),
+            defaultOtoskopieLinks.isEmpty() ? null : defaultOtoskopieLinks,
             null,
             null,
             0L

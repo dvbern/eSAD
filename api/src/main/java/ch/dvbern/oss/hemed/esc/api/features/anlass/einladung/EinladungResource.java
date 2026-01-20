@@ -74,7 +74,6 @@ public class EinladungResource {
         @NotNull @NonNull @Valid KindIdListJson kindIdListJson
     ) {
         authorizerService.requireWriteAuthorizationAnlass(anlassId);
-        authorizerService.requireWriteAuthorizationAnlassLaeuse(anlassId);
         return new EinladungListJson(einladungMapper.createEinladungenForAnlass(anlassId, kindIdListJson));
     }
 
@@ -88,7 +87,6 @@ public class EinladungResource {
         List<ID<Einladung>> einladungenId =
             einladungListJson.getEinladungList().stream().map(EinladungJson::getId).toList();
         authorizerService.requireWriteAuthorizationAnlass(anlassId);
-        authorizerService.requireWriteAuthorizationAnlassLaeuse(anlassId);
         einladungMapper.requireConsistentPathParams(einladungenId, anlassId);
 
         einladungMapper.removeEinladungen(einladungListJson);
@@ -142,7 +140,6 @@ public class EinladungResource {
     ) {
         einladungMapper.requireConsistentPathParams(einladungId, anlassId);
         authorizerService.requireWriteAuthorizationAnlass(anlassId);
-        authorizerService.requireWriteAuthorizationAnlassLaeuse(anlassId);
         return einladungMapper.updateEinladung(einladungId, einladungSaveJson);
     }
 
@@ -187,7 +184,7 @@ public class EinladungResource {
     @GET
     @Path("/hiddentabinfo")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.KINDER_LESEN_MEDIZINISCH)
+    @RolesAllowed({BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH})
     public UntersuchungTabInfoListJson getHiddenUntersuchungTabInfos(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @QueryParam("einladungIds") List<ID<Einladung>> einladungIds
@@ -220,7 +217,6 @@ public class EinladungResource {
     ) {
         einladungMapper.requireConsistentPathParams(einladungId, anlassId);
         authorizerService.requireWriteAuthorizationAnlass(anlassId);
-        authorizerService.requireWriteAuthorizationAnlassLaeuse(anlassId);
         einladungMapper.untersuchungAbschliessen(einladungId);
         return Response.ok().build();
     }

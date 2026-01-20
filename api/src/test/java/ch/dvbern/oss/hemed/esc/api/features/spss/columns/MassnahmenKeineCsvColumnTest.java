@@ -6,6 +6,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassna
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 class MassnahmenKeineCsvColumnTest extends AbstractBaseColumnTest {
 
@@ -34,4 +35,35 @@ class MassnahmenKeineCsvColumnTest extends AbstractBaseColumnTest {
         untersuchungMassnahmen.setKeineMassnahmen(true);
         assertThat(column.extract(einladung)).isEqualTo("1");
     }
+
+    @Test
+    void extractCsv() {
+        // ARRANGE
+        final MassnahmenKeineCsvColumn column =
+            new MassnahmenKeineCsvColumn(configForCsv, null);
+        final Einladung einladung = new Einladung();
+
+        assertThat(column.extract(einladung)).isEmpty();
+
+        Untersuchung untersuchung = new Untersuchung();
+        einladung.setUntersuchung(untersuchung);
+
+        assertThat(column.extract(einladung)).isEmpty();
+
+        UntersuchungMassnahmen untersuchungMassnahmen = new UntersuchungMassnahmen();
+        untersuchung.setUntersuchungMassnahmen(untersuchungMassnahmen);
+
+        assertThat(column.extract(einladung)).isEmpty();
+
+        when(tlMock.translate("printer.boolean.true")).thenReturn("Ja");
+        when(tlMock.translate("printer.boolean.false")).thenReturn("Nein");
+
+
+        untersuchungMassnahmen.setKeineMassnahmen(false);
+        assertThat(column.extract(einladung)).isEqualTo("Nein");
+
+        untersuchungMassnahmen.setKeineMassnahmen(true);
+        assertThat(column.extract(einladung)).isEqualTo("Ja");
+    }
+
 }

@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -23,10 +23,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(
     uniqueConstraints = {
-        @UniqueConstraint(name = "uc_edokididsequence_eintrittsjahr", columnNames = { "eintrittsJahr", "tenant" })
+        @UniqueConstraint(name = "uc_edokididsequence_eintrittsjahr", columnNames = { "eintrittsJahr" })
     }
 )
-public class EdokidIdSequence extends AbstractTenantEntity<EdokidIdSequence> implements Serializable {
+public class EdokidIdSequence extends AbstractEntity<EdokidIdSequence> implements Serializable {
 
     private static final char MAX_CHARACTER = 'Z';
     private static final int MAX_LAUFNUMMER = 999;

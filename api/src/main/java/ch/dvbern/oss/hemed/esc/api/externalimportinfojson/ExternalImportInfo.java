@@ -8,6 +8,8 @@ import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +27,7 @@ public class ExternalImportInfo implements Serializable {
     private static final long serialVersionUID = -3712635907225593561L;
 
     /**
-     * Id in external System. e.g. Escada
+     * Id in external System. e.g. Escada or Pupil
      */
     @IgnoreForIdClassTest
     @Nullable
@@ -52,4 +54,12 @@ public class ExternalImportInfo implements Serializable {
     @Nullable
     @Column(nullable = true, updatable = true)
     private OffsetDateTime timestampLatestImport;
+
+    /**
+     * Type of import (e.g. escada or excel_massenimport or pupil)
+     */
+    @Nullable
+    @Column(nullable = true, updatable = true, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private ImportTyp importTyp;
 }

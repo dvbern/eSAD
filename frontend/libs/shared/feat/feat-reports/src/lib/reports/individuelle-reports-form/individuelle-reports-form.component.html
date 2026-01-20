@@ -1,0 +1,41 @@
+<svui-card>
+  <form svuiFormLayout
+        [formType]="'kacheln'"
+        [formGroup]="form.group"
+        (ngSubmit)="submitIfValid()"
+        [mode]="DetailMode.EDIT"
+  >
+    <h2 svuiHeading="formSection" class="mb-3">{{ 'reports.individuelleReports.card.title' | transloco }}</h2>
+
+    <!-- Datum -->
+    <svui-form-control [label]="'reports.form.datumVon' | transloco"
+                       [viewValue]="form.group.value.datumVon"
+                       [size]="'half'">
+      <input svuiTextInput="date" [formControl]="form.group.controls.datumVon"/>
+    </svui-form-control>
+
+    <!-- Datum -->
+    <svui-form-control [label]="'reports.form.datumBis' | transloco"
+                       [viewValue]="form.group.value.datumBis"
+                       [size]="'half'">
+      <input svuiTextInput="date" [formControl]="form.group.controls.datumBis"/>
+    </svui-form-control>
+
+    <!-- CsvReportType -->
+    @for (csvType of individuelleReports; track csvType) {
+      <svui-standalone-control [label]="'reports.csv.' + csvType | transloco">
+        <input type="checkbox" svuiCheckbox [formControl]="form.group.controls[csvType]">
+      </svui-standalone-control>
+    }
+
+    <!--messages for whole form -->
+    <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+    <div class="mt-2 text-end">
+      <button svuiButton="primary" type="submit">
+        {{ 'reports.individuelleReports.button.generieren' | transloco }}
+      </button>
+    </div>
+  </form>
+</svui-card>
+

@@ -30,7 +30,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.Perzenti
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungGroesseGewichtUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungGroesseGewichtPresentIfReq;
 import jakarta.persistence.Column;
@@ -57,7 +57,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckUntersuchungGroesseGewichtPresentIfReq
-public class UntersuchungGroesseGewicht extends AbstractTenantEntity<UntersuchungGroesseGewicht>
+public class UntersuchungGroesseGewicht extends AbstractEntity<UntersuchungGroesseGewicht>
     implements EntityWithOptimisticLocking {
 
     @Serial

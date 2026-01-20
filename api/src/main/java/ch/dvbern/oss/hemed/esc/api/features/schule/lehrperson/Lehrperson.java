@@ -11,7 +11,7 @@ import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.HasExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -38,8 +38,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Lehrperson
-    extends AbstractTenantEntity<Lehrperson>
+public class Lehrperson extends AbstractEntity<Lehrperson>
     implements Serializable, HasExternalImportInfo, EntityWithOptimisticLocking {
 
     @Serial
@@ -87,5 +86,13 @@ public class Lehrperson
             return name + ' ' + vorname;
         }
         return name;
+    }
+
+    @Nullable
+    public String getFullNameIfAllowed(boolean redactFullName) {
+        if(redactFullName) {
+            return null;
+        }
+        return this.getNameVorname();
     }
 }

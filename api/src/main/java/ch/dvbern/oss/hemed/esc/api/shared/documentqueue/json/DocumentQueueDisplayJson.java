@@ -6,6 +6,7 @@ import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueue;
+import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueueCsvParams;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueueParams;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueueStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
@@ -57,4 +58,8 @@ public class DocumentQueueDisplayJson {
     @Nullable
     @Schema(required = false)
     DocumentQueueParams documentQueueParams;
+
+    @Nullable
+    @Schema(required = false)
+    DocumentQueueCsvParams documentQueueCsvParams;
 }

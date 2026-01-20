@@ -26,7 +26,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungDurchfuehrungUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungDurchfuehrungPresentIfReq;
@@ -61,7 +61,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckUntersuchungDurchfuehrungPresentIfReq
-public class UntersuchungDurchfuehrung extends AbstractTenantEntity<UntersuchungDurchfuehrung>
+public class UntersuchungDurchfuehrung extends AbstractEntity<UntersuchungDurchfuehrung>
     implements EntityWithOptimisticLocking {
 
     @Serial

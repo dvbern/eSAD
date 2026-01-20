@@ -10,12 +10,13 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueue;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueueMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueueService;
-import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueDisplayJson;
+import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueCsvListSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueCsvSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueIDListJson;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueListJson;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueListSaveJson;
-import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueSaveJson;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3;
+import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueSpssSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.faulttolerance.api.RateLimit;
@@ -58,21 +59,21 @@ public class DocumentQueueResource {
     private final AuthorizerService authorizerService;
 
     @POST
-    @RolesAllowed({BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT})
-    public Response create(@NotNull @NonNull @Valid DocumentQueueSaveJson saveJson) {
+    @RolesAllowed({BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT, BerechtigungName.INDIVIDUELLE_REPORTS})
+    public Response create(@NotNull @NonNull @Valid DocumentQueueSpssSaveJson saveJson) {
         documentQueueMapper.create(saveJson);
         return Response.status(Status.CREATED.getStatusCode()).build();
     }
 
     @GET
     @Path("/self")
-    @RolesAllowed({BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT})
+    @RolesAllowed({BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT, BerechtigungName.INDIVIDUELLE_REPORTS})
     public DocumentQueueListJson findAllByCurrentBenutzer() {
         return documentQueueMapper.findAllByCurrentBenutzer();
     }
 
     @GET
-    @RolesAllowed({BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT})
+    @RolesAllowed({BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT, BerechtigungName.INDIVIDUELLE_REPORTS})
     public DocumentQueueListJson findAll() {
         return documentQueueMapper.findAll();
     }
@@ -83,31 +84,41 @@ public class DocumentQueueResource {
         schema = @Schema(type = SchemaType.STRING, format = "binary")), description = "OK", responseCode = "200")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Path("/{documentQueueId}/sync")
-    @RolesAllowed({BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT})
+    @RolesAllowed({BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT, BerechtigungName.INDIVIDUELLE_REPORTS})
     @NonNull
     @Blocking
     public Response downloadFile(
         @PathParam("documentQueueId") @NotNull @NonNull ID<DocumentQueue> documentQueueId
     ) {
         authorizerService.requireReadAuthorizationDocument(documentQueueId);
-        FileInfoS3 fileInfo = documentQueueService.findUploadedFileInfoS3(documentQueueId);
+        FileInfo fileInfo = documentQueueService.findUploadedFileInfo(documentQueueId);
         var content = fileStoreService.getFileBytesSync(fileInfo.getFileIdInBucket());
         return FileDownloadUtil.buildFileResponse("attachment", content, fileInfo);
     }
 
     @POST
-    @Path("/create-multiple")
+    @Path("/create-multiple-spss")
     @RolesAllowed({ BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT })
-    public Response createMultiple(@NotNull @NonNull @Valid DocumentQueueListSaveJson saveJsonList) {
-        for (DocumentQueueSaveJson saveJson : saveJsonList.getList()) {
+    public Response createMultipleSpss(@NotNull @NonNull @Valid DocumentQueueListSaveJson saveJsonList) {
+        for (DocumentQueueSpssSaveJson saveJson : saveJsonList.getList()) {
             documentQueueMapper.create(saveJson);
+        }
+        return Response.status(Status.CREATED.getStatusCode()).build();
+    }
+
+    @POST
+    @Path("/create-multiple-csv")
+    @RolesAllowed({ BerechtigungName.SUPPORT, BerechtigungName.INDIVIDUELLE_REPORTS })
+    public Response createMultipleCsv(@NotNull @NonNull @Valid DocumentQueueCsvListSaveJson saveJsonList) {
+        for (DocumentQueueCsvSaveJson saveJson : saveJsonList.getList()) {
+            documentQueueMapper.createCsv(saveJson);
         }
         return Response.status(Status.CREATED.getStatusCode()).build();
     }
 
     @DELETE
     @NonNull
-    @RolesAllowed({ BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT })
+    @RolesAllowed({ BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT, BerechtigungName.INDIVIDUELLE_REPORTS })
     public DocumentQueueListJson removeDocumentQueueItems(
         @NotNull @NonNull @Valid DocumentQueueIDListJson docIdsToDelete
     ) {

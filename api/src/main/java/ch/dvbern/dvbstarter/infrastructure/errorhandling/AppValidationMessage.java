@@ -12,7 +12,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -29,15 +30,17 @@ public class AppValidationMessage {
     private static final String CONST_KIND_NAME = "kindName";
     private static final String CONST_KIND_ID = "kindId";
     private static final String CONST_ENTITY_CLASS = "class";
+    private static final String ENTITY_ID = "entityId";
 
     @NonNull
     public static AppValidationMessage cannotAddEntityToInactiveKind(
         @NonNull Kind kind,
-        @NonNull AbstractTenantEntity<?> entity
+        @NonNull AbstractEntity<?> entity
     ) {
         return of(
             "CannotAddEntityToInactiveKind",
-            I18nMessage.of("AppValidation.CANNOT_ADD_ENTITY_TO_INACTIVE_KIND",
+            I18nMessage.of(
+                "AppValidation.CANNOT_ADD_ENTITY_TO_INACTIVE_KIND",
                 CONST_KIND_NAME, kind.getNameVorname(),
                 CONST_KIND_ID, kind.getId(),
                 CONST_ENTITY_CLASS, entity.getClass().getSimpleName())
@@ -51,21 +54,22 @@ public class AppValidationMessage {
     ) {
         return of(
             "CannotCreateEinladungForInactiveKind",
-            I18nMessage.of("AppValidation.CANNOT_CREATE_EINLADUNG_FOR_INACTIVE_KIND",
+            I18nMessage.of(
+                "AppValidation.CANNOT_CREATE_EINLADUNG_FOR_INACTIVE_KIND",
                 CONST_KIND_NAME, kind.getNameVorname(),
                 CONST_KIND_ID, kind.getId(),
                 "anlassId", anlassId)
         );
     }
 
-
     public static AppValidationMessage cannotCreateEntityForInactiveKind(
         @NonNull Kind kind,
-        @NonNull AbstractTenantEntity<?> entity
+        @NonNull AbstractEntity<?> entity
     ) {
         return of(
             "CannotCeateEntityForInactiveKind",
-            I18nMessage.of("AppValidation.CANNOT_CREATE_ENTITY_FOR_INACTIVE_KIND",
+            I18nMessage.of(
+                "AppValidation.CANNOT_CREATE_ENTITY_FOR_INACTIVE_KIND",
                 CONST_KIND_NAME, kind.getNameVorname(),
                 CONST_KIND_ID, kind.getId(),
                 CONST_ENTITY_CLASS, entity.getClass().getSimpleName())
@@ -74,22 +78,24 @@ public class AppValidationMessage {
 
     public static AppValidationMessage cannotEditEntityForInactiveKind(
         @NonNull Kind kind,
-        @NonNull AbstractTenantEntity<?> entity
+        @NonNull AbstractEntity<?> entity
     ) {
         return of(
             "CannotEditEntityForInactiveKind",
-            I18nMessage.of("AppValidation.CANNOT_EDIT_ENTITY_FOR_INACTIVE_KIND",
+            I18nMessage.of(
+                "AppValidation.CANNOT_EDIT_ENTITY_FOR_INACTIVE_KIND",
                 CONST_KIND_NAME, kind.getNameVorname(),
                 CONST_KIND_ID, kind.getId(),
                 CONST_ENTITY_CLASS, entity.getClass().getSimpleName(),
-                "entityId", entity.getId())
+                ENTITY_ID, entity.getId())
         );
     }
 
     public static AppValidationMessage cannotEditInactiveKind(@NonNull Kind kind) {
         return of(
             "CannotEditInactiveKind",
-            I18nMessage.of("AppValidation.CANNOT_EDIT_INACTIVE_KIND",
+            I18nMessage.of(
+                "AppValidation.CANNOT_EDIT_INACTIVE_KIND",
                 CONST_KIND_NAME, kind.getNameVorname(),
                 CONST_KIND_ID, kind.getId())
         );
@@ -97,15 +103,25 @@ public class AppValidationMessage {
 
     public static AppValidationMessage cannotRemoveEntityFromInactiveKind(
         @NonNull Kind kind,
-        @NonNull AbstractTenantEntity<?> entity
+        @NonNull AbstractEntity<?> entity
     ) {
         return of(
             "CannotRemoveEntityFromInactiveKind",
-            I18nMessage.of("AppValidation.CANNOT_REMOVE_ENTITY_FROM_INACTIVE_KIND",
+            I18nMessage.of(
+                "AppValidation.CANNOT_REMOVE_ENTITY_FROM_INACTIVE_KIND",
                 CONST_KIND_NAME, kind.getNameVorname(),
                 CONST_KIND_ID, kind.getId(),
                 CONST_ENTITY_CLASS, entity.getClass().getSimpleName(),
-                "entityId", entity.getId())
+                ENTITY_ID, entity.getId())
+        );
+    }
+
+    public static AppValidationMessage errorMassenimport(
+        @NonNull String message
+    ) {
+        return of(
+            "ErrorMassenimport",
+            I18nMessage.of("AppValidation.ERROR_MASSENIMPORT", "msg", message)
         );
     }
 
@@ -130,6 +146,15 @@ public class AppValidationMessage {
         return of(
             "InvalidPhoneInSwissRegion",
             I18nMessage.of("AppValidation.INVALID_PHONE_IN_SWISS_REGION", "phoneNumber", input)
+        );
+    }
+
+    @NonNull
+    public static AppValidationMessage invalidMassenuploadFile() {
+
+        return of(
+            "InvalidSturctureInMassenuploadFile",
+            I18nMessage.of("AppValidation.INVALID_MASSENUPLOAD_FILE")
         );
     }
 
@@ -266,7 +291,7 @@ public class AppValidationMessage {
     }
 
     @NonNull
-    public static AppValidationMessage escadaObjectsCannotBeUpdated(@NonNull AbstractTenantEntity<?> entity) {
+    public static AppValidationMessage escadaObjectsCannotBeUpdated(@NonNull AbstractEntity<?> entity) {
         return of(
             "EscadaObjectsCannotBeUpdated",
             I18nMessage.of(
@@ -276,7 +301,7 @@ public class AppValidationMessage {
     }
 
     @NonNull
-    public static AppValidationMessage escadaObjectsCannotBeDeactivated(@NonNull AbstractTenantEntity<?> entity) {
+    public static AppValidationMessage escadaObjectsCannotBeDeactivated(@NonNull AbstractEntity<?> entity) {
         return of(
             "EscadaObjectsCannotBeDeactivated",
             I18nMessage.of(
@@ -342,7 +367,7 @@ public class AppValidationMessage {
         return of(
             "InvalidEntityRelation", I18nMessage.of(
                 "AppValidation.INVALID_ENTITY_RELATION",
-                "entityId",
+                ENTITY_ID,
                 entityId,
                 "expectedForeignKey",
                 expectedForeignKey,
@@ -359,7 +384,7 @@ public class AppValidationMessage {
         return of(
             "InvalidEntityRelation", I18nMessage.of(
                 "AppValidation.INVALID_ENTITY_RELATION",
-                "entityId",
+                ENTITY_ID,
                 entityId,
                 "expectedForeignKey",
                 expectedForeignKey,
@@ -400,6 +425,58 @@ public class AppValidationMessage {
                 config1.getId(),
                 "config2",
                 config2.getId()
+            ));
+    }
+
+    @NonNull
+    public static AppValidationMessage fileIngressInvalidFilenameForFragebogenIngress(
+        @NonNull String filename
+    ) {
+        return of(
+            "InvalidFilenameForFragebogenIngress",
+            I18nMessage.of(
+                "AppValidation.INVALID_FILENAME_FOR_FRAGEBOGEN_INGRESS",
+                "filename",
+                filename
+            ));
+    }
+
+    @NonNull
+    public static AppValidationMessage fileIngressNoDossierForEsadId(
+        @NonNull @IgnoreForIdClassTest String esadId
+    ) {
+        return of(
+            "NoDossierForEsadId",
+            I18nMessage.of(
+                "AppValidation.NO_DOSSIER_FOR_ESAD_ID",
+                "esadId",
+                esadId
+            ));
+    }
+
+    @NonNull
+    public static AppValidationMessage fileIngressGeburtsdatumMissmatch(
+        @NonNull @IgnoreForIdClassTest String esadId
+    ) {
+        return of(
+            "FileIngressGeburtsdatumMissmatch",
+            I18nMessage.of(
+                "AppValidation.FILE_INGRESS_GEBURTSDATUM_MISSMATCH",
+                "esadId",
+                esadId
+            ));
+    }
+
+    @NonNull
+    public static AppValidationMessage fileIngressNoSuitableAnlass(
+        @NonNull @IgnoreForIdClassTest String esadId
+    ) {
+        return of(
+            "FileIngressNoSuitableAnlass",
+            I18nMessage.of(
+                "AppValidation.FILE_INGRESS_NO_SUITABLE_ANLASS",
+                "esadId",
+                esadId
             ));
     }
 }

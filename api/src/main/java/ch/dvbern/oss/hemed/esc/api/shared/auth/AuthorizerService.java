@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.auth;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
@@ -10,6 +12,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizService;
@@ -32,13 +36,12 @@ public class AuthorizerService {
     private final AnlassService anlassService;
     private final NotizService notizService;
     private final DocumentQueueService documentQueueService;
+    private final KindService kindService;
 
     public void requireWriteAuthorizationAnlass(@NonNull ID<Anlass> anlassId) {
         Anlass anlass = anlassService.getById(anlassId);
-        if (anlass.getAnlassStatus() == AnlassStatus.ABGESCHLOSSEN) {
-            if (!benutzerService.hasCallerBerechtigung(Berechtigung.VERANDERUNGEN_NACH_ABSCHLUSS)) {
-                throwViolation(anlass);
-            }
+        if (!hasWriteAuthorizationAnlass(anlass)) {
+            throwViolation(anlass);
         }
     }
 
@@ -94,36 +97,62 @@ public class AuthorizerService {
         }
     }
 
-    public void requireWriteAuthorizationAnlassLaeuse(@NonNull ID<Anlass> anlassId) {
-        Anlass anlass = anlassService.getById(anlassId);
-        if (!hasWriteAuthorizationAnlass(anlass)) {
-            throwViolation(anlass);
-        }
-    }
 
     public boolean hasReadAuthorizationAnlassListe(@NonNull Anlass anlass) {
-        if (anlass.getAnlassConfig().getAnlassTyp() != AnlassTyp.LAEUSEKONTROLLE) {
-            return benutzerService.hasCallerBerechtigung(Berechtigung.ANLASSLISTE_LESEN);
+        return hasReadAuthorizationAnlassListe(anlass.getAnlassConfig().getAnlassTyp());
+    }
+
+    public boolean hasReadAuthorizationAnlassListe(@NonNull AnlassTyp anlassTyp) {
+        if (anlassTyp == AnlassTyp.LAEUSEKONTROLLE) {
+            return benutzerService.hasAnyOfCallerBerechtigungen(List.of(
+                    Berechtigung.ANLASSLISTE_LESEN,
+                    Berechtigung.ANLASSLISTE_LESEN_LAEUSE
+                )
+            );
         }
-        return true;
+        return benutzerService.hasCallerBerechtigung(Berechtigung.ANLASSLISTE_LESEN);
+
     }
 
     public boolean hasReadAuthorizationAnlass(@NonNull Anlass anlass) {
-        if (anlass.getAnlassConfig().getAnlassTyp() != AnlassTyp.LAEUSEKONTROLLE) {
-            return benutzerService.hasCallerBerechtigung(Berechtigung.ANLASSPLANUNG_LESEN);
+        if (anlass.getAnlassConfig().getAnlassTyp() == AnlassTyp.LAEUSEKONTROLLE) {
+            return benutzerService.hasAnyOfCallerBerechtigungen(List.of(
+                    Berechtigung.ANLASSPLANUNG_LESEN,
+                    Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE
+                )
+            );
         }
-        return true;
+        return benutzerService.hasCallerBerechtigung(Berechtigung.ANLASSPLANUNG_LESEN);
     }
 
     public boolean hasWriteAuthorizationAnlass(@NonNull Anlass anlass) {
-        if (anlass.getAnlassConfig().getAnlassTyp() != AnlassTyp.LAEUSEKONTROLLE) {
-            return benutzerService.hasCallerBerechtigung(Berechtigung.ANLASSPLANUNG_SCHREIBEN);
+        if (anlass.getAnlassStatus() == AnlassStatus.ABGESCHLOSSEN) {
+            return benutzerService.hasCallerBerechtigung(Berechtigung.VERANDERUNGEN_NACH_ABSCHLUSS);
         }
-        return true;
+        if (anlass.getAnlassConfig().getAnlassTyp() == AnlassTyp.LAEUSEKONTROLLE) {
+            return benutzerService.hasAnyOfCallerBerechtigungen(List.of(
+                Berechtigung.ANLASSPLANUNG_SCHREIBEN,
+                Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE)
+            );
+        }
+        return benutzerService.hasCallerBerechtigung(Berechtigung.ANLASSPLANUNG_SCHREIBEN);
+    }
+
+    public void requireKinderDownloadAuthorization(@NonNull ID<Kind> kindID) {
+        Kind kind = kindService.getById(kindID);
+
+        if (!benutzerService.hasCallerBerechtigungen(List.of(
+            Berechtigung.KINDER_LESEN_MEDIZINISCH,
+            Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH, Berechtigung.KOMPLETTER_EXPORT))) {
+            throwViolation(kind);
+        }
     }
 
     private void throwViolation(@NonNull AbstractEntity<?> abstractEntity) {
-        String benutzername = benutzerService.findCurrentBenutzerOptional().map(Benutzer::getEmail).map(EmailAddress::getAddress).orElse("unknown");
+        String benutzername = benutzerService.findCurrentBenutzerOptional()
+            .map(Benutzer::getEmail)
+            .map(EmailAddress::getAddress)
+            .orElse("unknown");
         throw new AppFailureException(AppFailureMessage.missingBerechtigung(
             abstractEntity.getClass(),
             abstractEntity.getId(),

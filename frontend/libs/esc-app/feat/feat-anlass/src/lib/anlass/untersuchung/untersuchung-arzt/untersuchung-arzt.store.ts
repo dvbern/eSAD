@@ -93,12 +93,12 @@ export class UntersuchungArztStore extends signalStore(
     ),
   );
 
-  loadDefaultUntersuchungArzt = rxMethod<AnlassEinladungenId>(
+  loadDefaultUntersuchungArzt = rxMethod<UntersuchungArztServiceGetUntersuchungArztBeurteilungRequestParams>(
     pipe(
       switchMap(params => this.loader.tapLoading$(this.#untersuchungArztService.getDefaultUntersuchungArztBeurteilungForAnlassConfig$(
           {
             anlassId: params.anlassId,
-            einladungId: params.einladungIds[0],
+            einladungId: params.einladungId,
           }),
         error => this.#appErrorHandlerService.handleError(error))),
       tapResponse({

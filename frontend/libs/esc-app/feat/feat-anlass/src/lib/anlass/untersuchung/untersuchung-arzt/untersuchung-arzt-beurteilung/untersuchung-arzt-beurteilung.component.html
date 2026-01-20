@@ -6,6 +6,36 @@
         [formGroup]="form.group"
         (ngSubmit)="submitIfValid()">
 
+    <!-- Unterlagen -->
+    <!-- Einverstaendniserklaerung-->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.unterlagenEinverstaendnis !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.unterlagenEinverstaendnis' | transloco">
+        @for (unterlagenEinverstaendnis of getEinverstaendniserklaerungArray().controls; track $index) {
+          <svui-kachel-control [label]="'Einverstaendniserklaerung.' + unterlagenEinverstaendnis.controls.resultat.value | transloco">
+            <input svuiCheckbox
+                   type="checkbox"
+                   name="unterlagenEinverstaendnis"
+                   [formControl]="unterlagenEinverstaendnis.controls.isChecked"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+    <!-- Verhaltensfragebogen -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.unterlagenVerhaltensfragebogen !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.unterlagenVerhaltensfragebogen' | transloco">
+        @for (each of verhaltensfragebogenItems; track each) {
+          <svui-kachel-control [label]="'Verhaltensfragebogen.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="verhaltensfragebogen"
+                   [formControl]="form.group.controls.verhaltensfragebogen"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+      <hr/>
+    }
+
     <!-- Bewegungsapparat-->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBewegungsapparat !== RequirementSetting.NOT_VISIBLE) {
       <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.bewegungsapparat' | transloco">
@@ -30,7 +60,7 @@
     <!-- Einbeinstand -->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungEinbeinstand !== RequirementSetting.NOT_VISIBLE) {
       <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.einbeinstand' | transloco">
-        @for (each of einbeinstandItems; track each) {
+        @for (each of anlassStore.untersuchungEinbeinstandValues(); track each) {
           <svui-kachel-control [label]="'Einbeinstand.' + each |transloco">
             <input svuiRadio
                    type="radio"
@@ -49,10 +79,36 @@
       }
     }
 
+    <!-- Einbeinstand Rechts/Links -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungEinbeinstandRechtsLinks !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.einbeinstandLinks' | transloco">
+        @for (each of anlassStore.untersuchungEinbeinstandValues(); track each) {
+          <svui-kachel-control [label]="'Einbeinstand.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="einbeinstandLinks"
+                   [formControl]="form.group.controls.einbeinstandLinks"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.einbeinstandRechts' | transloco">
+        @for (each of anlassStore.untersuchungEinbeinstandValues(); track each) {
+          <svui-kachel-control [label]="'Einbeinstand.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="einbeinstandRechts"
+                   [formControl]="form.group.controls.einbeinstandRechts"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
     <!-- Einbeinhuepfen-->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungEinbeinhuepfen !== RequirementSetting.NOT_VISIBLE) {
       <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.einbeinhuepfen' | transloco">
-        @for (each of einbeinstandItems; track each) {
+        @for (each of anlassStore.untersuchungEinbeinhuepfenValues(); track each) {
           <svui-kachel-control [label]="'Einbeinhuepfen.' + each |transloco">
             <input svuiRadio
                    type="radio"
@@ -69,6 +125,32 @@
           <textarea svuiTextarea [formControl]="form.group.controls.einbeinhuepfenBemerkung"></textarea>
         </svui-form-control>
       }
+    }
+
+    <!-- Einbeinhuepfen Links/Rechts -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungEinbeinhuepfenRechtsLinks !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.einbeinhuepfenLinks' | transloco">
+        @for (each of anlassStore.untersuchungEinbeinhuepfenValues(); track each) {
+          <svui-kachel-control [label]="'Einbeinhuepfen.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="einbeinhuepfenLinks"
+                   [formControl]="form.group.controls.einbeinhuepfenLinks"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.einbeinhuepfenRechts' | transloco">
+        @for (each of anlassStore.untersuchungEinbeinhuepfenValues(); track each) {
+          <svui-kachel-control [label]="'Einbeinhuepfen.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="einbeinhuepfenRechts"
+                   [formControl]="form.group.controls.einbeinhuepfenRechts"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
     }
 
     <!-- Fingeropposition -->
@@ -92,10 +174,307 @@
       }
     }
 
+    <!-- untersuchungHampelmann -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungHampelmann !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungHampelmann' | transloco">
+        @for (each of hampelmannItems; track each) {
+          <svui-kachel-control [label]="'Hampelmann.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="hampelmann"
+                   [formControl]="form.group.controls.hampelmann"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- untersuchungBallFangen -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBallFangen !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungBallFangen' | transloco">
+        @for (each of ballFangenItems; track each) {
+          <svui-kachel-control [label]="'BallFangen.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="ballFangen"
+                   [formControl]="form.group.controls.ballFangen"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- untersuchungBallWerfen -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBallWerfen !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungBallWerfen' | transloco">
+        @for (each of ballWerfenItems; track each) {
+          <svui-kachel-control [label]="'BallWerfen.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="ballWerfen"
+                   [formControl]="form.group.controls.ballWerfen"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- untersuchungNameSchreiben -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungNameSchreiben !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungNameSchreiben' | transloco">
+        @for (each of nameSchreibenItems; track each) {
+          <svui-kachel-control [label]="'NameSchreiben.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="nameSchreiben"
+                   [formControl]="form.group.controls.nameSchreiben"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- untersuchungFigurNachmalen -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungFigurNachmalen !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungFigurNachmalen' | transloco">
+        @for (each of figurNachmalenItems; track each) {
+          <svui-kachel-control [label]="'FigurNachmalen.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="figurNachmalen"
+                   [formControl]="form.group.controls.figurNachmalen"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- untersuchungStifthaltung -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungStifthaltung !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungStifthaltung' | transloco">
+        @for (each of stifthaltungItems; track each) {
+          <svui-kachel-control [label]="'Stifthaltung.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="stifthaltung"
+                   [formControl]="form.group.controls.stifthaltung"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- TOTAL Motorik -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungMotorikPunkte !== RequirementSetting.NOT_VISIBLE) {
+      <div class="linksrechts_wrapper">
+        <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungMotorikPunkteTitel' | transloco">
+          <svui-form-control
+            class="linksrechts"
+            [label]="'untersuchung.tab.arzt.untersuchungMotorikPunkte' | transloco"
+            [topLabelVisibility]="'hidden'"
+            [viewValue]="''">
+            <input svuiTextInput="number" [formControl]="form.group.controls.motorikPunkte"/>
+          </svui-form-control>
+        </svui-kachel-form-section>
+      </div>
+      <hr/>
+    }
+
+    <!-- untersuchungAussprache -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungAussprache !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungAussprache' | transloco">
+        @for (each of ausspracheItems; track each) {
+          <svui-kachel-control [label]="'Aussprache.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="aussprache"
+                   [formControl]="form.group.controls.aussprache"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- untersuchungLesefit -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungLesefit !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungLesefit' | transloco">
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungLesefitPunkte !== RequirementSetting.NOT_VISIBLE) {
+          <div class="linksrechts_wrapper">
+            <svui-form-control
+              class="linksrechts"
+              [label]="'untersuchung.tab.arzt.untersuchungLesefitPunkte' | transloco"
+              [viewValue]="''">
+              <input svuiTextInput="number" [formControl]="form.group.controls.lesefitPunkte"/>
+            </svui-form-control>
+          </div>
+        }
+        @for (each of lesefitItems; track each) {
+          <svui-kachel-control [label]="'Lesefit.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="lesefit"
+                   [formControl]="form.group.controls.lesefit"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- TOTAL Sprache  -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungSprachePunkte !== RequirementSetting.NOT_VISIBLE) {
+      <div class="linksrechts_wrapper">
+        <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungSprachfaehigkeitPunkteTitel' | transloco">
+          <svui-form-control
+            class="linksrechts"
+            [label]="'untersuchung.tab.arzt.untersuchungSprachfaehigkeitPunkte' | transloco"
+            [topLabelVisibility]="'hidden'"
+            [viewValue]="''">
+            <input svuiTextInput="number" [formControl]="form.group.controls.sprachfaehigkeitPunkte"/>
+          </svui-form-control>
+        </svui-kachel-form-section>
+      </div>
+      <hr/>
+    }
+
+    <!-- untersuchungZahlenNachsprechen4 -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungZahlenNachsprechen4 !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungZahlenNachsprechen4' | transloco">
+        @for (each of zahlenNachsprechenItems; track each) {
+          <svui-kachel-control [label]="'ZahlenNachsprechen.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="zahlenNachsprechen4"
+                   [formControl]="form.group.controls.zahlenNachsprechen4"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- untersuchungZahlenNachsprechen5 -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungZahlenNachsprechen5 !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungZahlenNachsprechen5' | transloco">
+        @for (each of zahlenNachsprechenItems; track each) {
+          <svui-kachel-control [label]="'ZahlenNachsprechen.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="zahlenNachsprechen5"
+                   [formControl]="form.group.controls.zahlenNachsprechen5"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- untersuchungZeichnenKreis -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungZeichnenKreis !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungZeichnenKreis' | transloco">
+        @for (each of zeichnenItems; track each) {
+          <svui-kachel-control [label]="'Zeichnen.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="zeichnenKreis"
+                   [formControl]="form.group.controls.zeichnenKreis"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- untersuchungZeichnenViereck -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungZeichnenViereck !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungZeichnenViereck' | transloco">
+        @for (each of zeichnenItems; track each) {
+          <svui-kachel-control [label]="'Zeichnen.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="zeichnenViereck"
+                   [formControl]="form.group.controls.zeichnenViereck"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- untersuchungZeichnenDreieck -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungZeichnenDreieck !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungZeichnenDreieck' | transloco">
+        @for (each of zeichnenItems; track each) {
+          <svui-kachel-control [label]="'Zeichnen.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="zeichnenDreieck"
+                   [formControl]="form.group.controls.zeichnenDreieck"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- untersuchungZeichnenMensch -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungZeichnenMensch !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungZeichnenMensch' | transloco">
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungZeichnenMenschPunkte !== RequirementSetting.NOT_VISIBLE) {
+          <div class="linksrechts_wrapper">
+            <span class="fs-6 mt-5">
+              {{ 'untersuchung.tab.arzt.untersuchungZeichnenMenschPunkte.skala.male.jung' | transloco }}<br/>
+              {{ 'untersuchung.tab.arzt.untersuchungZeichnenMenschPunkte.skala.male.alt' | transloco }}<br/>
+              {{ 'untersuchung.tab.arzt.untersuchungZeichnenMenschPunkte.skala.female.jung' | transloco }}<br/>
+              {{ 'untersuchung.tab.arzt.untersuchungZeichnenMenschPunkte.skala.female.alt' | transloco }}
+            </span>
+            <svui-form-control
+              class="linksrechts"
+              [label]="'untersuchung.tab.arzt.untersuchungZeichnenMenschPunkte' | transloco"
+              [viewValue]="''">
+              <input svuiTextInput="number" [formControl]="form.group.controls.zeichnenMenschPunkte"/>
+            </svui-form-control>
+          </div>
+        }
+        @for (each of zeichnenMenschItems; track each) {
+          <svui-kachel-control [label]="'ZeichnenMensch.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="zeichnenMensch"
+                   [formControl]="form.group.controls.zeichnenMensch"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- TOTAL Kognition -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungKognitionPunkte !== RequirementSetting.NOT_VISIBLE) {
+      <div class="linksrechts_wrapper">
+        <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungKognitionPunkteTitel' | transloco">
+          <svui-form-control
+            class="linksrechts"
+            [label]="'untersuchung.tab.arzt.untersuchungKognitionPunkte' | transloco"
+            [topLabelVisibility]="'hidden'"
+            [viewValue]="''">
+            <input svuiTextInput="number" [formControl]="form.group.controls.kognitionPunkte"/>
+          </svui-form-control>
+        </svui-kachel-form-section>
+      </div>
+      <hr/>
+    }
+
     <!--    Motorik-->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungMotorik !== RequirementSetting.NOT_VISIBLE) {
       <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.motorik' | transloco">
-        @for (each of motorikItems; track each) {
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungMotorikPunkte !== RequirementSetting.NOT_VISIBLE) {
+          <div class="linksrechts_wrapper">
+            <svui-form-control
+              class="linksrechts"
+              [label]="'untersuchung.tab.arzt.untersuchungMotorikPunkte' | transloco"
+              [topLabelVisibility]="'hidden'"
+              [viewValue]="''">
+              <input svuiTextInput="number" [value]="form.group.controls.motorikPunkte.value" readonly disabled/>
+              <span class="fs-6"
+                    control-message>{{ 'untersuchung.tab.arzt.untersuchungMotorikPunkte' | transloco }}</span>
+            </svui-form-control>
+          </div>
+        }
+        @for (each of anlassStore.untersuchungMotorikValues(); track each) {
           <svui-kachel-control [label]="'Motorik.' + each |transloco">
             <input svuiRadio
                    type="radio"
@@ -107,10 +486,10 @@
       </svui-kachel-form-section>
     }
 
-    <!--   Sprachfaehigkeit-->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungSprache !== RequirementSetting.NOT_VISIBLE) {
+    <!-- SprachfaehigkeitMultiValue-->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungSprachfaehigkeitMultiValue !== RequirementSetting.NOT_VISIBLE) {
       <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.sprache' | transloco">
-        @for (sprachfaehigkeit of getSprachfaehigkeitArray().controls; track $index) {
+        @for (sprachfaehigkeit of getSprachfaehigkeitMultiValueArray().controls; track $index) {
           <svui-kachel-control [label]="'Sprachfaehigkeit.' + sprachfaehigkeit.controls.resultat.value | transloco">
             <input svuiCheckbox
                    type="checkbox"
@@ -119,13 +498,72 @@
           </svui-kachel-control>
         }
       </svui-kachel-form-section>
-      @if (form.isSprachfaehigkeitAnderesOrArtikulationsfehlerChecked()) {
+      @if (form.isSprachfaehigkeitMultiValueAnderesOrArtikulationsfehlerChecked()) {
         <svui-form-control
           [label]="'untersuchung.tab.arzt.sprache.andere' | transloco"
           [viewValue]="''">
           <textarea svuiTextarea [formControl]="form.group.controls.sprachfaehigkeitBemerkung"></textarea>
         </svui-form-control>
       }
+    }
+
+    <!-- SprachfaehigkeitSingleValue -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungSprachfaehigkeitSingleValue !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.sprache' | transloco">
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungSprachePunkte !== RequirementSetting.NOT_VISIBLE) {
+          <div class="linksrechts_wrapper">
+            <svui-form-control
+              class="linksrechts"
+              [label]="'untersuchung.tab.arzt.untersuchungSprachfaehigkeitPunkte' | transloco"
+              [topLabelVisibility]="'hidden'"
+              [viewValue]="''">
+              <input svuiTextInput="number"
+                     [value]="form.group.controls.sprachfaehigkeitPunkte.value"
+                     readonly
+                     disabled/>
+              <span class="fs-6"
+                    control-message>{{ 'untersuchung.tab.arzt.untersuchungSprachfaehigkeitPunkte' | transloco }}</span>
+            </svui-form-control>
+          </div>
+        }
+        @for (each of anlassStore.untersuchungSprachfaehigkeitValues(); track each) {
+          <svui-kachel-control [label]="'Sprachfaehigkeit.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="sprachfaehigkeitSingleValue"
+                   [formControl]="form.group.controls.sprachfaehigkeitSingleValue"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
+    }
+
+    <!-- untersuchungKognition -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungKognition !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.arzt.untersuchungKognition' | transloco">
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungKognitionPunkte !== RequirementSetting.NOT_VISIBLE) {
+          <div class="linksrechts_wrapper">
+            <svui-form-control
+              class="linksrechts"
+              [label]="'untersuchung.tab.arzt.untersuchungKognitionPunkte' | transloco"
+              [topLabelVisibility]="'hidden'"
+              [viewValue]="''">
+              <input svuiTextInput="number" [value]="form.group.controls.kognitionPunkte.value" readonly disabled/>
+              <span class="fs-6"
+                    control-message>{{ 'untersuchung.tab.arzt.untersuchungKognitionPunkte' | transloco }}</span>
+            </svui-form-control>
+          </div>
+        }
+        @for (each of kognitionItems; track each) {
+          <svui-kachel-control [label]="'Kognition.' + each |transloco">
+            <input svuiRadio
+                   type="radio"
+                   name="kognition"
+                   [formControl]="form.group.controls.kognition"
+                   [value]="each"/>
+          </svui-kachel-control>
+        }
+      </svui-kachel-form-section>
     }
 
     <!-- Mund und Zähne -->

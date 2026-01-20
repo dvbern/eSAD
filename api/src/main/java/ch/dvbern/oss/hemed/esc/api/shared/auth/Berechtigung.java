@@ -74,7 +74,13 @@ public enum Berechtigung {
     SYSTEM_ADMIN(BerechtigungName.SYSTEM_ADMIN),
 
     // ESCADA
-    ESCADA_PUSH(BerechtigungName.ESCADA_PUSH);
+    ESCADA_PUSH(BerechtigungName.ESCADA_PUSH),
+
+    // FILE_INGRESS
+    FILE_INGRESS_PUSH(BerechtigungName.FILE_INGRESS_PUSH),
+
+    // PUPIL
+    PUPIL_PUSH(BerechtigungName.PUPIL_PUSH);
 
     private final String berechtigungName;
 

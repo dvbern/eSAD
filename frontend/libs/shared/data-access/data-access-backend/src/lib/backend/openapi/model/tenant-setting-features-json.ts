@@ -13,6 +13,8 @@ import { TenantSettingFeatureStateJson } from './tenant-setting-feature-state-js
 export interface TenantSettingFeaturesJson { 
     esadIdFeature: TenantSettingFeatureStateJson;
     laenderCodeFeature: TenantSettingFeatureStateJson;
+    mobileScannerFeature: TenantSettingFeatureStateJson;
+    massenimportFeature: TenantSettingFeatureStateJson;
 }
 
 

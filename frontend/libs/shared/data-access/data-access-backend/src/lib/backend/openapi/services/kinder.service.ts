@@ -846,10 +846,10 @@ export class KinderService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateKindAktivStatus$(requestParameters?: KinderServiceUpdateKindAktivStatusRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public updateKindAktivStatus$(requestParameters?: KinderServiceUpdateKindAktivStatusRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public updateKindAktivStatus$(requestParameters?: KinderServiceUpdateKindAktivStatusRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public updateKindAktivStatus$(requestParameters?: KinderServiceUpdateKindAktivStatusRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public updateKindAktivStatus$(requestParameters?: KinderServiceUpdateKindAktivStatusRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<KindJson>;
+    public updateKindAktivStatus$(requestParameters?: KinderServiceUpdateKindAktivStatusRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<KindJson>>;
+    public updateKindAktivStatus$(requestParameters?: KinderServiceUpdateKindAktivStatusRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<KindJson>>;
+    public updateKindAktivStatus$(requestParameters?: KinderServiceUpdateKindAktivStatusRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         const kindId = requestParameters?.kindId;
         if (kindId === null || kindId === undefined) {
             throw new Error('Required parameter kindId was null or undefined when calling updateKindAktivStatus.');
@@ -871,6 +871,7 @@ export class KinderService {
         if (localVarHttpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
+                'application/json'
             ];
             localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -910,7 +911,7 @@ export class KinderService {
         }
 
         let localVarPath = `/api/kinder/${this.configuration.encodeParam({name: "kindId", value: kindId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/kindaktivstatus`;
-        return this.httpClient.request<any>('put', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<KindJson>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: entityAktivStatusSaveJson,

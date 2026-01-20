@@ -34,6 +34,7 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizMapper;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizJson;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
 import ch.dvbern.oss.hemed.esc.api.shared.util.PathParamConsistancyUtil;
 import lombok.RequiredArgsConstructor;
@@ -72,7 +73,7 @@ public final class EinladungMapper {
                 einladung.getBemerkungAbmeldung(),
                 einladung.getNotizen().stream().map(NotizMapper::toJson).toList(),
                 einladung.getVersion(),
-                einladung.getAbmeldungsNotiz() != null ? einladung.getAbmeldungsNotiz().getVersion() : -1L
+                einladung.getAbmeldungsNotiz().map(AbstractEntity::getVersion).orElse(-1L)
             ),
             KindMapper.toJson(einladung.getDossier().getKind(), now),
             NachkontrolleMapper.toJson(nachkontrolle),
@@ -124,7 +125,16 @@ public final class EinladungMapper {
         if (untersuchungImpfungen == null) {
             return false;
         }
-        return !impfstatus.isEmpty() || !impfungenInternList.isEmpty();
+        // Neu werden die Impfungen beim Erstellen der Untersuchung erstellt, deshalb zählt das Tab erst als bearbeitet wenn bei einem der Werte die Version > 0 ist.
+        boolean hasImpfstatusNotInitial = impfstatus.stream().anyMatch(is -> is.getVersion() > 0);
+        boolean hasImpfungInterNotInitial = impfungenInternList.stream().anyMatch(ii -> ii.getVersion() > 0);
+        boolean hasRelevantCheckboxes = untersuchungImpfungen.isImpfausweisZweiPlusEinsSchema()
+            || untersuchungImpfungen.isImpfausweisNichtVorhanden()
+            || untersuchungImpfungen.isImpfausweisUnvollstaendig();
+        boolean impfungMassnahmenPresent = untersuchungImpfungen.getUntersuchungImpfungenMassnahmen() != null;
+
+
+        return hasImpfstatusNotInitial || hasImpfungInterNotInitial || hasRelevantCheckboxes || impfungMassnahmenPresent;
     }
 
     @NonNull
@@ -132,7 +142,7 @@ public final class EinladungMapper {
         @NonNull Einladung existing,
         @NonNull EinladungSaveJson saveJson
     ) {
-        Notiz abmeldungsNotiz = this.updateAbmeldungsNotiz(existing, saveJson);
+        this.updateAbmeldungsNotiz(existing, saveJson);
 
         existing.setEinladungStatus(saveJson.getEinladungStatus());
         existing.setGrundAbmeldung(saveJson.getGrundAbmeldung());
@@ -141,7 +151,7 @@ public final class EinladungMapper {
         // Impfausweis wird separat gespeichert
         // Fragebogen wird separat gespeichert
         // AnmeldungBestätigung wird separat gespeichert
-        existing.setAbmeldungsNotiz(abmeldungsNotiz);
+
         return existing;
     }
 
@@ -237,7 +247,8 @@ public final class EinladungMapper {
             existing
         );
         Einladung updated = toEntity(existing, einladungSaveJson);
-        Einladung persistedEinladung = einladungService.persistWithOptimisticLocking(updated, einladungSaveJson.getVersion());
+        Einladung persistedEinladung =
+            einladungService.persistWithOptimisticLocking(updated, einladungSaveJson.getVersion());
         Nachkontrolle nachkontrolle = this.nachkontrolleService.getOrCreateByDossier(updated.getDossier().getId());
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
         return toJson(persistedEinladung, nachkontrolle, now);
@@ -253,12 +264,11 @@ public final class EinladungMapper {
         return NotizMapper.toJson(notiz);
     }
 
-    @Nullable
-    private Notiz updateAbmeldungsNotiz(
+    private void updateAbmeldungsNotiz(
         @NonNull Einladung einladung,
         @NonNull EinladungSaveJson einladungSaveJson
     ) {
-        return einladungNotizMapper.createOrUpdateAbmeldungsNotiz(einladung, einladungSaveJson);
+        einladungNotizMapper.createOrUpdateAbmeldungsNotiz(einladung, einladungSaveJson);
     }
 
     public void untersuchungAbschliessen(@NonNull ID<Einladung> einladungId) {

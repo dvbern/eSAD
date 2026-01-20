@@ -11,40 +11,48 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.berechtigugnsmatrix.Berechtigungs
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import org.apache.commons.csv.CSVRecord;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class BerechtigungsMatrixTest {
 
     private static final Path OUTPUT_PATH = Path.of("target/exported-fach-rollen.csv");
 
-    public static final String EXPECTED_FACH_ROLLEN_CSV = "expected-fach-rollen.csv";
-    private static final Path EXPECTED_PATH = TestUtil.createTempFileFor(
-        Path.of(BerechtigungsMatrixTest.class.getSimpleName(), EXPECTED_FACH_ROLLEN_CSV),
-        EXPECTED_FACH_ROLLEN_CSV
-    );
+    @NonNull
+    private Path getExpectedPath(@NonNull String tenant) {
+        return TestUtil.createTempFileFor(
+            Path.of(BerechtigungsMatrixTest.class.getSimpleName(), "expected-fach-rollen-" + tenant + ".csv"),
+            "expected-fach-rollen-" + tenant + ".csv"
+        );
+    }
 
-    @Test
-    void checkExpectedCSVFileExistsAndContainsExpectedSeparator() throws IOException {
+    @ParameterizedTest
+    @ValueSource(strings = { "BS", "WIN" })
+    void checkExpectedCSVFileExistsAndContainsExpectedSeparator(@NonNull String tenant) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(
-            EXPECTED_PATH.toFile(),
+            getExpectedPath(tenant).toFile(),
             StandardCharsets.UTF_8))) {
             String firstLine = reader.readLine();  // Read the first line
             Assertions.assertThat(firstLine)
                 .as(
                     "The first line of the %s file should contain the correct column separator",
-                    EXPECTED_FACH_ROLLEN_CSV)
+                    getExpectedPath(tenant).getFileName())
                 .contains(BerechtigungsMatrixCSVHelper.getCsvFormat().getDelimiterString());
         }
     }
 
-    @Test
-    void exportedCSVMatchesExpectedOutput() throws IOException {
+    @ParameterizedTest
+    @ValueSource(strings = { "BS", "WIN" })
+    void exportedCSVMatchesExpectedOutput(@NonNull String tenant) throws IOException {
+
+        TenantEnum tenantEnum = TenantEnum.valueOf(tenant);
         // Generate fresh CSV Export file in /tartget
-        BerechtigungsMatrixCSVHelper.writeBerechtigungenToCSV(OUTPUT_PATH);
+        BerechtigungsMatrixCSVHelper.writeBerechtigungenToCSV(OUTPUT_PATH, tenantEnum);
 
         // Read both files and compare
         List<CSVRecord> actualRecords = BerechtigungsMatrixCSVHelper.readCSVRecords(OUTPUT_PATH);
-        List<CSVRecord> expectedRecords = BerechtigungsMatrixCSVHelper.readCSVRecords(EXPECTED_PATH);
+        List<CSVRecord> expectedRecords = BerechtigungsMatrixCSVHelper.readCSVRecords(getExpectedPath(tenant));
 
         // Compare number of records
         Assertions.assertThat(actualRecords)
@@ -78,5 +86,4 @@ class BerechtigungsMatrixTest {
             }
         }
     }
-
 }

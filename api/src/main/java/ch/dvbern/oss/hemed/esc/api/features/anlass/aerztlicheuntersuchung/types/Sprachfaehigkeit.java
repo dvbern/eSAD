@@ -25,5 +25,8 @@ public enum Sprachfaehigkeit {
     ARTIKULATIONSFEHLER,
     DEUTSCHKENNTNISSE_MINIM,
     ANDERES,
+    AUFFAELLIG,
+    GRENZWERTIG,
+    GUT,
     NICHT_GEPRUEFT
 }

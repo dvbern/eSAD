@@ -19,6 +19,11 @@ public class FarbsehenCsvColumn extends AbstractCsvColumn {
                 if (sehen.getFarbsehen() == null) {
                     return "";
                 }
+
+                if (!config.forSpssReport()) {
+                    return config.tl().translateValue(sehen.getFarbsehen());
+                }
+
                 return switch (sehen.getFarbsehen()) {
                     case NORMAL -> "1";
                     case PATHOLOGISCH -> "2";

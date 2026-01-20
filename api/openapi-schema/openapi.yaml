@@ -187,6 +187,8 @@ components:
       - untersuchungImpfungEmpfehlung
       - untersuchungImpfungAchtung
       - untersuchungImpfungBemerkungen
+      - untersuchungImpfungKrankheitenLinksValues
+      - untersuchungImpfungKrankheitenRechtsValues
       - sehenBrilleLinsen
       - sehenFarbsehen
       - sehenTafel
@@ -226,11 +228,11 @@ components:
       - laeusekontrolleBemerkungen
       - untersuchungBewegungsapparat
       - untersuchungEinbeinstand
-      - untersuchungEinbeinstandRechts
-      - untersuchungEinbeinstandLinks
+      - untersuchungEinbeinstandRechtsLinks
+      - untersuchungEinbeinstandValues
       - untersuchungEinbeinhuepfen
-      - untersuchungEinbeinhuepfenRechts
-      - untersuchungEinbeinhuepfenLinks
+      - untersuchungEinbeinhuepfenRechtsLinks
+      - untersuchungEinbeinhuepfenValues
       - untersuchungFingeropposition
       - untersuchungHampelmann
       - untersuchungBallFangen
@@ -249,10 +251,13 @@ components:
       - untersuchungZeichnenMensch
       - untersuchungZeichnenMenschPunkte
       - untersuchungMotorik
+      - untersuchungMotorikValues
       - untersuchungMotorikPunkte
       - untersuchungKognition
       - untersuchungKognitionPunkte
-      - untersuchungSprache
+      - untersuchungSprachfaehigkeitSingleValue
+      - untersuchungSprachfaehigkeitMultiValue
+      - untersuchungSprachfaehigkeitValues
       - untersuchungSprachePunkte
       - untersuchungMundZaehne
       - untersuchungHaut
@@ -337,6 +342,14 @@ components:
           $ref: "#/components/schemas/RequirementSetting"
         untersuchungImpfungBemerkungen:
           $ref: "#/components/schemas/RequirementSetting"
+        untersuchungImpfungKrankheitenLinksValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/Krankheit"
+        untersuchungImpfungKrankheitenRechtsValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/Krankheit"
         sehenBrilleLinsen:
           $ref: "#/components/schemas/RequirementSetting"
         sehenFarbsehen:
@@ -417,16 +430,20 @@ components:
           $ref: "#/components/schemas/RequirementSetting"
         untersuchungEinbeinstand:
           $ref: "#/components/schemas/RequirementSetting"
-        untersuchungEinbeinstandRechts:
+        untersuchungEinbeinstandRechtsLinks:
           $ref: "#/components/schemas/RequirementSetting"
-        untersuchungEinbeinstandLinks:
-          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungEinbeinstandValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/Einbeinstand"
         untersuchungEinbeinhuepfen:
           $ref: "#/components/schemas/RequirementSetting"
-        untersuchungEinbeinhuepfenRechts:
+        untersuchungEinbeinhuepfenRechtsLinks:
           $ref: "#/components/schemas/RequirementSetting"
-        untersuchungEinbeinhuepfenLinks:
-          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungEinbeinhuepfenValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/Einbeinhuepfen"
         untersuchungFingeropposition:
           $ref: "#/components/schemas/RequirementSetting"
         untersuchungHampelmann:
@@ -463,14 +480,24 @@ components:
           $ref: "#/components/schemas/RequirementSetting"
         untersuchungMotorik:
           $ref: "#/components/schemas/RequirementSetting"
+        untersuchungMotorikValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/Motorik"
         untersuchungMotorikPunkte:
           $ref: "#/components/schemas/RequirementSetting"
         untersuchungKognition:
           $ref: "#/components/schemas/RequirementSetting"
         untersuchungKognitionPunkte:
           $ref: "#/components/schemas/RequirementSetting"
-        untersuchungSprache:
+        untersuchungSprachfaehigkeitSingleValue:
           $ref: "#/components/schemas/RequirementSetting"
+        untersuchungSprachfaehigkeitMultiValue:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungSprachfaehigkeitValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/Sprachfaehigkeit"
         untersuchungSprachePunkte:
           $ref: "#/components/schemas/RequirementSetting"
         untersuchungMundZaehne:
@@ -655,6 +682,78 @@ components:
       - EINSCHULUNG
       - SONSTIGES
       - LAEUSEKONTROLLE
+    AnlassWithDateTimeJson:
+      type: object
+      required:
+      - anlassId
+      - anlassTyp
+      - titel
+      - datum
+      properties:
+        anlassId:
+          $ref: "#/components/schemas/IDAnlass"
+        anlassTyp:
+          $ref: "#/components/schemas/AnlassTyp"
+        titel:
+          type: string
+        datum:
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        zeitVon:
+          type: string
+          $ref: "#/components/schemas/LocalDateTime"
+        zeitBis:
+          type: string
+          $ref: "#/components/schemas/LocalDateTime"
+    AnlassWithDateTimeListJson:
+      type: object
+      required:
+      - anlaesseWithDateTime
+      properties:
+        anlaesseWithDateTime:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnlassWithDateTimeJson"
+    AnlassWithOpenSlotsListJson:
+      type: object
+      required:
+      - anlaesseWithOpenEinladungenSlots
+      - maximalAnzahlSlots
+      properties:
+        anlaesseWithOpenEinladungenSlots:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnlassWithOpenSlotsOptionJson"
+        maximalAnzahlSlots:
+          type: integer
+          format: int32
+    AnlassWithOpenSlotsOptionJson:
+      type: object
+      required:
+      - anlassId
+      - anlassTyp
+      - titel
+      - offeneSlots
+      - datum
+      properties:
+        anlassId:
+          $ref: "#/components/schemas/IDAnlass"
+        anlassTyp:
+          $ref: "#/components/schemas/AnlassTyp"
+        titel:
+          type: string
+        offeneSlots:
+          type: integer
+          format: int32
+        datum:
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        zeitVon:
+          type: string
+          $ref: "#/components/schemas/LocalDateTime"
+        zeitBis:
+          type: string
+          $ref: "#/components/schemas/LocalDateTime"
     AppFailureErrorJson:
       type: object
       required:
@@ -866,6 +965,24 @@ components:
       - OFFEN
       - IN_BEARBEITUNG
       - ABGESCHLOSSEN
+    Aussprache:
+      type: string
+      enum:
+      - OKAY
+      - NICHT_OKAY
+      - NICHT_GEPRUEFT
+    BallFangen:
+      type: string
+      enum:
+      - BALL_GEFANGEN
+      - BALL_NICHT_GEFANGEN
+      - NICHT_GEPRUEFT
+    BallWerfen:
+      type: string
+      enum:
+      - MIND_ZWEI_METER
+      - WENIGER_ALS_ZWEI_METER
+      - NICHT_GEPRUEFT
     BenutzerJson:
       type: object
       required:
@@ -1016,6 +1133,8 @@ components:
       - SUPPORT
       - SYSTEM_ADMIN
       - ESCADA_PUSH
+      - FILE_INGRESS_PUSH
+      - PUPIL_PUSH
     Bewegungsapparat:
       type: string
       enum:
@@ -1159,6 +1278,10 @@ components:
           $ref: "#/components/schemas/NormalizedPhoneNumber"
       required:
       - phoneNumber
+    CsvReportType:
+      type: string
+      enum:
+      - SCHULUNTERSUCHUNG
     DBInfoConnectionSSLJson:
       type: object
       required:
@@ -1217,6 +1340,38 @@ components:
       - RECHTS_REDUZIERT
       - LINKS_REDUZIERT
       - NICHT_GEPRUEFT
+    DocumentQueueCsvListSaveJson:
+      type: object
+      required:
+      - list
+      properties:
+        list:
+          type: array
+          items:
+            $ref: "#/components/schemas/DocumentQueueCsvSaveJson"
+    DocumentQueueCsvParams:
+      type: object
+      properties:
+        csvReportType:
+          $ref: "#/components/schemas/CsvReportType"
+    DocumentQueueCsvSaveJson:
+      type: object
+      required:
+      - type
+      - datumVon
+      - datumBis
+      - documentQueueCsvParams
+      properties:
+        type:
+          $ref: "#/components/schemas/FileTyp"
+        datumVon:
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        datumBis:
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        documentQueueCsvParams:
+          $ref: "#/components/schemas/DocumentQueueCsvParams"
     DocumentQueueDisplayJson:
       type: object
       required:
@@ -1242,6 +1397,8 @@ components:
           type: string
         documentQueueParams:
           $ref: "#/components/schemas/DocumentQueueParams"
+        documentQueueCsvParams:
+          $ref: "#/components/schemas/DocumentQueueCsvParams"
     DocumentQueueIDListJson:
       type: object
       required:
@@ -1268,13 +1425,13 @@ components:
         list:
           type: array
           items:
-            $ref: "#/components/schemas/DocumentQueueSaveJson"
+            $ref: "#/components/schemas/DocumentQueueSpssSaveJson"
     DocumentQueueParams:
       type: object
       properties:
         spssReportType:
           $ref: "#/components/schemas/SpssReportType"
-    DocumentQueueSaveJson:
+    DocumentQueueSpssSaveJson:
       type: object
       required:
       - type
@@ -1379,7 +1536,7 @@ components:
       type: object
       required:
       - id
-      - escada
+      - external
       properties:
         id:
           $ref: "#/components/schemas/IDKind"
@@ -1400,7 +1557,9 @@ components:
         timestampLatestImport:
           type: string
           $ref: "#/components/schemas/OffsetDateTime"
-        escada:
+        importTyp:
+          $ref: "#/components/schemas/ImportTyp"
+        external:
           type: boolean
         schule:
           type: string
@@ -1436,6 +1595,8 @@ components:
       - UNSICHER_UNGEUEBT
       - NICHT_MOEGLICH
       - ANDERES
+      - MIN_DREIMAL
+      - MAX_DREIMAL
       - NICHT_GEPRUEFT
     Einbeinstand:
       type: string
@@ -1444,6 +1605,8 @@ components:
       - UNSICHER_UNGEUEBT
       - NICHT_MOEGLICH
       - ANDERES
+      - MIN_FUENF_SEKUNDEN
+      - MAX_FUENF_SEKUNDEN
       - NICHT_GEPRUEFT
     EinladungJson:
       type: object
@@ -1516,9 +1679,15 @@ components:
       - NACHZUEGLER
       - PRIVATARZT_OFFEN
       - PRIVATARZT_BESTAETIGT
-      - PRIVATARZT_MUENDLICH_BESTAETIGT
+      - PRIVATARZT_MUENDL_BESTAETIGT
       - KEINE_ANMELDUNG
       - UNTERSUCHUNG_JA
+    Einverstaendniserklaerung:
+      type: string
+      enum:
+      - ENTBINDUNG_VORHANDEN
+      - SCHWEIGEPFLICHT_VORHANDEN
+      - VIDEOAUFNAHME_VORHANDEN
     EmailAddress:
       format: email
       type: string
@@ -1560,12 +1729,6 @@ components:
       properties:
         esadId:
           type: string
-    EscadaImportMode:
-      type: string
-      enum:
-      - CREATE
-      - UPDATE
-      - DELETE
     EscadaImportResultJson:
       type: object
       properties:
@@ -1587,9 +1750,9 @@ components:
             - externalId
             properties:
               determinedImportMode:
-                $ref: "#/components/schemas/EscadaImportMode"
+                $ref: "#/components/schemas/ImportMode"
               status:
-                $ref: "#/components/schemas/EscadaImportStatus"
+                $ref: "#/components/schemas/ImportStatus"
               externalId:
                 type: string
               internalId:
@@ -1614,9 +1777,9 @@ components:
             - externalId
             properties:
               determinedImportMode:
-                $ref: "#/components/schemas/EscadaImportMode"
+                $ref: "#/components/schemas/ImportMode"
               status:
-                $ref: "#/components/schemas/EscadaImportStatus"
+                $ref: "#/components/schemas/ImportStatus"
               externalId:
                 type: string
               internalId:
@@ -1641,9 +1804,9 @@ components:
             - externalId
             properties:
               determinedImportMode:
-                $ref: "#/components/schemas/EscadaImportMode"
+                $ref: "#/components/schemas/ImportMode"
               status:
-                $ref: "#/components/schemas/EscadaImportStatus"
+                $ref: "#/components/schemas/ImportStatus"
               externalId:
                 type: string
               internalId:
@@ -1668,9 +1831,9 @@ components:
             - externalId
             properties:
               determinedImportMode:
-                $ref: "#/components/schemas/EscadaImportMode"
+                $ref: "#/components/schemas/ImportMode"
               status:
-                $ref: "#/components/schemas/EscadaImportStatus"
+                $ref: "#/components/schemas/ImportStatus"
               externalId:
                 type: string
               internalId:
@@ -1695,9 +1858,9 @@ components:
             - externalId
             properties:
               determinedImportMode:
-                $ref: "#/components/schemas/EscadaImportMode"
+                $ref: "#/components/schemas/ImportMode"
               status:
-                $ref: "#/components/schemas/EscadaImportStatus"
+                $ref: "#/components/schemas/ImportStatus"
               externalId:
                 type: string
               internalId:
@@ -1712,11 +1875,6 @@ components:
                 type:
                 - string
                 - "null"
-    EscadaImportStatus:
-      type: string
-      enum:
-      - OK
-      - ERROR
     EscadaKlasseStufe:
       type: string
       enum:
@@ -1778,6 +1936,7 @@ components:
       - aktivInExternalSystem
       - timestampFirstImport
       - timestampLatestImport
+      - importTyp
       properties:
         idInExternalSystem:
           type: string
@@ -1789,6 +1948,8 @@ components:
         timestampLatestImport:
           type: string
           $ref: "#/components/schemas/OffsetDateTime"
+        importTyp:
+          $ref: "#/components/schemas/ImportTyp"
     FachRolle:
       type: string
       enum:
@@ -1829,6 +1990,12 @@ components:
       - ENABLED_FOR_BETA_TESTING
       - ENABLED_FOR_DEVELOPMENT
       - DISABLED
+    FigurNachmalen:
+      type: string
+      enum:
+      - KORREKT
+      - NICHT_KORREKT
+      - NICHT_GEPRUEFT
     FileDataJson:
       type: object
       required:
@@ -1861,10 +2028,27 @@ components:
           type: string
         deletedInBucket:
           type: boolean
+    FileIngressResultJson:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/FileIngressStatus"
+        successMessage:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/AppValidationErrorJson"
+    FileIngressStatus:
+      type: string
+      enum:
+      - OK
+      - ERROR
     FileTyp:
       type: string
       enum:
       - ESCADA_SYNC
+      - PUPIL_SYNC
       - IMPFAUSWEIS
       - NOTIZUPLOAD
       - AUFGABEUPLOAD
@@ -1875,6 +2059,7 @@ components:
       - PLAYGROUND
       - PLAYGROUND_ERROR
       - SPSS_REPORT
+      - CSV_REPORT
     FilterCombination:
       type: string
       enum:
@@ -1927,6 +2112,12 @@ components:
       - KEINE_ABMELDUNG
       - ANDERER_GRUND
       - SU_BEREITS_ERFOLGT
+    Hampelmann:
+      type: string
+      enum:
+      - MIND_FUENF_MAL
+      - WENIGER_ALS_FUENF_MAL
+      - NICHT_GEPRUEFT
     Haut:
       type: string
       enum:
@@ -2107,6 +2298,12 @@ components:
       examples:
       - 11111111-1111-1111-1111-111111111111
     IDNotiz:
+      type: string
+      format: entity-id
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      examples:
+      - 11111111-1111-1111-1111-111111111111
+    IDPupilSyncEvent:
       type: string
       format: entity-id
       pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
@@ -2318,6 +2515,23 @@ components:
       type: string
       enum:
       - IMPFUNG_BEIM_HAUSARZT
+    ImportMode:
+      type: string
+      enum:
+      - CREATE
+      - UPDATE
+      - DELETE
+    ImportStatus:
+      type: string
+      enum:
+      - OK
+      - ERROR
+    ImportTyp:
+      type: string
+      enum:
+      - ESCADA
+      - EXCEL_MASSENIMPORT
+      - PUPIL
     InfomaterialJson:
       type: object
       required:
@@ -2690,6 +2904,12 @@ components:
       - SEK_II_KLASSE_2
       - SEK_II_KLASSE_3
       - SEK_II_KLASSE_4
+    Kognition:
+      type: string
+      enum:
+      - AUFFAELLIG
+      - GRENZWERTIG
+      - GUT
     KontaktPersonKindBeziehung:
       type: string
       enum:
@@ -2856,16 +3076,17 @@ components:
     Krankheit:
       type: string
       enum:
-      - POLIO
       - DIPHTERIE
       - TETANUS
       - PERTUSSIS
+      - POLIO
       - HEPATITIS_B
-      - VARIZELLEN
+      - HPV
+      - FSME
       - MASERN
       - MUMPS
       - ROETELN
-      - HPV
+      - VARIZELLEN
       - MENINGOKOKKEN_A_C_W_Y
       - MENINGOKOKKEN_B
     LabelJson:
@@ -3240,6 +3461,13 @@ components:
         version:
           type: integer
           format: int64
+    Lesefit:
+      type: string
+      enum:
+      - PUNKTE_MAX_14
+      - PUNKTE_15_BIS_16
+      - PUNKTE_MIN_17
+      - NICHT_GEPRUEFT
     LocalDate:
       type: string
       format: date
@@ -3261,6 +3489,9 @@ components:
       enum:
       - NORMAL
       - AUFFAELLIG
+      - AUFFAELLIG_PUNKTE
+      - GRENZWERTIG
+      - GUT
       - NICHT_GEPRUEFT
     MundAndZaehne:
       type: string
@@ -3310,6 +3541,12 @@ components:
         naechsteStationSeit:
           type: string
           $ref: "#/components/schemas/LocalDateTime"
+    NameSchreiben:
+      type: string
+      enum:
+      - GESCHAFFT
+      - NICHT_GESCHAFFT
+      - NICHT_GEPRUEFT
     NormalizedPhoneNumber:
       type: string
       format: phone-number
@@ -3481,10 +3718,10 @@ components:
       - NORMAL
       - PERZENTILE_TIEF
       - PERZENTILE_HOCH
-      - NICHT_GEPRUEFT
       - UNTERGEWICHT
       - UEBERGEWICHT
       - ADIPOSITAS
+      - NICHT_GEPRUEFT
     PerzentileGewicht:
       type: string
       enum:
@@ -3511,6 +3748,98 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Berechtigung"
+    PupilImportResultJson:
+      type: object
+      properties:
+        pupilSyncEventID:
+          $ref: "#/components/schemas/IDPupilSyncEvent"
+        importTimestamp:
+          type: string
+          $ref: "#/components/schemas/LocalDateTime"
+        importDuration:
+          type: string
+          $ref: "#/components/schemas/Duration"
+        schuleImportResultJsons:
+          type: array
+          items:
+            type: object
+            required:
+            - determinedImportMode
+            - status
+            - externalId
+            properties:
+              determinedImportMode:
+                $ref: "#/components/schemas/ImportMode"
+              status:
+                $ref: "#/components/schemas/ImportStatus"
+              externalId:
+                type: string
+              internalId:
+                anyOf:
+                - $ref: "#/components/schemas/IDSchule"
+                - type: "null"
+              friendlyName:
+                type:
+                - string
+                - "null"
+              msg:
+                type:
+                - string
+                - "null"
+        klasseImportResultJsons:
+          type: array
+          items:
+            type: object
+            required:
+            - determinedImportMode
+            - status
+            - externalId
+            properties:
+              determinedImportMode:
+                $ref: "#/components/schemas/ImportMode"
+              status:
+                $ref: "#/components/schemas/ImportStatus"
+              externalId:
+                type: string
+              internalId:
+                anyOf:
+                - $ref: "#/components/schemas/IDKlasse"
+                - type: "null"
+              friendlyName:
+                type:
+                - string
+                - "null"
+              msg:
+                type:
+                - string
+                - "null"
+        kindImportResultJsons:
+          type: array
+          items:
+            type: object
+            required:
+            - determinedImportMode
+            - status
+            - externalId
+            properties:
+              determinedImportMode:
+                $ref: "#/components/schemas/ImportMode"
+              status:
+                $ref: "#/components/schemas/ImportStatus"
+              externalId:
+                type: string
+              internalId:
+                anyOf:
+                - $ref: "#/components/schemas/IDKind"
+                - type: "null"
+              friendlyName:
+                type:
+                - string
+                - "null"
+              msg:
+                type:
+                - string
+                - "null"
     QuartierJson:
       type: object
       required:
@@ -3818,6 +4147,9 @@ components:
       - ARTIKULATIONSFEHLER
       - DEUTSCHKENNTNISSE_MINIM
       - ANDERES
+      - AUFFAELLIG
+      - GRENZWERTIG
+      - GUT
       - NICHT_GEPRUEFT
     SpssReportType:
       type: string
@@ -3834,6 +4166,12 @@ components:
       - NORMAL
       - PATHOLOGISCH
       - UNSICHER
+      - NICHT_GEPRUEFT
+    Stifthaltung:
+      type: string
+      enum:
+      - OKAY
+      - NICHT_OKAY
       - NICHT_GEPRUEFT
     StrabismusAuftretenResultat:
       type: string
@@ -3881,16 +4219,23 @@ components:
       required:
       - esadIdFeature
       - laenderCodeFeature
+      - mobileScannerFeature
+      - massenimportFeature
       properties:
         esadIdFeature:
           $ref: "#/components/schemas/TenantSettingFeatureStateJson"
         laenderCodeFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        mobileScannerFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        massenimportFeature:
           $ref: "#/components/schemas/TenantSettingFeatureStateJson"
     TenantSettingSaveJson:
       type: object
       required:
       - defaultLanguage
       - supportedLanguages
+      - folgeTermineMaxSlots
       - features
       - einladungStatusValues
       properties:
@@ -3900,6 +4245,9 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/AppLanguages"
+        folgeTermineMaxSlots:
+          type: integer
+          format: int32
         features:
           $ref: "#/components/schemas/TenantSettingFeaturesJson"
         einladungStatusValues:
@@ -3913,6 +4261,7 @@ components:
       - tenant
       - entityInfo
       - data
+      - fachrollen
       properties:
         id:
           $ref: "#/components/schemas/IDTenantSetting"
@@ -3922,6 +4271,10 @@ components:
           $ref: "#/components/schemas/EntityInfoJson"
         data:
           $ref: "#/components/schemas/TenantSettingSaveJson"
+        fachrollen:
+          type: array
+          items:
+            $ref: "#/components/schemas/FachRolle"
     TestingResponseJson:
       type: object
       required:
@@ -3999,6 +4352,12 @@ components:
     UntersuchungArztBeurteilungSaveJson:
       type: object
       properties:
+        einverstaendniserklaerung:
+          type: array
+          items:
+            $ref: "#/components/schemas/Einverstaendniserklaerung"
+        verhaltensfragebogen:
+          $ref: "#/components/schemas/Verhaltensfragebogen"
         verhalten:
           $ref: "#/components/schemas/Verhalten"
         blutdruck:
@@ -4023,14 +4382,24 @@ components:
             $ref: "#/components/schemas/MundAndZaehne"
         mundAndZaehneBemerkung:
           type: string
-        sprachfaehigkeit:
+        sprachfaehigkeitSingleValue:
+          $ref: "#/components/schemas/Sprachfaehigkeit"
+        sprachfaehigkeitMultiValue:
           type: array
           items:
             $ref: "#/components/schemas/Sprachfaehigkeit"
         sprachfaehigkeitBemerkung:
           type: string
+        sprachfaehigkeitPunkte:
+          type: number
         motorik:
           $ref: "#/components/schemas/Motorik"
+        motorikPunkte:
+          type: number
+        kognition:
+          $ref: "#/components/schemas/Kognition"
+        kognitionPunkte:
+          type: number
         bewegungsapparat:
           type: array
           items:
@@ -4039,9 +4408,17 @@ components:
           type: string
         einbeinstand:
           $ref: "#/components/schemas/Einbeinstand"
+        einbeinstandRechts:
+          $ref: "#/components/schemas/Einbeinstand"
+        einbeinstandLinks:
+          $ref: "#/components/schemas/Einbeinstand"
         einbeinstandBemerkung:
           type: string
         einbeinhuepfen:
+          $ref: "#/components/schemas/Einbeinhuepfen"
+        einbeinhuepfenRechts:
+          $ref: "#/components/schemas/Einbeinhuepfen"
+        einbeinhuepfenLinks:
           $ref: "#/components/schemas/Einbeinhuepfen"
         einbeinhuepfenBemerkung:
           type: string
@@ -4051,6 +4428,38 @@ components:
             $ref: "#/components/schemas/Fingeropposition"
         fingeroppositionBemerkung:
           type: string
+        hampelmann:
+          $ref: "#/components/schemas/Hampelmann"
+        ballFangen:
+          $ref: "#/components/schemas/BallFangen"
+        ballWerfen:
+          $ref: "#/components/schemas/BallWerfen"
+        nameSchreiben:
+          $ref: "#/components/schemas/NameSchreiben"
+        figurNachmalen:
+          $ref: "#/components/schemas/FigurNachmalen"
+        stifthaltung:
+          $ref: "#/components/schemas/Stifthaltung"
+        aussprache:
+          $ref: "#/components/schemas/Aussprache"
+        lesefit:
+          $ref: "#/components/schemas/Lesefit"
+        lesefitPunkte:
+          type: number
+        zahlenNachsprechen4:
+          $ref: "#/components/schemas/ZahlenNachsprechen"
+        zahlenNachsprechen5:
+          $ref: "#/components/schemas/ZahlenNachsprechen"
+        zeichnenKreis:
+          $ref: "#/components/schemas/Zeichnen"
+        zeichnenViereck:
+          $ref: "#/components/schemas/Zeichnen"
+        zeichnenDreieck:
+          $ref: "#/components/schemas/Zeichnen"
+        zeichnenMensch:
+          $ref: "#/components/schemas/ZeichnenMensch"
+        zeichnenMenschPunkte:
+          type: number
         version:
           type: integer
           format: int64
@@ -4878,6 +5287,12 @@ components:
       - UNAUFFAELLIG
       - AUFFAELLIG
       - NICHT_GEPRUEFT
+    Verhaltensfragebogen:
+      type: string
+      enum:
+      - VORHANDEN
+      - NICHT_VORHANDEN
+      - NICHT_RELEVANT
     VerwendetTafelResultat:
       type: string
       enum:
@@ -4902,6 +5317,24 @@ components:
     Zahl:
       format: number-zahl
       type: number
+    ZahlenNachsprechen:
+      type: string
+      enum:
+      - RICHTIG
+      - FALSCH
+      - NICHT_GEPRUEFT
+    Zeichnen:
+      type: string
+      enum:
+      - RICHTIG
+      - FALSCH
+      - NICHT_GEPRUEFT
+    ZeichnenMensch:
+      type: string
+      enum:
+      - ERFUELLT
+      - NICHT_ERFUELLT
+      - NICHT_GEPRUEFT
     ZonedDateTime:
       type: string
       format: date-time
@@ -4928,6 +5361,7 @@ tags:
 - name: Einladungen
 - name: Escada
 - name: Example-Logging
+- name: FileIngress
 - name: Impfstoff-Chargen
 - name: Impfstoffe
 - name: Infomaterial
@@ -4938,9 +5372,11 @@ tags:
 - name: Kontaktperson-Schule
 - name: Labels
 - name: Lehrperson
+- name: Massenimport
 - name: Notizen
 - name: Plz
 - name: Printer
+- name: Pupil
 - name: Quartiere
 - name: Schulen
 - name: Search
@@ -5238,6 +5674,81 @@ paths:
       - SecurityScheme:
         - ANLASSLISTE_LESEN
         - ANLASSLISTE_LESEN_LAEUSE
+  /api/anlaesse/search-sheduled-for-kind:
+    get:
+      operationId: AnlassResource_findScheduledAnlaesseForKind
+      tags:
+      - Anlass
+      parameters:
+      - name: anlassTyp
+        in: query
+        schema:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnlassTyp"
+        required: true
+      - name: excludeAnlassIds
+        in: query
+        schema:
+          type: array
+          items:
+            $ref: "#/components/schemas/IDAnlass"
+        required: true
+      - name: kindId
+        in: query
+        schema:
+          $ref: "#/components/schemas/IDKind"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnlassWithDateTimeListJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Find Scheduled Anlaesse For Kind
+      security:
+      - SecurityScheme:
+        - ANLASSLISTE_LESEN
+        - ANLASSLISTE_LESEN_LAEUSE
+  /api/anlaesse/search-with-available-slots:
+    get:
+      operationId: AnlassResource_searchAnlassTermineWithAvailableSlots
+      tags:
+      - Anlass
+      parameters:
+      - name: anlassTyp
+        in: query
+        schema:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnlassTyp"
+        required: true
+      - name: kindId
+        in: query
+        schema:
+          $ref: "#/components/schemas/IDKind"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnlassWithOpenSlotsListJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Search Anlass Termine With Available Slots
+      security:
+      - SecurityScheme:
+        - ANLASSLISTE_LESEN
+        - ANLASSLISTE_LESEN_LAEUSE
   /api/anlaesse/{anlassId}:
     put:
       operationId: AnlassResource_updateAnlass
@@ -5443,6 +5954,7 @@ paths:
       security:
       - SecurityScheme:
         - KINDER_LESEN_MEDIZINISCH
+        - KINDER_LESEN_NICHT_MEDIZINISCH
   /api/anlaesse/{anlassId}/einladungen/tabinfo:
     get:
       operationId: EinladungResource_getUntersuchungTabInfos
@@ -7233,6 +7745,27 @@ paths:
       security:
       - SecurityScheme:
         - SUPPORT
+  /api/anlassconfig/script:
+    get:
+      operationId: AnlassConfigResource_downloadAllSqlSkripts
+      tags:
+      - Anlass-Config
+      responses:
+        "200":
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Download All Sql Skripts
+      security:
+      - SecurityScheme:
+        - SUPPORT
   /api/anlassconfig/script/{anlassConfigId}:
     get:
       operationId: AnlassConfigResource_downloadSqlSkripts
@@ -8084,6 +8617,7 @@ paths:
       - SecurityScheme:
         - SUPPORT
         - SPSS_EXPORT
+        - INDIVIDUELLE_REPORTS
     get:
       operationId: DocumentQueueResource_findAll
       tags:
@@ -8104,6 +8638,7 @@ paths:
       - SecurityScheme:
         - SUPPORT
         - SPSS_EXPORT
+        - INDIVIDUELLE_REPORTS
     post:
       operationId: DocumentQueueResource_create
       tags:
@@ -8112,7 +8647,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DocumentQueueSaveJson"
+              $ref: "#/components/schemas/DocumentQueueSpssSaveJson"
         required: true
       responses:
         "200":
@@ -8128,9 +8663,35 @@ paths:
       - SecurityScheme:
         - SUPPORT
         - SPSS_EXPORT
-  /api/documentqueue/create-multiple:
+        - INDIVIDUELLE_REPORTS
+  /api/documentqueue/create-multiple-csv:
     post:
-      operationId: DocumentQueueResource_createMultiple
+      operationId: DocumentQueueResource_createMultipleCsv
+      tags:
+      - Document-Queue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DocumentQueueCsvListSaveJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Create Multiple Csv
+      security:
+      - SecurityScheme:
+        - SUPPORT
+        - INDIVIDUELLE_REPORTS
+  /api/documentqueue/create-multiple-spss:
+    post:
+      operationId: DocumentQueueResource_createMultipleSpss
       tags:
       - Document-Queue
       requestBody:
@@ -8148,7 +8709,7 @@ paths:
           description: Not Allowed
         "400":
           description: Bad Request
-      summary: Create Multiple
+      summary: Create Multiple Spss
       security:
       - SecurityScheme:
         - SUPPORT
@@ -8174,6 +8735,7 @@ paths:
       - SecurityScheme:
         - SUPPORT
         - SPSS_EXPORT
+        - INDIVIDUELLE_REPORTS
   /api/documentqueue/{documentQueueId}/sync:
     get:
       operationId: DocumentQueueResource_downloadFile
@@ -8202,6 +8764,7 @@ paths:
       - SecurityScheme:
         - SUPPORT
         - SPSS_EXPORT
+        - INDIVIDUELLE_REPORTS
   /api/dossiers/kind/{kindId}:
     post:
       operationId: DossierResource_getOrCreateDossier
@@ -8419,7 +8982,23 @@ paths:
         - DUBLETTEN_ZUSAMMENFUHREN
   /api/duplikate/reload:
     put:
-      operationId: DuplikatResource_reloadDuplikate
+      operationId: DuplikatResource_reloadDuplikateAsync
+      tags:
+      - Duplikate
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Reload Duplikate Async
+      security:
+      - SecurityScheme:
+        - DUBLETTEN_ZUSAMMENFUHREN
+  /api/duplikate/reload-sync:
+    put:
+      operationId: DuplikatResource_reloadDuplikateSync
       tags:
       - Duplikate
       responses:
@@ -8433,7 +9012,7 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
-      summary: Reload Duplikate
+      summary: Reload Duplikate Sync
       security:
       - SecurityScheme:
         - DUBLETTEN_ZUSAMMENFUHREN
@@ -8594,6 +9173,49 @@ paths:
         "200":
           description: OK
       summary: Log
+  /api/file-ingress/dossier/{esadId}/fragebogen:
+    post:
+      operationId: FileIngressResource_uploadFragebogen
+      tags:
+      - FileIngress
+      parameters:
+      - name: esadId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  $ref: "#/components/schemas/UploadItemSchema"
+        required: true
+      responses:
+        "200":
+          description: File ingress successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileIngressResultJson"
+        "400":
+          description: File ingress failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileIngressResultJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Upload Fragebogen
+      security:
+      - SecurityScheme:
+        - FILE_INGRESS_PUSH
   /api/impfstoffe:
     get:
       operationId: ImpfstoffResource_findAllImpfstoffeAndChargen
@@ -9521,8 +10143,12 @@ paths:
               $ref: "#/components/schemas/EntityAktivStatusSaveJson"
         required: true
       responses:
-        "204":
-          description: No Content
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KindJson"
         "401":
           description: Not Authorized
         "403":
@@ -10042,6 +10668,32 @@ paths:
       security:
       - SecurityScheme:
         - LABELS_LESEN
+  /api/labels/{labelID}:
+    get:
+      operationId: LabelResource_getById
+      tags:
+      - Labels
+      parameters:
+      - name: labelID
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDLabel"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LabelJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get By Id
+      security:
+      - SecurityScheme:
+        - LABELS_LESEN
   /api/labels/{labelId}:
     put:
       operationId: LabelResource_updateLabel
@@ -10097,6 +10749,119 @@ paths:
       security:
       - SecurityScheme:
         - LABELS_SCHREIBEN
+  /api/massenimport/schule/{schuleID}:
+    post:
+      operationId: MassenimportResource_massenimportKinderForSchuleExtractKlassen
+      tags:
+      - Massenimport
+      parameters:
+      - name: schuleID
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDSchule"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  $ref: "#/components/schemas/UploadItemSchema"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Massenimport Kinder For Schule Extract Klassen
+      security:
+      - SecurityScheme:
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
+  /api/massenimport/schule/{schuleID}/klasse/{klasseID}:
+    post:
+      operationId: MassenimportResource_massenimportKinderForSchuleAndKlasse
+      tags:
+      - Massenimport
+      parameters:
+      - name: klasseID
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDKlasse"
+      - name: schuleID
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDSchule"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  $ref: "#/components/schemas/UploadItemSchema"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Massenimport Kinder For Schule And Klasse
+      security:
+      - SecurityScheme:
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
+  /api/massenimport/template/klasse:
+    get:
+      operationId: MassenimportResource_downloadKlassenTemplate
+      tags:
+      - Massenimport
+      responses:
+        "200":
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Download Klassen Template
+      security:
+      - SecurityScheme:
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
+  /api/massenimport/template/standard:
+    get:
+      operationId: MassenimportResource_downloadStandardTemplate
+      tags:
+      - Massenimport
+      responses:
+        "200":
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Download Standard Template
+      security:
+      - SecurityScheme:
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/notizen:
     get:
       operationId: NotizResource_findAll
@@ -10498,6 +11263,64 @@ paths:
               schema:
                 $ref: "#/components/schemas/ConfigJson"
       summary: Config
+  /api/pupil:
+    post:
+      operationId: PupilResource_syncWithPupilAsync
+      tags:
+      - Pupil
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  $ref: "#/components/schemas/UploadItemSchema"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Sync With Pupil Async
+      security:
+      - SecurityScheme:
+        - PUPIL_PUSH
+  /api/pupil/sync:
+    post:
+      operationId: PupilResource_syncWithPupil
+      tags:
+      - Pupil
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  $ref: "#/components/schemas/UploadItemSchema"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PupilImportResultJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Sync With Pupil
+      security:
+      - SecurityScheme:
+        - PUPIL_PUSH
   /api/quartiere:
     get:
       operationId: QuartierResource_findAllQuartiere
@@ -11426,6 +12249,6 @@ paths:
         - SUPPORT
 info:
   title: esc-api API
-  version: 1.0.0-SNAPSHOT
+  version: 26.1.0-SNAPSHOT
 servers:
 - url: https://local-esc-bs.localhost:8443

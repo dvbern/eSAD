@@ -9,13 +9,15 @@
  */
 
 
-export type Einbeinhuepfen = 'SICHER' | 'UNSICHER_UNGEUEBT' | 'NICHT_MOEGLICH' | 'ANDERES' | 'NICHT_GEPRUEFT';
+export type Einbeinhuepfen = 'SICHER' | 'UNSICHER_UNGEUEBT' | 'NICHT_MOEGLICH' | 'ANDERES' | 'MIN_DREIMAL' | 'MAX_DREIMAL' | 'NICHT_GEPRUEFT';
 
 export const Einbeinhuepfen = {
     SICHER: 'SICHER' as Einbeinhuepfen,
     UNSICHER_UNGEUEBT: 'UNSICHER_UNGEUEBT' as Einbeinhuepfen,
     NICHT_MOEGLICH: 'NICHT_MOEGLICH' as Einbeinhuepfen,
     ANDERES: 'ANDERES' as Einbeinhuepfen,
+    MIN_DREIMAL: 'MIN_DREIMAL' as Einbeinhuepfen,
+    MAX_DREIMAL: 'MAX_DREIMAL' as Einbeinhuepfen,
     NICHT_GEPRUEFT: 'NICHT_GEPRUEFT' as Einbeinhuepfen
 } as const;
 

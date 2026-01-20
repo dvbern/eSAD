@@ -21,6 +21,11 @@ public class StrabismusAuspraegungCsvColumn extends AbstractCsvColumn {
                 if (resultat == null) {
                     return "";
                 }
+
+                if (!config.forSpssReport()) {
+                    return config.tl().translateValue(resultat);
+                }
+
                 return switch (resultat) {
                     case KEIN_STRABISMUS -> "";
                     case MANIFEST -> "1";

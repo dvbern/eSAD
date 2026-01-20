@@ -13,6 +13,7 @@ import { AppValidators, BaseForm } from '@dvb/util-angular';
 import { ensureProps, Nullish, requireValue, trimToUndefined } from '@dvb/util-shared';
 import { distinctUntilChanged } from 'rxjs';
 import { markAllMultiCheckboxesAsTouched } from '../../untersuchung.util';
+import {BackendEntityId, requireValidBackendEntityId} from "@dvb/data-access-types";
 
 type Config = {
   fb: NonNullableFormBuilder;
@@ -42,6 +43,7 @@ function makeForm(config: Config) {
     empfehlungArray: fb.array<EmpfehlungSubFormType>([]),
     achtung: fb.control<string>('', AppValidators.textareaMaxLength2000()),
     bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength2000()),
+    folgeTerminImpfen: fb.control<BackendEntityId | Nullish>(undefined),
     version: fb.control<number | Nullish>({ value: undefined, disabled: true }),
   });
 
@@ -88,6 +90,12 @@ export class UntersuchungImpfungenMassnahmenForm extends BaseForm<
     if (config.data.untersuchungImpfungAchtung === RequirementSetting.REQUIRED) {
       this.group.controls.achtung.addValidators(Validators.required);
     }
+  }
+
+  public getAndResetImpfFolgetermin() : BackendEntityId | Nullish {
+    const anlassId = this.group.getRawValue().folgeTerminImpfen;
+    this.group.controls.folgeTerminImpfen.reset();
+    return anlassId;
   }
 
   public override valueOnValid(): UntersuchungImpfungenMassnahmenSaveJson {

@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseService;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
@@ -98,7 +99,11 @@ class SchuleResourceITest extends AbstractITest {
             builder -> builder
                 .withID(ID.random(Schule.class))
                 .withSchulhaus("DeaktivierteSchule")
-                .withExternalImportInfo(UUID.randomUUID().toString(), false, getAppClock().offsetDateTime().now())
+                .withExternalImportInfo(
+                    UUID.randomUUID().toString(),
+                    false,
+                    getAppClock().offsetDateTime().now(),
+                    ImportTyp.ESCADA)
                 .withEntityAktivStatus(EntityAktivStatus.INAKTIV));
         schuleService.persist(schuleInaktiv);
 
@@ -127,7 +132,11 @@ class SchuleResourceITest extends AbstractITest {
             builder -> builder
                 .withID(ID.random(Schule.class))
                 .withSchulhaus("DeaktivierteSchule")
-                .withExternalImportInfo(UUID.randomUUID().toString(), false, getAppClock().offsetDateTime().now())
+                .withExternalImportInfo(
+                    UUID.randomUUID().toString(),
+                    false,
+                    getAppClock().offsetDateTime().now(),
+                    ImportTyp.ESCADA)
                 .withEntityAktivStatus(EntityAktivStatus.INAKTIV));
         schuleService.persist(schuleInaktiv);
 
@@ -135,7 +144,11 @@ class SchuleResourceITest extends AbstractITest {
             builder -> builder
                 .withID(ID.random(Schule.class))
                 .withSchulhaus("Aktive Schule")
-                .withExternalImportInfo(UUID.randomUUID().toString(), true, getAppClock().offsetDateTime().now())
+                .withExternalImportInfo(
+                    UUID.randomUUID().toString(),
+                    true,
+                    getAppClock().offsetDateTime().now(),
+                    ImportTyp.ESCADA)
                 .withEntityAktivStatus(EntityAktivStatus.AKTIV));
         schuleService.persist(schuleAktiv);
 
@@ -324,7 +337,6 @@ class SchuleResourceITest extends AbstractITest {
             .anyMatch(kp -> inaktiveKlasse.getId().getId().equals(kp.getId()));
     }
 
-
     @Test
     @TestAsAdminBS
     void getSchule() {
@@ -475,7 +487,7 @@ class SchuleResourceITest extends AbstractITest {
     @TestAsAdminBS
     void changeSchuleAktivStatus_shouldWork_ifExternalAndInactive() {
         // ARRANGE
-        Schule existingSchule = fixtureService.createSchuleExternal("TestSchuleToDeactivate", false);
+        Schule existingSchule = fixtureService.createSchuleExternal("TestSchuleToDeactivate", false, ImportTyp.ESCADA);
         ID<Schule> existingSchuleId = existingSchule.getId();
         assertThat(existingSchule.getSchuleAktivStatus()).isEqualTo(EntityAktivStatus.AKTIV);
         assertThat(existingSchule.getExternalImportInfo()).isNotNull();
@@ -504,7 +516,7 @@ class SchuleResourceITest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void changeSchuleAktivStatus_shouldNotWork_ifExternalAndActive() {
-        Schule existingSchule = fixtureService.createSchuleExternal("TestSchuleToDeactivate", true);
+        Schule existingSchule = fixtureService.createSchuleExternal("TestSchuleToDeactivate", true, ImportTyp.ESCADA);
         ID<Schule> existingSchuleId = existingSchule.getId();
         assertThat(existingSchule.getSchuleAktivStatus()).isEqualTo(EntityAktivStatus.AKTIV);
         assertThat(existingSchule.getExternalImportInfo()).isNotNull();
@@ -568,7 +580,11 @@ class SchuleResourceITest extends AbstractITest {
                 .withID(schuleId)
                 .withQuartier(fixtureService.createQuartier(TestUtil.getRandomString("GBW")))
                 .withSchulhaus("TestSchulhausToRemove")
-                .withExternalImportInfo(externalSystemId, true, getAppClock().offsetDateTime().now()));
+                .withExternalImportInfo(
+                    externalSystemId,
+                    true,
+                    getAppClock().offsetDateTime().now(),
+                    ImportTyp.ESCADA));
         schuleService.persist(schule);
         Optional<Schule> schuleOptional = schuleService.findById(schuleId);
         Assertions.assertThat(schuleOptional).isPresent();

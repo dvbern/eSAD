@@ -27,6 +27,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public enum FileTyp {
 
     ESCADA_SYNC("escada_sync"),
+    PUPIL_SYNC("pupil_sync"),
     IMPFAUSWEIS("impfausweis"),
     NOTIZUPLOAD("notizupload"),
     AUFGABEUPLOAD("aufgabeupload"),
@@ -38,8 +39,8 @@ public enum FileTyp {
     // Types to test DocumentQueue
     PLAYGROUND("playground"),
     PLAYGROUND_ERROR("playground_error"),
-    SPSS_REPORT("spss")
-    ;
+    SPSS_REPORT("spss"),
+    CSV_REPORT("csv");
 
     @NonNull
     private final String prefix;

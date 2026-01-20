@@ -320,7 +320,6 @@ public class AutoAufgabeService {
     ) {
         aufgabe.setTitel(titel);
         aufgabe.setBemerkung(getAufgabeBemerkung(aufgabe.getBemerkung(), bemerkung));
-        aufgabe.setAufgabeStatus(AufgabeStatus.OFFEN);
         aufgabe.setFaelligBis(appClock.getToday());
         aufgabe.disableOptimisticLockingCheck();
         aufgabeService.persist(aufgabe);

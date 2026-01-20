@@ -41,16 +41,18 @@ public class DocumentQueueBuilder {
     private final DocumentQueue documentQueue;
 
     private DocumentQueueBuilder() {
-        this.documentQueue = defaultDossier();
+        this.documentQueue = defaultDocumentQueue();
         TestUtil.setEntityInfo(documentQueue);
     }
 
     @NonNull
-    public static DocumentQueue defaultDossier() {
+    public static DocumentQueue defaultDocumentQueue() {
         return new DocumentQueue(
             FileTyp.PLAYGROUND,
             DocumentQueueStatus.NEW,
             0,
+            null,
+            null,
             null,
             null,
             null,

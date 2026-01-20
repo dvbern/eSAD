@@ -1,8 +1,11 @@
 package ch.dvbern.oss.hemed.esc.api.shared.settings;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -26,7 +29,6 @@ public class TenantSettingsJson {
     @Schema(required = true)
     private final TenantEnum tenant;
 
-
     @NotNull
     @NonNull
     @Valid
@@ -38,4 +40,9 @@ public class TenantSettingsJson {
     @Valid
     @Schema(required = true)
     private final TenantSettingSaveJson data;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private List<FachRolle> fachrollen;
 }

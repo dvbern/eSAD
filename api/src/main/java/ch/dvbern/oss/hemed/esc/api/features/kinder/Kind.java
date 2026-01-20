@@ -15,7 +15,7 @@ import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.HasExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Land;
@@ -70,7 +70,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckKindKlasseSchuleConsistency
-public class Kind extends AbstractTenantEntity<Kind>
+public class Kind extends AbstractEntity<Kind>
         implements Serializable, HasExternalImportInfo, EntityWithOptimisticLocking {
 
     @Serial
@@ -182,6 +182,14 @@ public class Kind extends AbstractTenantEntity<Kind>
     @NonNull
     public String getNameVorname() {
         return name + ' ' + vorname;
+    }
+
+    @Nullable
+    public String getFullNameIfAllowed(boolean redactFullName) {
+        if (redactFullName) {
+            return null;
+        }
+        return this.getNameVorname();
     }
 
     @Nullable

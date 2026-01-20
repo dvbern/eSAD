@@ -21,12 +21,14 @@ package ch.dvbern.oss.hemed.esc.api.shared.fileio;
 import java.io.Serial;
 import java.io.Serializable;
 
+import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
+import ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil;
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileNameConverter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -36,15 +38,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.tika.mime.MediaType;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 @Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@MappedSuperclass
 @Embeddable
 @ToString
-public abstract class FileInfo implements Serializable {
+public class FileInfo implements Serializable {
 
 	@Serial
     private static final long serialVersionUID = -1805105243056027213L;
@@ -63,8 +65,58 @@ public abstract class FileInfo implements Serializable {
 	@Valid
     private MediaType mediaType;
 
+    /**
+     * This is the id of the file in the s3 bucket
+     */
+    @NotNull
+    @Column(nullable = false, length = DbConst.DB_DEFAULT_MAX_LENGTH)
+    @JsonIgnore
+    private String fileIdInBucket;
+
 
 	public boolean isPresent() {
 		return fileSize > 0;
 	}
+
+    @NonNull
+    public static FileInfo of(
+        @NonNull String prefix,
+        @NonNull CleanFileName fileName,
+        @NonNull MediaType mediaType,
+        long fileSize
+    ) {
+        return new FileInfo(
+            fileName,
+            fileSize,
+            mediaType,
+            FileUtil.generateUUIDWithOriginalFilename(prefix, fileName)
+        );
+    }
+
+    @NonNull
+    public static FileInfo of(
+        @NonNull CleanFileName fileName,
+        @NonNull MediaType mediaType,
+        long fileSize
+    ) {
+        return new FileInfo(
+            fileName,
+            fileSize,
+            mediaType,
+            FileUtil.generateUUIDWithFileExtension(fileName)
+        );
+    }
+
+    @NonNull
+    public static FileInfo of(@NonNull FileInfo fileInfo) {
+        return FileInfo.of(
+            fileInfo.getFileName(),
+            fileInfo.getMediaType(),
+            fileInfo.getFileSize()
+        );
+    }
+
+    public FileInfo deepCopy() {
+        return new FileInfo(this.getFileName(), this.getFileSize(), this.getMediaType(), this.getFileIdInBucket());
+    }
 }

@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 import { ISODateTimeString } from '@dvb/data-access-types';
+import { ImportTyp } from './import-typ';
 import { ISODateString } from '@dvb/data-access-types';
 import { EntityAktivStatus } from './entity-aktiv-status';
 import { BackendEntityId } from '@dvb/data-access-types';
@@ -23,7 +24,8 @@ export interface DuplikatKindJson {
     timestampErstellt?: ISODateTimeString;
     aktivStatus?: EntityAktivStatus;
     timestampLatestImport?: ISODateTimeString;
-    escada: boolean;
+    importTyp?: ImportTyp;
+    external: boolean;
     schule?: string;
     klasse?: string;
 }

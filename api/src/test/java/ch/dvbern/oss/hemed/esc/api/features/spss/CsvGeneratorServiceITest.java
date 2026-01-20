@@ -28,10 +28,12 @@ import ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassBuilder;
@@ -107,6 +109,50 @@ class CsvGeneratorServiceITest extends AbstractITest {
                 .contains(expectedString));
     }
 
+    @ParameterizedTest
+    @MethodSource("csvReportResults")
+    @TestAsAdminBS
+    void generateCsvReport(
+        @NonNull CsvReportType csvReportType,
+        @NonNull String expectedCsvPath
+    ) {
+        // ARRANCE
+        LocalDate anlassDatum = LocalDate.of(2025, 6, 22);
+        AnlassConfig anlassConfig = fixtureService.createAnlassConfigAllOptional(
+            anlassDatum.getYear(),
+            AnlassTyp.KINDERGARTEN);
+        Anlass anlass = AnlassBuilder.create(builder -> builder
+            .withDatumSetSchuljahr(anlassDatum)
+            .withAnlassStatus(AnlassStatus.ABGESCHLOSSEN));
+        anlass.setAnlassConfig(anlassConfig);
+        anlassService.persist(anlass);
+        Einladung einladung = fixtureService.createEinladung(anlass);
+
+        DateRange zeitraum = new DateRange();
+        zeitraum.setDatumVon(LocalDate.of(2025, 5, 1));
+        zeitraum.setDatumBis(LocalDate.of(2025, 7, 31));
+
+        // ACT
+        byte[] result =
+            csvGeneratorService.generateCsvReport(
+                csvReportType,
+                zeitraum,
+                EmailAddress.fromString("admin.basel@example.com"));
+
+        // And the result contains our expectations
+        File expectedCsv = loadTestfile(expectedCsvPath);
+        List<String> expectedStrings =
+            FileUtil.readLineBasedTextFromPath(expectedCsv.toPath()); // read excted csv lines
+        String actual = new String(result, StandardCharsets.UTF_8);
+
+        // all expected lines must be present
+        assertThat(expectedStrings).isNotEmpty()
+            .allSatisfy(expectedString -> assertThat(actual).as(
+                    "actual should contain expected string: %s",
+                    expectedString)
+                .contains(expectedString));
+    }
+
     @NonNull
     private static Stream<Arguments> spssReportResults() {
         return Stream.of(
@@ -116,6 +162,13 @@ class CsvGeneratorServiceITest extends AbstractITest {
             Arguments.of(SpssReportType.KLASSE_9, "/CsvGenerator/expected/klasse9.csv"),
             Arguments.of(SpssReportType.FREMDSPRACHEN, "/CsvGenerator/expected/fremdsprache.csv"),
             Arguments.of(SpssReportType.IMPF_ANLAESSE, "/CsvGenerator/expected/impfanlass.csv")
+        );
+    }
+
+    @NonNull
+    private static Stream<Arguments> csvReportResults() {
+        return Stream.of(
+            Arguments.of(CsvReportType.SCHULUNTERSUCHUNG, "/CsvGenerator/expected/schuluntersuchung.csv")
         );
     }
 }

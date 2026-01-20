@@ -1,6 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure;
 
-import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,10 +8,12 @@ import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.rest.HttpForwardedForHeaderFilter;
 import ch.dvbern.dvbstarter.shared.runas.RunAs;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerBerechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerLoginInfos;
@@ -30,18 +31,20 @@ public class EnsureBenutzerHelperService {
 
     public static final FachRolle[] EMPTY_FACHROLLEN = new FachRolle[0];
     private final BenutzerService benutzerService;
+    private final TenantProducer tenantProducer;
 
     private final AppClock appClock;
 
-
-    @RunAs(username = "dev-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
+    @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void createNewUserFromToken(JsonWebTokenDataDTO webTokenData) {
 
         Benutzer benutzerFromJWT = benutzerService.createBenutzerFromJWT(webTokenData);
         List<BenutzerBerechtigung> storedBerechtigungen = benutzerService.syncBerechtigungenToBenutzer(
             benutzerFromJWT.getId(),
-            FachRolle.collectAllBerechtigungen(benutzerFromJWT.getFachRollen().toArray(EMPTY_FACHROLLEN))
+            FachRolle.collectAllBerechtigungen(
+                tenantProducer.produceTenant(),
+                benutzerFromJWT.getFachRollen().toArray(EMPTY_FACHROLLEN))
         );
 
         LOG.info(
@@ -57,13 +60,13 @@ public class EnsureBenutzerHelperService {
         this.storeLastLoginInfoForBenutzer(benutzerFromJWT, webTokenData);
     }
 
-
-    @RunAs(username = "dev-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
+    @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
     public void updateExistingUser(ID<Benutzer> existingUserId, @NonNull JsonWebTokenDataDTO webTokenData) {
-        Benutzer existingUser =  benutzerService.getById(existingUserId);
+        Benutzer existingUser = benutzerService.getById(existingUserId);
 
         // Username ist die Email. Falls die KeycloakId sich geändert hat, loggen, aber nicht abbrechen.
-        if (existingUser.getKeycloakId() == null || !existingUser.getKeycloakId().equals(webTokenData.getSubjectId().toString())) {
+        if (existingUser.getKeycloakId() == null || !existingUser.getKeycloakId()
+            .equals(webTokenData.getSubjectId().toString())) {
             LOG.warn(
                 "KeycloakId for Benutzer {} with ID {} has changed from {} to {}. "
                     + "This should not happen, but we will continue with the update the keycloakid.",
@@ -77,13 +80,17 @@ public class EnsureBenutzerHelperService {
         existingUser.setVorname(webTokenData.getGivenName());
         existingUser.setNachname(webTokenData.getFamilyName());
         existingUser.setEmail(webTokenData.getEmail());
-        existingUser.setFachRollen(EnumSetUtil.toEnumSet(webTokenData.getFachRollen().stream().toList(), FachRolle.class));
+        existingUser.setFachRollen(EnumSetUtil.toEnumSet(
+            webTokenData.getFachRollen().stream().toList(),
+            FachRolle.class));
         existingUser.setTitel(webTokenData.getTitleClaim());
         existingUser.setTelefon(NormalizedPhoneNumber.parse(webTokenData.getPhoneNumberClaim()));
 
         benutzerService.syncBerechtigungenToBenutzer(
             existingUser.getId(),
-            FachRolle.collectAllBerechtigungen(existingUser.getFachRollen().toArray(EMPTY_FACHROLLEN)));
+            FachRolle.collectAllBerechtigungen(
+                tenantProducer.produceTenant(),
+                existingUser.getFachRollen().toArray(EMPTY_FACHROLLEN)));
 
         // LastSessionId speichern
         this.storeLastLoginInfoForBenutzer(existingUser, webTokenData);
@@ -94,7 +101,8 @@ public class EnsureBenutzerHelperService {
         @NonNull JsonWebTokenDataDTO webTokenData
     ) {
         benutzer.disableOptimisticLockingCheck();
-        BenutzerLoginInfos loginInfos = benutzer.getLoginInfos() == null ? new BenutzerLoginInfos() : benutzer.getLoginInfos();
+        BenutzerLoginInfos loginInfos =
+            benutzer.getLoginInfos() == null ? new BenutzerLoginInfos() : benutzer.getLoginInfos();
         benutzer.setLoginInfos(loginInfos);
         String session = webTokenData.getSession();
         if (session != null) {

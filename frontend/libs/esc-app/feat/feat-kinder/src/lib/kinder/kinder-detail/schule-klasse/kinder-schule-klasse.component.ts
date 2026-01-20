@@ -3,6 +3,7 @@ import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular
 import {ActivatedRoute, Router} from '@angular/router';
 import {
   EntityAktivStatus,
+  ImportTyp,
   KindSaveJson,
   KindSaveModeDuplikat,
   KlasseOptionJson,
@@ -18,7 +19,7 @@ import {
   NgSelectDirective,
 } from '@dvb/ui-components';
 import {DirtyMarker} from '@dvb/util-angular';
-import {hasKindEditBerechtigung, isNullish, requireValue} from '@dvb/util-shared';
+import {hasKindEditBerechtigung, isNotNullish, isNullish, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {DossierStore} from '../../dossier.store';
@@ -54,13 +55,16 @@ export class KinderSchuleKlasseComponent implements DirtyMarker {
   protected readonly Path = Path;
 
   schuleOptions = computed(() =>
-    this.schulenOptionsStore.entitiesIncluding( this.dossierStore.selectedKind()?.data.schule)
+    this.schulenOptionsStore.entitiesIncluding(this.dossierStore.selectedKind()?.data.schule),
   );
   klasseOptions = computed(() => {
-    return this.klassenStore.entitiesIncluding( this.dossierStore.selectedKind()?.data.klasse)
+    return this.klassenStore.entitiesIncluding(this.dossierStore.selectedKind()?.data.klasse)
   });
   isEscadaObject = computed(() => {
-    return !!this.dossierStore.selectedKind()?.externalImportInfoJson?.aktivInExternalSystem;
+    const externalImportInfo = this.dossierStore.selectedKind()?.externalImportInfoJson;
+    return isNotNullish(externalImportInfo)
+      && externalImportInfo?.aktivInExternalSystem
+      && externalImportInfo?.importTyp === ImportTyp.ESCADA;
   });
   canEdit = this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung());
 
@@ -123,7 +127,7 @@ function getOptionWithSuffix<T extends {
   aktivStatus: EntityAktivStatus,
   bezeichnung: string
 }>(translatedSuffix: string, currentOption?: T) {
-  if(currentOption?.aktivStatus === EntityAktivStatus.INAKTIV){
+  if (currentOption?.aktivStatus === EntityAktivStatus.INAKTIV) {
     return {
       ...currentOption,
       bezeichnung: currentOption.bezeichnung + translatedSuffix,

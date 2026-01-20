@@ -12,7 +12,7 @@ import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.json.BriefvorlageListJ
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.json.BriefvorlageSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import io.smallrye.faulttolerance.api.RateLimit;
@@ -158,7 +158,7 @@ public class BriefvorlageResource {
     public Response downloadBriefvorlageFile(
         @NotNull @NonNull @PathParam("briefvorlageId") ID<Briefvorlage> briefvorlageId
     ) {
-        FileInfoS3 fileInfo = briefvorlageService.findBriefvorlageFile(briefvorlageId);
+        FileInfo fileInfo = briefvorlageService.findBriefvorlageFile(briefvorlageId);
         byte[] content = fileStoreService.getFileBytesSync(fileInfo.getFileIdInBucket());
 
         return FileDownloadUtil.buildFileResponse("attachment", content, fileInfo);

@@ -9,6 +9,7 @@ import ch.dvbern.dvbstarter.shared.EdokidIdTestGenerator;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.sozialversicherungsnummer.SozialversicherungsNummerTestGenerator;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.edokid_id.EdokidId;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.edokid_id.EdokidIdGeneratorService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKind;
@@ -63,7 +64,6 @@ class KindResourceITest extends AbstractITest {
 
     private final FixtureService fixtureService;
     private final KindService kindService;
-    private final DossierService dossierService;
     private final KontaktPersonKindService kontaktPersonKindService;
     private final SchuleService schuleService;
     private final KlasseService klasseService;
@@ -165,7 +165,7 @@ class KindResourceITest extends AbstractITest {
                 .withKlasse(klasse)
                 .withWohntyp("Heim")
                 .withName("Meier", "Fridolin")
-                .withExternalImportInfo(kindExternalId, true, getAppClock().offsetDateTime().now())
+                .withExternalImportInfo(kindExternalId, true, getAppClock().offsetDateTime().now(), ImportTyp.ESCADA)
         );
         schuleService.persist(schule);
         klasseService.persist(klasse);
@@ -304,7 +304,7 @@ class KindResourceITest extends AbstractITest {
         );
         KontaktPersonKind kontaktPersonKindInaktiv = KontaktPersonKindBuilder.create(
             builder -> builder.forKind(kind)
-                .withExternalImportInfo(UUID.randomUUID().toString(), false, getAppClock().offsetDateTime().now())
+                .withExternalImportInfo(UUID.randomUUID().toString(), false, getAppClock().offsetDateTime().now(), ImportTyp.ESCADA)
         );
 
         kontaktPersonKindService.persist(kontaktPersonKindAktiv);
@@ -574,13 +574,17 @@ class KindResourceITest extends AbstractITest {
         EntityAktivStatusSaveJsonSpec saveJson = new EntityAktivStatusSaveJsonSpec(EntityAktivStatusSpec.INAKTIV);
 
         // ACT
-        api.kindResourceUpdateKindAktivStatus()
+        KindJsonSpec result = api.kindResourceUpdateKindAktivStatus()
             .kindIdPath(existingKindId.getId())
             .body(saveJson)
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
-            .statusCode(Status.NO_CONTENT.getStatusCode());
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(KindJsonSpec.class);
+
+        assertThat(result.getData().getKindAktivStatus()).isEqualTo(EntityAktivStatusSpec.INAKTIV);
 
         // ASSERT
         KindJsonSpec jsonSpec = api.kindResourceGetKind()
@@ -761,7 +765,7 @@ class KindResourceITest extends AbstractITest {
     void updateKind_set_esadId() {
         // ARRANGE
         Kind kind1 = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
-        String newEsadId = "A43215432";
+        String newEsadId = "A4 32 154 32";
 
         // ACT
         EsadIdJsonSpec updateEsadId = new EsadIdJsonSpec(newEsadId);
@@ -786,7 +790,7 @@ class KindResourceITest extends AbstractITest {
         // ARRANGE
         Kind kind1 = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
         Kind kind2 = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
-        String newEsadId = "A54512378";
+        String newEsadId = "A5 45 123 78";
 
         EsadIdJsonSpec updateEsadId = new EsadIdJsonSpec(newEsadId);
         KindJsonSpec result = api

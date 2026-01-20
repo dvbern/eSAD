@@ -9,13 +9,15 @@
  */
 
 
-export type Einbeinstand = 'SICHER' | 'UNSICHER_UNGEUEBT' | 'NICHT_MOEGLICH' | 'ANDERES' | 'NICHT_GEPRUEFT';
+export type Einbeinstand = 'SICHER' | 'UNSICHER_UNGEUEBT' | 'NICHT_MOEGLICH' | 'ANDERES' | 'MIN_FUENF_SEKUNDEN' | 'MAX_FUENF_SEKUNDEN' | 'NICHT_GEPRUEFT';
 
 export const Einbeinstand = {
     SICHER: 'SICHER' as Einbeinstand,
     UNSICHER_UNGEUEBT: 'UNSICHER_UNGEUEBT' as Einbeinstand,
     NICHT_MOEGLICH: 'NICHT_MOEGLICH' as Einbeinstand,
     ANDERES: 'ANDERES' as Einbeinstand,
+    MIN_FUENF_SEKUNDEN: 'MIN_FUENF_SEKUNDEN' as Einbeinstand,
+    MAX_FUENF_SEKUNDEN: 'MAX_FUENF_SEKUNDEN' as Einbeinstand,
     NICHT_GEPRUEFT: 'NICHT_GEPRUEFT' as Einbeinstand
 } as const;
 

@@ -1,0 +1,24 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="anst" id="1763979254464-5">
+    <addColumn tableName="tenantsetting">
+      <column name="folgeterminemaxslots" type="INTEGER"/>
+    </addColumn>
+  </changeSet>
+  
+  <changeSet author="anst (generated)" id="1763979254464-6">
+    <addColumn tableName="tenantsetting_aud">
+      <column name="folgeterminemaxslots" type="INTEGER"/>
+    </addColumn>
+  </changeSet>
+  
+  <changeSet author="anst" id="1763979254464-7">
+    <sql>
+      UPDATE tenantsetting SET folgeterminemaxslots = 16;
+    </sql>
+  </changeSet>
+
+  <changeSet author="anst" id="1763979254464-8">
+    <addNotNullConstraint tableName="tenantsetting" columnName="folgeterminemaxslots"/>
+  </changeSet>
+</databaseChangeLog>

@@ -12,12 +12,14 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfoJson;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.Lehrperson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.LehrpersonService;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ExternalSystemIdDTO;
-import ch.dvbern.oss.hemed.esc.api.shared.escada.ItemSyncResultJson;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ExternalSystemIdDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ItemSyncResultJson;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
@@ -37,6 +39,7 @@ public class LehrpersonExternalSyncHelperService {
     private final LehrpersonService lehrpersonService;
     private final KlasseService klasseService;
     private final AppClock appClock;
+    private final ConfigService configService;
 
     @NonNull
     public static Lehrperson toEntityForCreate(
@@ -45,7 +48,7 @@ public class LehrpersonExternalSyncHelperService {
         @NonNull OffsetDateTime now
     ) {
         return new Lehrperson(
-            ExternalImportInfoJson.toEntityOrCreate(null, lehrpersonExternal.getExternalId(), now),
+            ExternalImportInfoJson.toEntityOrCreate(null, lehrpersonExternal.getExternalId(), now, ImportTyp.ESCADA),
             klassen,
             mapGeschlechtFromEscadaAnrede(lehrpersonExternal.getKlasseLehrpersonAnrede()),
             Objects.toString(lehrpersonExternal.getKlasseLehrpersonName(), "N/A"),
@@ -79,7 +82,8 @@ public class LehrpersonExternalSyncHelperService {
         lehrperson.setExternalImportInfo(ExternalImportInfoJson.toEntityOrCreate(
             lehrperson.getExternalImportInfo(),
             updatedExternal.getExternalId(),
-            now
+            now,
+            ImportTyp.ESCADA
         ));
         return lehrperson;
     }
@@ -116,8 +120,9 @@ public class LehrpersonExternalSyncHelperService {
         var result = ItemSyncResultJson.createAddOkItem(
             lehrpersonExternalToAdd,
             internalLehrpersonToStore.getId(),
-            internalLehrpersonToStore.getName()
+            internalLehrpersonToStore.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo())
         );
+
         LOG.info(
             "ESCADA: Lehrperson {} added{}, internalId: '{}', externalId: '{}'",
             result.getFriendlyName(),
@@ -175,7 +180,7 @@ public class LehrpersonExternalSyncHelperService {
         return ItemSyncResultJson.createUpdateOkItem(
             idDTO,
             Lehrperson.class,
-            updatedLehrperson.getName()
+            updatedLehrperson.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo())
         );
     }
 
@@ -185,7 +190,8 @@ public class LehrpersonExternalSyncHelperService {
         @NonNull Set<Klasse> klassenLehrpersCurrentlyBelongsToInDb
     ) {
 
-        // remove still existing klassen from all currently linked klassen to get those from which we must remove the lehrer
+        // remove still existing klassen from all currently linked klassen to get those from which we must remove the
+        // lehrer
         List<Klasse> klassenToRemoveLehrerFrom = new ArrayList<>(klassenLehrpersCurrentlyBelongsToInDb);
         klassenToRemoveLehrerFrom.removeAll(klassenLehrerBelongsToExternally);
         // add lehrperson to klassen since klassen is owing side
@@ -243,7 +249,7 @@ public class LehrpersonExternalSyncHelperService {
         var result = ItemSyncResultJson.createDeactivateOkItem(
             externalSystemIdDTO,
             Lehrperson.class,
-            lehrperson.getName()
+            lehrperson.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo())
         );
         LOG.info(
             "ESCADA: Lehrperson {} deactivated, internalId: '{}', externalId: '{}'",

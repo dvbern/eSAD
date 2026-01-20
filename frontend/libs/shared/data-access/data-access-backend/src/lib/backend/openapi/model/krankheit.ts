@@ -9,19 +9,20 @@
  */
 
 
-export type Krankheit = 'POLIO' | 'DIPHTERIE' | 'TETANUS' | 'PERTUSSIS' | 'HEPATITIS_B' | 'VARIZELLEN' | 'MASERN' | 'MUMPS' | 'ROETELN' | 'HPV' | 'MENINGOKOKKEN_A_C_W_Y' | 'MENINGOKOKKEN_B';
+export type Krankheit = 'DIPHTERIE' | 'TETANUS' | 'PERTUSSIS' | 'POLIO' | 'HEPATITIS_B' | 'HPV' | 'FSME' | 'MASERN' | 'MUMPS' | 'ROETELN' | 'VARIZELLEN' | 'MENINGOKOKKEN_A_C_W_Y' | 'MENINGOKOKKEN_B';
 
 export const Krankheit = {
-    POLIO: 'POLIO' as Krankheit,
     DIPHTERIE: 'DIPHTERIE' as Krankheit,
     TETANUS: 'TETANUS' as Krankheit,
     PERTUSSIS: 'PERTUSSIS' as Krankheit,
+    POLIO: 'POLIO' as Krankheit,
     HEPATITIS_B: 'HEPATITIS_B' as Krankheit,
-    VARIZELLEN: 'VARIZELLEN' as Krankheit,
+    HPV: 'HPV' as Krankheit,
+    FSME: 'FSME' as Krankheit,
     MASERN: 'MASERN' as Krankheit,
     MUMPS: 'MUMPS' as Krankheit,
     ROETELN: 'ROETELN' as Krankheit,
-    HPV: 'HPV' as Krankheit,
+    VARIZELLEN: 'VARIZELLEN' as Krankheit,
     MENINGOKOKKEN_A_C_W_Y: 'MENINGOKOKKEN_A_C_W_Y' as Krankheit,
     MENINGOKOKKEN_B: 'MENINGOKOKKEN_B' as Krankheit
 } as const;

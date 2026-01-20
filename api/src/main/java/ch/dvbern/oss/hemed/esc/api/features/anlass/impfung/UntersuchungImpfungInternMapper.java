@@ -8,10 +8,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungInternJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungInternSaveJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
@@ -34,7 +32,6 @@ public final class UntersuchungImpfungInternMapper {
     private final ImpfstoffService impfstoffService;
     private final ImpfstoffChargeService impfstoffChargeService;
     private final BenutzerService benutzerService;
-    private final EinladungService einladungService;
     private final AppClock appClock;
 
     @Nullable
@@ -123,62 +120,15 @@ public final class UntersuchungImpfungInternMapper {
 
     @NonNull
     public List<UntersuchungImpfungInternJson> getByUntersuchungImpfungen(@NonNull UntersuchungImpfungen impfungen) {
-        List<UntersuchungImpfungIntern> existingImpfungen =
-            untersuchungImpfungInternService.findByUntersuchung(impfungen.getUntersuchung().getId());
-
-        // Eigentlich sollten wir nur das erste Mal kopieren. Da das Objekt aber immer schon existiert
-        // kopieren wir wenn die Liste (noch) leer ist. Das ist eigentlich zu viel. Insbesondere sollten
-        // wir bei abgeschlossenen Anlaessen nicht mehr kopieren.
-        if (impfungen.getUntersuchung().getEinladung().getAnlass().getAnlassStatus() != AnlassStatus.ABGESCHLOSSEN &&
-            existingImpfungen.isEmpty()) {
-            Optional<Einladung> lastEinladung = einladungService.findLastEinladungForKind(
-                impfungen.getUntersuchung().getEinladung().getAnlass(),
-                impfungen.getUntersuchung().getEinladung().getDossier().getKind().getId());
-
-            if (lastEinladung.isPresent() && lastEinladung.get().getUntersuchung() != null) {
-                List<UntersuchungImpfungIntern> oldImpfungen =
-                    untersuchungImpfungInternService.findByUntersuchung(lastEinladung.get()
-                        .getUntersuchung()
-                        .getId());
-
-                return oldImpfungen.stream().map(impfung -> copyImpfung(impfungen, impfung)
-                ).map(UntersuchungImpfungInternMapper::toJson).toList();
-            }
+        List<UntersuchungImpfungIntern> impfungenIntern = untersuchungImpfungInternService.findByUntersuchung(impfungen.getUntersuchung().getId());
+        // Eigentlich sollten die Impfstatus beim Erstellen der Untersuchung erstellt werden. Bei schon bestehenden Untersuchungen erstellen wir sie hier noch.
+        if (impfungenIntern.isEmpty()) {
+            untersuchungService.createCompleteImpfungenInternBasedOnLastAnlass(impfungen);
+            impfungenIntern = untersuchungImpfungInternService.findByUntersuchung(impfungen.getUntersuchung().getId());
         }
-        return existingImpfungen.stream().
+        return impfungenIntern.stream().
             map(UntersuchungImpfungInternMapper::toJson).
             toList();
-    }
-
-    @NonNull
-    private UntersuchungImpfungIntern copyImpfung(
-        @NonNull UntersuchungImpfungen untersuchungImpfungen,
-        @NonNull UntersuchungImpfungIntern impfung
-    ) {
-        UntersuchungImpfungIntern newImpfung = UntersuchungImpfungIntern.forUntersuchungImpfung(untersuchungImpfungen);
-        newImpfung.setImpfstoff(impfung.getImpfstoff());
-        newImpfung.setCharge(impfung.getCharge());
-        newImpfung.setDatumImpfung(impfung.getDatumImpfung());
-        newImpfung.setImpfStatus(impfung.getImpfStatus());
-        newImpfung.setUserDurchgefuehrt(impfung.getUserDurchgefuehrt());
-        newImpfung.setGrundNichtDurchfuehrung(impfung.getGrundNichtDurchfuehrung());
-        newImpfung.setAnlassImpfungErfasst(impfung.getAnlassImpfungErfasst());
-        newImpfung.setUserErfasst(impfung.getUserErfasst());
-        newImpfung.setAnlassImpfungDurchgefuehrt(impfung.getAnlassImpfungDurchgefuehrt());
-
-        newImpfung.setKrankheitenImmunitaeten(impfung.getKrankheitenImmunitaeten()
-            .stream()
-            .map(immunitaet -> {
-                UntersuchungImpfungKrankheitImmunitaet newImmunitaet =
-                    new UntersuchungImpfungKrankheitImmunitaet();
-                newImmunitaet.setImpfung(newImpfung);
-                newImmunitaet.setKrankheit(immunitaet.getKrankheit());
-                newImmunitaet.setImmunitaetGenuegend(immunitaet.isImmunitaetGenuegend());
-                return newImmunitaet;
-            })
-            .collect(Collectors.toSet()));
-
-        return untersuchungImpfungInternService.persist(newImpfung);
     }
 
     @NonNull

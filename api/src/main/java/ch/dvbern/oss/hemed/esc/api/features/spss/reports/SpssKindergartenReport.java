@@ -48,7 +48,7 @@ import ch.dvbern.oss.hemed.esc.api.features.spss.columns.GewichtWertCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.GroesseBeurteilungCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.GroesseWertCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.HasNoFragebogenCsvColumn;
-import ch.dvbern.oss.hemed.esc.api.features.spss.columns.HautCsvColumn;
+import ch.dvbern.oss.hemed.esc.api.features.spss.columns.HautSelectedCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.HerzauskultationCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.HoerenBeurteilungCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.HoerenOtoskopieLinksCsvColumn;
@@ -110,7 +110,7 @@ import ch.dvbern.oss.hemed.esc.api.features.spss.columns.SchulartCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.SchulhausnameCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.SchulhausnummerCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.SchulkreisCsvColumn;
-import ch.dvbern.oss.hemed.esc.api.features.spss.columns.SprachfaehigkeitCsvColumn;
+import ch.dvbern.oss.hemed.esc.api.features.spss.columns.SprachfaehigkeitMultiCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.StereotestCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.StrabismusAuftretenCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.StrabismusAuspraegungCsvColumn;
@@ -316,21 +316,21 @@ public class SpssKindergartenReport {
             new FingeroppositionCsvColumn(config, "FMOTLIK", Fingeropposition.LINKS_AUFFAELLIG),
             new FingeroppositionCsvColumn(config, "FMOTNGK", Fingeropposition.NICHT_GEPRUEFT),
             new FingeroppositionCsvColumn(config, "Fingeropposition_Anderes_K", Fingeropposition.ANDERES),
-            new SprachfaehigkeitCsvColumn(config, "SPRANOK", Sprachfaehigkeit.GROBKURSORISCH_NORMAL),
-            new SprachfaehigkeitCsvColumn(config, "SPRAENTK", Sprachfaehigkeit.ENTWICKLUNGSVERZOEGERUNG),
-            new SprachfaehigkeitCsvColumn(config, "SPRAARTK", Sprachfaehigkeit.ARTIKULATIONSFEHLER),
-            new SprachfaehigkeitCsvColumn(config, "SPRADEUK", Sprachfaehigkeit.DEUTSCHKENNTNISSE_MINIM),
-            new SprachfaehigkeitCsvColumn(config, "SPRAANDK", Sprachfaehigkeit.ANDERES),
-            new SprachfaehigkeitCsvColumn(config, "SPRANGK", Sprachfaehigkeit.NICHT_GEPRUEFT),
+            new SprachfaehigkeitMultiCsvColumn(config, "SPRANOK", Sprachfaehigkeit.GROBKURSORISCH_NORMAL),
+            new SprachfaehigkeitMultiCsvColumn(config, "SPRAENTK", Sprachfaehigkeit.ENTWICKLUNGSVERZOEGERUNG),
+            new SprachfaehigkeitMultiCsvColumn(config, "SPRAARTK", Sprachfaehigkeit.ARTIKULATIONSFEHLER),
+            new SprachfaehigkeitMultiCsvColumn(config, "SPRADEUK", Sprachfaehigkeit.DEUTSCHKENNTNISSE_MINIM),
+            new SprachfaehigkeitMultiCsvColumn(config, "SPRAANDK", Sprachfaehigkeit.ANDERES),
+            new SprachfaehigkeitMultiCsvColumn(config, "SPRANGK", Sprachfaehigkeit.NICHT_GEPRUEFT),
             new MundAndZaehneCsvColumn(config, "Mund_Unauffällig_K", MundAndZaehne.UNAUFFAELLIG),
             new MundAndZaehneCsvColumn(config, "KARIESK", MundAndZaehne.KARIES),
             new MundAndZaehneCsvColumn(config, "Mund_KariesSaniert_K", MundAndZaehne.KARIES_SANIERT),
             new MundAndZaehneCsvColumn(config, "Mund_Adenoidhyperplasie_K", MundAndZaehne.ADENOIDHYPERPLASIE),
             new MundAndZaehneCsvColumn(config, "Mund_Anderes_K", MundAndZaehne.ANDERES),
             new MundAndZaehneCsvColumn(config, "Mund_NichtGeprüft_K", MundAndZaehne.NICHT_GEPRUEFT),
-            new HautCsvColumn(config, "HAUTNOK", Haut.GROBKURSORISCH_UNAUFFAELLIG),
-            new HautCsvColumn(config, "HAUTANDEK", Haut.ANDERES),
-            new HautCsvColumn(config, "HAUTNGK", Haut.NICHT_GEPRUEFT),
+            new HautSelectedCsvColumn(config, "HAUTNOK", Haut.GROBKURSORISCH_UNAUFFAELLIG),
+            new HautSelectedCsvColumn(config, "HAUTANDEK", Haut.ANDERES),
+            new HautSelectedCsvColumn(config, "HAUTNGK", Haut.NICHT_GEPRUEFT),
             new HerzauskultationCsvColumn(config, "AUSKULTK"),
             new VerhaltenCsvColumn(config, "EINDRUK"),
             new MassnahmenKeineCsvColumn(config, "MNKEINK"),

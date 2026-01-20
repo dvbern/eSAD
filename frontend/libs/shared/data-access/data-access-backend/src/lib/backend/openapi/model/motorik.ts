@@ -9,11 +9,14 @@
  */
 
 
-export type Motorik = 'NORMAL' | 'AUFFAELLIG' | 'NICHT_GEPRUEFT';
+export type Motorik = 'NORMAL' | 'AUFFAELLIG' | 'AUFFAELLIG_PUNKTE' | 'GRENZWERTIG' | 'GUT' | 'NICHT_GEPRUEFT';
 
 export const Motorik = {
     NORMAL: 'NORMAL' as Motorik,
     AUFFAELLIG: 'AUFFAELLIG' as Motorik,
+    AUFFAELLIG_PUNKTE: 'AUFFAELLIG_PUNKTE' as Motorik,
+    GRENZWERTIG: 'GRENZWERTIG' as Motorik,
+    GUT: 'GUT' as Motorik,
     NICHT_GEPRUEFT: 'NICHT_GEPRUEFT' as Motorik
 } as const;
 

@@ -1,0 +1,183 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="gema (generated)" id="1764059056231-6">
+        <dropUniqueConstraint constraintName="uc_edokididsequence_eintrittsjahr" tableName="edokididsequence"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-7">
+        <dropUniqueConstraint constraintName="uc_tenantsetting_tenant" tableName="tenantsetting"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-9">
+        <dropColumn columnName="tenant" tableName="anlass"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-10">
+        <dropColumn columnName="tenant" tableName="anlassaktivitaethistory"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-11">
+        <dropColumn columnName="tenant" tableName="anlassconfig"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-12">
+        <dropColumn columnName="tenant" tableName="arzt"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-13">
+        <dropColumn columnName="tenant" tableName="audiogramm"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-14">
+        <dropColumn columnName="tenant" tableName="aufgabe"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-15">
+        <dropColumn columnName="tenant" tableName="benutzer"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-16">
+        <dropColumn columnName="tenant" tableName="benutzerberechtigung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-17">
+        <dropColumn columnName="tenant" tableName="briefvorlage"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-18">
+        <dropColumn columnName="tenant" tableName="documentqueue"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-19">
+        <dropColumn columnName="tenant" tableName="dossier"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-20">
+        <dropColumn columnName="tenant" tableName="duplikat"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-21">
+        <dropColumn columnName="tenant" tableName="edokididsequence"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-22">
+        <dropColumn columnName="tenant" tableName="einladung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-23">
+        <dropColumn columnName="tenant" tableName="escadasyncevent"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-24">
+        <dropColumn columnName="tenant" tableName="filedata"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-25">
+        <dropColumn columnName="tenant" tableName="impfstoff"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-26">
+        <dropColumn columnName="tenant" tableName="impfstoffcharge"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-27">
+        <dropColumn columnName="tenant" tableName="infomaterial"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-28">
+        <dropColumn columnName="tenant" tableName="kind"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-29">
+        <dropColumn columnName="tenant" tableName="kindaktivitaethistory"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-30">
+        <dropColumn columnName="tenant" tableName="kindexternal"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-31">
+        <dropColumn columnName="tenant" tableName="klasse"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-32">
+        <dropColumn columnName="tenant" tableName="klasseexternal"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-33">
+        <dropColumn columnName="tenant" tableName="kontaktpersonkind"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-34">
+        <dropColumn columnName="tenant" tableName="kontaktpersonkindexternal"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-35">
+        <dropColumn columnName="tenant" tableName="kontaktpersonschule"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-36">
+        <dropColumn columnName="tenant" tableName="label"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-37">
+        <dropColumn columnName="tenant" tableName="lehrperson"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-38">
+        <dropColumn columnName="tenant" tableName="lehrpersonexternal"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-39">
+        <dropColumn columnName="tenant" tableName="nachkontrolle"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-40">
+        <dropColumn columnName="tenant" tableName="notiz"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-41">
+        <dropColumn columnName="tenant" tableName="plzdata"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-42">
+        <dropColumn columnName="tenant" tableName="quartier"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-43">
+        <dropColumn columnName="tenant" tableName="schedulerconfig"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-44">
+        <dropColumn columnName="tenant" tableName="schule"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-45">
+        <dropColumn columnName="tenant" tableName="schuleexternal"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-46">
+        <dropColumn columnName="tenant" tableName="tenantsetting"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-47">
+        <dropColumn columnName="tenant" tableName="untersuchung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-48">
+        <dropColumn columnName="tenant" tableName="untersuchungarztbemerkung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-49">
+        <dropColumn columnName="tenant" tableName="untersuchungarztbeurteilung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-50">
+        <dropColumn columnName="tenant" tableName="untersuchungdurchfuehrung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-51">
+        <dropColumn columnName="tenant" tableName="untersuchunggroessegewicht"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-52">
+        <dropColumn columnName="tenant" tableName="untersuchunghoerenaudiogramm"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-53">
+        <dropColumn columnName="tenant" tableName="untersuchunghoerenotoskopie"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-54">
+        <dropColumn columnName="tenant" tableName="untersuchungimpfstatuskrankheit"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-55">
+        <dropColumn columnName="tenant" tableName="untersuchungimpfungen"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-56">
+        <dropColumn columnName="tenant" tableName="untersuchungimpfungenmassnahmen"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-57">
+        <dropColumn columnName="tenant" tableName="untersuchungimpfungintern"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-58">
+        <dropColumn columnName="tenant" tableName="untersuchungimpfungkrankheitimmunitaet"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-59">
+        <dropColumn columnName="tenant" tableName="untersuchungkinddaten"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-60">
+        <dropColumn columnName="tenant" tableName="untersuchunglaeusekontrolle"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-61">
+        <dropColumn columnName="tenant" tableName="untersuchungmassnahmen"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-62">
+        <dropColumn columnName="tenant" tableName="untersuchungsehenbemerkungfragebogen"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-63">
+        <dropColumn columnName="tenant" tableName="untersuchungsehenbeurteilung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-64">
+        <dropColumn columnName="tenant" tableName="untersuchungtriage"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1764059056231-65">
+        <dropColumn columnName="tenant" tableName="visum"/>
+    </changeSet>
+  <changeSet author="dvbern (generated)" id="1764169359808-5">
+    <addUniqueConstraint columnNames="eintrittsjahr" constraintName="uc_edokididsequence_eintrittsjahr" tableName="edokididsequence"/>
+  </changeSet>
+</databaseChangeLog>

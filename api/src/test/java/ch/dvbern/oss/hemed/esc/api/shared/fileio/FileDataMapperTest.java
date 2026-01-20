@@ -32,14 +32,14 @@ class FileDataMapperTest {
     @Test
     void toJson_shouldMapAllFields() {
         // ARRANGE
-        FileInfoS3 fileInfoS3 = FileInfoS3.of(
+        FileInfo fileInfo = FileInfo.of(
             "prefix",
             new CleanFileName("file-name.pdf"),
             new MediaType("application", "pdf"),
             2900
         );
 
-        FileData fileData = new FileData(FileTyp.NOTIZUPLOAD, new CleanFileName("11-3-2025_Max-Musterman.pdf"), fileInfoS3);
+        FileData fileData = new FileData(FileTyp.NOTIZUPLOAD, new CleanFileName("11-3-2025_Max-Musterman.pdf"), fileInfo);
         ID<FileData> id = ID.random(FileData.class);
         fileData.setId(id);
         TestUtil.setEntityInfo(fileData);
@@ -52,9 +52,9 @@ class FileDataMapperTest {
         assertEquals(id, fileDataJson.getId());
         assertEquals(fileData.getFileTyp(), fileDataJson.getFileTyp());
         assertEquals(fileData.getCalculatedFileName().toString(), fileDataJson.getCalculatedFileName());
-        assertEquals(fileInfoS3.getFileName(), fileDataJson.getFileName());
-        assertEquals(fileInfoS3.getFileSize(), fileDataJson.getFileSize());
-        assertEquals(fileInfoS3.getMediaType().toString(), fileDataJson.getMimeType());
-        assertEquals(fileInfoS3.getFileIdInBucket(), fileDataJson.getFileIdInBucket());
+        assertEquals(fileInfo.getFileName(), fileDataJson.getFileName());
+        assertEquals(fileInfo.getFileSize(), fileDataJson.getFileSize());
+        assertEquals(fileInfo.getMediaType().toString(), fileDataJson.getMimeType());
+        assertEquals(fileInfo.getFileIdInBucket(), fileDataJson.getFileIdInBucket());
     }
 }

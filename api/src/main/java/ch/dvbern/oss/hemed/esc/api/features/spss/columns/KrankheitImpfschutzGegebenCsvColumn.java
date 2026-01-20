@@ -40,6 +40,6 @@ public class KrankheitImpfschutzGegebenCsvColumn extends AbstractCsvColumn {
     @Override
     @NonNull
     protected String getDefaultHeaderKey() {
-        return "CsvColumn.krankheitImpfschutzGegeben";
+        return "CsvColumn.krankheitImpfschutzGegeben." + this.krankheit;
     }
 }

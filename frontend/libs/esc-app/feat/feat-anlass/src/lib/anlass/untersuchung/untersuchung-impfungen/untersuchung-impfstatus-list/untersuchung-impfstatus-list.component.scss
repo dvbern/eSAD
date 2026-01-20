@@ -18,12 +18,17 @@
     width: 100%;
     display: grid;
     grid-template-columns: 0fr 2fr 1fr 1fr 1fr 1fr 1fr;
+    grid-auto-rows: 1fr;
 
     thead, tbody, tr {
       display: grid;
       grid-column: 1 / -1;
       grid-template-columns: subgrid;
     }
+
+    thead, tbody {
+      grid-template-rows: subgrid;
+    };
 
     thead {
       margin-bottom: 4px;

@@ -90,6 +90,11 @@ FIELD_anlass.krankheit.MENINGOKOKKEN_B.anzahlImpfungen : 3
 FIELD_anlass.krankheit.MENINGOKOKKEN_B.datumLetzteImpfung : 05/2025
 FIELD_anlass.krankheit.MENINGOKOKKEN_B.Impfempfehlung : Nein
 
+FSME
+FIELD_anlass.krankheit.FSME.anzahlImpfungen : 3
+FIELD_anlass.krankheit.FSME.datumLetzteImpfung : 05/2025
+FIELD_anlass.krankheit.FSME.Impfempfehlung : Nein
+
 FIELD_anlass.impfung.impfungList : 20.04.2025 VARIVAX (Varizellen)
 13.03.2025 Boostrix (Diphtherie, Tetanus, Pertussis)
 13.03.2025 VARIVAX (Varizellen)

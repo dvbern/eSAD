@@ -89,7 +89,10 @@ public class BenutzerRepo extends BaseRepo<Benutzer> {
         List<UUID> systemAdmins = List.of(
             Benutzer.SYSTEM_ADMIN_BS_ID.getUUID(),
             Benutzer.SYSTEM_ADMIN_BE_ID.getUUID(),
-            Benutzer.SYSTEM_ADMIN_WIN_ID.getUUID());
+            Benutzer.SYSTEM_ADMIN_WIN_ID.getUUID(),
+            Benutzer.ESCADA_BENUTZER_ID.getUUID(),
+            Benutzer.FILE_INGRESS_BENUTZER_ID.getUUID()
+        );
         return db.selectFrom(QBenutzer.benutzer)
             .where(QBenutzer.benutzer.id.notIn(systemAdmins))
             .orderBy(QBenutzer.benutzer.vorname.asc(), QBenutzer.benutzer.nachname.asc())

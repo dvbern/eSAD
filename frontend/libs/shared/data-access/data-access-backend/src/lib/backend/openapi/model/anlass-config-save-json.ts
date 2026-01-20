@@ -7,7 +7,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { Einbeinhuepfen } from './einbeinhuepfen';
+import { Einbeinstand } from './einbeinstand';
 import { ISODateString } from '@dvb/data-access-types';
+import { Krankheit } from './krankheit';
+import { Motorik } from './motorik';
+import { Sprachfaehigkeit } from './sprachfaehigkeit';
 import { AnlassTyp } from './anlass-typ';
 import { PerzentileBmi } from './perzentile-bmi';
 import { RequirementSetting } from './requirement-setting';
@@ -44,6 +49,8 @@ export interface AnlassConfigSaveJson {
     untersuchungImpfungEmpfehlung: RequirementSetting;
     untersuchungImpfungAchtung: RequirementSetting;
     untersuchungImpfungBemerkungen: RequirementSetting;
+    untersuchungImpfungKrankheitenLinksValues: Array<Krankheit>;
+    untersuchungImpfungKrankheitenRechtsValues: Array<Krankheit>;
     sehenBrilleLinsen: RequirementSetting;
     sehenFarbsehen: RequirementSetting;
     sehenTafel: RequirementSetting;
@@ -83,11 +90,11 @@ export interface AnlassConfigSaveJson {
     laeusekontrolleBemerkungen: RequirementSetting;
     untersuchungBewegungsapparat: RequirementSetting;
     untersuchungEinbeinstand: RequirementSetting;
-    untersuchungEinbeinstandRechts: RequirementSetting;
-    untersuchungEinbeinstandLinks: RequirementSetting;
+    untersuchungEinbeinstandRechtsLinks: RequirementSetting;
+    untersuchungEinbeinstandValues: Array<Einbeinstand>;
     untersuchungEinbeinhuepfen: RequirementSetting;
-    untersuchungEinbeinhuepfenRechts: RequirementSetting;
-    untersuchungEinbeinhuepfenLinks: RequirementSetting;
+    untersuchungEinbeinhuepfenRechtsLinks: RequirementSetting;
+    untersuchungEinbeinhuepfenValues: Array<Einbeinhuepfen>;
     untersuchungFingeropposition: RequirementSetting;
     untersuchungHampelmann: RequirementSetting;
     untersuchungBallFangen: RequirementSetting;
@@ -106,10 +113,13 @@ export interface AnlassConfigSaveJson {
     untersuchungZeichnenMensch: RequirementSetting;
     untersuchungZeichnenMenschPunkte: RequirementSetting;
     untersuchungMotorik: RequirementSetting;
+    untersuchungMotorikValues: Array<Motorik>;
     untersuchungMotorikPunkte: RequirementSetting;
     untersuchungKognition: RequirementSetting;
     untersuchungKognitionPunkte: RequirementSetting;
-    untersuchungSprache: RequirementSetting;
+    untersuchungSprachfaehigkeitSingleValue: RequirementSetting;
+    untersuchungSprachfaehigkeitMultiValue: RequirementSetting;
+    untersuchungSprachfaehigkeitValues: Array<Sprachfaehigkeit>;
     untersuchungSprachePunkte: RequirementSetting;
     untersuchungMundZaehne: RequirementSetting;
     untersuchungHaut: RequirementSetting;

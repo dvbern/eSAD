@@ -10,6 +10,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.InfomaterialBuilder;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 class MassnahmenAbgegebenesInfomaterialCsvColumnTest extends AbstractBaseColumnTest {
 
@@ -39,5 +40,34 @@ class MassnahmenAbgegebenesInfomaterialCsvColumnTest extends AbstractBaseColumnT
         untersuchungMassnahmen.setAbgegebenesInfomaterial(Set.of(infomaterial));
 
         assertThat(column.extract(einladung)).isEqualTo("1");
+    }
+
+    @Test
+    void extractCsv() {
+        // ARRANGE
+        final MassnahmenAbgegebenesInfomaterialCsvColumn column =
+            new MassnahmenAbgegebenesInfomaterialCsvColumn(configForCsv, null);
+        final Einladung einladung = new Einladung();
+
+        assertThat(column.extract(einladung)).isEmpty();
+
+        Untersuchung untersuchung = new Untersuchung();
+        einladung.setUntersuchung(untersuchung);
+
+        assertThat(column.extract(einladung)).isEmpty();
+
+        UntersuchungMassnahmen untersuchungMassnahmen = new UntersuchungMassnahmen();
+        untersuchung.setUntersuchungMassnahmen(untersuchungMassnahmen);
+
+        assertThat(column.extract(einladung)).isEmpty();
+
+        Infomaterial infomaterial = InfomaterialBuilder.create(
+            builder -> builder
+                .withRandomName("InfomaterialForTest"));
+
+        when(tlMock.translate("printer.boolean.true")).thenReturn("Ja");
+        untersuchungMassnahmen.setAbgegebenesInfomaterial(Set.of(infomaterial));
+
+        assertThat(column.extract(einladung)).isEqualTo("Ja");
     }
 }

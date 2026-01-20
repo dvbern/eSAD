@@ -1,18 +1,19 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Blutdruck;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinstand;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Herzauskultation;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungArztBemerkungBuilder;
@@ -107,6 +108,7 @@ class UntersuchungArztResourceITest extends AbstractITest {
         UntersuchungArztBeurteilung existingArztuntersuchung =
             untersuchungArztBeurteilungService.getById(untersuchung.getUntersuchungArztBeurteilung().getId());
         Assertions.assertThat(existingArztuntersuchung).isNotNull();
+        BigDecimal motorikPunkte = new BigDecimal("10.5");
 
         // ACT
         // Create a new UntersuchungArztBeurteilungSaveJsonSpec
@@ -118,7 +120,8 @@ class UntersuchungArztResourceITest extends AbstractITest {
                 .withSprachfaehigkeit(List.of(
                     Sprachfaehigkeit.ARTIKULATIONSFEHLER,
                     Sprachfaehigkeit.ENTWICKLUNGSVERZOEGERUNG))
-                .withHerzauskultation(Herzauskultation.UNAUFFAELLIG)).getData();
+                .withHerzauskultation(Herzauskultation.UNAUFFAELLIG)
+                .withMotorikPunkte(motorikPunkte)).getData();
 
         UntersuchungArztBeurteilungJsonSpec result = api
             .untersuchungArztResourceSaveUntersuchungArztBeurteilung()
@@ -136,14 +139,15 @@ class UntersuchungArztResourceITest extends AbstractITest {
         Assertions.assertThat(result.getId()).isNotNull();
         Assertions.assertThat(result.getData().getBlutdruck()).isEqualTo(BlutdruckSpec.NORMAL);
         Assertions.assertThat(result.getData().getBewegungsapparat()).contains(BewegungsapparatSpec.FUSSFEHLSTELLUNG);
-        Assertions.assertThat(result.getData().getSprachfaehigkeit()).contains(
+        Assertions.assertThat(result.getData().getSprachfaehigkeitMultiValue()).contains(
             SprachfaehigkeitSpec.ARTIKULATIONSFEHLER, SprachfaehigkeitSpec.ENTWICKLUNGSVERZOEGERUNG);
         Assertions.assertThat(result.getData().getHerzauskultation()).isEqualTo(HerzauskultationSpec.UNAUFFAELLIG);
+        Assertions.assertThat(result.getData().getMotorikPunkte()).isEqualTo(motorikPunkte);
     }
 
     @Test
     @TestAsAdminBS
-    void saveUntersuchungAsEmpfang_should_work_for_create(){
+    void saveUntersuchungAsEmpfang_should_work_for_create() {
         // ARRANGE
         Einladung someEinladung = fixtureService.createEinladung();
         var us = UntersuchungArztBeurteilungBuilder.createJaxSpec(a -> a.withEinbeinstand(Einbeinstand.NICHT_GEPRUEFT));
@@ -168,7 +172,7 @@ class UntersuchungArztResourceITest extends AbstractITest {
 
     @Test
     @TestAsEmpfang
-    void saveUntersuchungAsEmpfang_should_fail_for_empfang(){
+    void saveUntersuchungAsEmpfang_should_fail_for_empfang() {
         // ARRANGE
         Einladung someEinladung = fixtureService.createEinladung();
         var us = UntersuchungArztBeurteilungBuilder.createJaxSpec(a -> a.withEinbeinstand(Einbeinstand.NICHT_GEPRUEFT));
@@ -195,14 +199,14 @@ class UntersuchungArztResourceITest extends AbstractITest {
         // ACT
         UntersuchungArztBeurteilungSaveJsonSpec result =
             api.untersuchungArztResourceGetDefaultUntersuchungArztBeurteilungForAnlassConfig()
-            .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
-            .execute(ResponseBody::prettyPeek)
-            .then()
-            .assertThat()
-            .statusCode(Status.OK.getStatusCode())
-            .extract()
-            .as(UntersuchungArztBeurteilungSaveJsonSpec.class);
+                .anlassIdPath(einladung.getAnlass().getId().getId())
+                .einladungIdPath(einladung.getId().getId())
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.OK.getStatusCode())
+                .extract()
+                .as(UntersuchungArztBeurteilungSaveJsonSpec.class);
 
         // ASSERT
         assertThat(result).isNotNull();
@@ -216,7 +220,7 @@ class UntersuchungArztResourceITest extends AbstractITest {
         assertThat(result.getHautBemerkung()).isNull();
         assertThat(result.getMundAndZaehne()).containsExactly(MundAndZaehneSpec.UNAUFFAELLIG);
         assertThat(result.getMundAndZaehneBemerkung()).isNull();
-        assertThat(result.getSprachfaehigkeit()).containsExactly(SprachfaehigkeitSpec.GROBKURSORISCH_NORMAL);
+        assertThat(result.getSprachfaehigkeitMultiValue()).containsExactly(SprachfaehigkeitSpec.GROBKURSORISCH_NORMAL);
         assertThat(result.getSprachfaehigkeitBemerkung()).isNull();
         assertThat(result.getMotorik()).isNull();
         assertThat(result.getBewegungsapparat()).containsExactly(BewegungsapparatSpec.GROBKURSORISCH_NORMAL);

@@ -3,7 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.impfung;
 import java.io.Serial;
 import java.time.LocalDate;
 
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractTenantEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,7 +30,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Visum extends AbstractTenantEntity<Visum> {
+public class Visum extends AbstractEntity<Visum> {
 
     @Serial
     private static final long serialVersionUID = 2104031384427983293L;

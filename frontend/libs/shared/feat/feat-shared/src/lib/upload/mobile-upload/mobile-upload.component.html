@@ -1,0 +1,10 @@
+<div class="mobile_upload__zone d-flex flex-column align-items-center justify-content-center">
+  <button svuiIconOnlyButton="secondary"
+          type="button"
+          [tooltip]="'global.tooltip.icon.mobile' | transloco"
+          [icon]="'mobile'"
+          (click)="clicked.emit()"
+          style="margin-bottom: 10px">
+  </button>
+  <span class="mobile_upload__text">{{ 'ui.upload.action.upload.mobile.text' | transloco }}</span>
+</div>

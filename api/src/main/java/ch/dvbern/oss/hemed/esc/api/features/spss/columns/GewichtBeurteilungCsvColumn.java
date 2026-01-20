@@ -22,6 +22,9 @@ public class GewichtBeurteilungCsvColumn extends AbstractCsvColumn {
                 if (untersuchungGroesseGewicht.getGewichtPerzentile() == null) {
                     return "";
                 }
+                if (!config.forSpssReport()) {
+                    return config.tl().translateValue(untersuchungGroesseGewicht.getGewichtPerzentile());
+                }
                 return switch (untersuchungGroesseGewicht.getGewichtPerzentile()) {
                     case PerzentileGewicht.NORMAL -> "1";
                     case PerzentileGewicht.PERZENTILE_TIEF -> "5";

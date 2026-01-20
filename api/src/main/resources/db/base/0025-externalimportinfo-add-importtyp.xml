@@ -1,0 +1,58 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+<!--  Add to Kind-->
+  <changeSet author="hora (generated)" id="1761744262587-5">
+    <addColumn tableName="kind">
+      <column name="importtyp" type="varchar(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1761744262587-6">
+    <addColumn tableName="kind_aud">
+      <column name="importtyp" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+<!--  Add to Klasse-->
+  <changeSet author="hora (generated)" id="1761744262587-7">
+    <addColumn tableName="klasse">
+      <column name="importtyp" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1761744262587-8">
+    <addColumn tableName="klasse_aud">
+      <column name="importtyp" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+<!--  Add to KontaktPersonKind-->
+  <changeSet author="hora (generated)" id="1761744262587-9">
+    <addColumn tableName="kontaktpersonkind">
+      <column name="importtyp" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1761744262587-10">
+    <addColumn tableName="kontaktpersonkind_aud">
+      <column name="importtyp" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+<!--  Add to Lehrperson-->
+  <changeSet author="hora (generated)" id="1761744262587-11">
+    <addColumn tableName="lehrperson">
+      <column name="importtyp" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1761744262587-12">
+    <addColumn tableName="lehrperson_aud">
+      <column name="importtyp" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+<!--  Add to Schule-->
+  <changeSet author="hora (generated)" id="1761744262587-13">
+    <addColumn tableName="schule">
+      <column name="importtyp" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1761744262587-14">
+    <addColumn tableName="schule_aud">
+      <column name="importtyp" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+</databaseChangeLog>

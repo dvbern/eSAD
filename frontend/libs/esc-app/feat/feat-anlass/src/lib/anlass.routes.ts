@@ -1,10 +1,10 @@
 import {inject} from '@angular/core';
 import {ActivatedRouteSnapshot, Route} from '@angular/router';
-import {AnlassSaveJson} from '@dvb/data-access-backend';
+import {AnlassSaveJson, NotizTyp} from '@dvb/data-access-backend';
 import {requireValidBackendEntityId, requireValidBackendEntityIds} from '@dvb/data-access-types';
 import {
-  BenutzerStore,
   AnlassConfigOptionsStore,
+  BenutzerStore,
   ImpfstoffeChargenStore,
   InfomaterialStore,
   LabelsStore,
@@ -26,6 +26,7 @@ import {
   hasSehenViewBerechtigung,
   hasTriageViewBerechtigung,
   hasUntersuchungKindDatenViewBerechtigung,
+  isValidEnumValue,
 } from '@dvb/util-shared';
 import {provideTranslocoScope} from '@jsverse/transloco';
 import {AnlassListPageComponent} from './anlass/anlass-list/anlass-list.page.component';
@@ -39,6 +40,9 @@ import {AnlassPlanungPageComponent} from './anlass/anlasse-detail/anlass-planung
 import {
   EinladungNotizPageComponent,
 } from './anlass/anlasse-detail/anlass-planung/notizen/einladung-notiz.page.component';
+import {
+  EinladungNotizHochladenPageComponent,
+} from './anlass/anlasse-detail/anlass-planung/notizen/notizen-hochladen/einladung-notiz-hochladen.page.component';
 import {AnlassEinladungenId} from './anlass/untersuchung/anlass-einladungen-id';
 import {UntersuchungArztComponent} from './anlass/untersuchung/untersuchung-arzt/untersuchung-arzt.component';
 import {UntersuchungArztStore} from './anlass/untersuchung/untersuchung-arzt/untersuchung-arzt.store';
@@ -62,6 +66,12 @@ import {
 } from './anlass/untersuchung/untersuchung-impfungen/untersuchung-impfungen.component';
 import {UntersuchungImpfungenStore} from './anlass/untersuchung/untersuchung-impfungen/untersuchung-impfungen.store';
 import {
+  UntersuchungLaeusekontrolleComponent,
+} from './anlass/untersuchung/untersuchung-laeusekontrolle/untersuchung-laeusekontrolle.component';
+import {
+  UntersuchungLaeusekontrolleStore,
+} from './anlass/untersuchung/untersuchung-laeusekontrolle/untersuchung-laeusekontrolle.store';
+import {
   UntersuchungMassnahmenComponent,
 } from './anlass/untersuchung/untersuchung-massnahmen/untersuchung-massnahmen.component';
 import {UntersuchungMassnahmenStore} from './anlass/untersuchung/untersuchung-massnahmen/untersuchung-massnahmen.store';
@@ -71,12 +81,6 @@ import {UntersuchungSehenStore} from './anlass/untersuchung/untersuchung-sehen/u
 import {UntersuchungTriageComponent} from './anlass/untersuchung/untersuchung-triage/untersuchung-triage.component';
 import {UntersuchungTriageStore} from './anlass/untersuchung/untersuchung-triage/untersuchung-triage.store';
 import {UntersuchungStore} from './anlass/untersuchung/untersuchung.store';
-import {
-  UntersuchungLaeusekontrolleComponent
-} from "./anlass/untersuchung/untersuchung-laeusekontrolle/untersuchung-laeusekontrolle.component";
-import {
-  UntersuchungLaeusekontrolleStore
-} from "./anlass/untersuchung/untersuchung-laeusekontrolle/untersuchung-laeusekontrolle.store";
 
 export const anlassRoutes: Route[] = [
   {
@@ -171,7 +175,7 @@ export const anlassRoutes: Route[] = [
             },
           },
           {
-            path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG + '/:einladungId/' + Path.NOTIZEN,
+            path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG + '/:einladungId/' + Path.NOTIZEN + '/:notizTyp',
             component: EinladungNotizPageComponent,
             canActivate: [requireRole(hasAllNotizenEditBerechtigung())],
             canDeactivate: [confirmOnDirty()],
@@ -180,6 +184,23 @@ export const anlassRoutes: Route[] = [
               _store: (route: ActivatedRouteSnapshot) => {
                 const einladungId = requireValidBackendEntityId(route.params['einladungId']);
                 inject(AnlassKinderStore).setSelectedEinladungId(einladungId);
+                const notizTyp = requireValidNotizTyp(route.params['notizTyp']);
+                inject(AnlassKinderStore).setCurrentNotizTyp(notizTyp);
+
+              },
+            },
+          },
+          {
+            path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG + '/:einladungId/' + Path.NOTIZEN + '/:notizTyp/' + Path.UPLOAD,
+            component: EinladungNotizHochladenPageComponent,
+            canActivate: [requireRole(hasAllNotizenEditBerechtigung())],
+            resolve: {
+              _labels: () => inject(LabelsStore).loadLabelsList(),
+              _store: (route: ActivatedRouteSnapshot) => {
+                const einladungId = requireValidBackendEntityId(route.params['einladungId']);
+                inject(AnlassKinderStore).setSelectedEinladungId(einladungId);
+                const notizTyp = requireValidNotizTyp(route.params['notizTyp']);
+                inject(AnlassKinderStore).setCurrentNotizTyp(notizTyp);
               },
             },
           },
@@ -231,13 +252,8 @@ export const anlassRoutes: Route[] = [
                       anlassId: anlassId,
                       einladungIds: [currentEinladungId],
                     });
-                    inject(ImpfstoffeChargenStore).loadImpfstoffeAndChargen();
                     inject(UntersuchungStore).setCurrentTabId(currentEinladungId);
                     inject(UntersuchungStore).loadEinladung(params);
-                    inject(UntersuchungSehenStore).loadDefaultSehenBeurteilung(params);
-                    inject(UntersuchungHoerenAudiogrammStore).loadDefaultHoerenAudiogramm(params);
-                    inject(UntersuchungHoerenOtoskopieStore).loadDefaultHoerenOtoskopie(params);
-                    inject(UntersuchungArztStore).loadDefaultUntersuchungArzt(params);
                   },
                 },
                 children: [
@@ -270,14 +286,18 @@ export const anlassRoutes: Route[] = [
                     component: UntersuchungImpfungenComponent,
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
+
                         const currentEinladungId = requireValidBackendEntityId(route.params['id']);
                         const currentAnlassId = requireValidBackendEntityId(
                           route.parent?.parent?.parent?.paramMap.get('anlassId'),
                         );
-                        inject(UntersuchungImpfungenStore).loadUntersuchungImpfungenData({
+                        inject(ImpfstoffeChargenStore).loadImpfstoffeAndChargen();
+                        const untersuchungImpfungenStore =  inject(UntersuchungImpfungenStore);
+                        untersuchungImpfungenStore.loadUntersuchungImpfungenData({
                           anlassId: currentAnlassId,
                           einladungId: currentEinladungId,
                         });
+                        untersuchungImpfungenStore.initializeFolgeTermine({ currentAnlassId });
                       },
                     },
                     canActivate: [requireRole(hasImpfungenViewBerechtigung())],
@@ -288,22 +308,14 @@ export const anlassRoutes: Route[] = [
                     component: UntersuchungSehenComponent,
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
-                        const currentEinladungId = requireValidBackendEntityId(route.params['id']);
-                        const currentAnlassId = requireValidBackendEntityId(
-                          route.parent?.parent?.parent?.paramMap.get('anlassId'),
-                        );
-                        inject(UntersuchungSehenStore).loadSehenBeurteilung({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
-                        inject(UntersuchungSehenStore).loadSehenMassnahmen({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
-                        inject(UntersuchungSehenStore).loadSehenBemerkungFragebogen({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
+                        const params = {
+                          anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId')),
+                          einladungId: requireValidBackendEntityId(route.params['id'])
+                        }
+                        inject(UntersuchungSehenStore).loadDefaultSehenBeurteilung(params);
+                        inject(UntersuchungSehenStore).loadSehenBeurteilung(params);
+                        inject(UntersuchungSehenStore).loadSehenMassnahmen(params);
+                        inject(UntersuchungSehenStore).loadSehenBemerkungFragebogen(params);
                       },
                     },
                     canActivate: [requireRole(hasSehenViewBerechtigung())],
@@ -314,18 +326,14 @@ export const anlassRoutes: Route[] = [
                     component: UntersuchungHoerenComponent,
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
-                        const currentEinladungId = requireValidBackendEntityId(route.params['id']);
-                        const currentAnlassId = requireValidBackendEntityId(
-                          route.parent?.parent?.parent?.paramMap.get('anlassId'),
-                        );
-                        inject(UntersuchungHoerenAudiogrammStore).loadHoerenAudiogramm({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
-                        inject(UntersuchungHoerenOtoskopieStore).loadHoerenOtoskopie({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
+                        const params = {
+                          einladungId: requireValidBackendEntityId(route.params['id']),
+                          anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId'))
+                        };
+                        inject(UntersuchungHoerenAudiogrammStore).loadDefaultHoerenAudiogramm(params);
+                        inject(UntersuchungHoerenOtoskopieStore).loadDefaultHoerenOtoskopie(params);
+                        inject(UntersuchungHoerenAudiogrammStore).loadHoerenAudiogramm(params);
+                        inject(UntersuchungHoerenOtoskopieStore).loadHoerenOtoskopie(params);
                       },
                     },
                     canActivate: [requireRole(hasHoerenViewBerechtigung())],
@@ -372,18 +380,13 @@ export const anlassRoutes: Route[] = [
                     component: UntersuchungArztComponent,
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
-                        const currentEinladungId = requireValidBackendEntityId(route.params['id']);
-                        const currentAnlassId = requireValidBackendEntityId(
-                          route.parent?.parent?.parent?.paramMap.get('anlassId'),
-                        );
-                        inject(UntersuchungArztStore).loadUntersuchungArzt({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
-                        inject(UntersuchungArztStore).loadUntersuchungArztBemerkung({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
+                        const params = {
+                          einladungId: requireValidBackendEntityId(route.params['id']),
+                          anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId'),)
+                        }
+                        inject(UntersuchungArztStore).loadDefaultUntersuchungArzt(params);
+                        inject(UntersuchungArztStore).loadUntersuchungArzt(params);
+                        inject(UntersuchungArztStore).loadUntersuchungArztBemerkung(params);
                       },
                     },
                     canActivate: [requireRole(hasAerztlicheUntersuchungViewBerechtigung())],
@@ -470,3 +473,19 @@ export const anlassRoutes: Route[] = [
     ],
   },
 ];
+
+export function requireValidNotizTyp(value: unknown): NotizTyp {
+  if (!isValidNotizTyp(value)) {
+    throw new Error(`Invalid NotizTyp: ${value}`);
+  }
+  return value;
+}
+
+
+export function isValidNotizTyp(value: unknown): value is NotizTyp {
+  if (typeof value !== 'string') {
+    return false;
+  }
+  return isValidEnumValue(NotizTyp, value.toUpperCase())
+
+}

@@ -1,8 +1,7 @@
-
-import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject} from '@angular/core';
-import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
-import {InfomaterialJson, InformationEltern} from '@dvb/data-access-backend';
-import {InfomaterialStore, TranslatedStringPipe} from '@dvb/feat-shared';
+import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject } from '@angular/core';
+import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { InfomaterialJson, InformationEltern } from '@dvb/data-access-backend';
+import { InfomaterialStore, Path, TranslatedStringPipe } from '@dvb/feat-shared';
 import {
   CardInCardComponent,
   CheckboxDirective,
@@ -16,17 +15,18 @@ import {
   TextareaDirective,
   TitleComponent,
 } from '@dvb/ui-components';
-import {DirtyMarker} from '@dvb/util-angular';
-import {compareFn, requireValue} from '@dvb/util-shared';
-import {TranslocoPipe} from '@jsverse/transloco';
-import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
-import {AnlassStore} from '../../anlass.store';
-import {UntersuchungStore} from '../untersuchung.store';
-import {UntersuchungMassnahmenForm} from './untersuchung-massnahmen.form';
-import {UntersuchungMassnahmenStore} from './untersuchung-massnahmen.store';
+import { DirtyMarker } from '@dvb/util-angular';
+import { compareFn, requireValue } from '@dvb/util-shared';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
+import { AnlassStore } from '../../anlass.store';
+import { UntersuchungStore } from '../untersuchung.store';
+import { UntersuchungMassnahmenForm } from './untersuchung-massnahmen.form';
+import { UntersuchungMassnahmenStore } from './untersuchung-massnahmen.store';
 import {
   UntersuchungPathologischeBefundeComponent,
 } from './untersuchung-pathologische-befunde/untersuchung-pathologische-befunde.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'feat-untersuchung-massnahmen',
@@ -60,6 +60,9 @@ export class UntersuchungMassnahmenComponent implements DirtyMarker {
   readonly untersuchungStore = inject(UntersuchungStore);
   readonly infomaterialStore = inject(InfomaterialStore);
 
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
   informationEltern = Object.values(InformationEltern);
   infomaterialOptions: InfomaterialJson[] | undefined;
   protected readonly compareInfomaterial = compareFn<InfomaterialJson>;
@@ -77,6 +80,19 @@ export class UntersuchungMassnahmenComponent implements DirtyMarker {
       this.form.setDisabled(!this.anlassStore.canUserEditAnlassInCurrentState());
       this.infomaterialOptions =
         this.infomaterialStore.patchInfomaterialOptions(massnahmen?.data?.abgegebenesInfomaterial);
+    });
+
+    effect(() => {
+      const anlass = this.anlassStore.selectedEntity();
+      const configData = anlass?.anlassConfig.showTabMassnahmen;
+      if (!configData) {
+        this.router.navigate(['../', Path.ANLASS_UNTERSUCHUNG_EINLADUNG_DATEN],
+          {
+            relativeTo: this.route,
+            replaceUrl: true,
+            queryParamsHandling: 'preserve'
+          });
+      }
     });
   }
 

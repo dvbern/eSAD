@@ -1,13 +1,16 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 class GroesseBeurteilungCsvColumnTest extends AbstractBaseColumnTest {
 
@@ -34,5 +37,29 @@ class GroesseBeurteilungCsvColumnTest extends AbstractBaseColumnTest {
         untersuchungGroesseGewicht.setGroessePerzentile(perzentileGroesse);
 
         assertThat(column.extract(einladung)).isEqualTo(expected);
+    }
+
+    @Test
+    void extract() {
+        // ARRANGE
+        final GroesseBeurteilungCsvColumn column =
+            new GroesseBeurteilungCsvColumn(configForCsv, null);
+        final Einladung einladung = new Einladung();
+
+        assertThat(column.extract(einladung)).isEmpty();
+
+        Untersuchung untersuchung = new Untersuchung();
+        einladung.setUntersuchung(untersuchung);
+
+        assertThat(column.extract(einladung)).isEmpty();
+
+        UntersuchungGroesseGewicht untersuchungGroesseGewicht = new UntersuchungGroesseGewicht();
+        untersuchung.setUntersuchungGroesseGewicht(untersuchungGroesseGewicht);
+
+        assertThat(column.extract(einladung)).isEmpty();
+
+        when(tlMock.translateValue(PerzentileGroesse.PERZENTILE_HOCH)).thenReturn("Perzentile Hoch");
+        untersuchungGroesseGewicht.setGroessePerzentile(PerzentileGroesse.PERZENTILE_HOCH);
+        assertThat(column.extract(einladung)).isEqualTo("Perzentile Hoch");
     }
 }

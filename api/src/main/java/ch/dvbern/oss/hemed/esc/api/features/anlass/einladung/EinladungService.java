@@ -24,6 +24,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AufgabeService;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AutoAufgabeService;
 import ch.dvbern.oss.hemed.esc.api.shared.notizen.AutoNotizService;
+import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
 import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -176,6 +177,11 @@ public class EinladungService {
     @NonNull
     public List<ID<Einladung>> findAllForSpssReport(@NonNull List<AnlassTyp> anlassTypList) {
         return einladungRepo.findAllForSpssReport(anlassTypList);
+    }
+
+    @NonNull
+    public List<ID<Einladung>> findAllForCsvReport(@NonNull DateRange zeitraum) {
+        return einladungRepo.findAllForCsvReport(zeitraum);
     }
 
     public void markAsSpssExported(@NonNull List<ID<Einladung>> einladungIdList) {

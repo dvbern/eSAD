@@ -1,5 +1,12 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder.duplikate;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
+
 import ch.dvbern.dvbstarter.shared.types.sozialversicherungsnummer.SozialversicherungsNummer;
 import ch.dvbern.dvbstarter.shared.types.sozialversicherungsnummer.SozialversicherungsNummerTestGenerator;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
@@ -35,12 +42,6 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import io.restassured.response.ResponseOptions;
 import jakarta.ws.rs.core.Response.Status;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -66,7 +67,6 @@ class DuplikatResourceITest extends AbstractITest {
     private final AufgabeService aufgabeService;
     private final KindAnlaesseService kindAnlaesseService;
 
-
     @Test
     @TestAsAdminBS
     void reloadDuplikate() {
@@ -75,7 +75,7 @@ class DuplikatResourceITest extends AbstractITest {
         Kind kind2 = fixtureService.createKind("Laura", "Mueller", LocalDate.of(2000, 1, 5), Geschlecht.WEIBLICH);
         Kind kind3 = fixtureService.createKind("Another", "Another", LocalDate.of(2000, 1, 5), Geschlecht.WEIBLICH);
         // ACT
-        api.duplikatResourceReloadDuplikate()
+        api.duplikatResourceReloadDuplikateSync()
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -84,6 +84,21 @@ class DuplikatResourceITest extends AbstractITest {
         assertThat(duplikatRepo.findByKindIds(kind1.getId(), kind2.getId())).isPresent();
         assertThat(duplikatRepo.findByKindIds(kind1.getId(), kind3.getId())).isEmpty();
         assertThat(duplikatRepo.findByKindIds(kind2.getId(), kind3.getId())).isEmpty();
+    }
+
+    @Test
+    @TestAsAdminBS
+    void reloadDuplikateAsync() {
+        // ARRANGE
+        // ACT
+        api.duplikatResourceReloadDuplikateAsync()
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.NO_CONTENT.getStatusCode());
+        // ASSERT
+        // no assert the goal is just to trigger it to see if it works. If we wanted we could wait for the job to finish
+        // in some loop but that has the potential to be flaky
     }
 
     @Test
@@ -238,9 +253,11 @@ class DuplikatResourceITest extends AbstractITest {
     void merge_escada_and_manual_choose_manual() {
         // ARRANGE
         String name = TestUtil.getRandomString("DuplikatMergeTest");
-        SozialversicherungsNummer vnr = SozialversicherungsNummerTestGenerator.INSTANCE.getNextSozialversicherungsnummer();
+        SozialversicherungsNummer vnr =
+            SozialversicherungsNummerTestGenerator.INSTANCE.getNextSozialversicherungsnummer();
         Kind kindManuell = fixtureService.createKind(name, name, LocalDate.of(2000, 1, 1), Geschlecht.WEIBLICH);
-        Kind kindEscada = fixtureService.createKindEscada(name, name, LocalDate.of(2000, 1, 1), Geschlecht.WEIBLICH, vnr, false);
+        Kind kindEscada =
+            fixtureService.createKindEscada(name, name, LocalDate.of(2000, 1, 1), Geschlecht.WEIBLICH, vnr, false);
         // Check
         assertThat(kindManuell.getExternalSystemIdOrNull()).isNull();
         assertThat(kindEscada.getExternalSystemIdOrNull()).isNotNull();
@@ -280,9 +297,11 @@ class DuplikatResourceITest extends AbstractITest {
     void merge_escada_and_manual_choose_escada() {
         // ARRANGE
         String name = TestUtil.getRandomString("DuplikatMergeTest");
-        SozialversicherungsNummer vnr = SozialversicherungsNummerTestGenerator.INSTANCE.getNextSozialversicherungsnummer();
+        SozialversicherungsNummer vnr =
+            SozialversicherungsNummerTestGenerator.INSTANCE.getNextSozialversicherungsnummer();
         Kind kindManuell = fixtureService.createKind(name, name, LocalDate.of(2000, 1, 1), Geschlecht.WEIBLICH);
-        Kind kindEscada = fixtureService.createKindEscada(name, name, LocalDate.of(2000, 1, 1), Geschlecht.WEIBLICH, vnr, false);
+        Kind kindEscada =
+            fixtureService.createKindEscada(name, name, LocalDate.of(2000, 1, 1), Geschlecht.WEIBLICH, vnr, false);
         // Check
         assertThat(kindManuell.getExternalSystemIdOrNull()).isNull();
         assertThat(kindEscada.getExternalSystemIdOrNull()).isNotNull();

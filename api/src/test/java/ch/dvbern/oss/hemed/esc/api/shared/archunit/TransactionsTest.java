@@ -1,8 +1,9 @@
 package ch.dvbern.oss.hemed.esc.api.shared.archunit;
 
-import ch.dvbern.oss.hemed.esc.api.features.escada.EscadaResource;
+import ch.dvbern.oss.hemed.esc.api.features.importoptions.escada.EscadaResource;
 import ch.dvbern.oss.hemed.esc.api.features.example.developer.DatabaseResource;
 import ch.dvbern.oss.hemed.esc.api.features.example.developer.SuperAdminRunnerResource;
+import ch.dvbern.oss.hemed.esc.api.features.importoptions.pupil.PupilResource;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
 import jakarta.enterprise.inject.Stereotype;
@@ -50,13 +51,14 @@ class TransactionsTest {
     void transactional_boundary_on_methods() {
         var rule = methods()
             .that()
-            .haveNameNotMatching("getMyBenutzerData").and().haveNameNotMatching("reloadDuplikate")
+            .haveNameNotMatching("getMyBenutzerData").and().haveNameNotMatching("reloadDuplikateSync").and().haveNameNotMatching("reloadDuplikateAsync")
             .and()
             .areDeclaredInClassesThat(are(
                 and(
                     not(SERVICE.or(REPOSITORY).or(NO_TRANSACTION_SERVICE)
                         .or(fullyQualifiedName(DatabaseResource.class.getName()))
                         .or(fullyQualifiedName(EscadaResource.class.getName()))
+                        .or(fullyQualifiedName(PupilResource.class.getName()))
                         .or(fullyQualifiedName(SuperAdminRunnerResource.class.getName()))
                     ),
                     not(annotatedWith(Stereotype.class))

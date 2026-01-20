@@ -1,0 +1,28 @@
+<div class="modal-header">
+  <h2 class="modal-title">
+    {{ 'notizen.modal.hochladen.title' | transloco }}
+  </h2>
+</div>
+<div class="modal-body">
+  <p
+    style="text-align: center">
+    {{ 'notizen.modal.hochladen.description' | transloco }}
+  </p>
+
+  <feat-qr-code-upload
+    [qrUrl]="qrCodeData()"
+    [title]="'ui.upload.qr.title' | transloco "
+    [width]="275"
+    [text]="'ui.upload.qr.title' | transloco "
+    [notizTyp]="notizTyp()">
+  </feat-qr-code-upload>
+
+  <div class="button-wrapper">
+    <button svuiButton="primary" type="button" (click)="close()">
+      {{ 'notizen.modal.save' | transloco }}
+    </button>
+    <button svuiButton="secondary" type="button" (click)="close()">
+      {{ 'global.cancel' | transloco }}
+    </button>
+  </div>
+</div>

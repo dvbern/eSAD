@@ -39,6 +39,7 @@ type AnlassKinderState = {
   selectedIdsForUntersuchung: BackendEntityId[];
   selectedEinladungId: BackendEntityId | undefined;
   kindWasAdded: boolean;
+  currentNotizTyp: NotizTyp | undefined;
 };
 
 const initialState: AnlassKinderState = {
@@ -47,6 +48,7 @@ const initialState: AnlassKinderState = {
   selectedIdsForUntersuchung: [],
   selectedEinladungId: undefined,
   kindWasAdded: false,
+  currentNotizTyp: undefined,
 };
 
 @Injectable()
@@ -105,6 +107,9 @@ export class AnlassKinderStore extends signalStore(
     },
     setSelectedEinladungId(einladungId: BackendEntityId | undefined): void {
       patchState(store, { selectedEinladungId: einladungId });
+    },
+    setCurrentNotizTyp(notizTyp: NotizTyp): void {
+      patchState(store, { currentNotizTyp: notizTyp });
     },
     getSprachenMap(): Map<string, number> {
       const map = new Map();

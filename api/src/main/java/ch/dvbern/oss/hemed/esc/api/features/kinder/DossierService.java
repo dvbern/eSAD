@@ -6,6 +6,7 @@ import java.util.Optional;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
+import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -55,6 +56,11 @@ public class DossierService {
     public ID<Dossier> getDossierIdByKind(@NonNull ID<Kind> kindID) {
         Optional<Dossier> dossierOptional = dossierRepo.findByKind(kindID);
         return dossierOptional.orElseThrow().getId();
+    }
+
+    @NonNull
+    public Optional<Dossier> findByEsadId(@IgnoreForIdClassTest @NonNull String externalId) {
+        return dossierRepo.findByEsadId(externalId);
     }
 
     @NonNull

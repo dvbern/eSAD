@@ -1,0 +1,14 @@
+.mobile_upload {
+  &__zone{
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+  }
+
+  &__text {
+    font-size: var(--svui-body-font-size);
+    color: var(--svui-body-color);
+  }
+}

@@ -28,9 +28,9 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 public class FileInfoS3Mapper {
 
     @NonNull
-    public static FileInfoS3 mapFileUploadToFileInfoS3(@NonNull FileUpload fileUpload, @NonNull FileTyp fileTyp) {
+    public static FileInfo mapFileUploadToFileInfo(@NonNull FileUpload fileUpload, @NonNull FileTyp fileTyp) {
         CleanFileName cleanFileName = new CleanFileName(fileUpload.fileName());
-        return FileInfoS3.of(
+        return FileInfo.of(
             fileTyp.getPrefix(),
             cleanFileName,
             MediaType.parse(fileUpload.contentType()),

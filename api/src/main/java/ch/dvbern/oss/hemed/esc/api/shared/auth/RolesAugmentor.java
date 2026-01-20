@@ -10,6 +10,7 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.auth;
 
+import java.util.Objects;
 import java.util.Set;
 
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.JsonWebTokenDataDTO;
@@ -23,8 +24,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+
+import static ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.JsonWebTokenClaims.TENANT_CLAIM;
 
 /**
  * This class is responsible for augmenting the SecurityIdentity with the roles of the user. To that end it checks all
@@ -61,12 +65,24 @@ public class RolesAugmentor implements SecurityIdentityAugmentor {
         String authorizedParty = jsonWebToken.getClaim(Claims.azp);
 
         Set<Berechtigung> berechtigungen;
-
-        if(isEscadaClientAndUser(authorizedParty, preferedUserName)){
+        if (isEscadaClientAndUser(authorizedParty, preferedUserName)) {
+            LOG.info("The current user '{}' is an escada client user", email);
             berechtigungen = Set.of(Berechtigung.ESCADA_PUSH); // escada user has fixed role
+        } else if (isFileIngressClientAndUser(authorizedParty, preferedUserName)) {
+            LOG.info("The current user '{}' is a file ingress client user", email);
+            berechtigungen = Set.of(Berechtigung.FILE_INGRESS_PUSH); // file ingress user has fixed role
+        } else if (isPupilClientAndUser(authorizedParty, preferedUserName)) {
+            LOG.info("The current user '{}' is a pupil client user", email);
+            berechtigungen = Set.of(Berechtigung.PUPIL_PUSH); // pupil user has fixed role
         } else {
-            FachRolle[] fachRollen = JsonWebTokenDataDTO.fromJsonWebToken(jsonWebToken).getFachRollen().toArray(EMPTY_FACHROLLEN);
-            berechtigungen = FachRolle.collectAllBerechtigungen(fachRollen);
+            String tenantClaim = jsonWebToken.getClaim(TENANT_CLAIM);
+            if (tenantClaim != null && TenantEnum.fromString(tenantClaim) != null) {
+                TenantEnum tenantEnum = TenantEnum.fromString(tenantClaim);
+                FachRolle[] fachRollen = JsonWebTokenDataDTO.fromJsonWebToken(jsonWebToken).getFachRollen().toArray(EMPTY_FACHROLLEN);
+                berechtigungen = FachRolle.collectAllBerechtigungen(Objects.requireNonNull(tenantEnum), fachRollen);
+            } else {
+                berechtigungen = Set.of(); // tenant or ESC-FACHROLLE claim  was missing in the token
+            }
         }
 
         if(!berechtigungen.isEmpty()) {
@@ -78,7 +94,17 @@ public class RolesAugmentor implements SecurityIdentityAugmentor {
         return builder.build();
     }
 
-    boolean isEscadaClientAndUser(String authorizedParty, String userName){
+    boolean isEscadaClientAndUser(@NonNull String authorizedParty, @NonNull String userName){
         return configService.getEscadaClientUser().equals(userName) && configService.getEscadaAZP().equals(authorizedParty);
+    }
+
+    boolean isFileIngressClientAndUser(@NonNull String authorizedParty, @NonNull String userName) {
+        return configService.getFileIngressClientUser().equals(userName)
+            && configService.getFileIngressAZP().equals(authorizedParty);
+    }
+
+    boolean isPupilClientAndUser(@NonNull String authorizedParty, @NonNull String userName){
+        return configService.getPupilClientUser().equals(userName)
+            && configService.getPupilAZP().equals(authorizedParty);
     }
 }

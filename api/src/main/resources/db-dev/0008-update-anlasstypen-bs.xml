@@ -19,4 +19,12 @@
       where anlasstyp = 'VERTRAUENSARZT';
     </sql>
   </changeSet>
+  <changeSet author="anst" id="1762183066230-6">
+    <sql>
+      update anlassconfig set untersuchungeinbeinstandvalues = 'SICHER,UNSICHER_UNGEUEBT,NICHT_MOEGLICH,ANDERES,NICHT_GEPRUEFT' where untersuchungeinbeinstandvalues is null;
+      update anlassconfig set untersuchungeinbeinhuepfenvalues = 'SICHER,UNSICHER_UNGEUEBT,NICHT_MOEGLICH,ANDERES,NICHT_GEPRUEFT' where untersuchungeinbeinhuepfenvalues is null;
+      update anlassconfig set untersuchungmotorikvalues = 'NORMAL,AUFFAELLIG,NICHT_GEPRUEFT' where untersuchungmotorikvalues is null;
+      update anlassconfig set untersuchungsprachfaehigkeitvalues = 'GROBKURSORISCH_NORMAL,ENTWICKLUNGSVERZOEGERUNG,ARTIKULATIONSFEHLER,DEUTSCHKENNTNISSE_MINIM,ANDERES,NICHT_GEPRUEFT' where untersuchungsprachfaehigkeitvalues is null;
+    </sql>
+  </changeSet>
 </databaseChangeLog>

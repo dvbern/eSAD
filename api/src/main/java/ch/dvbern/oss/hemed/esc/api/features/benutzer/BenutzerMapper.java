@@ -9,6 +9,7 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.*;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerBerechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
@@ -27,6 +28,7 @@ import java.util.stream.Stream;
 public class BenutzerMapper {
 
     private final BenutzerService benutzerService;
+    private final TenantProducer tenantProducer;
     private final AppClock appClock;
 
     @Nullable
@@ -189,7 +191,7 @@ public class BenutzerMapper {
         );
 
         // The System Admin, Support and Admin Role have the LISTEN_SCHREIBEN Berechtigung, without this it's not allowed to update
-        boolean hasListenSchreibenBerechtigung = userFachRollen.stream().anyMatch(f -> f.hasBerechtigung(Berechtigung.LISTEN_SCHREIBEN));
+        boolean hasListenSchreibenBerechtigung = userFachRollen.stream().anyMatch(f -> f.hasBerechtigung(Berechtigung.LISTEN_SCHREIBEN, tenantProducer.produceTenant()));
 
         // System Admins are not Managed through this Endpoint, so we don't allow to update them
         if (!hasListenSchreibenBerechtigung || rollenDiff.contains(FachRolle.SYSTEM_ADMIN)) {

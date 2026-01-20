@@ -10,6 +10,13 @@
   </svui-page-header-buttons>
 
   <feat-document-queue/>
-  <feat-spss-form/>
+
+  @if (canViewSpssReports()) {
+    <feat-spss-form/>
+  }
+  @if (canViewIndividuelleReports()) {
+    <feat-individuelle-reports-form />
+  }
+
 </feat-page>
 

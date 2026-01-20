@@ -2,12 +2,11 @@ package ch.dvbern.oss.hemed.esc.api.shared.auth;
 
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -20,443 +19,47 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 @AllArgsConstructor
 public enum FachRolle {
 
+    EMPFANG,
+    MPA,
+    ORTHOPISTIN,
+    SCHULAERZTIN,
+    LAUSBEAUFTRAGTE,
+    PFP,
+    SUPERUSER,
+    ADMIN,
+    SUPPORT,
+    SYSTEM_ADMIN;
 
-    EMPFANG(
-        EnumSet.of(
-            Berechtigung.AUFGABEN_LESEN,
-            Berechtigung.AUFGABEN_SCHREIBEN,
-            Berechtigung.ANLASSLISTE_LESEN,
-            Berechtigung.ANLASSPLANUNG_LESEN,
-            Berechtigung.KINDER_LESEN_MEDIZINISCH,
-            Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
-            Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
-            Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
-            Berechtigung.LISTEN_LESEN,
-            Berechtigung.LISTEN_ADMIN_LESEN,
-            Berechtigung.AERZTE_LESEN,
-            Berechtigung.EIGENE_BERECHTIGUNGEN_LESEN,
-            Berechtigung.LABELS_LESEN,
-            Berechtigung.VORLAGEN_LESEN
-        )
-    ),
-    MPA(
-        EnumSet.of(
-            Berechtigung.AUFGABEN_LESEN,
-            Berechtigung.AUFGABEN_SCHREIBEN,
-            Berechtigung.ANLASSLISTE_LESEN,
-            Berechtigung.ANLASSPLANUNG_LESEN,
-            Berechtigung.ANLASSPLANUNG_SCHREIBEN,
-            Berechtigung.SU_DATEN_LESEN,
-            Berechtigung.SU_DATEN_SCHREIBEN,
-            Berechtigung.SU_IMPFEN_LESEN,
-            Berechtigung.SU_IMPFEN_SCHREIBEN,
-            Berechtigung.SU_SEHEN_LESEN,
-            Berechtigung.SU_SEHEN_SCHREIBEN,
-            Berechtigung.SU_HOREN_LESEN,
-            Berechtigung.SU_HOREN_SCHREIBEN,
-            Berechtigung.SU_GROSSE_GEWICHT_LESEN,
-            Berechtigung.SU_GROSSE_GEWICHT_SCHREIBEN,
-            Berechtigung.SU_TRIAGE_LESEN,
-            Berechtigung.SU_TRIAGE_SCHREIBEN,
-            Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN,
-            Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN,
-            Berechtigung.SU_MASSNAHMEN_LESEN,
-            Berechtigung.SU_MASSNAHMEN_SCHREIBEN,
-            Berechtigung.KINDER_LESEN_MEDIZINISCH,
-            Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
-            Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH,
-            Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH,
-            Berechtigung.KINDER_ALLE_NOTIZEN_LESEN,
-            Berechtigung.KINDER_ALLE_NOTIZEN_SCHREIBEN,
-            Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
-            Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
 
-            Berechtigung.INDIVIDUELLE_REPORTS,
-
-            Berechtigung.LISTEN_LESEN,
-            Berechtigung.LISTEN_ADMIN_LESEN,
-            Berechtigung.AERZTE_LESEN,
-            Berechtigung.IMPFSTOFFE_LESEN,
-
-            Berechtigung.LABELS_LESEN,
-            Berechtigung.LABELS_ADMIN_LESEN,
-            Berechtigung.EIGENE_BERECHTIGUNGEN_LESEN,
-
-            Berechtigung.VORLAGEN_LESEN,
-            Berechtigung.VORLAGEN_ADMIN_LESEN
-        )
-    ),
-
-    ORTHOPISTIN(
-        EnumSet.of(
-            Berechtigung.AUFGABEN_LESEN,
-            Berechtigung.AUFGABEN_SCHREIBEN,
-            Berechtigung.ANLASSLISTE_LESEN,
-            Berechtigung.ANLASSPLANUNG_LESEN,
-            Berechtigung.ANLASSPLANUNG_SCHREIBEN,
-            Berechtigung.SU_DATEN_LESEN,
-
-            Berechtigung.SU_IMPFEN_LESEN,
-
-            Berechtigung.SU_SEHEN_LESEN,
-            Berechtigung.SU_SEHEN_SCHREIBEN,
-            Berechtigung.SU_HOREN_LESEN,
-
-            Berechtigung.SU_GROSSE_GEWICHT_LESEN,
-
-            Berechtigung.SU_TRIAGE_LESEN,
-            Berechtigung.SU_TRIAGE_SCHREIBEN,
-            Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN,
-
-            Berechtigung.SU_MASSNAHMEN_LESEN,
-            Berechtigung.SU_MASSNAHMEN_SCHREIBEN,
-            Berechtigung.KINDER_LESEN_MEDIZINISCH,
-            Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
-            Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH,
-            Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH,
-            Berechtigung.KINDER_ALLE_NOTIZEN_LESEN,
-            Berechtigung.KINDER_ALLE_NOTIZEN_SCHREIBEN,
-            Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
-            Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
-
-            Berechtigung.INDIVIDUELLE_REPORTS,
-
-            Berechtigung.LISTEN_LESEN,
-            Berechtigung.LISTEN_ADMIN_LESEN,
-            Berechtigung.AERZTE_LESEN,
-            Berechtigung.IMPFSTOFFE_LESEN,
-
-            Berechtigung.LABELS_LESEN,
-            Berechtigung.LABELS_ADMIN_LESEN,
-            Berechtigung.EIGENE_BERECHTIGUNGEN_LESEN,
-
-            Berechtigung.VORLAGEN_LESEN,
-            Berechtigung.VORLAGEN_ADMIN_LESEN
-        )
-    ),
-    SCHULAERZTIN(
-        EnumSet.of(
-            Berechtigung.AUFGABEN_LESEN,
-            Berechtigung.AUFGABEN_SCHREIBEN,
-
-            Berechtigung.ANLASSLISTE_LESEN,
-            Berechtigung.ANLASSLISTE_LESEN_LAEUSE,
-            Berechtigung.ANLASSPLANUNG_LESEN,
-            Berechtigung.ANLASSPLANUNG_SCHREIBEN,
-            Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE,
-            Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE,
-
-            Berechtigung.SU_DATEN_LESEN,
-            Berechtigung.SU_DATEN_SCHREIBEN,
-            Berechtigung.SU_IMPFEN_LESEN,
-            Berechtigung.SU_IMPFEN_SCHREIBEN,
-            Berechtigung.SU_SEHEN_LESEN,
-            Berechtigung.SU_SEHEN_SCHREIBEN,
-            Berechtigung.SU_HOREN_LESEN,
-            Berechtigung.SU_HOREN_SCHREIBEN,
-            Berechtigung.SU_GROSSE_GEWICHT_LESEN,
-            Berechtigung.SU_GROSSE_GEWICHT_SCHREIBEN,
-            Berechtigung.SU_LAEUSE_LESEN,
-            Berechtigung.SU_LAEUSE_SCHREIBEN,
-            Berechtigung.SU_TRIAGE_LESEN,
-            Berechtigung.SU_TRIAGE_SCHREIBEN,
-            Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN,
-            Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN,
-            Berechtigung.SU_MASSNAHMEN_LESEN,
-            Berechtigung.SU_MASSNAHMEN_SCHREIBEN,
-            Berechtigung.KINDER_LESEN_MEDIZINISCH,
-            Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
-            Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH,
-            Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH,
-            Berechtigung.KINDER_ALLE_NOTIZEN_LESEN,
-            Berechtigung.KINDER_ALLE_NOTIZEN_SCHREIBEN,
-            Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
-            Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
-
-            Berechtigung.INDIVIDUELLE_REPORTS,
-
-            Berechtigung.LISTEN_LESEN,
-            Berechtigung.LISTEN_ADMIN_LESEN,
-            Berechtigung.AERZTE_LESEN,
-            Berechtigung.IMPFSTOFFE_LESEN,
-
-            Berechtigung.LABELS_LESEN,
-            Berechtigung.LABELS_ADMIN_LESEN,
-            Berechtigung.EIGENE_BERECHTIGUNGEN_LESEN,
-
-            Berechtigung.VORLAGEN_LESEN,
-            Berechtigung.VORLAGEN_ADMIN_LESEN
-        )
-    ),
-    LAUSBEAUFTRAGTE(
-        EnumSet.of(
-            Berechtigung.SU_DATEN_LESEN,
-            Berechtigung.EIGENE_BERECHTIGUNGEN_LESEN,
-            Berechtigung.ANLASSLISTE_LESEN_LAEUSE,
-            Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE,
-            Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE,
-            Berechtigung.SU_LAEUSE_LESEN,
-            Berechtigung.SU_LAEUSE_SCHREIBEN,
-            Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
-            Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH,
-            Berechtigung.LISTEN_LESEN,
-            Berechtigung.LABELS_LESEN
-        )
-    ),
-    PFP(
-        EnumSet.of(
-            Berechtigung.AUFGABEN_LESEN,
-            Berechtigung.AUFGABEN_SCHREIBEN,
-
-            Berechtigung.ANLASSLISTE_LESEN,
-            Berechtigung.ANLASSLISTE_LESEN_LAEUSE,
-            Berechtigung.ANLASSPLANUNG_LESEN,
-            Berechtigung.ANLASSPLANUNG_SCHREIBEN,
-            Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE,
-            Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE,
-
-            Berechtigung.SU_DATEN_LESEN,
-            Berechtigung.SU_DATEN_SCHREIBEN,
-            Berechtigung.SU_IMPFEN_LESEN,
-            Berechtigung.SU_IMPFEN_SCHREIBEN,
-            Berechtigung.SU_SEHEN_LESEN,
-            Berechtigung.SU_SEHEN_SCHREIBEN,
-            Berechtigung.SU_HOREN_LESEN,
-            Berechtigung.SU_HOREN_SCHREIBEN,
-            Berechtigung.SU_GROSSE_GEWICHT_LESEN,
-            Berechtigung.SU_GROSSE_GEWICHT_SCHREIBEN,
-            Berechtigung.SU_LAEUSE_LESEN,
-            Berechtigung.SU_LAEUSE_SCHREIBEN,
-            Berechtigung.SU_TRIAGE_LESEN,
-            Berechtigung.SU_TRIAGE_SCHREIBEN,
-            Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN,
-            Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN,
-            Berechtigung.SU_MASSNAHMEN_LESEN,
-            Berechtigung.SU_MASSNAHMEN_SCHREIBEN,
-            Berechtigung.KINDER_LESEN_MEDIZINISCH,
-            Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
-            Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH,
-            Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH,
-            Berechtigung.KINDER_ALLE_NOTIZEN_LESEN,
-            Berechtigung.KINDER_ALLE_NOTIZEN_SCHREIBEN,
-            Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
-            Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
-
-            Berechtigung.INDIVIDUELLE_REPORTS,
-            Berechtigung.KOMPLETTER_EXPORT,
-
-            Berechtigung.LISTEN_LESEN,
-            Berechtigung.LISTEN_ADMIN_LESEN,
-            Berechtigung.IMPFSTOFFE_LESEN,
-
-            Berechtigung.LABELS_LESEN,
-            Berechtigung.LABELS_ADMIN_LESEN,
-            Berechtigung.EIGENE_BERECHTIGUNGEN_LESEN,
-
-            Berechtigung.VORLAGEN_LESEN,
-            Berechtigung.VORLAGEN_ADMIN_LESEN
-        )
-    ),
-    SUPERUSER(
-            EnumSet.of(
-                Berechtigung.IMPFSTOFFE_LESEN,
-                Berechtigung.IMPFSTOFFE_SCHREIBEN,
-                Berechtigung.VORLAGEN_LESEN,
-                Berechtigung.VORLAGEN_ADMIN_LESEN,
-                Berechtigung.VORLAGEN_SCHREIBEN,
-                Berechtigung.AERZTE_SCHREIBEN
-            )
-    ),
-    ADMIN(
-        EnumSet.of(
-            Berechtigung.AUFGABEN_LESEN,
-            Berechtigung.AUFGABEN_SCHREIBEN,
-            Berechtigung.ANLASSLISTE_LESEN,
-            Berechtigung.ANLASSLISTE_LESEN_LAEUSE,
-            Berechtigung.ANLASSPLANUNG_LESEN,
-            Berechtigung.ANLASSPLANUNG_SCHREIBEN,
-            Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE,
-            Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE,
-            Berechtigung.VERANDERUNGEN_NACH_ABSCHLUSS,
-            Berechtigung.SU_DATEN_LESEN,
-            Berechtigung.SU_DATEN_SCHREIBEN,
-            Berechtigung.SU_IMPFEN_LESEN,
-            Berechtigung.SU_IMPFEN_SCHREIBEN,
-            Berechtigung.SU_SEHEN_LESEN,
-            Berechtigung.SU_SEHEN_SCHREIBEN,
-            Berechtigung.SU_HOREN_LESEN,
-            Berechtigung.SU_HOREN_SCHREIBEN,
-            Berechtigung.SU_GROSSE_GEWICHT_LESEN,
-            Berechtigung.SU_GROSSE_GEWICHT_SCHREIBEN,
-            Berechtigung.SU_LAEUSE_LESEN,
-            Berechtigung.SU_LAEUSE_SCHREIBEN,
-            Berechtigung.SU_TRIAGE_LESEN,
-            Berechtigung.SU_TRIAGE_SCHREIBEN,
-            Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN,
-            Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN,
-            Berechtigung.SU_MASSNAHMEN_LESEN,
-            Berechtigung.SU_MASSNAHMEN_SCHREIBEN,
-            Berechtigung.KINDER_LESEN_MEDIZINISCH,
-            Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
-            Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH,
-            Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH,
-            Berechtigung.KINDER_ALLE_NOTIZEN_LESEN,
-            Berechtigung.KINDER_ALLE_NOTIZEN_SCHREIBEN,
-            Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
-            Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
-            Berechtigung.INDIVIDUELLE_REPORTS,
-            Berechtigung.SPSS_EXPORT,
-            Berechtigung.KOMPLETTER_EXPORT,
-            Berechtigung.LISTEN_LESEN,
-            Berechtigung.LISTEN_ADMIN_LESEN,
-            Berechtigung.LISTEN_SCHREIBEN,
-            Berechtigung.AERZTE_LESEN,
-            Berechtigung.AERZTE_SCHREIBEN,
-            Berechtigung.IMPFSTOFFE_LESEN,
-            Berechtigung.IMPFSTOFFE_SCHREIBEN,
-            Berechtigung.DUBLETTEN_ZUSAMMENFUHREN,
-            Berechtigung.LABELS_LESEN,
-            Berechtigung.LABELS_ADMIN_LESEN,
-            Berechtigung.LABELS_SCHREIBEN,
-            Berechtigung.EIGENE_BERECHTIGUNGEN_LESEN,
-            Berechtigung.MITARBEITERLISTE_BERECHTIGUNGEN_LESEN,
-            Berechtigung.VORLAGEN_LESEN,
-            Berechtigung.VORLAGEN_ADMIN_LESEN,
-            Berechtigung.VORLAGEN_SCHREIBEN
-
-        )
-    ),
-    SUPPORT(
-        EnumSet.of(
-            Berechtigung.AUFGABEN_LESEN,
-            Berechtigung.AUFGABEN_SCHREIBEN,
-            Berechtigung.ANLASSLISTE_LESEN,
-            Berechtigung.ANLASSLISTE_LESEN_LAEUSE,
-            Berechtigung.ANLASSPLANUNG_LESEN,
-            Berechtigung.ANLASSPLANUNG_SCHREIBEN,
-            Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE,
-            Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE,
-            Berechtigung.VERANDERUNGEN_NACH_ABSCHLUSS,
-            Berechtigung.SU_DATEN_LESEN,
-            Berechtigung.SU_DATEN_SCHREIBEN,
-            Berechtigung.SU_IMPFEN_LESEN,
-            Berechtigung.SU_IMPFEN_SCHREIBEN,
-            Berechtigung.SU_SEHEN_LESEN,
-            Berechtigung.SU_SEHEN_SCHREIBEN,
-            Berechtigung.SU_HOREN_LESEN,
-            Berechtigung.SU_HOREN_SCHREIBEN,
-            Berechtigung.SU_GROSSE_GEWICHT_LESEN,
-            Berechtigung.SU_GROSSE_GEWICHT_SCHREIBEN,
-            Berechtigung.SU_LAEUSE_LESEN,
-            Berechtigung.SU_LAEUSE_SCHREIBEN,
-            Berechtigung.SU_TRIAGE_LESEN,
-            Berechtigung.SU_TRIAGE_SCHREIBEN,
-            Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN,
-            Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN,
-            Berechtigung.SU_MASSNAHMEN_LESEN,
-            Berechtigung.SU_MASSNAHMEN_SCHREIBEN,
-            Berechtigung.KINDER_LESEN_MEDIZINISCH,
-            Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
-            Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH,
-            Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH,
-            Berechtigung.KINDER_ALLE_NOTIZEN_LESEN,
-            Berechtigung.KINDER_ALLE_NOTIZEN_SCHREIBEN,
-            Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
-            Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
-            Berechtigung.INDIVIDUELLE_REPORTS,
-            Berechtigung.SPSS_EXPORT,
-            Berechtigung.KOMPLETTER_EXPORT,
-            Berechtigung.LISTEN_LESEN,
-            Berechtigung.LISTEN_ADMIN_LESEN,
-            Berechtigung.LISTEN_SCHREIBEN,
-            Berechtigung.AERZTE_LESEN,
-            Berechtigung.AERZTE_SCHREIBEN,
-            Berechtigung.IMPFSTOFFE_LESEN,
-            Berechtigung.IMPFSTOFFE_SCHREIBEN,
-            Berechtigung.DUBLETTEN_ZUSAMMENFUHREN,
-            Berechtigung.LABELS_LESEN,
-            Berechtigung.LABELS_ADMIN_LESEN,
-            Berechtigung.LABELS_SCHREIBEN,
-            Berechtigung.EIGENE_BERECHTIGUNGEN_LESEN,
-            Berechtigung.MITARBEITERLISTE_BERECHTIGUNGEN_LESEN,
-            Berechtigung.VORLAGEN_LESEN,
-            Berechtigung.VORLAGEN_ADMIN_LESEN,
-            Berechtigung.VORLAGEN_SCHREIBEN,
-            Berechtigung.SUPPORT
-        )
-    ),
-    SYSTEM_ADMIN(
-        EnumSet.of(
-            Berechtigung.AUFGABEN_LESEN,
-            Berechtigung.AUFGABEN_SCHREIBEN,
-            Berechtigung.ANLASSLISTE_LESEN,
-            Berechtigung.ANLASSLISTE_LESEN_LAEUSE,
-            Berechtigung.ANLASSPLANUNG_LESEN,
-            Berechtigung.ANLASSPLANUNG_SCHREIBEN,
-            Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE,
-            Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE,
-            Berechtigung.VERANDERUNGEN_NACH_ABSCHLUSS,
-            Berechtigung.SU_DATEN_LESEN,
-            Berechtigung.SU_DATEN_SCHREIBEN,
-            Berechtigung.SU_IMPFEN_LESEN,
-            Berechtigung.SU_IMPFEN_SCHREIBEN,
-            Berechtigung.SU_SEHEN_LESEN,
-            Berechtigung.SU_SEHEN_SCHREIBEN,
-            Berechtigung.SU_HOREN_LESEN,
-            Berechtigung.SU_HOREN_SCHREIBEN,
-            Berechtigung.SU_GROSSE_GEWICHT_LESEN,
-            Berechtigung.SU_GROSSE_GEWICHT_SCHREIBEN,
-            Berechtigung.SU_LAEUSE_LESEN,
-            Berechtigung.SU_LAEUSE_SCHREIBEN,
-            Berechtigung.SU_TRIAGE_LESEN,
-            Berechtigung.SU_TRIAGE_SCHREIBEN,
-            Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN,
-            Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN,
-            Berechtigung.SU_MASSNAHMEN_LESEN,
-            Berechtigung.SU_MASSNAHMEN_SCHREIBEN,
-            Berechtigung.KINDER_LESEN_MEDIZINISCH,
-            Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
-            Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH,
-            Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH,
-            Berechtigung.KINDER_ALLE_NOTIZEN_LESEN,
-            Berechtigung.KINDER_ALLE_NOTIZEN_SCHREIBEN,
-            Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
-            Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
-            Berechtigung.INDIVIDUELLE_REPORTS,
-            Berechtigung.SPSS_EXPORT,
-            Berechtigung.KOMPLETTER_EXPORT,
-            Berechtigung.LISTEN_LESEN,
-            Berechtigung.LISTEN_ADMIN_LESEN,
-            Berechtigung.LISTEN_SCHREIBEN,
-            Berechtigung.AERZTE_SCHREIBEN,
-            Berechtigung.AERZTE_LESEN,
-            Berechtigung.IMPFSTOFFE_LESEN,
-            Berechtigung.IMPFSTOFFE_SCHREIBEN,
-            Berechtigung.DUBLETTEN_ZUSAMMENFUHREN,
-            Berechtigung.LABELS_LESEN,
-            Berechtigung.LABELS_ADMIN_LESEN,
-            Berechtigung.LABELS_SCHREIBEN,
-            Berechtigung.EIGENE_BERECHTIGUNGEN_LESEN,
-            Berechtigung.MITARBEITERLISTE_BERECHTIGUNGEN_LESEN,
-            Berechtigung.VORLAGEN_LESEN,
-            Berechtigung.VORLAGEN_ADMIN_LESEN,
-            Berechtigung.VORLAGEN_SCHREIBEN,
-            Berechtigung.SUPPORT,
-            Berechtigung.SYSTEM_ADMIN
-        )
-    );
-
-    @Getter(AccessLevel.PACKAGE)
-    private final Set<Berechtigung> berechtigungen;
-
-    public boolean hasBerechtigung(@NonNull Berechtigung berechtigung) {
-        return berechtigungen.contains(berechtigung);
+    @NonNull
+    public Set<Berechtigung> getBerechtigungen(@NonNull TenantEnum tenant) {
+        if (tenant == TenantEnum.BS) {
+            return FachRolleBS.valueOf(this.name()).getBerechtigungen();
+        }
+        if (tenant == TenantEnum.WIN) {
+            return FachRolleWIN.valueOf(this.name()).getBerechtigungen();
+        }
+        if (tenant == TenantEnum.BE) {
+            return FachRolleBE.valueOf(this.name()).getBerechtigungen();
+        }
+        return EnumSet.noneOf(Berechtigung.class);
     }
 
-    public static Set<Berechtigung> collectAllBerechtigungen(@NonNull FachRolle... fachRolle) {
+    public boolean hasBerechtigung(@NonNull Berechtigung berechtigung, @NonNull TenantEnum tenant) {
+        return getBerechtigungen(tenant).contains(berechtigung);
+    }
+
+    @NonNull
+    public static Set<Berechtigung> collectAllBerechtigungen(@NonNull TenantEnum tenant, @NonNull FachRolle... fachRolle) {
         return Arrays.stream(fachRolle)
-            .flatMap(f -> f.berechtigungen.stream())
+            .flatMap(f -> f.getBerechtigungen(tenant).stream())
             .collect(Collectors.toSet());
     }
 
+    @NonNull
+    public static List<FachRolle> getFachrollenWithBerechtigung(@NonNull TenantEnum tenant) {
+        return Arrays.stream(FachRolle.values())
+            .filter(fachRolle -> !fachRolle.getBerechtigungen(tenant).isEmpty())
+            .toList();
+    }
 }

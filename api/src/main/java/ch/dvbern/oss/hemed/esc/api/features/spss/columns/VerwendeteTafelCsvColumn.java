@@ -19,6 +19,11 @@ public class VerwendeteTafelCsvColumn extends AbstractCsvColumn {
                 if (sehen.getVerwendeteTafel() == null) {
                     return "";
                 }
+
+                if (!config.forSpssReport()) {
+                    return config.tl().translateValue(sehen.getVerwendeteTafel());
+                }
+
                 return switch (sehen.getVerwendeteTafel()) {
                     case E_TAFEL -> "1";
                     case C_TAFEL -> "2";

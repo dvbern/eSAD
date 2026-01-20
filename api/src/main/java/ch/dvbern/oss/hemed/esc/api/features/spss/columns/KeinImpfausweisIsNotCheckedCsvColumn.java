@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -18,7 +19,12 @@ public class KeinImpfausweisIsNotCheckedCsvColumn extends AbstractCsvColumn {
     public String extract(@NonNull Einladung einladung) {
         return ExtractorForCsvUtil.extractUntersuchungImpfungen(
             einladung,
-            impfungen -> impfungen.isImpfausweisNichtVorhanden() ? "" : "1");
+            impfungen -> {
+                if (config.forSpssReport()) {
+                    return impfungen.isImpfausweisNichtVorhanden() ? "" : "1";
+                }
+                return PrintUtil.trimToPlaceholder(impfungen.isImpfausweisNichtVorhanden(), config.tl());
+            });
     }
 
     @Override
