@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RequiredArgsConstructor
 class AerzteExportTest {
-    private final TL tl = new TLProducer(() -> AppLanguages.DE).forAppLanguage(AppLanguages.DE);
+    private final TL tl = new TLProducer(() -> AppLanguages.DE, () -> TenantEnum.BS).forAppLanguage(AppLanguages.DE);
     private static final String OUTPUT_PATH =
         Paths.get(FileUtils.getTempDirectoryPath(), "esc", "aerztemerge").toString();
 
@@ -108,7 +108,7 @@ class AerzteExportTest {
 
             // all expected lines must be present
             assertThat(expectedRecords).isNotEmpty()
-                .allSatisfy(expected-> assertThat(actual).as("actual should contain expected string: %s", expected)
+                .allSatisfy(expected -> assertThat(actual).as("actual should contain expected string: %s", expected)
                     .contains(expected));
         }
     }
@@ -116,8 +116,8 @@ class AerzteExportTest {
     private String readExpectedContent(TenantEnum tenant) {
         String expectedResultFilename =
             switch (tenant) {
-            case BE, BS, WIN, DEFAULT -> "aerzte-export-textcontent.txt";
-        };
+                case BE, BS, WIN, DEFAULT -> "aerzte-export-textcontent.txt";
+            };
         File expectedFile = loadTestfile("/AerzteDocMergerTest/expected/" + expectedResultFilename);
         return FileUtil.readTextFromPath(expectedFile.toPath());
     }
@@ -125,7 +125,7 @@ class AerzteExportTest {
     private List<String> readExpectedLines(TenantEnum tenant) {
         String expectedResultFilename =
             switch (tenant) {
-                case BE, BS, WIN, DEFAULT -> "aerzte-export-textcontent.csv" ;
+                case BE, BS, WIN, DEFAULT -> "aerzte-export-textcontent.csv";
             };
         File expectedFile = loadTestfile("/AerzteDocMergerTest/expected/" + expectedResultFilename);
         return FileUtil.readLineBasedTextFromPath(expectedFile.toPath());

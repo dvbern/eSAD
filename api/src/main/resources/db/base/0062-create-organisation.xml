@@ -1,0 +1,195 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="gema (generated)" id="1774426108433-1">
+        <createTable tableName="organisation">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="organisationPK"/>
+            </column>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usererstellt" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usermutiert" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="verantwortlicherarzt_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-2">
+        <createTable tableName="organisation_aud">
+            <column name="id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="usererstellt" type="VARCHAR(255)"/>
+            <column name="usermutiert" type="VARCHAR(255)"/>
+            <column name="verantwortlicherarzt_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-3">
+        <createTable tableName="organisationrollen">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="organisationrollenPK"/>
+            </column>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usererstellt" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usermutiert" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fachrollen" type="VARCHAR(2000)"/>
+            <column name="benutzer_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="organisation_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-4">
+        <createTable tableName="organisationrollen_aud">
+            <column name="id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="usererstellt" type="VARCHAR(255)"/>
+            <column name="usermutiert" type="VARCHAR(255)"/>
+            <column name="fachrollen" type="VARCHAR(2000)"/>
+            <column name="benutzer_id" type="UUID"/>
+            <column name="organisation_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-5">
+        <createTable tableName="systemrollen">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="systemrollenPK"/>
+            </column>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usererstellt" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usermutiert" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fachrollen" type="VARCHAR(2000)"/>
+            <column name="benutzer_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-6">
+        <createTable tableName="systemrollen_aud">
+            <column name="id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="usererstellt" type="VARCHAR(255)"/>
+            <column name="usermutiert" type="VARCHAR(255)"/>
+            <column name="fachrollen" type="VARCHAR(2000)"/>
+            <column name="benutzer_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-7">
+        <addPrimaryKey columnNames="rev, id" constraintName="organisation_audPK" tableName="organisation_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-8">
+        <addPrimaryKey columnNames="rev, id" constraintName="organisationrollen_audPK" tableName="organisationrollen_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-9">
+        <addPrimaryKey columnNames="rev, id" constraintName="systemrollen_audPK" tableName="systemrollen_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-10">
+        <addUniqueConstraint columnNames="verantwortlicherarzt_id" constraintName="UC_ORGANISATIONVERANTWORTLICHERARZT_ID_COL" tableName="organisation"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-11">
+        <addUniqueConstraint columnNames="benutzer_id" constraintName="UC_SYSTEMROLLENBENUTZER_ID_COL" tableName="systemrollen"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-12">
+        <addUniqueConstraint columnNames="organisation_id, benutzer_id" constraintName="uc_organisationrollen_organisation_benutzer" tableName="organisationrollen"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-13">
+        <createIndex indexName="ix_organisation_verantwortlicherarzt" tableName="organisation">
+            <column name="verantwortlicherarzt_id"/>
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-14">
+        <createIndex indexName="ix_organisationrollen_benutzer" tableName="organisationrollen">
+            <column name="benutzer_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-15">
+        <createIndex indexName="ix_organisationrollen_organisation" tableName="organisationrollen">
+            <column name="organisation_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-16">
+        <addForeignKeyConstraint baseColumnNames="rev" baseTableName="organisationrollen_aud" constraintName="FK3kp0sddajn92qv76dhh5wh16c" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-17">
+        <addForeignKeyConstraint baseColumnNames="rev" baseTableName="organisation_aud" constraintName="FKfb6767p3ssyday3r8vj0dh5o8" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-18">
+        <addForeignKeyConstraint baseColumnNames="rev" baseTableName="systemrollen_aud" constraintName="FKi32vbie7o3p2l14csi1xgrrtl" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-19">
+        <addForeignKeyConstraint baseColumnNames="verantwortlicherarzt_id" baseTableName="organisation" constraintName="fk_organisation_benutzer" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-20">
+        <addForeignKeyConstraint baseColumnNames="benutzer_id" baseTableName="organisationrollen" constraintName="fk_organisationrollen_benutzer" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-21">
+        <addForeignKeyConstraint baseColumnNames="organisation_id" baseTableName="organisationrollen" constraintName="fk_organisationrollen_organisation" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="organisation" validate="true"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1774426108433-22">
+        <addForeignKeyConstraint baseColumnNames="benutzer_id" baseTableName="systemrollen" constraintName="fk_systemrollen_benutzer" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+    </changeSet>
+  <changeSet author="gema (generated)" id="1774426108433-23">
+    <createIndex indexName="ix_systemrollen_benutzer" tableName="systemrollen">
+      <column name="benutzer_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+</databaseChangeLog>

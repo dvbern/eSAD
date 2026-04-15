@@ -8,7 +8,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.mime.MediaType;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.time.OffsetDateTime;

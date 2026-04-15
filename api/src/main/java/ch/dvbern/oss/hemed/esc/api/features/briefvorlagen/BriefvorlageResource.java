@@ -36,8 +36,7 @@ import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -53,7 +52,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 @Tag(name = Tags.TAG_BRIEFVORLAGE)
 @RolesAllowed(BerechtigungName.VORLAGEN_LESEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "BriefvorlageResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("BriefvorlageResourceMS")
 public class BriefvorlageResource {
 
     private final BriefvorlageMapper briefvorlageMapper;

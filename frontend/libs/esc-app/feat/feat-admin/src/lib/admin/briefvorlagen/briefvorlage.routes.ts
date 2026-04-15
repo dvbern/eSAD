@@ -1,8 +1,6 @@
 import {inject} from '@angular/core';
 import {ActivatedRouteSnapshot, Route} from '@angular/router';
-import {BriefvorlagenStore, SystemAdminStore} from '@dvb/feat-shared';
-import {requireRole} from '@dvb/feat-shared';
-import {Path} from '@dvb/feat-shared';
+import {BriefvorlagenStore, Path, requireAcceptedAgb, requireRole, SystemAdminStore} from '@dvb/feat-shared';
 import {confirmOnDirty} from '@dvb/util-angular';
 import {hasBriefvorlagenViewBerechtigung} from '@dvb/util-shared';
 import {EntityId} from '@ngrx/signals/entities';
@@ -46,6 +44,7 @@ export const briefvorlageRoutes: Route[] = [
         canDeactivate: [confirmOnDirty()],
         canActivate: [
           requireRole(hasBriefvorlagenViewBerechtigung()),
+          requireAcceptedAgb(),
         ],
       },
     ],

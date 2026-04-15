@@ -25,7 +25,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.external.KindExternal;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.external.KindExternalSyncHelperService;
 import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -67,15 +67,15 @@ public class KindAssert extends AbstractAssert<KindAssert, Kind> {
             failIfDifferent(actual.getNationalitaet(), otherKind.getSchuelerNationalitaet(), "Nationalitaet");
         }
 
-        if (!Objects.equals(actual.getTelefon(), mapValidPhoneNumberOrNull(otherKind))) {
+        if (!Objects.equals(actual.getTelefon(), mapValidPhoneNumberOrNull(otherKind, ImportTyp.ESCADA))) {
             failIfDifferent(actual.getTelefon(), otherKind.getSchuelerMobile(), "Telefon");
         }
 
-        if (!Objects.equals(actual.getEmail(), KindExternalSyncHelperService.mapValidEmailAdressOrNull(otherKind))) {
+        if (!Objects.equals(actual.getEmail(), KindExternalSyncHelperService.mapValidEmailAdressOrNull(otherKind, ImportTyp.ESCADA))) {
             failIfDifferent(actual.getEmail(), otherKind.getSchuelerEMail(), "Email");
         }
 
-        if (!Objects.equals(actual.getSozialversicherungsNummer(), mapValidSvnrOrNull(otherKind))) {
+        if (!Objects.equals(actual.getSozialversicherungsNummer(), mapValidSvnrOrNull(otherKind, ImportTyp.ESCADA))) {
             failIfDifferent(
                 actual.getSozialversicherungsNummer(),
                 otherKind.getSchuelerSozialversicherung(),

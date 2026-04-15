@@ -19,16 +19,16 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmenService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.Impfstoff;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffCharge;
@@ -43,6 +43,8 @@ import ch.dvbern.oss.hemed.esc.api.features.labels.LabelService;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizService;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizStatus;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
@@ -63,19 +65,30 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.KlasseBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.LabelBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.NotizBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.SchuleBuilder;
-import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfstatusKrankheitBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungInternBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenMassnahmenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.SearchApiSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.*;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FilterCombinationSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindSearchListJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KrankheitSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizStatusSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.PageRequestJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.PageResultJsonSearchSummaryJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SearchColumnsSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SearchJsonFiltersInnerSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SearchJsonSortsInnerSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SearchJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SearchSummaryJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SearchSummaryListJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SortDirectionSpec;
 import com.google.common.collect.MoreCollectors;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.tuple.Pair;
 import org.assertj.core.api.Assertions;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -84,6 +97,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.oss.hemed.esc.api.features.search.types.SearchColumns.DATE_TIME_FORMAT_PATTERN;
+import static ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus.isInaktiv;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
@@ -107,6 +121,7 @@ class SearchResourceITest extends AbstractITest {
     private final UntersuchungImpfungenMassnahmenService untersuchungImpfungenMassnahmenService;
     private final AnlassService anlassService;
     private final EinladungService einladungService;
+    private final OrganisationService organisationService;
 
     // Without this, the test has to be adapted every year on 01. August
     private final LocalDate currentDate = this.getAppClock().localDateTime().now().toLocalDate();
@@ -393,7 +408,7 @@ class SearchResourceITest extends AbstractITest {
 
             assertThat(result.getData())
                 .isNotEmpty()
-                .allMatch(k -> StringUtils.containsIgnoreCase(k.getName(), "all"));
+                .allMatch(k -> Strings.CI.contains(k.getName(), "all"));
 
             assertThat(result.getData())
                 .isNotEmpty()
@@ -405,8 +420,6 @@ class SearchResourceITest extends AbstractITest {
                 .filteredOn(k -> k.getName().contains(uuid.toString() + "ALLCAPS"))
                 .hasSize(1);
         }
-
-
 
         @Test
         @TestAsAdminBS
@@ -468,8 +481,8 @@ class SearchResourceITest extends AbstractITest {
                 .matches(total -> (total) >= 2);
 
             Integer totalUnfiltered = unfiltered.getTotalItemCount();
-            Integer filteredCount   = filtered.getTotalFilteredCount();
-            Integer totalFiltered   = filtered.getTotalItemCount();
+            Integer filteredCount = filtered.getTotalFilteredCount();
+            Integer totalFiltered = filtered.getTotalItemCount();
 
             assertThat(totalFiltered)
                 .as("totalItemCount is global/unchanged by filters")
@@ -922,7 +935,6 @@ class SearchResourceITest extends AbstractITest {
                 .noneMatch(id -> id.equals(kind2.getId().getId()));
         }
 
-
         @Test
         @TestAsAdminBS
         void findPaginatedKinder_should_filter_notiz_status_and_benutzer() {
@@ -1070,11 +1082,12 @@ class SearchResourceITest extends AbstractITest {
             UUID testrunUUID = UUID.randomUUID();
 
             // ARRANGE
+            Organisation organisation = organisationService.getZentraleOrganisation();
             Benutzer mpaSchule = benutzerService.persist(BenutzerBuilder.create(
-                builder -> builder.withFachRolle(List.of(
+                builder -> builder.withOrganisationRollen(organisation, List.of(
                     FachRolle.MPA))));
             Benutzer mpaDossier = benutzerService.persist(BenutzerBuilder.create(
-                builder -> builder.withFachRolle(List.of(
+                builder -> builder.withOrganisationRollen(organisation, List.of(
                     FachRolle.MPA))));
 
             Schule schule = schuleService.persist(SchuleBuilder.create(builder -> builder
@@ -1224,11 +1237,13 @@ class SearchResourceITest extends AbstractITest {
             UUID testrunUUID = UUID.randomUUID();
 
             // ARRANGE
+            Organisation organisation = organisationService.getZentraleOrganisation();
+
             Benutzer arztSchule = benutzerService.persist(BenutzerBuilder.create(
-                builder -> builder.withFachRolle(List.of(
+                builder -> builder.withOrganisationRollen(organisation, List.of(
                     FachRolle.SCHULAERZTIN))));
             Benutzer arztDossier = benutzerService.persist(BenutzerBuilder.create(
-                builder -> builder.withFachRolle(List.of(
+                builder -> builder.withOrganisationRollen(organisation, List.of(
                     FachRolle.SCHULAERZTIN))));
 
             Schule schule = schuleService.persist(SchuleBuilder.create(builder -> builder
@@ -1492,7 +1507,7 @@ class SearchResourceITest extends AbstractITest {
             var uuid = UUID.randomUUID();
             List<Kind> knownKinder = insertKnownTestKinder(uuid);
             Kind inaktivesKind =
-                knownKinder.stream().filter(k -> k.getKindAktivStatus() == EntityAktivStatus.INAKTIV).collect(
+                knownKinder.stream().filter(k -> isInaktiv(k.getKindAktivStatus())).collect(
                     MoreCollectors.onlyElement());
 
             // ACT
@@ -1541,7 +1556,7 @@ class SearchResourceITest extends AbstractITest {
             var uuid = UUID.randomUUID();
             List<Kind> knownKinder = insertKnownTestKinder(uuid);
             Kind inaktivesKind =
-                knownKinder.stream().filter(k -> k.getKindAktivStatus() == EntityAktivStatus.INAKTIV).collect(
+                knownKinder.stream().filter(k -> isInaktiv(k.getKindAktivStatus())).collect(
                     MoreCollectors.onlyElement());
 
             // ACT
@@ -1851,7 +1866,6 @@ class SearchResourceITest extends AbstractITest {
                 .extracting(PageResultJsonSearchSummaryJsonSpec::getTotalFilteredCount)
                 .matches(count -> count >= 1);
 
-
             // Verify that only kind1 with anlass in status AUFGEBOTEN is returned
             assertThat(result.getData())
                 .isNotEmpty()
@@ -1866,17 +1880,18 @@ class SearchResourceITest extends AbstractITest {
         void findPaginatedKinder_should_filter_anlass_mpa_arzt_weitere_person() {
             // ARRANGE
             // Create benutzer
+            Organisation organisation = organisationService.getZentraleOrganisation();
             Benutzer arzt1 = benutzerService.persist(BenutzerBuilder.create(
-                builder -> builder.withFachRolle(List.of(
+                builder -> builder.withOrganisationRollen(organisation, List.of(
                     FachRolle.SCHULAERZTIN))));
             Benutzer arzt2 = benutzerService.persist(BenutzerBuilder.create(
-                builder -> builder.withFachRolle(List.of(
+                builder -> builder.withOrganisationRollen(organisation, List.of(
                     FachRolle.SCHULAERZTIN))));
             Benutzer mpa1 = benutzerService.persist(BenutzerBuilder.create(
-                builder -> builder.withFachRolle(List.of(
+                builder -> builder.withOrganisationRollen(organisation, List.of(
                     FachRolle.MPA))));
             Benutzer mpa2 = benutzerService.persist(BenutzerBuilder.create(
-                builder -> builder.withFachRolle(List.of(
+                builder -> builder.withOrganisationRollen(organisation, List.of(
                     FachRolle.MPA))));
 
             Benutzer weiterePerson1 = fixtureService.createBenutzer();
@@ -2390,7 +2405,10 @@ class SearchResourceITest extends AbstractITest {
             Impfstoff impfstoff = fixtureService.createImpfstoff(krankheiten);
             Assertions.assertThat(previousUntersuchung.getUntersuchungImpfungen()).isNotNull();
 
-            Optional<UntersuchungImpfstatusKrankheit> krankheit = untersuchungImpfstatusKrankheitService.findByUntersuchungAndKrankheit(previousUntersuchung.getUntersuchungImpfungen().getId(), Krankheit.MASERN);
+            Optional<UntersuchungImpfstatusKrankheit> krankheit =
+                untersuchungImpfstatusKrankheitService.findByUntersuchungAndKrankheit(
+                    previousUntersuchung.getUntersuchungImpfungen()
+                        .getId(), Krankheit.MASERN);
             krankheit.ifPresent(untersuchungImpfstatusKrankheit -> untersuchungImpfstatusKrankheit.setAnzahlImpfungen(2));
 
             untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(

@@ -8,19 +8,20 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDatenMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.EinladungJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.EinladungListJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.EinladungSaveJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.json.UntersuchungKindDatenJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.UntersuchungTabInfoJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.UntersuchungTabInfoListJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.UntersuchungTabsSavedJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDatenMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.json.UntersuchungKindDatenJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindIdListJson;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizJson;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import io.micrometer.core.annotation.Timed;
 import io.smallrye.faulttolerance.api.RateLimit;
 import io.vertx.core.http.HttpServerResponse;
 import jakarta.annotation.security.RolesAllowed;
@@ -37,14 +38,11 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.stream.Streams;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.reactive.PartType;
 import org.jboss.resteasy.reactive.RestForm;
@@ -56,7 +54,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 @Tag(name = Tags.TAG_EINLADUNGEN)
 @RolesAllowed({ BerechtigungName.ANLASSLISTE_LESEN, BerechtigungName.ANLASSLISTE_LESEN_LAEUSE })
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "EinladungResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("EinladungResourceMS")
 public class EinladungResource {
 
     private final EinladungMapper einladungMapper;
@@ -78,9 +76,8 @@ public class EinladungResource {
     }
 
     @DELETE
-    @NonNull
     @RolesAllowed({ BerechtigungName.ANLASSPLANUNG_SCHREIBEN, BerechtigungName.ANLASSPLANUNG_SCHREIBEN_LAEUSE })
-    public Response removeEinladungenForAnlass(
+    public void removeEinladungenForAnlass(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @Valid EinladungListJson einladungListJson
     ) {
@@ -90,7 +87,6 @@ public class EinladungResource {
         einladungMapper.requireConsistentPathParams(einladungenId, anlassId);
 
         einladungMapper.removeEinladungen(einladungListJson);
-        return Response.ok().build();
     }
 
     @GET
@@ -209,15 +205,13 @@ public class EinladungResource {
 
     @PUT
     @Path("/{einladungId}/untersuchung/abschluss")
-    @NonNull
     @RolesAllowed({ BerechtigungName.ANLASSPLANUNG_SCHREIBEN, BerechtigungName.ANLASSPLANUNG_SCHREIBEN_LAEUSE })
-    public Response untersuchungAbschliessen(
+    public void untersuchungAbschliessen(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
     ) {
         einladungMapper.requireConsistentPathParams(einladungId, anlassId);
         authorizerService.requireWriteAuthorizationAnlass(anlassId);
         einladungMapper.untersuchungAbschliessen(einladungId);
-        return Response.ok().build();
     }
 }

@@ -87,10 +87,10 @@ class TranslationPropertiesTest {
 
     private String fromAppLang(AppLanguages appLang) {
         return switch (appLang) {
-            case DE -> "translations.properties";
-            case FR -> "translations_fr.properties";
-            case IT -> "translations_it.properties";
-            case EN -> "translations_en.properties";
+            case DE -> "translations/translations-bs.properties";
+            case FR -> "translations/translations-bs_fr.properties";
+            case IT -> "translations/translations-bs_it.properties";
+            case EN -> "translations/translations-bs_en.properties";
         };
     }
 

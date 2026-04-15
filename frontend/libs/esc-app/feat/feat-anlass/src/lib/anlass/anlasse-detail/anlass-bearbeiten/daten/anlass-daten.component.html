@@ -83,7 +83,8 @@
     <!-- Schuljahr -->
     <svui-form-control [label]="'anlass.detail.schuljahr' | transloco"
                        [viewValue]="displaySchuljahr(form.group.value.schuljahr)"
-                       [size]="'half'">
+                       [size]="'half'"
+                       data-testid="anlass-schuljahr-select">
       <ng-select
         svuiNgSelect
         bindLabel='dummy'
@@ -153,10 +154,10 @@
     >
       <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
       @if (benutzerOptionsStore.arztOptionsIncluding(store.arztOfCurrentAnlass())) {
-        @for (item of benutzerOptionsStore.arztOptionsIncluding(store.arztOfCurrentAnlass()); track item.id; ) {
-          <ng-option [value]="item" [disabled]="!item.aktiv">
+        @for (arzt of benutzerOptionsStore.arztOptionsIncluding(store.arztOfCurrentAnlass()); track arzt.id; ) {
+          <ng-option [value]="arzt" [disabled]="arzt.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
               <span class="w-100 d-flex justify-content-between">
-                <span>{{ item.fullName }}</span>
+                <span>{{ arzt.fullName }}</span>
               </span>
           </ng-option>
         }
@@ -177,11 +178,11 @@
       [compareWith]="compareFnBenutzer"
     >
       <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-      @if (benutzerOptionsStore.mpaOrPfpOptionsIncluding(store.mpaOfCurrentAnlass())) {
-        @for (item of benutzerOptionsStore.mpaOrPfpOptionsIncluding(store.mpaOfCurrentAnlass()); track item.id; ) {
-          <ng-option [value]="item" [disabled]="!item.aktiv">
+      @if (benutzerOptionsStore.hilfspersonOptionsIncluding(store.mpaOfCurrentAnlass())) {
+        @for (hilfsperson of benutzerOptionsStore.hilfspersonOptionsIncluding(store.mpaOfCurrentAnlass()); track hilfsperson.id; ) {
+          <ng-option [value]="hilfsperson" [disabled]="hilfsperson.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
               <span class="w-100 d-flex justify-content-between">
-                <span>{{ item.fullName }}</span>
+                <span>{{ hilfsperson.fullName }}</span>
               </span>
           </ng-option>
         }
@@ -203,10 +204,10 @@
     >
       <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
       @if (benutzerOptionsStore.entitiesIncluding(store.weiterePersonOfCurrentAnlass())) {
-        @for (item of benutzerOptionsStore.entitiesIncluding(store.weiterePersonOfCurrentAnlass()); track item.id) {
-          <ng-option [value]="item" [disabled]="!item.aktiv">
+        @for (benutzer of benutzerOptionsStore.entitiesIncluding(store.weiterePersonOfCurrentAnlass()); track benutzer.id) {
+          <ng-option [value]="benutzer" [disabled]="benutzer.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
               <span class="w-100 d-flex justify-content-between">
-                <span>{{ item.fullName }}</span>
+                <span>{{ benutzer.fullName }}</span>
               </span>
           </ng-option>
         }

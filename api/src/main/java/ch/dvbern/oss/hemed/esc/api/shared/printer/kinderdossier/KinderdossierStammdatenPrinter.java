@@ -7,8 +7,10 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKind;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import com.itextpdf.layout.Document;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -24,9 +26,11 @@ public final class KinderdossierStammdatenPrinter {
         @NonNull Kind kind,
         @NonNull List<KontaktPersonKind> kontaktPersonKindList,
         @NonNull BasePrinter basePrinter,
-        @NonNull Document document
+        @NonNull Document document,
+        @NonNull TenantSettingsService tenantSettingsService,
+        @NonNull ConfigService configService
     ) {
-        addPersonalien(kind, basePrinter, document);
+        addPersonalien(kind, basePrinter, document, tenantSettingsService, configService);
 
         addKontaktangaben(kind, basePrinter, document);
 
@@ -56,12 +60,20 @@ public final class KinderdossierStammdatenPrinter {
     private static void addPersonalien(
         @NonNull Kind kind,
         @NonNull BasePrinter basePrinter,
-        @NonNull Document document
+        @NonNull Document document,
+        @NonNull TenantSettingsService tenantSettingsService,
+        @NonNull ConfigService configService
     ) {
         basePrinter.addH2Title(
             I18nMessage.of("printer.kinderdossier.stammdaten.subtitle.personalien.label"),
             document);
-        basePrinter.addKeyValue("printer.kinderdossier.stammdaten.edokid-id.label", kind.getEsadId(), document);
+        boolean showEsadId = tenantSettingsService.getTenantSetting()
+            .getTenantSettingFeatures()
+            .getEsadIdFeature()
+            .isEnabledForDeploymentEnvironment(configService.getEnvironment());
+        if (showEsadId) {
+            basePrinter.addKeyValue("printer.kinderdossier.stammdaten.edokid-id.label", kind.getEsadId(), document);
+        }
         basePrinter.addKeyValue(
             "printer.kinderdossier.stammdaten.ahv-nummer.label",
             kind.getSozialversicherungsNummer(),

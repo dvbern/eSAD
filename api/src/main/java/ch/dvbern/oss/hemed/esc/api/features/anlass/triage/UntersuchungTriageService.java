@@ -22,7 +22,10 @@ public class UntersuchungTriageService {
     }
 
     @NonNull
-    public UntersuchungTriage persistWithOptimisticLocking(@NonNull UntersuchungTriage entity, @NonNull Long versionFromFrontend) {
+    public UntersuchungTriage persistWithOptimisticLocking(
+        @NonNull UntersuchungTriage entity,
+        @NonNull Long versionFromFrontend
+    ) {
         return triageRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
     }
 

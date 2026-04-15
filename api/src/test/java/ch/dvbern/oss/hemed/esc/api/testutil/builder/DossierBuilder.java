@@ -19,6 +19,7 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -30,7 +31,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.DossierJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierJsonSpec;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -99,10 +100,18 @@ public class DossierBuilder {
         this.dossier.setImmunitaetVarizellen(immunitaetVarizellen);
         return this;
     }
+
     @NonNull
     @CanIgnoreReturnValue
     public DossierBuilder withImmunitaetMasern(@NonNull Boolean immunitaetMasern) {
         this.dossier.setImmunitaetMasern(immunitaetMasern);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public DossierBuilder withTimestampDefinitivArchiviert(@Nullable LocalDateTime localDateTime) {
+        this.dossier.setTimestampDefinitivArchiviert(localDateTime);
         return this;
     }
 

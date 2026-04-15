@@ -33,8 +33,9 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResulta
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
-import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungHoerenUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhancedMapper;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -56,9 +57,9 @@ public class UntersuchungHoerenOtoskopieMapper {
             hoeren.getId(),
             EntityInfoJson.fromEntity(hoeren),
             new UntersuchungHoerenOtoskopieSaveJson(
-                EnumSetUtil.toList(hoeren.getOtoskopieRechts()),
+                MultiValueEnhancedMapper.toJson(OtoskopieResultat.class, hoeren.getOtoskopieRechts()),
                 hoeren.getOtoskopieRechtsResultatAndere(),
-                EnumSetUtil.toList(hoeren.getOtoskopieLinks()),
+                MultiValueEnhancedMapper.toJson(OtoskopieResultat.class, hoeren.getOtoskopieLinks()),
                 hoeren.getOtoskopieLinksResultatAndere(),
                 hoeren.getBemerkungen(),
                 hoeren.getVersion()
@@ -81,15 +82,23 @@ public class UntersuchungHoerenOtoskopieMapper {
         if (hoeren == null) {
             hoeren = UntersuchungHoerenOtoskopie.forUntersuchung(untersuchung);
         }
-        hoeren.setOtoskopieRechts(EnumSetUtil.toEnumSet(saveJson.getOtoskopieRechts(), OtoskopieResultat.class));
+        hoeren.setOtoskopieRechts(MultiValueEnhancedMapper.toEntity(
+            OtoskopieResultat.class,
+            saveJson.getOtoskopieRechts()));
         hoeren.setOtoskopieRechtsResultatAndere(
-            saveJson.getOtoskopieRechts() != null && saveJson.getOtoskopieRechts().contains(OtoskopieResultat.ANDERES)
+            ValueEnhancedUtil.getEnumSetOrEmpty(
+                MultiValueEnhancedMapper.toEntity(OtoskopieResultat.class, saveJson.getOtoskopieRechts()),
+                OtoskopieResultat.class).contains(OtoskopieResultat.ANDERES)
                 ? saveJson.getOtoskopieRechtsResultatAndere()
                 : null
         );
-        hoeren.setOtoskopieLinks(EnumSetUtil.toEnumSet(saveJson.getOtoskopieLinks(), OtoskopieResultat.class));
+        hoeren.setOtoskopieLinks(MultiValueEnhancedMapper.toEntity(
+            OtoskopieResultat.class,
+            saveJson.getOtoskopieLinks()));
         hoeren.setOtoskopieLinksResultatAndere(
-            saveJson.getOtoskopieLinks() != null && saveJson.getOtoskopieLinks().contains(OtoskopieResultat.ANDERES)
+            ValueEnhancedUtil.getEnumSetOrEmpty(
+                MultiValueEnhancedMapper.toEntity(OtoskopieResultat.class, saveJson.getOtoskopieRechts()),
+                OtoskopieResultat.class).contains(OtoskopieResultat.ANDERES)
                 ? saveJson.getOtoskopieLinksResultatAndere()
                 : null
         );
@@ -119,22 +128,17 @@ public class UntersuchungHoerenOtoskopieMapper {
             defaultOtoskopieResultat = OtoskopieResultat.NICHT_GEPRUEFT;
         }
 
-        List<OtoskopieResultat> defaultOtoskopieRechts = EnumSetUtil.toList(
-            UntersuchungHoerenUtil.getOtoskopieRechts(
-                anlassConfig.getHoerenOtoskopie(),
-                null,
-                defaultOtoskopieResultat)
-        );
-        List<OtoskopieResultat> defaultOtoskopieLinks = EnumSetUtil.toList(
-            UntersuchungHoerenUtil.getOtoskopieLinks(
-                anlassConfig.getHoerenOtoskopie(),
-                null,
-                defaultOtoskopieResultat));
         // Warning: it is important for the dirty check to send null values if there is no default value for otoskopie
         return new UntersuchungHoerenOtoskopieSaveJson(
-            defaultOtoskopieRechts.isEmpty() ? null : defaultOtoskopieRechts,
+            MultiValueEnhancedMapper.toJson(
+                OtoskopieResultat.class,
+                UntersuchungHoerenUtil.getOtoskopieDefault(anlassConfig.getHoerenOtoskopie(), defaultOtoskopieResultat)
+            ),
             null,
-            defaultOtoskopieLinks.isEmpty() ? null : defaultOtoskopieLinks,
+            MultiValueEnhancedMapper.toJson(
+                OtoskopieResultat.class,
+                UntersuchungHoerenUtil.getOtoskopieDefault(anlassConfig.getHoerenOtoskopie(), defaultOtoskopieResultat)
+            ),
             null,
             null,
             0L

@@ -48,7 +48,9 @@ describe('BenutzerStore', () => {
         'firstName',
         'lastName',
         [],
+        undefined,
         ['ANLASSPLANUNG_LESEN'],
+        undefined
       );
 
       expect(store.isLoggedIn())

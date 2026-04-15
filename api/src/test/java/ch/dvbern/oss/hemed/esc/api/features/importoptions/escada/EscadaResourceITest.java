@@ -11,7 +11,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.assertj.AppValidationErrorJsonSpecAssert;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsEscada;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsEscadaBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.DeveloperApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.EscadaApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppValidationErrorJsonSpec;
@@ -96,7 +96,7 @@ class EscadaResourceITest extends AbstractITest {
                 .setParam(SO_TIMEOUT, timeout));
     }
 
-    @TestAsEscada
+    @TestAsEscadaBS
     @Test
     @Order(10)
     void escada_csv_upload_throws_if_file_empty() {
@@ -123,7 +123,7 @@ class EscadaResourceITest extends AbstractITest {
             .allMatch(k -> k.equals("InvalidCSVFormat"));
     }
 
-    @TestAsEscada
+    @TestAsEscadaBS
     @Test
     @Order(20)
     void escada_csv_upload_fails_if_format_invalid() {
@@ -152,7 +152,7 @@ class EscadaResourceITest extends AbstractITest {
             .allMatch(k -> k.equals("InvalidCSVFormat"));
     }
 
-    @TestAsEscada
+    @TestAsEscadaBS
     @Test
     @Order(30)
     void escada_csv_upload_for_malencoded_file_should_fail() {
@@ -184,7 +184,7 @@ class EscadaResourceITest extends AbstractITest {
             .allMatch(k -> k.equals("InvalidCSVFormat"));
     }
 
-    @TestAsEscada
+    @TestAsEscadaBS
     @Test
     @Order(40)
     void escada_csv_upload_pseudo_data() {
@@ -247,7 +247,7 @@ class EscadaResourceITest extends AbstractITest {
     }
 
     @TestSecurity(
-        user = TestAsEscada.USERNAME,
+        user = TestAsEscadaBS.USERNAME,
         // java Annotation require compile time Constants so we need to define the array each time :(
         roles = {
             ESCADA_PUSH
@@ -255,12 +255,12 @@ class EscadaResourceITest extends AbstractITest {
     )
     @OidcSecurity(
         claims = {
-            @Claim(key = "sub", value = TestAsEscada.BENUTZER_ID),
+            @Claim(key = "sub", value = TestAsEscadaBS.BENUTZER_ID),
             @Claim(key = "tenant", value = "BS"),
             @Claim(key = "family_name", value = "Serviceaccount"),
             @Claim(key = "given_name", value = "Escada"),
-            @Claim(key = "preferred_username", value = TestAsEscada.USERNAME),
-            @Claim(key = "email", value = TestAsEscada.EMAIL),
+            @Claim(key = "preferred_username", value = TestAsEscadaBS.USERNAME),
+            @Claim(key = "email", value = TestAsEscadaBS.EMAIL),
             @Claim(key = "azp", value = "invalid_client"),
         }
     )
@@ -279,7 +279,7 @@ class EscadaResourceITest extends AbstractITest {
     }
 
     @TestSecurity(
-        user = TestAsEscada.USERNAME,
+        user = TestAsEscadaBS.USERNAME,
         // java Annotation require compile time Constants so we need to define the array each time :(
         roles = {
             ESCADA_PUSH
@@ -287,13 +287,13 @@ class EscadaResourceITest extends AbstractITest {
     )
     @OidcSecurity(
         claims = {
-            @Claim(key = "sub", value = TestAsEscada.BENUTZER_ID),
+            @Claim(key = "sub", value = TestAsEscadaBS.BENUTZER_ID),
             @Claim(key = "tenant", value = "BS"),
             @Claim(key = "family_name", value = "Serviceaccount"),
             @Claim(key = "given_name", value = "Escada"),
             @Claim(key = "preferred_username", value = "invalid_username"),
-            @Claim(key = "email", value = TestAsEscada.EMAIL),
-            @Claim(key = "azp", value = TestAsEscada.AZP),
+            @Claim(key = "email", value = TestAsEscadaBS.EMAIL),
+            @Claim(key = "azp", value = TestAsEscadaBS.AZP),
         }
     )
     @Test
@@ -310,7 +310,7 @@ class EscadaResourceITest extends AbstractITest {
             .statusCode(Status.FORBIDDEN.getStatusCode());
     }
 
-    @TestAsEscada
+    @TestAsEscadaBS
     @Test
     @Order(80)
     void escada_client_blocked_from_other_apis() {
@@ -322,7 +322,7 @@ class EscadaResourceITest extends AbstractITest {
             .statusCode(Status.FORBIDDEN.getStatusCode());
     }
 
-    @TestAsEscada
+    @TestAsEscadaBS
     @Test
     @Order(90)
     void escada_csv_upload_async_successful_even_if_format_invalid() {
@@ -334,10 +334,10 @@ class EscadaResourceITest extends AbstractITest {
             ._fileMultiPart(firstFile)
             .execute(ResponseBody::peek)
             .then()
-            .statusCode(Status.OK.getStatusCode());
+            .statusCode(Status.NO_CONTENT.getStatusCode());
     }
 
-    @TestAsEscada
+    @TestAsEscadaBS
     @Test
     @Order(100)
     void escada_csv_upload_async_for_malencoded_file_is_still_successful() {
@@ -349,10 +349,10 @@ class EscadaResourceITest extends AbstractITest {
             ._fileMultiPart(firstFile)
             .execute(ResponseBody::peek)
             .then()
-            .statusCode(Status.OK.getStatusCode());
+            .statusCode(Status.NO_CONTENT.getStatusCode());
     }
 
-    @TestAsEscada
+    @TestAsEscadaBS
     @Test
     @Order(110)
     void escada_csv_upload_async_pseudo_data() {
@@ -364,7 +364,7 @@ class EscadaResourceITest extends AbstractITest {
             ._fileMultiPart(firstFile)
             .execute(v -> v)
             .then()
-            .statusCode(Status.OK.getStatusCode());
+            .statusCode(Status.NO_CONTENT.getStatusCode());
     }
 
     @NonNull

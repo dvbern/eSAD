@@ -4,9 +4,8 @@ import {
   AhvNummerUtil,
   fromISODateString,
   getSchoolYearFromISODateString,
-  isFilledIn,
-  isNullish,
-  toDateStr
+  isFilledIn,  isNullish,
+  toDateStr,
 } from '@dvb/util-shared';
 import {addYears, subYears} from 'date-fns';
 
@@ -46,12 +45,15 @@ export const AppValidatorKeys = {
   zeroDecimalPlaces: 'zeroDecimalPlaces',
   changeSchuljahr: 'changeSchuljahr',
   einmalAuswahlKrankheiten: 'einmalAuswahlKrankheiten',
-  datumVonAfterDatumBis: 'datumVonAfterDatumBis',
-  dateRangeIsMaximumNumberOfYears: 'dateRangeIsMaximumNumberOfYears'
+  datumBisAfterDatumVon: 'datumBisAfterDatumVon',
+  datumBisAtleastDatumVonOrAfter: 'datumBisAtleastDatumVonOrAfter',
+  dateRangeIsMaximumNumberOfYears: 'dateRangeIsMaximumNumberOfYears',
+  multipleEmails: 'multipleEmails'
 } as const satisfies ValidatorKeyMap<AppValidators>;
 
 const MIN_KIND_AGE = 3;
 const MAX_KIND_AGE = 130;
+const EMAIL_PATTERN = '[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}';
 
 export class AppValidators {
 
@@ -182,7 +184,7 @@ export class AppValidators {
       if (isNullish(control.value)) {
         return null;
       }
-        const dateErrors = AppValidators.date()(control);
+      const dateErrors = AppValidators.date()(control);
       if (dateErrors) {
         return dateErrors;
       }
@@ -230,11 +232,22 @@ export class AppValidators {
     };
   }
 
+  static multipleEmailValidator(separator = ','): ValidatorFn {
+    return (control) => {
+      const value: string = control.value;
+      if (!isFilledIn(value)) {
+        return null;
+      }
+      const emails = value.split(separator).map(e => e.trim()).filter(Boolean);
+      const invalidEmails = emails.filter(email => !email.match(EMAIL_PATTERN));
+      return invalidEmails.length > 0 ? {[AppValidatorKeys.multipleEmails]: true} : null;
+    };
+  }
+
   static emailValidator(): ValidatorFn {
     return (control) => {
       // Validators.email ist zu wenig streng (schaut nur aufs @, aber nicht auf .ch etc.)
       // Deshalb wollen wir eine Validierung mit Pattern, die aber "email" heisst (für eine schöne Fehlerbeschreibung)
-      const EMAIL_PATTERN = '[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}';
       if (Validators.pattern(EMAIL_PATTERN)(control)) {
         return {[AppValidatorKeys.email]: true};
       }
@@ -378,7 +391,26 @@ export class AppValidators {
       const datumVonDate = fromISODateString(datumVon);
       const datumBisDate = fromISODateString(datumBis);
       if (datumVonDate >= datumBisDate) {
-        return {[AppValidatorKeys.datumVonAfterDatumBis]: true};
+        return {[AppValidatorKeys.datumBisAfterDatumVon]: true};
+      }
+
+      return null;
+    };
+  }
+
+  static datumBisIsAtleastDatumVonOrAfter(nameVon: string, nameBis: string): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const datumVon: ISODateString = control.get(nameVon)?.value;
+      const datumBis: ISODateString = control.get(nameBis)?.value;
+
+      if (isNullish(datumVon) || isNullish(datumBis)) {
+        return null;
+      }
+
+      const datumVonDate = fromISODateString(datumVon);
+      const datumBisDate = fromISODateString(datumBis);
+      if (datumVonDate > datumBisDate) {
+        return {[AppValidatorKeys.datumBisAtleastDatumVonOrAfter]: true};
       }
 
       return null;
@@ -399,9 +431,11 @@ export class AppValidators {
       datumBisDate.setFullYear(datumBisDate.getFullYear() - maximalRange);
 
       if (datumVonDate < datumBisDate) {
-        return {[AppValidatorKeys.dateRangeIsMaximumNumberOfYears]: {
+        return {
+          [AppValidatorKeys.dateRangeIsMaximumNumberOfYears]: {
             maximalYears: maximalRange,
-          }};
+          },
+        };
       }
 
       return null;
@@ -487,7 +521,8 @@ export class AppValidators {
         // Überprüfen ob es sich um ein valides Datum handelt.
         const dateErrors = AppValidators.date()(datumNew);
 
-        if (!dateErrors && getSchoolYearFromISODateString(datumNew?.value) !== getSchoolYearFromISODateString(datumOriginal.value)) {
+        if (!dateErrors && getSchoolYearFromISODateString(datumNew?.value) !== getSchoolYearFromISODateString(
+          datumOriginal.value)) {
           datumNew?.setErrors({changeSchuljahr: true});
           return null;
         } else {

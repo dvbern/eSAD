@@ -12,6 +12,8 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.DossierService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
@@ -33,8 +35,8 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.api.SchulenApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassFlagsJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppFailureErrorJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppValidationErrorJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierNichtMedizinischSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EntityAktivStatusSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EntityAktivStatusSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FailureTypeSpec;
@@ -42,6 +44,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindSaveModeDuplikatSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindSaveResultJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SchuleJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.PapierakteStatusSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SchuleSaveJsonSpec;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
@@ -72,6 +75,7 @@ class DossierResourceITest extends AbstractITest {
     private final BenutzerService benutzerService;
     private final BenutzerRepo benutzerRepo;
     private final AppClock appClock;
+    private final OrganisationService organisationService;
 
     @Override
     @BeforeEach
@@ -126,16 +130,17 @@ class DossierResourceITest extends AbstractITest {
         Assertions.assertThat(existingDossier.getAndereZusatzInformationText()).isNull();
         String zusatzinformation = "MeineTestInfo";
 
+        Organisation organisation = organisationService.getZentraleOrganisation();
+
         Benutzer createDto = BenutzerBuilder.create(
             builder -> builder
                 .withRandomEmail("nina.neu@example.com")
                 .withRandomVorname("Nina")
                 .withRandomNachname("Neu")
-                .withFachRolle(List.of(FachRolle.SCHULAERZTIN, FachRolle.MPA))
+                .withOrganisationRollen(organisation, List.of(FachRolle.SCHULAERZTIN, FachRolle.MPA))
                 .withKeycloakId(UUID.randomUUID().toString())
         );
         benutzerRepo.persist(createDto);
-//        Benutzer zustaendigArztMPA = benutzerService.getById(createDto.getId());
 
         DossierJsonSpec updatedDossierJson = DossierBuilder.createJaxSpec(
             builder -> builder
@@ -181,12 +186,14 @@ class DossierResourceITest extends AbstractITest {
         Assertions.assertThat(existingDossier.getAndereZusatzInformationText()).isNull();
         String zusatzinformation = "MeineTestInfo";
 
+        Organisation organisation = organisationService.getZentraleOrganisation();
+
         Benutzer createDto = BenutzerBuilder.create(
             builder -> builder
                 .withRandomEmail("nina.neu@example.com")
                 .withRandomVorname("Nina")
                 .withRandomNachname("Neu")
-                .withFachRolle(List.of(FachRolle.SCHULAERZTIN, FachRolle.MPA))
+                .withOrganisationRollen(organisation, List.of(FachRolle.SCHULAERZTIN, FachRolle.MPA))
                 .withKeycloakId(UUID.randomUUID().toString())
         );
         benutzerRepo.persist(createDto);
@@ -256,29 +263,33 @@ class DossierResourceITest extends AbstractITest {
                 .withKeycloakId(UUID.randomUUID().toString())
         );
         Benutzer benutzer = benutzerService.getById(benutzerService.createBenutzer(createDto));
-
-        DossierJsonSpec updatedDossierJson = DossierBuilder.createJaxSpec(
-            builder -> builder
-                .forDossier(existingDossier)
-                .withZustaendigArzt(benutzer)
-                .withZustaendigMPA(benutzer),
-            appClock.offsetDateTime().now().toLocalDate());
+        BenutzerOptionJsonSpec benutzerOptionJson = BenutzerBuilder.createOptionJaxSpec(
+            builder -> builder.forBenutzer(benutzer));
 
         // ACT
-        String dossierId = existingDossier.getId().getId();
-        DossierNichtMedizinischSaveJsonSpec data = updatedDossierJson.getDataNichtMedizinisch();
-        AppFailureErrorJsonSpec error = api
-            .dossierResourceUpdateDossierNichtMedizinisch()
+        AppFailureErrorJsonSpec errorArzt = api
+            .dossierResourceUpdateDossierVerantwortlichArzt()
             .dossierIdPath(existingDossier.getId().getId())
-            .body(data)
+            .body(benutzerOptionJson)
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
             .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
             .extract().as(AppFailureErrorJsonSpec.class);
+        assertThat(errorArzt).isNotNull();
+        assertThat(errorArzt.getType()).isEqualTo(FailureTypeSpec.FAILURE);
 
-        assertThat(error).isNotNull();
-        assertThat(error.getType()).isEqualTo(FailureTypeSpec.FAILURE);
+        AppFailureErrorJsonSpec errorMpa = api
+            .dossierResourceUpdateDossierVerantwortlichMpa()
+            .dossierIdPath(existingDossier.getId().getId())
+            .body(benutzerOptionJson)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
+            .extract().as(AppFailureErrorJsonSpec.class);
+        assertThat(errorMpa).isNotNull();
+        assertThat(errorMpa.getType()).isEqualTo(FailureTypeSpec.FAILURE);
     }
 
     @Test
@@ -337,8 +348,9 @@ class DossierResourceITest extends AbstractITest {
     @TestAsAdminBS
     void openDossier_forKindWithKlasse_schuleHasMpaAndNoArzt_shouldSetOnDossier() {
         // ARRANGE
+        Organisation organisation = organisationService.getZentraleOrganisation();
         Benutzer mpa = benutzerService.persist(BenutzerBuilder.create(
-            builder -> builder.withFachRolle(List.of(FachRolle.MPA))));
+            builder -> builder.withOrganisationRollen(organisation, List.of(FachRolle.MPA))));
         Schule schule = schuleService.persist(SchuleBuilder.create(builder -> builder.withZustaendigMPA(mpa)));
         Klasse klasse = klasseService.persist(KlasseBuilder.create(builder -> builder.forSchule(schule)));
         Kind kind = kindService.persistWithoutDuplicateCheck(KindBuilder.create(builder -> builder.withKlasse(klasse)));
@@ -369,8 +381,9 @@ class DossierResourceITest extends AbstractITest {
     @TestAsAdminBS
     void openDossier_forKindWithKlasse_schuleHasArztAndMpa_shouldSetOnDossier_changeSchule_shouldSetNull() {
         // ARRANGE
+        Organisation organisation = organisationService.getZentraleOrganisation();
         Benutzer arztMpa = benutzerService.persist(BenutzerBuilder.create(
-            builder -> builder.withFachRolle(List.of(FachRolle.MPA, FachRolle.SCHULAERZTIN))
+            builder -> builder.withOrganisationRollen(organisation, List.of(FachRolle.MPA, FachRolle.SCHULAERZTIN))
                 .withRandomNachname("ARZTMPA1___")));
         Schule schule = schuleService.persist(SchuleBuilder.create(builder -> builder.withZustaendigArzt(arztMpa)
             .withZustaendigMPA(arztMpa).withSchulhaus("Schulhaus 1")));
@@ -379,7 +392,7 @@ class DossierResourceITest extends AbstractITest {
         Kind kind = kindService.persistWithoutDuplicateCheck(KindBuilder.create(builder -> builder.withKlasse(klasse)));
 
         Benutzer newArztMpa = benutzerService.persist(BenutzerBuilder.create(
-            builder -> builder.withFachRolle(List.of(FachRolle.MPA, FachRolle.SCHULAERZTIN))
+            builder -> builder.withOrganisationRollen(organisation, List.of(FachRolle.MPA, FachRolle.SCHULAERZTIN))
                 .withRandomNachname("ARZTMPA2___")));
         Schule newSchule = schuleService.persist(SchuleBuilder.create(builder -> builder.withZustaendigArzt(newArztMpa)
             .withZustaendigMPA(newArztMpa).withSchulhaus("Schulhaus 2")));
@@ -452,11 +465,12 @@ class DossierResourceITest extends AbstractITest {
     @TestAsAdminBS
     void updateArztAndMpaOnSchule_shouldUpdateEachDossierWithNew() {
         // ARRANGE
+        Organisation organisation = organisationService.getZentraleOrganisation();
+
         Benutzer arztMpa = benutzerService.persist(BenutzerBuilder.create(
-            builder -> builder.withFachRolle(List.of(
-                FachRolle.SCHULAERZTIN, FachRolle.MPA))));
+            builder -> builder.withOrganisationRollen(organisation, List.of(FachRolle.SCHULAERZTIN, FachRolle.MPA))));
         Benutzer arztMpa2 = benutzerService.persist(BenutzerBuilder.create(
-            builder -> builder.withFachRolle(List.of(
+            builder -> builder.withOrganisationRollen(organisation, List.of(
                 FachRolle.SCHULAERZTIN, FachRolle.MPA))));
         Schule schule = schuleService.persist(SchuleBuilder.create(builder -> builder.withZustaendigArzt(arztMpa)
             .withZustaendigMPA(arztMpa)));
@@ -552,5 +566,110 @@ class DossierResourceITest extends AbstractITest {
         assertThat(updatedDossier2.getDataNichtMedizinisch().getZustaendigArzt().getId()).isEqualTo(arztMpa2.getId().getId());
         assertThat(updatedDossier2.getDataNichtMedizinisch().getZustaendigMPA().getId()).isEqualTo(arztMpa2.getId().getId());
 
+    }
+
+    @Test
+    @TestAsAdminBS
+    void updateDossierVerantwortlichArzt() {
+        // ARRANGE
+        Organisation organisation = organisationService.getZentraleOrganisation();
+        Kind kind = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
+        Dossier existingDossier = dossierService.persist(
+            DossierBuilder.create(builder -> builder.forKind(kind)));
+
+        Benutzer arzt = benutzerService.persist(BenutzerBuilder.create(
+            builder -> builder.withOrganisationRollen(organisation, List.of(FachRolle.SCHULAERZTIN))));
+        BenutzerOptionJsonSpec benutzerOptionJson = BenutzerBuilder.createOptionJaxSpec(
+            builder -> builder.forBenutzer(arzt));
+
+        // ACT
+        DossierJsonSpec result = api
+            .dossierResourceUpdateDossierVerantwortlichArzt()
+            .dossierIdPath(existingDossier.getId().getId())
+            .body(benutzerOptionJson)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(DossierJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(existingDossier.getId().getId());
+        assertThat(result.getDataNichtMedizinisch().getZustaendigArzt()).isNotNull();
+        assertThat(result.getDataNichtMedizinisch().getZustaendigArzt().getId()).isEqualTo(arzt.getId().getId());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void updateDossierVerantwortlichMpa() {
+        // ARRANGE
+        Organisation organisation = organisationService.getZentraleOrganisation();
+        Kind kind = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
+        Dossier existingDossier = dossierService.persist(
+            DossierBuilder.create(builder -> builder.forKind(kind)));
+
+        Benutzer mpa = benutzerService.persist(BenutzerBuilder.create(
+            builder -> builder.withOrganisationRollen(organisation, List.of(FachRolle.MPA))));
+        BenutzerOptionJsonSpec benutzerOptionJson = BenutzerBuilder.createOptionJaxSpec(
+            builder -> builder.forBenutzer(mpa));
+
+        // ACT
+        DossierJsonSpec result = api
+            .dossierResourceUpdateDossierVerantwortlichMpa()
+            .dossierIdPath(existingDossier.getId().getId())
+            .body(benutzerOptionJson)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(DossierJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(existingDossier.getId().getId());
+        assertThat(result.getDataNichtMedizinisch().getZustaendigMPA()).isNotNull();
+        assertThat(result.getDataNichtMedizinisch().getZustaendigMPA().getId()).isEqualTo(mpa.getId().getId());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void updateDossierPapierakteStatus() {
+        // ARRANGE
+        Kind kind = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
+        Dossier existingDossier = dossierService.persist(
+            DossierBuilder.create(builder -> builder.forKind(kind)));
+
+        // ACT
+        DossierJsonSpec result = api
+            .dossierResourceUpdateDossierPapierakteStatus()
+            .dossierIdPath(existingDossier.getId().getId())
+            .statusPath(PapierakteStatusSpec.VORHANDEN)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(DossierJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(existingDossier.getId().getId());
+        assertThat(result.getDataNichtMedizinisch().getPapierakteStatus()).isEqualTo(PapierakteStatusSpec.VORHANDEN);
+
+        // ACT - update to a different status
+        DossierJsonSpec result2 = api
+            .dossierResourceUpdateDossierPapierakteStatus()
+            .dossierIdPath(existingDossier.getId().getId())
+            .statusPath(PapierakteStatusSpec.NICHT_VORHANDEN)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(DossierJsonSpec.class);
+
+        // ASSERT
+        assertThat(result2).isNotNull();
+        assertThat(result2.getId()).isEqualTo(existingDossier.getId().getId());
+        assertThat(result2.getDataNichtMedizinisch().getPapierakteStatus()).isEqualTo(PapierakteStatusSpec.NICHT_VORHANDEN);
     }
 }

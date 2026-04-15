@@ -15,7 +15,7 @@ import {
   TableLinkComponent,
   TextInputDirective,
 } from '@dvb/ui-components';
-import { hasListEditBerechtigung, isNullish } from '@dvb/util-shared';
+import {hasListEditBerechtigung, isActiveInExternalSystem} from '@dvb/util-shared';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { NgbDropdownItem } from '@ng-bootstrap/ng-bootstrap';
 import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
@@ -67,10 +67,7 @@ export class KlassenListComponent {
   }
 
   public isExternalKlasseAndActive(klasse: KlasseJsonEnhanced): boolean {
-    if (isNullish(klasse.externalImportInfoJson)) {
-      return false;
-    }
-    return klasse.externalImportInfoJson.aktivInExternalSystem;
+    return isActiveInExternalSystem(klasse);
   }
 
   public changeKlasseAktivStatus(klasse: KlasseJsonEnhanced): void {

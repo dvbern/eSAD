@@ -1,0 +1,10 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="2026-03-13-1">
+    <sql>
+      -- Add ARCHIVIERUNG to ESC-WINTERTHUR-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, berechtigung, benutzer_id)
+      VALUES ('49d3b1f3-345a-4cd8-b26c-3dc5805c259b', '2026-03-13 08:45:50.889111 +00:00', '2026-03-13 08:45:50.889111 +00:00', '11111111-1111-1111-1111-111111111114', '11111111-1111-1111-1111-111111111114', 0, 'ARCHIVIERUNG', '11111111-1111-1111-1111-111111111114');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

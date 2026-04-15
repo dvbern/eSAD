@@ -99,3 +99,4 @@ hs_err_pid*.log
 /.run/
 /api/docs/escada-service/scripts/
 /api/docs/file-ingress/scripts/
+/api/docs/pupil-service/scripts/

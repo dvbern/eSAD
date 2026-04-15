@@ -5,14 +5,14 @@ import jakarta.enterprise.inject.Produces;
 import lombok.Setter;
 
 @RequestScoped
-public class TenantProducer {
+public class TenantProducer implements TenantProvider {
 
     @Setter
     private TenantEnum currentTenant;
 
-
     @Produces
     @RequestScoped
+    @Override
     public TenantEnum produceTenant() {
         return currentTenant;
     }

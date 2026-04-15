@@ -1,0 +1,215 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="1770039267939-1">
+    <createTable tableName="untersuchungschulrelevantebeeintraechtigung">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungschulrelevantebeeintraechtigungPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+      <column name="feinmotorik" type="VARCHAR(30)"/>
+      <column name="freiesgehen" type="VARCHAR(30)"/>
+      <column name="gleichgewichteinbeinstand" type="VARCHAR(30)"/>
+      <column name="grafomotorik" type="VARCHAR(30)"/>
+      <column name="grobmotorikeinbeinhuepfen" type="VARCHAR(30)"/>
+      <column name="ohnestuetzradvelofahren" type="VARCHAR(30)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-2">
+    <createTable tableName="untersuchungschulrelevantebeeintraechtigung_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+      <column name="feinmotorik" type="VARCHAR(30)"/>
+      <column name="freiesgehen" type="VARCHAR(30)"/>
+      <column name="gleichgewichteinbeinstand" type="VARCHAR(30)"/>
+      <column name="grafomotorik" type="VARCHAR(30)"/>
+      <column name="grobmotorikeinbeinhuepfen" type="VARCHAR(30)"/>
+      <column name="ohnestuetzradvelofahren" type="VARCHAR(30)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-3">
+    <addColumn tableName="untersuchung">
+      <column name="untersuchungschulrelevantebeeintraechtigung_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-4">
+    <addColumn tableName="untersuchung_aud">
+      <column name="untersuchungschulrelevantebeeintraechtigung_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-5">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungschulrelevantebeeintraechtigung_audPK" tableName="untersuchungschulrelevantebeeintraechtigung_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-6">
+    <addUniqueConstraint columnNames="untersuchungschulrelevantebeeintraechtigung_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGSCHULRELEVANTEBEEINTRAECHTIGUNG_ID_C" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-7">
+    <createIndex indexName="ix_untersuchung_untersuchungschulrelevantebeintraechtigung" tableName="untersuchung">
+      <column name="untersuchungschulrelevantebeeintraechtigung_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-8">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungschulrelevantebeeintraechtigung_aud" constraintName="FKphtntpwgxo78nv6mkja0s68jo" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-9">
+    <addForeignKeyConstraint baseColumnNames="untersuchungschulrelevantebeeintraechtigung_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchungschulrelevantebeeintraechtigung" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungschulrelevantebeeintraechtigung" validate="true"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-10">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungbeeintraechtigungbemerkung" type="VARCHAR(30)">
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-11">
+    <sql>update anlassconfig
+         set untersuchungbeeintraechtigungbemerkung = 'NOT_VISIBLE'
+         where untersuchungbeeintraechtigungbemerkung is null</sql>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-12">
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungbeeintraechtigungbemerkung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-13">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungbeeintraechtigungbemerkung" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-14">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungbeeintraechtigungfeinmotorik" type="VARCHAR(30)">
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-15">
+    <sql>update anlassconfig
+         set untersuchungbeeintraechtigungfeinmotorik = 'NOT_VISIBLE'
+         where untersuchungbeeintraechtigungfeinmotorik is null</sql>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-16">
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungbeeintraechtigungfeinmotorik"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-17">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungbeeintraechtigungfeinmotorik" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-18">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungbeeintraechtigungfreiesgehen" type="VARCHAR(30)">
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-19">
+    <sql>update anlassconfig
+         set untersuchungbeeintraechtigungfreiesgehen = 'NOT_VISIBLE'
+         where untersuchungbeeintraechtigungfreiesgehen is null</sql>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-20">
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungbeeintraechtigungfreiesgehen"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-21">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungbeeintraechtigungfreiesgehen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-22">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungbeeintraechtigunggleichgewicht" type="VARCHAR(30)">
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-23">
+    <sql>update anlassconfig
+         set untersuchungbeeintraechtigunggleichgewicht = 'NOT_VISIBLE'
+         where untersuchungbeeintraechtigunggleichgewicht is null</sql>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-24">
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungbeeintraechtigunggleichgewicht"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-25">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungbeeintraechtigunggleichgewicht" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-26">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungbeeintraechtigunggrafomotorik" type="VARCHAR(30)">
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-27">
+    <sql>update anlassconfig
+         set untersuchungbeeintraechtigunggrafomotorik = 'NOT_VISIBLE'
+         where untersuchungbeeintraechtigunggrafomotorik is null</sql>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-28">
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungbeeintraechtigunggrafomotorik"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-29">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungbeeintraechtigunggrafomotorik" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-30">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungbeeintraechtigunggrobmotorik" type="VARCHAR(30)">
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-31">
+    <sql>update anlassconfig
+         set untersuchungbeeintraechtigunggrobmotorik = 'NOT_VISIBLE'
+         where untersuchungbeeintraechtigunggrobmotorik is null</sql>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-32">
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungbeeintraechtigunggrobmotorik"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-33">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungbeeintraechtigunggrobmotorik" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-34">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungbeeintraechtigungohnestuetzradvelofahren" type="VARCHAR(30)">
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-35">
+    <sql>update anlassconfig
+         set untersuchungbeeintraechtigungohnestuetzradvelofahren = 'NOT_VISIBLE'
+         where untersuchungbeeintraechtigungohnestuetzradvelofahren is null</sql>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-36">
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungbeeintraechtigungohnestuetzradvelofahren"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770039267939-37">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungbeeintraechtigungohnestuetzradvelofahren" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+</databaseChangeLog>

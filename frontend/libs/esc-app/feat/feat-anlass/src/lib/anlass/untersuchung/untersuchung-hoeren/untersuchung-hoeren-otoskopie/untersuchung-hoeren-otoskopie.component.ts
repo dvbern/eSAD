@@ -1,14 +1,16 @@
 
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
-import {FormArray, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
-import {RequirementSetting} from '@dvb/data-access-backend';
-import {BenutzerStore} from '@dvb/feat-shared';
+import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {OtoskopieResultat, RequirementSetting} from '@dvb/data-access-backend';
 import {
-  CheckboxDirective,
+  BenutzerStore,
+  createMultiValueEnhancedForm,
+  TenantSettingsStore,
+  ValueEnhancedComponent
+} from '@dvb/feat-shared';
+import {
   FormControlComponent,
   FormLayoutComponent,
-  KachelControlComponent,
-  KachelFormSectionComponent,
   SaveCancelButtonsComponent,
   TextareaDirective,
   TitleComponent,
@@ -20,23 +22,21 @@ import {TranslocoPipe} from '@jsverse/transloco';
 import {AnlassStore} from '../../../anlass.store';
 import {UntersuchungStore} from '../../untersuchung.store';
 import {hasSomeNotNullishValueIgnoringVersion} from '../../untersuchung.util';
-import {OtoskopieResultatSubFormType, UntersuchungHoerenOtoskopieForm} from './untersuchung-hoeren-otoskopie.form';
+import {UntersuchungHoerenOtoskopieForm} from './untersuchung-hoeren-otoskopie.form';
 import {UntersuchungHoerenOtoskopieStore} from './untersuchung-hoeren-otoskopie.store';
 
 @Component({
   selector: 'feat-untersuchung-hoeren-otoskopie',
   imports: [
     FormLayoutComponent,
-    KachelControlComponent,
-    KachelFormSectionComponent,
     ReactiveFormsModule,
     SaveCancelButtonsComponent,
     TranslocoPipe,
-    CheckboxDirective,
     FormControlComponent,
     TextareaDirective,
-    TitleComponent
-],
+    TitleComponent,
+    ValueEnhancedComponent
+  ],
   templateUrl: './untersuchung-hoeren-otoskopie.component.html',
   styleUrl: './untersuchung-hoeren-otoskopie.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,6 +49,7 @@ export class UntersuchungHoerenOtoskopieComponent implements DirtyMarker {
   readonly anlassStore = inject(AnlassStore);
   readonly untersuchungStore = inject(UntersuchungStore);
   readonly benutzerStore = inject(BenutzerStore);
+  readonly tenantSettingsStore = inject(TenantSettingsStore);
 
   anlassConfig = computed(() => {
     if (this.anlassStore.selectedEntity() !== undefined) {
@@ -60,9 +61,13 @@ export class UntersuchungHoerenOtoskopieComponent implements DirtyMarker {
   canEdit = computed(() => this.benutzerStore.createHasRequiredRoleSig(hasHoerenEditBerechtigung())()
     && this.anlassStore.canUserEditAnlassInCurrentState());
 
+  readonly otoskopieItems = Object.values(OtoskopieResultat);
+
   form = new UntersuchungHoerenOtoskopieForm({
     fb: inject(NonNullableFormBuilder),
     destroyRef: inject(DestroyRef),
+    otoskopieLinksValueEnhancedForm: createMultiValueEnhancedForm(this.otoskopieItems),
+    otoskopieRechtsValueEnhancedForm: createMultiValueEnhancedForm(this.otoskopieItems)
   });
 
   constructor() {
@@ -70,9 +75,10 @@ export class UntersuchungHoerenOtoskopieComponent implements DirtyMarker {
       const hoerenOtoskopie = this.hoerenOtoskopieStore.hoerenOtoskopie();
       this.form.resetForm(hoerenOtoskopie?.otoskopieData);
       const anlassConfig = this.anlassStore.selectedEntity()?.anlassConfig;
+      const nichtGeprueftGrundEnabled = this.tenantSettingsStore.nichtGeprueftGrundEnabled();
       if (anlassConfig) {
         untracked(() => {
-          this.form.setValidators(anlassConfig);
+          this.form.setValidators(anlassConfig, !!nichtGeprueftGrundEnabled);
         });
       }
       this.form.setDisabled(!this.canEdit());
@@ -85,6 +91,8 @@ export class UntersuchungHoerenOtoskopieComponent implements DirtyMarker {
         if (hasAnyValue) {
           this.form.resetForm(defaultHoerenOtoskopie);
           this.form.group.markAsDirty();
+          this.form.group.controls.otoskopieRechts.controls.valueArray.markAsDirty();
+          this.form.group.controls.otoskopieLinks.controls.valueArray.markAsDirty();
         }
         this.hoerenOtoskopieStore.resetApplyDefaultHoerenOtoskopie();
         this.form.setDisabled(!this.anlassStore.canUserEditAnlassInCurrentState());
@@ -118,13 +126,5 @@ export class UntersuchungHoerenOtoskopieComponent implements DirtyMarker {
         untersuchungHoerenOtoskopieSaveJson: payload,
       });
     }
-  }
-
-  getOtoskopieRechtsArray(): FormArray<OtoskopieResultatSubFormType> {
-    return this.form.group.controls.otoskopieRechtsArray;
-  }
-
-  getOtoskopieLinksArray(): FormArray<OtoskopieResultatSubFormType> {
-    return this.form.group.controls.otoskopieLinksArray;
   }
 }

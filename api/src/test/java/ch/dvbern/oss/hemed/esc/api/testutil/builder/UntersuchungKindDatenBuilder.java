@@ -33,7 +33,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungDatenJsonSpecMapp
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungDatenKindSaveJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungKindDatenJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungKindDatenSaveJsonSpec;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class UntersuchungKindDatenBuilder {

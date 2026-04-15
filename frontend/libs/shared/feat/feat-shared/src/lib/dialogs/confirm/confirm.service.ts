@@ -17,6 +17,7 @@ export interface ConfirmConfig {
   question: string;
   consequence: string;
   decision: string;
+  confirmCheckbox?: string;
   wayOut?: string;
 }
 
@@ -71,5 +72,4 @@ export class ConfirmService {
       close: outcome => modalRef.close(outcome),
     };
   }
-
 }

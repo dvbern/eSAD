@@ -34,7 +34,7 @@ class LiquibaseReadinessHealthCheckTest {
             var actual = sut.call();
 
             assertThat(actual.getName())
-                .isEqualTo("Liquibase");
+                .isEqualTo("LiquibaseRaceConditionWorkaround");
             assertThat(actual.getStatus())
                 .isEqualTo(HealthCheckResponse.Status.UP);
         }
@@ -54,7 +54,7 @@ class LiquibaseReadinessHealthCheckTest {
             var actual = sut.call();
 
             assertThat(actual.getName())
-                .isEqualTo("Liquibase");
+                .isEqualTo("LiquibaseRaceConditionWorkaround");
             assertThat(actual.getStatus())
                 .isEqualTo(HealthCheckResponse.Status.DOWN);
             assertThat(actual.getData().get())

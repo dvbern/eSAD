@@ -1,0 +1,19 @@
+@use '../../../../../../../../shared/ui/ui-components/src/styles/core/spacing';
+
+:host {
+  display: block;
+
+  .linksrechts_wrapper {
+    display: flex;
+    gap: spacing.$gutter-width-inline-elements;
+  }
+
+  .linksrechts {
+    width: 9rem;
+  }
+
+  button.nav-link {
+    font-weight: 700;
+    color: #8192b5;
+  }
+}

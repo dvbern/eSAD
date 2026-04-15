@@ -11,12 +11,16 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.QOrganisation;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.QOrganisationRollen;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.QBenutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.QBenutzerBerechtigung;
+import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import com.querydsl.core.NonUniqueResultException;
 import com.querydsl.core.types.Predicate;
 import jakarta.persistence.EntityGraph;
@@ -80,7 +84,7 @@ public class BenutzerRepo extends BaseRepo<Benutzer> {
             return Optional.empty();
         }
 
-        return Optional.of(fetchedUsers.get(0));
+        return Optional.of(fetchedUsers.getFirst());
     }
 
     @NonNull
@@ -100,9 +104,20 @@ public class BenutzerRepo extends BaseRepo<Benutzer> {
     }
 
     @NonNull
+    public List<Benutzer> findAllForOrganisation(@NonNull ID<Organisation> organisationId) {
+        return db.selectFrom(QBenutzer.benutzer)
+            .join(QBenutzer.benutzer.organisationRollen, QOrganisationRollen.organisationRollen)
+            .join(QOrganisationRollen.organisationRollen.organisation, QOrganisation.organisation)
+            .where(QBenutzer.benutzer.benutzerAktivStatus.eq(EntityAktivStatus.AKTIV)
+                .and(QOrganisation.organisation.id.eq(organisationId.getUUID())))
+            .orderBy(QBenutzer.benutzer.vorname.asc(), QBenutzer.benutzer.nachname.asc())
+            .fetch();
+    }
+
+    @NonNull
     public List<Benutzer> findAllActive() {
         return db.selectFrom(QBenutzer.benutzer)
-            .where(QBenutzer.benutzer.aktiv.isTrue())
+            .where(QBenutzer.benutzer.benutzerAktivStatus.eq(EntityAktivStatus.AKTIV))
             .orderBy(QBenutzer.benutzer.vorname.asc(), QBenutzer.benutzer.nachname.asc())
             .fetch();
     }
@@ -125,6 +140,7 @@ public class BenutzerRepo extends BaseRepo<Benutzer> {
         SmartJPAQuery<UUID> query =
             db.select(QBenutzer.benutzer.id)
                 .from(QBenutzer.benutzer)
+                .leftJoin(QBenutzer.benutzer.systemRollen, QSystemRollen.systemRollen)
                 .distinct()
                 .where(
                     (
@@ -132,14 +148,16 @@ public class BenutzerRepo extends BaseRepo<Benutzer> {
                         (QBenutzer.benutzer.loginInfos.lastUsedSessionTimestamp.lt(cutoffDateTimeForOldSessions)
                             .or(QBenutzer.benutzer.loginInfos.lastUsedSessionTimestamp.isNull())
                         )
-                            // and was not manually activated for a while (or never)
-                            .and(
-                                (QBenutzer.benutzer.timestampLastManuallyActivated.lt(cutoffDateTimeForOldSessions)
-                                    .or(QBenutzer.benutzer.timestampLastManuallyActivated.isNull()))
-                            )
+                        // and was not manually activated for a while (or never)
+                        .and(
+                            (QBenutzer.benutzer.timestampLastManuallyActivated.lt(cutoffDateTimeForOldSessions)
+                                .or(QBenutzer.benutzer.timestampLastManuallyActivated.isNull()))
+                        )
                     )
-                        .and(QBenutzer.benutzer.aktiv.isTrue())
-                        .and(QBenutzer.benutzer.fachRollen.contains(FachRolle.SYSTEM_ADMIN.name()).not())
+                    .and(QBenutzer.benutzer.benutzerAktivStatus.eq(EntityAktivStatus.AKTIV))
+                    .and(QBenutzer.benutzer.systemRollen.isNull()
+                        .or(QBenutzer.benutzer.systemRollen.fachRollen.contains(FachRolle.SYSTEM_ADMIN.name()).not())
+                    )
                 );
 
         List<UUID> resultList;
@@ -154,7 +172,7 @@ public class BenutzerRepo extends BaseRepo<Benutzer> {
     public long deactivateListOfBenutzer(@NonNull List<ID<Benutzer>> benutzerToDeactivate) {
         List<UUID> uuidList = benutzerToDeactivate.stream().map(ID::getUUID).toList();
         return db.update(QBenutzer.benutzer)
-            .set(QBenutzer.benutzer.aktiv, false)
+            .set(QBenutzer.benutzer.benutzerAktivStatus, EntityAktivStatus.INAKTIV)
             .where(QBenutzer.benutzer.id.in(uuidList))
             .execute();
     }

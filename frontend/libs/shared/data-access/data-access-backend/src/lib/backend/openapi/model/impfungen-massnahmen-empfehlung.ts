@@ -9,9 +9,10 @@
  */
 
 
-export type ImpfungenMassnahmenEmpfehlung = 'IMPFUNG_BEIM_HAUSARZT';
+export type ImpfungenMassnahmenEmpfehlung = 'IMPFUNG_BEIM_HAUSARZT' | 'IMPFTERMIN_EMPFOHLEN';
 
 export const ImpfungenMassnahmenEmpfehlung = {
-    IMPFUNG_BEIM_HAUSARZT: 'IMPFUNG_BEIM_HAUSARZT' as ImpfungenMassnahmenEmpfehlung
+    IMPFUNG_BEIM_HAUSARZT: 'IMPFUNG_BEIM_HAUSARZT' as ImpfungenMassnahmenEmpfehlung,
+    IMPFTERMIN_EMPFOHLEN: 'IMPFTERMIN_EMPFOHLEN' as ImpfungenMassnahmenEmpfehlung
 } as const;
 

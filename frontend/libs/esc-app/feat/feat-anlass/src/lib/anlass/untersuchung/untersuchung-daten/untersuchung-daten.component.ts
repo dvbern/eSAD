@@ -1,9 +1,16 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { BenutzerOptionJson, Geschlecht, Klassenstufe, Land, RequirementSetting } from '@dvb/data-access-backend';
-import { BenutzerOptionsStore, BenutzerStore, EventBusStore } from '@dvb/feat-shared';
+import {CommonModule} from '@angular/common';
+import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {
+  BenutzerOptionJson,
+  EntityAktivStatus,
+  Geschlecht,
+  Klassenstufe,
+  Land,
+  RequirementSetting
+} from '@dvb/data-access-backend';
+import {BenutzerOptionsStore, BenutzerStore, EventBusStore, TenantSettingsStore} from '@dvb/feat-shared';
 import {
   CheckboxDirective,
   FormControlComponent,
@@ -19,14 +26,14 @@ import {
   TextInputDirective,
   TitleComponent,
 } from '@dvb/ui-components';
-import { DetailMode, DirtyMarker } from '@dvb/util-angular';
-import { hasUntersuchungKindDatenEditBerechtigung, requireValue } from '@dvb/util-shared';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
-import { AnlassStore } from '../../anlass.store';
-import { UntersuchungStore } from '../untersuchung.store';
-import { UntersuchungDatenForm } from './untersuchung-daten.form';
-import { UntersuchungDatenStore } from './untersuchung-daten.store';
+import {DetailMode, DirtyMarker} from '@dvb/util-angular';
+import {hasUntersuchungKindDatenEditBerechtigung, requireValue} from '@dvb/util-shared';
+import {TranslocoPipe} from '@jsverse/transloco';
+import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
+import {AnlassStore} from '../../anlass.store';
+import {UntersuchungStore} from '../untersuchung.store';
+import {UntersuchungDatenForm} from './untersuchung-daten.form';
+import {UntersuchungDatenStore} from './untersuchung-daten.store';
 
 @Component({
   selector: 'feat-untersuchung-daten',
@@ -61,6 +68,7 @@ export class UntersuchungDatenComponent implements DirtyMarker {
   readonly eventBusStore = inject(EventBusStore);
   readonly destroyRef = inject(DestroyRef);
   readonly benutzerStore = inject(BenutzerStore);
+  readonly tenantSettingsStore = inject(TenantSettingsStore);
 
   protected readonly RequirementSetting = RequirementSetting;
 
@@ -153,4 +161,6 @@ export class UntersuchungDatenComponent implements DirtyMarker {
       // Form validation triggered, errors will be displayed if any
     });
   }
+
+  protected readonly EntityAktivStatus = EntityAktivStatus;
 }

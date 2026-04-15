@@ -1,3 +1,20 @@
+@if (anlassConfigHelperService.neverEditable()) {
+  <div class="pb-3">
+    <svui-status-text [icon]="'warning'"
+                      class="pt-3"
+                      statusColor="warning">{{ 'anlassconfig.info.never.editable'|transloco }}
+    </svui-status-text>
+  </div>
+}
+@if (anlassConfigHelperService.canEdit()) {
+  <div class="pb-3">
+    <svui-status-text [icon]="'warning'"
+                      class=""
+                      statusColor="warning">{{ 'anlassconfig.info.editable'|transloco }}
+    </svui-status-text>
+  </div>
+}
+
 <svui-card [innerSpacing]="'topBottom'">
   @if (itemTable(); as itemTable) {
     <table

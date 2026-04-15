@@ -5,6 +5,7 @@ import {
   AufgabeJson,
   AufgabeStatus,
   BenutzerOptionJson,
+  EntityAktivStatus,
   FileDataJson,
   KindJson,
   LabelJson,
@@ -121,8 +122,8 @@ export class AufgabeDetailsComponent implements DirtyMarker {
     this.store.selectedEntity()?.data?.labels?.filter(label => !label.data.aktiv) ?? []);
 
   uploadTable = new TableModel<FileDataJson>(
-    { rawListSignal: this.aufgabenFiles },
-    { frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll' });
+    {rawListSignal: this.aufgabenFiles},
+    {frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll'});
 
   constructor() {
     effect(() => {
@@ -135,7 +136,7 @@ export class AufgabeDetailsComponent implements DirtyMarker {
       const selectedAufgabe = this.store.selectedEntity();
       if (selectedAufgabe) {
         // We need to create a copy as to not filter away the disabled labels everywhere.
-        const copy = { ...selectedAufgabe.data };
+        const copy = {...selectedAufgabe.data};
         // Take out the disabled labels as to not show up in the control
         copy.labels = copy.labels?.filter(label => label.data.aktiv);
         this.form.reset(copy, DetailMode.EDIT);
@@ -199,7 +200,7 @@ export class AufgabeDetailsComponent implements DirtyMarker {
     const aufgabeId = requireValidBackendEntityId(this.store.selectedEntity()?.id);
     this.confirmService.confirm({
       question: this.transloco.translate('ui.upload.table.action.delete.confirm.question',
-        { filename: $event.calculatedFileName }),
+        {filename: $event.calculatedFileName}),
       consequence: this.transloco.translate('ui.upload.table.action.delete.confirm.consequence'),
       decision: this.transloco.translate('ui.upload.table.action.delete.decision'),
     }).subscribe(() => {
@@ -232,4 +233,6 @@ export class AufgabeDetailsComponent implements DirtyMarker {
     this.fileUploads = undefined;
     this.saveAction.emit();
   }
+
+  protected readonly EntityAktivStatus = EntityAktivStatus;
 }

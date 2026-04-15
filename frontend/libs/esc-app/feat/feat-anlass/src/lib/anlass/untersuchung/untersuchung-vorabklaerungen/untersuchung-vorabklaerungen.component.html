@@ -1,0 +1,50 @@
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabVorabklaerungen) {
+
+  <form svuiFormLayout
+        [formType]="'kacheln'"
+        [mode]="'edit'"
+        [formGroup]="form.group"
+        (ngSubmit)="submitIfValid()">
+
+    <!-- vorabklaerungenFragebogenStatus -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.vorabklaerungenFragebogenStatus !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.fragebogenStatusForm"
+        [valueTitleKey]="'untersuchung.tab.abschluss.vorabklaerungenFragebogenStatus'"
+        [valuePrefix]="'FragebogenStatus'"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+    }
+
+    <!-- vorabklaerungenEinverstaendnisImpfungen -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.vorabklaerungenEinverstaendnisImpfungen !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.einverstaendnisImpfungenForm"
+        [valueTitleKey]="'untersuchung.tab.abschluss.vorabklaerungenEinverstaendnisImpfungen'"
+        [valuePrefix]="'EinverstaendnisImpfungen'"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+    }
+
+    <!-- vorabklaerungenChronischeKrankheiten -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.vorabklaerungenChronischeKrankheiten !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.chronischeKrankheitenForm"
+        [valueTitleKey]="'untersuchung.tab.abschluss.vorabklaerungenChronischeKrankheiten'"
+        [valuePrefix]="'ChronischeKrankheiten'"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+    }
+
+    <!-- Save / Cancel Buttons -->
+    @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+      <svui-save-cancel-buttons
+        [saving]="false"
+        [canEdit]="canEditVorabklaerungen()"
+        (cancelClicked)="abbrechen()"/>
+    }
+  </form>
+}

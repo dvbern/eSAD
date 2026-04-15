@@ -7,13 +7,16 @@ import {
   AufgabenStore,
   BenutzerStore,
   BriefvorlagenStore,
+  ImpfstoffeChargenStore,
   LabelsStore,
   Path,
+  requireAcceptedAgb,
   requireRole,
   SchulenOptionsStore,
 } from '@dvb/feat-shared';
 import {confirmOnDirty, toDetailModeStrict} from '@dvb/util-angular';
 import {
+  hasAerztePageViewBerechtigung,
   hasAufgabenViewBerechtigungen,
   hasKindEditBerechtigung,
   hasKinderMedizinischeDatenViewBerechtigung,
@@ -51,6 +54,7 @@ import {KinderSummaryStore} from './kinder/kinder-summary.store';
 import {
   KinderNotizenHochladenPageComponent
 } from './kinder/kinder-notiz/kinder-notizen-hochladen/kinder-notizen-hochladen.page.component';
+import {KinderMassenbriefStore} from "./kinder/kinder-list/kinder-massenbrief/kinder-massenbrief.store";
 
 export const kinderRoutes: Route[] = [
   {
@@ -66,6 +70,14 @@ export const kinderRoutes: Route[] = [
       _store: () => {
         inject(DossierStore).reset();
         inject(AnlassConfigOptionsStore).loadAnlassConfigOptions();
+        inject(ImpfstoffeChargenStore).loadImpfstoffeAndChargen();
+        inject(KinderMassenbriefStore).resetState();
+        if (inject(BenutzerStore).createHasRequiredRoleSig(hasKindVorlagenViewBerechtigung())()) {
+          inject(BriefvorlagenStore).loadBriefvorlagen();
+        }
+        if (inject(BenutzerStore).createHasRequiredRoleSig(hasAerztePageViewBerechtigung())()) {
+          inject(AerzteStore).loadAerzteList();
+        }
       },
     },
     children: [
@@ -76,6 +88,7 @@ export const kinderRoutes: Route[] = [
             inject(SchulenOptionsStore).loadSchulenOptions({onlyActive: false});
           },
           _labels: () => inject(LabelsStore).loadLabelsList(),
+
         },
         pathMatch: 'full',
         component: KinderListPageComponent,
@@ -114,7 +127,7 @@ export const kinderRoutes: Route[] = [
             const param = requireValidBackendEntityId(route.params['id']);
             const benutzerStore = inject(BenutzerStore);
             inject(DossierStore).loadDossierForKind(param);
-            if(benutzerStore.createHasRequiredRoleSig(hasKinderMedizinischeDatenViewBerechtigung())()) {
+            if (benutzerStore.createHasRequiredRoleSig(hasKinderMedizinischeDatenViewBerechtigung())()) {
               inject(DossierStore).loadLastImpfung(param);
             }
             inject(DossierStore).setNewMode(false);
@@ -125,10 +138,6 @@ export const kinderRoutes: Route[] = [
               inject(AufgabenStore).loadAufgabenForKind(param);
             }
             inject(KindAnlaesseStore).loadAnlaesseForKind(param);
-            if (benutzerStore.createHasRequiredRoleSig(hasKindVorlagenViewBerechtigung())()) {
-              inject(BriefvorlagenStore).loadBriefvorlagen();
-              inject(AerzteStore).loadAerzteList(); // Ärzte werden nur im Briefvorlagen Modal benötigt.
-            }
           },
         },
         children: [
@@ -212,7 +221,7 @@ export const kinderRoutes: Route[] = [
                         inject(KontaktPersonKindStore).loadKontaktPersonenByKind({kindID: kindId});
                         inject(KontaktPersonKindStore).setDetailModeView();
 
-                        if(inject(BenutzerStore).createHasRequiredRoleSig(hasKindEditBerechtigung())()) {
+                        if (inject(BenutzerStore).createHasRequiredRoleSig(hasKindEditBerechtigung())()) {
                           inject(KontaktPersonKindOptionsStore).loadKontaktPersonenByKindOptions({kindID: kindId});
                         }
                       },
@@ -293,6 +302,7 @@ export const kinderRoutes: Route[] = [
                 canDeactivate: [confirmOnDirty()],
                 canActivate: [
                   requireRole(hasNotizEditBerechtigung()),
+                  requireAcceptedAgb(),
                 ],
               },
               {
@@ -306,6 +316,7 @@ export const kinderRoutes: Route[] = [
                 },
                 canActivate: [
                   requireRole(hasNotizEditBerechtigung()),
+                  requireAcceptedAgb(),
                 ],
                 children: [
                   {

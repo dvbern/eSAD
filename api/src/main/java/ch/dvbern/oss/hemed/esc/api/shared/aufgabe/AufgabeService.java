@@ -39,6 +39,7 @@ public class AufgabeService {
     private final ConfigService configService;
     private final CurrentUserService currentUserService;
     private final AppClock appClock;
+    private final FileDataService fileDataService;
 
     @NonNull
     public Aufgabe persist(@NonNull Aufgabe aufgabe) {
@@ -59,7 +60,11 @@ public class AufgabeService {
     }
 
     public void remove(@NonNull ID<Aufgabe> aufgabeID) {
+        Aufgabe aufgabeToDelete = aufgabeRepo.getById(aufgabeID);
+        // Die Aufgabe entfernen
         aufgabeRepo.remove(aufgabeID);
+        // Die Files in S3 entfernen
+        fileDataService.deleteFileData(aufgabeToDelete.getFiles(), true);
     }
 
     public void removeForKind(@NonNull ID<Kind> kindID) {

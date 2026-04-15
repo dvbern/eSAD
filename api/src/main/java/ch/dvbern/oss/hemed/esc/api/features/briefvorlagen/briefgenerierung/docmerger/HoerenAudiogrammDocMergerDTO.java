@@ -12,4 +12,7 @@ public class HoerenAudiogrammDocMergerDTO {
     Map<String, String> audiogrammLinks;
     String zusammenfassungOhren;
     String beurteilungAudiogramm;
+    String empfehlungUeberpruefungArzt;
+    String audiogrammSimpel;
+    String hoerhilfe;
 }

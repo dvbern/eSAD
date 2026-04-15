@@ -10,7 +10,7 @@ export type HeadingContext = 'page' | 'card' | 'list' | 'formSection' | 'hidden'
 export class HeadingDirective {
   readonly context = input.required<HeadingContext>({ alias: 'svuiHeading' });
 
-  @HostBinding('class.svui_heading') private readonly svuiHeading = true;
+  @HostBinding('class.svui_heading') readonly svuiHeading = true;
 
   @HostBinding('class.' + classFormLayoutWidthFull)
   get formSectionStyles(): boolean {

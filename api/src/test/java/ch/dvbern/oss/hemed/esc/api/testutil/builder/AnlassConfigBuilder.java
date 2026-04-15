@@ -34,6 +34,9 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigMapp
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.json.AnlassConfigJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.ImpfungenMassnahmenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
@@ -41,7 +44,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.AnlassConfigJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassConfigJsonSpec;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -68,6 +71,13 @@ public class AnlassConfigBuilder {
             RequirementSetting.OPTIONAL,    // datenUntersuchung
             true,                           // showDatenSchule
             RequirementSetting.OPTIONAL,    // datenBemerkung
+            RequirementSetting.OPTIONAL,    // vorabklaerungenFragebogenStatus
+            RequirementSetting.OPTIONAL,    // vorabklaerungenEinverstaendnisImpfungen
+            RequirementSetting.OPTIONAL,    // vorabklaerungenChronischeKrankheiten
+            true,                           // showImpfungenHeaderImpfausweisUnvollstaendig
+            true,                           // showImpfungenHeaderImpfausweisNichtVorhanden
+            true,                           // showImpfungenHeaderImpfausweisZweiPlusEinsSchema
+            true,                           // showImpfungenHeaderImpfausweisUpload
             RequirementSetting.OPTIONAL,    // impfungenUebersicht
             RequirementSetting.OPTIONAL,    // impfungenListe
             true,                           // showImpfungenDoppelkontrolle
@@ -80,20 +90,35 @@ public class AnlassConfigBuilder {
             true,                           // impfungenMassnahmeInfomaterialAbgegeben
             true,                           // impfungenMassnahmeInfoEltern
             true,                           // impfungenMassnahmeRueckfrageKinderarzt
+            RequirementSetting.OPTIONAL,    // impfungenMassnahmeBemerkungen
             RequirementSetting.OPTIONAL,    // checkEinwilligungVorhanden
             RequirementSetting.OPTIONAL,    // checkKontraindikationenAbgeklaert
             RequirementSetting.OPTIONAL,    // checkDoppelkontrolleImpfentscheidDurchgefuehrt
             RequirementSetting.OPTIONAL,    // untersuchungImpfungEmpfehlung
+            EnumSetUtil.toString(EnumSet.allOf(ImpfungenMassnahmenEmpfehlung.class)), // untersuchungImpfungEmpfehlungValues
             RequirementSetting.OPTIONAL,    // untersuchungImpfungAchtung
             RequirementSetting.OPTIONAL,    // untersuchungImpfungBemerkungen
             EnumSetUtil.toString(EnumSet.allOf(Krankheit.class)), //untersuchungImpfungKrankheitLinksValues
             EnumSetUtil.toString(EnumSet.noneOf(Krankheit.class)), //untersuchungImpfungKrankheitRechtsValues
+            RequirementSetting.OPTIONAL,    // impfungenDataMinimalImpfausweisGeprueft
+            RequirementSetting.OPTIONAL,    // impfungenDataMinimalImmunsuppression
+            RequirementSetting.OPTIONAL,    // impfungenDataMinimalMasernImpfstatus
+            RequirementSetting.OPTIONAL,    // impfungenDataMinimalMasernAnzahlImpfungen
+            RequirementSetting.OPTIONAL,    // impfungenDataMinimalHpvImpfstatus
+            RequirementSetting.OPTIONAL,    // impfungenDataMinimalHpvAnzahlImpfungen
+            RequirementSetting.OPTIONAL,    // impfungenDataMinimalImpfempfehlung
+            RequirementSetting.OPTIONAL,    // impfungenDataMinimalImpfungDurchgefuehrt
             RequirementSetting.OPTIONAL,    // sehenBrilleLinsen
+            EnumSetUtil.toString(EnumSet.noneOf(BrilleLinsenResultat.class)), //sehenBrilleLinsenValues
             RequirementSetting.OPTIONAL,    // sehenFarbsehen
             RequirementSetting.OPTIONAL,    // sehenTafel
             RequirementSetting.OPTIONAL,    // sehenFernvisus
+            RequirementSetting.OPTIONAL,    // sehenFernvisusAugeEinzeln
             RequirementSetting.OPTIONAL,    // sehenStereoTest
             RequirementSetting.OPTIONAL,    // sehenStrabismus
+            EnumSetUtil.toString(EnumSet.allOf(StrabismusResultat.class)),// sehenStrabismusValues
+            RequirementSetting.OPTIONAL,    // sehenStrabismusAuspraegung
+            RequirementSetting.OPTIONAL,    // sehenStrabismusAuftreten
             RequirementSetting.OPTIONAL,    // sehenInspektion
             RequirementSetting.OPTIONAL,    // sehenKonvergenz
             RequirementSetting.OPTIONAL,    // sehenMotilitaet
@@ -105,10 +130,12 @@ public class AnlassConfigBuilder {
             RequirementSetting.OPTIONAL,    // hoerenAudiogramm
             RequirementSetting.OPTIONAL,    // hoerenAudiogramm250Hz
             RequirementSetting.OPTIONAL,    // hoerenAudiogramm8000Hz
+            RequirementSetting.OPTIONAL,    // hoerenAudiogrammSimpel
             RequirementSetting.OPTIONAL,    // hoerenAudiogrammBeurteilung
             RequirementSetting.OPTIONAL,    // hoerenAudiogrammZusaetzlicheAngaben
             RequirementSetting.OPTIONAL,    // hoerenAudiogrammEmpfehlung
             RequirementSetting.OPTIONAL,    // hoerenAudiogrammBemerkungen
+            RequirementSetting.OPTIONAL,    // hoerenHoerhilfe
             RequirementSetting.OPTIONAL,    // hoerenOtoskopie
             RequirementSetting.OPTIONAL,    // hoerenOtoskopieBemerkungen
             RequirementSetting.OPTIONAL,    // groesseGewichtGroesse
@@ -167,6 +194,26 @@ public class AnlassConfigBuilder {
             RequirementSetting.OPTIONAL,    // unterlagenVerhaltensfragebogen
             RequirementSetting.OPTIONAL,    // untersuchungEmpfehlung
             RequirementSetting.OPTIONAL,    // untersuchungBemerkungen
+            RequirementSetting.OPTIONAL,    // untersuchungSpracheNachsprechen
+            RequirementSetting.OPTIONAL,    // untersuchungSpracheWortschatz
+            RequirementSetting.OPTIONAL,    // untersuchungSpracheSprachverstaendnis
+            RequirementSetting.OPTIONAL,    // untersuchungSpracheBemerkungen
+            RequirementSetting.OPTIONAL,    // bewegungsapparatSkoliose
+            RequirementSetting.OPTIONAL,    // bewegungsapparatHaltungsschwaeche
+            RequirementSetting.OPTIONAL,    // bewegungsapparatVerkuerzungHamstringmuskulatur
+            RequirementSetting.OPTIONAL,    // bewegungsapparatBemerkung
+            RequirementSetting.OPTIONAL,    // untersuchungBeeintraechtigungFreiesGehen
+            RequirementSetting.OPTIONAL,    // untersuchungBeeintraechtigungOhneStuetzradVelofahren
+            RequirementSetting.OPTIONAL,    // untersuchungBeeintraechtigungGrafomotorik
+            RequirementSetting.OPTIONAL,    // untersuchungBeeintraechtigungFeinmotorik
+            RequirementSetting.OPTIONAL,    // untersuchungBeeintraechtigungGrobmotorik
+            RequirementSetting.OPTIONAL,    // untersuchungBeeintraechtigungGleichgewicht
+            RequirementSetting.OPTIONAL,    // untersuchungBeeintraechtigungBemerkung
+            RequirementSetting.OPTIONAL,    // abschlussUeberweisungErfolgt
+            RequirementSetting.OPTIONAL,    // abschlussAerztlicheValidierungErforderlich
+            RequirementSetting.OPTIONAL,    // abschlussBeratungDurchgefuehrt
+            RequirementSetting.OPTIONAL,    // abschlussBeurteilungEmpfohleneMassnahmen
+            true,                           // signatur
             true,                           // showMassnahmenPathologischeBefunde
             true,                           // showMassnahmenKeine
             true,                           // showMassnahmenBeratungMpa
@@ -196,6 +243,13 @@ public class AnlassConfigBuilder {
             requirementSetting,             // datenUntersuchung
             showBooleans,                   // showDatenSchule
             requirementSetting,             // datenBemerkung
+            requirementSetting,             // vorabklaerungenFragebogenStatus
+            requirementSetting,             // vorabklaerungenEinverstaendnisImpfungen
+            requirementSetting,             // vorabklaerungenChronischeKrankheiten
+            showBooleans,                   // showImpfungenHeaderImpfausweisUnvollstaendig
+            showBooleans,                   // showImpfungenHeaderImpfausweisNichtVorhanden
+            showBooleans,                   // showImpfungenHeaderImpfausweisZweiPlusEinsSchema
+            showBooleans,                   // showImpfungenHeaderImpfausweisUpload
             requirementSetting,             // impfungenUebersicht
             requirementSetting,             // impfungenListe
             showBooleans,                   // showImpfungenDoppelkontrolle
@@ -208,20 +262,35 @@ public class AnlassConfigBuilder {
             showBooleans,                   // impfungenMassnahmeInfomaterialAbgegeben
             showBooleans,                   // impfungenMassnahmeInfoEltern
             showBooleans,                   // impfungenMassnahmeRueckfrageKinderarzt
+            requirementSetting,             // impfungenMassnahmeBemerkungen
             requirementSetting,             // checkEinwilligungVorhanden
             requirementSetting,             // checkKontraindikationenAbgeklaert
             requirementSetting,             // checkDoppelkontrolleImpfentscheidDurchgefuehrt
             requirementSetting,             // untersuchungImpfungEmpfehlung
+            EnumSetUtil.toString(EnumSet.allOf(ImpfungenMassnahmenEmpfehlung.class)), // untersuchungImpfungEmpfehlungValues
             requirementSetting,             // untersuchungImpfungAchtung
             requirementSetting,             // untersuchungImpfungBemerkungen
             EnumSetUtil.toString(EnumSet.allOf(Krankheit.class)),   // untersuchungImpfungKrankheitenLinksValues
             EnumSetUtil.toString(EnumSet.noneOf(Krankheit.class)),   // untersuchungImpfungKrankheitenRechtsValues
+            requirementSetting,             // impfungenDataMinimalImpfausweisGeprueft
+            requirementSetting,             // impfungenDataMinimalImmunsuppression
+            requirementSetting,             // impfungenDataMinimalMasernImpfstatus
+            requirementSetting,             // impfungenDataMinimalMasernAnzahlImpfungen
+            requirementSetting,             // impfungenDataMinimalHpvImpfstatus
+            requirementSetting,             // impfungenDataMinimalHpvAnzahlImpfungen
+            requirementSetting,             // impfungenDataMinimalImpfempfehlung
+            requirementSetting,             // impfungenDataMinimalImpfungDurchgefuehrt
             requirementSetting,             // sehenBrilleLinsen
+            EnumSetUtil.toString(EnumSet.noneOf(BrilleLinsenResultat.class)),   // untersuchungImpfungKrankheitenRechtsValues
             requirementSetting,             // sehenFarbsehen
             requirementSetting,             // sehenTafel
             requirementSetting,             // sehenFernvisus
+            requirementSetting,             // sehenFernvisusAugeEinzeln
             requirementSetting,             // sehenStereoTest
             requirementSetting,             // sehenStrabismus
+            EnumSetUtil.toString(EnumSet.allOf(StrabismusResultat.class)),// sehenStrabismusValues
+            requirementSetting,             // sehenStrabismusAuspraegung
+            requirementSetting,             // sehenStrabismusAuftreten
             requirementSetting,             // sehenInspektion
             requirementSetting,             // sehenKonvergenz
             requirementSetting,             // sehenMotilitaet
@@ -233,10 +302,12 @@ public class AnlassConfigBuilder {
             requirementSetting,             // hoerenAudiogramm
             requirementSetting,             // hoerenAudiogramm250Hz
             requirementSetting,             // hoerenAudiogramm8000Hz
+            requirementSetting,             // hoerenAudiogrammSimpel
             requirementSetting,             // hoerenAudiogrammBeurteilung
             requirementSetting,             // hoerenAudiogrammZusaetzlicheAngaben
             requirementSetting,             // hoerenAudiogrammEmpfehlung
             requirementSetting,             // hoerenAudiogrammBemerkungen
+            requirementSetting,             // hoerenHoerhilfe
             requirementSetting,             // hoerenOtoskopie
             requirementSetting,             // hoerenOtoskopieBemerkungen
             requirementSetting,             // groesseGewichtGroesse
@@ -295,6 +366,26 @@ public class AnlassConfigBuilder {
             requirementSetting,             // unterlagenVerhaltensfragebogen
             requirementSetting,             // untersuchungEmpfehlung
             requirementSetting,             // untersuchungBemerkungen
+            requirementSetting,             // untersuchungSpracheNachsprechen
+            requirementSetting,             // untersuchungSpracheWortschatz
+            requirementSetting,             // untersuchungSpracheSprachverstaendnis
+            requirementSetting,             // untersuchungSpracheBemerkungen
+            requirementSetting,             // bewegungsapparatSkoliose
+            requirementSetting,             // bewegungsapparatHaltungsschwaeche
+            requirementSetting,             // bewegungsapparatVerkuerzungHamstringmuskulatur
+            requirementSetting,             // bewegungsapparatBemerkung
+            requirementSetting,             // untersuchungBeeintraechtigungFreiesGehen
+            requirementSetting,             // untersuchungBeeintraechtigungOhneStuetzradVelofahren
+            requirementSetting,             // untersuchungBeeintraechtigungGrafomotorik
+            requirementSetting,             // untersuchungBeeintraechtigungFeinmotorik
+            requirementSetting,             // untersuchungBeeintraechtigungGrobmotorik
+            requirementSetting,             // untersuchungBeeintraechtigungGleichgewicht
+            requirementSetting,             // untersuchungBeeintraechtigungBemerkung
+            requirementSetting,             // abschlussUeberweisungErfolgt
+            requirementSetting,             // abschlussAerztlicheValidierungErforderlich
+            requirementSetting,             // abschlussBeratungDurchgefuehrt
+            requirementSetting,             // abschlussBeurteilungEmpfohleneMassnahmen
+            showBooleans,                   // signatur
             showBooleans,                   // showMassnahmenPathologischeBefunde
             showBooleans,                   // showMassnahmenKeine
             showBooleans,                   // showMassnahmenBeratungMpa
@@ -305,7 +396,7 @@ public class AnlassConfigBuilder {
             showBooleans,                   // showMassnahmenUeberweisungHausarzt
             showBooleans,                   // showMassnahmenUeberweisungAugenarzt
             showBooleans,                   // showMassnahmenNachkontrolleSaed
-            showBooleans                   // showMassnahmenAnderes
+            showBooleans                    // showMassnahmenAnderes
         );
     }
 
@@ -367,6 +458,14 @@ public class AnlassConfigBuilder {
         return this;
     }
 
+    @NonNull
+    @CanIgnoreReturnValue
+    public AnlassConfigBuilder withImpfungenMassnahmenEmpfehlungValues(
+        @NonNull EnumSet<ImpfungenMassnahmenEmpfehlung> values
+    ) {
+        this.anlassConfig.setUntersuchungImpfungEmpfehlungValues(values);
+        return this;
+    }
 
     @NonNull
     public static AnlassConfig create(@NonNull Consumer<AnlassConfigBuilder> block) {
@@ -381,7 +480,7 @@ public class AnlassConfigBuilder {
         final FixedClockProvider clockProvider = FixedClockProvider.now();
         final AppClock appClock = new AppClock(clockProvider);
         LocalDate date = appClock.getToday();
-        return AnlassConfigMapper.toJson(anlassConfig, false, date);
+        return AnlassConfigMapper.toJson(anlassConfig, date);
     }
 
     @NonNull

@@ -5,10 +5,11 @@ import java.util.List;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminWIN;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupport;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.TenantSettingsApiSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AgbResponsabilitySpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppLanguagesSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EinladungStatusSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FeatureEnabledSettingSpec;
@@ -61,7 +62,7 @@ class TenantSettingsResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsAdminWIN
+    @TestAsAdminBE
     void getTenantSettings_be_returnsCorrectSettings() {
         // ARRANGE
         // settings are inserted in liquibase
@@ -83,7 +84,7 @@ class TenantSettingsResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void updateTenantSettings_changes_data_as_requested() {
         // ARRANGE
         // settings are inserted in liquibase
@@ -101,8 +102,20 @@ class TenantSettingsResourceITest extends AbstractITest {
             AppLanguagesSpec.FR,
             List.of(AppLanguagesSpec.FR, AppLanguagesSpec.DE),
             42,
-            new TenantSettingFeaturesJsonSpec(
+            "test@mailbucket.dvbern.ch",
+            "test@mailbucket.dvbern.ch",
+            AgbResponsabilitySpec.AGB_MANAGED_BY_TENANT,
+            new TenantSettingFeaturesJsonSpec( // Add Assertions below if new Feature is added
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, false),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant)
@@ -129,6 +142,24 @@ class TenantSettingsResourceITest extends AbstractITest {
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
         Assertions.assertThat(result.getData().getFeatures().getMobileScannerFeature().getFeatureEnabled())
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData().getFeatures().getArchivierungFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData().getFeatures().getMassenimportFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData().getFeatures().getMassenbriefFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData().getFeatures().getNichtGeprueftGrundFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData().getFeatures().getArztListeFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData().getFeatures().getAdHocImpfstoffChargenFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData().getFeatures().getFooterFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData().getFeatures().getBenutzerverwaltungInternFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData().getFeatures().getBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
         Assertions.assertThat(result.getData()
             .getEinladungStatusValues()
             .stream()
@@ -147,3 +178,4 @@ class TenantSettingsResourceITest extends AbstractITest {
             .statusCode(Status.OK.getStatusCode());
     }
 }
+

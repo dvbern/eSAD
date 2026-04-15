@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Reader;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileNameUtil;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
@@ -27,11 +29,19 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.external.KindExternal;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.external.KindExternalRepo;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.external.KindExternalSyncService;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKind;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.external.KontaktPersonKindExternal;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.external.KontaktPersonKindExternalRepo;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.external.KontaktPersonKindExternalSyncService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.klasseexternal.KlasseExternal;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.klasseexternal.KlasseExternalRepo;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.klasseexternal.KlasseExternalSyncService;
+import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.Lehrperson;
+import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.external.LehrpersonExternal;
+import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.external.LehrpersonExternalRepo;
+import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.external.LehrpersonExternalSyncService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.schulenexternal.SchuleExternal;
 import ch.dvbern.oss.hemed.esc.api.features.schule.schulenexternal.SchuleExternalRepo;
 import ch.dvbern.oss.hemed.esc.api.features.schule.schulenexternal.SchuleExternalSyncService;
@@ -86,6 +96,10 @@ public class PupilService {
     private final KindExternalSyncService kindExternalSyncService;
     private final PupilMailService pupilMailService;
     private final TenantProducer tenantProducer;
+    private final LehrpersonExternalRepo lehrpersonExternalRepo;
+    private final LehrpersonExternalSyncService lehrpersonExternalSyncService;
+    private final KontaktPersonKindExternalRepo kontaktPersonKindExternalRepo;
+    private final KontaktPersonKindExternalSyncService kontaktPersonKindExternalSyncService;
 
     @NonNull
     @Transactional(TxType.NOT_SUPPORTED)
@@ -150,6 +164,62 @@ public class PupilService {
     }
 
     @NonNull
+    private ImportPlanDTO<LehrpersonExternal> extractLehrpersonenAndDetermineUpdatePlan(
+        @NonNull List<PupilCsvDTO> escadaCsvDTOS
+    ) {
+        Set<LehrpersonExternal> importedItems = extractUniqueExternalLehrpersonen(escadaCsvDTOS);
+        LOG.debug("Extracted {} unique Lehrpersonen schule from the csv", importedItems.size());
+
+        Set<ExternalSystemIdDTO> existingItems = new HashSet<>(lehrpersonExternalRepo.findAllExternalIds());
+        ImportPlanDTO<LehrpersonExternal> result = ImportPlanDTO.from(existingItems, importedItems);
+
+        LOG.info(
+            "PUPIL: Detected {} new Lehrpersonen schule, {} deleted and {} to sync",
+            result.itemsToAdd().size(),
+            result.itemsToDelete().size(),
+            result.itemIdsToSync().size());
+        return result;
+    }
+
+    @NonNull
+    private Set<LehrpersonExternal> extractUniqueExternalLehrpersonen(
+        @NonNull List<PupilCsvDTO> pupilCsvDTOs
+    ) {
+        // Liste aller KP erstellen (die im CSV flach als Lehrperson 1 und 2 vorliegen)
+        List<LehrpersonExternal> list = pupilCsvDTOs.stream()
+            // For each DTO, generate the persons in order
+            .flatMap(dto -> Stream.of(
+                    PupilCSVMapperService.toExternalLehrperson1(dto),
+                    PupilCSVMapperService.toExternalLehrperson2(dto)
+                ).flatMap(Optional::stream) // Remove empty Optionals
+            ).toList();
+
+        // Map aller LehrerIds mit ihren Lehrer-Objekten (Duplikaten)
+        Map<String, List<LehrpersonExternal>> lehrerIdToLehrer =
+            list.stream().collect(Collectors.groupingBy(LehrpersonExternal::getExternalId));
+
+        // Map aller LehrerIds mit ihren KlassenIds
+        Map<String, Set<String>> lehrerIdToKlassenIds = new HashMap<>();
+        for (Entry<String, List<LehrpersonExternal>> lehrerIdToKlassenEntry : lehrerIdToLehrer.entrySet()) {
+            Set<String> klasseIds = lehrerIdToKlassenEntry.getValue().stream()
+                .map(LehrpersonExternal::getEscadaKlasseId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+            lehrerIdToKlassenIds.put(lehrerIdToKlassenEntry.getKey(), klasseIds);
+        }
+
+        // Deduplicate Lehrer-Objekte: KlassenIds der Duplikate auf dem ersten Lehrer zusammenmergen
+        Set<LehrpersonExternal> result = new HashSet<>();
+        for (Entry<String, Set<String>> entry : lehrerIdToKlassenIds.entrySet()) {
+            var lehrerToKeep = lehrerIdToLehrer.get(entry.getKey()).stream().findFirst().orElseThrow();
+            Set<String> klassenForLehrer = entry.getValue();
+            lehrerToKeep.setEscadaKlasseIds(String.join(",", klassenForLehrer));
+            result.add(lehrerToKeep);
+        }
+        return result;
+    }
+
+    @NonNull
     private PupilImportResultJson handlePupilCSVUpload(
         @NonNull InputStream inputStream,
         @NonNull PupilSyncEvent pupilSyncEvent
@@ -166,8 +236,14 @@ public class PupilService {
         // handle klassen
         var klassenResultItems = extractAndSyncKlassen(pupilCsvDTOS);
 
+        // handle lehrpersonen
+        var lehrpersonenResultItems = extractAndSyncLehrpersonen(pupilCsvDTOS);
+
         // handle Kinder
         var kinderResultItems = extractAndSyncKinder(pupilCsvDTOS);
+
+        // handle kontaktpersonen kinder
+        var kontaktPersonKindResultItems = extractAndSyncKontaktPersonKind(pupilCsvDTOS);
 
         var resultReport = new PupilImportResultJson(
             pupilSyncEvent.getId(),
@@ -175,7 +251,9 @@ public class PupilService {
             stopWatch.getDuration(),
             schuleResultItems,
             klassenResultItems,
-            kinderResultItems
+            lehrpersonenResultItems,
+            kinderResultItems,
+            kontaktPersonKindResultItems
         );
 
         reportSummaryByMail(resultReport);
@@ -201,9 +279,21 @@ public class PupilService {
     }
 
     @NonNull
+    List<ItemSyncResultJson<Lehrperson>> extractAndSyncLehrpersonen(@NonNull List<PupilCsvDTO> pupilCsvDTOs) {
+        ImportPlanDTO<LehrpersonExternal> importPlanDTO = extractLehrpersonenAndDetermineUpdatePlan(pupilCsvDTOs);
+        return lehrpersonExternalSyncService.syncLehrpersonen(importPlanDTO, ImportTyp.PUPIL);
+    }
+
+    @NonNull
     List<ItemSyncResultJson<Kind>> extractAndSyncKinder(@NonNull List<PupilCsvDTO> pupilCsvDTOS) {
         ImportPlanDTO<KindExternal> importPlanDTO = extractKinderAndDetermineUpdatePlan(pupilCsvDTOS);
         return kindExternalSyncService.syncKinder(importPlanDTO, ImportTyp.PUPIL);
+    }
+
+    @NonNull
+    List<ItemSyncResultJson<KontaktPersonKind>> extractAndSyncKontaktPersonKind(@NonNull List<PupilCsvDTO> pupilCsvDTOs) {
+        ImportPlanDTO<KontaktPersonKindExternal> importPlanDTO = extractKontaktPersonenKindAndDetermineUpdatePlan(pupilCsvDTOs);
+        return kontaktPersonKindExternalSyncService.syncKontaktPersonKind(importPlanDTO, ImportTyp.PUPIL);
     }
 
     @NonNull
@@ -331,6 +421,62 @@ public class PupilService {
         return kindIdsToEntries.values().stream()
             .flatMap(List::stream)
             .collect(toUniqueExternalIdSet());
+    }
+
+
+    @NonNull
+    private ImportPlanDTO<KontaktPersonKindExternal> extractKontaktPersonenKindAndDetermineUpdatePlan(
+        @NonNull List<PupilCsvDTO> pupilCsvDTOS
+    ) {
+        Set<KontaktPersonKindExternal> importedItems = extractUniqueExternalKontaktPersonenKind(pupilCsvDTOS);
+        LOG.debug("Extracted {} unique Lehrpersonen kinder from the csv", importedItems.size());
+
+        Set<ExternalSystemIdDTO> existingItems = new HashSet<>(kontaktPersonKindExternalRepo.findAllExternalIds());
+        ImportPlanDTO<KontaktPersonKindExternal> result = ImportPlanDTO.from(existingItems, importedItems);
+
+        LOG.info(
+            "PUPIL: Detected {} new Lehrpersonen kinder, {} deleted and {} to sync",
+            result.itemsToAdd().size(),
+            result.itemsToDelete().size(),
+            result.itemIdsToSync().size());
+        return result;
+    }
+
+    @NonNull
+    private Set<KontaktPersonKindExternal> extractUniqueExternalKontaktPersonenKind(
+        @NonNull List<PupilCsvDTO> pupilCsvDTOS
+    ) {
+        // Liste aller KP erstellen (die im CSV flach als KP 1-2 vorliegen), i.e. 'unflatten'
+        List<KontaktPersonKindExternal> list = pupilCsvDTOS.stream()
+            // For each DTO, generate the persons in order
+            .flatMap(dto -> Stream.of(
+                    PupilCSVMapperService.toExternalKontaktPersonKind1(dto),
+                    PupilCSVMapperService.toExternalKontaktPersonKind2(dto)
+                ).flatMap(Optional::stream) // Remove empty Optionals
+            ).toList();
+
+        // Map aller ElternIds mit ihren Eltern-Objekten (Duplikaten)
+        Map<String, List<KontaktPersonKindExternal>> kpIdToKps =
+            list.stream().collect(Collectors.groupingBy(KontaktPersonKindExternal::getExternalId));
+
+        // Map aller ElternIds mit ihren SchuelerIds (i.e. ihren Kindern)
+        Map<String, Set<String>> kpIdToSchuelerIds = new HashMap<>();
+        for (Entry<String, List<KontaktPersonKindExternal>> kpIdToKpsEntry : kpIdToKps.entrySet()) {
+            Set<String> schuelerIds = kpIdToKpsEntry.getValue().stream()
+                .map(KontaktPersonKindExternal::getSchuelerId)
+                .collect(Collectors.toSet());
+            kpIdToSchuelerIds.put(kpIdToKpsEntry.getKey(), schuelerIds);
+        }
+
+        // Deduplicate Kind-Objekte: schuelerIds der Duplikate auf der ersten KP zusammenmergen
+        Set<KontaktPersonKindExternal> result = new HashSet<>();
+        for (Entry<String, Set<String>> entry : kpIdToSchuelerIds.entrySet()) {
+            var lehrerToKeep = kpIdToKps.get(entry.getKey()).stream().findFirst().orElseThrow();
+            Set<String> schuelerForKp = entry.getValue();
+            lehrerToKeep.setSchuelerIds(String.join(",", schuelerForKp));
+            result.add(lehrerToKeep);
+        }
+        return result;
     }
 
     private void reportSummaryByMail(@NonNull PupilImportResultJson resultReport) {

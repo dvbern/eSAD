@@ -11,13 +11,12 @@ import { ISODateString } from '@dvb/data-access-types';
 import { ImpfstoffJson } from './impfstoff-json';
 import { BenutzerOptionJson } from './benutzer-option-json';
 import { ImpfStatus } from './impf-status';
-import { ImpfstoffChargeJson } from './impfstoff-charge-json';
 import { UntersuchungImpfungKrankheitImmunitaetJson } from './untersuchung-impfung-krankheit-immunitaet-json';
 
 
 export interface UntersuchungImpfungInternSaveJson { 
     impfstoff: ImpfstoffJson;
-    charge?: ImpfstoffChargeJson;
+    charge?: string;
     datumImpfung?: ISODateString;
     userDurchgefuehrt?: BenutzerOptionJson;
     impfStatus: ImpfStatus;

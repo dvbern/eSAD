@@ -18,7 +18,7 @@ import {
   TextInputDirective,
 } from '@dvb/ui-components';
 import {TableModel} from '@dvb/util-angular';
-import {hasListEditBerechtigung, isNullish} from '@dvb/util-shared';
+import {hasListEditBerechtigung, isActiveInExternalSystem} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbDropdownItem} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
@@ -65,10 +65,7 @@ export class SchulenListComponent {
   readonly schuleAktivStati = Object.values(EntityAktivStatus);
 
   isExternalSchuleAndActive(schule: SchuleJson): boolean {
-    if (isNullish(schule.externalImportInfoJson)) {
-      return false;
-    }
-    return schule.externalImportInfoJson.aktivInExternalSystem;
+    return isActiveInExternalSystem(schule);
   }
 
   public getTranslatedKlassenstufen(schule: SchuleJson): string {

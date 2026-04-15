@@ -1,0 +1,139 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <!-- UntersuchungAbschluss -->
+  <changeSet author="gema (generated)" id="1770878596076-1">
+    <createTable tableName="untersuchungabschluss">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungabschlussPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="aerztlichevalidierung" type="VARCHAR(255)"/>
+      <column name="beratungdurchgefuehrt" type="VARCHAR(255)"/>
+      <column name="beurteilungempfohlenemassnahmen" type="VARCHAR(2000)"/>
+      <column name="ueberweisungerfolgt" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770878596076-2">
+    <createTable tableName="untersuchungabschluss_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="aerztlichevalidierung" type="VARCHAR(255)"/>
+      <column name="beratungdurchgefuehrt" type="VARCHAR(255)"/>
+      <column name="beurteilungempfohlenemassnahmen" type="VARCHAR(2000)"/>
+      <column name="ueberweisungerfolgt" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770878596076-3">
+    <addColumn tableName="untersuchung">
+      <column name="untersuchungabschluss_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770878596076-4">
+    <addColumn tableName="untersuchung_aud">
+      <column name="untersuchungabschluss_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770878596076-5">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungabschluss_audPK" tableName="untersuchungabschluss_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770878596076-6">
+    <addUniqueConstraint columnNames="untersuchungabschluss_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGABSCHLUSS_ID_COL" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770878596076-7">
+    <createIndex indexName="ix_untersuchung_untersuchungabschluss" tableName="untersuchung">
+      <column name="untersuchungabschluss_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770878596076-8">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungabschluss_aud" constraintName="FK87oi63voxtncay1twiyl1ih9v" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770878596076-9">
+    <addForeignKeyConstraint baseColumnNames="untersuchungabschluss_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchungabschluss" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungabschluss" validate="true"/>
+  </changeSet>
+  <!-- AnlassConfig -->
+  <changeSet author="gema (generated)" id="1770878596076-10">
+    <addColumn tableName="anlassconfig">
+      <column name="abschlussaerztlichevalidierungerforderlich" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770878596076-11">
+    <addColumn tableName="anlassconfig">
+      <column name="abschlussberatungdurchgefuehrt" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770878596076-12">
+    <addColumn tableName="anlassconfig">
+      <column name="abschlussbeurteilungempfohlenemassnahmen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770878596076-13">
+    <addColumn tableName="anlassconfig">
+      <column name="abschlussueberweisungerfolgt" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770878596076-14">
+    <sql>
+      update anlassconfig
+      set abschlussaerztlichevalidierungerforderlich    = 'NOT_VISIBLE',
+          abschlussberatungdurchgefuehrt                = 'NOT_VISIBLE',
+          abschlussbeurteilungempfohlenemassnahmen      = 'NOT_VISIBLE',
+          abschlussueberweisungerfolgt                  = 'NOT_VISIBLE';
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1770878596076-14a">
+    <addNotNullConstraint tableName="anlassconfig" columnName="abschlussaerztlichevalidierungerforderlich"/>
+  </changeSet>
+  <changeSet author="hefr" id="1770878596076-14b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="abschlussberatungdurchgefuehrt"/>
+  </changeSet>
+  <changeSet author="hefr" id="1770878596076-14c">
+    <addNotNullConstraint tableName="anlassconfig" columnName="abschlussbeurteilungempfohlenemassnahmen"/>
+  </changeSet>
+  <changeSet author="hefr" id="1770878596076-14d">
+    <addNotNullConstraint tableName="anlassconfig" columnName="abschlussueberweisungerfolgt"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770878596076-15">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="abschlussaerztlichevalidierungerforderlich" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770878596076-16">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="abschlussberatungdurchgefuehrt" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770878596076-17">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="abschlussbeurteilungempfohlenemassnahmen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770878596076-18">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="abschlussueberweisungerfolgt" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+</databaseChangeLog>

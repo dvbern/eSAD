@@ -1,10 +1,10 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,13 +30,13 @@ class KonvergenzCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungSehenBeurteilung.setKonvergenz(InspektionKonvergenzResultat.UNAUFFAELLIG);
+        untersuchungSehenBeurteilung.setKonvergenz(SingleValueEnhanced.of(InspektionKonvergenzResultat.UNAUFFAELLIG, null));
         assertThat(column.extract(einladung)).isEqualTo("1");
 
-        untersuchungSehenBeurteilung.setKonvergenz(InspektionKonvergenzResultat.AUFFAELLIG);
+        untersuchungSehenBeurteilung.setKonvergenz(SingleValueEnhanced.of(InspektionKonvergenzResultat.AUFFAELLIG,  null));
         assertThat(column.extract(einladung)).isEqualTo("2");
 
-        untersuchungSehenBeurteilung.setKonvergenz(InspektionKonvergenzResultat.NICHT_GEPRUEFT);
+        untersuchungSehenBeurteilung.setKonvergenz(SingleValueEnhanced.of(InspektionKonvergenzResultat.NICHT_GEPRUEFT, null));
         assertThat(column.extract(einladung)).isEqualTo("3");
     }
 
@@ -59,7 +59,7 @@ class KonvergenzCsvColumnTest extends AbstractBaseColumnTest {
         assertThat(column.extract(einladung)).isEmpty();
 
         when(tlMock.translateValue(InspektionKonvergenzResultat.UNAUFFAELLIG)).thenReturn("Unauffällig");
-        untersuchungSehenBeurteilung.setKonvergenz(InspektionKonvergenzResultat.UNAUFFAELLIG);
+        untersuchungSehenBeurteilung.setKonvergenz(SingleValueEnhanced.of(InspektionKonvergenzResultat.UNAUFFAELLIG, null));
         assertThat(column.extract(einladung)).isEqualTo("Unauffällig");
     }
 }

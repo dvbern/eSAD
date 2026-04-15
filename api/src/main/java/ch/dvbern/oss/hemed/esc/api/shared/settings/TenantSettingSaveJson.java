@@ -24,6 +24,7 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.features.TenantSettingFeaturesJson;
+import ch.dvbern.oss.hemed.esc.api.shared.types.AgbResponsability;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -50,6 +51,21 @@ public class TenantSettingSaveJson {
     @Valid
     @Schema(required = true)
     private int folgeTermineMaxSlots;
+
+    @NotNull
+    @Valid
+    @Schema(required = true)
+    private final String customerAdminEmails;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private final String supportEmail;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private final AgbResponsability agbResponsability;
 
     @NotNull
     @NonNull

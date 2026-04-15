@@ -4,19 +4,31 @@
   "projectType": "application",
   "prefix": "app",
   "sourceRoot": "apps/esc-app/src",
-  "tags": ["scope:esc-app"],
+  "tags": [
+    "scope:esc-app"
+  ],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:application",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/apps/esc-app",
         "index": "apps/esc-app/src/index.html",
         "browser": "apps/esc-app/src/main.ts",
-        "polyfills": ["zone.js", "@angular/localize/init"],
+        "polyfills": [
+          "zone.js",
+          "@angular/localize/init"
+        ],
         "tsConfig": "apps/esc-app/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/esc-app/src/assets",
+            "output": "assets"
+          },
           {
             "glob": "**/*",
             "input": "apps/esc-app/public"
@@ -52,7 +64,9 @@
         ],
         "scripts": [],
         "stylePreprocessorOptions": {
-          "includePaths": ["libs/shared/ui/ui-components/src"]
+          "includePaths": [
+            "libs/shared/ui/ui-components/src"
+          ]
         }
       },
       "configurations": {
@@ -113,7 +127,9 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
       "options": {
         "jestConfig": "apps/esc-app/jest.config.ts",
         "tsConfig": "apps/esc-app/tsconfig.spec.json"

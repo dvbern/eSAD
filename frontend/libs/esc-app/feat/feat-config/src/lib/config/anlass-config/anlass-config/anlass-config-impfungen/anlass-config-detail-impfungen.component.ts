@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import {Krankheit, RequirementSetting} from '@dvb/data-access-backend';
-import {BenutzerStore, Path, TranslatedEnumViewValuePipe} from '@dvb/feat-shared';
+import { ImpfungenMassnahmenEmpfehlung, Krankheit } from '@dvb/data-access-backend';
+import { BenutzerStore, Path,AnlassConfigRequirementSettingComponent, TranslatedEnumViewValuePipe ,
+  AnlassConfigSelectBooleanComponent,
+} from '@dvb/feat-shared';
 import {
   FormButtonsComponent,
   FormControlComponent,
@@ -35,6 +37,8 @@ import { ActivatedRoute } from '@angular/router';
     NgSelectDirective,
     TranslocoPipe,
     TranslatedEnumViewValuePipe,
+    AnlassConfigRequirementSettingComponent,
+    AnlassConfigSelectBooleanComponent,
   ],
   templateUrl: './anlass-config-detail-impfungen.component.html',
   styleUrl: './anlass-config-detail-impfungen.component.scss',
@@ -46,8 +50,9 @@ export class AnlassConfigDetailImpfungenComponent implements DirtyMarker {
   readonly #activatedRoute = inject(ActivatedRoute);
   readonly anlassConfigHelperService = inject(AnlassConfigHelperService);
 
-  readonly requirementSettingOptions = Object.values(RequirementSetting);
   readonly krankheiten = Object.values(Krankheit);
+  readonly impfungenEmpfehlungOptions = Object.values(ImpfungenMassnahmenEmpfehlung);
+
   protected readonly Path = Path;
 
   public form = new AnlassConfigForm({

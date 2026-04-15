@@ -24,17 +24,24 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.runas.RunAs;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
+import ch.dvbern.oss.hemed.esc.api.features.archivierung.ArchivdokumentService;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.kinddeactivation.KindDeactivationService;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.duplikate.Duplikat;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.duplikate.DuplikatService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.duplikate.DuplikatStatus;
+import ch.dvbern.oss.hemed.esc.api.shared.archivierung.ArchivierungRuleService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueueRunnerService;
+import ch.dvbern.oss.hemed.esc.api.shared.dossierqueue.DossierQueueRunnerService;
+import ch.dvbern.oss.hemed.esc.api.shared.dossierqueue.DossierQueueService;
+import ch.dvbern.oss.hemed.esc.api.shared.dossierqueue.DossierQueueTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
@@ -55,6 +62,11 @@ public class SuperAdminRunnerService {
     private final KindDeactivationService kindDeactivationService;
     private final KindService kindService;
     private final DuplikatService duplikatService;
+    private final UntersuchungImpfungInternService impfungInternService;
+    private final ArchivdokumentService archivdokumentService;
+    private final DossierQueueRunnerService dossierQueueRunnerService;
+    private final ArchivierungRuleService archivierungRuleService;
+    private final DossierQueueService dossierQueueService;
 
     @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
     public void runBenutzerInaktivierenJob(boolean forcerun) {
@@ -181,6 +193,125 @@ public class SuperAdminRunnerService {
         }
     }
 
+    @Transactional(TxType.NOT_SUPPORTED)
+    @RunAs(username = "bs-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
+    public void runDeactivateImpfstoffChargenJob(boolean forcerun) {
+        final SchedulerConfig config =
+            schedulerConfigService.getSchedulerConfig(SchedulerTyp.DEACTIVATE_IMPFSTOFF_CHARGEN);
+        if (!config.isDisabled() || forcerun) {
+            int monthsUnused = configService.getDeactivateImpfstoffChargenAfterUnusedMonths();
+            SchedulerProcessingResult result = impfungInternService.deactivateImpfstoffChargeIfNotUsedSince(
+                monthsUnused,
+                config.getBatchsize()
+            );
+            LOG.info(result.getResultString("ESC_DEACTIVATE_IMPFSTOFF_CHARGEN"));
+        } else {
+            LOG.debug("ESC_DEACTIVATE_IMPFSTOFF_CHARGEN: Scheduler is disabled.");
+        }
+    }
+
+    @Transactional(TxType.NOT_SUPPORTED)
+    @RunAs(username = "bs-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
+    public void runDeleteImpfstoffChargenJob(boolean forcerun) {
+        final SchedulerConfig config = schedulerConfigService.getSchedulerConfig(SchedulerTyp.DELETE_IMPFSTOFF_CHARGEN);
+        if (!config.isDisabled() || forcerun) {
+            int monthsUnreferenced = configService.getDeleteImpfstoffChargenAfterUnreferencedMonths();
+            SchedulerProcessingResult result = impfungInternService.deleteImpfstoffChargeIfNotReferencedSince(
+                monthsUnreferenced,
+                config.getBatchsize()
+            );
+            LOG.info(result.getResultString("ESC_DELETE_IMPFSTOFF_CHARGEN"));
+        } else {
+            LOG.debug("ESC_DELETE_IMPFSTOFF_CHARGEN: Scheduler is disabled.");
+        }
+    }
+
+    @Transactional(TxType.NOT_SUPPORTED)
+    @RunAs(username = "be-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
+    public void runArchiveDocumentDownloadEmailReminderJob(boolean forcerun) {
+        final SchedulerConfig config =
+            schedulerConfigService.getSchedulerConfig(SchedulerTyp.ARCHIVE_DOC_DOWNLOAD_REMINDER);
+        if (!config.isDisabled() || forcerun) {
+            archivdokumentService.sendArchiveDocumentDownloadReminder();
+            LOG.info("ARCHIVE_DOC_DOWNLOAD_REMINDER: beendet");
+        } else {
+            LOG.debug("ARCHIVE_DOC_DOWNLOAD_REMINDER: Scheduler is disabled.");
+        }
+    }
+
+    @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void runMarkForArchivierungJob(boolean forcerun) {
+        final SchedulerConfig config = schedulerConfigService.getSchedulerConfig(SchedulerTyp.MARK_FOR_ARCHIVIERUNG);
+        if (!config.isDisabled() || forcerun) {
+            List<ID<Dossier>> dossiersToArchive = archivierungRuleService.findDossiersToArchive(config.getBatchsize());
+            for (ID<Dossier> dossierToArchive : dossiersToArchive) {
+                dossierQueueService.createDossierQueueItem(dossierToArchive, DossierQueueTyp.ARCHIVIERUNG, null);
+            }
+            SchedulerProcessingResult
+                result = new SchedulerProcessingResult(config.getBatchsize(), 0, dossiersToArchive.size());
+            if (!dossiersToArchive.isEmpty()) {
+                LOG.info(
+                    "ESC-ARCHIVIERUNG: Found {} Dossiers to archive",
+                    dossiersToArchive.size());
+                result.setSuccessCounter(dossiersToArchive.size());
+            }
+            LOG.info(result.getResultString("ESC-ARCHIVIERUNG"));
+        } else {
+            LOG.debug("ESC-ARCHIVIERUNG: Scheduler is disabled.");
+        }
+    }
+
+    @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void runDossierQueueProcessingJob(boolean forcerun) {
+        final SchedulerConfig config = schedulerConfigService.getSchedulerConfig(SchedulerTyp.DOSSIER_QUEUE_PROCESSING);
+        if (!config.isDisabled() || forcerun) {
+            SchedulerProcessingResult result = dossierQueueRunnerService.processQueueItems(config);
+            if (result.getTotalCounter() != 0) {
+                LOG.info(result.getResultString("ESC-DOSSIER_QUEUE_PROCESSING"));
+            }
+        } else {
+            LOG.debug("ESC-DOSSIER_QUEUE_PROCESSING: DossierQueue Scheduler is disabled.");
+        }
+    }
+
+    @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void runDossierQueueCleanupJob(boolean forcerun) {
+        final SchedulerConfig config = schedulerConfigService.getSchedulerConfig(SchedulerTyp.DOSSIER_QUEUE_CLEAN_UP);
+        if (!config.isDisabled() || forcerun) {
+            SchedulerProcessingResult result = dossierQueueRunnerService.performDossierQueueCleanup(config);
+            LOG.info(result.getResultString("ESC-DOSSIER_QUEUE_CLEAN_UP"));
+        } else {
+            LOG.debug("ESC-DOSSIER_QUEUE_CLEAN_UP: DossierQueue Clean up Scheduler is disabled.");
+        }
+    }
+
+    @Transactional(TxType.NOT_SUPPORTED)
+    @RunAs(username = "be-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
+    public void runArchiveDocumentKindDeleteJob(boolean forcerun) {
+        final SchedulerConfig config = schedulerConfigService.getSchedulerConfig(SchedulerTyp.ARCHIVIERUNG_KIND_DELETE);
+        if (!config.isDisabled() || forcerun) {
+            List<ID<Dossier>> dossiersToDelete = archivierungRuleService
+                .findDossiersToDelete(configService.getArchiveMonthsBeforeDeletion(), config.getBatchsize());
+            for (ID<Dossier> dossierToDelete : dossiersToDelete) {
+                dossierQueueService.createDossierQueueItem(dossierToDelete, DossierQueueTyp.ARCHIVIERUNG_DELETE, null);
+            }
+            SchedulerProcessingResult
+                result = new SchedulerProcessingResult(config.getBatchsize(), 0, dossiersToDelete.size());
+            if (!dossiersToDelete.isEmpty()) {
+                LOG.info(
+                    "ESC-ARCHIVIERUNG-DELETE: Found {} Dossiers to delete",
+                    dossiersToDelete.size());
+                result.setSuccessCounter(dossiersToDelete.size());
+            }
+            LOG.info(result.getResultString("ESC-ARCHIVIERUNG-DELETE"));
+        } else {
+            LOG.debug("ESC-ARCHIVIERUNG-DELETE: Scheduler is disabled.");
+        }
+    }
+
     private void reevaluateAllExistingDuplikate() {
         List<Duplikat> duplikate = duplikatService.findUnmergedDuplikate();
         LOG.info("ESC-RELOAD_DUPLIKATE: Checking {} existing Duplikate", duplikate.size());
@@ -217,5 +348,6 @@ public class SuperAdminRunnerService {
                 + "Duplikate.",
             ids.size(), successCounter);
     }
+
 }
 

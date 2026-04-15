@@ -49,6 +49,10 @@ public class NotizSaveJson implements SaveJsonWithOptimisticLocking {
     @Valid
     private BenutzerOptionJson verantwortlicher;
 
+    @Nullable
+    @Schema(required = false)
+    private String anlassLink;
+
     @NotNull
     @NonNull
     @Schema(required = true)

@@ -39,6 +39,21 @@ import {
 import {
   AnlassConfigDetailLaeusekontrolleComponent
 } from "./anlass-config/anlass-config-laeusekontrolle/anlass-config-detail-laeusekontrolle.component";
+import {
+  AnlassConfigDetailSpracheComponent
+} from "./anlass-config/anlass-config-detail-sprache/anlass-config-detail-sprache.component";
+import {
+  AnlassConfigDetailSchulrelevanteBeeintraechtigungComponent
+} from "./anlass-config/anlass-config-detail-schulrelevante-beeintraechtigung/anlass-config-detail-schulrelevante-beeintraechtigung.component";
+import {
+  AnlassConfigDetailBewegungsapparatComponent
+} from "./anlass-config/anlass-config-bewegungsapparat/anlass-config-detail-bewegungsapparat.component";
+import {
+  AnlassConfigDetailAbschlussComponent
+} from "./anlass-config/anlass-config-abschluss/anlass-config-detail-abschluss.component";
+import {
+  AnlassConfigDetailVorabklaerungenComponent
+} from "./anlass-config/anlass-config-vorabklaerungen/anlass-config-detail-vorabklaerungen.component";
 
 export const anlassConfigRoutes: Route[] = [
   {
@@ -50,7 +65,7 @@ export const anlassConfigRoutes: Route[] = [
     component: AnlassConfigDetailPageComponent,
     resolve: {
       _store: () => {
-        inject(AnlassConfigStore).setSelectedEntityId(undefined)
+        inject(AnlassConfigStore).setSelectedEntityId(undefined);
       },
     },
     children: [
@@ -118,6 +133,27 @@ export const anlassConfigRoutes: Route[] = [
           {
             path: ':mode',
             component: AnlassConfigDetailDatenComponent,
+            resolve: {
+              _store: (route: ActivatedRouteSnapshot) => {
+                const mode = toDetailModeStrict(route.params['mode']);
+                inject(AnlassConfigStore).setDetailMode(mode);
+              },
+            },
+            canDeactivate: [confirmOnDirty()],
+          },
+        ],
+      },
+      {
+        path: Path.ANLASS_CONFIG_VORABKLAERUNGEN,
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            redirectTo: 'view',
+          },
+          {
+            path: ':mode',
+            component: AnlassConfigDetailVorabklaerungenComponent,
             resolve: {
               _store: (route: ActivatedRouteSnapshot) => {
                 const mode = toDetailModeStrict(route.params['mode']);
@@ -286,6 +322,90 @@ export const anlassConfigRoutes: Route[] = [
           {
             path: ':mode',
             component: AnlassConfigDetailAerztlicheUntersuchungComponent,
+            resolve: {
+              _store: (route: ActivatedRouteSnapshot) => {
+                const mode = toDetailModeStrict(route.params['mode']);
+                inject(AnlassConfigStore).setDetailMode(mode);
+              },
+            },
+            canDeactivate: [confirmOnDirty()],
+          },
+        ],
+      },
+      {
+        path: Path.ANLASS_CONFIG_SPRACHE,
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            redirectTo: 'view',
+          },
+          {
+            path: ':mode',
+            component: AnlassConfigDetailSpracheComponent,
+            resolve: {
+              _store: (route: ActivatedRouteSnapshot) => {
+                const mode = toDetailModeStrict(route.params['mode']);
+                inject(AnlassConfigStore).setDetailMode(mode);
+              },
+            },
+            canDeactivate: [confirmOnDirty()],
+          },
+        ],
+      },
+      {
+        path: Path.ANLASS_CONFIG_SCHULRELEVANTE_BEEINTRAECHTIGUNG,
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            redirectTo: 'view',
+          },
+          {
+            path: ':mode',
+            component: AnlassConfigDetailSchulrelevanteBeeintraechtigungComponent,
+            resolve: {
+              _store: (route: ActivatedRouteSnapshot) => {
+                const mode = toDetailModeStrict(route.params['mode']);
+                inject(AnlassConfigStore).setDetailMode(mode);
+              },
+            },
+            canDeactivate: [confirmOnDirty()],
+          },
+        ],
+      },
+      {
+        path: Path.ANLASS_CONFIG_BEWEGUNGSPPARAT,
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            redirectTo: 'view',
+          },
+          {
+            path: ':mode',
+            component: AnlassConfigDetailBewegungsapparatComponent,
+            resolve: {
+              _store: (route: ActivatedRouteSnapshot) => {
+                const mode = toDetailModeStrict(route.params['mode']);
+                inject(AnlassConfigStore).setDetailMode(mode);
+              },
+            },
+            canDeactivate: [confirmOnDirty()],
+          },
+        ],
+      },
+      {
+        path: Path.ANLASS_CONFIG_ABSCHLUSS,
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            redirectTo: 'view',
+          },
+          {
+            path: ':mode',
+            component: AnlassConfigDetailAbschlussComponent,
             resolve: {
               _store: (route: ActivatedRouteSnapshot) => {
                 const mode = toDetailModeStrict(route.params['mode']);

@@ -105,6 +105,7 @@ public final class EinladungMapper {
         return new UntersuchungTabsSavedJson(
             untersuchung.getId(),
             untersuchung.getUntersuchungDurchfuehrung() != null,
+            untersuchung.getUntersuchungVorabklaerungen() != null,
             untersuchungImpfungenHasAnyValues(untersuchung.getUntersuchungImpfungen(), impfstatus, impfungenInternList),
             untersuchung.getUntersuchungSehenBeurteilung() != null,
             untersuchung.getUntersuchungHoerenAudiogramm() != null,
@@ -112,6 +113,11 @@ public final class EinladungMapper {
             untersuchung.getUntersuchungGroesseGewicht() != null,
             untersuchung.getUntersuchungTriage() != null,
             untersuchung.getUntersuchungArztBeurteilung() != null,
+            untersuchung.getUntersuchungSprache() != null,
+            untersuchung.getUntersuchungBewegungsapparat() != null,
+            untersuchung.getUntersuchungSchulrelevanteBeeintraechtigung() != null,
+            untersuchung.getUntersuchungAbschluss() != null,
+            untersuchung.getUntersuchungSignatur() != null && untersuchung.getUntersuchungSignatur().getPerson() != null,
             untersuchung.getUntersuchungMassnahmen() != null,
             untersuchung.getUntersuchungLaeusekontrolle() != null
         );
@@ -125,16 +131,21 @@ public final class EinladungMapper {
         if (untersuchungImpfungen == null) {
             return false;
         }
-        // Neu werden die Impfungen beim Erstellen der Untersuchung erstellt, deshalb zählt das Tab erst als bearbeitet wenn bei einem der Werte die Version > 0 ist.
+        // Neu werden die Impfungen beim Erstellen der Untersuchung erstellt, deshalb zählt das Tab erst als
+        // bearbeitet wenn bei einem der Werte die Version > 0 ist.
         boolean hasImpfstatusNotInitial = impfstatus.stream().anyMatch(is -> is.getVersion() > 0);
         boolean hasImpfungInterNotInitial = impfungenInternList.stream().anyMatch(ii -> ii.getVersion() > 0);
         boolean hasRelevantCheckboxes = untersuchungImpfungen.isImpfausweisZweiPlusEinsSchema()
             || untersuchungImpfungen.isImpfausweisNichtVorhanden()
             || untersuchungImpfungen.isImpfausweisUnvollstaendig();
         boolean impfungMassnahmenPresent = untersuchungImpfungen.getUntersuchungImpfungenMassnahmen() != null;
+        boolean impfungenDataMinimalPresent = untersuchungImpfungen.getUntersuchungImpfungenDataMinimal() != null;
 
-
-        return hasImpfstatusNotInitial || hasImpfungInterNotInitial || hasRelevantCheckboxes || impfungMassnahmenPresent;
+        return hasImpfstatusNotInitial
+            || hasImpfungInterNotInitial
+            || hasRelevantCheckboxes
+            || impfungMassnahmenPresent
+            || impfungenDataMinimalPresent;
     }
 
     @NonNull

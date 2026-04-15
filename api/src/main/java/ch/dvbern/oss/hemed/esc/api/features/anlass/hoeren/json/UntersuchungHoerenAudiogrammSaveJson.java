@@ -18,16 +18,13 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json;
 
-import java.util.List;
-
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.ValueEnhancedJson;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
@@ -46,21 +43,34 @@ public class UntersuchungHoerenAudiogrammSaveJson implements SaveJsonWithOptimis
     @Schema(required = false)
     private AudiogrammSaveJson audiogrammLinks;
 
-    @Nullable
-    @Schema(required = false)
-    private List<AudiogrammBeurteilung> audiogrammBeurteilung;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson audiogrammBeurteilung;
 
-    @Nullable
-    @Schema(required = false)
-    private List<HoerenZusaetzlicheAngaben> zusaetzlicheAngaben;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson zusaetzlicheAngaben;
 
-    @Nullable
-    @Schema(required = false)
-    private List<HoerenEmpfehlung> empfehlung;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson empfehlung;
 
     @Nullable
     @Schema(required = false)
     private String bemerkungen;
+
+    @Nullable
+    @Valid
+    @Schema(required = false)
+    private ValueEnhancedJson audiogrammSimpel;
+
+    @Nullable
+    @Valid
+    @Schema(required = false)
+    private ValueEnhancedJson hoerhilfe;
 
     @Schema(required = true)
     private long version;

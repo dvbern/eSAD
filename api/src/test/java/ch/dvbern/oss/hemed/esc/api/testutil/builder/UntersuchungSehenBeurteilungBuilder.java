@@ -23,10 +23,13 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAusprae
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.NichtGeprueftGrund;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungSehenBeurteilungJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenBeurteilungJsonSpec;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -62,36 +65,53 @@ public class UntersuchungSehenBeurteilungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungSehenBeurteilungBuilder withBrilleLinsen(@Nullable BrilleLinsenResultat brilleLinsen) {
-        this.sehen.setBrilleLinsen(brilleLinsen);
+    public UntersuchungSehenBeurteilungBuilder withBrilleLinsen(
+        @Nullable BrilleLinsenResultat brilleLinsen,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.sehen.setBrilleLinsen(SingleValueEnhanced.of(brilleLinsen, nichtGeprueftGrund));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungSehenBeurteilungBuilder withStereotest(@Nullable StereotestResultat stereotest) {
-        this.sehen.setStereotest(stereotest);
+    public UntersuchungSehenBeurteilungBuilder withStereotest(
+        @Nullable StereotestResultat stereotest,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.sehen.setStereotest(SingleValueEnhanced.of(stereotest, nichtGeprueftGrund));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungSehenBeurteilungBuilder withFarbsehen(@Nullable FarbsehenResultat farbsehen) {
-        this.sehen.setFarbsehen(farbsehen);
+    public UntersuchungSehenBeurteilungBuilder withFarbsehen(
+        @Nullable FarbsehenResultat farbsehen,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.sehen.setFarbsehen(SingleValueEnhanced.of(farbsehen, nichtGeprueftGrund));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungSehenBeurteilungBuilder withVerwendeteTafel(@Nullable VerwendetTafelResultat verwendeteTafel) {
-        this.sehen.setVerwendeteTafel(verwendeteTafel);
+    public UntersuchungSehenBeurteilungBuilder withVerwendeteTafel(
+        @Nullable VerwendetTafelResultat verwendeteTafel,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.sehen.setVerwendeteTafel(SingleValueEnhanced.of(verwendeteTafel, nichtGeprueftGrund));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungSehenBeurteilungBuilder withFernvisus(@Nullable Collection<DistanzSehenResultat> fernvisus) {
-        this.sehen.setFernvisus(EnumSetUtil.toEnumSet(fernvisus, DistanzSehenResultat.class));
+    public UntersuchungSehenBeurteilungBuilder withFernvisus(
+        @Nullable Collection<DistanzSehenResultat> fernvisus,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.sehen.setFernvisus(MultiValueEnhanced.of(
+            EnumSetUtil.toEnumSet(fernvisus, DistanzSehenResultat.class),
+            nichtGeprueftGrund));
         return this;
     }
 
@@ -111,8 +131,13 @@ public class UntersuchungSehenBeurteilungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungSehenBeurteilungBuilder withNahvisus(@Nullable Collection<DistanzSehenResultat> nahvisus) {
-        this.sehen.setNahvisus(EnumSetUtil.toEnumSet(nahvisus, DistanzSehenResultat.class));
+    public UntersuchungSehenBeurteilungBuilder withNahvisus(
+        @Nullable Collection<DistanzSehenResultat> nahvisus,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.sehen.setNahvisus(MultiValueEnhanced.of(
+            EnumSetUtil.toEnumSet(nahvisus, DistanzSehenResultat.class),
+            nichtGeprueftGrund));
         return this;
     }
 
@@ -132,52 +157,75 @@ public class UntersuchungSehenBeurteilungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungSehenBeurteilungBuilder withMotilitaet(@Nullable MotilitaetResultat motilitaet) {
-        this.sehen.setMotilitaet(motilitaet);
+    public UntersuchungSehenBeurteilungBuilder withMotilitaet(
+        @Nullable MotilitaetResultat motilitaet,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.sehen.setMotilitaet(SingleValueEnhanced.of(motilitaet, nichtGeprueftGrund));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungSehenBeurteilungBuilder withStrabismus(@Nullable Collection<StrabismusResultat> strabismus) {
-        this.sehen.setStrabismus(EnumSetUtil.toEnumSet(strabismus, StrabismusResultat.class));
+    public UntersuchungSehenBeurteilungBuilder withStrabismus(
+        @Nullable Collection<StrabismusResultat> strabismus,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.sehen.setStrabismus(MultiValueEnhanced.of(
+            EnumSetUtil.toEnumSet(strabismus, StrabismusResultat.class),
+            nichtGeprueftGrund));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
     public UntersuchungSehenBeurteilungBuilder withStrabismusAuspraegung(
-        @Nullable StrabismusAuspraegungResultat strabismusAuspraegung) {
-        this.sehen.setStrabismusAuspraegung(strabismusAuspraegung);
+        @Nullable StrabismusAuspraegungResultat strabismusAuspraegung,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.sehen.setStrabismusAuspraegung(SingleValueEnhanced.of(strabismusAuspraegung, nichtGeprueftGrund));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
     public UntersuchungSehenBeurteilungBuilder withStrabismusAuftreten(
-        @Nullable StrabismusAuftretenResultat strabismusAuftreten) {
-        this.sehen.setStrabismusAuftreten(strabismusAuftreten);
+        @Nullable StrabismusAuftretenResultat strabismusAuftreten,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.sehen.setStrabismusAuftreten(SingleValueEnhanced.of(strabismusAuftreten, nichtGeprueftGrund));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungSehenBeurteilungBuilder withInspektion(@Nullable InspektionKonvergenzResultat inspektion) {
-        this.sehen.setInspektion(inspektion);
+    public UntersuchungSehenBeurteilungBuilder withInspektion(
+        @Nullable InspektionKonvergenzResultat inspektion,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.sehen.setInspektion(SingleValueEnhanced.of(inspektion, nichtGeprueftGrund));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungSehenBeurteilungBuilder withKonvergenz(@Nullable InspektionKonvergenzResultat konvergenz) {
-        this.sehen.setKonvergenz(konvergenz);
+    public UntersuchungSehenBeurteilungBuilder withKonvergenz(
+        @Nullable InspektionKonvergenzResultat konvergenz,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.sehen.setKonvergenz(SingleValueEnhanced.of(konvergenz, nichtGeprueftGrund));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungSehenBeurteilungBuilder withEmpfehlung(@Nullable Collection<SehenEmpfehlung> empfehlungList) {
-        this.sehen.setEmpfehlung(EnumSetUtil.toEnumSet(empfehlungList, SehenEmpfehlung.class));
+    public UntersuchungSehenBeurteilungBuilder withEmpfehlung(
+        @Nullable Collection<SehenEmpfehlung> empfehlungList,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.sehen.setEmpfehlung(MultiValueEnhanced.of(
+            EnumSetUtil.toEnumSet(empfehlungList, SehenEmpfehlung.class),
+            nichtGeprueftGrund));
         return this;
     }
 
@@ -196,13 +244,15 @@ public class UntersuchungSehenBeurteilungBuilder {
     }
 
     @NonNull
-    public static UntersuchungSehenBeurteilungJson createJax(@NonNull Consumer<UntersuchungSehenBeurteilungBuilder> block) {
+    public static UntersuchungSehenBeurteilungJson createJax(
+        @NonNull Consumer<UntersuchungSehenBeurteilungBuilder> block) {
         UntersuchungSehenBeurteilung entity = create(block);
         return UntersuchungSehenBeurteilungMapper.toJson(entity);
     }
 
     @NonNull
-    public static UntersuchungSehenBeurteilungJsonSpec createJaxSpec(@NonNull Consumer<UntersuchungSehenBeurteilungBuilder> block) {
+    public static UntersuchungSehenBeurteilungJsonSpec createJaxSpec(
+        @NonNull Consumer<UntersuchungSehenBeurteilungBuilder> block) {
         UntersuchungSehenBeurteilungJson json = createJax(block);
         return UntersuchungSehenBeurteilungJsonSpecMapper.INSTANCE.untersuchungSehenJsonToUntersuchungSehenJsonSpec(json);
     }

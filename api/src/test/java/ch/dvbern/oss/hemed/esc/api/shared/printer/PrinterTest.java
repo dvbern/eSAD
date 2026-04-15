@@ -15,7 +15,14 @@ import java.util.Set;
 import ch.dvbern.dvbstarter.shared.EdokidIdTestGenerator;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.BallFangen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.BallWerfen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Hampelmann;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithDateTimeJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.UntersuchungLaeusekontrolle;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.types.LaeusekontrolleBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
@@ -69,6 +76,7 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
@@ -78,6 +86,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierAnl
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintVariant;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrinter;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateTimeRange;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassConfigBuilder;
@@ -93,6 +102,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.KontaktPersonKindBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.NachkontrolleBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.NotizBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.SchuleBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.TenantSettingBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungArztBemerkungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungArztBeurteilungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungBuilder;
@@ -102,6 +112,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungHoerenAudiogramm
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungHoerenOtoskopieBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfstatusKrankheitBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungInternBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungLaeusekontrolleBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungMassnahmenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBeurteilungBuilder;
 
@@ -112,6 +123,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.tika.mime.MediaType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.EnumSource.Mode;
@@ -126,6 +138,8 @@ class PrinterTest {
     private static final String OUTPUT_PATH = Paths.get(FileUtils.getTempDirectoryPath(), "esc", "pdf").toString();
 
     private final FileStoreService fileStoreServiceMock = Mockito.mock(FileStoreService.class);
+    private final TenantSettingsService tenantSettingsServiceMock = Mockito.mock(TenantSettingsService.class);
+    private final ConfigService configServiceMock = Mockito.mock(ConfigService.class);
 
     @BeforeAll
     static void setUp() throws IOException {
@@ -133,6 +147,11 @@ class PrinterTest {
         for (TenantEnum tenant : TenantEnum.values()) {
             FileUtils.forceMkdir(new File(OUTPUT_PATH + '/' + tenant));
         }
+    }
+
+    @BeforeEach
+    void setUpBeforeEach() {
+        Mockito.when(tenantSettingsServiceMock.getTenantSetting()).thenReturn(TenantSettingBuilder.defaultTenantSetting());
     }
 
     @ParameterizedTest
@@ -198,7 +217,8 @@ class PrinterTest {
                     .withAnlass(anlassLongAgo)
                     .withUntersuchung(untersuchungLongAgo)),
                 List.of(untersuchungImpfungIntern),
-                List.of(UntersuchungImpfstatusKrankheitBuilder.defaultUntersuchungImpfungen()));
+                List.of(UntersuchungImpfstatusKrankheitBuilder.defaultUntersuchungImpfungen()),
+                List.of());
 
             UntersuchungTriage untersuchungTriage =
                 UntersuchungTriageBuilder.create(builder -> builder
@@ -213,6 +233,7 @@ class PrinterTest {
                         .withAnlass(anlassToday)
                         .withUntersuchung(untersuchung)),
                 List.of(UntersuchungImpfungInternBuilder.defaultUntersuchungImpfungIntern(LocalDate.now())),
+                List.of(),
                 List.of());
 
             KinderdossierPrintDTO dto = new KinderdossierPrintDTO(
@@ -226,7 +247,7 @@ class PrinterTest {
                 KinderdossierPrintVariant.GESAMTES
             );
 
-            KinderdossierPrinter.print(dto, outputStream, fileStoreServiceMock);
+            KinderdossierPrinter.print(dto, outputStream, fileStoreServiceMock, tenantSettingsServiceMock, configServiceMock);
         } catch (IOException e) {
             LOG.error("Error while writing to file", e);
         }
@@ -247,11 +268,28 @@ class PrinterTest {
                     .withArzt(BenutzerBuilder.defaultBenutzer())
                     .withMPA(BenutzerBuilder.defaultBenutzer())
                     .withWeiterePerson(BenutzerBuilder.defaultBenutzer()));
+
+            Anlass anlassFolgeTermin = AnlassBuilder.create(builder ->
+                builder
+                    .withDatumSetSchuljahr(LocalDate.now().plusMonths(2))
+                    .withTitle("Folgetermin Impfung")
+                    .withAnlassConfig(AnlassConfigBuilder.create(anlassConfigBuilder -> builder.withAnlassTyp(AnlassTyp.IMPFTERMIN)))
+            );
+            AnlassWithDateTimeJson anlassWithDateTime = new AnlassWithDateTimeJson(
+                anlassFolgeTermin.getId().getUUID(),
+                anlassFolgeTermin.getAnlassConfig().getAnlassTyp(),
+                anlassFolgeTermin.getTitel(),
+                anlassFolgeTermin.getDatum(),
+                anlassFolgeTermin.getZeitVonBis() != null ? anlassFolgeTermin.getZeitVonBis().getVon() : null,
+                anlassFolgeTermin.getZeitVonBis() != null ? anlassFolgeTermin.getZeitVonBis().getBis() : null
+            );
+
             KinderdossierAnlassPrintDTO anlassKeineTeilnahme = new KinderdossierAnlassPrintDTO(
                 EinladungBuilder.create(builder -> builder.withStatus(EinladungStatus.TEILNAHME_ABGESAGT)
                     .withAnlass(anlassLongAgo)),
                 List.of(UntersuchungImpfungInternBuilder.defaultUntersuchungImpfungIntern(LocalDate.now())),
-                List.of(UntersuchungImpfstatusKrankheitBuilder.defaultUntersuchungImpfungen()));
+                List.of(UntersuchungImpfstatusKrankheitBuilder.defaultUntersuchungImpfungen()),
+                List.of(anlassWithDateTime));
 
             UntersuchungTriage untersuchungTriage =
                 UntersuchungTriageBuilder.create(builder -> builder
@@ -260,23 +298,24 @@ class PrinterTest {
                 UntersuchungDurchfuehrungBuilder.create(builder ->
                     builder.isNachzuegler(true)
                         .isNachkontrolle(true)
-                        .isNeueintritt(false));
+                        .isNeueintritt(false)
+                        .withBemerkung("Test Bemerkung bei Daten"));
 
             UntersuchungSehenBeurteilung untersuchungSehenBeurteilung =
                 UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withBrilleLinsen(
-                        BrilleLinsenResultat.MIT)
-                    .withStereotest(StereotestResultat.NICHT_GEPRUEFT)
-                    .withFarbsehen(FarbsehenResultat.PATHOLOGISCH)
-                    .withVerwendeteTafel(VerwendetTafelResultat.BUCHSTABEN)
-                    .withFernvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT, DistanzSehenResultat.RECHTS_REDUZIERT))
+                        BrilleLinsenResultat.MIT, null)
+                    .withStereotest(StereotestResultat.NICHT_GEPRUEFT, null)
+                    .withFarbsehen(FarbsehenResultat.PATHOLOGISCH, null)
+                    .withVerwendeteTafel(VerwendetTafelResultat.BUCHSTABEN, null)
+                    .withFernvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT, DistanzSehenResultat.RECHTS_REDUZIERT), null)
                     .withFernvisusRechts(BigDecimal.valueOf(2.5))
-                    .withNahvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT))
-                    .withMotilitaet(MotilitaetResultat.NORMAL)
-                    .withStrabismus(List.of(StrabismusResultat.KEIN_STRABISMUS))
-                    .withStrabismusAuspraegung(StrabismusAuspraegungResultat.LATENT)
-                    .withStrabismusAuftreten(StrabismusAuftretenResultat.KEIN_STRABISMUS)
-                    .withInspektion(InspektionKonvergenzResultat.AUFFAELLIG)
-                    .withKonvergenz(InspektionKonvergenzResultat.UNAUFFAELLIG)
+                    .withNahvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT), null)
+                    .withMotilitaet(MotilitaetResultat.NORMAL, null)
+                    .withStrabismus(List.of(StrabismusResultat.KEIN_STRABISMUS), null)
+                    .withStrabismusAuspraegung(StrabismusAuspraegungResultat.LATENT, null)
+                    .withStrabismusAuftreten(StrabismusAuftretenResultat.KEIN_STRABISMUS, null)
+                    .withInspektion(InspektionKonvergenzResultat.AUFFAELLIG, null)
+                    .withKonvergenz(InspektionKonvergenzResultat.UNAUFFAELLIG, null)
                     .withBemerkung("Eine sehr ausführliche bemerkung!")
                 );
 
@@ -284,17 +323,17 @@ class PrinterTest {
                 builder -> builder
                     .withAudiogrammBeurteilung(List.of(
                         AudiogrammBeurteilung.NICHT_GEPRUEFT,
-                        AudiogrammBeurteilung.RECHTS_REDUZIERT))
+                        AudiogrammBeurteilung.RECHTS_REDUZIERT), null)
                     .withAudiogrammRechts(Dezibel.DB50)
                     .withAudiogrammLinks(Dezibel.DB30)
-                    .withZusaetzlicheAngaben(HoerenZusaetzlicheAngaben.ERKAELTUNG)
+                    .withZusaetzlicheAngaben(List.of(HoerenZusaetzlicheAngaben.ERKAELTUNG), null)
                     .withBemerkung("Eine weitere Audiogramm Bemerkung!")
             );
             UntersuchungHoerenOtoskopie untersuchungHoerenOtoskopie = UntersuchungHoerenOtoskopieBuilder.create(
                 builder -> builder
-                    .withOtoskopieRechts(List.of(OtoskopieResultat.ANDERES, OtoskopieResultat.TROMMELFELL_CERUMEN))
+                    .withOtoskopieRechts(List.of(OtoskopieResultat.ANDERES, OtoskopieResultat.TROMMELFELL_CERUMEN), null)
                     .withOtoskopieRechtsResultatAndere("Test")
-                    .withOtoskopieLinks(List.of(OtoskopieResultat.SEROMUKOTYMPANON))
+                    .withOtoskopieLinks(List.of(OtoskopieResultat.SEROMUKOTYMPANON), null)
                     .withOtoskopieLinksResultatAndere("Test 2")
                     .withBemerkung("Eine weitere Otoskopie Bemerkung!")
             );
@@ -304,10 +343,10 @@ class PrinterTest {
                     .withBemerkung("Bemerkung")
                     .withBmi(BigDecimal.ZERO)
                     .withGewicht(BigDecimal.valueOf(122))
-                    .withBmiPerzentile(PerzentileBmi.PERZENTILE_HOCH)
-                    .withGewichtPerzentile(PerzentileGewicht.NORMAL)
+                    .withBmiPerzentile(PerzentileBmi.PERZENTILE_HOCH, null)
+                    .withGewichtPerzentile(PerzentileGewicht.NORMAL, null)
                     .withGroesse(100)
-                    .withGroessePerzentile(PerzentileGroesse.NICHT_GEPRUEFT)
+                    .withGroessePerzentile(PerzentileGroesse.NICHT_GEPRUEFT, null)
             );
 
             UntersuchungArztBeurteilung untersuchungArztBrt = UntersuchungArztBeurteilungBuilder.create(
@@ -321,11 +360,19 @@ class PrinterTest {
                     .withHaut(Haut.GROBKURSORISCH_UNAUFFAELLIG)
                     .withHerzauskultation(Herzauskultation.NICHT_GEPRUEFT)
                     .withVerhalten(Verhalten.AUFFAELLIG)
+                    .withHampelmann(Hampelmann.MIND_FUENF_MAL)
+                    .withBallFangen(BallFangen.BALL_GEFANGEN)
+                    .withBallWerfen(BallWerfen.NICHT_GEPRUEFT)
                     .withSprachfaehigkeit(List.of(Sprachfaehigkeit.ARTIKULATIONSFEHLER, Sprachfaehigkeit.ANDERES))
             );
 
             UntersuchungArztBemerkung untersuchungArztBemerkung = UntersuchungArztBemerkungBuilder.create(
                 builder -> builder.withBemerkungen("Eine ärztliche Bemerkung")
+            );
+
+            UntersuchungLaeusekontrolle untersuchungLaeusekontrolle = UntersuchungLaeusekontrolleBuilder.create(
+                builder -> builder.withBeurteilung(List.of(LaeusekontrolleBeurteilung.LAEUSE_VORHANDEN))
+                    .withBemerkung("Es gibt Läuse")
             );
 
             UntersuchungMassnahmen untersuchungMassnahmen = UntersuchungMassnahmenBuilder.create(
@@ -344,11 +391,14 @@ class PrinterTest {
                         .withUntersuchungHoerenOtoskopie(untersuchungHoerenOtoskopie)
                         .withUntersuchungGroesseGewicht(untersuchungGroesseGewicht)
                         .withUntersuchungArztBeurteilung(untersuchungArztBrt)
+                        .withUntersuchungLaeusekontrolle(untersuchungLaeusekontrolle)
                         .withUntersuchungArztBemerkung(untersuchungArztBemerkung)
                         .withUntersuchungMassnahmen(untersuchungMassnahmen)
                 );
-
-            Anlass anlassToday = AnlassBuilder.create(builder -> builder.withDatumSetSchuljahr(LocalDate.now())
+            LocalDate anlassDatum = LocalDate.now();
+            DateTimeRange dateRangeAnlass = DateTimeRange.of(anlassDatum.atTime(10, 0), anlassDatum.atTime(13, 30));
+            Anlass anlassToday = AnlassBuilder.create(builder -> builder.withDatumSetSchuljahr(anlassDatum)
+                .withZeitVonBis(dateRangeAnlass)
                 .withArzt(BenutzerBuilder.create(bBuilder ->
                     bBuilder.withNachname("Univ.- Prof. em. Dr. Dr. h.c. mult.")
                         .withVorname("Francisco Domingo Carlos Andres Sebastián d'Anconia"))));
@@ -368,7 +418,8 @@ class PrinterTest {
                         .withUntersuchung(untersuchung)),
                 List.of(untersuchungImpfungIntern),
                 List.of(UntersuchungImpfstatusKrankheitBuilder.create(builder -> builder.withAnzahlImpfungen(10)
-                    .withDatumLetzteImpfung(LocalDate.now()))));
+                    .withDatumLetzteImpfung(LocalDate.now()))),
+                List.of(anlassWithDateTime));
 
             KinderdossierPrintDTO dto = new KinderdossierPrintDTO(
                 kind,
@@ -381,7 +432,7 @@ class PrinterTest {
                 KinderdossierPrintVariant.ANLAESSE
             );
 
-            KinderdossierPrinter.print(dto, outputStream, fileStoreServiceMock);
+            KinderdossierPrinter.print(dto, outputStream, fileStoreServiceMock, tenantSettingsServiceMock, configServiceMock);
         } catch (IOException e) {
             LOG.error("Error while writing to file", e);
         }
@@ -408,37 +459,37 @@ class PrinterTest {
 
             UntersuchungSehenBeurteilung untersuchungSehenBeurteilung =
                 UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withBrilleLinsen(
-                        BrilleLinsenResultat.MIT)
-                    .withStereotest(StereotestResultat.NICHT_GEPRUEFT)
-                    .withFarbsehen(FarbsehenResultat.PATHOLOGISCH)
-                    .withVerwendeteTafel(VerwendetTafelResultat.BUCHSTABEN)
-                    .withFernvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT, DistanzSehenResultat.RECHTS_REDUZIERT))
+                        BrilleLinsenResultat.MIT, null)
+                    .withStereotest(StereotestResultat.NICHT_GEPRUEFT, null)
+                    .withFarbsehen(FarbsehenResultat.PATHOLOGISCH, null)
+                    .withVerwendeteTafel(VerwendetTafelResultat.BUCHSTABEN, null)
+                    .withFernvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT, DistanzSehenResultat.RECHTS_REDUZIERT), null)
                     .withFernvisusRechts(BigDecimal.valueOf(2.5))
-                    .withNahvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT))
-                    .withMotilitaet(MotilitaetResultat.NORMAL)
-                    .withStrabismus(List.of(StrabismusResultat.KEIN_STRABISMUS))
-                    .withStrabismusAuspraegung(StrabismusAuspraegungResultat.LATENT)
-                    .withStrabismusAuftreten(StrabismusAuftretenResultat.KEIN_STRABISMUS)
-                    .withInspektion(InspektionKonvergenzResultat.AUFFAELLIG)
-                    .withKonvergenz(InspektionKonvergenzResultat.UNAUFFAELLIG)
+                    .withNahvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT), null)
+                    .withMotilitaet(MotilitaetResultat.NORMAL, null)
+                    .withStrabismus(List.of(StrabismusResultat.KEIN_STRABISMUS), null)
+                    .withStrabismusAuspraegung(StrabismusAuspraegungResultat.LATENT, null)
+                    .withStrabismusAuftreten(StrabismusAuftretenResultat.KEIN_STRABISMUS, null)
+                    .withInspektion(InspektionKonvergenzResultat.AUFFAELLIG, null)
+                    .withKonvergenz(InspektionKonvergenzResultat.UNAUFFAELLIG, null)
                     .withBemerkung("Eine sehr ausführliche bemerkung!")
                 );
 
             UntersuchungHoerenAudiogramm untersuchungHoerenAudiogramm = UntersuchungHoerenAudiogrammBuilder.create(
                 builder -> builder.withAudiogrammBeurteilung(List.of(
                         AudiogrammBeurteilung.NICHT_GEPRUEFT,
-                        AudiogrammBeurteilung.RECHTS_REDUZIERT))
+                        AudiogrammBeurteilung.RECHTS_REDUZIERT), null)
                     .withAudiogrammRechts(Dezibel.DB50)
                     .withAudiogrammLinks(Dezibel.DB30)
-                    .withZusaetzlicheAngaben(HoerenZusaetzlicheAngaben.ERKAELTUNG)
+                    .withZusaetzlicheAngaben(List.of(HoerenZusaetzlicheAngaben.ERKAELTUNG), null)
                     .withBemerkung("Eine weitere Audiogramm Bemerkung!")
             );
 
             UntersuchungHoerenOtoskopie untersuchungHoerenOtoskopie = UntersuchungHoerenOtoskopieBuilder.create(
                 builder -> builder
-                    .withOtoskopieRechts(List.of(OtoskopieResultat.ANDERES, OtoskopieResultat.TROMMELFELL_CERUMEN))
+                    .withOtoskopieRechts(List.of(OtoskopieResultat.ANDERES, OtoskopieResultat.TROMMELFELL_CERUMEN), null)
                     .withOtoskopieRechtsResultatAndere("Test")
-                    .withOtoskopieLinks(List.of(OtoskopieResultat.SEROMUKOTYMPANON))
+                    .withOtoskopieLinks(List.of(OtoskopieResultat.SEROMUKOTYMPANON), null)
                     .withOtoskopieLinksResultatAndere("Test 2")
                     .withBemerkung("Eine weitere Otoskopie Bemerkung!")
             );
@@ -448,10 +499,10 @@ class PrinterTest {
                     .withBemerkung("Bemerkung")
                     .withBmi(BigDecimal.ZERO)
                     .withGewicht(BigDecimal.valueOf(122))
-                    .withBmiPerzentile(PerzentileBmi.PERZENTILE_HOCH)
-                    .withGewichtPerzentile(PerzentileGewicht.NORMAL)
+                    .withBmiPerzentile(PerzentileBmi.PERZENTILE_HOCH, null)
+                    .withGewichtPerzentile(PerzentileGewicht.NORMAL, null)
                     .withGroesse(100)
-                    .withGroessePerzentile(PerzentileGroesse.NICHT_GEPRUEFT)
+                    .withGroessePerzentile(PerzentileGroesse.NICHT_GEPRUEFT, null)
             );
 
             UntersuchungArztBeurteilung untersuchungArztBrt = UntersuchungArztBeurteilungBuilder.create(
@@ -501,6 +552,7 @@ class PrinterTest {
                         .withAnlass(anlassToday)
                         .withUntersuchung(untersuchung)),
                 List.of(),
+                List.of(),
                 List.of());
 
             KinderdossierPrintDTO dto = new KinderdossierPrintDTO(
@@ -514,7 +566,7 @@ class PrinterTest {
                 KinderdossierPrintVariant.ANLAESSE
             );
 
-            KinderdossierPrinter.print(dto, outputStream, fileStoreServiceMock);
+            KinderdossierPrinter.print(dto, outputStream, fileStoreServiceMock, tenantSettingsServiceMock, configServiceMock);
         } catch (IOException e) {
             LOG.error("Error while writing to file", e);
         }
@@ -569,7 +621,7 @@ class PrinterTest {
                 KinderdossierPrintVariant.NOTIZEN
             );
 
-            KinderdossierPrinter.print(dto, outputStream, fileStoreServiceMock);
+            KinderdossierPrinter.print(dto, outputStream, fileStoreServiceMock, tenantSettingsServiceMock, configServiceMock);
         } catch (IOException e) {
             LOG.error("Error while writing to file", e);
         }
@@ -592,7 +644,7 @@ class PrinterTest {
                 KinderdossierPrintVariant.GESAMTES
             );
 
-            KinderdossierPrinter.print(dto, outputStream, fileStoreServiceMock);
+            KinderdossierPrinter.print(dto, outputStream, fileStoreServiceMock, tenantSettingsServiceMock, configServiceMock);
         } catch (IOException e) {
             LOG.error("Error while writing to file", e);
         }
@@ -610,7 +662,7 @@ class PrinterTest {
             AnlassPrintDTO anlassPrintDTO =
                 new AnlassPrintDTO(anlass, List.of(einladung), LocalDate.now(), tenantEnum, AppLanguages.DE, null);
 
-            AnlassPrinter.print(anlassPrintDTO, outputStream, fileStoreServiceMock);
+            AnlassPrinter.print(anlassPrintDTO, outputStream, fileStoreServiceMock, tenantSettingsServiceMock, configServiceMock);
 
         } catch (IOException e) {
             LOG.error("Error while writing to file", e);
@@ -794,7 +846,7 @@ class PrinterTest {
             AnlassPrintDTO anlassPrintDTO =
                 new AnlassPrintDTO(anlass, einladungen, LocalDate.now(), tenantEnum, AppLanguages.DE, null);
 
-            AnlassPrinter.print(anlassPrintDTO, outputStream, fileStoreServiceMock);
+            AnlassPrinter.print(anlassPrintDTO, outputStream, fileStoreServiceMock, tenantSettingsServiceMock, configServiceMock);
 
         } catch (IOException e) {
             LOG.error("Error while writing to file", e);
@@ -851,7 +903,7 @@ class PrinterTest {
             AnlassPrintDTO anlassPrintDTO =
                 new AnlassPrintDTO(anlass, einladungen, LocalDate.now(), tenantEnum, AppLanguages.DE, nachkontrollen);
 
-            AnlassPrinter.print(anlassPrintDTO, outputStream, fileStoreServiceMock);
+            AnlassPrinter.print(anlassPrintDTO, outputStream, fileStoreServiceMock, tenantSettingsServiceMock, configServiceMock);
 
         } catch (IOException e) {
             LOG.error("Error while writing to file", e);

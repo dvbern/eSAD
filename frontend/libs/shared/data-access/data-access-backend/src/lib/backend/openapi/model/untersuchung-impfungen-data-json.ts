@@ -11,6 +11,7 @@ import { UntersuchungImpfstatusListSaveJson } from './untersuchung-impfstatus-li
 import { UntersuchungImpfungenJson } from './untersuchung-impfungen-json';
 import { UntersuchungImpfungenMassnahmenJson } from './untersuchung-impfungen-massnahmen-json';
 import { UntersuchungImpfungInternListJson } from './untersuchung-impfung-intern-list-json';
+import { UntersuchungImpfungenDataMinimalJson } from './untersuchung-impfungen-data-minimal-json';
 
 
 export interface UntersuchungImpfungenDataJson { 
@@ -18,6 +19,7 @@ export interface UntersuchungImpfungenDataJson {
     massnahmen?: UntersuchungImpfungenMassnahmenJson;
     impfstatusList: UntersuchungImpfstatusListSaveJson;
     impfungInternList: UntersuchungImpfungInternListJson;
+    dataMinimal?: UntersuchungImpfungenDataMinimalJson;
 }
 
 

@@ -8,6 +8,9 @@
   <svui-page-header-list-summary
     [items]="summaryItems()"/>
 
+  @if (this.canEditBenutzer()) {
+    <svui-page-header-add-button [addRouterLink]="Path.CREATE"/>
+  }
 
   <svui-card [innerSpacing]="'topBottom'">
     <table
@@ -19,11 +22,20 @@
     >
       <!-- col widths -->
       <colgroup>
+        <!-- Name -->
         <col svuiColWidth colWidth="text-medium">
-        <col svuiColWidth colWidth="text-medium">
-        <col svuiColWidth colWidth="select-medium">
-        <col svuiColWidth colWidth="select-small">
-        <col svuiColWidth colWidth="options">
+        <!-- Vorname -->
+        <col svuiColWidth [colWidth]="'text-medium'">
+        <!-- E-Mail -->
+        <col svuiColWidth [colWidth]="'text-medium'">
+        <!-- Rollen -->
+        <col svuiColWidth [colWidth]="'select-medium'">
+        <!-- Aktiv/Deaktiviert -->
+        <col svuiColWidth [colWidth]="'select-small'">
+        <!-- Last Login -->
+        <col svuiColWidth [colWidth]="'text-small'">
+        <!-- Options -->
+        <col svuiColWidth [colWidth]="'options'">
       </colgroup>
       <thead>
       <!-- Headers for sorting -->
@@ -31,10 +43,18 @@
         <th
           scope="col"
           svuiSortable
-          [sortState]="itemTable.findColSortDTO('data.fullName')"
-          (sort)="itemTable.onColSort($event, 'data.fullName')"
+          [sortState]="itemTable.findColSortDTO('data.name')"
+          (sort)="itemTable.onColSort($event, 'data.name')"
         >
-          {{ 'benutzer.fullName' | transloco }}
+          {{ 'benutzer.name' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('data.vorname')"
+          (sort)="itemTable.onColSort($event, 'data.vorname')"
+        >
+          {{ 'benutzer.vorname' | transloco }}
         </th>
         <th
           scope="col"
@@ -44,14 +64,22 @@
         >
           {{ 'benutzer.email' | transloco }}
         </th>
-        <th>{{ 'benutzer.rollen' | transloco }}</th>
+        <th scope="col">{{ 'benutzer.rollen' | transloco }}</th>
         <th
           scope="col"
           svuiSortable
-          [sortState]="itemTable.findColSortDTO('data.aktiv')"
-          (sort)="itemTable.onColSort($event, 'data.aktiv')"
+          [sortState]="itemTable.findColSortDTO('data.benutzerAktivStatus')"
+          (sort)="itemTable.onColSort($event, 'data.benutzerAktivStatus')"
         >
-          {{ 'benutzer.aktiv' | transloco }}
+          {{ 'global.entityAktivStatus' | transloco }}
+        </th>
+        <th
+          scope="col"
+          svuiSortable
+          [sortState]="itemTable.findColSortDTO('lastUsedSessionTimestamp')"
+          (sort)="itemTable.onColSort($event, 'lastUsedSessionTimestamp')"
+        >
+          {{ 'benutzer.lastUsedSessionTimestamp' | transloco }}
         </th>
         <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
 
@@ -59,10 +87,16 @@
       </tr>
       <!-- Headers for filtering-->
       <tr>
-        <!-- Filter for fullName -->
+        <!-- Filter for name -->
         <th scope="col">
-          <svui-table-filter [columnHeader]="('benutzer.fullName' | transloco)">
-            <input svuiTextInput [formControl]="tableFilterForm.group.controls.fullName"/>
+          <svui-table-filter [columnHeader]="('benutzer.name' | transloco)">
+            <input svuiTextInput [formControl]="tableFilterForm.group.controls.name"/>
+          </svui-table-filter>
+        </th>
+        <!-- Filter for vorname -->
+        <th scope="col">
+          <svui-table-filter [columnHeader]="('benutzer.vorname' | transloco)">
+            <input svuiTextInput [formControl]="tableFilterForm.group.controls.vorname"/>
           </svui-table-filter>
         </th>
 
@@ -94,24 +128,24 @@
 
         <!-- Filter for aktiv/deaktiviert -->
         <th scope="col">
-          <svui-table-filter [columnHeader]="('benutzer.aktiv' | transloco)">
+          <svui-table-filter [columnHeader]="('benutzer.benutzerAktivStatus' | transloco)">
             <ng-select
               svuiNgSelect
               bindLabel='dummy'
               appendTo="body"
-              [formControl]="tableFilterForm.group.controls.aktiv"
+              [formControl]="tableFilterForm.group.controls.benutzerAktivStatus"
               [placeholder]="'global.select.bitte-auswaehlen' | transloco"
             >
-              <ng-option [value]="true">
-                {{ 'benutzer.list.aktiv' | transloco }}
-              </ng-option>
-              <ng-option [value]="false">
-                {{ 'benutzer.list.inaktiv' | transloco }}
-              </ng-option>
+              @for (status of benutzerAktivStati; track status) {
+                <ng-option [value]="status">
+                  {{ 'EntityAktivStatus.' + status | transloco }}
+                </ng-option>
+              }
             </ng-select>
 
           </svui-table-filter>
         </th>
+        <th scope="col"></th>
         <th scope="col"></th>
       </tr>
       </thead>
@@ -121,10 +155,22 @@
         }
         @for (item of itemTable.displayedList(); track item.id) {
           <tr>
-            <td>{{ item.data.fullName }}</td>
-            <td>{{ item.data.email }}</td>
-            <td>{{ printFachRollen(item.data.fachRollen) }}</td>
-            <td>{{ item.data.aktiv ? ('benutzer.list.aktiv' | transloco) : ('benutzer.list.inaktiv' | transloco) }}</td>
+            <td>{{ item.data.name }}</td>
+            <td>{{ item.data.vorname }}</td>
+            <td>
+              @if (canEditBenutzer()) {
+                <svui-table-link
+                  type="text"
+                  [myRouterLink]="[item.id]">
+                  {{ item.data.email }}
+                </svui-table-link>
+              } @else {
+                {{ item.data.email }}
+              }
+            </td>
+            <td>{{ printFachRollen(item.fachRollen) }}</td>
+            <td> {{ 'EntityAktivStatus.' + item.data.benutzerAktivStatus | transloco }}</td>
+            <td>{{ item.lastUsedSessionTimestamp | date:'dd.MM.yyyy HH:mm' }}</td>
             <td>
               <svui-collapsible-menu
                 [loading]="benutzerListStore.loaderSave.isLoading()"

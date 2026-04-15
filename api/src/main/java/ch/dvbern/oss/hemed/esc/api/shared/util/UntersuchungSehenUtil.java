@@ -21,8 +21,8 @@ package ch.dvbern.oss.hemed.esc.api.shared.util;
 import java.math.BigDecimal;
 import java.util.EnumSet;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
@@ -33,6 +33,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftret
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -42,78 +44,58 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class UntersuchungSehenUtil {
 
     @Nullable
-    public static BrilleLinsenResultat getBrilleLinsen(
+    public SingleValueEnhanced<BrilleLinsenResultat> getBrilleLinsenDefault(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehenBeurteilung sehen,
         @Nullable BrilleLinsenResultat defaultWert
     ) {
-        if (config.getSehenBrilleLinsen().isVisible()) {
-            if (sehen != null && sehen.getBrilleLinsen() != null) {
-                return sehen.getBrilleLinsen();
-            }
-            return defaultWert;
+        if (config.getSehenBrilleLinsen().isVisible() && defaultWert != null) {
+            return SingleValueEnhanced.of(defaultWert, null);
         }
         return null;
     }
 
     @Nullable
-    public static StereotestResultat getStereoTest(
+    public static SingleValueEnhanced<StereotestResultat> getStereoTestDefault(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehenBeurteilung sehen,
-        @NonNull StereotestResultat defaultWert
+        @Nullable StereotestResultat defaultWert
     ) {
         if (config.getSehenStereoTest().isVisible()) {
-            if (sehen != null && sehen.getStereotest() != null) {
-                return sehen.getStereotest();
-            }
-            return defaultWert;
+            return SingleValueEnhanced.of(defaultWert, null);
         }
         return null;
     }
 
     @Nullable
-    public static FarbsehenResultat getFarbsehen(
+    public static SingleValueEnhanced<FarbsehenResultat> getFarbsehenDefault(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehenBeurteilung sehen,
-        @NonNull FarbsehenResultat defaultWert
+        @Nullable FarbsehenResultat defaultWert
     ) {
         if (config.getSehenFarbsehen().isVisible()) {
-            if (sehen != null && sehen.getFarbsehen() != null) {
-                return sehen.getFarbsehen();
-            }
-            return defaultWert;
+            return SingleValueEnhanced.of(defaultWert, null);
         }
         return null;
     }
 
     @Nullable
-    public static VerwendetTafelResultat getVerwendeteTafel(
+    public static SingleValueEnhanced<VerwendetTafelResultat> getVerwendeteTafelDefault(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehenBeurteilung sehen,
-        @NonNull VerwendetTafelResultat defaultWert
+        @Nullable VerwendetTafelResultat defaultWert
     ) {
         if (config.getSehenTafel().isVisible()) {
-            if (sehen != null && sehen.getVerwendeteTafel() != null) {
-                return sehen.getVerwendeteTafel();
-            }
-            return defaultWert;
+            return SingleValueEnhanced.of(defaultWert, null);
         }
         return null;
     }
 
     @NonNull
-    public static EnumSet<DistanzSehenResultat> getFernvisus(
+    public static MultiValueEnhanced<DistanzSehenResultat> getFernvisusDefault(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull DistanzSehenResultat defaultWert
     ) {
         if (config.getSehenFernvisus().isVisible()) {
-            if (sehen != null && CollectionUtils.isNotEmpty(sehen.getFernvisus())) {
-                return sehen.getFernvisus();
-            }
-            return EnumSet.of(defaultWert);
+            return MultiValueEnhanced.of(EnumSet.of(defaultWert), null);
         }
-        return EnumSet.noneOf(DistanzSehenResultat.class);
+        return MultiValueEnhanced.of(EnumSet.noneOf(DistanzSehenResultat.class), null);
     }
 
     @Nullable
@@ -123,7 +105,10 @@ public class UntersuchungSehenUtil {
         @NonNull BigDecimal defaultWert
     ) {
         if (config.getSehenFernvisus().isVisible()) {
-            if (sehen != null && CollectionUtils.isNotEmpty(sehen.getFernvisus())) {
+            if (sehen != null && CollectionUtils.isNotEmpty(ValueEnhancedUtil.getEnumSetOrEmpty(
+                sehen.getFernvisus(),
+                DistanzSehenResultat.class))
+            ) {
                 return sehen.getFernvisusRechts();
             }
             return defaultWert;
@@ -138,7 +123,10 @@ public class UntersuchungSehenUtil {
         @NonNull BigDecimal defaultWert
     ) {
         if (config.getSehenFernvisus().isVisible()) {
-            if (sehen != null && CollectionUtils.isNotEmpty(sehen.getFernvisus())) {
+            if (sehen != null && CollectionUtils.isNotEmpty(ValueEnhancedUtil.getEnumSetOrEmpty(
+                sehen.getFernvisus(),
+                DistanzSehenResultat.class))
+            ) {
                 return sehen.getFernvisusLinks();
             }
             return defaultWert;
@@ -147,104 +135,76 @@ public class UntersuchungSehenUtil {
     }
 
     @NonNull
-    public static EnumSet<DistanzSehenResultat> getNahvisus(
+    public static MultiValueEnhanced<DistanzSehenResultat> getNahvisusDefault(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull DistanzSehenResultat defaultWert) {
         if (config.getSehenNahvisus().isVisible()) {
-            if (sehen != null && CollectionUtils.isNotEmpty(sehen.getNahvisus())) {
-                return sehen.getNahvisus();
-            }
-            return EnumSet.of(defaultWert);
+            return MultiValueEnhanced.of(EnumSet.of(defaultWert), null);
         }
-        return EnumSet.noneOf(DistanzSehenResultat.class);
+        return MultiValueEnhanced.of(EnumSet.noneOf(DistanzSehenResultat.class), null);
     }
 
     @Nullable
-    public static MotilitaetResultat getMotilitaet(
+    public static SingleValueEnhanced<MotilitaetResultat> getMotilitaetDefault(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehenBeurteilung sehen,
-        @NonNull MotilitaetResultat defaultWert
+        @Nullable MotilitaetResultat defaultWert
     ) {
         if (config.getSehenMotilitaet().isVisible()) {
-            if (sehen != null && sehen.getMotilitaet() != null) {
-                return sehen.getMotilitaet();
-            }
-            return defaultWert;
+            return SingleValueEnhanced.of(defaultWert, null);
         }
         return null;
     }
 
     @NonNull
-    public static EnumSet<StrabismusResultat> getStrabismus(
+    public static MultiValueEnhanced<StrabismusResultat> getStrabismusDefault(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehenBeurteilung sehen,
         @NonNull StrabismusResultat defaultWert) {
         if (config.getSehenStrabismus().isVisible()) {
-            if (sehen != null && CollectionUtils.isNotEmpty(sehen.getStrabismus())) {
-                return sehen.getStrabismus();
-            }
-            return EnumSet.of(defaultWert);
+            return MultiValueEnhanced.of(EnumSet.of(defaultWert), null);
         }
-        return EnumSet.noneOf(StrabismusResultat.class);
+        return MultiValueEnhanced.of(EnumSet.noneOf(StrabismusResultat.class), null);
     }
 
     @Nullable
-    public static StrabismusAuspraegungResultat getStrabismusAuspraegung(
+    public static SingleValueEnhanced<StrabismusAuspraegungResultat> getStrabismusAuspraegung(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehenBeurteilung sehen,
-        @NonNull StrabismusAuspraegungResultat defaultWert
+        @Nullable StrabismusAuspraegungResultat defaultWert
     ) {
-        if (config.getSehenStrabismus().isVisible()) {
-            if (sehen != null && sehen.getStrabismusAuspraegung() != null) {
-                return sehen.getStrabismusAuspraegung();
-            }
-            return defaultWert;
+        if (config.getSehenStrabismusAuspraegung().isVisible()) {
+            return SingleValueEnhanced.of(defaultWert, null);
         }
         return null;
     }
 
     @Nullable
-    public static StrabismusAuftretenResultat getStrabismusAuftreten(
+    public static SingleValueEnhanced<StrabismusAuftretenResultat> getStrabismusAuftreten(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehenBeurteilung sehen,
-        @NonNull StrabismusAuftretenResultat defaultWert
+        @Nullable StrabismusAuftretenResultat defaultWert
     ) {
-        if (config.getSehenStrabismus().isVisible()) {
-            if (sehen != null && sehen.getStrabismusAuftreten() != null) {
-                return sehen.getStrabismusAuftreten();
-            }
-            return defaultWert;
+        if (config.getSehenStrabismusAuftreten().isVisible()) {
+            return SingleValueEnhanced.of(defaultWert, null);
         }
         return null;
     }
 
     @Nullable
-    public static InspektionKonvergenzResultat getInspektion(
+    public static SingleValueEnhanced<InspektionKonvergenzResultat> getInspektion(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehenBeurteilung sehen,
-        @NonNull InspektionKonvergenzResultat defaultWert
+        @Nullable InspektionKonvergenzResultat defaultWert
     ) {
         if (config.getSehenInspektion().isVisible()) {
-            if (sehen != null && sehen.getInspektion() != null) {
-                return sehen.getInspektion();
-            }
-            return defaultWert;
+            return SingleValueEnhanced.of(defaultWert, null);
         }
         return null;
     }
 
     @Nullable
-    public static InspektionKonvergenzResultat getKonvergenz(
+    public static SingleValueEnhanced<InspektionKonvergenzResultat> getKonvergenz(
         @NonNull AnlassConfig config,
-        @Nullable UntersuchungSehenBeurteilung sehen,
-        @NonNull InspektionKonvergenzResultat defaultWert
+        @Nullable InspektionKonvergenzResultat defaultWert
     ) {
         if (config.getSehenKonvergenz().isVisible()) {
-            if (sehen != null && sehen.getKonvergenz() != null) {
-                return sehen.getKonvergenz();
-            }
-            return defaultWert;
+            return SingleValueEnhanced.of(defaultWert, null);
         }
         return null;
     }

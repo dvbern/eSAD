@@ -22,6 +22,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateConst;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -75,16 +77,12 @@ public class AnlassConfigService {
 
     @NonNull
     public AnlassConfig updateAnlassConfig(@NonNull AnlassConfig anlassConfig) {
-        boolean usedInAtLeastOneAnlass = isUsedInAtLeastOneAnlass(anlassConfig.getId());
-        boolean alwaysEditable = configService.getEnvironment() != DeploymentEnvironment.UAT
-            && configService.getEnvironment() != DeploymentEnvironment.PROD;
-        if (!alwaysEditable) {
-            AnlassConfigUtil.requireAnlassConfigNotYetUsedInAnlass(usedInAtLeastOneAnlass);
+        // AnlassConfig ist auf Stufe UAT und PROD nie editierbar
+        if (configService.getEnvironment() == DeploymentEnvironment.UAT
+            || configService.getEnvironment() == DeploymentEnvironment.PROD) {
+            throw new AppValidationException(AppValidationMessage.anlassConfigCannotBeEdited());
         }
+        // AnlassConfig ist auf Stufe DEV immer editierbar
         return persist(anlassConfigRepo.getById(anlassConfig.getId()));
-    }
-
-    public boolean isUsedInAtLeastOneAnlass(@NonNull ID<AnlassConfig> anlassConfigId) {
-        return anlassConfigRepo.isUsedInAtLeastOneAnlass(anlassConfigId);
     }
 }

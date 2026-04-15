@@ -1,0 +1,9 @@
+Anlasstyp,Anlassart,Anlassdatum,SystemID,IDNr,Geschlecht,Geburtsdatum,Impfstoff,Krankheiten,Charge,Impfdatum,Erstellt durch,Verabreicht durch,Impfung verabreicht?
+SU KG,Gruppen,01.08.2026,775d8e78-84af-3bd1-86da-8785dcf67428,,Unbekannt,01.01.2010,Masern_Test,"Masern,Mumps,Röteln",Priorix_Charge_Test,,Meier Maria,-,Durchgeführt
+SU 4.PS,Gruppen,10.08.2026,954525cd-c619-3470-8e6f-de9725cc3d94,,Männlich,12.12.2000,Priorix_Test,"Masern,Mumps,Röteln",Priorix_Charge_Test,20.08.2026,Meier Maria,-,Geplant
+SU 4.PS,Gruppen,10.08.2026,954525cd-c619-3470-8e6f-de9725cc3d94,,Männlich,12.12.2000,FSME_Test,"Masern,Mumps,Röteln",FSME_Charge_Test,10.07.2024,Meier Maria,-,Durchgeführt
+SU 4.PS,Gruppen,10.08.2026,954525cd-c619-3470-8e6f-de9725cc3d94,,Männlich,12.12.2000,FSME_Test,"Masern,Mumps,Röteln",FSME_Charge_Test,25.07.2025,Meier Maria,-,Durchgeführt
+SU KG,Gruppen,01.08.2026,76cc8ca7-fb59-3bb9-99f4-8a1da0db0509,,Weiblich,01.01.2010,Priorix_Test,"Masern,Mumps,Röteln",Priorix_Charge_Test,,Meier Maria,-,Geplant
+SU 4.PS,Gruppen,10.08.2026,f20eb073-2ef0-3068-a7e0-73c4689b29d7,,Männlich,01.01.2010,Priorix_Test,"Masern,Mumps,Röteln",Priorix_Charge_Test,,Meier Maria,-,Geplant
+SU 4.PS,Gruppen,10.08.2026,f20eb073-2ef0-3068-a7e0-73c4689b29d7,,Männlich,01.01.2010,Masern_Test,"Masern,Mumps,Röteln",Masern_Charge_Test,,Meier Maria,-,Geplant
+SU KG,Gruppen,01.08.2026,9737b3a2-bc7a-315f-9bb7-e4f8213a5746,,Weiblich,01.01.2010,Priorix_Test,"Masern,Mumps,Röteln",Priorix_Charge_Test,,Meier Maria,-,Geplant

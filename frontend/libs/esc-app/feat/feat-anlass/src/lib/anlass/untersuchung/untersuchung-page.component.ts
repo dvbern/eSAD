@@ -19,7 +19,9 @@ import {
   hasMassnahmenViewBerechtigung,
   hasSehenViewBerechtigung,
   hasTriageViewBerechtigung,
+  hasUntersuchungAbschlussViewBerechtigung,
   hasUntersuchungKindDatenViewBerechtigung,
+  hasUntersuchungVorabklaerungenViewBerechtigung,
   isNullish,
   requireValue,
 } from '@dvb/util-shared';
@@ -73,19 +75,17 @@ export class UntersuchungPageComponent {
   readonly #transloco = inject(TranslocoService);
   readonly confirmService = inject(ConfirmService);
 
-  canViewUntersuchungKindDaten = this.benutzerStore.createHasRequiredRoleSig(
-    hasUntersuchungKindDatenViewBerechtigung(),
-  );
+  canViewUntersuchungKindDaten = this.benutzerStore.createHasRequiredRoleSig(hasUntersuchungKindDatenViewBerechtigung());
+  canViewUntersuchungVorabklaerungen = this.benutzerStore.createHasRequiredRoleSig(hasUntersuchungVorabklaerungenViewBerechtigung());
   canViewUntersuchungImpfung = this.benutzerStore.createHasRequiredRoleSig(hasImpfungenViewBerechtigung());
   canViewUntersuchungSehen = this.benutzerStore.createHasRequiredRoleSig(hasSehenViewBerechtigung());
   canViewUntersuchungHoeren = this.benutzerStore.createHasRequiredRoleSig(hasHoerenViewBerechtigung());
   canViewUntersuchungGroesseGewicht = this.benutzerStore.createHasRequiredRoleSig(hasGroesseGewichtViewBerechtigung());
   canViewUntersuchungTriage = this.benutzerStore.createHasRequiredRoleSig(hasTriageViewBerechtigung());
-  canViewUntersuchungAertzlicheUntersuchung = this.benutzerStore.createHasRequiredRoleSig(
-    hasAerztlicheUntersuchungViewBerechtigung(),
-  );
+  canViewUntersuchungAertzlicheUntersuchung = this.benutzerStore.createHasRequiredRoleSig(hasAerztlicheUntersuchungViewBerechtigung());
   canViewUntersuchungLaeusekontrolle = this.benutzerStore.createHasRequiredRoleSig(hasLaeusekontrolleViewBerechtigung());
   canViewUntersuchungMassnahmen = this.benutzerStore.createHasRequiredRoleSig(hasMassnahmenViewBerechtigung());
+  canViewAbschluss = this.benutzerStore.createHasRequiredRoleSig(hasUntersuchungAbschlussViewBerechtigung());
 
   pageTitle = computed(() => {
     const currentAnlassData = this.anlassStore.selectedEntity()?.data;
@@ -112,6 +112,24 @@ export class UntersuchungPageComponent {
     }
     if (!anlassConfig?.showTabHoerenAudiogramm && anlassConfig?.showTabHoerenOtoskopie) {
       return tabsSaved?.hoerenOtoskopieTabSaved;
+    }
+    return false;
+  }
+
+  isAbschlussTabSaved(): boolean {
+    const anlassConfig = this.anlassStore.selectedEntity()?.anlassConfig;
+    const tabsSaved = this.untersuchungStore.tabsSaved();
+    if (isNullish(tabsSaved) || isNullish(anlassConfig)) {
+      return false;
+    }
+    if (anlassConfig?.showCardAbschlussAbschluss && anlassConfig.showCardAbschlussSignatur) {
+      return tabsSaved?.abschlussTabSaved && tabsSaved?.signaturTabSaved;
+    }
+    if (anlassConfig?.showCardAbschlussAbschluss && !anlassConfig.showCardAbschlussSignatur) {
+      return tabsSaved?.abschlussTabSaved;
+    }
+    if (!anlassConfig?.showCardAbschlussAbschluss && anlassConfig?.showCardAbschlussSignatur) {
+      return tabsSaved?.signaturTabSaved;
     }
     return false;
   }

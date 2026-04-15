@@ -24,21 +24,29 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintService;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintVariant;
+import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
 @RequiredArgsConstructor
-class PrinterITest {
+class PrinterITest extends AbstractITest {
 
     private final FixtureService fixtureService;
     private final KinderdossierPrintService kinderdossierPrintService;
+
+    @Override
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+    }
 
     @Test
     @TestAsAdminBS
@@ -58,6 +66,5 @@ class PrinterITest {
             anlassId);
         // ASSERT
         assertThat(printResultDTO).isNotNull();
-
     }
 }

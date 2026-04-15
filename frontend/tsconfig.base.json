@@ -38,6 +38,7 @@
       "@dvb/feat-notizen": ["libs/esc-app/feat/feat-notizen/src/index.ts"],
       "@dvb/feat-page": ["libs/shared/feat/feat-page/src/index.ts"],
       "@dvb/feat-playground": ["libs/shared/feat/feat-playground/src/index.ts"],
+      "@dvb/feat-publicinfo": ["libs/esc-info-app/feat/feat-publicinfo/src/index.ts"],
       "@dvb/feat-reports": ["libs/shared/feat/feat-reports/src/index.ts"],
       "@dvb/feat-search-popup": ["libs/shared/feat/feat-search-popup/src/index.ts"],
       "@dvb/feat-shared": ["libs/shared/feat/feat-shared/src/index.ts"],

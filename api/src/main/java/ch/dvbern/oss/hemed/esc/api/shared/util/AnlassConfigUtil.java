@@ -59,14 +59,6 @@ public final class AnlassConfigUtil {
     private AnlassConfigUtil() {
 	}
 
-	public static void requireAnlassConfigNotYetUsedInAnlass(
-        boolean usedInAtLeastOneAnlass
-    ) {
-        if (usedInAtLeastOneAnlass) {
-            throw new AppValidationException(AppValidationMessage.anlassConfigUsedInAtLeastOneAnlassCannotBeEdited());
-        }
-	}
-
     public static void requireAnlassConfigValidDatumVon(
         @NonNull AnlassConfig existingAnlassConfig,
         @NonNull AnlassConfig newAnlassConfig
@@ -160,7 +152,8 @@ public final class AnlassConfigUtil {
             query.append(String.join(", ", columnNames));
             query.append(") VALUES (");
             query.append(String.join(", ", values));
-            query.append(");");
+            query.append(") ");
+            query.append("ON CONFLICT (id) DO NOTHING;"); // ignore errors because we always generate with insert AND update
 
         } catch (IllegalAccessException e) {
             throw new AppFailureException(AppFailureMessage.internalError("Failed to access field via reflection"), e);
@@ -259,6 +252,9 @@ public final class AnlassConfigUtil {
             return true;
         }
         if (field.getName().equals("anlassTyp")) {
+            return true;
+        }
+        if (field.getName().equals("version")) {
             return true;
         }
         // Skip audit fields

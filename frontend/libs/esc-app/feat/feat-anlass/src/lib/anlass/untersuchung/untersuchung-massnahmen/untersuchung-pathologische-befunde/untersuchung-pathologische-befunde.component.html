@@ -1,5 +1,21 @@
 <h2 svuiHeading="formSection">{{ 'untersuchung.pathologische.befunde.title' | transloco }}</h2>
 
+<!-- Vorabklaerungen -->
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabVorabklaerungen) {
+  <b>{{ 'untersuchung.tab.vorabklaerungen' | transloco }}</b>
+  @if (vorabklaerungenMap().size > 0) {
+    <ul>
+      @for (key of vorabklaerungenMap().keys(); track $index) {
+        <li>
+          <em>{{ key }}: </em>{{ vorabklaerungenMap().get(key) }}
+        </li>
+      }
+    </ul>
+  } @else {
+    <p>-</p>
+  }
+}
+
 <!-- Impfungen -->
 @if (anlassStore.selectedEntity()?.anlassConfig?.showTabImpfungen) {
   <b>{{ 'untersuchung.tab.impfungen' | transloco }}</b>
@@ -96,3 +112,52 @@
     <p>-</p>
   }
 }
+
+<!-- Sprache -->
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabSprache) {
+  <b>{{ 'untersuchung.tab.sprache' | transloco }}</b>
+  @if (spracheMap().size > 0) {
+    <ul>
+      @for (key of spracheMap().keys(); track $index) {
+        <li>
+          <em>{{ key }}: </em>{{ spracheMap().get(key) }}
+        </li>
+      }
+    </ul>
+  } @else {
+    <p>-</p>
+  }
+}
+
+<!-- Bewegungsapparat -->
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabBewegungsapparat) {
+  <b>{{ 'untersuchung.tab.bewegungsapparat' | transloco }}</b>
+  @if (bewegungsapparatMap().size > 0) {
+    <ul>
+      @for (key of bewegungsapparatMap().keys(); track $index) {
+        <li>
+          <em>{{ key }}: </em> {{ bewegungsapparatMap().get(key) }}
+        </li>
+      }
+    </ul>
+  } @else {
+    <p>-</p>
+  }
+}
+
+<!-- Schulrelevante Beeinträchtigung -->
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabSchulrelevanteBeeintraechtigung) {
+  <b>{{ 'untersuchung.tab.schulrelevanteBeeintraechtigung' | transloco }}</b>
+  @if (schulrelevanteBeeintraechtigungMap().size > 0) {
+    <ul>
+      @for (key of schulrelevanteBeeintraechtigungMap().keys(); track $index) {
+        <li>
+          <em>{{ key }}: </em>{{ schulrelevanteBeeintraechtigungMap().get(key) }}
+        </li>
+      }
+    </ul>
+  } @else {
+    <p>-</p>
+  }
+}
+

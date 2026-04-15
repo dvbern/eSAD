@@ -10,11 +10,12 @@ import {
   SummaryListItem,
 } from '@dvb/ui-components';
 import {FilterSessionStorage, TableModel} from '@dvb/util-angular';
-import {ensureProps, hasConfigEditBerechtigung, isNotNullish, toValidEnumList} from '@dvb/util-shared';
+import {ensureProps, isNotNullish, toValidEnumList} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {AnlassConfigStore} from '../anlass-config.store';
 import {AnlassConfigFilterForm, AnlassConfigListFilterForm} from './anlass-config-list-filter.form';
 import {AnlassConfigListComponent} from './list/anlass-config-list.component';
+import {AnlassConfigHelperService} from "../anlass-config-helper.service";
 
 @Component({
   selector: 'feat-anlass-config-list-page',
@@ -37,6 +38,7 @@ export class AnlassConfigListPageComponent extends FilterSessionStorage<AnlassCo
   readonly tenantSettingsStore = inject(TenantSettingsStore);
   readonly benutzerStore = inject(BenutzerStore);
   readonly #translocoService = inject(TranslocoService);
+  readonly anlassConfigHelperService = inject(AnlassConfigHelperService);
 
   pageTitle = computed(() => {
     const mandant = isNotNullish(this.tenantSettingsStore.settings())
@@ -45,8 +47,6 @@ export class AnlassConfigListPageComponent extends FilterSessionStorage<AnlassCo
 
     return this.#translocoService.translate('anlassconfig.list.page.title', { mandant });
   });
-
-  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasConfigEditBerechtigung());
 
   readonly SESSIONSTORAGE_KEY = 'anlassConfigFilter';
 

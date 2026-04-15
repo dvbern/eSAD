@@ -16,11 +16,15 @@ import ch.dvbern.dvbstarter.shared.types.sozialversicherungsnummer.Sozialversich
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfoJson;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.DossierService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
-import ch.dvbern.oss.hemed.esc.api.features.schule.EscadaDummySchulenIds;
+import ch.dvbern.oss.hemed.esc.api.features.schule.DummySchulenIds;
+import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseService;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.ZustaendigePersonService;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ExternalSystemIdDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ItemSyncResultJson;
@@ -29,6 +33,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Land;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
+import ch.dvbern.oss.hemed.esc.api.shared.util.VerantwortlicherSchuleChangedDTO;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +43,8 @@ import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import static ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus.isInaktiv;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -46,8 +53,10 @@ public class KindExternalSyncHelperService {
     private final KindExternalRepo kindExternalRepo;
     private final KindService kindService;
     private final KlasseService klasseService;
+    private final DossierService dossierService;
     private final AppClock appClock;
     private final ConfigService configService;
+    private final ZustaendigePersonService zustaendigePersonService;
 
     @NonNull
     public static Kind toEntityForCreate(
@@ -66,7 +75,7 @@ public class KindExternalSyncHelperService {
                 importTyp
             ),
             null,
-            mapValidSvnrOrNull(kindExternal),
+            mapValidSvnrOrNull(kindExternal, importTyp),
             Objects.toString(kindExternal.getSchuelerName(), "N/A"),
             Objects.toString(kindExternal.getSchuelerVorname(), "N/A"),
             "TODO", // will be set in AbstractEntityListener
@@ -77,8 +86,8 @@ public class KindExternalSyncHelperService {
             kindExternal.getSchuelerErstsprache(),
             kindExternal.getWohntyp(),
             schuelerAdresse,
-            mapValidEmailAdressOrNull(kindExternal),
-            mapValidPhoneNumberOrNull(kindExternal),
+            mapValidEmailAdressOrNull(kindExternal, importTyp),
+            mapValidPhoneNumberOrNull(kindExternal, importTyp),
             klasseToConnect.getSchule(),
             klasseToConnect,
             EntityAktivStatus.AKTIV
@@ -86,7 +95,9 @@ public class KindExternalSyncHelperService {
     }
 
     public static @Nullable SozialversicherungsNummer mapValidSvnrOrNull(
-        @NonNull KindExternal kindExternal) {
+        @NonNull KindExternal kindExternal,
+        @NonNull ImportTyp importTyp
+    ) {
         if (StringUtils.isEmpty(kindExternal.getSchuelerSozialversicherung())) {
             return null;
         }
@@ -94,14 +105,17 @@ public class KindExternalSyncHelperService {
             return new SozialversicherungsNummer(kindExternal.getSchuelerSozialversicherung());
         } catch (Exception e) {
             LOG.debug(
-                "ESCADA: Invalid Sozialversicherungsnummer '{}' for Kind with externalId: '{}'",
-                kindExternal.getSchuelerSozialversicherung(), kindExternal.getExternalId());
+                "{}: Invalid Sozialversicherungsnummer '{}' for Kind with externalId: '{}'",
+                importTyp, kindExternal.getSchuelerSozialversicherung(), kindExternal.getExternalId());
             return null;
         }
     }
 
     @Nullable
-    public static EmailAddress mapValidEmailAdressOrNull(@NonNull KindExternal kindExternal) {
+    public static EmailAddress mapValidEmailAdressOrNull(
+        @NonNull KindExternal kindExternal,
+        @NonNull ImportTyp importTyp
+    ) {
         if (StringUtils.isEmpty(kindExternal.getSchuelerEMail())) {
             return null;
         }
@@ -109,7 +123,8 @@ public class KindExternalSyncHelperService {
             return EmailAddress.fromString(kindExternal.getSchuelerEMail());
         } catch (Exception e) {
             LOG.debug(
-                "ESCADA: Invalid email address '{}' for Kind with externalId: '{}'",
+                "{}: Invalid email address '{}' for Kind with externalId: '{}'",
+                importTyp,
                 kindExternal.getSchuelerEMail(),
                 kindExternal.getExternalId()
             );
@@ -118,7 +133,10 @@ public class KindExternalSyncHelperService {
     }
 
     @Nullable
-    public static NormalizedPhoneNumber mapValidPhoneNumberOrNull(@NonNull KindExternal kindExternal) {
+    public static NormalizedPhoneNumber mapValidPhoneNumberOrNull(
+        @NonNull KindExternal kindExternal,
+        @NonNull ImportTyp importTyp
+    ) {
         if (StringUtils.isEmpty(kindExternal.getSchuelerMobile())) {
             return null;
         }
@@ -126,7 +144,8 @@ public class KindExternalSyncHelperService {
             return new NormalizedPhoneNumber(kindExternal.getSchuelerMobile());
         } catch (Exception e) {
             LOG.debug(
-                "ESCADA: Invalid phone number '{}' for Kind with externalId: '{}'",
+                "{}: Invalid phone number '{}' for Kind with externalId: '{}'",
+                importTyp,
                 kindExternal.getSchuelerMobile(),
                 kindExternal.getExternalId()
             );
@@ -227,8 +246,9 @@ public class KindExternalSyncHelperService {
         // only update the fields that were not changed locally already
         kind.setSozialversicherungsNummer(determineValueToStore(
             kind.getSozialversicherungsNummer(),
-            mapValidSvnrOrNull(remoteKindExternal),
-            mapValidSvnrOrNull(existingKindExternal))
+            mapValidSvnrOrNull(remoteKindExternal, importTyp),
+            mapValidSvnrOrNull(existingKindExternal, importTyp),
+            importTyp)
         );
 
         kind.setName(
@@ -236,7 +256,8 @@ public class KindExternalSyncHelperService {
                 determineValueToStore(
                     kind.getName(),
                     remoteKindExternal.getSchuelerName(),
-                    existingKindExternal.getSchuelerName()
+                    existingKindExternal.getSchuelerName(),
+                    importTyp
                 ), "N/A")
         );
 
@@ -245,7 +266,8 @@ public class KindExternalSyncHelperService {
                 determineValueToStore(
                     kind.getVorname(),
                     remoteKindExternal.getSchuelerVorname(),
-                    existingKindExternal.getSchuelerVorname()
+                    existingKindExternal.getSchuelerVorname(),
+                    importTyp
                 ), "N/A")
         );
 
@@ -254,32 +276,37 @@ public class KindExternalSyncHelperService {
                 determineValueToStore(
                     kind.getGeschlecht(),
                     mapGeschlechtForSchueler(remoteKindExternal.getSchuelerGeschlecht()),
-                    mapGeschlechtForSchueler(existingKindExternal.getSchuelerGeschlecht())))
+                    mapGeschlechtForSchueler(existingKindExternal.getSchuelerGeschlecht()),
+                    importTyp))
         );
 
         kind.setGeburtsdatum(
             Objects.requireNonNull(determineValueToStore(
                 kind.getGeburtsdatum(),
                 mapGeburtsdatum(remoteKindExternal.getSchuelerGeburtsdatum(), importTyp),
-                mapGeburtsdatum(existingKindExternal.getSchuelerGeburtsdatum(), importTyp)))
+                mapGeburtsdatum(existingKindExternal.getSchuelerGeburtsdatum(), importTyp),
+                importTyp))
         );
 
         kind.setNationalitaet(determineValueToStore(
             kind.getNationalitaet(),
             mapNationalitaetNameToCode(remoteKindExternal.getSchuelerStaatcodeISO()),
-            mapNationalitaetNameToCode(existingKindExternal.getSchuelerStaatcodeISO()))
+            mapNationalitaetNameToCode(existingKindExternal.getSchuelerStaatcodeISO()),
+            importTyp)
         );
 
         kind.setErstsprache(determineValueToStore(
             kind.getErstsprache(),
             remoteKindExternal.getSchuelerErstsprache(),
-            existingKindExternal.getSchuelerErstsprache())
+            existingKindExternal.getSchuelerErstsprache(),
+            importTyp)
         );
 
         kind.setWohntyp(determineValueToStore(
             kind.getWohntyp(),
             remoteKindExternal.getWohntyp(),
-            existingKindExternal.getWohntyp())
+            existingKindExternal.getWohntyp(),
+            importTyp)
         );
 
         kind.setAdresse(determineAdresseUpdate(
@@ -292,14 +319,16 @@ public class KindExternalSyncHelperService {
 
         kind.setEmail(determineValueToStore(
             kind.getEmail(),
-            mapValidEmailAdressOrNull(remoteKindExternal),
-            mapValidEmailAdressOrNull(existingKindExternal))
+            mapValidEmailAdressOrNull(remoteKindExternal, importTyp),
+            mapValidEmailAdressOrNull(existingKindExternal, importTyp),
+            importTyp)
         );
 
         kind.setTelefon(determineValueToStore(
             kind.getTelefon(),
-            mapValidPhoneNumberOrNull(remoteKindExternal),
-            mapValidPhoneNumberOrNull(existingKindExternal))
+            mapValidPhoneNumberOrNull(remoteKindExternal, importTyp),
+            mapValidPhoneNumberOrNull(existingKindExternal, importTyp),
+            importTyp)
         );
 
         kind.setExternalImportInfo(ExternalImportInfoJson.toEntityOrCreate(
@@ -322,7 +351,7 @@ public class KindExternalSyncHelperService {
         Adresse existingAdresseExternal = extractAdresse(existingKindExternal);
 
         if (adresesInDb == null) {
-            LOG.info("{}: Adresse not found in DB, updating with remote address", importTyp.toString().toUpperCase());
+            LOG.info("{}: Adresse not found in DB, updating with remote address", importTyp);
             return remoteAdresseExternal;
         }
 
@@ -330,7 +359,8 @@ public class KindExternalSyncHelperService {
             determineValueToStore(
                 adresesInDb.getStrasseUndNr(),
                 remoteAdresseExternal.getStrasseUndNr(),
-                existingAdresseExternal.getStrasseUndNr()
+                existingAdresseExternal.getStrasseUndNr(),
+                importTyp
             )
         );
 
@@ -338,7 +368,8 @@ public class KindExternalSyncHelperService {
             determineValueToStore(
                 adresesInDb.getAdresseZusatz(),
                 remoteAdresseExternal.getAdresseZusatz(),
-                existingAdresseExternal.getAdresseZusatz()
+                existingAdresseExternal.getAdresseZusatz(),
+                importTyp
             )
         );
 
@@ -346,7 +377,8 @@ public class KindExternalSyncHelperService {
             determineValueToStore(
                 adresesInDb.getPlz(),
                 remoteAdresseExternal.getPlz(),
-                existingAdresseExternal.getPlz()
+                existingAdresseExternal.getPlz(),
+                importTyp
             )
         );
 
@@ -354,7 +386,8 @@ public class KindExternalSyncHelperService {
             determineValueToStore(
                 adresesInDb.getOrt(),
                 remoteAdresseExternal.getOrt(),
-                existingAdresseExternal.getOrt()
+                existingAdresseExternal.getOrt(),
+                importTyp
             )
         );
 
@@ -362,7 +395,8 @@ public class KindExternalSyncHelperService {
             determineValueToStore(
                 adresesInDb.getLand(),
                 remoteAdresseExternal.getLand(),
-                existingAdresseExternal.getLand()
+                existingAdresseExternal.getLand(),
+                importTyp
             )
         );
 
@@ -379,7 +413,8 @@ public class KindExternalSyncHelperService {
     private static <T> T determineValueToStore(
         @Nullable T currentEntityValue,
         @Nullable T remoteExternalUpdateValue,
-        @Nullable T existingExternalValue
+        @Nullable T existingExternalValue,
+        @NonNull ImportTyp importTyp
     ) {
 
         if (currentEntityValue == null
@@ -389,13 +424,15 @@ public class KindExternalSyncHelperService {
         // If current value is equal to the initial escada value, update it
         if (Objects.equals(currentEntityValue, existingExternalValue)) {
             LOG.trace(
-                "ESCADA: Field updated, local value: '{}', remote value: '{}'",
+                "{}: Field updated, local value: '{}', remote value: '{}'",
+                importTyp,
                 existingExternalValue,
                 remoteExternalUpdateValue);
             return remoteExternalUpdateValue;
         }
         LOG.debug(
-            "ESCADA: Field not updated, current value {} was different than escada value: '{}', remote value: '{}'",
+            "{}: Field not updated, current value {} was different than escada value: '{}', remote value: '{}'",
+            importTyp,
             currentEntityValue,
             existingExternalValue,
             remoteExternalUpdateValue);
@@ -429,7 +466,7 @@ public class KindExternalSyncHelperService {
         updatedKind.disableOptimisticLockingCheck();
 
         KindExternal updatedKindExt = toEntityKindExternal(existingkindExternal, remoteKindExternal);
-        ensureNoManualKindWithSameVnrExisting(updatedKindExt, existingkindExternal.getExternalId());
+        ensureNoManualKindWithSameVnrExisting(updatedKindExt, existingkindExternal.getExternalId(), importTyp);
         kindExternalRepo.persist(updatedKindExt);
 
         String escadaKlasseId =
@@ -437,7 +474,8 @@ public class KindExternalSyncHelperService {
 
         // update klasse if it has changed
         Klasse klasseToConnect = klasseService.getByExternalId(escadaKlasseId);
-        updateSchuleAndKlasse(updatedKind, klasseToConnect, importTyp);
+        Optional<Dossier> dossier = dossierService.findByKind(updatedKind.getId());
+        updateSchuleAndKlasse(updatedKind, klasseToConnect, importTyp, dossier.orElse(null));
         ensureKindAktiv(updatedKind, importTyp);
 
         updatedKind = kindService.persistWithoutDuplicateCheck(updatedKind);
@@ -445,7 +483,7 @@ public class KindExternalSyncHelperService {
         return ItemSyncResultJson.createUpdateOkItem(
             idDTO,
             Kind.class,
-            updatedKind.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo()));
+            updatedKind.getFullNameIfAllowed(configService.isExternalImportRedactPersonalInfo()));
     }
 
     @NonNull
@@ -462,7 +500,8 @@ public class KindExternalSyncHelperService {
         Optional<Kind> preexistingKindOpt = findExistingKindWithSameId(kindExternalToAdd);
         ensureNoManualKindWithSameVnrExisting(
             kindExternalToAdd,
-            preexistingKindOpt.map(Kind::getExternalSystemIdOrNull).orElse(null));
+            preexistingKindOpt.map(Kind::getExternalSystemIdOrNull).orElse(null),
+            importTyp);
 
         Kind internalKind;
         // normally we would only update the Kind if the values were unchanged versus the 'old' values, here we will
@@ -477,7 +516,9 @@ public class KindExternalSyncHelperService {
                         appClock.offsetDateTime().now(),
                         importTyp
                     );
-                    updateSchuleAndKlasse(kindUpdated, klasseToConnect, importTyp);
+                    kindUpdated.disableOptimisticLockingCheck();
+                    Optional<Dossier> dossier = dossierService.findByKind(kindUpdated.getId());
+                    updateSchuleAndKlasse(kindUpdated, klasseToConnect, importTyp, dossier.orElse(null));
                     ensureKindAktiv(kindUpdated, importTyp);
                     return kindUpdated;
                 })
@@ -496,11 +537,11 @@ public class KindExternalSyncHelperService {
         var result = ItemSyncResultJson.createAddOkItem(
             kindExternalToAdd,
             internalKind.getId(),
-            internalKind.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo())
+            internalKind.getFullNameIfAllowed(configService.isExternalImportRedactPersonalInfo())
         );
         LOG.info(
             "{}: Kind {} added{}, internalId: '{}', externalId: '{}'",
-            importTyp.toString().toUpperCase(),
+            importTyp,
             result.getFriendlyName(),
             preexistingKindOpt.isEmpty() ? "" : " (preexisting)",
             result.getInternalId(),
@@ -509,25 +550,36 @@ public class KindExternalSyncHelperService {
         return result;
     }
 
-    private static void updateSchuleAndKlasse(
+    private void updateSchuleAndKlasse(
         @NonNull Kind updatedKind,
         @NonNull Klasse klasseToConnect,
-        @NonNull ImportTyp importTyp) {
+        @NonNull ImportTyp importTyp,
+        @Nullable Dossier dossierOrNull
+    ) {
         if (!Objects.equals(klasseToConnect, updatedKind.getKlasse())) {
             LOG.info(
                 "{}: Klasse of Kind {} has changed, updating Klasse from {} to {}",
-                importTyp.toString().toUpperCase(),
+                importTyp,
                 updatedKind.getExternalSystemIdOrNull(), updatedKind.getKlasse(), klasseToConnect);
+            Schule oldSchule = updatedKind.getSchule();
             updatedKind.setKlasse(klasseToConnect); // klasse might have changed
             updatedKind.setSchule(klasseToConnect.getSchule());
+            if (dossierOrNull != null) {
+                // if the kind had a dossier and the schule/klasse changes we have to reset the Zustaendigkeit
+                // https://intra.dvbern.ch/spaces/HEM/pages/284263663/Zust%C3%A4ndigkeiten+Archivierung
+                // Change Zustaendigkeiten: Fall 6, 8: Neue Klasse/Schule auf Kind (externe Schnittstelle)
+                VerantwortlicherSchuleChangedDTO args =
+                    VerantwortlicherSchuleChangedDTO.of(oldSchule, klasseToConnect.getSchule());
+                zustaendigePersonService.schuleChangedOnDossier(dossierOrNull, args);
+            }
         }
     }
 
     private static void ensureKindAktiv(@NonNull Kind updatedKind, @NonNull ImportTyp importTyp) {
-        if (updatedKind.getKindAktivStatus() == EntityAktivStatus.INAKTIV) {
+        if (isInaktiv(updatedKind.getKindAktivStatus())) {
             LOG.info(
                 "{}: Kind with UUID {} and ExternalID {} was INAKTIV, resetting to AKTIV",
-                importTyp.toString().toUpperCase(),
+                importTyp,
                 updatedKind.getId().getUUID(),
                 updatedKind.getExternalSystemIdOrNull());
             updatedKind.setKindAktivStatus(EntityAktivStatus.AKTIV);
@@ -536,9 +588,10 @@ public class KindExternalSyncHelperService {
 
     private void ensureNoManualKindWithSameVnrExisting(
         @NonNull KindExternal kindExternalToAdd,
-        @Nullable @IgnoreForIdClassTest String externalSchuelerId
+        @Nullable @IgnoreForIdClassTest String externalSchuelerId,
+        @NonNull ImportTyp importTyp
     ) {
-        SozialversicherungsNummer vnr = mapValidSvnrOrNull(kindExternalToAdd);
+        SozialversicherungsNummer vnr = mapValidSvnrOrNull(kindExternalToAdd, importTyp);
         if (vnr != null) {
             kindService.ensureNoManualKindWithSameVnrExisting(vnr, externalSchuelerId);
         }
@@ -575,9 +628,11 @@ public class KindExternalSyncHelperService {
             if (kind.getSchule() != null
                 && (
                 kind.getSchule().getExternalSystemIdOrNull() != null
-                    || EscadaDummySchulenIds.isDummySchule(kind.getSchule().getId())
+                    || DummySchulenIds.isDummySchule(kind.getSchule().getId())
             )
             ) {
+                // https://intra.dvbern.ch/spaces/HEM/pages/284263663/Zust%C3%A4ndigkeiten+Archivierung
+                // Kind wird ueber Escada inaktiviert und Schule entfernt -> wir archivieren nichts
                 kind.setSchule(null);
             }
             kind.disableOptimisticLockingCheck();
@@ -588,11 +643,11 @@ public class KindExternalSyncHelperService {
         var result = ItemSyncResultJson.createDeactivateOkItem(
             externalSystemIdDTO,
             Kind.class,
-            kind.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo())
+            kind.getFullNameIfAllowed(configService.isExternalImportRedactPersonalInfo())
         );
         LOG.info(
             "{}: Kind {} deactivated, internalId: '{}', externalId: '{}'",
-            importTyp.toString().toUpperCase(),
+            importTyp,
             result.getFriendlyName(),
             result.getInternalId(),
             result.getExternalId()

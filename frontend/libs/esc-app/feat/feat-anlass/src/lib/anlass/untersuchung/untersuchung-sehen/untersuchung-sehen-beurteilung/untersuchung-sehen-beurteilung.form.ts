@@ -1,84 +1,66 @@
 import {DestroyRef} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {FormArray, NonNullableFormBuilder, Validators} from '@angular/forms';
+import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {
   AnlassConfigJson,
-  BrilleLinsenResultat,
   DistanzSehenResultat,
-  FarbsehenResultat,
-  InspektionKonvergenzResultat,
-  MotilitaetResultat,
   RequirementSetting,
-  SehenEmpfehlung,
-  StereotestResultat,
-  StrabismusAuftretenResultat,
-  StrabismusAuspraegungResultat,
-  StrabismusResultat,
   UntersuchungSehenBeurteilungSaveJson,
-  VerwendetTafelResultat,
 } from '@dvb/data-access-backend';
-import {globalConstants} from '@dvb/feat-shared';
+import {globalConstants, ValueEnhancedForm} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensureProps, Nullish, requireValue, trimToUndefined} from '@dvb/util-shared';
+import {ensurePropsFlat, Nullish, requireValue, trimToUndefined} from '@dvb/util-shared';
 import {distinctUntilChanged} from 'rxjs';
-import {markAllMultiCheckboxesAsTouched} from '../../untersuchung.util';
+import {checkIfArrayContainsCheckedValue} from '../../untersuchung.util';
 
 type Config = {
   fb: NonNullableFormBuilder,
   destroyRef: DestroyRef,
+  brilleLinsenEnhancedForm: ValueEnhancedForm;
+  stereotestEnhancedForm: ValueEnhancedForm;
+  farbsehenEnhancedForm: ValueEnhancedForm;
+  verwendeteTafelEnhancedForm: ValueEnhancedForm;
+  fernvisusAugeLinksEnhancedForm: ValueEnhancedForm;
+  fernvisusAugeRechtsEnhancedForm: ValueEnhancedForm;
+  motilitaetEnhancedForm: ValueEnhancedForm;
+  strabismusAuspraegungEnhancedForm: ValueEnhancedForm;
+  strabismusAuftretenEnhancedForm: ValueEnhancedForm;
+  inspektionEnhancedForm: ValueEnhancedForm;
+  konvergenzEnhancedForm: ValueEnhancedForm;
+  fernvisusEnhancedForm: ValueEnhancedForm;
+  nahvisusEnhancedForm: ValueEnhancedForm;
+  strabismusEnhancedForm: ValueEnhancedForm;
+  empfehlungEnhancedForm: ValueEnhancedForm;
 }
-
-function makeDistanzSehenSubForm(fb: NonNullableFormBuilder, value: DistanzSehenResultat) {
-  return fb.group({
-    resultat: fb.control<DistanzSehenResultat>({value, disabled: true}),
-    isChecked: fb.control<boolean>(false),
-  });
-}
-
-function makeStrabismusSubForm(fb: NonNullableFormBuilder, value: StrabismusResultat) {
-  return fb.group({
-    resultat: fb.control<StrabismusResultat>({value, disabled: true}),
-    isChecked: fb.control<boolean>(false),
-  });
-}
-
-function makeEmpfehlungSubForm(fb: NonNullableFormBuilder, value: SehenEmpfehlung) {
-  return fb.group({
-    resultat: fb.control<SehenEmpfehlung>({value, disabled: true}),
-    isChecked: fb.control<boolean>(false),
-  });
-}
-
-export type DistanzSehenSubFormType = ReturnType<typeof makeDistanzSehenSubForm>
-export type StrabismusSubFormType = ReturnType<typeof makeStrabismusSubForm>
-export type EmpfehlungSubFormType = ReturnType<typeof makeEmpfehlungSubForm>
 
 function makeForm(config: Config) {
   const fb = config.fb;
   const group = fb.group({
-    brilleLinsen: fb.control<BrilleLinsenResultat | undefined>(undefined),
-    stereotest: fb.control<StereotestResultat | undefined>(undefined),
-    farbsehen: fb.control<FarbsehenResultat | undefined>(undefined),
-    verwendeteTafel: fb.control<VerwendetTafelResultat | undefined>(undefined),
-    fernvisusArray: fb.array<DistanzSehenSubFormType>([]),
+    brilleLinsen: config.brilleLinsenEnhancedForm.group,
+    stereotest: config.stereotestEnhancedForm.group,
+    farbsehen: config.farbsehenEnhancedForm.group,
+    verwendeteTafel: config.verwendeteTafelEnhancedForm.group,
+    fernvisus: config.fernvisusEnhancedForm.group,
     fernvisusRechts: fb.control<number | undefined>(undefined),
     fernvisusLinks: fb.control<number | undefined>(undefined),
-    nahvisusArray: fb.array<DistanzSehenSubFormType>([]),
+    fernvisusAugeLinks: config.fernvisusAugeLinksEnhancedForm.group,
+    fernvisusAugeRechts: config.fernvisusAugeRechtsEnhancedForm.group,
+    nahvisus: config.nahvisusEnhancedForm.group,
     nahvisusRechts: fb.control<number | undefined>(undefined),
     nahvisusLinks: fb.control<number | undefined>(undefined),
-    motilitaet: fb.control<MotilitaetResultat | undefined>(undefined),
-    strabismusArray: fb.array<StrabismusSubFormType>([]),
-    strabismusAuspraegung: fb.control<StrabismusAuspraegungResultat | undefined>(undefined),
-    strabismusAuftreten: fb.control<StrabismusAuftretenResultat | undefined>(undefined),
-    inspektion: fb.control<InspektionKonvergenzResultat | undefined>(undefined),
-    konvergenz: fb.control<InspektionKonvergenzResultat | undefined>(undefined),
-    empfehlungArray: fb.array<EmpfehlungSubFormType>([]),
+    motilitaet: config.motilitaetEnhancedForm.group,
+    strabismus: config.strabismusEnhancedForm.group,
+    strabismusAuspraegung: config.strabismusAuspraegungEnhancedForm.group,
+    strabismusAuftreten: config.strabismusAuftretenEnhancedForm.group,
+    inspektion: config.inspektionEnhancedForm.group,
+    konvergenz: config.konvergenzEnhancedForm.group,
+    empfehlung: config.empfehlungEnhancedForm.group,
     bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength2000()),
     version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
 
   // Eine Eingabe aendert den required-Status eines anderen Feldes
-  group.controls.fernvisusArray.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
+  group.controls.fernvisus.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
     .subscribe({
       next: _ => {
         group.controls.fernvisusRechts.updateValueAndValidity();
@@ -86,7 +68,7 @@ function makeForm(config: Config) {
       },
       error: console.error,
     });
-  group.controls.nahvisusArray.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
+  group.controls.nahvisus.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
     .subscribe({
       next: _ => {
         group.controls.nahvisusRechts.updateValueAndValidity();
@@ -95,153 +77,187 @@ function makeForm(config: Config) {
       error: console.error,
     });
 
-  // Multi-Checkboxen: Wenn eines touched ist aber keines ausgewählt, müssen alle rot werden
-  markAllMultiCheckboxesAsTouched(group.controls.fernvisusArray, config.destroyRef);
-  markAllMultiCheckboxesAsTouched(group.controls.nahvisusArray, config.destroyRef);
-  markAllMultiCheckboxesAsTouched(group.controls.strabismusArray, config.destroyRef);
-  markAllMultiCheckboxesAsTouched(group.controls.empfehlungArray, config.destroyRef);
-
   return group;
 }
 
 export class UntersuchungSehenBeurteilungForm
   extends BaseForm<ReturnType<typeof makeForm>, UntersuchungSehenBeurteilungSaveJson> {
+  readonly brilleLinsenEnhancedForm: ValueEnhancedForm;
+  readonly stereotestEnhancedForm: ValueEnhancedForm;
+  readonly farbsehenEnhancedForm: ValueEnhancedForm;
+  readonly verwendeteTafelEnhancedForm: ValueEnhancedForm;
+  readonly fernvisusAugeLinksEnhancedForm: ValueEnhancedForm;
+  readonly fernvisusAugeRechtsEnhancedForm: ValueEnhancedForm;
+  readonly motilitaetEnhancedForm: ValueEnhancedForm;
+  readonly strabismusAuspraegungEnhancedForm: ValueEnhancedForm;
+  readonly strabismusAuftretenEnhancedForm: ValueEnhancedForm;
+  readonly inspektionEnhancedForm: ValueEnhancedForm;
+  readonly konvergenzEnhancedForm: ValueEnhancedForm;
+  readonly fernvisusEnhancedForm: ValueEnhancedForm;
+  readonly nahvisusEnhancedForm: ValueEnhancedForm;
+  readonly strabismusEnhancedForm: ValueEnhancedForm;
+  readonly empfehlungEnhancedForm: ValueEnhancedForm;
 
   constructor(protected config: Config) {
     super(() => makeForm(config));
+    this.brilleLinsenEnhancedForm = config.brilleLinsenEnhancedForm;
+    this.stereotestEnhancedForm = config.stereotestEnhancedForm;
+    this.farbsehenEnhancedForm = config.farbsehenEnhancedForm;
+    this.verwendeteTafelEnhancedForm = config.verwendeteTafelEnhancedForm;
+    this.fernvisusAugeLinksEnhancedForm = config.fernvisusAugeLinksEnhancedForm;
+    this.fernvisusAugeRechtsEnhancedForm = config.fernvisusAugeRechtsEnhancedForm;
+    this.motilitaetEnhancedForm = config.motilitaetEnhancedForm;
+    this.strabismusAuspraegungEnhancedForm = config.strabismusAuspraegungEnhancedForm;
+    this.strabismusAuftretenEnhancedForm = config.strabismusAuftretenEnhancedForm;
+    this.inspektionEnhancedForm = config.inspektionEnhancedForm;
+    this.konvergenzEnhancedForm = config.konvergenzEnhancedForm;
+    this.fernvisusEnhancedForm = config.fernvisusEnhancedForm;
+    this.nahvisusEnhancedForm = config.nahvisusEnhancedForm;
+    this.strabismusEnhancedForm = config.strabismusEnhancedForm;
+    this.empfehlungEnhancedForm = config.empfehlungEnhancedForm;
   }
 
-  resetForm(value: UntersuchungSehenBeurteilungSaveJson | undefined): void {
+  resetForm(
+    value: UntersuchungSehenBeurteilungSaveJson | undefined,
+  ): void {
     super.reset(value);
-    this.resetFernvisus(value);
-    this.resetNahvisus(value);
-    this.resetStrabismus(value);
-    this.resetEmpfehlung(value);
-  }
-
-  private resetFernvisus(value: UntersuchungSehenBeurteilungSaveJson | Nullish): void {
-    this.group.controls.fernvisusArray.clear();
-    for (const resultat of Object.values(DistanzSehenResultat)) {
-      const subForm = makeDistanzSehenSubForm(this.config.fb, resultat);
-      subForm.controls.isChecked.reset(!!value?.fernvisus?.find(fv => fv === resultat));
-      this.group.controls.fernvisusArray.push(subForm);
-    }
-  }
-
-  private resetNahvisus(value: UntersuchungSehenBeurteilungSaveJson | Nullish): void {
-    this.group.controls.nahvisusArray.clear();
-    for (const resultat of Object.values(DistanzSehenResultat)) {
-      const subForm = makeDistanzSehenSubForm(this.config.fb, resultat);
-      subForm.controls.isChecked.reset(!!value?.nahvisus?.find(fv => fv === resultat));
-      this.group.controls.nahvisusArray.push(subForm);
-    }
-  }
-
-  private resetStrabismus(value: UntersuchungSehenBeurteilungSaveJson | Nullish): void {
-    this.group.controls.strabismusArray.clear();
-    for (const resultat of Object.values(StrabismusResultat)) {
-      const subForm = makeStrabismusSubForm(this.config.fb, resultat);
-      subForm.controls.isChecked.reset(!!value?.strabismus?.find(fv => fv === resultat));
-      this.group.controls.strabismusArray.push(subForm);
-    }
-  }
-
-  private resetEmpfehlung(value: UntersuchungSehenBeurteilungSaveJson | Nullish): void {
-    this.group.controls.empfehlungArray.clear();
-    for (const resultat of Object.values(SehenEmpfehlung)) {
-      const subForm = makeEmpfehlungSubForm(this.config.fb, resultat);
-      subForm.controls.isChecked.reset(!!value?.empfehlung?.find(fv => fv === resultat));
-      this.group.controls.empfehlungArray.push(subForm);
-    }
+    this.brilleLinsenEnhancedForm.resetForm(value?.brilleLinsen);
+    this.stereotestEnhancedForm.resetForm(value?.stereotest);
+    this.farbsehenEnhancedForm.resetForm(value?.farbsehen);
+    this.verwendeteTafelEnhancedForm.resetForm(value?.verwendeteTafel);
+    this.fernvisusAugeLinksEnhancedForm.resetForm(value?.fernvisusAugeLinks);
+    this.fernvisusAugeRechtsEnhancedForm.resetForm(value?.fernvisusAugeRechts);
+    this.motilitaetEnhancedForm.resetForm(value?.motilitaet);
+    this.strabismusAuspraegungEnhancedForm.resetForm(value?.strabismusAuspraegung);
+    this.strabismusAuftretenEnhancedForm.resetForm(value?.strabismusAuftreten);
+    this.inspektionEnhancedForm.resetForm(value?.inspektion);
+    this.konvergenzEnhancedForm.resetForm(value?.konvergenz);
+    this.fernvisusEnhancedForm.resetForm(value?.fernvisus);
+    this.nahvisusEnhancedForm.resetForm(value?.nahvisus);
+    this.strabismusEnhancedForm.resetForm(value?.strabismus);
+    this.empfehlungEnhancedForm.resetForm(value?.empfehlung);
   }
 
   public override valueOnValid(): UntersuchungSehenBeurteilungSaveJson {
     const value = requireValue(this.group.getRawValue());
-    return ensureProps<UntersuchungSehenBeurteilungSaveJson>({
-      brilleLinsen: value.brilleLinsen,
-      stereotest: value.stereotest,
-      farbsehen: value.farbsehen,
-      verwendeteTafel: value.verwendeteTafel,
-      fernvisus: value.fernvisusArray.filter(i => i.isChecked).map(i => i.resultat),
+    return ensurePropsFlat<UntersuchungSehenBeurteilungSaveJson>({
+      brilleLinsen: this.brilleLinsenEnhancedForm.valueOnValid(),
+      stereotest: this.stereotestEnhancedForm.valueOnValid(),
+      farbsehen: this.farbsehenEnhancedForm.valueOnValid(),
+      verwendeteTafel: this.verwendeteTafelEnhancedForm.valueOnValid(),
+      fernvisus: this.fernvisusEnhancedForm.valueOnValid(),
       fernvisusRechts: value.fernvisusRechts,
       fernvisusLinks: value.fernvisusLinks,
-      nahvisus: value.nahvisusArray.filter(i => i.isChecked).map(i => i.resultat),
+      fernvisusAugeLinks: this.fernvisusAugeLinksEnhancedForm.valueOnValid(),
+      fernvisusAugeRechts: this.fernvisusAugeRechtsEnhancedForm.valueOnValid(),
+      nahvisus: this.nahvisusEnhancedForm.valueOnValid(),
       nahvisusRechts: value.nahvisusRechts,
       nahvisusLinks: value.nahvisusLinks,
-      motilitaet: value.motilitaet,
-      inspektion: value.inspektion,
-      konvergenz: value.konvergenz,
+      motilitaet: this.motilitaetEnhancedForm.valueOnValid(),
+      inspektion: this.inspektionEnhancedForm.valueOnValid(),
+      konvergenz: this.konvergenzEnhancedForm.valueOnValid(),
       bemerkungen: trimToUndefined(value.bemerkungen),
-      strabismus: value.strabismusArray.filter(i => i.isChecked).map(i => i.resultat),
-      strabismusAuspraegung: value.strabismusAuspraegung,
-      strabismusAuftreten: value.strabismusAuftreten,
-      empfehlung: value.empfehlungArray.filter(i => i.isChecked).map(i => i.resultat),
+      strabismus: this.strabismusEnhancedForm.valueOnValid(),
+      strabismusAuspraegung: this.strabismusAuspraegungEnhancedForm.valueOnValid(),
+      strabismusAuftreten: this.strabismusAuftretenEnhancedForm.valueOnValid(),
+      empfehlung: this.empfehlungEnhancedForm.valueOnValid(),
       version: value.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 
-  setValidatorsForAnlassConfig(config: AnlassConfigJson): void {
-    if (config.data.sehenBrilleLinsen === RequirementSetting.REQUIRED) {
-      this.group.controls.brilleLinsen.addValidators(Validators.required);
-    }
-    if (config.data.sehenStereoTest === RequirementSetting.REQUIRED) {
-      this.group.controls.stereotest.addValidators(Validators.required);
-    }
-    if (config.data.sehenFarbsehen === RequirementSetting.REQUIRED) {
-      this.group.controls.farbsehen.addValidators(Validators.required);
-    }
-    if (config.data.sehenTafel === RequirementSetting.REQUIRED) {
-      this.group.controls.verwendeteTafel.addValidators(Validators.required);
-    }
+  setValidatorsForAnlassConfig(config: AnlassConfigJson, nichtGeprueftGrundEnabled: boolean): void {
+    this.fernvisusEnhancedForm.setValidatorsForAnlassConfig(
+      config.data.sehenFernvisus,
+      nichtGeprueftGrundEnabled,
+    );
+    this.nahvisusEnhancedForm.setValidatorsForAnlassConfig(
+      config.data.sehenNahvisus,
+      nichtGeprueftGrundEnabled,
+    );
+
     if (config.data.sehenFernvisus === RequirementSetting.REQUIRED) {
-      this.group.controls.fernvisusArray.addValidators(AppValidators.atLeastOneCheckedValidator());
-      this.group.controls.fernvisusRechts.addValidators(AppValidators.requiredIfValidator(() => {
-        const formArray: FormArray<DistanzSehenSubFormType> = this.group.controls.fernvisusArray;
-        const fernVisusNichtGeprueft = formArray.controls.find(i => i.controls.resultat.getRawValue()
-          === DistanzSehenResultat.NICHT_GEPRUEFT);
-        return !fernVisusNichtGeprueft?.value.isChecked;
-      }));
-      this.group.controls.fernvisusLinks.addValidators(AppValidators.requiredIfValidator(() => {
-        const formArray: FormArray<DistanzSehenSubFormType> = this.group.controls.fernvisusArray;
-        const fernVisusNichtGeprueft = formArray.controls.find(i => i.controls.resultat.getRawValue()
-          === DistanzSehenResultat.NICHT_GEPRUEFT);
-        return !fernVisusNichtGeprueft?.value.isChecked;
-      }));
+      this.group.controls.fernvisusRechts.addValidators(AppValidators.requiredIfValidator(() =>
+        !this.isFernvisusResultatNichtGeprueftChecked()
+      ));
+      this.group.controls.fernvisusLinks.addValidators(AppValidators.requiredIfValidator(() =>
+        !this.isFernvisusResultatNichtGeprueftChecked()
+      ));
     }
     if (config.data.sehenNahvisus === RequirementSetting.REQUIRED) {
-      this.group.controls.nahvisusArray.addValidators(AppValidators.atLeastOneCheckedValidator());
-      this.group.controls.nahvisusRechts.addValidators(AppValidators.requiredIfValidator(() => {
-        const formArray: FormArray<DistanzSehenSubFormType> = this.group.controls.nahvisusArray;
-        const nahVisusNichtGeprueft = formArray.controls.find(i => i.controls.resultat.getRawValue()
-          === DistanzSehenResultat.NICHT_GEPRUEFT);
-        return !nahVisusNichtGeprueft?.value.isChecked;
-      }));
-      this.group.controls.nahvisusLinks.addValidators(AppValidators.requiredIfValidator(() => {
-        const formArray: FormArray<DistanzSehenSubFormType> = this.group.controls.nahvisusArray;
-        const nahVisusNichtGeprueft = formArray.controls.find(i => i.controls.resultat.getRawValue()
-          === DistanzSehenResultat.NICHT_GEPRUEFT);
-        return !nahVisusNichtGeprueft?.value.isChecked;
-      }));
+      this.group.controls.nahvisusRechts.addValidators(AppValidators.requiredIfValidator(() =>
+        !this.isNahvisusResultatNichtGeprueftChecked()
+      ));
+      this.group.controls.nahvisusLinks.addValidators(AppValidators.requiredIfValidator(() =>
+        !this.isNahvisusResultatNichtGeprueftChecked()
+      ));
     }
-    if (config.data.sehenStrabismus === RequirementSetting.REQUIRED) {
-      this.group.controls.strabismusArray.addValidators(AppValidators.atLeastOneCheckedValidator());
-      this.group.controls.strabismusAuspraegung.addValidators(Validators.required);
-      this.group.controls.strabismusAuftreten.addValidators(Validators.required);
-    }
-    if (config.data.sehenMotilitaet === RequirementSetting.REQUIRED) {
-      this.group.controls.motilitaet.addValidators(Validators.required);
-    }
-    if (config.data.sehenInspektion === RequirementSetting.REQUIRED) {
-      this.group.controls.inspektion.addValidators(Validators.required);
-    }
-    if (config.data.sehenKonvergenz === RequirementSetting.REQUIRED) {
-      this.group.controls.konvergenz.addValidators(Validators.required);
-    }
-    if (config.data.sehenEmpfehlung === RequirementSetting.REQUIRED) {
-      this.group.controls.empfehlungArray.addValidators(AppValidators.atLeastOneCheckedValidator());
-    }
+
+    this.strabismusEnhancedForm.setValidatorsForAnlassConfig(
+      config.data.sehenStrabismus,
+      nichtGeprueftGrundEnabled,
+    );
+    this.empfehlungEnhancedForm.setValidatorsForAnlassConfig(
+      config.data.sehenEmpfehlung,
+      nichtGeprueftGrundEnabled,
+    );
+
     if (config.data.sehenBemerkungen === RequirementSetting.REQUIRED) {
       this.group.controls.bemerkungen.addValidators(Validators.required);
     }
+
+    this.brilleLinsenEnhancedForm.setValidatorsForAnlassConfig(
+      config.data.sehenBrilleLinsen,
+      nichtGeprueftGrundEnabled,
+    );
+    this.stereotestEnhancedForm.setValidatorsForAnlassConfig(
+      config.data.sehenStereoTest,
+      nichtGeprueftGrundEnabled,
+    );
+    this.farbsehenEnhancedForm.setValidatorsForAnlassConfig(
+      config.data.sehenFarbsehen,
+      nichtGeprueftGrundEnabled,
+    );
+    this.verwendeteTafelEnhancedForm.setValidatorsForAnlassConfig(
+      config.data.sehenTafel,
+      nichtGeprueftGrundEnabled,
+    );
+    this.fernvisusAugeLinksEnhancedForm.setValidatorsForAnlassConfig(
+      config.data.sehenFernvisusAugeEinzeln,
+      nichtGeprueftGrundEnabled,
+    );
+    this.fernvisusAugeRechtsEnhancedForm.setValidatorsForAnlassConfig(
+      config.data.sehenFernvisusAugeEinzeln,
+      nichtGeprueftGrundEnabled,
+    );
+    this.motilitaetEnhancedForm.setValidatorsForAnlassConfig(
+      config.data.sehenMotilitaet,
+      nichtGeprueftGrundEnabled,
+    );
+    this.strabismusAuspraegungEnhancedForm.setValidatorsForAnlassConfig(
+      config.data.sehenStrabismusAuspraegung,
+      nichtGeprueftGrundEnabled,
+    );
+    this.strabismusAuftretenEnhancedForm.setValidatorsForAnlassConfig(
+      config.data.sehenStrabismusAuftreten,
+      nichtGeprueftGrundEnabled,
+    );
+    this.inspektionEnhancedForm.setValidatorsForAnlassConfig(
+      config.data.sehenInspektion,
+      nichtGeprueftGrundEnabled,
+    );
+    this.konvergenzEnhancedForm.setValidatorsForAnlassConfig(
+      config.data.sehenKonvergenz,
+      nichtGeprueftGrundEnabled,
+    );
+  }
+
+  public isFernvisusResultatNichtGeprueftChecked(): boolean {
+    return checkIfArrayContainsCheckedValue(this.fernvisusEnhancedForm.group.controls.valueArray.controls,
+      [DistanzSehenResultat.NICHT_GEPRUEFT]);
+  }
+
+  public isNahvisusResultatNichtGeprueftChecked(): boolean {
+    return checkIfArrayContainsCheckedValue(this.nahvisusEnhancedForm.group.controls.valueArray.controls,
+      [DistanzSehenResultat.NICHT_GEPRUEFT]);
   }
 }

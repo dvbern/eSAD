@@ -1,0 +1,19 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="gema (generated)" id="1770649609784-1">
+        <addColumn tableName="tenantsetting">
+            <column name="customeradminemails" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+  <changeSet author="gema (generated)" id="1770649609784-2">
+    <sql>update tenantsetting set customeradminemails = 'esc@dvbern.ch'</sql>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770649609784-3">
+    <addNotNullConstraint tableName="tenantsetting" columnName="customeradminemails"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1770649609784-4">
+        <addColumn tableName="tenantsetting_aud">
+            <column name="customeradminemails" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

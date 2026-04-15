@@ -7,13 +7,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { OtoskopieResultat } from './otoskopie-resultat';
+import { ValueEnhancedJson } from './value-enhanced-json';
 
 
 export interface UntersuchungHoerenOtoskopieSaveJson { 
-    otoskopieRechts?: Array<OtoskopieResultat>;
+    otoskopieRechts: ValueEnhancedJson;
     otoskopieRechtsResultatAndere?: string;
-    otoskopieLinks?: Array<OtoskopieResultat>;
+    otoskopieLinks: ValueEnhancedJson;
     otoskopieLinksResultatAndere?: string;
     bemerkungen?: string;
     version: number;

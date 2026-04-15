@@ -14,7 +14,8 @@
 
     <svui-form-control [label]="'anlass.kinder.remove.confirm.name' | transloco"
                        [viewValue]="form.group.controls.name.value"
-                       [size]="'full'">
+                       [size]="'full'"
+                       data-testid="kinder-name-input">
       <input svuiTextInput [formControl]="form.group.controls.name"/>
     </svui-form-control>
 

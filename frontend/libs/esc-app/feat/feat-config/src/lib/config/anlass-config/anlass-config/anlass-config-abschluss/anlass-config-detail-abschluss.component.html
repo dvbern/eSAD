@@ -1,0 +1,45 @@
+<form svuiFormLayout
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="store.detailMode()">
+  <h2 svuiHeading="formSection">{{ 'anlassconfig.detail.tab.daten' | transloco }}</h2>
+
+  <!-- abschlussUeberweisungErfolgt -->
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.abschlussUeberweisungErfolgt'"
+    [formControlAttr]="form.group.controls.abschlussUeberweisungErfolgt"></feat-anlass-config-requirement-setting>
+
+  <!-- abschlussAerztlicheValidierungErforderlich -->
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.abschlussAerztlicheValidierungErforderlich'"
+    [formControlAttr]="form.group.controls.abschlussAerztlicheValidierungErforderlich"></feat-anlass-config-requirement-setting>
+
+  <!-- abschlussBeratungDurchgefuehrt -->
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.abschlussBeratungDurchgefuehrt'"
+    [formControlAttr]="form.group.controls.abschlussBeratungDurchgefuehrt"></feat-anlass-config-requirement-setting>
+
+  <!-- abschlussBeurteilungEmpfohleneMassnahmen -->
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.abschlussBeurteilungEmpfohleneMassnahmen'"
+    [formControlAttr]="form.group.controls.abschlussBeurteilungEmpfohleneMassnahmen"></feat-anlass-config-requirement-setting>
+
+  <!-- showCardAbschlussSignatur -->
+  <feat-anlass-config-select-boolean
+    [labelKey]="'anlassconfig.label.showCardAbschlussSignatur'"
+    [formControlAttr]="form.group.controls.showCardAbschlussSignatur"></feat-anlass-config-select-boolean>
+
+  <!--messages for whole form -->
+  <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="store.detailMode()"
+    [isCreate]="store.selectedIsNew()"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="anlassConfigHelperService.canEdit()"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+    [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"
+  />
+</form>

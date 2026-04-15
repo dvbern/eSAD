@@ -1,6 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -16,15 +18,15 @@ public class VerwendeteTafelCsvColumn extends AbstractCsvColumn {
         return ExtractorForCsvUtil.extractUntersuchungSehen(
             einladung,
             sehen -> {
-                if (sehen.getVerwendeteTafel() == null) {
+                VerwendetTafelResultat resultat =
+                    ValueEnhancedUtil.getEnumValueOrNull(sehen.getVerwendeteTafel(), VerwendetTafelResultat.class);
+                if (resultat == null) {
                     return "";
                 }
-
                 if (!config.forSpssReport()) {
-                    return config.tl().translateValue(sehen.getVerwendeteTafel());
+                    return config.tl().translateValue(resultat);
                 }
-
-                return switch (sehen.getVerwendeteTafel()) {
+                return switch (resultat) {
                     case E_TAFEL -> "1";
                     case C_TAFEL -> "2";
                     case PATTI_PICS -> "3";

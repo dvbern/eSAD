@@ -7,7 +7,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { FachRolle } from './fach-rolle';
+import { OrganisationRollenJson } from './organisation-rollen-json';
+import { EntityAktivStatus } from './entity-aktiv-status';
+import { SystemRollenJson } from './system-rollen-json';
 import { BackendEntityId } from '@dvb/data-access-types';
 
 
@@ -16,8 +18,12 @@ export interface BenutzerOptionJson {
     name: string;
     vorname: string;
     fullName: string;
-    fachrollen: Array<FachRolle>;
-    aktiv: boolean;
+    organisationRollen: Array<OrganisationRollenJson>;
+    systemRollen?: SystemRollenJson;
+    benutzerAktivStatus: EntityAktivStatus;
 }
+export namespace BenutzerOptionJson {
+}
+
 
 

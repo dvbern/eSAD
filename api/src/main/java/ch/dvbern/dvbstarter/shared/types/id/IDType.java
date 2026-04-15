@@ -1,6 +1,7 @@
 package ch.dvbern.dvbstarter.shared.types.id;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,17 +10,19 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.UUID;
 
+import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.HibernateException;
-import org.hibernate.annotations.common.reflection.java.JavaXMember;
-import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.type.SqlTypes;
+import org.hibernate.type.descriptor.WrapperOptions;
 import org.hibernate.usertype.DynamicParameterizedType;
 import org.hibernate.usertype.EnhancedUserType;
 
 import static java.util.Objects.requireNonNull;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "removal"})
+@Slf4j
 public class IDType implements EnhancedUserType<ID>, DynamicParameterizedType {
 
     private Class entityClass = null;
@@ -28,21 +31,20 @@ public class IDType implements EnhancedUserType<ID>, DynamicParameterizedType {
     // Hibernate insists on using a HashTable :(
     @SuppressWarnings("UseOfPropertiesAsHashtable")
     public void setParameterValues(Properties parameters) {
-        var member = (JavaXMember) parameters.get(DynamicParameterizedType.XPROPERTY);
+        ParameterType pt = (ParameterType) parameters.get(DynamicParameterizedType.PARAMETER_TYPE);
+        Type javaType = (pt == null) ? null : pt.getReturnedJavaType();
 
-        var pt = (ParameterType) parameters.get(DynamicParameterizedType.PARAMETER_TYPE);
-
-        var propertyIsOnEnversAuditTable = member == null && isEnversAuditTable(pt);
+        boolean propertyIsOnEnversAuditTable = javaType == null && pt != null && isEnversAuditTable(pt);
         if (propertyIsOnEnversAuditTable) {
             var entity = parameters.getProperty(DynamicParameterizedType.ENTITY);
             entityClass = parseEntityClassFromEntityNameEvilHack(entity);
             return;
         }
 
-        requireNonNull(member, "Hibernate did not provide the generic type parameter :(");
+        requireNonNull(javaType, "Hibernate did not provide the generic type parameter :(");
 
         entityClass = new EntityClassNameParser(ID.class)
-            .entityClassFrom(member.getJavaType());
+            .entityClassFrom(javaType);
     }
 
     private static boolean isEnversAuditTable(ParameterType pt) {
@@ -80,11 +82,11 @@ public class IDType implements EnhancedUserType<ID>, DynamicParameterizedType {
     }
 
     @Override
-    public @Nullable ID nullSafeGet(
-        ResultSet rs,
+    @Nullable
+    public ID nullSafeGet(
+        @NonNull ResultSet rs,
         int position,
-        SharedSessionContractImplementor session,
-        Object owner
+        WrapperOptions options
     ) throws SQLException {
         var value = (UUID) rs.getObject(position);
         if (value == null) {
@@ -98,7 +100,7 @@ public class IDType implements EnhancedUserType<ID>, DynamicParameterizedType {
     }
 
     @Override
-    public void nullSafeSet(PreparedStatement st, ID value, int index, SharedSessionContractImplementor session)
+    public void nullSafeSet(@NonNull PreparedStatement st, @Nullable ID value, int index, WrapperOptions options)
         throws SQLException {
         if (value == null) {
             st.setObject(index, null);
@@ -142,7 +144,6 @@ public class IDType implements EnhancedUserType<ID>, DynamicParameterizedType {
     @Override
     public ID fromStringValue(CharSequence sequence) throws HibernateException {
         var uuid = UUID.fromString(sequence.toString());
-
         @SuppressWarnings("unchecked")
         var id = ID.of(uuid, entityClass);
 

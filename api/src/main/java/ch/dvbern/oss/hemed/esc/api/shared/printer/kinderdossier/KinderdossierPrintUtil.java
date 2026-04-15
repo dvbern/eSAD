@@ -1,12 +1,18 @@
 package ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier;
 
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.UntersuchungBewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithDateTimeJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDaten;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.UntersuchungLaeusekontrolle;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.UntersuchungSchulrelevanteBeeintraechtigung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
@@ -14,9 +20,11 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGr
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenDataMinimal;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.UntersuchungSprache;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
@@ -152,6 +160,17 @@ public final class KinderdossierPrintUtil {
     }
 
     @NonNull
+    public static String extractUntersuchungImpfungenDataMinimal(
+        @NonNull Einladung einladung,
+        @NonNull Function<UntersuchungImpfungenDataMinimal, String> stringFunction
+    ) {
+        return ExtractorUtil.getUntersuchungImpfungenOptional(einladung)
+            .map(UntersuchungImpfungen::getUntersuchungImpfungenDataMinimal)
+            .map(stringFunction)
+            .orElse(PLACEHOLDER);
+    }
+
+    @NonNull
     public static String extractUntersuchungArzt(
         @NonNull Einladung einladung,
         @NonNull Function<UntersuchungArztBeurteilung, String> stringFunction
@@ -168,6 +187,46 @@ public final class KinderdossierPrintUtil {
     ) {
         return ExtractorUtil.getUntersuchungArztBemerkungOptional(einladung)
             .map(stringFunction)
+            .orElse(PLACEHOLDER);
+    }
+
+    @NonNull
+    public static String extractUntersuchungSprache(
+        @NonNull Einladung einladung,
+        @NonNull Function<UntersuchungSprache, String> stringFunction
+    ) {
+        return ExtractorUtil.getUntersuchungSpracheOptional(einladung)
+            .map(stringFunction)
+            .orElse(PLACEHOLDER);
+    }
+
+    @NonNull
+    public static String extractUntersuchungBewegungsapparat(
+        @NonNull Einladung einladung,
+        @NonNull Function<UntersuchungBewegungsapparat, String> stringFunction
+    ) {
+        return ExtractorUtil.getUntersuchungBewegungsapparatOptional(einladung)
+            .map(stringFunction)
+            .orElse(PLACEHOLDER);
+    }
+
+    @NonNull
+    public static String extractUntersuchungSchulrelevanteBeeintraechtigung(
+        @NonNull Einladung einladung,
+        @NonNull Function<UntersuchungSchulrelevanteBeeintraechtigung, String> stringFunction
+    ) {
+        return ExtractorUtil.getUntersuchungSchulrelevanteBeeintraechtigungOptional(einladung)
+            .map(stringFunction)
+            .orElse(PLACEHOLDER);
+    }
+
+    @NonNull
+    public static String extractUntersuchungLaeusekontrolle(
+        @NonNull Einladung einladung,
+        @NonNull Function<UntersuchungLaeusekontrolle, String> stringTransformer
+    ) {
+        return ExtractorUtil.getUntersuchungLaeusekontrolleOptional(einladung)
+            .map(stringTransformer)
             .orElse(PLACEHOLDER);
     }
 
@@ -189,6 +248,18 @@ public final class KinderdossierPrintUtil {
         return ExtractorUtil.getUntersuchungImpfungenMassnahmenOptional(einladung)
             .map(stringFunction)
             .orElse(PLACEHOLDER);
+    }
+
+    @NonNull
+    public static String extractImpfungenFolgetermin(
+        @NonNull List<AnlassWithDateTimeJson> listeImpfungenFolgetermin,
+        @NonNull Function<AnlassWithDateTimeJson, String> stringFunction
+    ) {
+        if (listeImpfungenFolgetermin.isEmpty()) {
+            return PLACEHOLDER;
+        }
+        return listeImpfungenFolgetermin
+            .stream().map(stringFunction).collect(Collectors.joining(", "));
     }
 
     @Nullable

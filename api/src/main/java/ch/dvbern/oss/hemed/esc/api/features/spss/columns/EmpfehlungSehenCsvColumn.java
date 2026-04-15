@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.SehenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class EmpfehlungSehenCsvColumn extends AbstractCsvColumn {
@@ -11,7 +12,8 @@ public class EmpfehlungSehenCsvColumn extends AbstractCsvColumn {
 
     public EmpfehlungSehenCsvColumn(
         @NonNull CsvColumnConfig config,
-        @NonNull SehenEmpfehlung empfehlung) {
+        @NonNull SehenEmpfehlung empfehlung
+    ) {
         super(config, null);
         this.empfehlung = empfehlung;
     }
@@ -22,7 +24,9 @@ public class EmpfehlungSehenCsvColumn extends AbstractCsvColumn {
         return ExtractorForCsvUtil.extractUntersuchungSehen(
             einladung,
             untersuchungSehen ->
-                PrintUtil.trimToPlaceholder(untersuchungSehen.getEmpfehlung().contains(this.empfehlung), config.tl())
+                PrintUtil.trimToPlaceholder(
+                    ValueEnhancedUtil.getEnumSetOrEmpty(untersuchungSehen.getEmpfehlung(), SehenEmpfehlung.class)
+                        .contains(this.empfehlung), config.tl())
         );
     }
 

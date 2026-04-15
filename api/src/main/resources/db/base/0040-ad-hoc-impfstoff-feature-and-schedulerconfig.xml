@@ -1,0 +1,33 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hefr (generated)" id="1770821750195-1">
+    <addColumn tableName="tenantsetting">
+      <column name="adhocimpfstoffchargenfeature" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1770821750195-1a">
+    <sql>
+      update tenantsetting set adhocimpfstoffchargenfeature = 'DISABLED'
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1770821750195-1b">
+    <addNotNullConstraint tableName="tenantsetting" columnName="adhocimpfstoffchargenfeature"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770821750195-2">
+    <addColumn tableName="tenantsetting_aud">
+      <column name="adhocimpfstoffchargenfeature" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770821750195-3">
+    <sql>
+      INSERT INTO schedulerconfig (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, batchsize, disabled, schedulertyp)
+      VALUES ('221073eb-4ef9-4766-bb96-d09cbe7e5e75', '2026-02-12 18:35:17.642000', '2026-02-12 18:35:17.642000', 'liquibase', 'liquibase', 0, 100, false, 'DEACTIVATE_IMPFSTOFF_CHARGEN');
+    </sql>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770821750195-4">
+    <sql>
+      INSERT INTO schedulerconfig (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, batchsize, disabled, schedulertyp)
+      VALUES ('eede56cc-2633-4b3d-84f7-cd079e7d1028', '2026-02-12 18:35:17.642000', '2026-02-12 18:35:17.642000', 'liquibase', 'liquibase', 0, 100, false, 'DELETE_IMPFSTOFF_CHARGEN');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

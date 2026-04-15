@@ -37,31 +37,43 @@ import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.math.GanzZahl;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammSimpel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenHoerhilfe;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenAugeEinzelnResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.SehenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftretenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.Arzt;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
@@ -80,6 +92,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtilImpl;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.MergeSourceDummyDataCreator;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -133,11 +146,10 @@ public class MergeSourceCreatorService {
     }
 
     @NonNull
-    public RootMergeSource fromKind(@NonNull Kind kind, @Nullable Arzt arzt) {
+    public RootMergeSource fromKind(@NonNull Kind kind, @Nullable Arzt arzt, @NonNull Benutzer benutzer) {
 
         Dossier dossier = dossierService.getOrCreateByKind(kind.getId());
         Nachkontrolle nachkontrolle = nachkontrolleService.getOrCreateByDossier(dossier.getId());
-        Benutzer currentBenutzer = benutzerService.getCurrentBenutzerOrThrowException();
         KontaktPersonKind kontaktPersonKind = kontaktPersonKindService.findByKind(kind.getId())
             .stream()
             .filter(KontaktPersonKind::isKorrespondenz)
@@ -147,7 +159,7 @@ public class MergeSourceCreatorService {
         return toRootMergeSource(
             dossier,
             nachkontrolle,
-            currentBenutzer,
+            benutzer,
             appClock.offsetDateTime().now(),
             tl,
             arzt,
@@ -156,7 +168,8 @@ public class MergeSourceCreatorService {
 
     @NonNull
     public RootMergeSource testMergeSourceForKind(@NonNull Kind kind) {
-        Dossier dossier = MergeSourceDummyDataCreator.getTestDossier(kind);
+        OffsetDateTime now = appClock.offsetDateTime().now();
+        Dossier dossier = MergeSourceDummyDataCreator.getTestDossier(kind, now);
         Nachkontrolle nachkontrolle = MergeSourceDummyDataCreator.getTestNachkontrolle(dossier);
         Benutzer currentBenutzer = benutzerService.getCurrentBenutzerOrThrowException();
         Arzt arzt = MergeSourceDummyDataCreator.getTestArzt();
@@ -165,7 +178,7 @@ public class MergeSourceCreatorService {
             dossier,
             nachkontrolle,
             currentBenutzer,
-            appClock.offsetDateTime().now(),
+            now,
             tl,
             arzt,
             null);
@@ -173,9 +186,10 @@ public class MergeSourceCreatorService {
 
     @NonNull
     public RootMergeSource testMergeSourceForAnlass(@NonNull Kind kind) {
-        Dossier dossier = MergeSourceDummyDataCreator.getTestDossier(kind);
+        OffsetDateTime now = appClock.offsetDateTime().now();
+        Dossier dossier = MergeSourceDummyDataCreator.getTestDossier(kind, now);
         Nachkontrolle nachkontrolle = MergeSourceDummyDataCreator.getTestNachkontrolle(dossier);
-        Anlass anlass = MergeSourceDummyDataCreator.getTestAnlass();
+        Anlass anlass = MergeSourceDummyDataCreator.getTestAnlass(now);
         List<UntersuchungImpfungIntern> impfungList = MergeSourceDummyDataCreator.getTestImpfungList(dossier, anlass);
         List<UntersuchungImpfstatusKrankheit> impfstatusList = MergeSourceDummyDataCreator.getTestImpfStatusList();
         Benutzer currentBenutzer = benutzerService.getCurrentBenutzerOrThrowException();
@@ -194,7 +208,7 @@ public class MergeSourceCreatorService {
             impfstatusList,
             impfungList,
             currentBenutzer,
-            appClock.offsetDateTime().now(),
+            now,
             tl,
             arzt,
             kontaktPersonKind);
@@ -244,7 +258,8 @@ public class MergeSourceCreatorService {
                 toSehenDTO(untersuchung, anlassConfig, tl),
                 toHoerenAudiogrammDTO(untersuchung, anlassConfig, tl),
                 toHoerenOtoskopieDTO(untersuchung, anlassConfig, tl),
-                toGroesseGewichtDTO(untersuchung.getUntersuchungGroesseGewicht(), tl)
+                toGroesseGewichtDTO(untersuchung.getUntersuchungGroesseGewicht(), tl),
+                toUntersuchungArztDTO(untersuchung.getUntersuchungArztBeurteilung(), tl)
             ),
             toExternerArztDTO(arzt)
         );
@@ -444,31 +459,104 @@ public class MergeSourceCreatorService {
                 PRINT_UTIL.getPlaceholder(),
                 PRINT_UTIL.getPlaceholder(),
                 PRINT_UTIL.getPlaceholder(),
+                PRINT_UTIL.getPlaceholder(),
+                PRINT_UTIL.getPlaceholder(),
+                PRINT_UTIL.getPlaceholder(),
                 PRINT_UTIL.getPlaceholder());
         }
 
         return new SehenDocMergerDTO(
-            getEnumValue("brief.eltern", untersuchungSehenBeurteilung.getBrilleLinsen(), tl),
-            getEnumValue("brief.arzt", untersuchungSehenBeurteilung.getBrilleLinsen(), tl),
-            getEnumValue("brief.eltern", untersuchungSehenBeurteilung.getStereotest(), tl),
-            getEnumValue("brief.arzt", untersuchungSehenBeurteilung.getStereotest(), tl),
-            getFarbeSehen(untersuchungSehenBeurteilung.getFarbsehen(), untersuchung.getUntersuchungMassnahmen(), tl),
-            getEnumValue(BRIEF_PREFIX, untersuchungSehenBeurteilung.getVerwendeteTafel(), tl),
-            getVisusString(untersuchungSehenBeurteilung.getFernvisus(), tl),
+            getEnumValue(
+                "brief.eltern",
+                ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehenBeurteilung.getBrilleLinsen(),
+                    BrilleLinsenResultat.class),
+                tl),
+            getEnumValue(
+                "brief.arzt",
+                ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehenBeurteilung.getBrilleLinsen(),
+                    BrilleLinsenResultat.class),
+                tl),
+            getEnumValue(
+                "brief.eltern",
+                ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehenBeurteilung.getStereotest(),
+                    StereotestResultat.class),
+                tl),
+            getEnumValue(
+                "brief.arzt",
+                ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehenBeurteilung.getStereotest(),
+                    StereotestResultat.class),
+                tl),
+            getFarbeSehen(
+                ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehenBeurteilung.getFarbsehen(),
+                    FarbsehenResultat.class), untersuchung.getUntersuchungMassnahmen(), tl),
+            getEnumValue(
+                BRIEF_PREFIX,
+                ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehenBeurteilung.getVerwendeteTafel(),
+                    VerwendetTafelResultat.class),
+                tl),
+            getVisusString(
+                ValueEnhancedUtil.getEnumSetOrEmpty(
+                    untersuchungSehenBeurteilung.getFernvisus(),
+                    DistanzSehenResultat.class), tl),
             PRINT_UTIL.trimToPlaceholder(untersuchungSehenBeurteilung.getFernvisusRechts()),
             PRINT_UTIL.trimToPlaceholder(untersuchungSehenBeurteilung.getFernvisusLinks()),
-            getVisusString(untersuchungSehenBeurteilung.getNahvisus(), tl),
+            getEnumValue(
+                BRIEF_PREFIX,
+                ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehenBeurteilung.getFernvisusAugeLinks(),
+                    DistanzSehenAugeEinzelnResultat.class),
+                tl),
+            getEnumValue(
+                BRIEF_PREFIX,
+                ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehenBeurteilung.getFernvisusAugeRechts(),
+                    DistanzSehenAugeEinzelnResultat.class),
+                tl),
+            getVisusString(
+                ValueEnhancedUtil.getEnumSetOrEmpty(
+                    untersuchungSehenBeurteilung.getNahvisus(),
+                    DistanzSehenResultat.class), tl),
             PRINT_UTIL.trimToPlaceholder(untersuchungSehenBeurteilung.getNahvisusRechts()),
             PRINT_UTIL.trimToPlaceholder(untersuchungSehenBeurteilung.getNahvisusLinks()),
-            untersuchungSehenBeurteilung.getStrabismus()
+            ValueEnhancedUtil.getEnumSetOrEmpty(untersuchungSehenBeurteilung.getStrabismus(), StrabismusResultat.class)
                 .stream().map(strabismus -> getEnumValue(BRIEF_PREFIX, strabismus, tl))
                 .collect(Collectors.joining(", ")),
-            getEnumValue(BRIEF_PREFIX, untersuchungSehenBeurteilung.getStrabismusAuspraegung(), tl),
-            getEnumValue(BRIEF_PREFIX, untersuchungSehenBeurteilung.getStrabismusAuftreten(), tl),
-            getEnumValue(BRIEF_PREFIX, untersuchungSehenBeurteilung.getInspektion(), tl),
-            getEnumValue(BRIEF_PREFIX, untersuchungSehenBeurteilung.getKonvergenz(), tl),
+            getEnumValue(
+                BRIEF_PREFIX, ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehenBeurteilung.getStrabismusAuspraegung(),
+                    StrabismusAuspraegungResultat.class), tl),
+            getEnumValue(
+                BRIEF_PREFIX, ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehenBeurteilung.getStrabismusAuftreten(),
+                    StrabismusAuftretenResultat.class), tl),
+            getEnumValue(
+                BRIEF_PREFIX,
+                ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehenBeurteilung.getInspektion(),
+                    InspektionKonvergenzResultat.class),
+                tl),
+            getEnumValue(
+                BRIEF_PREFIX,
+                ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehenBeurteilung.getKonvergenz(),
+                    InspektionKonvergenzResultat.class),
+                tl),
             getSehenBeurteilung(untersuchung, anlassConfig, tl),
-            getEnumValue(BRIEF_PREFIX, untersuchungSehenBeurteilung.getMotilitaet(), tl)
+            getEnumValue(
+                BRIEF_PREFIX,
+                ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehenBeurteilung.getMotilitaet(),
+                    MotilitaetResultat.class),
+                tl),
+            ValueEnhancedUtil.getEnumSetOrEmpty(untersuchungSehenBeurteilung.getEmpfehlung(), SehenEmpfehlung.class)
+                .stream().map(empfehlung -> getEnumValue(BRIEF_PREFIX, empfehlung, tl))
+                .collect(Collectors.joining(", "))
         );
     }
 
@@ -542,20 +630,46 @@ public class MergeSourceCreatorService {
                 new HashMap<>(),
                 new HashMap<>(),
                 PRINT_UTIL.getPlaceholder(),
-                PRINT_UTIL.getPlaceholder());
+                PRINT_UTIL.getPlaceholder(),
+                PRINT_UTIL.getPlaceholder(),
+                PRINT_UTIL.getPlaceholder(),
+                PRINT_UTIL.getPlaceholder()
+            );
         }
 
         return new HoerenAudiogrammDocMergerDTO(
-            untersuchungHoerenAudiogramm.getZusaetzlicheAngaben().contains(HoerenZusaetzlicheAngaben.ERKAELTUNG) ?
+            ValueEnhancedUtil.getEnumSetOrEmpty(
+                untersuchungHoerenAudiogramm.getZusaetzlicheAngaben(),
+                HoerenZusaetzlicheAngaben.class).contains(HoerenZusaetzlicheAngaben.ERKAELTUNG) ?
                 getEnumValue(BRIEF_PREFIX, HoerenZusaetzlicheAngaben.ERKAELTUNG, tl) :
                 "",
-            untersuchungHoerenAudiogramm.getZusaetzlicheAngaben().contains(HoerenZusaetzlicheAngaben.HOERHILFE) ?
+            ValueEnhancedUtil.getEnumSetOrEmpty(
+                untersuchungHoerenAudiogramm.getZusaetzlicheAngaben(),
+                HoerenZusaetzlicheAngaben.class).contains(HoerenZusaetzlicheAngaben.HOERHILFE) ?
                 getEnumValue(BRIEF_PREFIX, HoerenZusaetzlicheAngaben.HOERHILFE, tl) :
                 "",
             getAudiogrammMap(untersuchungHoerenAudiogramm.getAudiogrammRechts()),
             getAudiogrammMap(untersuchungHoerenAudiogramm.getAudiogrammLinks()),
             getZusammenfassungAudiogramm(untersuchung, anlassConfig, tl),
-            getAudiogramBeurteilung(untersuchungHoerenAudiogramm.getAudiogrammBeurteilung(), tl)
+            getAudiogramBeurteilung(
+                ValueEnhancedUtil.getEnumSetOrEmpty(
+                    untersuchungHoerenAudiogramm.getAudiogrammBeurteilung(),
+                    AudiogrammBeurteilung.class), tl),
+            ValueEnhancedUtil.getEnumSetOrEmpty(untersuchungHoerenAudiogramm.getEmpfehlung(), HoerenEmpfehlung.class)
+                .stream().map(empfehlung -> getEnumValue(BRIEF_PREFIX, empfehlung, tl))
+                .collect(Collectors.joining(", ")),
+            getEnumValue(
+                BRIEF_PREFIX,
+                ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungHoerenAudiogramm.getAudiogrammSimpel(),
+                    AudiogrammSimpel.class),
+                tl),
+            getEnumValue(
+                BRIEF_PREFIX,
+                ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungHoerenAudiogramm.getHoerhilfe(),
+                    HoerenHoerhilfe.class),
+                tl)
         );
     }
 
@@ -576,11 +690,15 @@ public class MergeSourceCreatorService {
 
         return new HoerenOtoskopieDocMergerDTO(
             otoskopieResultatToString(
-                untersuchungHoerenOtoskopie.getOtoskopieRechts(),
+                ValueEnhancedUtil.getEnumSetOrEmpty(
+                    untersuchungHoerenOtoskopie.getOtoskopieRechts(),
+                    OtoskopieResultat.class),
                 untersuchungHoerenOtoskopie.getOtoskopieRechtsResultatAndere(),
                 tl),
             otoskopieResultatToString(
-                untersuchungHoerenOtoskopie.getOtoskopieLinks(),
+                ValueEnhancedUtil.getEnumSetOrEmpty(
+                    untersuchungHoerenOtoskopie.getOtoskopieLinks(),
+                    OtoskopieResultat.class),
                 untersuchungHoerenOtoskopie.getOtoskopieLinksResultatAndere(),
                 tl),
             getZusammenfassungOtoskopie(untersuchung, anlassConfig, tl)
@@ -588,10 +706,13 @@ public class MergeSourceCreatorService {
     }
 
     private static String otoskopieResultatToString(
-        @NonNull EnumSet<OtoskopieResultat> otoskopieResultate,
+        @Nullable EnumSet<OtoskopieResultat> otoskopieResultate,
         @Nullable String resultatBemerkung,
         @NonNull TL tl
     ) {
+        if (otoskopieResultate == null || otoskopieResultate.isEmpty()) {
+            return PRINT_UTIL.getPlaceholder();
+        }
         return otoskopieResultate.stream().map(beurteilung -> {
             String otoskopieValue = getEnumValue(BRIEF_PREFIX, beurteilung, tl);
             boolean isAnderesWithBemerkung =
@@ -689,11 +810,39 @@ public class MergeSourceCreatorService {
             numberWithSuffix(
                 groesseGewicht.getGroesse() != null ? GanzZahl.valueOf(groesseGewicht.getGroesse()).getValue() : null,
                 "brief.centimeter.suffix", tl),
-            getEnumValue(BRIEF_PREFIX, groesseGewicht.getGroessePerzentile(), tl),
+            getEnumValue(
+                BRIEF_PREFIX, ValueEnhancedUtil.getEnumValueOrNull(
+                    groesseGewicht.getGroessePerzentile(),
+                    PerzentileGroesse.class), tl),
             numberWithSuffix(groesseGewicht.getGewicht(), "brief.kilogram.suffix", tl),
-            getEnumValue(BRIEF_PREFIX, groesseGewicht.getGewichtPerzentile(), tl),
+            getEnumValue(
+                BRIEF_PREFIX, ValueEnhancedUtil.getEnumValueOrNull(
+                    groesseGewicht.getGewichtPerzentile(),
+                    PerzentileGewicht.class), tl),
             PRINT_UTIL.trimToPlaceholder(groesseGewicht.getBmi()),
-            getEnumValue(BRIEF_PREFIX, groesseGewicht.getBmiPerzentile(), tl)
+            getEnumValue(
+                BRIEF_PREFIX, ValueEnhancedUtil.getEnumValueOrNull(
+                    groesseGewicht.getBmiPerzentile(),
+                    PerzentileBmi.class), tl)
+        );
+    }
+
+    @NonNull
+    private static UntersuchungArztDocMergerDTO toUntersuchungArztDTO(
+        @Nullable UntersuchungArztBeurteilung untersuchungArztBeurteilung,
+        @NonNull TL tl
+    ) {
+        if (untersuchungArztBeurteilung == null) {
+            return new UntersuchungArztDocMergerDTO(
+                PRINT_UTIL.getPlaceholder(),
+                PRINT_UTIL.getPlaceholder(),
+                PRINT_UTIL.getPlaceholder()
+            );
+        }
+        return new UntersuchungArztDocMergerDTO(
+            getEnumValue(BRIEF_PREFIX, untersuchungArztBeurteilung.getBlutdruck(), tl),
+            PRINT_UTIL.trimToPlaceholder(untersuchungArztBeurteilung.getBlutdruckSystolisch()),
+            PRINT_UTIL.trimToPlaceholder(untersuchungArztBeurteilung.getBlutdruckDiastolisch())
         );
     }
 

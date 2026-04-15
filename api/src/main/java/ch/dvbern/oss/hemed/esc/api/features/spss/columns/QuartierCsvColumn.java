@@ -14,7 +14,7 @@ public class QuartierCsvColumn extends AbstractCsvColumn {
     @Override
     @NonNull
     public String extract(@NonNull Einladung einladung) {
-        Schule schule = einladung.getDossier().getKind().getSchule();
+        Schule schule = einladung.getDossier().getKind().extractSchule();
 
         if (schule == null || schule.getQuartier() == null) {
             return "";

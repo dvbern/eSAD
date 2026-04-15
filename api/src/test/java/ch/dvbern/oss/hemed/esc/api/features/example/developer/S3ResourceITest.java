@@ -7,7 +7,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupport;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.NotizenApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.S3ResourceApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizJsonSpec;
@@ -39,7 +39,7 @@ class S3ResourceITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void downloadFile() {
         // ARRANGE
         Notiz storedNotiz = fixtureService.createNotiz();
@@ -75,7 +75,7 @@ class S3ResourceITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void downloadFileWithCommaInFilename() {
         // ARRANGE
         Notiz storedNotiz = fixtureService.createNotiz();

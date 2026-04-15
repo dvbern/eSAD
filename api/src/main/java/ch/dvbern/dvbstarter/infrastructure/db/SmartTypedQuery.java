@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.NoResultException;
@@ -50,6 +52,12 @@ public class SmartTypedQuery<X> implements TypedQuery<X> {
     @Nullable
     public X getSingleResult() {
         return delegate.getSingleResult();
+    }
+
+    @Override
+    @Nullable
+    public X getSingleResultOrNull() {
+        return delegate.getSingleResultOrNull();
     }
 
     @Override
@@ -192,7 +200,8 @@ public class SmartTypedQuery<X> implements TypedQuery<X> {
     }
 
     @Override
-    public <T> @NonNull Parameter<T> getParameter(int position, @NonNull Class<T> type) {
+    @NonNull
+    public <T> Parameter<T> getParameter(int position, @NonNull Class<T> type) {
         return delegate.getParameter(position, type);
     }
 
@@ -202,6 +211,7 @@ public class SmartTypedQuery<X> implements TypedQuery<X> {
     }
 
     @Override
+    @NonNull
     public <T> T getParameterValue(@NonNull Parameter<T> param) {
         return delegate.getParameterValue(param);
     }
@@ -243,7 +253,44 @@ public class SmartTypedQuery<X> implements TypedQuery<X> {
     }
 
     @Override
-    public <T> @NonNull T unwrap(@NonNull Class<T> cls) {
+    @NonNull
+    public SmartTypedQuery<X> setCacheRetrieveMode(@NonNull CacheRetrieveMode cacheRetrieveMode) {
+        return new SmartTypedQuery<>(delegate.setCacheRetrieveMode(cacheRetrieveMode));
+    }
+
+    @Override
+    @NonNull
+    public SmartTypedQuery<X> setCacheStoreMode(@NonNull CacheStoreMode cacheStoreMode) {
+        return new SmartTypedQuery<>(delegate.setCacheStoreMode(cacheStoreMode));
+    }
+
+    @Override
+    @NonNull
+    public CacheRetrieveMode getCacheRetrieveMode() {
+        return delegate.getCacheRetrieveMode();
+    }
+
+    @Override
+    @NonNull
+    public CacheStoreMode getCacheStoreMode() {
+        return delegate.getCacheStoreMode();
+    }
+
+    @Override
+    @NonNull
+    public SmartTypedQuery<X> setTimeout(@NonNull Integer integer) {
+        return new SmartTypedQuery<>(delegate.setTimeout(integer));
+    }
+
+    @Override
+    @NonNull
+    public Integer getTimeout() {
+        return delegate.getTimeout();
+    }
+
+    @Override
+    @NonNull
+    public <T> T unwrap(@NonNull Class<T> cls) {
         return delegate.unwrap(cls);
     }
 }

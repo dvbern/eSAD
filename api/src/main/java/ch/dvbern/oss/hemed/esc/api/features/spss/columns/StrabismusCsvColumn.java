@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -21,10 +22,12 @@ public class StrabismusCsvColumn extends AbstractCsvColumn {
         return ExtractorForCsvUtil.extractUntersuchungSehen(
             einladung,
             sehen -> {
+                boolean resultat = ValueEnhancedUtil.getEnumSetOrEmpty(sehen.getStrabismus(), StrabismusResultat.class)
+                    .contains(this.strabismusResultat);
                 if (config.forSpssReport()) {
-                    return sehen.getStrabismus().contains(strabismusResultat) ? "1" : "";
+                    return resultat ? "1" : "";
                 }
-                return PrintUtil.trimToPlaceholder(sehen.getStrabismus().contains(strabismusResultat), config.tl());
+                return PrintUtil.trimToPlaceholder(resultat, config.tl());
             }
         );
     }

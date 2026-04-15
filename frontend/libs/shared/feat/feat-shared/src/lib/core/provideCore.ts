@@ -25,7 +25,11 @@ import {
 } from '@angular/router';
 import {appErrorInterceptor} from '@dvb/util-angular';
 
-import {LanguageStore, provideAppTransloco} from '@dvb/util-i18n';
+import {
+  acceptLanguageInterceptorFn,
+  LanguageStore,
+  provideAppTransloco,
+} from '@dvb/util-i18n';
 import {hasListViewBerechtigung} from '@dvb/util-shared';
 import {TranslocoService} from '@jsverse/transloco';
 import {provideNgIconLoader, withCaching} from '@ng-icons/core';
@@ -79,6 +83,7 @@ export function provideCore(appRoutes: Route[]): ApplicationConfig['providers'] 
     provideHttpClient(
       withInterceptors([
         appErrorInterceptor(), // note that the order is important, msg outflow is 'reversed'
+        acceptLanguageInterceptorFn, // adds the selected language as first param to the AcceptLanguage header
         authSessionExpiredInterceptorFn(),
 
         // FIXME: check backend version
@@ -98,15 +103,12 @@ export function provideCore(appRoutes: Route[]): ApplicationConfig['providers'] 
       deps: [Router],
     },
     // init (has to be last, order matters!)
-    // TODO ESC-428 importProvidersFrom(KeycloakAngularModule),
-
-
     // time travel
     TimetravelStore,
 
     // app init
     provideAppInitializer(() => {
-        const initializerFn = appInitializer();
+      const initializerFn = appInitializer();
       return initializerFn();
     }),
     // Locale_ID
@@ -143,11 +145,10 @@ function appInitializer(
     if (benutzerStore.createHasRequiredRoleSig(hasListViewBerechtigung())()) {
       benutzerOptionsStore.loadAllBenutzerOptions();
     }
-    tenantSettingsStore.loadTenantSettings();
+    await tenantSettingsStore.init();
 
     // load current timetravel state
     timetravelStore.loadNow();
-
 
     // wait for the translation to load:
     await lastValueFrom(transloco.load(languageStore.activeLocale()));

@@ -4,7 +4,8 @@
           type="button"
           (click)="resetFilter.emit()"
   >
-    <span>{{ 'global.reset-filter' | transloco }} ({{ activeFilterCount() }})</span>
+    <span
+    data-testid="button-reset-filter">{{ 'global.reset-filter' | transloco }} ({{ activeFilterCount() }})</span>
   </button>
 }
 
@@ -13,7 +14,7 @@
 
 <!-- filter popup -->
 @if (showFilterPopup()) {
-  <button svuiIconOnlyButton="primary"
+  <button svuiIconOnlyButton="secondary"
           type="button"
           [tooltip]="'global.tooltip.open-filter-popup' | transloco"
           [icon]="'filter'"

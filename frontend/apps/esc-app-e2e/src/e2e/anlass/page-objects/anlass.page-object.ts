@@ -32,9 +32,18 @@ export class AnlassPageObject extends DetailFormWithModePageObject {
   };
 
   elements = {
-    titleInput: () => new FormInputComponentObject('anlass-titel-input'),
-    anlassArtSelect: () => new FormSelectComponentObject('anlass-art-select'),
-    anlassTypSelect: () => new FormSelectComponentObject('anlass-typ-select'),
+    anlassTitleInput: () => new FormInputComponentObject('anlass-titel-input'),
+    anlassArtSelect: () => new FormSelectComponentObject('anlass-art-select', 'svui-form-control'),
+    anlassTypSelect: () => new FormSelectComponentObject('anlass-typ-select', 'svui-form-control'),
     anlassDatumDatePicker: () => new FormDatePickerComponentObject('anlass-datum-date-picker'),
+    schuljahrSelect: () => new FormSelectComponentObject('anlass-schuljahr-select', 'svui-form-control'),
+    schuleSelect: () => new FormSelectComponentObject('anlass-schule-select', 'svui-form-control'),
+    klasseSelect: () => new FormSelectComponentObject('anlass-klasse-select', 'svui-form-control'),
+    buttonAddKinder: () => this.page.getByTestId('button-add-kinder'),
+    selectedKinderTitle: () => this.page.getByTestId('anlass-selected-kinder-title'),
+    buttonRemoveKinder: () => this.page.getByTestId('button-remove-kinder'),
+    kinderNameInput: () => new FormInputComponentObject('kinder-name-input'),
+    buttonConfirmRemove: () => this.page.getByTestId('button-confirm'),
+    buttonSaveAnlass: () => this.page.getByTestId('button-save'),
   }
 }

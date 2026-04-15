@@ -1,10 +1,10 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,13 +30,13 @@ class MotilitaetCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungSehenBeurteilung.setMotilitaet(MotilitaetResultat.NORMAL);
+        untersuchungSehenBeurteilung.setMotilitaet(SingleValueEnhanced.of(MotilitaetResultat.NORMAL, null));
         assertThat(column.extract(einladung)).isEqualTo("1");
 
-        untersuchungSehenBeurteilung.setMotilitaet(MotilitaetResultat.PATHOLOGISCH);
+        untersuchungSehenBeurteilung.setMotilitaet(SingleValueEnhanced.of(MotilitaetResultat.PATHOLOGISCH, null));
         assertThat(column.extract(einladung)).isEqualTo("2");
 
-        untersuchungSehenBeurteilung.setMotilitaet(MotilitaetResultat.NICHT_GEPRUEFT);
+        untersuchungSehenBeurteilung.setMotilitaet(SingleValueEnhanced.of(MotilitaetResultat.NICHT_GEPRUEFT, null));
         assertThat(column.extract(einladung)).isEqualTo("3");
     }
 
@@ -59,7 +59,7 @@ class MotilitaetCsvColumnTest extends AbstractBaseColumnTest {
         assertThat(column.extract(einladung)).isEmpty();
 
         when(tlMock.translateValue(MotilitaetResultat.NICHT_GEPRUEFT)).thenReturn("Nicht geprüft");
-        untersuchungSehenBeurteilung.setMotilitaet(MotilitaetResultat.NICHT_GEPRUEFT);
+        untersuchungSehenBeurteilung.setMotilitaet(SingleValueEnhanced.of(MotilitaetResultat.NICHT_GEPRUEFT, null));
         assertThat(column.extract(einladung)).isEqualTo("Nicht geprüft");
     }
 

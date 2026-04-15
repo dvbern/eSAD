@@ -15,9 +15,9 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.BriefvorlageBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.FileDataBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsMpaSuper;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsOrthoptist;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupport;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsMpaSuperBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsOrthoptistBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.BriefvorlageApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppLanguagesSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BriefvorlageJsonSpec;
@@ -88,7 +88,7 @@ class BriefvorlageResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void createBriefvorlage() throws JsonProcessingException {
         // ARRANGE
         File wordFile = TestUtil.loadTestWord();
@@ -111,7 +111,7 @@ class BriefvorlageResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void updateBriefvorlage() throws JsonProcessingException {
         // ARRANGE
         FileData fileData = FileDataBuilder.defaultWordFileData();
@@ -145,7 +145,7 @@ class BriefvorlageResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void deleteBriefvorlage() {
         // ARRANGE
         Briefvorlage briefvorlage1 = BriefvorlageBuilder.create(builder -> builder
@@ -176,7 +176,7 @@ class BriefvorlageResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsMpaSuper
+    @TestAsMpaSuperBS
     void updateBriefvorlagen_should_work_for_user_with_super_berechtigung() throws JsonProcessingException {
         // ARRANGE
         FileData fileData = FileDataBuilder.defaultWordFileData();
@@ -214,7 +214,7 @@ class BriefvorlageResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsOrthoptist
+    @TestAsOrthoptistBS
     void updateBriefvorlage_should_not_work_for_orthoptistin() throws JsonProcessingException {
 
         // ARRANGE
@@ -245,7 +245,7 @@ class BriefvorlageResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void downloadBrief_for_anlass() throws JsonProcessingException {
         // ARRANGE
         File briefvorlageFile = TestUtil.loadBriefvorlageFile(BriefvorlageType.ANLASS);
@@ -280,7 +280,7 @@ class BriefvorlageResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void downloadBrief_for_kind() {
         // ARRANGE
         Briefvorlage briefvorlage = fixtureService.createBriefvorlage(BriefvorlageType.KIND);
@@ -299,7 +299,7 @@ class BriefvorlageResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void downloadBriefvorlageFile() throws JsonProcessingException {
         // ARRANGE
         File wordFile = TestUtil.loadTestWord();
@@ -329,7 +329,7 @@ class BriefvorlageResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void downloadTestBriefe() throws IOException {
         // ARRANGE
         File briefvorlageAnlassFile = TestUtil.loadBriefvorlageFile(BriefvorlageType.ANLASS);

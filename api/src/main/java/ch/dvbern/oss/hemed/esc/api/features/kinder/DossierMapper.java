@@ -1,26 +1,25 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder;
 
-import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
+import java.time.LocalDate;
+
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
+import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierMedizinischSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierNichtMedizinischSaveJson;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
-import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.types.PapierakteStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.ZustaendigePersonService;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @JaxMapper
 @RequiredArgsConstructor
@@ -31,6 +30,7 @@ public final class DossierMapper {
     private final NachkontrolleService nachkontrolleService;
     private final AktivitaetHistoryService aktivitaetHistoryService;
     private final AppClock appClock;
+    private final ZustaendigePersonService zustaendigePersonService;
 
     @NonNull
     public static DossierJson toJson(
@@ -61,15 +61,16 @@ public final class DossierMapper {
                 dossier.getPapierakteStatus(),
                 dossier.getVersion()
             ),
-            KindMapper.toJson(dossier.getKind(), now)
+            KindMapper.toJson(dossier.getKind(), now),
+            dossier.getTimestampDefinitivArchiviert()
         );
     }
 
     @NonNull
     private Dossier toEntity(
         @NonNull Dossier existingDossier,
-        @Nullable DossierMedizinischSaveJson saveJsonMedizinisch,
-        @Nullable DossierNichtMedizinischSaveJson saveJsonNichtMedizinisch) {
+        @Nullable DossierMedizinischSaveJson saveJsonMedizinisch
+    ) {
         // We don't set the EdokidId in toEntity() because it can't be changed
         // Either it's generated in the according service, or it's already set on existingDossier
         if (saveJsonMedizinisch != null) {
@@ -80,16 +81,6 @@ public final class DossierMapper {
             existingDossier.setAndereZusatzInformationText(saveJsonMedizinisch.getAndereZusatzInformationText());
             existingDossier.setImmunitaetMasern(saveJsonMedizinisch.isImmunitaetMasern());
             existingDossier.setImmunitaetVarizellen(saveJsonMedizinisch.isImmunitaetVarizellen());
-        } else if (saveJsonNichtMedizinisch != null) {
-            existingDossier.setZustaendigArzt(
-                benutzerService.getBenutzerIfCorrectRole(
-                    saveJsonNichtMedizinisch.getZustaendigArzt(),
-                    FachRolle.SCHULAERZTIN)
-            );
-            existingDossier.setZustaendigMPA(
-                benutzerService.getBenutzerIfOneOfRolesIsCorrect(saveJsonNichtMedizinisch.getZustaendigMPA(), List.of(FachRolle.MPA, FachRolle.PFP))
-            );
-            existingDossier.setPapierakteStatus(saveJsonNichtMedizinisch.getPapierakteStatus());
         }
         return existingDossier;
     }
@@ -110,15 +101,10 @@ public final class DossierMapper {
     @NonNull
     public DossierJson updateMedizinisch(
         @NonNull ID<Dossier> dossierID,
-        @NonNull DossierMedizinischSaveJson dossierJson) {
-        Dossier existingDossier = dossierService.getById(dossierID);
-        KindValidationUtil.throwErrorIfKindIsInactive(
-            existingDossier.getKind(),
-            AppValidationMessage.cannotEditEntityForInactiveKind(
-                existingDossier.getKind(),
-                existingDossier
-            ));
-        Dossier entity = toEntity(existingDossier, dossierJson, null);
+        @NonNull DossierMedizinischSaveJson dossierJson
+    ) {
+        Dossier existingDossier = dossierService.getByIdEnsureActive(dossierID);
+        Dossier entity = toEntity(existingDossier, dossierJson);
         Dossier persistedDossier = dossierService.persistWithOptimisticLocking(entity, dossierJson.getVersion());
         persistedDossier.disableOptimisticLockingCheck();
         Nachkontrolle nachkontrolle = nachkontrolleService.getOrCreateByDossier(existingDossier.getId());
@@ -135,28 +121,51 @@ public final class DossierMapper {
     }
 
     @NonNull
-    public DossierJson updateNichtMedizinisch(
-        @NonNull ID<Dossier> dossierID,
-        @NonNull DossierNichtMedizinischSaveJson dossierJson) {
-        Dossier existingDossier = dossierService.getById(dossierID);
-        KindValidationUtil.throwErrorIfKindIsInactive(
-            existingDossier.getKind(),
-            AppValidationMessage.cannotEditEntityForInactiveKind(
-                existingDossier.getKind(),
-                existingDossier
-            ));
-        Dossier entity = toEntity(existingDossier, null, dossierJson);
-        Dossier persistedDossier = dossierService.persistWithOptimisticLocking(entity, dossierJson.getVersion());
-        persistedDossier.disableOptimisticLockingCheck();
-        LocalDate now = appClock.offsetDateTime().now().toLocalDate();
-        return toJson(
-            persistedDossier,
-            null,
-            now,
-            benutzerService.hasCallerBerechtigung(Berechtigung.KINDER_LESEN_MEDIZINISCH));
+    public DossierJson updateDossierVerantwortlicherArzt(@NonNull ID<Dossier> dossierID, @NonNull BenutzerOptionJson arztJson) {
+        Dossier existingDossier = dossierService.getByIdEnsureActive(dossierID);
+        // https://intra.dvbern.ch/spaces/HEM/pages/284263663/Zust%C3%A4ndigkeiten+Archivierung
+        // Change Zustaendigkeiten: Fall 3: Neue Verantwortliche auf Kind (manuell)
+        zustaendigePersonService.verantwortlicherChangedOnDossier(
+            existingDossier,
+            arztJson.getId(),
+            existingDossier.getZustaendigMPA() != null ? existingDossier.getZustaendigMPA().getId() : null);
+
+        return getDossierJson(existingDossier);
+    }
+
+    @NonNull
+    public DossierJson updateDossierVerantwortlicheMpa(@NonNull ID<Dossier> dossierID, @NonNull BenutzerOptionJson mpaJson) {
+        Dossier existingDossier = dossierService.getByIdEnsureActive(dossierID);
+        // https://intra.dvbern.ch/spaces/HEM/pages/284263663/Zust%C3%A4ndigkeiten+Archivierung
+        // Change Zustaendigkeiten: Fall 3: Neue Verantwortliche auf Kind (manuell)
+        zustaendigePersonService.verantwortlicherChangedOnDossier(
+            existingDossier,
+            existingDossier.getZustaendigArzt() != null ? existingDossier.getZustaendigArzt().getId() : null,
+            mpaJson.getId());
+
+        return getDossierJson(existingDossier);
+    }
+
+    @NonNull
+    public DossierJson updateDossierPapierakteStatus(@NonNull ID<Dossier> dossierID, @NonNull PapierakteStatus status) {
+        Dossier existingDossier = dossierService.getByIdEnsureActive(dossierID);
+        existingDossier.disableOptimisticLockingCheck();
+        existingDossier.setPapierakteStatus(status);
+        Dossier persistedDossier = dossierService.persist(existingDossier);
+        return getDossierJson(persistedDossier);
     }
 
     public void remove(@NonNull ID<Dossier> dossierID) {
         dossierService.remove(dossierID);
+    }
+
+    @NonNull
+    private DossierJson getDossierJson(@NonNull Dossier existingDossier) {
+        LocalDate now = appClock.offsetDateTime().now().toLocalDate();
+        return toJson(
+            existingDossier,
+            null,
+            now,
+            benutzerService.hasCallerBerechtigung(Berechtigung.KINDER_LESEN_MEDIZINISCH));
     }
 }

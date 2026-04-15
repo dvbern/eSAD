@@ -13,6 +13,8 @@ FROM docker-registry.dvbern.ch/dockerhub/library/caddy:${CADDY_VERSION}-alpine
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 
 ARG APP="starty-app"
+ARG APP_PUBLIC="esc-info-app"
+
 
 ARG VERS_INFO
 ENV APP_VERSION=$VERS_INFO
@@ -21,8 +23,9 @@ ENV ADDITIONAL_FRAME_ANCESTORS ''
 
 COPY Caddyfile /etc/caddy/Caddyfile
 COPY dist/apps/${APP}/browser /srv/app
+COPY dist/apps/${APP_PUBLIC}/browser /srv/app_public
 
 RUN adduser -u 101 -D -S -G www-data www-data;
-RUN chown -R www-data:www-data /config /srv/app /data
+RUN chown -R www-data:www-data /config /srv/app /srv/app_public /data
 
 USER www-data

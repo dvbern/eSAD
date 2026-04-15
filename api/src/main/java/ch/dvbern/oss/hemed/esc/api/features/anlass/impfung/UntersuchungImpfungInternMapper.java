@@ -1,26 +1,33 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.impfung;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungInternJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungInternSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
-import ch.dvbern.oss.hemed.esc.api.features.impfstoff.*;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.Impfstoff;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffCharge;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffChargeService;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffMapper;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffService;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @JaxMapper
 @RequiredArgsConstructor
@@ -44,7 +51,7 @@ public final class UntersuchungImpfungInternMapper {
             EntityInfoJson.fromEntity(impfung),
             new UntersuchungImpfungInternSaveJson(
                 ImpfstoffMapper.toJson(impfung.getImpfstoff()),
-                impfung.getCharge() != null ? ImpfstoffChargeMapper.toJson(impfung.getCharge()) : null,
+                impfung.getCharge() != null ? impfung.getCharge().getName() : null,
                 impfung.getDatumImpfung(),
                 impfung.getUserDurchgefuehrt() != null ?
                     BenutzerMapper.toOptionJson(impfung.getUserDurchgefuehrt()) :
@@ -72,7 +79,7 @@ public final class UntersuchungImpfungInternMapper {
             untersuchungImpfungenService.getOrCreateUntersuchungImpfungen(untersuchung.getId());
         Impfstoff impfstoff = impfstoffService.getById(saveJson.getImpfstoff().getId());
         ImpfstoffCharge charge =
-            saveJson.getCharge() != null ? impfstoffChargeService.getById(saveJson.getCharge().getId()) : null;
+            impfstoffChargeService.getChargeOrCreateNewIfFeatureEnabled(saveJson.getCharge(), impfstoff);
         Benutzer userErfasst = benutzerService.getCurrentBenutzerOrThrowException();
         Benutzer userDurchgefuehrt = saveJson.getUserDurchgefuehrt() != null ?
             benutzerService.getById(saveJson.getUserDurchgefuehrt().getId()) :

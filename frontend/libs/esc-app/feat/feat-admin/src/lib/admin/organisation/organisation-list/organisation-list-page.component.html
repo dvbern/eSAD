@@ -1,0 +1,11 @@
+<feat-page [heading]="'organisation.list.page.title' | transloco"
+           [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN}">
+
+  @if (canCreateOrganisation()) {
+    <svui-page-header-add-button [addRouterLink]="Path.CREATE"/>
+  }
+
+  <svui-card [innerSpacing]="'topBottom'">
+    <feat-organisation-list [itemTable]="itemTable" [tableFilterForm]="tableFilterForm"></feat-organisation-list>
+  </svui-card>
+</feat-page>

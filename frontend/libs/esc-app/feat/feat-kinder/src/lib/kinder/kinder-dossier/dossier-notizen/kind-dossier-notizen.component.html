@@ -7,7 +7,8 @@
   }
   @if (canEditNotizen()) {
     <svui-page-header-add-button listAddbutton
-                                 [addRouterLink]="Path.NOTIZEN + '/' + Path.CREATE"/>
+                                 [addRouterLink]="Path.NOTIZEN + '/' + Path.CREATE"
+                                 data-testid="button-add-notiz"/>
   }
 
   @for (item of notizenStore.notizenSortedAndSliced(); track item.id; let index = $index) {

@@ -8,11 +8,13 @@ import ch.dvbern.oss.hemed.esc.api.features.impfstoff.json.ImpfstoffChargeJson;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.json.ImpfstoffImpfstoffChargeDataJson;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.json.ImpfstoffJson;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.json.ImpfstoffSaveJson;
-import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatusSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import static ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus.isAktiv;
+import static ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus.isInaktiv;
 
 @JaxMapper
 @RequiredArgsConstructor
@@ -58,8 +60,8 @@ public final class ImpfstoffMapper {
     private Impfstoff toEntity(@NonNull Impfstoff existing, @NonNull ImpfstoffSaveJson impfstoffSaveJson) {
         existing.setName(impfstoffSaveJson.getName());
         existing.setKrankheiten(impfstoffSaveJson.getKrankheiten());
-        if (existing.getImpfstoffAktivStatus() == EntityAktivStatus.AKTIV
-            && impfstoffSaveJson.getImpfstoffAktivStatus() == EntityAktivStatus.INAKTIV) {
+        if (isAktiv(existing.getImpfstoffAktivStatus())
+            && isInaktiv(impfstoffSaveJson.getImpfstoffAktivStatus())) {
             deactivateImpfstoffChargen(existing.getId());
         }
         existing.setImpfstoffAktivStatus(impfstoffSaveJson.getImpfstoffAktivStatus());
@@ -87,8 +89,8 @@ public final class ImpfstoffMapper {
         @NonNull EntityAktivStatusSaveJson saveJson
     ) {
         Impfstoff existing = impfstoffService.getById(impfstoffId);
-        if (saveJson.getEntityAktivStatus() == EntityAktivStatus.INAKTIV
-            && existing.getImpfstoffAktivStatus() == EntityAktivStatus.AKTIV) {
+        if (isInaktiv(saveJson.getEntityAktivStatus())
+            && isAktiv(existing.getImpfstoffAktivStatus())) {
             deactivateImpfstoffChargen(impfstoffId);
         }
         existing.setImpfstoffAktivStatus(saveJson.getEntityAktivStatus());

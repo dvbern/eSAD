@@ -11,8 +11,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/quartiere")
@@ -21,7 +20,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = Tags.TAG_QUARTIERE)
 @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "QuartierResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("QuartierResourceMS")
 public class QuartierResource {
 
     private final QuartierMapper quartierMapper;

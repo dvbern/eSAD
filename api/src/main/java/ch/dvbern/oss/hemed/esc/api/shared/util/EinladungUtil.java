@@ -37,7 +37,7 @@ public class EinladungUtil {
     public static String extractSchulenCommaSeparated(@NonNull List<Einladung> einladungen) {
 
         return einladungen.stream()
-            .map(einladung -> einladung.getDossier().getKind().getSchule())
+            .map(einladung -> einladung.getDossier().getKind().extractSchule())
             .filter(Objects::nonNull)
             .distinct()
             .map(Schule::getSchulhaus)

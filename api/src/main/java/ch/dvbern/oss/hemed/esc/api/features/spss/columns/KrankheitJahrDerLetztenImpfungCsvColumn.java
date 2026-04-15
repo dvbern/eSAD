@@ -29,7 +29,11 @@ public class KrankheitJahrDerLetztenImpfungCsvColumn extends AbstractCsvColumn {
             config,
             impfstatus -> impfstatus.getDatumLetzteImpfung() != null ?
                 String.valueOf(impfstatus.getDatumLetzteImpfung().getYear()) :
-                NOT_AVAILABLE_VALUE);
+                getNotAvailableValue(config.forSpssReport()));
+    }
+
+    String getNotAvailableValue(boolean forSpssReport) {
+        return forSpssReport ? NOT_AVAILABLE_VALUE : "";
     }
 
     @Override

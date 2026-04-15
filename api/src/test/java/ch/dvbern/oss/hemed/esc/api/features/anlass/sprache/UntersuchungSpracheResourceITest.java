@@ -1,0 +1,125 @@
+package ch.dvbern.oss.hemed.esc.api.features.anlass.sprache;
+
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Nachsprechen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
+import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSpracheBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.generated.restassured.api.UntersuchungSpracheApiSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSpracheJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSpracheSaveJsonSpec;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.response.ResponseBody;
+import jakarta.ws.rs.core.Response.Status;
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@QuarkusTest
+@RequiredArgsConstructor
+class UntersuchungSpracheResourceITest extends AbstractITest {
+
+    private final UntersuchungSpracheApiSpec api = UntersuchungSpracheApiSpec.untersuchungSprache(RequestSpecUtil.quarkusSpec());
+
+    private final UntersuchungService untersuchungService;
+    private final UntersuchungSpracheService untersuchungSpracheService;
+    private final FixtureService fixtureService;
+
+    @Override
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+    }
+
+    @Test
+    @TestAsAdminBS
+    void getUntersuchungSprache_non_existing_should_not_create_data() {
+        // ARRANGE
+        Einladung einladung = fixtureService.createEinladung();
+        untersuchungService.getOrCreateUntersuchung(einladung.getId());
+        // ACT / ASSERT
+        api.untersuchungSpracheResourceGetUntersuchungSprache()
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .einladungIdPath(einladung.getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.NO_CONTENT.getStatusCode());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void getUntersuchungSprache_existing_should_return_existing() {
+        // ARRANGE
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithSprache();
+        assertThat(untersuchung.getUntersuchungSprache()).isNotNull();
+
+        UntersuchungSprache
+            existingSprache = untersuchungSpracheService.getById(untersuchung.getUntersuchungSprache().getId());
+        assertThat(existingSprache).isNotNull();
+        assertThat(existingSprache.getNachsprechen().getEnumValue(Nachsprechen.class)).isEqualTo(Nachsprechen.BESTANDEN);
+        assertThat(existingSprache.getBemerkungen()).isNotNull();
+        // ACT
+        UntersuchungSpracheJsonSpec result = api.untersuchungSpracheResourceGetUntersuchungSprache()
+            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungSpracheJsonSpec.class);
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(existingSprache.getId().getId());
+        assertThat(existingSprache.getNachsprechen()).isNotNull();
+        String existingNachsprechen = existingSprache.getNachsprechen().toEnumValueName(Nachsprechen.class);
+        assertThat(existingNachsprechen).isNotNull();
+        assertThat(result.getData().getNachsprechen().getValue()).contains(existingNachsprechen);
+        assertThat(result.getData().getBemerkungen()).isNotNull().isEqualTo(existingSprache.getBemerkungen());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void saveUntersuchungSprache() {
+        // ARRANGE
+        Einladung einladung = fixtureService.createEinladung();
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithSprache();
+        assertThat(untersuchung.getUntersuchungSprache()).isNotNull();
+        UntersuchungSprache
+            existingSprache = untersuchungSpracheService.getById(untersuchung.getUntersuchungSprache().getId());
+        assertThat(existingSprache).isNotNull();
+        assertThat(existingSprache.getNachsprechen().getEnumValue(Nachsprechen.class)).isEqualTo(Nachsprechen.BESTANDEN);
+        assertThat(existingSprache.getBemerkungen()).isNotNull().isEqualTo("Untersuchung Sprache Bemerkung");
+
+        // ACT
+        UntersuchungSpracheSaveJsonSpec saveJsonSpec =
+            UntersuchungSpracheBuilder.createJaxSpec(builder -> builder
+                .forUntersuchungSprache(existingSprache)
+                .withNachsprechen(Nachsprechen.NICHT_BESTANDEN, null)
+                .withBemerkung("Test updateUntersuchungSprache")).getData();
+
+        UntersuchungSpracheJsonSpec result = api.untersuchungSpracheResourceSaveUntersuchungSprache()
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .einladungIdPath(einladung.getId().getId())
+            .body(saveJsonSpec)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungSpracheJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getData().getBemerkungen()).isNotNull().isEqualTo("Test updateUntersuchungSprache");
+        assertThat(result.getData().getNachsprechen().getValue()).contains(Nachsprechen.NICHT_BESTANDEN.name());
+    }
+}

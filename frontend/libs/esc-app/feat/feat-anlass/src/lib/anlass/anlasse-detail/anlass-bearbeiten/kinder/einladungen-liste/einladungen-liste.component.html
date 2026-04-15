@@ -2,6 +2,7 @@
   class="mb-3"
   [heading]="'anlass.kinder.ausgewählt' | transloco: {anzahl: selectedItemTable.filteredListSize()}"
   [initialState]="this.store.kindWasAdded() ? 'open' : 'collapsed'"
+  data-testid="anlass-selected-kinder-title"
 >
 
   <svui-card [innerSpacing]="'topBottom'">
@@ -11,6 +12,7 @@
       [totalRows]="selectedItemTable.filteredListSize()"
       (pageChanged)="selectedItemTable.onPageChanged($event)"
       [pagination]="selectedItemTable.pagination()"
+      data-testid="anlass-selected-kinder-table"
     >
       <!-- col widths -->
       <colgroup>
@@ -85,7 +87,8 @@
                       [tooltip]="'global.tooltip.icon.loeschen' | transloco"
                       [working]="store.deleteLoader.isLoading()"
                       [icon]="'loeschen'"
-                      (click)="removeEinladung(item)">
+                      (click)="removeEinladung(item)"
+                      data-testid="button-remove-kinder">
                 <span class="hidden"></span>
               </button>
             </td>

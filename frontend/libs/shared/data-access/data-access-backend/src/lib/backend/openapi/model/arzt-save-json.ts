@@ -7,16 +7,16 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { Rechtsform } from './rechtsform';
 import { Fachrichtung } from './fachrichtung';
 import { HpvTeilnahme } from './hpv-teilnahme';
-import { Organisation } from './organisation';
 import { AdresseJson } from './adresse-json';
 
 
 export interface ArztSaveJson { 
     anrede?: string;
     fachrichtung: Fachrichtung;
-    organisation: Organisation;
+    rechtsform: Rechtsform;
     vorname?: string;
     name: string;
     adresse?: AdresseJson;

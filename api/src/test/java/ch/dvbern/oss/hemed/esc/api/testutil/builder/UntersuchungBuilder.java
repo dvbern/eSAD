@@ -18,6 +18,7 @@
 
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
+import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.UntersuchungLaeusekontrolle;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
 import java.time.LocalDate;
@@ -27,6 +28,7 @@ import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.signatur.UntersuchungSignatur;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
@@ -37,7 +39,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudi
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class UntersuchungBuilder {
@@ -119,6 +121,13 @@ public class UntersuchungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
+    public UntersuchungBuilder withUntersuchungLaeusekontrolle(@NonNull UntersuchungLaeusekontrolle untersuchungLaeusekontrolle) {
+        this.untersuchung.setUntersuchungLaeusekontrolle(untersuchungLaeusekontrolle);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
     public UntersuchungBuilder withUntersuchungArztBemerkung(@NonNull UntersuchungArztBemerkung uaBem) {
         this.untersuchung.setUntersuchungArztBemerkung(uaBem);
         return this;
@@ -143,6 +152,13 @@ public class UntersuchungBuilder {
     @CanIgnoreReturnValue
     public UntersuchungBuilder withUntersuchungImpfungen(@NonNull UntersuchungImpfungen untersuchungImpfungen) {
         this.untersuchung.setUntersuchungImpfungen(untersuchungImpfungen);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungBuilder withUntersuchungSignatur(@NonNull UntersuchungSignatur untersuchungSignatur) {
+        this.untersuchung.setUntersuchungSignatur(untersuchungSignatur);
         return this;
     }
 

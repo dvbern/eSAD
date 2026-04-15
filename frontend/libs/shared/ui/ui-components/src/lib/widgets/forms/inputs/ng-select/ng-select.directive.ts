@@ -14,7 +14,7 @@ import { ControlType, ValidatedInputWithIdDirective } from '../validated-input-w
   ],
 })
 export class NgSelectDirective extends ValidatedInputWithIdDirective {
-  @HostBinding('class.form-control') private readonly bootstrapClass = true;
+  @HostBinding('class.form-control') readonly bootstrapClass = true;
 
   @HostBinding('class.badges-nowrap')
   get badgesNoWrap(): boolean {

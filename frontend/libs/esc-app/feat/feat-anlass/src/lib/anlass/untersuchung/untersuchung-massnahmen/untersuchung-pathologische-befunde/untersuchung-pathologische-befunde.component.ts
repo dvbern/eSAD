@@ -5,12 +5,16 @@ import {
   RequirementSetting,
   UntersuchungArztBemerkungSaveJson,
   UntersuchungArztBeurteilungSaveJson,
+  UntersuchungBewegungsapparatSaveJson,
   UntersuchungGroesseGewichtSaveJson,
   UntersuchungHoerenAudiogrammSaveJson,
   UntersuchungHoerenOtoskopieSaveJson,
   UntersuchungImpfstatusKrankheitSaveJson,
   UntersuchungImpfungInternJson,
+  UntersuchungSchulrelevanteBeeintraechtigungSaveJson,
   UntersuchungSehenBeurteilungSaveJson,
+  UntersuchungSpracheSaveJson,
+  UntersuchungVorabklaerungenSaveJson,
 } from '@dvb/data-access-backend';
 import {BenutzerStore} from '@dvb/feat-shared';
 import {HeadingDirective} from '@dvb/ui-components';
@@ -21,31 +25,56 @@ import {UntersuchungArztStore} from '../../untersuchung-arzt/untersuchung-arzt.s
 import {calculateBmi} from '../../untersuchung-groessegewicht/untersuchung-groessegewicht.form';
 import {UntersuchungGroesseGewichtStore} from '../../untersuchung-groessegewicht/untersuchung-groessegewicht.store';
 import {
-  UntersuchungHoerenAudiogrammStore,
+  UntersuchungHoerenAudiogrammStore
 } from '../../untersuchung-hoeren/untersuchung-hoeren-audiogramm/untersuchung-hoeren-audiogramm.store';
 import {
-  UntersuchungHoerenOtoskopieStore,
+  UntersuchungHoerenOtoskopieStore
 } from '../../untersuchung-hoeren/untersuchung-hoeren-otoskopie/untersuchung-hoeren-otoskopie.store';
 import {UntersuchungImpfungenStore} from '../../untersuchung-impfungen/untersuchung-impfungen.store';
 import {UntersuchungSehenStore} from '../../untersuchung-sehen/untersuchung-sehen.store';
+import {UntersuchungSpracheStore} from '../../untersuchung-sprache/untersuchung-sprache.store';
+import {
+  UntersuchungBewegungsapparatStore
+} from '../../untersuchung-bewegungsapparat/untersuchung-bewegungsapparat.store';
+import {
+  UntersuchungSchulrelevanteBeeintraechtigungStore
+} from '../../untersuchung-schulrelevante-beeintraechtigung/untersuchung-schulrelevante-beeintraechtigung.store';
+import {UntersuchungVorabklaerungenStore} from "../../untersuchung-vorabklaerungen/untersuchung-vorabklaerungen.store";
 
 @Component({
   selector: 'feat-untersuchung-pathologische-befunde',
   templateUrl: './untersuchung-pathologische-befunde.component.html',
   styleUrl: './untersuchung-pathologische-befunde.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    FormsModule,
-    TranslocoPipe,
-    ReactiveFormsModule,
-    HeadingDirective,
-  ],
+  imports: [FormsModule, TranslocoPipe, ReactiveFormsModule, HeadingDirective],
 })
 export class UntersuchungPathologischeBefundeComponent {
-
   private readonly excludes = [
-    'OHNE_KEINE', 'NICHT_GEPRUEFT', 'NORMAL', 'NO', 'UNAUFFAELLIG', 'GROBKURSORISCH_NORMAL',
-    'GROBKURSORISCH_UNAUFFAELLIG', 'SICHER', 'ALTERSENTSPRECHEND', 'KEINE', 'KEIN_STRABISMUS', 'GUT', undefined, null,
+    'OHNE_KEINE',
+    'NICHT_GEPRUEFT',
+    'NORMAL',
+    'NO',
+    'UNAUFFAELLIG',
+    'GROBKURSORISCH_NORMAL',
+    'SKOLIOSE_NEIN',
+    'GROBKURSORISCH_UNAUFFAELLIG',
+    'SICHER',
+    'ALTERSENTSPRECHEND',
+    'KEINE',
+    'KEIN_STRABISMUS',
+    'GUT',
+    'BESTANDEN',
+    'JA_OHNE_STUETZRAD_VELOFAHREN',
+    'DREISSIG_IN_ZEHN_SEK',
+    'FUENFUNDZWANZIG_IN_ZEHN_SEK',
+    'MEHR_ALS_VIER_METER',
+    'MEHR_ALS_ZEHN_SEKUNDEN',
+    'DB_TIEF',
+    'ERHALTEN_VOLLSTAENDIG',
+    'EINVERSTANDEN',
+    'NICHT_VORHANDEN',
+    undefined,
+    null,
   ];
 
   protected readonly DetailMode = DetailMode;
@@ -60,6 +89,10 @@ export class UntersuchungPathologischeBefundeComponent {
   readonly hoerenOtoskopieStore = inject(UntersuchungHoerenOtoskopieStore);
   readonly groesseGewichtStore = inject(UntersuchungGroesseGewichtStore);
   readonly arztStore = inject(UntersuchungArztStore);
+  readonly spracheStore = inject(UntersuchungSpracheStore);
+  readonly bewegungsapparatStore = inject(UntersuchungBewegungsapparatStore);
+  readonly schulrelevanteBeeintraechtigungStore = inject(UntersuchungSchulrelevanteBeeintraechtigungStore);
+  readonly vorabklaerungenStore = inject(UntersuchungVorabklaerungenStore);
 
   readonly translocoService = inject(TranslocoService);
 
@@ -94,163 +127,168 @@ export class UntersuchungPathologischeBefundeComponent {
     const data: UntersuchungSehenBeurteilungSaveJson | undefined = this.sehenStore.sehenBeurteilung()?.data;
 
     // Inspektion
-    this.addEnumValue(
+    this.addFilteredEnumListValue(
       sehenMap,
       'untersuchung.pathologische.befunde.sehen.inspektion',
-      data?.inspektion,
+      data?.inspektion?.value,
       'InspektionKonvergenzResultat',
     );
     // Stereotest
-    this.addEnumValue(
+    this.addFilteredEnumListValue(
       sehenMap,
       'untersuchung.pathologische.befunde.sehen.stereotest',
-      data?.stereotest,
+      data?.stereotest?.value,
       'StereotestResultat',
     );
     // Farbsehen
-    this.addEnumValue(
+    this.addFilteredEnumListValue(
       sehenMap,
       'untersuchung.pathologische.befunde.sehen.farbsehen',
-      data?.farbsehen,
+      data?.farbsehen?.value,
       'FarbsehenResultat',
     );
-    // Fernvisus
+    // Fernvisus fuer beide Augen mit Zahlenwert
     const fernvisusPathologisch = this.addFilteredEnumListValue(
       sehenMap,
       'untersuchung.pathologische.befunde.sehen.fernvisus',
-      data?.fernvisus,
+      data?.fernvisus.value,
       'DistanzSehenResultat',
     );
     if (fernvisusPathologisch) {
-      this.addSimpleValue(
-        sehenMap,
-        'untersuchung.pathologische.befunde.sehen.fernvisus.rechts',
-        data?.fernvisusRechts,
-      );
-      this.addSimpleValue(
-        sehenMap,
-        'untersuchung.pathologische.befunde.sehen.fernvisus.links',
-        data?.fernvisusLinks,
-      );
+      this.addSimpleValue(sehenMap, 'untersuchung.pathologische.befunde.sehen.fernvisus.rechts', data?.fernvisusRechts);
+      this.addSimpleValue(sehenMap, 'untersuchung.pathologische.befunde.sehen.fernvisus.links', data?.fernvisusLinks);
     }
+    // Fernvisus Pro Auge Einzehln ohne Zahlenwerte
+    this.addFilteredEnumListValue(
+      sehenMap,
+      'untersuchung.pathologische.befunde.sehen.fernvisusAugeLinks',
+      data?.fernvisusAugeLinks?.value,
+      'DistanzSehenAugeEinzelnResultat',
+    );
+    this.addFilteredEnumListValue(
+      sehenMap,
+      'untersuchung.pathologische.befunde.sehen.fernvisusAugeRechts',
+      data?.fernvisusAugeRechts?.value,
+      'DistanzSehenAugeEinzelnResultat',
+    );
     // Nahvisus
     const nahvisusPathologisch = this.addFilteredEnumListValue(
       sehenMap,
       'untersuchung.pathologische.befunde.sehen.nahvisus',
-      data?.nahvisus,
+      data?.nahvisus.value,
       'DistanzSehenResultat',
     );
     if (nahvisusPathologisch) {
-      this.addSimpleValue(
-        sehenMap,
-        'untersuchung.pathologische.befunde.sehen.nahvisus.rechts',
-        data?.nahvisusRechts,
-      );
-      this.addSimpleValue(
-        sehenMap,
-        'untersuchung.pathologische.befunde.sehen.nahvisus.links',
-        data?.nahvisusLinks,
-      );
+      this.addSimpleValue(sehenMap, 'untersuchung.pathologische.befunde.sehen.nahvisus.rechts', data?.nahvisusRechts);
+      this.addSimpleValue(sehenMap, 'untersuchung.pathologische.befunde.sehen.nahvisus.links', data?.nahvisusLinks);
     }
     // Motilitaet
-    this.addEnumValue(
+    this.addFilteredEnumListValue(
       sehenMap,
       'untersuchung.pathologische.befunde.sehen.motilitat',
-      data?.motilitaet,
+      data?.motilitaet?.value,
       'MotilitaetResultat',
     );
     // Kovergenz
-    this.addEnumValue(
+    this.addFilteredEnumListValue(
       sehenMap,
       'untersuchung.pathologische.befunde.sehen.konvergenz',
-      data?.konvergenz,
+      data?.konvergenz?.value,
       'InspektionKonvergenzResultat',
     );
     // Strabismus
     this.addFilteredEnumListValue(
       sehenMap,
       'untersuchung.pathologische.befunde.sehen.strabismus',
-      data?.strabismus,
+      data?.strabismus.value,
       'StrabismusResultat',
     );
-    this.addEnumValue(
+    this.addFilteredEnumListValue(
       sehenMap,
       'untersuchung.pathologische.befunde.sehen.strabismusAuftreten',
-      data?.strabismusAuftreten,
+      data?.strabismusAuftreten?.value,
       'StrabismusAuftretenResultat',
     );
-    this.addEnumValue(
+    this.addFilteredEnumListValue(
       sehenMap,
       'untersuchung.pathologische.befunde.sehen.strabismusAuspraegung',
-      data?.strabismusAuspraegung,
+      data?.strabismusAuspraegung?.value,
       'StrabismusAuspraegungResultat',
     );
     // Brille / Linsen
     // Brille / Linsen soll angezeigt werden, wenn eines der oberen pathologisch ist
-    this.addEnumValueOverride(
+    this.addFilteredEnumListValueOverride(
       sehenMap,
       'untersuchung.pathologische.befunde.sehen.brillelinsen',
-      data?.brilleLinsen,
+      data?.brilleLinsen?.value,
       'BrilleLinsenResultat',
+      undefined,
       sehenMap.size > 0,
     );
     // Empfehlung
     this.addFilteredEnumListValue(
       sehenMap,
       'untersuchung.pathologische.befunde.sehen.empfehlung',
-      data?.empfehlung,
+      data?.empfehlung.value,
       'SehenEmpfehlung',
     );
     // Bemerkungen
-    this.addSimpleValue(
-      sehenMap,
-      'untersuchung.pathologische.befunde.sehen.bemerkung',
-      data?.bemerkungen,
-    );
+    this.addSimpleValue(sehenMap, 'untersuchung.pathologische.befunde.sehen.bemerkung', data?.bemerkungen);
     return sehenMap;
   });
   hoerenAudiogrammMap = computed(() => {
     const hoerenMap: Map<string, string> = new Map<string, string>();
-    const data: UntersuchungHoerenAudiogrammSaveJson | undefined = this.hoerenAudiogrammStore.hoerenAudiogramm()?.audiogrammData;
+    const data: UntersuchungHoerenAudiogrammSaveJson | undefined =
+      this.hoerenAudiogrammStore.hoerenAudiogramm()?.audiogrammData;
     // Audiogramm
     this.addFilteredEnumListValue(
       hoerenMap,
       'untersuchung.pathologische.befunde.hoeren.audiogrammBeurteilung',
-      data?.audiogrammBeurteilung,
+      data?.audiogrammBeurteilung?.value,
       'AudiogrammBeurteilung',
+    );
+    this.addFilteredEnumListValue(
+      hoerenMap,
+      'untersuchung.pathologische.befunde.hoeren.audiogrammSimpel',
+      data?.audiogrammSimpel?.value,
+      'AudiogrammSimpel',
+    );
+    this.addFilteredEnumListValue(
+      hoerenMap,
+      'untersuchung.pathologische.befunde.hoeren.hoerhilfe',
+      data?.hoerhilfe?.value,
+      'HoerenHoerhilfe',
+      ['JA']
     );
     // Zusatzliche Angaben
     this.addFilteredEnumListValue(
       hoerenMap,
       'untersuchung.pathologische.befunde.hoeren.zusaetzlicheAngaben',
-      data?.zusaetzlicheAngaben,
+      data?.zusaetzlicheAngaben?.value,
       'HoerenZusaetzlicheAngaben',
     );
     // Empfehlung
     this.addFilteredEnumListValue(
       hoerenMap,
       'untersuchung.pathologische.befunde.hoeren.empfehlung',
-      data?.empfehlung,
+      data?.empfehlung?.value,
       'HoerenEmpfehlung',
     );
     // Bemerkungen
-    this.addSimpleValue(
-      hoerenMap,
-      'untersuchung.pathologische.befunde.hoeren.bemerkung',
-      data?.bemerkungen,
-    );
+    this.addSimpleValue(hoerenMap, 'untersuchung.pathologische.befunde.hoeren.bemerkung', data?.bemerkungen);
 
     return hoerenMap;
   });
 
   hoerenOtoskopieMap = computed(() => {
     const hoerenOtoskopieMap: Map<string, string> = new Map<string, string>();
-    const data: UntersuchungHoerenOtoskopieSaveJson | undefined = this.hoerenOtoskopieStore.hoerenOtoskopie()?.otoskopieData;
+    const data: UntersuchungHoerenOtoskopieSaveJson | undefined =
+      this.hoerenOtoskopieStore.hoerenOtoskopie()?.otoskopieData;
     // Otoskopie
     this.addFilteredEnumListValue(
       hoerenOtoskopieMap,
       'untersuchung.pathologische.befunde.hoeren.otoskopieRechts',
-      data?.otoskopieRechts,
+      data?.otoskopieRechts?.value,
       'OtoskopieResultat',
     );
     this.addSimpleValue(
@@ -261,7 +299,7 @@ export class UntersuchungPathologischeBefundeComponent {
     this.addFilteredEnumListValue(
       hoerenOtoskopieMap,
       'untersuchung.pathologische.befunde.hoeren.otoskopieLinks',
-      data?.otoskopieLinks,
+      data?.otoskopieLinks?.value,
       'OtoskopieResultat',
     );
     this.addSimpleValue(
@@ -270,22 +308,19 @@ export class UntersuchungPathologischeBefundeComponent {
       data?.otoskopieLinksResultatAndere,
     );
     // Bemerkungen
-    this.addSimpleValue(
-      hoerenOtoskopieMap,
-      'untersuchung.pathologische.befunde.hoeren.bemerkung',
-      data?.bemerkungen,
-    );
+    this.addSimpleValue(hoerenOtoskopieMap, 'untersuchung.pathologische.befunde.hoeren.bemerkung', data?.bemerkungen);
     return hoerenOtoskopieMap;
   });
 
   groesseGewichtMap = computed(() => {
     const groesseGewichtMap: Map<string, string> = new Map<string, string>();
-    const data: UntersuchungGroesseGewichtSaveJson | undefined = this.groesseGewichtStore.groesseGewicht()?.untersuchungGroesseGewichtJson?.data;
+    const data: UntersuchungGroesseGewichtSaveJson | undefined =
+      this.groesseGewichtStore.groesseGewicht()?.untersuchungGroesseGewichtJson?.data;
     // Groesse
-    const groessePathologisch = this.addEnumValue(
+    const groessePathologisch = this.addFilteredEnumListValue(
       groesseGewichtMap,
       'untersuchung.pathologische.befunde.groessegewicht.groessePerzentile',
-      data?.groessePerzentile,
+      data?.groessePerzentile?.value,
       'PerzentileGroesse',
     );
     if (groessePathologisch) {
@@ -296,10 +331,10 @@ export class UntersuchungPathologischeBefundeComponent {
       );
     }
     // Gewicht
-    const gewichtPathologisch = this.addEnumValue(
+    const gewichtPathologisch = this.addFilteredEnumListValue(
       groesseGewichtMap,
       'untersuchung.pathologische.befunde.groessegewicht.gewichtPerzentile',
-      data?.gewichtPerzentile,
+      data?.gewichtPerzentile?.value,
       'PerzentileGewicht',
     );
     if (gewichtPathologisch) {
@@ -310,19 +345,15 @@ export class UntersuchungPathologischeBefundeComponent {
       );
     }
     // BMI
-    const bmiPathologisch = this.addEnumValue(
+    const bmiPathologisch = this.addFilteredEnumListValue(
       groesseGewichtMap,
       'untersuchung.pathologische.befunde.groessegewicht.bmiPerzentile',
-      data?.bmiPerzentile,
+      data?.bmiPerzentile?.value,
       'PerzentileBmi',
     );
     if (bmiPathologisch) {
       const bmi = calculateBmi(data?.groesse, data?.gewicht);
-      this.addSimpleValue(
-        groesseGewichtMap,
-        'untersuchung.pathologische.befunde.groessegewicht.bmi',
-        bmi,
-      );
+      this.addSimpleValue(groesseGewichtMap, 'untersuchung.pathologische.befunde.groessegewicht.bmi', bmi);
     }
     // Bemerkungen
     this.addSimpleValue(
@@ -335,8 +366,10 @@ export class UntersuchungPathologischeBefundeComponent {
 
   arztMap = computed(() => {
     const arztMap: Map<string, string> = new Map<string, string>();
-    const dataBeurteilung: UntersuchungArztBeurteilungSaveJson | undefined = this.arztStore.untersuchungArztBeurteilung()?.data;
-    const dataBemerkung: UntersuchungArztBemerkungSaveJson | undefined = this.arztStore.untersuchungArztBemerkung()?.data;
+    const dataBeurteilung: UntersuchungArztBeurteilungSaveJson | undefined =
+      this.arztStore.untersuchungArztBeurteilung()?.data;
+    const dataBemerkung: UntersuchungArztBemerkungSaveJson | undefined =
+      this.arztStore.untersuchungArztBemerkung()?.data;
     // Bewegungsapparat
     this.addFilteredEnumListValue(
       arztMap,
@@ -386,12 +419,7 @@ export class UntersuchungPathologischeBefundeComponent {
       dataBeurteilung?.fingeroppositionBemerkung,
     );
     // Motorik
-    this.addEnumValue(
-      arztMap,
-      'untersuchung.pathologische.befunde.arzt.motorik',
-      dataBeurteilung?.motorik,
-      'Motorik',
-    );
+    this.addEnumValue(arztMap, 'untersuchung.pathologische.befunde.arzt.motorik', dataBeurteilung?.motorik, 'Motorik');
     // Verhalten
     this.addEnumValue(
       arztMap,
@@ -437,12 +465,7 @@ export class UntersuchungPathologischeBefundeComponent {
       dataBeurteilung?.mundAndZaehneBemerkung,
     );
     // Haut
-    this.addEnumValue(
-      arztMap,
-      'untersuchung.pathologische.befunde.arzt.haut',
-      dataBeurteilung?.haut,
-      'Haut',
-    );
+    this.addEnumValue(arztMap, 'untersuchung.pathologische.befunde.arzt.haut', dataBeurteilung?.haut, 'Haut');
     this.addSimpleValue(
       arztMap,
       'untersuchung.pathologische.befunde.arzt.haut.bemerkung',
@@ -480,18 +503,172 @@ export class UntersuchungPathologischeBefundeComponent {
       );
     }
     // Bemerkungen
-    this.addSimpleValue(
-      arztMap,
-      'untersuchung.pathologische.befunde.arzt.bemerkungen',
-      dataBemerkung?.bemerkungen,
-    );
+    this.addSimpleValue(arztMap, 'untersuchung.pathologische.befunde.arzt.bemerkungen', dataBemerkung?.bemerkungen);
     return arztMap;
+  });
+
+  spracheMap = computed(() => {
+    const spracheMap: Map<string, string> = new Map<string, string>();
+    const data: UntersuchungSpracheSaveJson | undefined = this.spracheStore.untersuchungSprache()?.data;
+
+    // Nachsprechen
+    this.addFilteredEnumListValue(
+      spracheMap,
+      'untersuchung.pathologische.befunde.sprache.nachsprechen',
+      data?.nachsprechen.value,
+      'Nachsprechen',
+    );
+    // Wortschatz
+    this.addFilteredEnumListValue(
+      spracheMap,
+      'untersuchung.pathologische.befunde.sprache.wortschatz',
+      data?.wortschatz.value,
+      'Wortschatz',
+    );
+    // Sprachverstaendnis
+    this.addFilteredEnumListValue(
+      spracheMap,
+      'untersuchung.pathologische.befunde.sprache.sprachverstaendnis',
+      data?.sprachverstaendnis.value,
+      'Sprachverstaendnis',
+    );
+    // Bemerkungen
+    this.addSimpleValue(spracheMap, 'untersuchung.pathologische.befunde.sprache.bemerkungen', data?.bemerkungen);
+    return spracheMap;
+  });
+
+  bewegungsapparatMap = computed(() => {
+    const bewegungsapparatMap: Map<string, string> = new Map<string, string>();
+    const bewegungsapparat: UntersuchungBewegungsapparatSaveJson | undefined =
+      this.bewegungsapparatStore.bewegungsapparat()?.data;
+
+    // Skolios
+    this.addFilteredEnumListValue(
+      bewegungsapparatMap,
+      'untersuchung.pathologische.befunde.bewegungsapparat.skoliose',
+      bewegungsapparat?.skoliose.value,
+      'Skoliose',
+    );
+
+    // Haltungsschwäche
+    this.addFilteredEnumListValue(
+      bewegungsapparatMap,
+      'untersuchung.pathologische.befunde.bewegungsapparat.haltungsschwaeche',
+      bewegungsapparat?.haltungsschwaeche.value,
+      'Haltungsschwaeche',
+    );
+
+    // Verkuerzung Hamstringmuskulatur
+    this.addFilteredEnumListValue(
+      bewegungsapparatMap,
+      'untersuchung.pathologische.befunde.bewegungsapparat.verkuerzungHamstringmuskulatur',
+      bewegungsapparat?.verkuerzungHamstringmuskulatur.value,
+      'VerkuerzungHamstringmuskulatur',
+    );
+    // Bemerkungen
+    this.addSimpleValue(
+      bewegungsapparatMap,
+      'untersuchung.pathologische.befunde.bewegungsapparat.bemerkungen',
+      bewegungsapparat?.bemerkungen,
+    );
+    return bewegungsapparatMap;
+  });
+
+  schulrelevanteBeeintraechtigungMap = computed(() => {
+    const schulrelevanteBeeintraechtigungMap: Map<string, string> = new Map<string, string>();
+    const data: UntersuchungSchulrelevanteBeeintraechtigungSaveJson | undefined =
+      this.schulrelevanteBeeintraechtigungStore.untersuchungSchulrelevanteBeeintraechtigung()?.data;
+
+    // Freies Gehen
+    this.addFilteredEnumListValue(
+      schulrelevanteBeeintraechtigungMap,
+      'untersuchung.pathologische.befunde.schulrelevanteBeeintraechtigung.freiesGehen',
+      data?.freiesGehen.value,
+      'FreiesGehen',
+    );
+
+    // Ohne Stützrad Velofahren
+    this.addFilteredEnumListValue(
+      schulrelevanteBeeintraechtigungMap,
+      'untersuchung.pathologische.befunde.schulrelevanteBeeintraechtigung.ohneStuetzradVelofahren',
+      data?.ohneStuetzradVelofahren.value,
+      'OhneStuetzradVelofahren',
+    );
+
+    // Grafomotorik
+    this.addFilteredEnumListValue(
+      schulrelevanteBeeintraechtigungMap,
+      'untersuchung.pathologische.befunde.schulrelevanteBeeintraechtigung.grafomotorik',
+      data?.grafomotorik.value,
+      'Grafomotorik',
+    );
+
+    // Feinmotorik
+    this.addFilteredEnumListValue(
+      schulrelevanteBeeintraechtigungMap,
+      'untersuchung.pathologische.befunde.schulrelevanteBeeintraechtigung.feinmotorik',
+      data?.feinmotorik.value,
+      'Feinmotorik',
+    );
+
+    // Grobmotorik
+    this.addFilteredEnumListValue(
+      schulrelevanteBeeintraechtigungMap,
+      'untersuchung.pathologische.befunde.schulrelevanteBeeintraechtigung.grobmotorik',
+      data?.grobmotorikEinbeinhuepfen.value,
+      'GrobmotorikEinbeinhuepfen',
+    );
+
+    // Gleichgewicht
+    this.addFilteredEnumListValue(
+      schulrelevanteBeeintraechtigungMap,
+      'untersuchung.pathologische.befunde.schulrelevanteBeeintraechtigung.gleichgewicht',
+      data?.gleichgewichtEinbeinstand.value,
+      'GleichgewichtEinbeinstand',
+    );
+    // Bemerkungen
+    this.addSimpleValue(
+      schulrelevanteBeeintraechtigungMap,
+      'untersuchung.pathologische.befunde.schulrelevanteBeeintraechtigung.bemerkungen',
+      data?.bemerkungen,
+    );
+    return schulrelevanteBeeintraechtigungMap;
+  });
+
+  vorabklaerungenMap = computed(() => {
+    const vorabklaerungenMap: Map<string, string> = new Map<string, string>();
+    const data: UntersuchungVorabklaerungenSaveJson | undefined =
+      this.vorabklaerungenStore.untersuchungVorabklaerungen()?.data;
+
+    // fragebogenStatus
+    this.addFilteredEnumListValue(
+      vorabklaerungenMap,
+      'untersuchung.pathologische.befunde.vorabklaerungen.fragebogenStatus',
+      data?.fragebogenStatus?.value,
+      'FragebogenStatus',
+    );
+    // einverstaendnisImpfungen
+    this.addFilteredEnumListValue(
+      vorabklaerungenMap,
+      'untersuchung.pathologische.befunde.vorabklaerungen.einverstaendnisImpfungen',
+      data?.einverstaendnisImpfungen?.value,
+      'EinverstaendnisImpfungen',
+    );
+    // chronischeKrankheiten
+    this.addFilteredEnumListValue(
+      vorabklaerungenMap,
+      'untersuchung.pathologische.befunde.vorabklaerungen.chronischeKrankheiten',
+      data?.chronischeKrankheiten?.value,
+      'ChronischeKrankheiten',
+    );
+    return vorabklaerungenMap;
   });
 
   private getFilteredImpfstatus(condition: (item: UntersuchungImpfstatusKrankheitSaveJson) => boolean): string {
     const list = this.impfungenStore.impfstatusList()?.impfstatusList;
     if (list && list.length > 0) {
-      return list.filter(item => condition(item))
+      return list
+        .filter(item => condition(item))
         .map(status => this.translocoService.translate(`Krankheit.${status.krankheit}`))
         .join(', ');
     }
@@ -501,7 +678,8 @@ export class UntersuchungPathologischeBefundeComponent {
   private getDurchgefuehrteImpfungen(): string | undefined {
     const list = this.impfungenStore.impfungenInternList();
     if (list && list.length > 0) {
-      return list.filter(item => this.isImpfungInDiesemAnlassDurchgefuehrt(item))
+      return list
+        .filter(item => this.isImpfungInDiesemAnlassDurchgefuehrt(item))
         .map(impfung => impfung.data.impfstoff.data.name)
         .join(', ');
     }
@@ -509,8 +687,10 @@ export class UntersuchungPathologischeBefundeComponent {
   }
 
   private isImpfungInDiesemAnlassDurchgefuehrt(item: UntersuchungImpfungInternJson): boolean {
-    return item.data.impfStatus === ImpfStatus.DURCHGEFUEHRT
-      && item.anlassImpfungDurchgefuehrtId === this.anlassStore.selectedEntity()?.id;
+    return (
+      item.data.impfStatus === ImpfStatus.DURCHGEFUEHRT &&
+      item.anlassImpfungDurchgefuehrtId === this.anlassStore.selectedEntity()?.id
+    );
   }
 
   private addEnumValue(
@@ -519,13 +699,7 @@ export class UntersuchungPathologischeBefundeComponent {
     enumValue: string | undefined,
     enumClass: string,
   ): boolean {
-    return this.addEnumValueOverride(
-      map,
-      key,
-      enumValue,
-      enumClass,
-      false,
-    );
+    return this.addEnumValueOverride(map, key, enumValue, enumClass, false);
   }
 
   private addEnumValueOverride(
@@ -548,11 +722,13 @@ export class UntersuchungPathologischeBefundeComponent {
     key: string,
     enumValueList: string[] | undefined,
     enumClass: string,
+    additionalExcludes: string[] = [],
   ): boolean {
     if (enumValueList) {
       const filtered = enumValueList
-        .filter(item => !this.excludes.includes(item))
-        .map(item => this.translocoService.translate(enumClass + '.' + item)).join(', ');
+        .filter(item => !this.excludes.includes(item) && !additionalExcludes.includes(item))
+        .map(item => this.translocoService.translate(enumClass + '.' + item))
+        .join(', ');
       if (filtered) {
         map.set(this.translocoService.translate(key), filtered);
         return true;
@@ -560,6 +736,28 @@ export class UntersuchungPathologischeBefundeComponent {
     }
     return false;
   }
+
+  private addFilteredEnumListValueOverride(
+    map: Map<string, string>,
+    key: string,
+    enumValueList: string[] | undefined,
+    enumClass: string,
+    additionalExcludes: string[] = [],
+    showEvenIfExcluded: boolean
+  ): boolean {
+    if (enumValueList) {
+      const filtered = enumValueList
+        .filter(item => (!this.excludes.includes(item) && !additionalExcludes.includes(item)) || showEvenIfExcluded)
+        .map(item => this.translocoService.translate(enumClass + '.' + item))
+        .join(', ');
+      if (filtered) {
+        map.set(this.translocoService.translate(key), filtered);
+        return true;
+      }
+    }
+    return false;
+  }
+
 
   private addSimpleValue(map: Map<string, string>, key: string, value: string | number | undefined): void {
     if (value) {

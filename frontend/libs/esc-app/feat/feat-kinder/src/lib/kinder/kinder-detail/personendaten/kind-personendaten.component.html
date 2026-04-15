@@ -9,7 +9,7 @@
   <!-- Sozialversicherungsnummer -->
   <svui-form-control [label]="'kind.sozialversicherungsNummer' | transloco"
                      [viewValue]="form.group.getRawValue().sozialversicherungsNummer"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <input svuiTextInput
            [formControl]="form.controlAt('sozialversicherungsNummer')"
 
@@ -19,7 +19,7 @@
   <!-- Name -->
   <svui-form-control [label]="'kind.name' | transloco"
                      [viewValue]="form.group.getRawValue().name"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <input svuiTextInput
            [formControl]="form.controlAt('name')"
     />
@@ -28,7 +28,7 @@
   <!-- Vorname -->
   <svui-form-control [label]="'kind.vorname' | transloco"
                      [viewValue]="form.group.getRawValue().vorname"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <input svuiTextInput
            [formControl]="form.controlAt('vorname')"
     />
@@ -38,7 +38,7 @@
   <svui-form-group [label]="'kind.geschlecht' | transloco"
                    [direction]="'horizontal'"
                    [viewValue]="form.group.getRawValue().geschlecht ? ('Geschlecht.' + form.group.getRawValue().geschlecht | transloco) : undefined "
-                   [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                   [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     @for (geschlecht of geschlechtOptions; track geschlecht) {
       <svui-single-radio-wrapper [label]="'Geschlecht.' + geschlecht | transloco">
         <input svuiRadio
@@ -54,7 +54,7 @@
   <!-- Geburtsdatum -->
   <svui-form-control [label]="'kind.geburtsdatum' | transloco"
                      [viewValue]="form.group.getRawValue().geburtsdatum | date: 'dd.MM.yyyy'"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <input svuiTextInput="date"
            [formControl]="form.controlAt('geburtsdatum')"
     />
@@ -64,7 +64,7 @@
   <svui-form-control [label]="'kind.nationalitaet' | transloco"
                      [viewValue]="form.group.getRawValue().nationalitaet ?
                      (('Land.' + form.group.getRawValue().nationalitaet | transloco) + ' (' + ('LandCode.' + this.dossierStore.selectedKind()?.landCode | transloco) + ')') : undefined"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <ng-select
       svuiNgSelect
       bindLabel='dummy'
@@ -84,7 +84,7 @@
   <!-- Erstsprache -->
   <svui-form-control [label]="'kind.erstsprache' | transloco"
                      [viewValue]="form.group.getRawValue().erstsprache"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <input svuiTextInput
            [formControl]="form.controlAt('erstsprache')"
     />
@@ -93,7 +93,7 @@
   <!-- Email -->
   <svui-form-control [label]="'kind.email' | transloco"
                      [viewValue]="form.group.getRawValue().email"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <input svuiTextInput="email"
            [formControl]="form.controlAt('email')"
     />
@@ -102,7 +102,7 @@
   <!-- Telefon -->
   <svui-form-control [label]="'kind.telefon' | transloco"
                      [viewValue]="form.group.getRawValue().telefon"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <input svuiTextInput
            [formControl]="form.controlAt('telefon')"
     />
@@ -111,14 +111,14 @@
   <!-- Wohntyp -->
   <svui-form-control [label]="'kind.wohntyp' | transloco"
                      [viewValue]="form.group.getRawValue().wohntyp"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <input svuiTextInput
            [formControl]="form.controlAt('wohntyp')"
     />
   </svui-form-control>
 
   <!-- KindAktivStatus -->
-  <svui-form-control [label]="'kind.kindAktivStatus' | transloco"
+  <svui-form-control [label]="'global.entityAktivStatus' | transloco"
                      [viewValue]="'EntityAktivStatus.' + form.group.value.kindAktivStatus | transloco">
     <ng-select
       svuiNgSelect
@@ -141,12 +141,13 @@
   <feat-adresse svuiFormFullWidth
                 [form]="form.adresseForm"
                 [mode]="dossierStore.detailMode()"
-                [isEscadaObject]="isEscadaObject()"/>
+                [isExternalObject]="isExternalObject()"
+                [externalSchnittstelle]="getImportSchnittstelle()"/>
 
   <!--Letzter Escada Import-->
-  @if (isEscadaObject()) {
+  @if (isExternalObject()) {
     <div>
-      <p>{{ 'global.escada.import.latest' | transloco: {date: getDateLatestImportIfEscadaObject() | date} }}</p>
+      <p>{{ 'global.import.latest' | transloco: {date: getDateLatestImportIfExternalObject() | date} }}</p>
     </div>
   }
 
@@ -182,7 +183,7 @@
     [mode]="dossierStore.detailMode()"
     [isCreate]="isNew"
     [saving]="store.saveLoader.isLoading()"
-    [canEdit]="canEditKind() && dossierStore.isKindAktiv()"
+    [canEdit]="canEditKind()"
     routeToEdit="../edit"
     [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
     [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"/>

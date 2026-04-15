@@ -19,8 +19,8 @@ class UntersuchungHoerenOtoskopieMapperTest {
         Untersuchung untersuchung = UntersuchungBuilder.defaultUntersuchung(LocalDate.now());
         UntersuchungHoerenOtoskopieSaveJson json =
             UntersuchungHoerenOtoskopieBuilder.createJax(builder -> builder
-                .withOtoskopieRechts(List.of(OtoskopieResultat.ANDERES), "Bemerkung Rechts")
-                .withOtoskopieLinks(List.of(OtoskopieResultat.ANDERES), "Bemerkung Links")
+                .withOtoskopieRechts(List.of(OtoskopieResultat.ANDERES), null,"Bemerkung Rechts")
+                .withOtoskopieLinks(List.of(OtoskopieResultat.ANDERES), null, "Bemerkung Links")
             ).getOtoskopieData();
         // ACT
         UntersuchungHoerenOtoskopie entity = UntersuchungHoerenOtoskopieMapper.toEntity(untersuchung, null, json);
@@ -36,10 +36,10 @@ class UntersuchungHoerenOtoskopieMapperTest {
         UntersuchungHoerenOtoskopieSaveJson json =
             UntersuchungHoerenOtoskopieBuilder.createJax(builder -> builder
                 .withOtoskopieRechts(
-                    List.of(OtoskopieResultat.NORMAL, OtoskopieResultat.ANDERES),
+                    List.of(OtoskopieResultat.NORMAL, OtoskopieResultat.ANDERES),null,
                     "Bemerkung Rechts")
                 .withOtoskopieLinks(
-                    List.of(OtoskopieResultat.NORMAL, OtoskopieResultat.ANDERES),
+                    List.of(OtoskopieResultat.NORMAL, OtoskopieResultat.ANDERES),null,
                     "Bemerkung Links")
             ).getOtoskopieData();
         // ACT
@@ -55,8 +55,8 @@ class UntersuchungHoerenOtoskopieMapperTest {
         Untersuchung untersuchung = UntersuchungBuilder.defaultUntersuchung(LocalDate.now());
         UntersuchungHoerenOtoskopieSaveJson json =
             UntersuchungHoerenOtoskopieBuilder.createJax(builder -> builder
-                .withOtoskopieRechts(List.of(OtoskopieResultat.NORMAL), "Bemerkung Rechts")
-                .withOtoskopieLinks(List.of(OtoskopieResultat.NORMAL), "Bemerkung Links")
+                .withOtoskopieRechts(List.of(OtoskopieResultat.NORMAL), null, "Bemerkung Rechts")
+                .withOtoskopieLinks(List.of(OtoskopieResultat.NORMAL), null, "Bemerkung Links")
             ).getOtoskopieData();
         // ACT
         UntersuchungHoerenOtoskopie entity = UntersuchungHoerenOtoskopieMapper.toEntity(untersuchung, null, json);
@@ -71,8 +71,8 @@ class UntersuchungHoerenOtoskopieMapperTest {
         Untersuchung untersuchung = UntersuchungBuilder.defaultUntersuchung(LocalDate.now());
         UntersuchungHoerenOtoskopieSaveJson json =
             UntersuchungHoerenOtoskopieBuilder.createJax(builder -> builder
-                .withOtoskopieRechts(null, "Bemerkung Rechts")
-                .withOtoskopieLinks(null, "Bemerkung Links")
+                .withOtoskopieRechts(null, null, "Bemerkung Rechts")
+                .withOtoskopieLinks(null, null, "Bemerkung Links")
             ).getOtoskopieData();
         // ACT
         UntersuchungHoerenOtoskopie entity = UntersuchungHoerenOtoskopieMapper.toEntity(untersuchung, null, json);

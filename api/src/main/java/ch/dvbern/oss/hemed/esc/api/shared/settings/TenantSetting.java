@@ -8,11 +8,14 @@ import java.util.stream.Stream;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
+import ch.dvbern.dvbstarter.shared.types.StringListConverter;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
-import ch.dvbern.oss.hemed.esc.api.shared.settings.features.TenantSettingFeatures;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.features.TenantSettingFeatures;
+import ch.dvbern.oss.hemed.esc.api.shared.types.AgbResponsability;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -58,12 +61,28 @@ public class TenantSetting extends AbstractEntity<TenantSetting> {
     @Column(nullable = false)
     private int folgeTermineMaxSlots;
 
+    @NotNull
+    @NonNull
+    @Column(nullable = false)
+    @Convert(converter = StringListConverter.class)
+    private List<String> customerAdminEmails;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false)
+    private String supportEmail;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private AgbResponsability agbResponsability;
+
     @Valid
     @NotNull
     @NonNull
     @Embedded
     private TenantSettingFeatures tenantSettingFeatures;
-
 
     @Nullable
     @Size(max = DbConst.DB_ENUM_LIST_LENGTH)

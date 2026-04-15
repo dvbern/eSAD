@@ -18,6 +18,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLA
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLANUNG_LESEN_LAEUSE;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLANUNG_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLANUNG_SCHREIBEN_LAEUSE;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ARCHIVIERUNG;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AUFGABEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AUFGABEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.DUBLETTEN_ZUSAMMENFUHREN;
@@ -41,7 +42,11 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_AD
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.MITARBEITERLISTE_BERECHTIGUNGEN_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ORGANISATION_VERWALTEN_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ORGANISATION_VERWALTEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SPSS_EXPORT;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_ABSCHLUSS_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_ABSCHLUSS_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_DATEN_LESEN;
@@ -60,6 +65,8 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_SEHEN_
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_SEHEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_TRIAGE_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_TRIAGE_SCHREIBEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_VORABKLAERUNGEN_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_VORABKLAERUNGEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VERANDERUNGEN_NACH_ABSCHLUSS;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_ADMIN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_LESEN;
@@ -69,7 +76,6 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @TestSecurity(
     user = "testing-admin-be",
-    // java Annotation require compile time Constants so we need to define the array each time :(
     roles = {
         AUFGABEN_LESEN,
         AUFGABEN_SCHREIBEN,
@@ -82,6 +88,8 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         VERANDERUNGEN_NACH_ABSCHLUSS,
         SU_DATEN_LESEN,
         SU_DATEN_SCHREIBEN,
+        SU_VORABKLAERUNGEN_LESEN,
+        SU_VORABKLAERUNGEN_SCHREIBEN,
         SU_IMPFEN_LESEN,
         SU_IMPFEN_SCHREIBEN,
         SU_SEHEN_LESEN,
@@ -96,6 +104,8 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN,
         SU_MASSNAHMEN_LESEN,
         SU_MASSNAHMEN_SCHREIBEN,
+        SU_ABSCHLUSS_LESEN,
+        SU_ABSCHLUSS_SCHREIBEN,
         SU_LAEUSE_LESEN,
         SU_LAEUSE_SCHREIBEN,
         KINDER_LESEN_MEDIZINISCH,
@@ -124,25 +134,27 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         MITARBEITERLISTE_BERECHTIGUNGEN_LESEN,
         VORLAGEN_LESEN,
         VORLAGEN_ADMIN_LESEN,
-        VORLAGEN_SCHREIBEN
+        VORLAGEN_SCHREIBEN,
+        ARCHIVIERUNG,
+        ORGANISATION_VERWALTEN_LESEN,
+        ORGANISATION_VERWALTEN_SCHREIBEN
     }
 )
 @OidcSecurity(
     claims = {
         @Claim(key = "sub", value = TestAsAdminBE.BENUTZER_ID_IN_KC),
         @Claim(key = "tenant", value = "BE"),
-        @Claim(key = "family_name", value = "Bernabeu"),
-        @Claim(key = "given_name", value = "Bernhard"),
+        @Claim(key = "family_name", value = "Administrator"),
+        @Claim(key = "given_name", value = "Adrian"),
         @Claim(key = "preferred_username", value = TestAsAdminBE.USERNAME),
         @Claim(key = "email", value = TestAsAdminBE.EMAIL),
         @Claim(key = JsonWebTokenClaims.PHONE_CLAIM, value = TestAsAdminBE.TELEFON),
     }
 )
 public @interface TestAsAdminBE {
-    String BENUTZER_ID = "a36b1dfd-9b8b-4bf9-bfb3-8a13764b8d36";
-    String BENUTZER_ID_IN_KC = "3617e847-a9d0-4184-8e39-59af661f63b4";
-    String EMAIL = "admin.bern@example.com";
-    String USERNAME = "admin.bern@example.com";
-    String TELEFON = "+41 31 123 45 71";
-    String TITEL = null;
+    String BENUTZER_ID = "a0f624c9-7634-47fe-b49e-0d26e9310872";
+    String BENUTZER_ID_IN_KC = "88aac6e0-ad5f-4a5a-8944-219dc12fa3ec";
+    String EMAIL = "admin@example.com";
+    String USERNAME = "admin@example.com";
+    String TELEFON = "+41 61 123 45 70";
 }

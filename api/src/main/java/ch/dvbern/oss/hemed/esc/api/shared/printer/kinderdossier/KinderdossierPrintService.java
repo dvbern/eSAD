@@ -1,5 +1,15 @@
 package ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileDownloadUtil;
@@ -10,13 +20,16 @@ import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.*;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithDateTimeJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
@@ -28,23 +41,20 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPe
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizService;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintZipUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 import static ch.dvbern.dvbstarter.infrastructure.fileio.FileNameUtil.DATE_FORMATTER_FOR_FILENAME;
 
@@ -62,9 +72,13 @@ public class KinderdossierPrintService {
     private final UntersuchungService untersuchungService;
     private final UntersuchungImpfstatusKrankheitService untersuchungImpfstatusKrankheitService;
     private final UntersuchungImpfungInternService untersuchungImpfungInternService;
+    private final AnlassService anlassService;
     private final AppClock appClock;
     private final AppLanguageProvider appLanguageProvider;
     private final FileStoreService fileStoreService;
+    private final TenantSettingsService tenantSettingsService;
+    private final ConfigService configService;
+    private final TenantProducer tenantProducer;
     private final TL tl;
 
     @NonNull
@@ -101,9 +115,16 @@ public class KinderdossierPrintService {
                     untersuchungImpfstatusKrankheitService.findByUntersuchung(untersuchung.getId());
                 List<UntersuchungImpfungIntern> impfungInternList =
                     untersuchungImpfungInternService.findByUntersuchung(untersuchung.getId());
+                List<AnlassWithDateTimeJson> folgeImpfAnlassList = anlassService.findScheduledAnlaesseOfTypeForKind(
+                    List.of(AnlassTyp.IMPFSPRECHSTUNDE, AnlassTyp.IMPFAKTION, AnlassTyp.IMPFTERMIN),
+                    kindId,
+                    List.of(einladung.getAnlass().getId())
+                );
 
-                anlassDTOList.add(new KinderdossierAnlassPrintDTO(einladung, impfungInternList, impfstatusList));
+                anlassDTOList.add(new KinderdossierAnlassPrintDTO(einladung, impfungInternList, impfstatusList, folgeImpfAnlassList));
             }
+
+
 
             KinderdossierPrintDTO dto = new KinderdossierPrintDTO(
                 kind,
@@ -111,13 +132,13 @@ public class KinderdossierPrintService {
                 anlassDTOList,
                 notizList,
                 appClock.getToday(),
-                TenantEnum.BS, // Use tenant resolver once we found a way around SonarCube's parameter limitation //
+                tenantProducer.produceTenant(),
                 (AppLanguages) appLanguageProvider.current(),
                 variation
             );
 
             logPrintOfKinderdossier(dto, variation, currentUserService.currentUserName());
-            KinderdossierPrinter.print(dto, baos, fileStoreService);
+            KinderdossierPrinter.print(dto, baos, fileStoreService, tenantSettingsService, configService);
 
             byte[] byteArray = baos.toByteArray();
             PrintResultDTO pdfPrintResult =

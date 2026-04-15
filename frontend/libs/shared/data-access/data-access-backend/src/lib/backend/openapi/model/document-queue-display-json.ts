@@ -10,22 +10,19 @@
 import { ISODateTimeString } from '@dvb/data-access-types';
 import { EntityInfoJson } from './entity-info-json';
 import { BackendEntityId } from '@dvb/data-access-types';
-import { DocumentQueueCsvParams } from './document-queue-csv-params';
 import { DocumentQueueStatus } from './document-queue-status';
 import { FileTyp } from './file-typ';
-import { DocumentQueueParams } from './document-queue-params';
 
 
 export interface DocumentQueueDisplayJson { 
     id: BackendEntityId;
     entityInfo: EntityInfoJson;
     type: FileTyp;
+    displayname?: string;
     status: DocumentQueueStatus;
     timestampResult?: ISODateTimeString;
     fileName?: string;
     lastError?: string;
-    documentQueueParams?: DocumentQueueParams;
-    documentQueueCsvParams?: DocumentQueueCsvParams;
 }
 export namespace DocumentQueueDisplayJson {
 }

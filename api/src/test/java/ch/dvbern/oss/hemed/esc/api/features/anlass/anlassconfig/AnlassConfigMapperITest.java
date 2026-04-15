@@ -59,17 +59,16 @@ class AnlassConfigMapperITest extends AbstractITest {
         AnlassConfig entity = fixtureService.createAnlassConfigAllOptional(appClock.localDateTime().now().getYear(), AnlassTyp.KLASSE_4);
 
         // ACT
-        AnlassConfigJson json = AnlassConfigMapper.toJson(entity, true, appClock.getToday());
+        AnlassConfigJson json = AnlassConfigMapper.toJson(entity, appClock.getToday());
 
         // ASSERT Fields in Json
         assertNotNull(json);
         assertEquals(json.getId(), entity.getId());
         assertThat(json.getAnlassConfigStatus()).isEqualTo(AnlassConfigStatus.AKTIV);
-        assertThat(json.isUsedInAtLeastOneAnlass()).isTrue();
         assertThat(json.isAnlassConfigVisible()).isTrue();
         assertThat(json.isShowTabDaten()).isTrue();
         assertThat(json.isShowTabImpfungen()).isTrue();
-        assertThat(json.isShowChecklist()).isTrue();
+        assertThat(json.isShowCardImpfungenChecklist()).isTrue();
         assertThat(json.isShowTabSehen()).isTrue();
         assertThat(json.isShowTabSehenBeurteilung()).isTrue();
         assertThat(json.isShowTabSehenBemerkungenFragenbogen()).isTrue();

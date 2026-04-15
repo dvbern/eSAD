@@ -1,0 +1,107 @@
+@if (itemTable(); as itemTable) {
+  <table
+    svuiTable
+    [loading]="isLoading()"
+    [totalRows]="itemTable.filteredListSize()"
+    (pageChanged)="itemTable.onPageChanged($event)"
+    [pagination]="itemTable.pagination()"
+  >
+    <thead>
+    <!-- Headers for sorting -->
+    <tr>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.vorname')"
+        (sort)="itemTable.onColSort($event, 'data.vorname')"
+      >{{ 'organisation.mitglied.vorname' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.name')"
+        (sort)="itemTable.onColSort($event, 'data.name')"
+      >{{ 'organisation.mitglied.nachname' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('data.email')"
+        (sort)="itemTable.onColSort($event, 'data.email')"
+      >{{ 'organisation.mitglied.email' | transloco }}
+      </th>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('fachRollen')"
+        (sort)="itemTable.onColSort($event, 'fachRollen')"
+      >{{ 'organisation.mitglied.fachrollen' | transloco }}
+      </th>
+      <th></th>
+    </tr>
+      @if (tableFilterForm(); as tableFilterForm) {
+        <!-- Headers for filtering-->
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'organisation.mitglied.vorname' | transloco">
+            <input svuiTextInput [formControl]="tableFilterForm.group.controls.vorname"/>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'organisation.mitglied.nachname' | transloco">
+            <input svuiTextInput [formControl]="tableFilterForm.group.controls.nachname"/>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'organisation.mitglied.email' | transloco">
+            <input svuiTextInput [formControl]="tableFilterForm.group.controls.email"/>
+          </svui-table-filter>
+        </th>
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'organisation.mitglied.fachrollen' | transloco">
+            <ng-select
+              svuiNgSelect
+              bindLabel='dummy'
+              appendTo="body"
+              [formControl]="tableFilterForm.group.controls.fachRollen"
+              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+              [multiple]="true"
+            >
+              @for (fachrolle of fachrollen; track fachrolle) {
+                <ng-option [value]="fachrolle">
+                  {{ 'FachRolle.' + fachrolle | transloco }}
+                </ng-option>
+              }
+            </ng-select>
+          </svui-table-filter>
+        </th>
+      }
+    </thead>
+    <tbody>
+      @for (item of itemTable.displayedList(); track item.id) {
+        <tr>
+          <td>{{ item.data.vorname }}</td>
+          <td>{{ item.data.name }}</td>
+          <td>
+            <svui-table-link
+              type="text"
+              [myRouterLink]="[item.id]">
+            {{ item.data.email }}
+            </svui-table-link>
+          </td>
+          <td>{{ printFachRollen(item.fachRollen) }}</td>
+          <td>
+            <svui-collapsible-menu
+              [loading]="false"
+              label="{{ 'global.actionmenu.tooltip' | transloco }}"
+            >
+            </svui-collapsible-menu>
+          </td>
+
+        </tr>
+
+      } @empty {
+        <tr svui-empty-table-message [message]="'organisation.mitglieder.list.empty' | transloco"></tr>
+      }
+    </tbody>
+  </table>
+}

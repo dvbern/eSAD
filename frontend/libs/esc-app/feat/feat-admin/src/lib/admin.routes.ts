@@ -1,18 +1,17 @@
 import {inject} from '@angular/core';
 import {Route} from '@angular/router';
-import {QuartiereOptionsStore, SchulenStore} from '@dvb/feat-shared';
-import {requireRole} from '@dvb/feat-shared';
-import {Path} from '@dvb/feat-shared';
+import {Path, QuartiereOptionsStore, requireAcceptedAgb, requireRole, SchulenStore} from '@dvb/feat-shared';
 import {
+  hasArchivierungBerechtigung,
   hasBenutzerViewBerechtigung,
   hasBriefvorlagenViewBerechtigung,
   hasDuplikateBerechtigung,
   hasImpfstoffePageViewBerechtigung,
   hasLabelPageViewBerechtigung,
   hasListViewBerechtigung,
+  hasOrganisationVerwaltungViewBerechtigung,
 } from '@dvb/util-shared';
 import {AdminPageComponent} from './admin/admin-page.component';
-import {BenutzerListStore} from './admin/benutzer';
 
 export const adminRoutes: Route[] = [
   {
@@ -31,6 +30,7 @@ export const adminRoutes: Route[] = [
     },
     canActivate: [
       requireRole(hasListViewBerechtigung()),
+      requireAcceptedAgb(),
     ],
   },
   {
@@ -38,6 +38,7 @@ export const adminRoutes: Route[] = [
     loadChildren: () => import('./admin/klassen').then(c => c.klassenRoutes),
     canActivate: [
       requireRole(hasListViewBerechtigung()),
+      requireAcceptedAgb(),
     ],
   },
   {
@@ -45,6 +46,7 @@ export const adminRoutes: Route[] = [
     loadChildren: () => import('./admin/label').then(c => c.labelsRoutes),
     canActivate: [
       requireRole(hasLabelPageViewBerechtigung()),
+      requireAcceptedAgb(),
     ],
   },
   {
@@ -52,6 +54,7 @@ export const adminRoutes: Route[] = [
     loadChildren: () => import('./admin/impfstoff').then(c => c.impfstoffRoutes),
     canActivate: [
       requireRole(hasImpfstoffePageViewBerechtigung()),
+      requireAcceptedAgb(),
     ],
   },
   {
@@ -59,17 +62,15 @@ export const adminRoutes: Route[] = [
     loadChildren: () => import('./admin/infomaterial').then(c => c.infomaterialRoutes),
     canActivate: [
       requireRole(hasListViewBerechtigung()),
+      requireAcceptedAgb(),
     ],
   },
   {
     path: Path.BENUTZER,
-    providers: [BenutzerListStore],
     loadChildren: () => import('./admin/benutzer').then(c => c.benutzerRoutes),
-    resolve: {
-      _store: () => inject(BenutzerListStore).loadBenutzerList(),
-    },
     canActivate: [
       requireRole(hasBenutzerViewBerechtigung()),
+      requireAcceptedAgb(),
     ],
   },
   {
@@ -77,6 +78,7 @@ export const adminRoutes: Route[] = [
     loadChildren: () => import('./admin/briefvorlagen').then(c => c.briefvorlageRoutes),
     canActivate: [
       requireRole(hasBriefvorlagenViewBerechtigung()),
+      requireAcceptedAgb(),
     ],
   },
   {
@@ -84,13 +86,31 @@ export const adminRoutes: Route[] = [
     loadChildren: () => import('./admin/duplikat').then(c => c.duplikatRoutes),
     canActivate: [
       requireRole(hasDuplikateBerechtigung()),
+      requireAcceptedAgb(),
     ],
   },
   {
     path: Path.AERZTE,
     loadChildren: () => import('./admin/aerzte').then(c => c.aerzteRoutes),
     canActivate: [
-      requireRole(hasListViewBerechtigung())
+      requireRole(hasListViewBerechtigung()),
+      requireAcceptedAgb(),
+    ],
+  },
+  {
+    path: Path.ARCHIVIERUNG,
+    loadChildren: () => import('./admin/archivierung').then(c => c.archivierungRoutes),
+    canActivate: [
+      requireRole(hasArchivierungBerechtigung()),
+      requireAcceptedAgb(),
+    ],
+  },
+  {
+    path: Path.ORGANISATION,
+    loadChildren: () => import('./admin/organisation').then(c => c.organisationRoutes),
+    canActivate: [
+      requireRole(hasOrganisationVerwaltungViewBerechtigung()),
+      requireAcceptedAgb(),
     ],
   },
 ];

@@ -5,5 +5,7 @@ public enum StrabismusResultat {
     EXO,
     ESO,
     HYPER,
+    LINKS,
+    RECHTS,
     NICHT_GEPRUEFT,
 }

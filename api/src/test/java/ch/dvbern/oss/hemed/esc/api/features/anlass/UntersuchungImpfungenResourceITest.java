@@ -18,9 +18,11 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIn
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatusMinimal;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfausweisGeprueft;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
@@ -38,6 +40,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassConfigBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfstatusKrankheitBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungInternBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenDataMinimalBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenMassnahmenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
@@ -53,6 +56,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungInte
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungInternListJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungInternSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenDataJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenDataMinimalJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenMassnahmenJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenSaveJsonSpec;
@@ -1438,7 +1442,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 				.execute(ResponseBody::prettyPeek)
 				.then()
 				.assertThat()
-				.statusCode(Status.OK.getStatusCode());
+				.statusCode(Status.NO_CONTENT.getStatusCode());
 
 		// ASSERT
 		List<Aufgabe> aufgaben =
@@ -1447,4 +1451,72 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		Assertions.assertThat(aufgaben.getFirst().getTitel())
 				.isEqualTo("Gerber Emma: Einzeltermin Impfen erstellen - 2022/23 SU 4.PS Test getAnlass");
 	}
+
+    @Test
+    @TestAsAdminBS
+    void getUntersuchungDataMinimal_is_null_if_not_saved() {
+        // ARRANGE
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+        Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        Assertions.assertThat(untersuchung.getUntersuchungImpfungen().getUntersuchungImpfungenDataMinimal()).isNull();
+        // ACT
+        UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
+            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungImpfungenDataJsonSpec.class);
+        // ASSERT
+        Assertions.assertThat(data).isNotNull();
+        Assertions.assertThat(data.getDataMinimal()).isNull();
+    }
+
+    @Test
+    @TestAsAdminBS
+    void saveUntersuchungDataMinimal() {
+        // ARRANGE
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+        Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungenDataMinimalJsonSpec saveJson =
+            UntersuchungImpfungenDataMinimalBuilder.createJaxSpec(builder -> builder.forUntersuchungImpfungen(
+                    untersuchung.getUntersuchungImpfungen())
+                .withImpfausweisGeprueft(ImpfausweisGeprueft.JA, null)
+                .withMasernImpfstatus(ImpfStatusMinimal.VOLLSTAENDIG, null)
+                .withMasernAnzahlImpfungen(4));
+        // ACT: Save
+        UntersuchungImpfungenDataMinimalJsonSpec saveResult = api.untersuchungImpfungenResourceSaveUntersuchungImpfungenDataMinimal()
+            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .body(saveJson.getData())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungImpfungenDataMinimalJsonSpec.class);
+        // ASSERT: Save
+        Assertions.assertThat(saveResult).isNotNull();
+        Assertions.assertThat(saveResult.getData().getImpfausweisGeprueft().getValue()).contains(ImpfausweisGeprueft.JA.name());
+        Assertions.assertThat(saveResult.getData().getMasernImpfstatus().getValue()).contains(ImpfStatusMinimal.VOLLSTAENDIG.name());
+        Assertions.assertThat(saveResult.getData().getMasernAnzahlImpfungen()).isEqualTo(4);
+        // ACT: Read
+        UntersuchungImpfungenDataJsonSpec resultRead = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
+            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungImpfungenDataJsonSpec.class);
+        // ASSERT: Read
+        Assertions.assertThat(resultRead).isNotNull();
+        Assertions.assertThat(resultRead.getDataMinimal()).isNotNull();
+        Assertions.assertThat(resultRead.getDataMinimal().getData().getImpfausweisGeprueft().getValue()).contains(ImpfausweisGeprueft.JA.name());
+        Assertions.assertThat(resultRead.getDataMinimal().getData().getMasernImpfstatus().getValue()).contains(ImpfStatusMinimal.VOLLSTAENDIG.name());
+        Assertions.assertThat(resultRead.getDataMinimal().getData().getMasernAnzahlImpfungen()).isEqualTo(4);
+    }
 }

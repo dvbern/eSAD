@@ -6,7 +6,6 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {
   EntityAktivStatus,
   Geschlecht,
-  ImportTyp,
   KindJson,
   KindSaveJson,
   KindSaveModeDuplikat,
@@ -29,8 +28,14 @@ import {
   TextInputDirective,
 } from '@dvb/ui-components';
 import {DetailMode, DirtyMarker} from '@dvb/util-angular';
-import {fromISODateTimeString, hasKindEditBerechtigung, isNotNullish, isNullish} from '@dvb/util-shared';
-import {TranslocoPipe} from '@jsverse/transloco';
+import {
+  fromISODateTimeString,
+  hasKindEditBerechtigung,
+  isExternalObject,
+  isNotNullish,
+  isNullish
+} from '@dvb/util-shared';
+import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbAlert} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {distinctUntilChanged} from 'rxjs';
@@ -77,10 +82,14 @@ export class KindPersonendatenComponent implements DirtyMarker {
   readonly #router = inject(Router);
   readonly #activatedRoute = inject(ActivatedRoute);
   readonly #destroyRef = inject(DestroyRef);
+  readonly #transloco = inject(TranslocoService);
 
   protected readonly Path = Path;
 
-  public canEditKind = this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung());
+  public canEditKind = computed(() => {
+    return this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung())()
+      && (this.dossierStore.isKindAktiv() || this.isNew)
+  });
 
   nationalitaeten = Object.values(Land);
   geschlechtOptions = Object.values(Geschlecht);
@@ -91,15 +100,15 @@ export class KindPersonendatenComponent implements DirtyMarker {
   kindIdsOfDuplicates = signal<BackendEntityId[]>([]);
   markDuplicatesAsFalsePositives = false;
 
-  isEscadaObject = computed(() => {
-    const externalImportInfo = this.dossierStore.selectedKind()?.externalImportInfoJson
-    return isNotNullish(externalImportInfo)
-      && externalImportInfo?.aktivInExternalSystem
-      && externalImportInfo?.importTyp === ImportTyp.ESCADA;
+  getImportSchnittstelle = computed(() => {
+    const externalImportInfo = this.dossierStore.selectedKind()?.externalImportInfoJson;
+    return isNotNullish(externalImportInfo) ? this.#transloco.translate('ImportTyp.' + externalImportInfo.importTyp) : '';
   });
 
-  getDateLatestImportIfEscadaObject() {
-    if (this.isEscadaObject()) {
+  isExternalObject = computed(() => isExternalObject(this.dossierStore.selectedKind()));
+
+  getDateLatestImportIfExternalObject() {
+    if (this.isExternalObject()) {
       return fromISODateTimeString(this.dossierStore.selectedKind()?.externalImportInfoJson?.timestampLatestImport);
     }
     return undefined;
@@ -128,7 +137,7 @@ export class KindPersonendatenComponent implements DirtyMarker {
         this.isNew = false;
       }
       this.form.reset(selectedEntity.data, mode);
-      if (this.isEscadaObject()) {
+      if (this.isExternalObject()) {
         this.form.disableEscadaFields()
       }
     });

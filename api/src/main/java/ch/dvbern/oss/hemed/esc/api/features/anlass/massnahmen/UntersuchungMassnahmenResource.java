@@ -24,8 +24,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/massnahmen")
@@ -34,7 +33,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = Tags.TAG_UNTERSUCHUNG_MASSNAHMEN)
 @RolesAllowed(BerechtigungName.SU_MASSNAHMEN_LESEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "UntersuchungMassnahmenResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("UntersuchungMassnahmenResourceMS")
 public class UntersuchungMassnahmenResource {
 
     private final UntersuchungMassnahmenMapper untersuchungMassnahmenMapper;

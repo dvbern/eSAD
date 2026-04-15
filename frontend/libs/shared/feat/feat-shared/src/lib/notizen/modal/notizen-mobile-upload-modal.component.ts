@@ -20,6 +20,6 @@ export class NotizenMobileUploadModalComponent {
   qrCodeData = model<string>('');
 
   close(): void {
-    this.activeModal.dismiss('cancel');
+    this.activeModal.close('closed');
   }
 }

@@ -1,0 +1,58 @@
+<div [formGroup]="form().group" >
+
+  <!-- Single Select -->
+  @if (form().getSelectionType() === 'single') {
+
+    <svui-kachel-form-section [heading]=" valueTitleKey() | transloco">
+      <ng-content select="fieldsBeforeSingle"></ng-content>
+      @for (each of form().getOptions(); track each) {
+        <svui-kachel-control [label]="valuePrefix() + '.' + each |transloco">
+          <input svuiRadio
+                 type="radio"
+                 [name]="getRadioGroupName()"
+                 [formControl]="form().group.controls.value"
+                 [value]="each"/>
+        </svui-kachel-control>
+      }
+      <ng-content select="fieldsAfterSingle"></ng-content>
+    </svui-kachel-form-section>
+  }
+  <!-- Multi Select -->
+  @if (form().getSelectionType() === 'multi') {
+    <svui-kachel-form-section [heading]=" valueTitleKey() | transloco">
+      <ng-content select="fieldsBeforeMulti"></ng-content>
+      @for (valueArray of getMultiValueArray().controls; track $index) {
+        <svui-kachel-control [label]="valuePrefix() + '.' + valueArray.controls.resultat.getRawValue() | transloco">
+          <input svuiCheckbox
+                 type="checkbox"
+                 name="multivalue"
+                 [formControl]="valueArray.controls.isChecked"/>
+        </svui-kachel-control>
+      }
+      <ng-content select="fieldsAfterMulti"></ng-content>
+    </svui-kachel-form-section>
+  }
+
+  @if (nichtGeprueftGrundEnabled()) {
+    <!-- Nicht geprueft Grund -->
+    @if (form().isNichtGeprueftChecked()) {
+      <svui-form-control [label]="'value.enhanced.nicht.geprueft.grund' | transloco"
+                         [viewValue]="form().group.value.nichtGeprueftGrund">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form().group.controls.nichtGeprueftGrund"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          @for (item of nichtGeprueftGrundValues; track item) {
+            <ng-option [value]="item">
+              {{ 'NichtGeprueftGrund.' + item | transloco }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+    }
+  }
+
+</div>

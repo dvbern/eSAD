@@ -21,6 +21,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.validator;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -30,55 +31,64 @@ import java.util.Set;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBemerkungFragebogen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Blutdruck;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinstand;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Motorik;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammSimpel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenHoerhilfe;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassArt;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.ImpfungenMassnahmenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBemerkungFragebogen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenAugeEinzelnResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.SehenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftretenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassArt;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.Arzt;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Fachrichtung;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.HpvTeilnahme;
-import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Organisation;
+import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Rechtsform;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.Impfstoff;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKind;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationRollen;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.quartier.Quartier;
@@ -93,6 +103,8 @@ import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateTimeRange;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import org.apache.commons.text.RandomStringGenerator;
 import org.apache.commons.text.RandomStringGenerator.Builder;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -107,8 +119,22 @@ public final class MergeSourceDummyDataCreator {
     }
 
     @NonNull
-    private static Benutzer getTestBenutzer() {
-        return new Benutzer(
+    private static OrganisationRollen getTestOrganisationBenutzer(
+        @NonNull Benutzer benutzer,
+        @NonNull EnumSet<FachRolle> fachrollen) {
+        Organisation organisation = new Organisation();
+        organisation.setVerantwortlicherArzt(benutzer);
+
+        OrganisationRollen organisationRollen = new OrganisationRollen();
+        organisationRollen.setOrganisation(organisation);
+        organisationRollen.setBenutzer(benutzer);
+        organisationRollen.setFachRollen(fachrollen);
+        return organisationRollen;
+    }
+
+    @NonNull
+    private static Benutzer getTestBenutzer(@NonNull OffsetDateTime now) {
+        Benutzer benutzer = new Benutzer(
             null,
             EmailAddress.fromString("julien.schularzt@mailbucket.dvbern.ch"),
             "Dr.",
@@ -116,16 +142,20 @@ public final class MergeSourceDummyDataCreator {
             "Julien",
             NormalizedPhoneNumber.parse("+41 76 123 45 67"),
             null,
-            EnumSetUtil.toString(EnumSet.of(FachRolle.SCHULAERZTIN)),
             Collections.emptySet(),
-            true,
+            EntityAktivStatus.AKTIV,
+            null,
+            now,
+            Set.of(),
             null
         );
+        benutzer.setOrganisationRollen(Set.of(getTestOrganisationBenutzer(benutzer, EnumSet.of(FachRolle.SCHULAERZTIN))));
+        return benutzer;
     }
 
     @NonNull
-    private static Benutzer getTestMPA() {
-        return new Benutzer(
+    private static Benutzer getTestMPA(@NonNull OffsetDateTime now) {
+        Benutzer benutzer = new Benutzer(
             null,
             EmailAddress.fromString("monika.mpa@mailbucket.dvbern.ch"),
             "Med. Praxisassistentin",
@@ -133,15 +163,19 @@ public final class MergeSourceDummyDataCreator {
             "Monika",
             NormalizedPhoneNumber.parse("+41 76 123 45 67"),
             null,
-            EnumSetUtil.toString(EnumSet.of(FachRolle.MPA)),
             Collections.emptySet(),
-            true,
+            EntityAktivStatus.AKTIV,
+            null,
+            now,
+            Set.of(),
             null
         );
+        benutzer.setOrganisationRollen(Set.of(getTestOrganisationBenutzer(benutzer, EnumSet.of(FachRolle.MPA))));
+        return benutzer;
     }
 
     @NonNull
-    private static Schule getTestSchule() {
+    private static Schule getTestSchule(@NonNull OffsetDateTime now) {
         return new Schule(
             null,
             "Dreirosen",
@@ -153,17 +187,17 @@ public final class MergeSourceDummyDataCreator {
             EmailAddress.fromString("elementaire@efdb.ch"),
             NormalizedPhoneNumber.parse("+41 79 765 43 21"),
             "Séction élémentaire",
-            getTestBenutzer(),
-            getTestMPA(),
+            getTestBenutzer(now),
+            getTestMPA(now),
             EntityAktivStatus.INAKTIV // Inkaktiv because this is a dummy schule
         );
     }
 
     @NonNull
-    private static Klasse getTestKlasse() {
+    private static Klasse getTestKlasse(@NonNull OffsetDateTime now) {
         return new Klasse(
             null,
-            getTestSchule(),
+            getTestSchule(now),
             new ArrayList<>(),
             "Klasse 4a",
             Klassenstufe.PRIMAR_KLASSE_4,
@@ -173,7 +207,7 @@ public final class MergeSourceDummyDataCreator {
     }
 
     @NonNull
-    public static Kind getTestKind() {
+    public static Kind getTestKind(@NonNull OffsetDateTime now) {
         Adresse adresse = new Adresse(
             "Bahnhofstrasse 10",
             "c/o Muster",
@@ -198,15 +232,15 @@ public final class MergeSourceDummyDataCreator {
             adresse,
             EmailAddress.fromString("nina.notter@mailbucket.dvbern.ch"),
             NormalizedPhoneNumber.parse("+41 79 123 67 45"),
-            getTestSchule(),
-            getTestKlasse(),
+            getTestSchule(now),
+            getTestKlasse(now),
             EntityAktivStatus.AKTIV);
     }
 
     @NonNull
-    public static Dossier getTestDossier(@NonNull Kind kind) {
+    public static Dossier getTestDossier(@NonNull Kind kind, @NonNull OffsetDateTime now) {
         Dossier dossier = Dossier.forKind(kind);
-        dossier.setZustaendigArzt(getTestBenutzer());
+        dossier.setZustaendigArzt(getTestBenutzer(now));
         return dossier;
     }
 
@@ -227,7 +261,7 @@ public final class MergeSourceDummyDataCreator {
     }
 
     @NonNull
-    public static Anlass getTestAnlass() {
+    public static Anlass getTestAnlass(@NonNull OffsetDateTime now) {
         LocalDate anlassDate = LocalDate.of(2024, 2, 14);
         int schuljahr = anlassDate.isAfter(LocalDate.of(anlassDate.getYear(), Month.AUGUST, 1))
             ? anlassDate.getYear() : anlassDate.getYear() - 1;
@@ -239,9 +273,9 @@ public final class MergeSourceDummyDataCreator {
             schuljahr,
             DateTimeRange.of(anlassDate.atTime(10, 14), anlassDate.atTime(12, 30)),
             AnlassArt.GRUPPEN_ANLASS,
-            getTestBenutzer(),
+            getTestBenutzer(now),
             null,
-            getTestMPA(),
+            getTestMPA(now),
             null,
             null,
             null
@@ -323,7 +357,7 @@ public final class MergeSourceDummyDataCreator {
         return new Arzt(
             "Dr. Med.",
             Fachrichtung.ANDERES,
-            Organisation.NATUERLICHE_PERSON,
+            Rechtsform.NATUERLICHE_PERSON,
             "Armin", "Arzt", adresse,
             NormalizedPhoneNumber.parse("+41 79 123 45 67"),
             EmailAddress.fromString("elementaire@efdb.ch"),
@@ -353,28 +387,50 @@ public final class MergeSourceDummyDataCreator {
     public static Untersuchung getTestUntersuchung() {
         Untersuchung untersuchung = new Untersuchung();
         UntersuchungSehenBeurteilung untersuchungSehenBeurteilung = new UntersuchungSehenBeurteilung();
-        untersuchungSehenBeurteilung.setBrilleLinsen(BrilleLinsenResultat.MIT);
-        untersuchungSehenBeurteilung.setStereotest(StereotestResultat.NORMAL);
-        untersuchungSehenBeurteilung.setFarbsehen(FarbsehenResultat.NORMAL);
-        untersuchungSehenBeurteilung.setVerwendeteTafel(VerwendetTafelResultat.E_TAFEL);
-        untersuchungSehenBeurteilung.setFernvisus(EnumSet.of(
-            DistanzSehenResultat.NORMAL,
-            DistanzSehenResultat.LINKS_REDUZIERT));
+        untersuchungSehenBeurteilung.setBrilleLinsen(SingleValueEnhanced.of(BrilleLinsenResultat.MIT, null));
+        untersuchungSehenBeurteilung.setStereotest(SingleValueEnhanced.of(StereotestResultat.NORMAL, null));
+        untersuchungSehenBeurteilung.setFarbsehen(SingleValueEnhanced.of(FarbsehenResultat.NORMAL, null));
+        untersuchungSehenBeurteilung.setVerwendeteTafel(SingleValueEnhanced.of(VerwendetTafelResultat.E_TAFEL, null));
+        untersuchungSehenBeurteilung.setFernvisus(MultiValueEnhanced.of(
+            EnumSet.of(
+                DistanzSehenResultat.NORMAL,
+                DistanzSehenResultat.LINKS_REDUZIERT),
+            null)
+        );
         untersuchungSehenBeurteilung.setFernvisusRechts(BigDecimal.valueOf(100));
         untersuchungSehenBeurteilung.setFernvisusLinks(BigDecimal.valueOf(200));
-        untersuchungSehenBeurteilung.setNahvisus(EnumSet.of(
-            DistanzSehenResultat.NORMAL,
-            DistanzSehenResultat.RECHTS_REDUZIERT));
+        untersuchungSehenBeurteilung.setNahvisus(MultiValueEnhanced.of(
+            EnumSet.of(
+                DistanzSehenResultat.NORMAL,
+                DistanzSehenResultat.RECHTS_REDUZIERT),
+            null)
+        );
+        untersuchungSehenBeurteilung.setFernvisusAugeLinks(SingleValueEnhanced.of(
+            DistanzSehenAugeEinzelnResultat.NORMAL,
+            null));
+        untersuchungSehenBeurteilung.setFernvisusAugeRechts(SingleValueEnhanced.of(
+            DistanzSehenAugeEinzelnResultat.REDUZIERT,
+            null));
         untersuchungSehenBeurteilung.setNahvisusRechts(BigDecimal.valueOf(300));
         untersuchungSehenBeurteilung.setNahvisusLinks(BigDecimal.valueOf(400));
-        untersuchungSehenBeurteilung.setStrabismus(EnumSet.of(StrabismusResultat.ESO, StrabismusResultat.HYPER));
+        untersuchungSehenBeurteilung.setStrabismus(MultiValueEnhanced.of(
+            EnumSet.of(
+                StrabismusResultat.ESO,
+                StrabismusResultat.HYPER), null));
         untersuchungSehenBeurteilung.setStrabismusAuspraegung(
-            StrabismusAuspraegungResultat.INTERMITTIEREND);
+            SingleValueEnhanced.of(StrabismusAuspraegungResultat.INTERMITTIEREND, null));
         untersuchungSehenBeurteilung.setStrabismusAuftreten(
-            StrabismusAuftretenResultat.RECHTS);
-        untersuchungSehenBeurteilung.setInspektion(InspektionKonvergenzResultat.AUFFAELLIG);
-        untersuchungSehenBeurteilung.setKonvergenz(InspektionKonvergenzResultat.NICHT_GEPRUEFT);
-        untersuchungSehenBeurteilung.setMotilitaet(MotilitaetResultat.NORMAL);
+            SingleValueEnhanced.of(StrabismusAuftretenResultat.RECHTS, null));
+        untersuchungSehenBeurteilung.setInspektion(SingleValueEnhanced.of(
+            InspektionKonvergenzResultat.AUFFAELLIG,
+            null));
+        untersuchungSehenBeurteilung.setKonvergenz(SingleValueEnhanced.of(
+            InspektionKonvergenzResultat.NICHT_GEPRUEFT,
+            null));
+        untersuchungSehenBeurteilung.setMotilitaet(SingleValueEnhanced.of(MotilitaetResultat.NORMAL, null));
+        untersuchungSehenBeurteilung.setEmpfehlung(MultiValueEnhanced.of(
+            EnumSet.of(SehenEmpfehlung.UEBERPRUEFUNG_AUGENARZT),
+            null));
 
         untersuchung.setUntersuchungSehenBemerkungFragebogen(new UntersuchungSehenBemerkungFragebogen(
             untersuchung,
@@ -384,6 +440,7 @@ public final class MergeSourceDummyDataCreator {
         untersuchung.setUntersuchungHoerenOtoskopie(getTestUntersuchungHoerenOtoskopie(untersuchung));
         untersuchung.setUntersuchungMassnahmen(new UntersuchungMassnahmen());
         untersuchung.setUntersuchungGroesseGewicht(getTestUntersuchungGroesseGewicht());
+        untersuchung.setUntersuchungArztBeurteilung(getMinimalTestUntersuchungArztBeurteilung());
         return untersuchung;
     }
 
@@ -411,15 +468,24 @@ public final class MergeSourceDummyDataCreator {
 
         hoerenAudiogramm.setAudiogrammRechts(audiogrammRechts);
         hoerenAudiogramm.setAudiogrammLinks(audiogrammLinks);
-        hoerenAudiogramm.setAudiogrammBeurteilung(EnumSet.of(
-            AudiogrammBeurteilung.NORMAL,
-            AudiogrammBeurteilung.LINKS_REDUZIERT,
-            AudiogrammBeurteilung.RECHTS_REDUZIERT));
-        hoerenAudiogramm.setZusaetzlicheAngaben(EnumSet.of(
-            HoerenZusaetzlicheAngaben.ERKAELTUNG,
-            HoerenZusaetzlicheAngaben.HOERHILFE));
-        hoerenAudiogramm.setEmpfehlung(EnumSet.of(
-            HoerenEmpfehlung.UEBERPRUEFUNG_ARZT));
+        hoerenAudiogramm.setAudiogrammSimpel(SingleValueEnhanced.of(AudiogrammSimpel.DB_TIEF, null));
+        hoerenAudiogramm.setHoerhilfe(SingleValueEnhanced.of(HoerenHoerhilfe.JA, null));
+        hoerenAudiogramm.setAudiogrammBeurteilung(
+            MultiValueEnhanced.of(
+                EnumSet.of(
+                    AudiogrammBeurteilung.NORMAL,
+                    AudiogrammBeurteilung.LINKS_REDUZIERT,
+                    AudiogrammBeurteilung.RECHTS_REDUZIERT)
+                , null));
+        hoerenAudiogramm.setZusaetzlicheAngaben(
+            MultiValueEnhanced.of(
+                EnumSet.of(
+                    HoerenZusaetzlicheAngaben.ERKAELTUNG,
+                    HoerenZusaetzlicheAngaben.HOERHILFE)
+                , null));
+        hoerenAudiogramm.setEmpfehlung(
+            MultiValueEnhanced.of(EnumSet.of(HoerenEmpfehlung.UEBERPRUEFUNG_ARZT), null)
+        );
         hoerenAudiogramm.setBemerkungen("Test Bemerkung für Audiogramm");
         hoerenAudiogramm.setUntersuchung(untersuchung);
         return hoerenAudiogramm;
@@ -428,12 +494,18 @@ public final class MergeSourceDummyDataCreator {
     @NonNull
     private static UntersuchungHoerenOtoskopie getTestUntersuchungHoerenOtoskopie(@NonNull Untersuchung untersuchung) {
         UntersuchungHoerenOtoskopie hoerenOtoskopie = new UntersuchungHoerenOtoskopie();
-        hoerenOtoskopie.setOtoskopieRechts(EnumSet.of(
-            OtoskopieResultat.NORMAL,
-            OtoskopieResultat.SEROMUKOTYMPANON));
-        hoerenOtoskopie.setOtoskopieLinks(EnumSet.of(
-            OtoskopieResultat.ANDERES,
-            OtoskopieResultat.TROMMELFELL_CERUMEN));
+        hoerenOtoskopie.setOtoskopieRechts(
+            MultiValueEnhanced.of(
+                EnumSet.of(
+                    OtoskopieResultat.NORMAL,
+                    OtoskopieResultat.SEROMUKOTYMPANON), null)
+        );
+        hoerenOtoskopie.setOtoskopieLinks(
+            MultiValueEnhanced.of(
+                EnumSet.of(
+                    OtoskopieResultat.ANDERES,
+                    OtoskopieResultat.TROMMELFELL_CERUMEN), null)
+        );
         hoerenOtoskopie.setBemerkungen("Test Bemerkung für Otoskopie");
         hoerenOtoskopie.setUntersuchung(untersuchung);
 
@@ -446,10 +518,22 @@ public final class MergeSourceDummyDataCreator {
         untersuchungGroesseGewicht.setGroesse(150);
         untersuchungGroesseGewicht.setGewicht(BigDecimal.valueOf(70));
         untersuchungGroesseGewicht.setBmi(BigDecimal.valueOf(31.1));
-        untersuchungGroesseGewicht.setGroessePerzentile(PerzentileGroesse.NORMAL);
-        untersuchungGroesseGewicht.setGewichtPerzentile(PerzentileGewicht.PERZENTILE_HOCH);
-        untersuchungGroesseGewicht.setBmiPerzentile(PerzentileBmi.PERZENTILE_HOCH);
+        untersuchungGroesseGewicht.setGroessePerzentile(SingleValueEnhanced.of(PerzentileGroesse.NORMAL, null));
+        untersuchungGroesseGewicht.setGewichtPerzentile(SingleValueEnhanced.of(
+            PerzentileGewicht.PERZENTILE_HOCH,
+            null));
+        untersuchungGroesseGewicht.setBmiPerzentile(SingleValueEnhanced.of(PerzentileBmi.PERZENTILE_HOCH, null));
         return untersuchungGroesseGewicht;
+    }
+
+    @NonNull
+    private static UntersuchungArztBeurteilung getMinimalTestUntersuchungArztBeurteilung() {
+        UntersuchungArztBeurteilung untersuchungArztBeurteilung = new UntersuchungArztBeurteilung();
+        untersuchungArztBeurteilung.setBlutdruck(Blutdruck.NORMAL);
+        untersuchungArztBeurteilung.setBlutdruckSystolisch(80);
+        untersuchungArztBeurteilung.setBlutdruckDiastolisch(80);
+        return untersuchungArztBeurteilung;
+
     }
 
     @NonNull
@@ -475,6 +559,13 @@ public final class MergeSourceDummyDataCreator {
             RequirementSetting.OPTIONAL,    // datenUntersuchung
             true,                           // showDatenSchule
             RequirementSetting.OPTIONAL,    // datenBemerkung
+            RequirementSetting.OPTIONAL,    // vorabklaerungenFragebogenStatus
+            RequirementSetting.OPTIONAL,    // vorabklaerungenEinverstaendnisImpfungen
+            RequirementSetting.OPTIONAL,    // vorabklaerungenChronischeKrankheiten
+            true,                           // showImpfungenHeaderImpfausweisUnvollstaendig
+            true,                           // showImpfungenHeaderImpfausweisNichtVorhanden
+            true,                           // showImpfungenHeaderImpfausweisZweiPlusEinsSchema
+            true,                           // showImpfungenHeaderImpfausweisUpload
             RequirementSetting.OPTIONAL,    // impfungenUebersicht
             RequirementSetting.OPTIONAL,    // impfungenListe
             true,                           // showImpfungenDoppelkontrolle
@@ -487,21 +578,37 @@ public final class MergeSourceDummyDataCreator {
             true,                           // impfungenMassnahmeInfomaterialAbgegeben
             true,                           // impfungenMassnahmeInfoEltern
             true,                           // impfungenMassnahmeRueckfrageKinderarzt
+            RequirementSetting.OPTIONAL,    // impfungenMassnahmeBemerkungen
             RequirementSetting.OPTIONAL,    // checkEinwilligungVorhanden
             RequirementSetting.OPTIONAL,    // checkKontraindikationenAbgeklaert
             RequirementSetting.OPTIONAL,    // checkDoppelkontrolleImpfentscheidDurchgefuehrt
             RequirementSetting.OPTIONAL,    // untersuchungImpfungEmpfehlung
+            EnumSetUtil.toString(EnumSet.allOf(ImpfungenMassnahmenEmpfehlung.class)), //
+            // untersuchungImpfungEmpfehlungValues
             RequirementSetting.OPTIONAL,    // untersuchungImpfungAchtung
             RequirementSetting.OPTIONAL,    // untersuchungImpfungBemerkungen
             EnumSetUtil.toString(EnumSet.allOf(Krankheit.class)), // untersuchungImpfungKrankheitenLinksValues
             EnumSetUtil.toString(EnumSet.allOf(Krankheit.class)), // untersuchungImpfungKrankheitenRechtsValues
-            RequirementSetting.OPTIONAL,    // sehenBrilleLinsen
+            RequirementSetting.OPTIONAL,    // impfungenDataMinimalImpfausweisGeprueft
+            RequirementSetting.OPTIONAL,    // impfungenDataMinimalImmunsuppression
+            RequirementSetting.OPTIONAL,    // impfungenDataMinimalMasernImpfstatus
+            RequirementSetting.OPTIONAL,    // impfungenDataMinimalMasernAnzahlImpfungen
+            RequirementSetting.OPTIONAL,    // impfungenDataMinimalHpvImpfstatus
+            RequirementSetting.OPTIONAL,    // impfungenDataMinimalHpvAnzahlImpfungen
+            RequirementSetting.OPTIONAL,    // impfungenDataMinimalImpfempfehlung
+            RequirementSetting.OPTIONAL,    // impfungenDataMinimalImpfungDurchgefuehrt
+            RequirementSetting.OPTIONAL,    // sehenBrilleLinsen,
+            EnumSetUtil.toString(EnumSet.allOf(BrilleLinsenResultat.class)), // sehenBrilleLinsenValues
             RequirementSetting.OPTIONAL,    // sehenFarbsehen
             RequirementSetting.OPTIONAL,    // sehenTafel
             RequirementSetting.OPTIONAL,    // sehenFernvisus
+            RequirementSetting.OPTIONAL,    // sehenFernvisusAugeEinzeln
             RequirementSetting.OPTIONAL,    // sehenStereoTest
             RequirementSetting.OPTIONAL,    // sehenStrabismus
+            EnumSetUtil.toString(EnumSet.allOf(StrabismusResultat.class)), // groesseGewichtGewichtValues
             RequirementSetting.OPTIONAL,    // sehenInspektion
+            RequirementSetting.OPTIONAL,    // sehenStrabismusAuspraegung
+            RequirementSetting.OPTIONAL,    // sehenStrabismusAuftreten
             RequirementSetting.OPTIONAL,    // sehenKonvergenz
             RequirementSetting.OPTIONAL,    // sehenMotilitaet
             RequirementSetting.OPTIONAL,    // sehenNahvisus
@@ -512,10 +619,12 @@ public final class MergeSourceDummyDataCreator {
             RequirementSetting.OPTIONAL,    // hoerenAudiogramm
             RequirementSetting.OPTIONAL,    // hoerenAudiogramm250Hz
             RequirementSetting.OPTIONAL,    // hoerenAudiogramm8000Hz
+            RequirementSetting.OPTIONAL,    // hoerenAudiogrammSimpel
             RequirementSetting.OPTIONAL,    // hoerenAudiogrammBeurteilung
             RequirementSetting.OPTIONAL,    // hoerenAudiogrammZusaetzlicheAngaben
             RequirementSetting.OPTIONAL,    // hoerenAudiogrammEmpfehlung
             RequirementSetting.OPTIONAL,    // hoerenAudiogrammBemerkungen
+            RequirementSetting.OPTIONAL,    // hoerenHoerhilfe
             RequirementSetting.OPTIONAL,    // hoerenOtoskopie
             RequirementSetting.OPTIONAL,    // hoerenOtoskopieBemerkungen
             RequirementSetting.OPTIONAL,    // groesseGewichtGroesse
@@ -574,6 +683,26 @@ public final class MergeSourceDummyDataCreator {
             RequirementSetting.OPTIONAL,    // unterlagenVerhaltensfragebogen
             RequirementSetting.OPTIONAL,    // untersuchungEmpfehlung
             RequirementSetting.OPTIONAL,    // untersuchungBemerkungen
+            RequirementSetting.OPTIONAL,    // untersuchungSpracheNachsprechen
+            RequirementSetting.OPTIONAL,    // untersuchungSpracheWortschatz
+            RequirementSetting.OPTIONAL,    // untersuchungSpracheSprachverstaendnis
+            RequirementSetting.OPTIONAL,    // untersuchungSpracheBemerkungen
+            RequirementSetting.OPTIONAL,    // bewegungsapparatSkoliose
+            RequirementSetting.OPTIONAL,    // bewegungsapparatHaltungsschwaeche
+            RequirementSetting.OPTIONAL,    // bewegungsapparatVerkuerzungHamstringmuskulatur
+            RequirementSetting.OPTIONAL,    // bewegungsapparatBemerkung
+            RequirementSetting.OPTIONAL,    // untersuchungBeeintraechtigungFreiesGehen
+            RequirementSetting.OPTIONAL,    // untersuchungBeeintraechtigungOhneStuetzradVelofahren
+            RequirementSetting.OPTIONAL,    // untersuchungBeeintraechtigungGrafomotorik
+            RequirementSetting.OPTIONAL,    // untersuchungBeeintraechtigungFeinmotorik
+            RequirementSetting.OPTIONAL,    // untersuchungBeeintraechtigungGrobmotorik
+            RequirementSetting.OPTIONAL,    // untersuchungBeeintraechtigungGleichgewicht
+            RequirementSetting.OPTIONAL,    // untersuchungBeeintraechtigungBemerkung
+            RequirementSetting.OPTIONAL,    // abschlussUeberweisungErfolgt
+            RequirementSetting.OPTIONAL,    // abschlussAerztlicheValidierungErforderlich
+            RequirementSetting.OPTIONAL,    // abschlussBeratungDurchgefuehrt
+            RequirementSetting.OPTIONAL,    // abschlussBeurteilungEmpfohleneMassnahmen
+            true,                           // signatur
             true,                           // showMassnahmenPathologischeBefunde
             true,                           // showMassnahmenKeine
             true,                           // showMassnahmenBeratungMpa

@@ -20,7 +20,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungArztBemerkungBui
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungArztBeurteilungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsEmpfang;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsEmpfangBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.UntersuchungArztApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BewegungsapparatSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BlutdruckSpec;
@@ -171,7 +171,7 @@ class UntersuchungArztResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsEmpfang
+    @TestAsEmpfangBS
     void saveUntersuchungAsEmpfang_should_fail_for_empfang() {
         // ARRANGE
         Einladung someEinladung = fixtureService.createEinladung();

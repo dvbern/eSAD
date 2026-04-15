@@ -4,5 +4,7 @@ public enum BrilleLinsenResultat {
     OHNE_KEINE,
     OHNE_VERGESSEN,
     MIT,
+    BRILLE,
+    KONTAKTLINSEN,
     NICHT_GEPRUEFT,
 }

@@ -2,7 +2,6 @@ package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
@@ -17,10 +16,12 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoere
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogrammMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.NichtGeprueftGrund;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungHoerenAudiogrammJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungHoerenAudiogrammJsonSpec;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -138,33 +139,30 @@ public class UntersuchungHoerenAudiogrammBuilder {
     @NonNull
     @CanIgnoreReturnValue
     public UntersuchungHoerenAudiogrammBuilder withAudiogrammBeurteilung(
-        @Nullable Collection<AudiogrammBeurteilung> beurteilungList
+        @Nullable Collection<AudiogrammBeurteilung> beurteilungList,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
     ) {
-        this.hoerenAudiogramm.setAudiogrammBeurteilung(EnumSetUtil.toEnumSet(beurteilungList, AudiogrammBeurteilung.class));
+        this.hoerenAudiogramm.setAudiogrammBeurteilung(MultiValueEnhanced.of(EnumSetUtil.toEnumSet(beurteilungList, AudiogrammBeurteilung.class), nichtGeprueftGrund));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
     public UntersuchungHoerenAudiogrammBuilder withZusaetzlicheAngaben(
-        @Nullable Collection<HoerenZusaetzlicheAngaben> angabenList
+        @Nullable Collection<HoerenZusaetzlicheAngaben> angabenList,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
     ) {
-        this.hoerenAudiogramm.setZusaetzlicheAngaben(EnumSetUtil.toEnumSet(angabenList, HoerenZusaetzlicheAngaben.class));
+        this.hoerenAudiogramm.setZusaetzlicheAngaben(MultiValueEnhanced.of(EnumSetUtil.toEnumSet(angabenList, HoerenZusaetzlicheAngaben.class), nichtGeprueftGrund));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungHoerenAudiogrammBuilder withZusaetzlicheAngaben(
-        @NonNull HoerenZusaetzlicheAngaben... zusaetzlicheAngaben
+    public UntersuchungHoerenAudiogrammBuilder withEmpfehlung(
+        @Nullable Collection<HoerenEmpfehlung> empfehlungList,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
     ) {
-        return this.withZusaetzlicheAngaben(List.of(zusaetzlicheAngaben));
-    }
-
-    @NonNull
-    @CanIgnoreReturnValue
-    public UntersuchungHoerenAudiogrammBuilder withEmpfehlung(@Nullable Collection<HoerenEmpfehlung> empfehlungList) {
-        this.hoerenAudiogramm.setEmpfehlung(EnumSetUtil.toEnumSet(empfehlungList, HoerenEmpfehlung.class));
+        this.hoerenAudiogramm.setEmpfehlung(MultiValueEnhanced.of(EnumSetUtil.toEnumSet(empfehlungList, HoerenEmpfehlung.class), nichtGeprueftGrund));
         return this;
     }
 

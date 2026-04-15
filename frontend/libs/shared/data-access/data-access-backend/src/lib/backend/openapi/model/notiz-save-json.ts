@@ -20,6 +20,7 @@ export interface NotizSaveJson {
     status: NotizStatus;
     typ: NotizTyp;
     verantwortlicher: BenutzerOptionJson;
+    anlassLink?: string;
     labels: Array<LabelJson>;
     files: Array<FileDataJson>;
     version: number;

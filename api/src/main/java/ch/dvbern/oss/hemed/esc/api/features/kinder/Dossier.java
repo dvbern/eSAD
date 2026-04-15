@@ -1,19 +1,35 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder;
 
+import java.io.Serial;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
+import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.types.PapierakteStatus;
-import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
+import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
-
-import java.io.Serial;
 
 @Entity
 @Table(
@@ -76,34 +92,71 @@ public class Dossier extends AbstractEntity<Dossier> implements EntityWithOptimi
     @Nullable
     @ManyToOne(optional = true)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_dossier_benutzer_arzt"), nullable = true)
-    @Getter(AccessLevel.PRIVATE)
     private Benutzer zustaendigArzt;
 
     @Nullable
     @ManyToOne(optional = true)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_dossier_benutzer_mpa"), nullable = true)
-    @Getter(AccessLevel.PRIVATE)
     private Benutzer zustaendigMPA;
 
+    @Nullable
+    @Column(nullable = true)
+    private LocalDateTime timestampDefinitivArchiviert;
+
+    @Nullable
+    public Benutzer getZustaendigArztFromSchule() {
+        Schule schule = this.getKind().extractSchule();
+        return schule != null ? schule.getZustaendigArzt() : null;
+    }
+
+    @Nullable
+    public Benutzer getZustaendigMpaFromSchule() {
+        Schule schule = this.getKind().extractSchule();
+        return schule != null ? schule.getZustaendigMPA() : null;
+    }
+
+    @Nullable
+    public ID<Benutzer> getZustaendigArztIdFromSchule() {
+        Benutzer arzt = getZustaendigArztFromSchule();
+        return arzt != null ? arzt.getId() : null;
+    }
+
+    @Nullable
+    public ID<Benutzer> getZustaendigMpaIdFromSchule() {
+        Benutzer arzt = getZustaendigMpaFromSchule();
+        return arzt != null ? arzt.getId() : null;
+    }
 
     @Nullable
     public Benutzer getZustaendigArztFromDossierOrSchule() {
-        Schule schule = this.getKind().getSchule();
+        Schule schule = this.getKind().extractSchule();
         if (zustaendigArzt == null && schule != null) {
             return schule.getZustaendigArzt();
         }
         return this.zustaendigArzt;
     }
 
+    @NonNull
+    public List<ID<Benutzer>> getBerechtigteAerzteIdsFromDossierOrSchule() {
+        // TODO ESC-1120: Change this to include Organisationsberechtigungen!
+        List<ID<Benutzer>> berechtigteAerzte = new ArrayList<>();
+        if (getZustaendigArztIdFromSchule() != null) {
+            berechtigteAerzte.add(getZustaendigArztIdFromSchule());
+        }
+        if (zustaendigArzt != null) {
+            berechtigteAerzte.add(zustaendigArzt.getId());
+        }
+        return berechtigteAerzte;
+    }
+
     @Nullable
     public Benutzer getZustaendigMPAFromDossierOrSchule() {
-        Schule schule = this.getKind().getSchule();
+        Schule schule = this.getKind().extractSchule();
         if (zustaendigMPA == null && schule != null) {
             return schule.getZustaendigMPA();
         }
         return this.zustaendigMPA;
     }
-
 
     @NonNull
     public static Dossier forKind(@NonNull Kind kind) {
@@ -117,6 +170,7 @@ public class Dossier extends AbstractEntity<Dossier> implements EntityWithOptimi
             false,
             false,
             PapierakteStatus.UNKLAR,
+            null,
             null,
             null
         );

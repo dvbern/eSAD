@@ -3,7 +3,7 @@ import {NonNullableFormBuilder} from '@angular/forms';
 import {BenutzerOptionJson, UntersuchungImpfungenDoppelkontrolleSaveJson} from '@dvb/data-access-backend';
 import {ISODateString} from '@dvb/data-access-types';
 import {AppValidators, BaseForm, DetailMode} from '@dvb/util-angular';
-import {ensureProps, isNotNullish, Nullish, requireValue} from '@dvb/util-shared';
+import {ensureProps, ensurePropsFlat, isNotNullish, Nullish, requireValue} from '@dvb/util-shared';
 
 type Config = {
   fb: NonNullableFormBuilder;
@@ -49,7 +49,7 @@ export class UntersuchungDoppelkontrolleImpfentscheidForm extends BaseForm<
 
   valueOnValid(): UntersuchungImpfungenDoppelkontrolleSaveJson {
     const value = requireValue(this.group.getRawValue());
-    return ensureProps<UntersuchungImpfungenDoppelkontrolleSaveJson>({
+    return ensurePropsFlat<UntersuchungImpfungenDoppelkontrolleSaveJson>({
       visumPerson1: value.visumPerson1,
       visumDatum1: value.visumDatum1,
       visumPerson2: value.visumPerson2,

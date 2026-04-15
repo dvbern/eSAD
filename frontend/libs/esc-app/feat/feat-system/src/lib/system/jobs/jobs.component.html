@@ -1,16 +1,59 @@
 <h2 svuiHeading="card" class="mb-3">Run Jobs</h2>
-<div class="mt-2">
-  <button svuiButton="primary" type="button" (click)="runBenutzerInaktivieren()">Run Benutzer Inaktivieren</button>
+
+<div style="margin: 15px;">
+
+  <h3 svuiHeading="card" class="mt-3">Divers</h3>
+  <div class="mt-2">
+    <button svuiButton="primary" type="button" (click)="runBenutzerInaktivieren()">Run Benutzer Inaktivieren</button>
+  </div>
+  <div class="mt-2">
+    <button svuiButton="primary" type="button" (click)="runKinderInaktivieren()">Run Kinder Inaktivieren</button>
+  </div>
+  <div class="mt-2">
+    <button svuiButton="primary" type="button" (click)="runReloadDuplikate()">Run Reload Duplikate</button>
+  </div>
 </div>
-<div class="mt-2">
-  <button svuiButton="primary" type="button" (click)="runDocumentQueue()">Run DocumentQueue</button>
+
+<div style="margin: 15px;">
+  <h3 svuiHeading="card" class="mt-3">Impfstoffe</h3>
+  <div class="mt-2">
+    <button svuiButton="primary" type="button" (click)="runDeactivateImpfstoffChargenJob()">Run Impfstoff-Charge
+      deaktieren
+    </button>
+  </div>
+  <div class="mt-2">
+    <button svuiButton="primary" type="button" (click)="runDeleteImpfstoffChargenJob()">Run Impfstoff-Charge löschen
+    </button>
+  </div>
 </div>
-<div class="mt-2">
-  <button svuiButton="primary" type="button" (click)="runDocumentQueueCleanUp()">Run DocumentQueue Cleanup</button>
+
+<div style="margin: 15px;">
+  <h3 svuiHeading="card" class="mt-3">DocumentQueue</h3>
+  <div class="mt-2">
+    <button svuiButton="primary" type="button" (click)="runDocumentQueue()">Run DocumentQueue</button>
+  </div>
+  <div class="mt-2">
+    <button svuiButton="primary" type="button" (click)="runDocumentQueueCleanUp()">Run DocumentQueue Cleanup</button>
+  </div>
 </div>
-<div class="mt-2">
-  <button svuiButton="primary" type="button" (click)="runKinderInaktivieren()">Run Kinder Inaktivieren</button>
-</div>
-<div class="mt-2">
-  <button svuiButton="primary" type="button" (click)="runReloadDuplikate()">Run Reload Duplikate</button>
+
+<div style="margin: 15px;">
+  <h3 svuiHeading="card" class="mt-3">DossierQueue/ Archivierung</h3>
+  <div class="mt-2">
+    <button svuiButton="primary" type="button" (click)="runDossierQueueProcessingJob()">Run DossierQueue</button>
+  </div>
+  <div class="mt-2">
+    <button svuiButton="primary" type="button" (click)="runDossierQueueCleanupJob()">Run DossierQueue Cleanup</button>
+  </div>
+  <div class="mt-2">
+    <button svuiButton="primary" type="button" (click)="runArchivierungJob()">Run Archivierung</button>
+  </div>
+  <div class="mt-2">
+    <button svuiButton="primary" type="button" (click)="runArchivierungDeleteJob()">Run Archivierung Löschung</button>
+  </div>
+  <div class="mt-2">
+    <button svuiButton="primary" type="button" (click)="runArchiveDownloadEmailReminderJob()">Run Archivierung Download
+      E-Mail Reminder
+    </button>
+  </div>
 </div>

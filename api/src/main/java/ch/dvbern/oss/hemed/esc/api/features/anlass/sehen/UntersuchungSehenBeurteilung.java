@@ -20,12 +20,11 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.sehen;
 
 import java.io.Serial;
 import java.math.BigDecimal;
-import java.util.EnumSet;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenAugeEinzelnResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
@@ -36,20 +35,22 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftret
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
-import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
-import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungSehenUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungSehenBeurteilungPresentIfReq;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -78,32 +79,36 @@ public class UntersuchungSehenBeurteilung extends AbstractEntity<UntersuchungSeh
     @OneToOne(optional = false, mappedBy = "untersuchungSehenBeurteilung")
     private Untersuchung untersuchung;
 
+    @Valid
+    @Embedded
     @Nullable
-    @Enumerated(EnumType.STRING)
-    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
-    private BrilleLinsenResultat brilleLinsen;
+    @AttributeOverride(name = "value", column = @Column(name = "brilleLinsen", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private SingleValueEnhanced<BrilleLinsenResultat> brilleLinsen = SingleValueEnhanced.of();
 
+    @Valid
+    @Embedded
     @Nullable
-    @Enumerated(EnumType.STRING)
-    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
-    private StereotestResultat stereotest;
+    @AttributeOverride(name = "value", column = @Column(name = "stereotest", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private SingleValueEnhanced<StereotestResultat> stereotest = SingleValueEnhanced.of();
 
+    @Valid
+    @Embedded
     @Nullable
-    @Enumerated(EnumType.STRING)
-    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
-    private FarbsehenResultat farbsehen;
+    @AttributeOverride(name = "value", column = @Column(name = "farbsehen", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private SingleValueEnhanced<FarbsehenResultat> farbsehen = SingleValueEnhanced.of();
 
+    @Valid
+    @Embedded
     @Nullable
-    @Enumerated(EnumType.STRING)
-    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
-    private VerwendetTafelResultat verwendeteTafel;
+    @AttributeOverride(name = "value",
+        column = @Column(name = "verwendeteTafel", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private SingleValueEnhanced<VerwendetTafelResultat> verwendeteTafel = SingleValueEnhanced.of();
 
+    @Valid
+    @Embedded
     @Nullable
-    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
-    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private String fernvisus;
+    @AttributeOverride(name = "value", column = @Column(name = "fernvisus", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private MultiValueEnhanced<DistanzSehenResultat> fernvisus = MultiValueEnhanced.of();
 
     @Nullable
     @Schema(required = false)
@@ -115,12 +120,25 @@ public class UntersuchungSehenBeurteilung extends AbstractEntity<UntersuchungSeh
     @Column(nullable = true)
     private BigDecimal fernvisusLinks;
 
+    @Valid
+    @Embedded
     @Nullable
-    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
-    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private String nahvisus;
+    @AttributeOverride(name = "value",
+        column = @Column(name = "fernvisusaugelinks", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private SingleValueEnhanced<DistanzSehenAugeEinzelnResultat> fernvisusAugeLinks = SingleValueEnhanced.of();
+
+    @Valid
+    @Embedded
+    @Nullable
+    @AttributeOverride(name = "value",
+        column = @Column(name = "fernvisusaugerechts", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private SingleValueEnhanced<DistanzSehenAugeEinzelnResultat> fernvisusAugeRechts = SingleValueEnhanced.of();
+
+    @Valid
+    @Embedded
+    @Nullable
+    @AttributeOverride(name = "value", column = @Column(name = "nahvisus", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private MultiValueEnhanced<DistanzSehenResultat> nahvisus = MultiValueEnhanced.of();
 
     @Nullable
     @Schema(required = false)
@@ -132,89 +150,54 @@ public class UntersuchungSehenBeurteilung extends AbstractEntity<UntersuchungSeh
     @Column(nullable = true)
     private BigDecimal nahvisusLinks;
 
+    @Valid
+    @Embedded
     @Nullable
-    @Enumerated(EnumType.STRING)
-    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
-    private MotilitaetResultat motilitaet;
+    @AttributeOverride(name = "value", column = @Column(name = "motilitaet", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private SingleValueEnhanced<MotilitaetResultat> motilitaet = SingleValueEnhanced.of();
 
+    @Valid
+    @Embedded
     @Nullable
-    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
-    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private String strabismus;
+    @AttributeOverride(name = "value", column = @Column(name = "strabismus", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private MultiValueEnhanced<StrabismusResultat> strabismus = MultiValueEnhanced.of();
 
+    @Valid
+    @Embedded
     @Nullable
-    @Enumerated(EnumType.STRING)
-    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
-    private StrabismusAuspraegungResultat strabismusAuspraegung;
+    @AttributeOverride(name = "value",
+        column = @Column(name = "strabismusAuspraegung", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private SingleValueEnhanced<StrabismusAuspraegungResultat> strabismusAuspraegung = SingleValueEnhanced.of();
 
+    @Valid
+    @Embedded
     @Nullable
-    @Enumerated(EnumType.STRING)
-    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
-    private StrabismusAuftretenResultat strabismusAuftreten;
+    @AttributeOverride(name = "value",
+        column = @Column(name = "strabismusAuftreten", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private SingleValueEnhanced<StrabismusAuftretenResultat> strabismusAuftreten = SingleValueEnhanced.of();
 
+    @Valid
+    @Embedded
     @Nullable
-    @Enumerated(EnumType.STRING)
-    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
-    private InspektionKonvergenzResultat inspektion;
+    @AttributeOverride(name = "value", column = @Column(name = "inspektion", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private SingleValueEnhanced<InspektionKonvergenzResultat> inspektion = SingleValueEnhanced.of();
 
+    @Valid
+    @Embedded
     @Nullable
-    @Enumerated(EnumType.STRING)
-    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
-    private InspektionKonvergenzResultat konvergenz;
+    @AttributeOverride(name = "value", column = @Column(name = "konvergenz", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private SingleValueEnhanced<InspektionKonvergenzResultat> konvergenz = SingleValueEnhanced.of();
 
+    @Valid
+    @Embedded
     @Nullable
-    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
-    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private String empfehlung;
+    @AttributeOverride(name = "value", column = @Column(name = "empfehlung", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private MultiValueEnhanced<SehenEmpfehlung> empfehlung = MultiValueEnhanced.of();
 
     @Nullable
     @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String bemerkungen;
-
-    // Fernvisus
-    public void setFernvisus(@Nullable EnumSet<DistanzSehenResultat> distanzSehenResultate) {
-        this.fernvisus = EnumSetUtil.toString(distanzSehenResultate);
-    }
-
-    @NonNull
-    public EnumSet<DistanzSehenResultat> getFernvisus() {
-        return EnumSetUtil.fromString(DistanzSehenResultat.class, fernvisus);
-    }
-
-    // Nahvisus
-    public void setNahvisus(@Nullable EnumSet<DistanzSehenResultat> distanzSehenResultate) {
-        this.nahvisus = EnumSetUtil.toString(distanzSehenResultate);
-    }
-
-    @NonNull
-    public EnumSet<DistanzSehenResultat> getNahvisus() {
-        return EnumSetUtil.fromString(DistanzSehenResultat.class, nahvisus);
-    }
-
-    // Strabismus
-    public void setStrabismus(@Nullable EnumSet<StrabismusResultat> strabismusResultate) {
-        this.strabismus = EnumSetUtil.toString(strabismusResultate);
-    }
-
-    @NonNull
-    public EnumSet<StrabismusResultat> getStrabismus() {
-        return EnumSetUtil.fromString(StrabismusResultat.class, strabismus);
-    }
-
-    // Empfehlung
-    public void setEmpfehlung(@Nullable EnumSet<SehenEmpfehlung> empfehlungList) {
-        this.empfehlung = EnumSetUtil.toString(empfehlungList);
-    }
-
-    @NonNull
-    public EnumSet<SehenEmpfehlung> getEmpfehlung() {
-        return EnumSetUtil.fromString(SehenEmpfehlung.class, empfehlung);
-    }
 
     @NonNull
     public static UntersuchungSehenBeurteilung forUntersuchung(@NonNull Untersuchung untersuchung) {
@@ -226,7 +209,8 @@ public class UntersuchungSehenBeurteilung extends AbstractEntity<UntersuchungSeh
 
     @NonNull
     public static UntersuchungSehenBeurteilung forUntersuchungAbschliessen(
-        @NonNull Untersuchung untersuchung
+        @NonNull Untersuchung untersuchung,
+        boolean nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
     ) {
         UntersuchungSehenBeurteilung sehen = untersuchung.getUntersuchungSehenBeurteilung();
         if (sehen == null) {
@@ -234,30 +218,146 @@ public class UntersuchungSehenBeurteilung extends AbstractEntity<UntersuchungSeh
         }
         AnlassConfig config = untersuchung.getEinladung().getAnlass().getAnlassConfig();
 
-        sehen.setBrilleLinsen(UntersuchungSehenUtil.getBrilleLinsen(
-            config, sehen, BrilleLinsenResultat.NICHT_GEPRUEFT));
-        sehen.setStereotest(UntersuchungSehenUtil.getStereoTest(
-            config, sehen, StereotestResultat.NICHT_GEPRUEFT));
-        sehen.setFarbsehen(UntersuchungSehenUtil.getFarbsehen(
-            config, sehen, FarbsehenResultat.NICHT_GEPRUEFT));
-        sehen.setVerwendeteTafel(UntersuchungSehenUtil.getVerwendeteTafel(
-            config, sehen, VerwendetTafelResultat.NICHT_GEPRUEFT));
-        sehen.setFernvisus(UntersuchungSehenUtil.getFernvisus(
-            config, sehen, DistanzSehenResultat.NICHT_GEPRUEFT));
-        sehen.setNahvisus(UntersuchungSehenUtil.getNahvisus(
-            config, sehen, DistanzSehenResultat.NICHT_GEPRUEFT));
-        sehen.setMotilitaet(UntersuchungSehenUtil.getMotilitaet(
-            config, sehen, MotilitaetResultat.NICHT_GEPRUEFT));
-        sehen.setStrabismus(UntersuchungSehenUtil.getStrabismus(
-            config, sehen, StrabismusResultat.NICHT_GEPRUEFT));
-        sehen.setStrabismusAuspraegung(UntersuchungSehenUtil.getStrabismusAuspraegung(
-            config, sehen, StrabismusAuspraegungResultat.NICHT_GEPRUEFT));
-        sehen.setStrabismusAuftreten(UntersuchungSehenUtil.getStrabismusAuftreten(
-            config, sehen, StrabismusAuftretenResultat.NICHT_GEPRUEFT));
-        sehen.setInspektion(UntersuchungSehenUtil.getInspektion(
-            config, sehen, InspektionKonvergenzResultat.NICHT_GEPRUEFT));
-        sehen.setKonvergenz(UntersuchungSehenUtil.getKonvergenz(
-            config, sehen, InspektionKonvergenzResultat.NICHT_GEPRUEFT));
+        sehen.setBrilleLinsen(
+            ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getSehenBrilleLinsen,
+                sehen,
+                UntersuchungSehenBeurteilung::getBrilleLinsen,
+                BrilleLinsenResultat.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        sehen.setStereotest(
+            ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getSehenStereoTest,
+                sehen,
+                UntersuchungSehenBeurteilung::getStereotest,
+                StereotestResultat.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        sehen.setFarbsehen(
+            ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getSehenFarbsehen,
+                sehen,
+                UntersuchungSehenBeurteilung::getFarbsehen,
+                FarbsehenResultat.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        sehen.setVerwendeteTafel(
+            ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getSehenTafel,
+                sehen,
+                UntersuchungSehenBeurteilung::getVerwendeteTafel,
+                VerwendetTafelResultat.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        sehen.setFernvisus(
+            ValueEnhancedUtil.getMultiValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getSehenFernvisus,
+                sehen,
+                UntersuchungSehenBeurteilung::getFernvisus,
+                DistanzSehenResultat.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        sehen.setFernvisusAugeLinks(
+            ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getSehenFernvisusAugeEinzeln,
+                sehen,
+                UntersuchungSehenBeurteilung::getFernvisusAugeLinks,
+                DistanzSehenAugeEinzelnResultat.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        sehen.setFernvisusAugeRechts(
+            ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getSehenFernvisusAugeEinzeln,
+                sehen,
+                UntersuchungSehenBeurteilung::getFernvisusAugeRechts,
+                DistanzSehenAugeEinzelnResultat.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        sehen.setNahvisus(
+            ValueEnhancedUtil.getMultiValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getSehenNahvisus,
+                sehen,
+                UntersuchungSehenBeurteilung::getNahvisus,
+                DistanzSehenResultat.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        sehen.setMotilitaet(
+            ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getSehenMotilitaet,
+                sehen,
+                UntersuchungSehenBeurteilung::getMotilitaet,
+                MotilitaetResultat.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        sehen.setStrabismus(
+            ValueEnhancedUtil.getMultiValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getSehenStrabismus,
+                sehen,
+                UntersuchungSehenBeurteilung::getStrabismus,
+                StrabismusResultat.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        sehen.setStrabismusAuspraegung(
+            ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getSehenStrabismusAuspraegung,
+                sehen,
+                UntersuchungSehenBeurteilung::getStrabismusAuspraegung,
+                StrabismusAuspraegungResultat.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        sehen.setStrabismusAuftreten(
+            ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getSehenStrabismusAuftreten,
+                sehen,
+                UntersuchungSehenBeurteilung::getStrabismusAuftreten,
+                StrabismusAuftretenResultat.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        sehen.setInspektion(
+            ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getSehenInspektion,
+                sehen,
+                UntersuchungSehenBeurteilung::getInspektion,
+                InspektionKonvergenzResultat.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        sehen.setKonvergenz(
+            ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getSehenKonvergenz,
+                sehen,
+                UntersuchungSehenBeurteilung::getKonvergenz,
+                InspektionKonvergenzResultat.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
         return sehen;
     }
 }

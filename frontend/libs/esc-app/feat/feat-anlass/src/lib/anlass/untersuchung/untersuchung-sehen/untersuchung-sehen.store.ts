@@ -19,7 +19,6 @@ import {tapResponse} from '@ngrx/operators';
 import {patchState, signalStore, withMethods, withState} from '@ngrx/signals';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, map, pipe, switchMap, tap} from 'rxjs';
-import {AnlassEinladungenId} from '../anlass-einladungen-id';
 import {UntersuchungStore} from '../untersuchung.store';
 
 type UntersuchungSehenState = {
@@ -43,14 +42,17 @@ export class UntersuchungSehenStore extends signalStore(
   {protectedState: false},
   withState(initialState),
   withMethods((store) => ({
-    defaultSehenToApplyWithCorrectedVersion(): UntersuchungSehenBeurteilungSaveJson {
+    defaultSehenToApplyWithCorrectedVersion(): UntersuchungSehenBeurteilungSaveJson | undefined {
       // Ensure that the version is set correctly when applying the default Sehen
       // noinspection UnnecessaryLocalVariableJS
-      const defaultsWithCorrectedVersion = {
-        ...store.defaultSehenBeurteilungInitial(),
+      const initialDefault = store.defaultSehenBeurteilungInitial();
+      if (!initialDefault) {
+        return undefined;
+      }
+      return  {
+        ...initialDefault,
         version: store.sehenBeurteilung()?.data?.version ?? -1
-      };
-      return defaultsWithCorrectedVersion;
+      } as UntersuchungSehenBeurteilungSaveJson;
     },
     applyDefaultSehenBeurteilung(): void {
       patchState(store, {defaultSehenBeurteilungToApply: this.defaultSehenToApplyWithCorrectedVersion()});

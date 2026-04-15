@@ -25,7 +25,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsFileIngress;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsFileIngressBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.FileIngressApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FileIngressResultJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FileIngressStatusSpec;
@@ -73,7 +73,7 @@ class FileIngressResourceITest extends AbstractITest {
             .statusCode(Status.FORBIDDEN.getStatusCode());
     }
 
-    @TestAsFileIngress
+    @TestAsFileIngressBS
     @Test
     void file_ingress_invalid_filename_not_parsable() {
         // ARRANGE
@@ -91,7 +91,7 @@ class FileIngressResourceITest extends AbstractITest {
         assertFileIngressResultError(result, "InvalidFilenameForFragebogenIngress");
     }
 
-    @TestAsFileIngress
+    @TestAsFileIngressBS
     @Test
     void file_ingress_invalid_filename_geburtsdatum_invalid() {
         // ARRANGE
@@ -109,7 +109,7 @@ class FileIngressResourceITest extends AbstractITest {
         assertFileIngressResultError(result, "InvalidFilenameForFragebogenIngress");
     }
 
-    @TestAsFileIngress
+    @TestAsFileIngressBS
     @Test
     void file_ingress_invalid_filename_esadId_invalid() {
         // ARRANGE
@@ -127,7 +127,7 @@ class FileIngressResourceITest extends AbstractITest {
         assertFileIngressResultError(result, "InvalidFilenameForFragebogenIngress");
     }
 
-    @TestAsFileIngress
+    @TestAsFileIngressBS
     @Test
     void file_ingress_invalid_filename_esadId_not_same_as_pathParam() {
         // ARRANGE
@@ -145,7 +145,7 @@ class FileIngressResourceITest extends AbstractITest {
         assertFileIngressResultError(result, "InvalidFilenameForFragebogenIngress");
     }
 
-    @TestAsFileIngress
+    @TestAsFileIngressBS
     @Test
     void file_ingress_no_dossier_found() {
         // ARRANGE
@@ -165,7 +165,7 @@ class FileIngressResourceITest extends AbstractITest {
         assertFileIngressResultError(result, "NoDossierForEsadId");
     }
 
-    @TestAsFileIngress
+    @TestAsFileIngressBS
     @Test
     void file_ingress_geburtsdatum_mismatch() {
         // ARRANGE
@@ -187,7 +187,7 @@ class FileIngressResourceITest extends AbstractITest {
         assertFileIngressResultError(result, "FileIngressGeburtsdatumMissmatch");
     }
 
-    @TestAsFileIngress
+    @TestAsFileIngressBS
     @Test
     void file_ingress_no_einladung() {
         // ARRANGE
@@ -210,7 +210,7 @@ class FileIngressResourceITest extends AbstractITest {
         assertFileIngressResultError(result, "FileIngressNoSuitableAnlass");
     }
 
-    @TestAsFileIngress
+    @TestAsFileIngressBS
     @Test
     void file_ingress_only_impfanlass() {
         // ARRANGE
@@ -236,7 +236,7 @@ class FileIngressResourceITest extends AbstractITest {
         assertFileIngressResultError(result, "FileIngressNoSuitableAnlass");
     }
 
-    @TestAsFileIngress
+    @TestAsFileIngressBS
     @Test
     void file_ingress_multiple_anlasstypen() {
         // ARRANGE
@@ -262,7 +262,7 @@ class FileIngressResourceITest extends AbstractITest {
         assertFileIngressResultError(result, "FileIngressNoSuitableAnlass");
     }
 
-    @TestAsFileIngress
+    @TestAsFileIngressBS
     @Test
     void file_ingress_success_only_one_anlass() {
         // ARRANGE
@@ -293,7 +293,7 @@ class FileIngressResourceITest extends AbstractITest {
         assertThat(einladung.getFragebogenNotiz().get().getBemerkungen()).isEqualTo("Datei 26-11-2025_Gerber-Emma_Fragebogen.pdf wurde am 26.11.2025 automatisch hochgeladen.");
     }
 
-    @TestAsFileIngress
+    @TestAsFileIngressBS
     @Test
     void file_ingress_success_only_multiple_anlass_same_anlasstyp() {
         // ARRANGE
@@ -325,7 +325,7 @@ class FileIngressResourceITest extends AbstractITest {
         assertThat(einladung.getFragebogenNotiz().get().getBemerkungen()).isEqualTo("Datei 26-11-2025_Gerber-Emma_Fragebogen.pdf wurde am 26.11.2025 automatisch hochgeladen.");
     }
 
-    @TestAsFileIngress
+    @TestAsFileIngressBS
     @Test
     void file_ingress_success_notiz_already_exists_with_label_and_orphaned_metadata() {
         // ARRANGE

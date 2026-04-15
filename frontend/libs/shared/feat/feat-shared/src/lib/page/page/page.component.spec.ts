@@ -6,9 +6,11 @@ import {AufgabenStore} from '../../admin-shared/aufgaben.store';
 import {AppUser, BenutzerStore} from '../../benutzer/benutzer/benutzer.store';
 import {TimetravelStore} from '../../core/timetravel-store';
 import {DeploymentStore} from '../../deployment/deployment.store';
-import {provideTestingTransloco} from '@dvb/util-i18n';
+import {LanguageStore, provideTestingTransloco} from '@dvb/util-i18n';
 import {NgbOffcanvas} from '@ng-bootstrap/ng-bootstrap';
 import {PageComponent} from './page.component';
+import {TenantSettingsStore} from "../../tenant/tenant-settings.store";
+import {AppLanguages} from "@dvb/data-access-backend";
 
 describe('PageComponent', () => {
   let component: PageComponent;
@@ -37,6 +39,19 @@ describe('PageComponent', () => {
     numOfOffeneFaelligeAufgaben: signal(1),
   };
 
+
+  // @ts-expect-error we mocked just the required things
+  const mockTenantSettingStore: TenantSettingsStore = {
+    supportedLanguages: signal([AppLanguages.DE, AppLanguages.FR]),
+    footerEnabled: signal(true),
+    settings: signal(undefined),
+  };
+
+  const mockLanguageStore: Partial<LanguageStore> = {
+    activeLocale: jest.fn().mockReturnValue('de'),
+    setActiveLanguage: jest.fn(),
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [PageComponent, HttpClientTestingModule],
@@ -56,6 +71,14 @@ describe('PageComponent', () => {
             isTimetravelEnabled: signal(true),
             version: signal('1.0.0'),
           },
+        },
+        {
+          provide: LanguageStore,
+          useValue: mockLanguageStore,
+        },
+        {
+          provide: TenantSettingsStore,
+          useValue: mockTenantSettingStore,
         },
         provideRouter([]),
         {

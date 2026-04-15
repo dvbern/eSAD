@@ -19,7 +19,7 @@
             [mode]="store.detailMode()"
             [isCreate]="store.selectedIsNew()"
             [saving]="store.saveLoader.isLoading()"
-            [canEdit]="false"
+            [canEdit]="store.selectedIsNew()"
             routeToEdit="../edit"
             [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
             [routeOnCancelCreate]="[Path.RELATIVE_ONE_UP]"/>

@@ -1,7 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.shared.mail.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguageProvider;
@@ -9,6 +8,7 @@ import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TLProducer;
 import ch.dvbern.oss.commons.i18nl10n.I18nMessage;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +23,7 @@ public class MailHelperService {
     private final AppLanguageProvider appLanguageProvider;
     private final ConfigService configService;
     private final TLProducer tlProducer;
+    private final TenantProducer tenantProducer;
 
     private static final String HTML_BR = "<br>";
 	private static final String LOG_PREFIX = "ESC-MAIL: Override E-Mail is enabled but no overriding recipients found, using original ";
@@ -106,7 +107,9 @@ public class MailHelperService {
     @NonNull
     private String getStufePrefix() {
         if (!configService.isStufeProd()) {
-            return String.format(" (%s)", configService.getEnvironment());
+            return String.format(" (%s, %s)",
+                configService.getEnvironment(),
+                tenantProducer.produceTenant());
         }
         return "";
     }

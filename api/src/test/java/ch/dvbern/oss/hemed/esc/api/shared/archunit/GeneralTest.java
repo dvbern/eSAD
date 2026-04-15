@@ -1,14 +1,21 @@
 package ch.dvbern.oss.hemed.esc.api.shared.archunit;
 
 import ch.dvbern.dvbstarter.infrastructure.db.baserepo.BaseRepo;
+import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntityListener;
 import ch.dvbern.oss.hemed.esc.api.shared.archunit.predicates.MethodPredicates;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileUploadWrapper;
+import ch.dvbern.oss.hemed.esc.api.shared.mapper.BaseMapper;
 import com.tngtech.archunit.library.GeneralCodingRules;
 import jakarta.inject.Inject;
 import jakarta.persistence.TypedQuery;
 import jakarta.ws.rs.ext.Provider;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -106,6 +113,39 @@ class GeneralTest {
             .callMethodWhere(MethodPredicates.methodOfFileExceptDeleteOnExit())
             .because("we should use java.nio.Path instead, which offers "
                 + "better performance, error handling, scalability and symlink handling.");
+
+        rule.check(ArchConst.APP_CLASSES);
+    }
+
+    @Test
+    void no_usage_of_now_api_to_enable_time_travel() {
+        var rule = noClasses()
+            .that()
+            // some exceptions are allowed
+            .areNotAssignableTo(AppClock.class)
+            .and()
+            .areNotAssignableTo(AppClock.LocalDateTimeProvider.class)
+            .and()
+            .areNotAssignableTo(AppClock.LocalTimeProvider.class)
+            .and()
+            .areNotAssignableTo(AppClock.OffsetDateTimeProvider.class)
+            .and()
+            .areNotAssignableTo(AppClock.ZonedDateTimeProvider.class)
+            .and()
+            .areNotAssignableTo(BaseMapper.class)
+            // all other classes should not use java.time.X.now()
+            .should()
+            .callMethod(LocalDate.class, "now")
+            .orShould()
+            .callMethod(LocalDateTime.class, "now")
+            .orShould()
+            .callMethod(LocalTime.class, "now")
+            .orShould()
+            .callMethod(OffsetDateTime.class, "now")
+            .orShould()
+            .callMethod(ZonedDateTime.class, "now")
+            .as("java.time.X.now() shouldn't be used")
+            .because("we use ch.dvbern.dvbstarter.shared.clock.AppClock instead to enable testing with 'time travel'");
 
         rule.check(ArchConst.APP_CLASSES);
     }

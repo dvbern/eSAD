@@ -2,7 +2,7 @@ import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, effect, inject, untracked} from '@angular/core';
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {EntityAktivStatus, ImportTyp, KlasseJson, Klassenstufe, SchuleOptionJson} from '@dvb/data-access-backend';
+import {EntityAktivStatus, KlasseJson, Klassenstufe, SchuleOptionJson} from '@dvb/data-access-backend';
 import {BenutzerStore, KlassenStore, Path, SchulenOptionsStore} from '@dvb/feat-shared';
 import {
   FormButtonsComponent,
@@ -14,8 +14,14 @@ import {
   TextInputDirective,
 } from '@dvb/ui-components';
 import {DirtyMarker} from '@dvb/util-angular';
-import {fromISODateTimeString, hasListEditBerechtigung, isNotNullish, isNullish} from '@dvb/util-shared';
-import {TranslocoPipe} from '@jsverse/transloco';
+import {
+  fromISODateTimeString,
+  hasListEditBerechtigung,
+  isExternalObject,
+  isNotNullish,
+  isNullish
+} from '@dvb/util-shared';
+import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {KlassenDetailForm} from '../klassen-detail.form';
 
@@ -49,6 +55,7 @@ export class KlassenDatenComponent implements DirtyMarker {
   protected readonly Path = Path;
   readonly klassenstufen = Object.values(Klassenstufe);
   readonly klasseAktivStati = Object.values(EntityAktivStatus);
+  readonly #transloco = inject(TranslocoService);
 
   canEditList = this.benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
 
@@ -56,15 +63,17 @@ export class KlassenDatenComponent implements DirtyMarker {
     () => this.schulenOptionsStore.entitiesActiveIncluding(this.store.selectedEntity()?.data.schule),
   );
 
-  isEscadaObject = computed(() => {
+  getImportSchnittstelle = computed(() => {
     const externalImportInfo = this.store.selectedEntity()?.externalImportInfoJson;
-    return isNotNullish(externalImportInfo)
-      && externalImportInfo?.aktivInExternalSystem
-      && externalImportInfo?.importTyp === ImportTyp.ESCADA;
+    return isNotNullish(externalImportInfo) ?
+      this.#transloco.translate('ImportTyp.' + externalImportInfo.importTyp) :
+      '';
   });
 
-  getDateLatestImportIfEscadaObject() {
-    if (this.isEscadaObject()) {
+  isExternalObject = computed(() => isExternalObject(this.store.selectedEntity()));
+
+  getDateLatestImportIfExternalObject() {
+    if (this.isExternalObject()) {
       return fromISODateTimeString(this.store.selectedEntity()?.externalImportInfoJson?.timestampLatestImport);
     }
     return undefined;
@@ -83,8 +92,11 @@ export class KlassenDatenComponent implements DirtyMarker {
       }
       untracked(() => {
         this.form.reset(selectedEntity.data, mode);
-        if (this.isEscadaObject()) {
+        if (this.isExternalObject()) {
           this.form.group.disable();
+        } else if (selectedEntity.data.schule) {
+          // Schule darf nicht mehr veraendert werden
+          this.form.group.get('schule')?.disable();
         }
       });
     });

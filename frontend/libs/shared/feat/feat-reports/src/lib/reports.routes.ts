@@ -10,7 +10,7 @@ export const reportsRoutes: Route[] = [
     providers: [DocumentQueueStore],
     resolve: {
       _store: () => {
-        inject(DocumentQueueStore).loadDocumentQueueList();
+        inject(DocumentQueueStore).loadDocumentQueueListForCurrentBenutzer();
       },
     },
   },

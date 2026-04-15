@@ -18,12 +18,8 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Fachrichtung, HpvTeilnahme, Organisation} from '@dvb/data-access-backend';
-import {AerzteStore} from '@dvb/feat-shared';
-import {AdresseComponent, AdresseForm} from '@dvb/feat-shared';
-import {BenutzerStore} from '@dvb/feat-shared';
-import {Path} from '@dvb/feat-shared';
-import {PageComponent} from '@dvb/feat-shared';
+import {Fachrichtung, HpvTeilnahme, Rechtsform} from '@dvb/data-access-backend';
+import {AdresseComponent, AdresseForm, AerzteStore, BenutzerStore, PageComponent, Path} from '@dvb/feat-shared';
 import {
   CardComponent,
   FormButtonsComponent,
@@ -73,7 +69,7 @@ export class AerzteDetailPageComponent implements DirtyMarker {
   readonly #activatedRoute = inject(ActivatedRoute);
 
   fachrichtungen = Object.values(Fachrichtung);
-  organsisationen = Object.values(Organisation);
+  rechtsformen = Object.values(Rechtsform);
   hpvTeilnahmen = Object.values(HpvTeilnahme);
 
   form = new ArztDetailForm({

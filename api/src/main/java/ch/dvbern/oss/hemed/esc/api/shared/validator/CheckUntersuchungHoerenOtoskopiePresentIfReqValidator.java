@@ -20,6 +20,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.validator;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.commons.collections4.CollectionUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -37,17 +38,17 @@ public class CheckUntersuchungHoerenOtoskopiePresentIfReqValidator
         AnlassConfig anlassConfig = hoerenOtoskopie.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
 
         if (anlassConfig.getHoerenOtoskopie().isRequired()) {
-            if (CollectionUtils.isEmpty(hoerenOtoskopie.getOtoskopieRechts())) {
+            if (CollectionUtils.isEmpty(ValueEnhancedUtil.getEnumSetOrEmpty(hoerenOtoskopie.getOtoskopieRechts(), OtoskopieResultat.class))) {
                 return false;
             }
-            if (CollectionUtils.isEmpty(hoerenOtoskopie.getOtoskopieLinks())) {
+            if (CollectionUtils.isEmpty(ValueEnhancedUtil.getEnumSetOrEmpty(hoerenOtoskopie.getOtoskopieLinks(), OtoskopieResultat.class))) {
                 return false;
             }
-            if (hoerenOtoskopie.getOtoskopieRechts().contains(OtoskopieResultat.ANDERES)
+            if (ValueEnhancedUtil.getEnumSetOrEmpty(hoerenOtoskopie.getOtoskopieRechts(), OtoskopieResultat.class).contains(OtoskopieResultat.ANDERES)
                 && hoerenOtoskopie.getOtoskopieRechtsResultatAndere() == null) {
                 return false;
             }
-            if (hoerenOtoskopie.getOtoskopieLinks().contains(OtoskopieResultat.ANDERES)
+            if (ValueEnhancedUtil.getEnumSetOrEmpty(hoerenOtoskopie.getOtoskopieLinks(), OtoskopieResultat.class).contains(OtoskopieResultat.ANDERES)
                 && hoerenOtoskopie.getOtoskopieLinksResultatAndere() == null) {
                 return false;
             }

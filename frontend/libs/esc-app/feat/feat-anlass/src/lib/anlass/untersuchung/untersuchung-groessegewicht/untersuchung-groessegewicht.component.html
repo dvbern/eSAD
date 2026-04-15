@@ -17,26 +17,25 @@
     <!-- Groesse -->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGroesse !== RequirementSetting.NOT_VISIBLE) {
       <svui-kachel-form-section [heading]=" 'untersuchung.tab.groessegewicht.groesse' | transloco">
-        <svui-form-control
-          class="textcontrol"
-          [label]="'untersuchung.tab.groessegewicht.groesse' | transloco"
-          [topLabelVisibility]="'hidden'"
-          [viewValue]="''">
-          <input [svuiTextInput]="'number'" [formControl]="form.group.controls.groesse"/>
-          <span class="fs-6" control-message>{{ 'untersuchung.tab.groessegewicht.groesse.einheit' | transloco }}</span>
-        </svui-form-control>
-        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGroessePerzentile
-        !== RequirementSetting.NOT_VISIBLE) {
-          @for (each of perzentileGroesse; track each) {
-            <svui-kachel-control [label]="'PerzentileGroesse.' + each | transloco ">
-              <input svuiRadio
-                     type="radio"
-                     name="groessePerzentile"
-                     [formControl]="form.group.controls.groessePerzentile"
-                     [value]="each"
-              />
-            </svui-kachel-control>
-          }
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGroessePerzentile !== RequirementSetting.NOT_VISIBLE) {
+          <feat-value-enhanced
+            [form]="form.groessePerzentileValueEnhancedForm"
+            [valueTitleKey]="''"
+            [valuePrefix]="'PerzentileGroesse'"
+            [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+            >
+            <div ngProjectAs="fieldsBeforeSingle">
+              <svui-form-control
+                class="textcontrol"
+                [label]="'untersuchung.tab.groessegewicht.groesse' | transloco"
+                [topLabelVisibility]="'hidden'"
+                [viewValue]="''"
+                data-testid="untersuchung-groesse-input">
+                <input [svuiTextInput]="'number'" [formControl]="form.group.controls.groesse"/>
+                <span class="fs-6" control-message>{{ 'untersuchung.tab.groessegewicht.groesse.einheit' | transloco }}</span>
+              </svui-form-control>
+            </div>/
+          </feat-value-enhanced>
         }
       </svui-kachel-form-section>
     }
@@ -44,27 +43,25 @@
     <!-- Gewicht -->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGewicht !== RequirementSetting.NOT_VISIBLE) {
       <svui-kachel-form-section [heading]=" 'untersuchung.tab.groessegewicht.gewicht' | transloco">
-        <svui-form-control
-          class="textcontrol"
-          [label]="'untersuchung.tab.groessegewicht.gewicht' | transloco"
-          [topLabelVisibility]="'hidden'"
-          [viewValue]="''">
-          <input [svuiTextInput]="'number'" [formControl]="form.group.controls.gewicht"/>
-          <span class="fs-6" control-message>{{ 'untersuchung.tab.groessegewicht.gewicht.einheit' | transloco }}</span>
-        </svui-form-control>
-        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGewichtPerzentile
-        !== RequirementSetting.NOT_VISIBLE) {
-          @for (each of perzentileGewicht; track each) {
-            <svui-kachel-control [label]="'PerzentileGewicht.' + each | transloco ">
-              <input
-                svuiRadio
-                type="radio"
-                name="gewichtPerzentile"
-                [formControl]="form.group.controls.gewichtPerzentile"
-                [value]="each"
-              />
-            </svui-kachel-control>
-          }
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGewichtPerzentile !== RequirementSetting.NOT_VISIBLE) {
+          <feat-value-enhanced
+            [form]="form.gewichtPerzentileValueEnhancedForm"
+            [valueTitleKey]="''"
+            [valuePrefix]="'PerzentileGewicht'"
+            [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+            >
+            <div ngProjectAs="fieldsBeforeSingle">
+              <svui-form-control
+                class="textcontrol"
+                [label]="'untersuchung.tab.groessegewicht.gewicht' | transloco"
+                [topLabelVisibility]="'hidden'"
+                [viewValue]="''"
+                data-testid="untersuchung-gewicht-input">
+                <input [svuiTextInput]="'number'" [formControl]="form.group.controls.gewicht"/>
+                <span class="fs-6" control-message>{{ 'untersuchung.tab.groessegewicht.gewicht.einheit' | transloco }}</span>
+              </svui-form-control>
+            </div>
+          </feat-value-enhanced>
         }
       </svui-kachel-form-section>
     }
@@ -72,27 +69,24 @@
     <!-- BMI -->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtBmi !== RequirementSetting.NOT_VISIBLE) {
       <svui-kachel-form-section [heading]=" 'untersuchung.tab.groessegewicht.bmi' | transloco">
-        <svui-form-control
-          class="textcontrol"
-          [label]="'untersuchung.tab.groessegewicht.bmi' | transloco"
-          [topLabelVisibility]="'hidden'"
-          [viewValue]="''">
-          <input svuiTextInput [formControl]="form.group.controls.bmi"/>
-          <span class="fs-6" control-message>{{ 'untersuchung.tab.groessegewicht.bmi.einheit' | transloco }}</span>
-        </svui-form-control>
-        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtBmiPerzentile
-        !== RequirementSetting.NOT_VISIBLE) {
-          @for (each of anlassStore.groesseGewichtBmiPerzentileValues(); track each) {
-            <svui-kachel-control [label]="'PerzentileBmi.' + each | transloco ">
-              <input
-                svuiRadio
-                type="radio"
-                name="bmiPerzentile"
-                [formControl]="form.group.controls.bmiPerzentile"
-                [value]="each"
-              />
-            </svui-kachel-control>
-          }
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtBmiPerzentile !== RequirementSetting.NOT_VISIBLE) {
+          <feat-value-enhanced
+            [form]="form.bmiPerzentileValueEnhancedForm"
+            [valueTitleKey]="''"
+            [valuePrefix]="'PerzentileBmi'"
+            [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+            >
+            <div ngProjectAs="fieldsBeforeSingle">
+              <svui-form-control
+                class="textcontrol"
+                [label]="'untersuchung.tab.groessegewicht.bmi' | transloco"
+                [topLabelVisibility]="'hidden'"
+                [viewValue]="''">
+                <input svuiTextInput [formControl]="form.group.controls.bmi"/>
+                <span class="fs-6" control-message>{{ 'untersuchung.tab.groessegewicht.bmi.einheit' | transloco }}</span>
+              </svui-form-control>
+            </div>
+          </feat-value-enhanced>
         }
       </svui-kachel-form-section>
     }

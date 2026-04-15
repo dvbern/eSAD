@@ -23,8 +23,7 @@ import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH;
@@ -35,7 +34,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_SC
 @Tag(name = Tags.TAG_KINDER)
 @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "KindResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("KindResourceMS")
 public class KindResource {
 
     private final KindMapper kindMapper;

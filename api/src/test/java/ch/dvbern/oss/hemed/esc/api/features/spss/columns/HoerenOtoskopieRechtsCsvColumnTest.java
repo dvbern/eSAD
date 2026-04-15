@@ -6,6 +6,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -35,7 +36,7 @@ class HoerenOtoskopieRechtsCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        hoerenOtoskopie.setOtoskopieRechts(EnumSet.allOf(OtoskopieResultat.class));
+        hoerenOtoskopie.setOtoskopieRechts(MultiValueEnhanced.of(EnumSet.allOf(OtoskopieResultat.class), null));
 
         assertThat(column.extract(einladung)).isEqualTo("1");
     }
@@ -60,7 +61,7 @@ class HoerenOtoskopieRechtsCsvColumnTest extends AbstractBaseColumnTest {
         assertThat(column.extract(einladung)).isEmpty();
 
         when(tlMock.translate("printer.boolean.true")).thenReturn("Ja");
-        hoerenOtoskopie.setOtoskopieRechts(EnumSet.allOf(OtoskopieResultat.class));
+        hoerenOtoskopie.setOtoskopieRechts(MultiValueEnhanced.of(EnumSet.allOf(OtoskopieResultat.class), null));
 
         assertThat(column.extract(einladung)).isEqualTo("Ja");
     }

@@ -9,6 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKind;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ExternalSystemIdDTO;
@@ -29,7 +30,7 @@ public class KontaktPersonKindExternalSyncService {
 
     private final KontaktPersonKindExternalSyncHelperService syncHelperService;
     private final ConfigService configService;
-    private final ManagedExecutor concurrentEscadaExecutor;
+    private final ManagedExecutor concurrentExecutor;
 
     // IMPORANT: for the @ManagedExecutorConfig annotation to work, it must be directly on the @Inject.
     // do NOT use private final quarkus magic or you will exhaust all db connections
@@ -37,24 +38,25 @@ public class KontaktPersonKindExternalSyncService {
     public KontaktPersonKindExternalSyncService(
         KontaktPersonKindExternalSyncHelperService syncHelperService,
         ConfigService configService,
-        @ManagedExecutorConfig(maxAsync = 9) ManagedExecutor concurrentEscadaExecutor
+        @ManagedExecutorConfig(maxAsync = 9) ManagedExecutor concurrentExecutor
     ) {
         this.syncHelperService = syncHelperService;
         this.configService = configService;
-        this.concurrentEscadaExecutor = concurrentEscadaExecutor;
+        this.concurrentExecutor = concurrentExecutor;
     }
 
     @NonNull
     @Transactional(TxType.NOT_SUPPORTED)
     public List<ItemSyncResultJson<KontaktPersonKind>> syncKontaktPersonKind(
-        @NonNull ImportPlanDTO<KontaktPersonKindExternal> importPlan
+        @NonNull ImportPlanDTO<KontaktPersonKindExternal> importPlan,
+        @NonNull ImportTyp importTyp
     ) {
         List<ItemSyncResultJson<KontaktPersonKind>> addResults =
-            addNewKontaktPersonenAsync(importPlan.itemsToAdd());
+            addNewKontaktPersonenAsync(importPlan.itemsToAdd(), importTyp);
         List<ItemSyncResultJson<KontaktPersonKind>> updateResults =
-            updateExistingKontaktPersonenAsync(importPlan.getItemsToSyncMap());
+            updateExistingKontaktPersonenAsync(importPlan.getItemsToSyncMap(), importTyp);
         List<ItemSyncResultJson<KontaktPersonKind>> deactivateResults =
-            deactivateRemovedKontaktPersonenAsync(importPlan.itemsToDelete());
+            deactivateRemovedKontaktPersonenAsync(importPlan.itemsToDelete(), importTyp);
 
         List<ItemSyncResultJson<KontaktPersonKind>> importResults = new ArrayList<>(addResults);
         importResults.addAll(updateResults);
@@ -64,28 +66,29 @@ public class KontaktPersonKindExternalSyncService {
 
     @NonNull
     private List<ItemSyncResultJson<KontaktPersonKind>> addNewKontaktPersonenAsync(
-        @NonNull Set<KontaktPersonKindExternal> itemsToPersist
+        @NonNull Set<KontaktPersonKindExternal> itemsToPersist,
+        @NonNull ImportTyp importTyp
     ) {
         StopWatch stopWatch = StopWatch.createStarted();
-        LOG.info("ESCADA: Starting to add {} KontaktPersonen-Kind", itemsToPersist.size());
+        LOG.info("{}: Starting to add {} KontaktPersonen-Kind", importTyp, itemsToPersist.size());
 
         List<CompletableFuture<ItemSyncResultJson<KontaktPersonKind>>> futures = itemsToPersist.stream()
             .map(kontaktPersonKindExternalToAdd -> CompletableFuture.supplyAsync(
                 () -> {
                     try {
-                        return syncHelperService.addNewKontaktPerson(kontaktPersonKindExternalToAdd);
+                        return syncHelperService.addNewKontaktPerson(kontaktPersonKindExternalToAdd, importTyp);
                     } catch (Exception e) {
                         LOG.warn(
-                            "ESCADA: Error adding new KontaktPersonKind with externalId: {}",
-                            kontaktPersonKindExternalToAdd.getExternalId(), e);
+                            "{}: Error adding new KontaktPersonKind with externalId: {}",
+                            importTyp, kontaktPersonKindExternalToAdd.getExternalId(), e);
                         return ItemSyncResultJson.<KontaktPersonKind>createAddErrorItem(
                             kontaktPersonKindExternalToAdd,
                             Objects.toString(
-                                kontaktPersonKindExternalToAdd.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo()),
+                                kontaktPersonKindExternalToAdd.getFullNameIfAllowed(configService.isExternalImportRedactPersonalInfo()),
                                 kontaktPersonKindExternalToAdd.getAdressierungId()),
                             e);
                     }
-                }, concurrentEscadaExecutor)
+                }, concurrentExecutor)
             )
             .toList();
 
@@ -94,34 +97,35 @@ public class KontaktPersonKindExternalSyncService {
             .toList();
 
         LOG.info(
-            "ESCADA: Finished persisting new KontaktPersonen-Kind, took {}ms",
-            stopWatch.getTime(TimeUnit.MILLISECONDS));
+            "{}: Finished persisting new KontaktPersonen-Kind, took {}ms",
+            importTyp, stopWatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 
     @NonNull
     private List<ItemSyncResultJson<KontaktPersonKind>> updateExistingKontaktPersonenAsync(
-        @NonNull Map<ExternalSystemIdDTO, KontaktPersonKindExternal> itemsToSync
+        @NonNull Map<ExternalSystemIdDTO, KontaktPersonKindExternal> itemsToSync,
+        @NonNull ImportTyp importTyp
     ) {
         StopWatch stopWatch = StopWatch.createStarted();
-        LOG.info("ESCADA: Starting to update {} KontaktPersonen-Kind", itemsToSync.size());
+        LOG.info("{}: Starting to update {} KontaktPersonen-Kind", importTyp, itemsToSync.size());
         List<CompletableFuture<ItemSyncResultJson<KontaktPersonKind>>> futures = itemsToSync.entrySet().stream()
             .map(entry -> CompletableFuture.supplyAsync(
                 () -> {
                     ExternalSystemIdDTO idDTO = entry.getKey();
                     try {
-                        return syncHelperService.updateExistingKontaktPerson(idDTO, entry.getValue());
+                        return syncHelperService.updateExistingKontaktPerson(idDTO, entry.getValue(), importTyp);
                     } catch (Exception e) {
                         LOG.warn(
-                            "ESCADA: Error updating KontaktPersonKind with externalId: '{}', internalId: '{}'",
-                            idDTO.getExternalId(), idDTO.getInternalId(), e);
+                            "{}: Error updating KontaktPersonKind with externalId: '{}', internalId: '{}'",
+                            importTyp, idDTO.getExternalId(), idDTO.getInternalId(), e);
                         return ItemSyncResultJson.createUpdateErrorItem(
                             idDTO,
                             KontaktPersonKind.class,
                             e);
                     }
                 },
-                concurrentEscadaExecutor)
+                concurrentExecutor)
             ).toList();
 
         List<ItemSyncResultJson<KontaktPersonKind>> resultDtos = futures.stream()
@@ -129,34 +133,35 @@ public class KontaktPersonKindExternalSyncService {
             .toList();
 
         LOG.info(
-            "ESCADA: Finished updating KontaktPersonen-Kind, took {}ms",
-            stopWatch.getTime(TimeUnit.MILLISECONDS));
+            "{}: Finished updating KontaktPersonen-Kind, took {}ms",
+            importTyp, stopWatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 
     @NonNull
     private List<ItemSyncResultJson<KontaktPersonKind>> deactivateRemovedKontaktPersonenAsync(
-        @NonNull Set<ExternalSystemIdDTO> itemsToDelete
+        @NonNull Set<ExternalSystemIdDTO> itemsToDelete,
+        @NonNull ImportTyp importTyp
     ) {
         StopWatch stopWatch = StopWatch.createStarted();
-        LOG.info("ESCADA: Starting to deactivate {} KontaktPersonen-Kind", itemsToDelete.size());
+        LOG.info("{}: Starting to deactivate {} KontaktPersonen-Kind", importTyp, itemsToDelete.size());
 
         List<CompletableFuture<ItemSyncResultJson<KontaktPersonKind>>> futures = itemsToDelete.stream()
             .map(
                 externalSystemIdDTO -> CompletableFuture.supplyAsync(
                     () -> {
                         try {
-                            return syncHelperService.deactivateRemovedKonkaktPersonen(externalSystemIdDTO);
+                            return syncHelperService.deactivateRemovedKonkaktPersonen(externalSystemIdDTO, importTyp);
                         } catch (Exception e) {
                             LOG.warn(
-                                "ESCADA: Error deactivating KontaktPersonKind with externalId: '{}', internalId: '{}'",
-                                externalSystemIdDTO.getExternalId(), externalSystemIdDTO.getInternalId(), e);
+                                "{}: Error deactivating KontaktPersonKind with externalId: '{}', internalId: '{}'",
+                                importTyp, externalSystemIdDTO.getExternalId(), externalSystemIdDTO.getInternalId(), e);
                             return ItemSyncResultJson.createDeactivateErrorItem(
                                 externalSystemIdDTO,
                                 KontaktPersonKind.class,
                                 e);
                         }
-                    }, concurrentEscadaExecutor))
+                    }, concurrentExecutor))
             .toList();
 
         List<ItemSyncResultJson<KontaktPersonKind>> resultDtos = futures.stream()
@@ -164,8 +169,8 @@ public class KontaktPersonKindExternalSyncService {
             .toList();
 
         LOG.info(
-            "ESCADA: Finished deactivating KontaktPersonen-Kind, took {}ms",
-            stopWatch.getTime(TimeUnit.MILLISECONDS));
+            "{}: Finished deactivating KontaktPersonen-Kind, took {}ms",
+            importTyp, stopWatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 }

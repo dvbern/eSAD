@@ -30,7 +30,7 @@ import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.oss.hemed.esc.api.features.importoptions.escada.csv.EscadaCsvDTO;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsEscada;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsEscadaBS;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -114,7 +114,7 @@ class SozialversicherungsnummerFixPreprocessorTest {
 
     @Test
     @Order(2)
-    @TestAsEscada
+    @TestAsEscadaBS
     @Disabled("This test is disabled because it is only needed when fixing the csv file from base.")
     void escada_csv_upload_pseudo_data() {
         // read csv file

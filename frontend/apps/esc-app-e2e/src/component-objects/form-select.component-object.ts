@@ -15,20 +15,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Page} from '@playwright/test';
+import {Locator, Page} from '@playwright/test';
+
+type Host = 'svui-form-control' | 'svui-table-control' | 'ng-select' ;
 
 export class FormSelectComponentObject {
+  constructor(
+    private testId: string,
+    private host: Host,
+  ) {}
 
-  constructor(private testId: string) {
-  }
+  getFormField = (page: Page | Locator) => page.locator(`${this.host}[data-testid=${this.testId}]`);
 
-  getFormField = (page: Page) => page.locator(`svui-form-control[data-testid=${this.testId}]`);
+  getSelect = (page: Page | Locator) => this.getFormField(page).getByRole('combobox');
 
-  getSelect = (page: Page) => this.getFormField(page).getByRole('combobox');
-
-  async setOption(page: Page, option: string) {
-    await this.getSelect(page).click();
-    await page.getByRole('option', {name: option}).click();
-    await this.getSelect(page).blur();
+  async setOption(page: Page, option: string, row?: Locator) {
+    await this.getSelect(row ?? page).click();
+    await page.getByRole('option', { name: option }).click();
+    if(this.host !== 'svui-table-control') {
+      await this.getSelect(page).blur();
+    }
   }
 }

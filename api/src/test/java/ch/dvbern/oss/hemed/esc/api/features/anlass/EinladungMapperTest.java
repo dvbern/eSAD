@@ -18,6 +18,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -33,12 +34,44 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfstatusKrankh
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungInternBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenMassnahmenBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSignaturBuilder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class EinladungMapperTest {
+
+    @ParameterizedTest(name = "toUntersuchungTabsSavedJson should return [{1}] when UntersuchungSignatur {2}")
+    @MethodSource("getUntersuchungenSignatur")
+    void toUntersuchungTabsSavedJson_should_return_untersuchungSignatur_saved(
+        Untersuchung untersuchung,
+        boolean expected,
+        String testCase
+    ) {
+        // ACT
+        UntersuchungTabsSavedJson actual =
+            EinladungMapper.toUntersuchungTabsSavedJson(untersuchung, List.of(), List.of());
+
+        // ASSERT
+        Assertions.assertThat(actual.isSignaturTabSaved()).isEqualTo(expected);
+    }
+
+    static Stream<Arguments> getUntersuchungenSignatur() {
+        return Stream.of(
+            Arguments.of(UntersuchungBuilder.defaultUntersuchung(LocalDate.now()), false, "UntersuchungSignatur is null"),
+            Arguments.of(
+                UntersuchungBuilder.create(
+                    untersuchungBuilder -> untersuchungBuilder.withUntersuchungSignatur(
+                UntersuchungSignaturBuilder.defaultUntersuchungSignatur(LocalDate.now())
+            )), false, "UntersuchungSignatur is not null but no Person is set"),
+
+            Arguments.of(UntersuchungBuilder.create(
+                untersuchungBuilder -> untersuchungBuilder.withUntersuchungSignatur(
+                    UntersuchungSignaturBuilder.create(untersuchungSignaturBuilder -> untersuchungSignaturBuilder.withSignatur(BenutzerBuilder.defaultBenutzer(), LocalDateTime.now()))
+                )), true, "UntersuchungSignatur is filled in")
+        );
+    }
 
     @ParameterizedTest(name = "toUntersuchungTabsSavedJson should return [{3}] when UntersuchungImpfung {4}")
     @MethodSource("getUntersuchungen")

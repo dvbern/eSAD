@@ -1,5 +1,7 @@
 <feat-page [heading]="pageTitle | transloco: {nameKind: dossierStore.nameKind() }"
-  [showNav]="false">
+  [showNav]="false"
+  [showFooter]="false"
+>
 
   <feat-notizen-mobile-upload
     [existingNotiz]="kinderNotizStore.selectedEntity()"

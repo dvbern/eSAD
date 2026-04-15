@@ -16,8 +16,7 @@ import jakarta.ws.rs.Path;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Slf4j
@@ -27,7 +26,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = OpenApiConst.Tags.TAG_AKTIVITAET)
 @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "AktivitaetHistoryResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("AktivitaetHistoryResourceMS")
 public class AktivitaetHistoryResource {
 
     private final AktivitaetHistoryMapper aktivitaetHistoryMapper;

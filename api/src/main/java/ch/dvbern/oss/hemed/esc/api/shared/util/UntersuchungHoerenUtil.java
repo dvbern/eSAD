@@ -23,11 +23,9 @@ import java.util.EnumSet;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.collections4.CollectionUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -35,66 +33,35 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class UntersuchungHoerenUtil {
 
     @NonNull
-    public static EnumSet<AudiogrammBeurteilung> getAudiogrammBeurteilung(
+    public static MultiValueEnhanced<AudiogrammBeurteilung> getAudiogrammBeurteilungDefault(
         @NonNull RequirementSetting config,
-        @Nullable UntersuchungHoerenAudiogramm hoeren,
         @NonNull AudiogrammBeurteilung defaultWert
     ) {
         if (config.isVisible()) {
-            if (hoeren != null && CollectionUtils.isNotEmpty(hoeren.getAudiogrammBeurteilung())) {
-                return hoeren.getAudiogrammBeurteilung();
-            }
-            return EnumSet.of(defaultWert);
+            return MultiValueEnhanced.of(EnumSet.of(defaultWert), null);
         }
-        return EnumSet.noneOf(AudiogrammBeurteilung.class);
+        return MultiValueEnhanced.of(EnumSet.noneOf(AudiogrammBeurteilung.class), null);
     }
 
     @NonNull
-    public static EnumSet<HoerenZusaetzlicheAngaben> getZusaetzlicheAngaben(
+    public static MultiValueEnhanced<HoerenZusaetzlicheAngaben> getZusaetzlicheAngabenDefault(
         @NonNull RequirementSetting config,
-        @Nullable UntersuchungHoerenAudiogramm hoeren,
         @NonNull HoerenZusaetzlicheAngaben defaultWert
     ) {
         if (config.isVisible()) {
-            if (hoeren != null && CollectionUtils.isNotEmpty(hoeren.getZusaetzlicheAngaben())) {
-                return hoeren.getZusaetzlicheAngaben();
-            }
-            return EnumSet.of(defaultWert);
+            return MultiValueEnhanced.of(EnumSet.of(defaultWert), null);
         }
-        return EnumSet.noneOf(HoerenZusaetzlicheAngaben.class);
+        return MultiValueEnhanced.of(EnumSet.noneOf(HoerenZusaetzlicheAngaben.class), null);
     }
 
     @NonNull
-    public static EnumSet<OtoskopieResultat> getOtoskopieRechts(
+    public static MultiValueEnhanced<OtoskopieResultat> getOtoskopieDefault(
         @NonNull RequirementSetting config,
-        @Nullable UntersuchungHoerenOtoskopie hoeren,
         @Nullable OtoskopieResultat defaultWert
     ) {
-        if (config.isVisible()) {
-            if (hoeren != null && CollectionUtils.isNotEmpty(hoeren.getOtoskopieRechts())) {
-                return hoeren.getOtoskopieRechts();
-            }
-            if (defaultWert != null) {
-                return EnumSet.of(defaultWert);
-            }
+        if (config.isVisible() && defaultWert != null) {
+            return MultiValueEnhanced.of(EnumSet.of(defaultWert), null);
         }
-        return EnumSet.noneOf(OtoskopieResultat.class);
-    }
-
-    @NonNull
-    public static EnumSet<OtoskopieResultat> getOtoskopieLinks(
-        @NonNull RequirementSetting config,
-        @Nullable UntersuchungHoerenOtoskopie hoeren,
-        @Nullable OtoskopieResultat defaultWert
-    ) {
-        if (config.isVisible()) {
-            if (hoeren != null && CollectionUtils.isNotEmpty(hoeren.getOtoskopieLinks())) {
-                return hoeren.getOtoskopieLinks();
-            }
-            if (defaultWert != null) {
-                return EnumSet.of(defaultWert);
-            }
-        }
-        return EnumSet.noneOf(OtoskopieResultat.class);
+        return MultiValueEnhanced.of(EnumSet.noneOf(OtoskopieResultat.class), null);
     }
 }

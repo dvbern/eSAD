@@ -37,14 +37,15 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public class SuperAdminEventService {
 
     public static final String DUPLIKAT_RECALCULATION_EVENT = "duplikat_recalculation_event";
+
     private final TenantProducer tenantProducer;
     private final SuperAdminRunnerService superAdminRunnerService;
 
     @ActivateRequestContext
     @ConsumeEvent(value = DUPLIKAT_RECALCULATION_EVENT, blocking = true)
     @Transactional(TxType.NOT_SUPPORTED)
-    @RunAs(username = "dev-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN})
-    public void handleEscadaSyncEvent(@NonNull TenantEnum tenantEnum) {
+    @RunAs(username = "dev-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
+    public void handleDuplikatRecalculationEvent(@NonNull TenantEnum tenantEnum) {
         LOG.info("ESC-RELOAD_DUPLIKATE: Triggered through event ");
         tenantProducer.setCurrentTenant(tenantEnum);
         superAdminRunnerService.runReloadDuplikateJob(true);

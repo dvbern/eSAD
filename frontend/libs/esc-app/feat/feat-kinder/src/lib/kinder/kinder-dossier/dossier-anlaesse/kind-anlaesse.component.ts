@@ -12,7 +12,7 @@ import {
   IconOnlyButtonComponent,
   ListComponent,
 } from '@dvb/ui-components';
-import {fromISODateString, hasAnlassEditBerechtigungForNotAbgeschlossen} from '@dvb/util-shared';
+import {fromISODateString, hasAnlassCreateOrEditForNotAbgeschlossenBerechtigung} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {DossierStore} from '../../dossier.store';
 import {KindAnlaesseStore} from './kind-anlaesse-store.service';
@@ -42,7 +42,7 @@ export class KindAnlaesseComponent {
   readonly timetravelStore = inject(TimetravelStore);
 
   canEditAnlaesse = computed(() =>
-    this.benutzerStore.createHasRequiredRoleSig(hasAnlassEditBerechtigungForNotAbgeschlossen())() &&
+    this.benutzerStore.createHasRequiredRoleSig(hasAnlassCreateOrEditForNotAbgeschlossenBerechtigung())() &&
     this.dossierStore.isKindAktiv()
   );
 

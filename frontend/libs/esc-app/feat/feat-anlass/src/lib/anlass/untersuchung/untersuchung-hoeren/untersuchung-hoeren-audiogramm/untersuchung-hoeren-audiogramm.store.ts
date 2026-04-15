@@ -8,13 +8,12 @@ import {
 } from '@dvb/data-access-backend';
 import {globalConstants} from '@dvb/feat-shared';
 import {AppErrorHandlerService, AppNotificationStore, Loader} from '@dvb/util-angular';
-import {requireValue} from '@dvb/util-shared';
+import {isNotNullish} from '@dvb/util-shared';
 import {TranslocoService} from '@jsverse/transloco';
 import {tapResponse} from '@ngrx/operators';
 import {patchState, signalStore, withMethods, withState} from '@ngrx/signals';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, map, pipe, switchMap, tap} from 'rxjs';
-import {AnlassEinladungenId} from '../../anlass-einladungen-id';
 import {UntersuchungStore} from '../../untersuchung.store';
 
 type UntersuchungHoerenAudiogrammState = {
@@ -34,21 +33,33 @@ export class UntersuchungHoerenAudiogrammStore extends signalStore(
   {protectedState: false},
   withState(initialState),
   withMethods((store) => ({
-    defaultHoerenAudiogrammToApplyWithCorrectedVersion(): UntersuchungHoerenAudiogrammSaveJson {
+    defaultHoerenAudiogrammToApplyWithCorrectedVersion(): UntersuchungHoerenAudiogrammSaveJson | undefined {
       // Ensure that the version is set correctly when applying the default Sehen
-      const defaultsWithCorrectedVersion = {
-        ...store.defaultHoerenAudiogrammInitial(),
+      const defaultAudiogram = store.defaultHoerenAudiogrammInitial();
+
+      if (!defaultAudiogram) {
+        return undefined;
+      }
+      const audiogrammLinks = isNotNullish(defaultAudiogram?.audiogrammLinks) ?
+        {
+          ...defaultAudiogram.audiogrammLinks,
+          version: store.hoerenAudiogramm()?.audiogrammData?.audiogrammLinks?.version ?? globalConstants.entityPrePersistVersion
+        } :
+        undefined;
+
+      const audiogrammRechts = isNotNullish(defaultAudiogram?.audiogrammRechts) ?
+        {
+          ...defaultAudiogram.audiogrammRechts,
+          version: store.hoerenAudiogramm()?.audiogrammData?.audiogrammLinks?.version ?? globalConstants.entityPrePersistVersion
+        } :
+        undefined;
+
+      return {
+        ...defaultAudiogram,
         version: store.hoerenAudiogramm()?.audiogrammData.version ?? globalConstants.entityPrePersistVersion,
-        audiogrammLinks: {
-          ...requireValue(store.defaultHoerenAudiogrammInitial()?.audiogrammLinks),
-          version:  store.hoerenAudiogramm()?.audiogrammData?.audiogrammLinks?.version ?? globalConstants.entityPrePersistVersion
-        },
-        audiogrammRechts: {
-          ...requireValue(store.defaultHoerenAudiogrammInitial()?.audiogrammRechts),
-          version: store.hoerenAudiogramm()?.audiogrammData.audiogrammRechts?.version ?? globalConstants.entityPrePersistVersion
-        }
+        audiogrammLinks,
+        audiogrammRechts,
       };
-      return defaultsWithCorrectedVersion;
     },
     applyDefaultHoeren(): void {
       patchState(store, {defaultHoerenAudiogrammToApply: this.defaultHoerenAudiogrammToApplyWithCorrectedVersion()});

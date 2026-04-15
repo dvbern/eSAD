@@ -10,6 +10,7 @@ import {
   EmptyTableMessageComponent,
   NgSelectDirective,
   SortableComponent,
+  StatusTextComponent,
   TableComponent,
   TableFilterComponent,
   TableLinkComponent,
@@ -21,6 +22,7 @@ import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
 import { AnlassConfigStore } from '../../anlass-config.store';
 import { AnlassConfigListFilterForm } from '../anlass-config-list-filter.form';
 import { NgbDropdownItem } from '@ng-bootstrap/ng-bootstrap';
+import {AnlassConfigHelperService} from "../../anlass-config-helper.service";
 
 @Component({
   selector: 'feat-anlass-config-list',
@@ -41,6 +43,7 @@ import { NgbDropdownItem } from '@ng-bootstrap/ng-bootstrap';
     TableLinkComponent,
     CollapsibleMenuComponent,
     NgbDropdownItem,
+    StatusTextComponent,
   ],
   templateUrl: './anlass-config-list.component.html',
   styleUrl: './anlass-config-list.component.scss',
@@ -50,6 +53,7 @@ export class AnlassConfigListComponent {
   readonly store = inject(AnlassConfigStore);
   readonly benutzerStore = inject(BenutzerStore);
   readonly transloco = inject(TranslocoService);
+  readonly anlassConfigHelperService = inject(AnlassConfigHelperService);
 
   readonly anlassTypOptions = Object.values(AnlassTyp);
   readonly anlassConfigStatusOptions = Object.values(AnlassConfigStatus);

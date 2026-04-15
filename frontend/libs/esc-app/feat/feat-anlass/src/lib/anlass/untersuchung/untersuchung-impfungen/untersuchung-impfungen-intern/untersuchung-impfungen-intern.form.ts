@@ -5,7 +5,6 @@ import {
   AnlassConfigJson,
   BenutzerOptionJson,
   ImpfStatus,
-  ImpfstoffChargeJson,
   ImpfstoffJson,
   Krankheit,
   RequirementSetting,
@@ -13,7 +12,7 @@ import {
   UntersuchungImpfungKrankheitImmunitaetJson,
 } from '@dvb/data-access-backend';
 import {ISODateString} from '@dvb/data-access-types';
-import {globalConstants, ImpfstoffeChargenStore, TimetravelStore} from '@dvb/feat-shared';
+import {globalConstants, ImpfstoffChargeOption, ImpfstoffeChargenStore, TimetravelStore} from '@dvb/feat-shared';
 import {AppValidators, BaseForm, DetailMode} from '@dvb/util-angular';
 import {ensureProps, ensureType, requireValue, today, toISODateString} from '@dvb/util-shared';
 import {distinctUntilChanged} from 'rxjs';
@@ -30,7 +29,7 @@ function makeForm(config: Config) {
   const fb = config.fb;
   return fb.group({
     impfstoff: fb.control<ImpfstoffJson | undefined>(undefined, [Validators.required]),
-    charge: fb.control<ImpfstoffChargeJson | undefined>(undefined),
+    charge: fb.control<ImpfstoffChargeOption | undefined>(undefined),
     datumImpfung: fb.control<ISODateString | undefined>(undefined),
     userDurchgefuehrt: fb.control<BenutzerOptionJson | undefined>(undefined),
     impfStatus: fb.control<ImpfStatus | undefined>(undefined),
@@ -53,7 +52,7 @@ function makeSubform(config: Config, krankheit: Krankheit): FormGroup {
 export class UntersuchungImpfungenInternForm
   extends BaseForm<ReturnType<typeof makeForm>, UntersuchungImpfungInternSaveJson> {
 
-  public readonly chargeOptions = signal<ImpfstoffChargeJson[]>([]);
+  public readonly chargeOptions = signal<ImpfstoffChargeOption[]>([]);
 
   constructor(protected config: Config) {
     super(() => makeForm(config));
@@ -64,7 +63,7 @@ export class UntersuchungImpfungenInternForm
           // ChargeOptions aufgrund Impfstoff anpassen
           this.group.controls.charge.reset();
           this.group.controls.krankheitsImmunitaeten.clear();
-          this.chargeOptions.set(config.impfstoffChargenStore.activeChargenForImpfstoff(value?.id));
+          this.chargeOptions.set(config.impfstoffChargenStore.activeChargenForImpfstoffOptions(value?.id));
           // Die Immunitaets-SubForms pro Krankheit des Impfstoffs erstellen
           if (value) {
             for (const krankheit of value.data.krankheiten) {
@@ -97,7 +96,11 @@ export class UntersuchungImpfungenInternForm
     currentUser: BenutzerOptionJson,
     timetravelStore: TimetravelStore,
   ): void {
-    super.reset(impfung, DetailMode.EDIT);
+
+    const charge = impfung?.charge ? {label: impfung.charge} as ImpfstoffChargeOption : undefined;
+    this.group.reset({...impfung, charge});
+    this.mode = DetailMode.EDIT;
+
     if (impfung) {
       for (const immunitaetKrankheit of impfung.krankheitenImmunitaeten) {
         const immunitaetForm = this.getImmunitaetKrankheitFormControl(immunitaetKrankheit.krankheit);
@@ -152,7 +155,7 @@ export class UntersuchungImpfungenInternForm
     });
     return ensureType<UntersuchungImpfungInternSaveJson>({
       impfstoff: requireValue(value.impfstoff),
-      charge: value.charge,
+      charge: value.charge?.label,
       datumImpfung: value.datumImpfung,
       userDurchgefuehrt: value.userDurchgefuehrt,
       impfStatus: value.impfStatus ?? ImpfStatus.GEPLANT,

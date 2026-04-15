@@ -20,6 +20,7 @@ import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {AnlassStore} from '../../../anlass.store';
 import {anlassTitleOptional} from '../../../anlass.util';
 import {AnlassKinderStore} from '../../anlass-kinder.store';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'feat-anlass.einladung-notiz.page',
@@ -45,6 +46,8 @@ export class EinladungNotizPageComponent implements DirtyMarker {
   readonly #notificationService = inject(AppNotificationStore);
 
   readonly location = inject(Location);
+  readonly router = inject(Router);
+  readonly route = inject(ActivatedRoute);
 
   protected readonly Path = Path;
   protected readonly requireValue = requireValue;
@@ -118,12 +121,16 @@ export class EinladungNotizPageComponent implements DirtyMarker {
         return undefined;
       }
 
+      const anlass = this.anlassStore.selectedEntity();
+      const anlassLink = `${Path.ANLASS}/${anlass?.id}`;
+
       return {
         titel: titel,
         bemerkungen: undefined,
         status: NotizStatus.ABGESCHLOSSEN,
         typ: this.notizTyp(),
         verantwortlicher: requireValue(currentUser),
+        anlassLink: anlassLink,
         labels: labels,
         files: [],
         version: globalConstants.entityPrePersistVersion,
@@ -137,7 +144,7 @@ export class EinladungNotizPageComponent implements DirtyMarker {
 
   onSaveNotiz(payload: NotizenSaveParams): void {
     this.saveNotiz(payload, () => {
-      this.afterSuccessfulSaveAndUpload()
+      this.afterSuccessfulSaveAndUpload();
     });
   }
 
@@ -176,5 +183,9 @@ export class EinladungNotizPageComponent implements DirtyMarker {
 
   private afterSuccessfulSaveAndUpload(): void {
     this.location.back();
+  }
+
+  public onMobileUpload(_: string) {
+    this.anlassKinderStore.loadEinladungen(requireValue(this.anlassStore.selectedEntity()).id );
   }
 }

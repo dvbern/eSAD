@@ -5,12 +5,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.oss.hemed.esc.api.features.importoptions.pupil.json.PupilImportResultJson;
-import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.mail.service.MailDAO;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
@@ -26,15 +27,15 @@ public class PupilMailService {
     public static final String ERROR_SENDING_ERROR_MAIL_TO = "Error sending error mail to {}";
 
     private final MailDAO mailDAO;
-    private final ConfigService configService;
     private final ObjectMapper objectMapper;
     private final AppClock appClock;
+    private final TenantSettingsService tenantSettingsService;
 
     public void sendWarningMail(@NonNull PupilImportResultJson resultReport) {
         String msg = "Dear Admin\t\nThe following errors occurred during the import of the Pupil data:\t\n\n"
             + resultReport.getImportSummary();
 
-        configService.getCustomerAdminEmails().forEach(email -> {
+        tenantSettingsService.getTenantSetting().getCustomerAdminEmails().forEach(email -> {
             try {
                 Path jsonFilePath =
                     createJsonFile(resultReport.toErrorFilteredPupilImportResultJson(), "pupil_import_error_report");
@@ -42,7 +43,7 @@ public class PupilMailService {
                         email, "Pupil Import Error Report", msg,
                         List.of(jsonFilePath))
                     .subscribeAsCompletionStage()
-                    .thenAccept(v -> LOG.info("Pupil Import-Error-Report mail sent to {}", email))
+                    .thenAccept(v -> LOG.info("Pupil Import-Waring-Report mail sent to {}", email))
                     .exceptionally(t -> {
                         LOG.info(ERROR_SENDING_ERROR_MAIL_TO, email, t);
                         return null;
@@ -58,7 +59,7 @@ public class PupilMailService {
         String msgTmpl =
             "<pre>Dear Admin\t\nThe following error occurred during the import of the Pupil data:\t\n\n %s \t\n</pre>";
         String msg = msgTmpl.formatted(errormsg);
-        configService.getCustomerAdminEmails().forEach(email -> {
+        tenantSettingsService.getTenantSetting().getCustomerAdminEmails().forEach(email -> {
             try {
                 mailDAO.sendEmail(email, "Pupil Import Fatal Error", msg)
                     .subscribeAsCompletionStage()
@@ -76,7 +77,7 @@ public class PupilMailService {
 
     @NonNull
     private Path createJsonFile(@NonNull PupilImportResultJson dto, @NonNull String fileName) throws IOException {
-        fileName += '_' + appClock.localDateTime().now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm"));
+        fileName += '_' + appClock.localDateTime().now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm", Locale.GERMAN));
         Path tempFileLoc = Files.createTempFile(fileName, ".json");
         tempFileLoc.toFile().deleteOnExit();
 

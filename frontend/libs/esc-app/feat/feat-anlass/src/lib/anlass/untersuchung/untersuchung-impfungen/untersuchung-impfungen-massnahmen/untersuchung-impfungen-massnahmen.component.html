@@ -58,7 +58,8 @@
   @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenMassnahmeInfoEltern) {
     <svui-form-control [label]="'untersuchung.tab.impfungen.massnahmen.informationEltern' | transloco"
                        [viewValue]="form.group.value.informationEltern"
-                       class="mt-3">
+                       class="mt-3"
+                       data-testid="information-eltern-select">
       <ng-select
         svuiNgSelect
         bindLabel='dummy'
@@ -119,16 +120,18 @@
   }
 
   <!--Bemerkung-->
-  <svui-title [context]="'formSection'"
-              class="mb-3">{{ 'untersuchung.tab.impfungen.massnahmen.bemerkungen' | transloco }}
-  </svui-title>
-  <svui-form-control
-    [label]="'untersuchung.tab.impfungen.massnahmen.bemerkungen' | transloco"
-    [topLabelVisibility]="'hidden'"
-    size="full"
-    [viewValue]="form.group.controls.bemerkungen.value">
-    <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
-  </svui-form-control>
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenMassnahmeBemerkungen !== RequirementSetting.NOT_VISIBLE) {
+    <svui-title [context]="'formSection'"
+                class="mb-3">{{ 'untersuchung.tab.impfungen.massnahmen.bemerkungen' | transloco }}
+    </svui-title>
+    <svui-form-control
+      [label]="'untersuchung.tab.impfungen.massnahmen.bemerkungen' | transloco"
+      [topLabelVisibility]="'hidden'"
+      size="full"
+      [viewValue]="form.group.controls.bemerkungen.value">
+      <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
+    </svui-form-control>
+  }
 
   <!-- impfungen folgetermin -->
   @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenMassnahmeImpfenFolgetermin) {

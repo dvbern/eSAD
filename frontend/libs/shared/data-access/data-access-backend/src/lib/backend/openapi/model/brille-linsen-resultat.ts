@@ -9,12 +9,14 @@
  */
 
 
-export type BrilleLinsenResultat = 'OHNE_KEINE' | 'OHNE_VERGESSEN' | 'MIT' | 'NICHT_GEPRUEFT';
+export type BrilleLinsenResultat = 'OHNE_KEINE' | 'OHNE_VERGESSEN' | 'MIT' | 'BRILLE' | 'KONTAKTLINSEN' | 'NICHT_GEPRUEFT';
 
 export const BrilleLinsenResultat = {
     OHNE_KEINE: 'OHNE_KEINE' as BrilleLinsenResultat,
     OHNE_VERGESSEN: 'OHNE_VERGESSEN' as BrilleLinsenResultat,
     MIT: 'MIT' as BrilleLinsenResultat,
+    BRILLE: 'BRILLE' as BrilleLinsenResultat,
+    KONTAKTLINSEN: 'KONTAKTLINSEN' as BrilleLinsenResultat,
     NICHT_GEPRUEFT: 'NICHT_GEPRUEFT' as BrilleLinsenResultat
 } as const;
 

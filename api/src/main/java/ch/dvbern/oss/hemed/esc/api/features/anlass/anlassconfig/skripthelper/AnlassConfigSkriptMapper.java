@@ -68,6 +68,7 @@ public final class AnlassConfigSkriptMapper {
 
         StringBuilder sb = new StringBuilder();
         for (AnlassConfig config : anlassConfigs) {
+            sb.append(AnlassConfigUtil.createSqlInsertQuery(config));
             sb.append(AnlassConfigUtil.createSqlUpdateQuery(config));
         }
         template = template.replace("{{script}}", sb.toString());

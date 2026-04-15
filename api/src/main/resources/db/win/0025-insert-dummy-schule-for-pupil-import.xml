@@ -1,0 +1,9 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet id="1769084220028-1" author="Franziska Herger">
+    <sql>
+      INSERT INTO schule (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, adressezusatz, land, ort, plz, strasseundnr, bemerkungen, email, schulhaus, schulhausnummer, schulkreis, schulstandort, telefon, quartier_id, zustaendigarzt_id, zustaendigmpa_id, aktivinexternalsystem, idinexternalsystem, timestampfirstimport, timestamplatestimport, schuleaktivstatus, importtyp)
+      VALUES ('0defe1d1-b4f3-4568-afe1-d1b4f34568ba', '2025-03-28 10:38:50.901903 +00:00', '2025-03-28 10:38:50.901903 +00:00', 'liquibase', 'liquibase', 0, null, 'SCHWEIZ', 'Winterthur', '8310', 'Bahnhofstrasse 10', 'Dummyschule falls in Pupil keine Schule angegeben wird', 'schularzt@win.ch', 'SÄD Winterthur Dummyschule', '-1', '-1', '-1', '+41 52 267 90 00', null, null, null, true, null, null, null, 'AKTIV', null);
+    </sql>
+  </changeSet>
+</databaseChangeLog>

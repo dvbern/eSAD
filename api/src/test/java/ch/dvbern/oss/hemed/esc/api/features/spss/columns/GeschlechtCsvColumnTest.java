@@ -1,10 +1,14 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
+import java.time.LocalDate;
+
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDaten;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.DossierBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungKindDatenBuilder;
 import org.junit.jupiter.api.Test;
 
@@ -18,12 +22,16 @@ class GeschlechtCsvColumnTest extends AbstractBaseColumnTest {
         // ARRANGE
         final GeschlechtCsvColumn column = new GeschlechtCsvColumn(config, null);
         Einladung einladung = new Einladung();
-        assertThat(column.extract(einladung)).isEmpty();
+        final Dossier dossier = DossierBuilder.defaultDossier();
+        dossier.getKind().setGeschlecht(Geschlecht.WEIBLICH);
+        einladung.setDossier(dossier);
+
+        assertThat(column.extract(einladung)).isEqualTo("2");
 
         Untersuchung untersuchung = new Untersuchung();
         einladung.setUntersuchung(untersuchung);
 
-        assertThat(column.extract(einladung)).isEmpty();
+        assertThat(column.extract(einladung)).isEqualTo("2");
 
         UntersuchungKindDaten untersuchungKindDaten = UntersuchungKindDatenBuilder.defaultUntersuchungDaten();
         untersuchung.setUntersuchungKindDaten(untersuchungKindDaten);
@@ -50,12 +58,18 @@ class GeschlechtCsvColumnTest extends AbstractBaseColumnTest {
         // ARRANGE
         final GeschlechtCsvColumn column = new GeschlechtCsvColumn(configForCsv, null);
         Einladung einladung = new Einladung();
-        assertThat(column.extract(einladung)).isEmpty();
+        final Dossier dossier = DossierBuilder.defaultDossier();
+        dossier.getKind().setGeschlecht(Geschlecht.WEIBLICH);
+        einladung.setDossier(dossier);
+
+        // Wenn noch keine UntersuchungKindDaten vorhanden sind werden die Werte vom Kind genommen.
+        when(tlMock.translateValue(Geschlecht.WEIBLICH)).thenReturn("Weiblich");
+        assertThat(column.extract(einladung)).isEqualTo("Weiblich");
 
         Untersuchung untersuchung = new Untersuchung();
         einladung.setUntersuchung(untersuchung);
 
-        assertThat(column.extract(einladung)).isEmpty();
+        assertThat(column.extract(einladung)).isEqualTo("Weiblich");
 
         UntersuchungKindDaten untersuchungKindDaten = UntersuchungKindDatenBuilder.defaultUntersuchungDaten();
         untersuchung.setUntersuchungKindDaten(untersuchungKindDaten);

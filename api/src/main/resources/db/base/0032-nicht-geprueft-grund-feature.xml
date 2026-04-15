@@ -1,0 +1,30 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <!-- Tenant Setting -->
+  <changeSet author="hefr (generated)" id="1769614668996-3">
+    <addColumn tableName="tenantsetting">
+      <column name="nichtgeprueftgrundfeature" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769614668996-3a">
+    <sql>update tenantsetting set nichtgeprueftgrundfeature = 'DISABLED' where nichtgeprueftgrundfeature is null</sql>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769614668996-3b">
+    <addNotNullConstraint tableName="tenantsetting" columnName="nichtgeprueftgrundfeature"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769614668996-4">
+    <addColumn tableName="tenantsetting_aud">
+      <column name="nichtgeprueftgrundfeature" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <!-- Beispiel Nachsprechen -->
+  <changeSet author="hefr (generated)" id="1769678190192-1">
+    <modifyDataType columnName="nachsprechen" newDataType="varchar(255)" tableName="untersuchungsprache"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769678190192-2">
+    <modifyDataType columnName="nachsprechen" newDataType="varchar(255)" tableName="untersuchungsprache_aud"/>
+  </changeSet>
+
+</databaseChangeLog>

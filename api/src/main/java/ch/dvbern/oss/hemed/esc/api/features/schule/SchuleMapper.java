@@ -21,6 +21,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.benutzer.ZustaendigePersonService;
 import ch.dvbern.oss.hemed.esc.api.shared.person.AdresseMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatusSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.util.VerantwortlicherSchuleChangedDTO;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -88,7 +89,7 @@ public final class SchuleMapper {
             FachRolle.SCHULAERZTIN));
         existingSchule.setZustaendigMPA(benutzerService.getBenutzerIfOneOfRolesIsCorrect(
             saveJson.getZustaendigMPA(),
-            List.of(FachRolle.MPA, FachRolle.PFP)));
+            FachRolle.fachrollenHilfsperson()));
         existingSchule.setSchuleAktivStatus(saveJson.getSchuleAktivStatus());
         return existingSchule;
     }
@@ -107,7 +108,9 @@ public final class SchuleMapper {
             saveJson.getTelefon(),
             saveJson.getBemerkungen(),
             benutzerService.getBenutzerIfCorrectRole(saveJson.getZustaendigArzt(), FachRolle.SCHULAERZTIN),
-            benutzerService.getBenutzerIfOneOfRolesIsCorrect(saveJson.getZustaendigMPA(), List.of(FachRolle.MPA, FachRolle.PFP)),
+            benutzerService.getBenutzerIfOneOfRolesIsCorrect(
+                saveJson.getZustaendigMPA(),
+                FachRolle.fachrollenHilfsperson()),
             EntityAktivStatus.AKTIV
         );
     }
@@ -160,7 +163,10 @@ public final class SchuleMapper {
     @NonNull
     public SchuleJson update(@NonNull ID<Schule> schuleId, @NonNull SchuleSaveJson saveJson) {
         Schule existingSchule = schuleService.getById(schuleId);
-        zustaendigePersonService.resetZustaendigkeitenOnDossierIfChangedOnSchule(existingSchule, saveJson);
+        // https://intra.dvbern.ch/spaces/HEM/pages/284263663/Zust%C3%A4ndigkeiten+Archivierung
+        // Change Zustaendigkeiten: Fall 2: Neuer Arzt auf Schule (asynchron)
+        VerantwortlicherSchuleChangedDTO args = VerantwortlicherSchuleChangedDTO.of(existingSchule, saveJson);
+        zustaendigePersonService.verantwortlicherChangedOnSchuleAsync(existingSchule, args);
         Schule updatedSchule = toEntity(existingSchule, saveJson);
         Schule entity = schuleService.persistWithOptimisticLocking(updatedSchule, saveJson.getVersion());
         return toJson(entity, klasseService.extractEscadaKlassenStufen(entity.getId()));

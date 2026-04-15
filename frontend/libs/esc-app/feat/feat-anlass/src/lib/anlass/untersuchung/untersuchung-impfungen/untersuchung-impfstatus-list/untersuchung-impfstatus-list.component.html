@@ -45,13 +45,15 @@
                 @if (controlForKrankheit(krankheit, 'anzahlImpfungen'); as control) {
                   <input [svuiTextInput]="'text'"
                          [formControl]="control"
-                         style="width: 2rem;">
+                    style="width: 2rem;"
+                  data-testid="impfung-amount-input">
                 }
               </svui-table-control>
             </td>
             <td class="dashed-right">
               <svui-table-control [columnHeader]="'Impfung.Impfentscheid.table.col.date' | transloco"
-                                  [rowHeader]="'Krankheit.' + krankheit | transloco">
+                                  [rowHeader]="'Krankheit.' + krankheit | transloco"
+                                  data-testid="impfung-date-input">
                 @if (controlForKrankheit(krankheit, 'datumLetzteImpfung'); as control) {
                   <input [svuiTextInput]="'month'"
                          [formControl]="control"
@@ -68,7 +70,8 @@
                          type="checkbox"
                          [id]="krankheit + '_impfschutzGenuegend'"
                          [attr.aria-label]="('Krankheit.' + krankheit | transloco) + ' ' + ('Impfung.Impfentscheid.table.col.genuegend' | transloco)"
-                         [formControl]="control">
+                    [formControl]="control"
+                    data-testid="impfschutz-genugend-checkbox">
                 }
               </label>
             </td>
@@ -80,7 +83,8 @@
                          type="checkbox"
                          [id]="krankheit + '_impfempfehlung'"
                          [attr.aria-label]="('Krankheit.' + krankheit | transloco) + ' ' + ('Impfung.Impfentscheid.table.col.empfehlung' | transloco)"
-                         [formControl]="control">
+                    [formControl]="control"
+                    data-testid="impfempfehlung-checkbox">
                 }
               </label>
             </td>
@@ -92,7 +96,9 @@
                          type="checkbox"
                          [id]="krankheit + '_impfentscheid'"
                          [attr.aria-label]="('Krankheit.' + krankheit | transloco) + ' ' + ('Impfung.Impfentscheid.table.col.entscheid' | transloco)"
-                         [formControl]="control">
+                    [formControl]="control"
+                    data-testid="impfentscheid-checkbox"
+                  >
                 }
               </label>
             </td>

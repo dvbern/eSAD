@@ -76,6 +76,7 @@ export class KinderNotizPageComponent implements DirtyMarker {
           status: NotizStatus.ABGESCHLOSSEN,
           typ: NotizTyp.DEFAULT,
           verantwortlicher: requireValue(currentUser),
+          anlass: undefined,
           labels: labels,
           files: [],
           version: globalConstants.entityPrePersistVersion,
@@ -131,5 +132,18 @@ export class KinderNotizPageComponent implements DirtyMarker {
     this.#router.navigate(
       [Path.RELATIVE_TWO_UP],
       {relativeTo: this.#activatedRoute});
+  }
+
+  public onMobileUpload(notizId : string) : void{
+    if (this.kinderNotizStore.selectedIsNew()) {
+      this.#router.navigate([Path.RELATIVE_ONE_UP, notizId], {
+        relativeTo: this.#activatedRoute,
+        replaceUrl: true,
+      }).then(() => {
+        this.kinderNotizStore.loadNotizenForKind(requireValue(this.dossierStore.kindId()));
+      });
+    } else {
+      this.kinderNotizStore.loadNotizenForKind(requireValue(this.dossierStore.kindId()));
+    }
   }
 }

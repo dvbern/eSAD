@@ -1,13 +1,14 @@
-import {NonNullableFormBuilder, Validators} from "@angular/forms";
-import {DestroyRef} from "@angular/core";
-import {AppValidators, BaseForm} from "@dvb/util-angular";
+import {DestroyRef} from '@angular/core';
+import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {
   CsvReportType,
-  DocumentQueueCsvListSaveJson, DocumentQueueCsvSaveJson,
+  DocumentQueueCsvListSaveJson,
+  DocumentQueueCsvSaveJson,
   FileTyp,
-} from "@dvb/data-access-backend";
-import {requireFilledIn, requireValue} from "@dvb/util-shared";
-import {ISODateString} from "@dvb/data-access-types";
+} from '@dvb/data-access-backend';
+import {ISODateString} from '@dvb/data-access-types';
+import {AppValidators, BaseForm} from '@dvb/util-angular';
+import {requireFilledIn, requireValue} from '@dvb/util-shared';
 
 type Config = {
   fb: NonNullableFormBuilder,
@@ -20,12 +21,13 @@ function makeForm(config: Config) {
       datumVon: fb.control<ISODateString | undefined>(undefined, [Validators.required]),
       datumBis: fb.control<ISODateString | undefined>(undefined, [Validators.required]),
       SCHULUNTERSUCHUNG: fb.control(false),
+      IMPFSTOFFE: fb.control(false),
     },
     {
       validators: [
-        AppValidators.datumBisIsAfterDatumVon('datumVon', 'datumBis'),
-        AppValidators.dateRangeIsMaximumNumberOfYears('datumVon', 'datumBis', 5)
-      ]
+        AppValidators.datumBisIsAtleastDatumVonOrAfter('datumVon', 'datumBis'),
+        AppValidators.dateRangeIsMaximumNumberOfYears('datumVon', 'datumBis', 5),
+      ],
     });
 }
 

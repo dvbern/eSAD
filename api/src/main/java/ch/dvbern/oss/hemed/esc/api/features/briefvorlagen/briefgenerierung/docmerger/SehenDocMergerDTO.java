@@ -13,6 +13,8 @@ public class SehenDocMergerDTO {
     String fernvisus;
     String fernvisusSehschaerfeRechts;
     String fernvisusSehschaerfeLinks;
+    String fernvisusAugeLinks;
+    String fernvisusAugeRechts;
     String nahvisus;
     String nahvisusSehschaerfeRechts;
     String nahvisusSehschaerfeLinks;
@@ -23,4 +25,5 @@ public class SehenDocMergerDTO {
     String konvergenz;
     String beurteilung;
     String motilitaet;
+    String empfehlungUeberpruefungAugenarzt;
 }

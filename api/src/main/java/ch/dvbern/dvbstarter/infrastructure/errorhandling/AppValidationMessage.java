@@ -67,7 +67,7 @@ public class AppValidationMessage {
         @NonNull AbstractEntity<?> entity
     ) {
         return of(
-            "CannotCeateEntityForInactiveKind",
+            "CannotCreateEntityForInactiveKind",
             I18nMessage.of(
                 "AppValidation.CANNOT_CREATE_ENTITY_FOR_INACTIVE_KIND",
                 CONST_KIND_NAME, kind.getNameVorname(),
@@ -113,6 +113,15 @@ public class AppValidationMessage {
                 CONST_KIND_ID, kind.getId(),
                 CONST_ENTITY_CLASS, entity.getClass().getSimpleName(),
                 ENTITY_ID, entity.getId())
+        );
+    }
+
+    public static AppValidationMessage errorMassenbriefgenerierung(
+        @NonNull String message
+    ) {
+        return of(
+            "ErrorMassenbriefgenerierung",
+            I18nMessage.of("AppValidation.ERROR_MASSENBRIEFGENERIERUNG", "msg", message)
         );
     }
 
@@ -393,10 +402,10 @@ public class AppValidationMessage {
     }
 
     @NonNull
-    public static AppValidationMessage anlassConfigUsedInAtLeastOneAnlassCannotBeEdited() {
+    public static AppValidationMessage anlassConfigCannotBeEdited() {
         return of(
-            "AnlassConfigUsedInAtLeastOneAnlassCannotBeEdited",
-            I18nMessage.of("AppValidation.ANLASS_CONFIG_USED_IN_AT_LEAST_ONE_ANLASS_CANNOT_BE_EDITED"));
+            "AnlassConfigCannotBeEdited",
+            I18nMessage.of("AppValidation.ANLASS_CONFIG_CANNOT_BE_EDITED"));
     }
 
     @NonNull
@@ -478,5 +487,13 @@ public class AppValidationMessage {
                 "esadId",
                 esadId
             ));
+    }
+
+    @NonNull
+    public static AppValidationMessage invalidImpfstoffCharge(@NonNull String charge) {
+        return of(
+            "InvalidImpfstoffCharge",
+            I18nMessage.of("AppValidation.INVALID_IMPFSTOFF_CHARGE", "charge", charge)
+        );
     }
 }

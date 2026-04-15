@@ -22,7 +22,7 @@ import {
 } from '@dvb/ui-components';
 import {FilterSessionStorage, TableModel} from '@dvb/util-angular';
 import {
-  hasAnlassCreateBerechtigung,
+  hasAnlassCreateOrEditForNotAbgeschlossenBerechtigung,
   hasAnlassViewBerechtigung,
   toISODateTimeString,
   toValidEnumList,
@@ -81,7 +81,7 @@ export class AnlassListPageComponent extends FilterSessionStorage<AnlassFilterFo
       rawListSignal: this.anlassStore.entities,
       lazyLoadOnSortOrFilter: () => this.setSessionStorageFilter(this.tableFilterForm.valueOnValid()),
     },
-    { frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll' },
+    {frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll'},
   );
   readonly tableFilterForm = new AnlassListFilterForm({
     fb: inject(NonNullableFormBuilder),
@@ -115,7 +115,7 @@ export class AnlassListPageComponent extends FilterSessionStorage<AnlassFilterFo
     ];
   });
 
-  canCreateAnlass = this.benutzerStore.createHasRequiredRoleSig(hasAnlassCreateBerechtigung());
+  canCreateAnlass = this.benutzerStore.createHasRequiredRoleSig(hasAnlassCreateOrEditForNotAbgeschlossenBerechtigung());
   canViewAnlass = this.benutzerStore.createHasRequiredRoleSig(hasAnlassViewBerechtigung());
 
   ngOnInit() {

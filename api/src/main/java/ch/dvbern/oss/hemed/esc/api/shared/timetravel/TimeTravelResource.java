@@ -6,6 +6,7 @@ import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import io.micrometer.core.annotation.Timed;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
@@ -14,11 +15,8 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/timetravel")
@@ -26,7 +24,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @RequiredArgsConstructor
 @Tag(name = Tags.TAG_TIMETRAVEL)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "TimeTravelResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("TimeTravelResourceMS")
 @PermitAll
 public class TimeTravelResource {
 
@@ -37,11 +35,10 @@ public class TimeTravelResource {
     @Produces("application/json")
     @NonNull
     @PermitAll
-    public Response getNow() {
+    public TimeTravelJson getNow() {
         LocalDate now = timeTravelService.getNow();
         boolean isTimeTravelling = timeTravelService.isTimeTravelling();
-        TimeTravelJson result = new TimeTravelJson(now, isTimeTravelling);
-        return Response.ok(result).build();
+        return new TimeTravelJson(now, isTimeTravelling);
     }
 
     @PUT
@@ -49,11 +46,10 @@ public class TimeTravelResource {
     @Produces("application/json")
     @NonNull
     @RolesAllowed(BerechtigungName.SUPPORT)
-    public Response setNow(@NonNull @Valid TimeTravelJson dto) {
+    public TimeTravelJson setNow(@NonNull @Valid TimeTravelJson dto) {
         LocalDate now = timeTravelService.setNow(dto.getNow());
         boolean isTimeTravelling = timeTravelService.isTimeTravelling();
-        TimeTravelJson result = new TimeTravelJson(now, isTimeTravelling);
-        return Response.ok(result).build();
+        return new TimeTravelJson(now, isTimeTravelling);
     }
 
     @PUT
@@ -61,10 +57,9 @@ public class TimeTravelResource {
     @Produces("application/json")
     @NonNull
     @RolesAllowed(BerechtigungName.SUPPORT)
-    public Response resetNow() {
+    public TimeTravelJson resetNow() {
         LocalDate now = timeTravelService.resetNow();
         boolean isTimeTravelling = timeTravelService.isTimeTravelling();
-        TimeTravelJson result = new TimeTravelJson(now, isTimeTravelling);
-        return Response.ok(result).build();
+        return new TimeTravelJson(now, isTimeTravelling);
     }
 }

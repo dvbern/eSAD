@@ -53,9 +53,6 @@ public class AnlassConfigJson {
     private boolean anlassConfigVisible;
 
     @Schema(required = true)
-    private boolean usedInAtLeastOneAnlass;
-
-    @Schema(required = true)
     private boolean latestAnlassConfigForAnlassTyp;
 
     // Daten
@@ -63,12 +60,36 @@ public class AnlassConfigJson {
     @Schema(required = true)
     private boolean showTabDaten;
 
+    // Daten
+
+    @Schema(required = true)
+    private boolean showTabVorabklaerungen;
+
     // Impfungen
 
     @Schema(required = true)
     private boolean showTabImpfungen;
+
     @Schema(required = true)
-    private boolean showChecklist;
+    private boolean showCardImpfungenHeader;
+
+    @Schema(required = true)
+    private boolean showCardImpfungenDataMinimal;
+
+    @Schema(required = true)
+    private boolean showCardImpfungenImpfstatus;
+
+    @Schema(required = true)
+    private boolean showCardImpfungenListeIntern;
+
+    @Schema(required = true)
+    private boolean showCardImpfungenChecklist;
+
+    @Schema(required = true)
+    private boolean showCardImpfungenDoppelkontrolle;
+
+    @Schema(required = true)
+    private boolean showCardImpfungenMassnahmen;
 
     // Sehen
 
@@ -120,6 +141,31 @@ public class AnlassConfigJson {
 
     @Schema(required = true)
     private boolean showTabUntersuchungBemerkung;
+
+    // Sprache
+
+    @Schema(required = true)
+    private boolean showTabSprache;
+
+    // Bewegungsapparat
+
+    @Schema(required = true)
+    private boolean showTabBewegungsapparat;
+
+    // Schulrelevante Beeinträchtigung
+
+    @Schema(required = true)
+    private boolean showTabSchulrelevanteBeeintraechtigung;
+
+    // Abschluss
+    @Schema(required = true)
+    private boolean showTabAbschluss;
+
+    @Schema(required = true)
+    private boolean showCardAbschlussAbschluss;
+
+    @Schema(required = true)
+    private boolean showCardAbschlussSignatur;
 
     // Massnahmen
 

@@ -19,10 +19,13 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig;
 
 import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileDownloadUtil;
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
+import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.json.AnlassConfigListJson;
@@ -32,6 +35,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.skripthelper.Anl
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.skripthelper.AnlassConfigSkriptMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import io.smallrye.faulttolerance.api.RateLimit;
 import io.vertx.core.http.HttpServerResponse;
@@ -51,8 +55,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -65,12 +68,14 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = Tags.TAG_ANLASSCONFIG)
 @RolesAllowed(BerechtigungName.SUPPORT)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "AnlassConfigResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("AnlassConfigResourceMS")
 public class AnlassConfigResource {
 
     private final AnlassConfigMapper anlassConfigMapper;
     private final AnlassConfigSkriptMapper anlassConfigSkriptMapper;
     private final TenantProducer tenantProducer;
+    private final ConfigService configService;
+    private final AppClock appClock;
 
     @Context
     private HttpServerResponse response;
@@ -141,7 +146,15 @@ public class AnlassConfigResource {
     public Response downloadAllSqlSkripts() {
         String skript = anlassConfigSkriptMapper.getLiquibaseSkript();
         byte[] content = skript.getBytes(StandardCharsets.UTF_8);
-            FileInfo fileInfo = FileDownloadUtil.buildFileInfo("XXXX-update-anlassconfig " + tenantProducer.produceTenant() + ".xml", "text", content.length);
+        // Filename mit Datum, Tenant, und Stufe
+        String filename = "XXXX-update-anlassconfig-"
+            + tenantProducer.produceTenant().getRealmName()
+            + '-'
+            + configService.getEnvironment().name().toLowerCase()
+            + '-'
+            + appClock.getToday().format(DateTimeFormatter.ofPattern("yyyyMMdd", Locale.GERMAN))
+            + ".xml";
+        FileInfo fileInfo = FileDownloadUtil.buildFileInfo(filename, "text", content.length);
         return FileDownloadUtil.buildFileResponse("attachment", content, fileInfo);
     }
 }

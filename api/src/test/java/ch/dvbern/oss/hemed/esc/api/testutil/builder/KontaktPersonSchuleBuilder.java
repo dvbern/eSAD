@@ -37,7 +37,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.mapper.KontaktPersonSchuleJsonSpecMa
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KontaktPersonSchuleJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KontaktPersonSchuleSaveJsonSpec;
 import lombok.RequiredArgsConstructor;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @RequiredArgsConstructor

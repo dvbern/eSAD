@@ -6,94 +6,75 @@ import {
   RequirementSetting,
   UntersuchungHoerenOtoskopieSaveJson,
 } from '@dvb/data-access-backend';
-import {globalConstants} from '@dvb/feat-shared';
+import {globalConstants, ValueEnhancedForm} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensureProps, Nullish, requireValue, trimToUndefined} from '@dvb/util-shared';
-import {checkIfArrayContainsCheckedValue, markAllMultiCheckboxesAsTouched} from '../../untersuchung.util';
+import {ensurePropsFlat, Nullish, requireValue, trimToUndefined} from '@dvb/util-shared';
+import {checkIfArrayContainsCheckedValue} from '../../untersuchung.util';
 
 type Config = {
   fb: NonNullableFormBuilder,
   destroyRef: DestroyRef,
+  otoskopieRechtsValueEnhancedForm: ValueEnhancedForm;
+  otoskopieLinksValueEnhancedForm: ValueEnhancedForm;
 }
-
-function makeOtoskopieResultatSubForm(fb: NonNullableFormBuilder, value: OtoskopieResultat) {
-  return fb.group({
-    resultat: fb.control<OtoskopieResultat>({value, disabled: true}),
-    isChecked: fb.control<boolean>(false),
-  })
-}
-
-export type OtoskopieResultatSubFormType = ReturnType<typeof makeOtoskopieResultatSubForm>
 
 function makeForm(config: Config) {
   const fb = config.fb;
-  const group = fb.group({
-    otoskopieRechtsArray: fb.array<OtoskopieResultatSubFormType>([]),
+  return fb.group({
+    otoskopieRechts: config.otoskopieRechtsValueEnhancedForm.group,
     otoskopieRechtsResultatAndere: fb.control<string>('', AppValidators.textareaMaxLength2000()),
-    otoskopieLinksArray: fb.array<OtoskopieResultatSubFormType>([]),
+    otoskopieLinks: config.otoskopieLinksValueEnhancedForm.group,
     otoskopieLinksResultatAndere: fb.control<string>('', AppValidators.textareaMaxLength2000()),
     bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength2000()),
     version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
-
-  // Multi-Checkboxen: Wenn eines touched ist aber keines ausgewählt, müssen alle rot werden
-  markAllMultiCheckboxesAsTouched(group.controls.otoskopieRechtsArray, config.destroyRef);
-  markAllMultiCheckboxesAsTouched(group.controls.otoskopieLinksArray, config.destroyRef);
-
-  return group;
 }
 
 export class UntersuchungHoerenOtoskopieForm
   extends BaseForm<ReturnType<typeof makeForm>, UntersuchungHoerenOtoskopieSaveJson> {
 
+  readonly otoskopieRechtsValueEnhancedForm: ValueEnhancedForm;
+  readonly otoskopieLinksValueEnhancedForm: ValueEnhancedForm;
+
   constructor(protected config: Config) {
     super(() => makeForm(config));
+    this.otoskopieRechtsValueEnhancedForm = config.otoskopieRechtsValueEnhancedForm;
+    this.otoskopieLinksValueEnhancedForm = config.otoskopieLinksValueEnhancedForm;
   }
 
-  resetForm(value: UntersuchungHoerenOtoskopieSaveJson | Nullish): void {
-    this.group.reset({...value});
-    this.resetOtoskopieRechts(value);
-    this.resetOtoskopieLinks(value);
-  }
-
-  private resetOtoskopieRechts(value: UntersuchungHoerenOtoskopieSaveJson | Nullish): void {
-    this.group.controls.otoskopieRechtsArray.clear();
-    for (const resultat of Object.values(OtoskopieResultat)) {
-      const subForm = makeOtoskopieResultatSubForm(this.config.fb, resultat);
-      subForm.controls.isChecked.reset(!!value?.otoskopieRechts?.find(fv => fv === resultat));
-      this.group.controls.otoskopieRechtsArray.push(subForm)
-    }
-  }
-
-  private resetOtoskopieLinks(value: UntersuchungHoerenOtoskopieSaveJson | Nullish): void {
-    this.group.controls.otoskopieLinksArray.clear();
-    for (const resultat of Object.values(OtoskopieResultat)) {
-      const subForm = makeOtoskopieResultatSubForm(this.config.fb, resultat);
-      subForm.controls.isChecked.reset(!!value?.otoskopieLinks?.find(fv => fv === resultat));
-      this.group.controls.otoskopieLinksArray.push(subForm)
-    }
+  resetForm(value: UntersuchungHoerenOtoskopieSaveJson | undefined): void {
+    super.reset(value);
+    this.otoskopieRechtsValueEnhancedForm.resetForm(value?.otoskopieRechts);
+    this.otoskopieLinksValueEnhancedForm.resetForm(value?.otoskopieLinks);
   }
 
   public override valueOnValid(): UntersuchungHoerenOtoskopieSaveJson {
     const value = requireValue(this.group.getRawValue());
-    return ensureProps<UntersuchungHoerenOtoskopieSaveJson>({
-      otoskopieRechts: value.otoskopieRechtsArray.filter(i => i.isChecked).map(i => i.resultat),
+    return ensurePropsFlat<UntersuchungHoerenOtoskopieSaveJson>({
+      otoskopieRechts: this.otoskopieRechtsValueEnhancedForm.valueOnValid(),
       otoskopieRechtsResultatAndere: value.otoskopieRechtsResultatAndere,
-      otoskopieLinks: value.otoskopieLinksArray.filter(i => i.isChecked).map(i => i.resultat),
+      otoskopieLinks: this.otoskopieLinksValueEnhancedForm.valueOnValid(),
       otoskopieLinksResultatAndere: value.otoskopieLinksResultatAndere,
       bemerkungen: trimToUndefined(value.bemerkungen),
       version: value.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 
-  setValidators(config: AnlassConfigJson): void {
+  setValidators(config: AnlassConfigJson, nichtGeprueftGrundEnabled: boolean): void {
     // Otoskopie
+    this.otoskopieRechtsValueEnhancedForm.setValidatorsForAnlassConfig(
+      config.data.hoerenOtoskopie,
+      nichtGeprueftGrundEnabled,
+    );
+    this.otoskopieLinksValueEnhancedForm.setValidatorsForAnlassConfig(
+      config.data.hoerenOtoskopie,
+      nichtGeprueftGrundEnabled,
+    );
+
     if (config.data.hoerenOtoskopie === RequirementSetting.REQUIRED) {
-      this.group.controls.otoskopieRechtsArray.addValidators(AppValidators.atLeastOneCheckedValidator());
       this.group.controls.otoskopieRechtsResultatAndere.addValidators(AppValidators.requiredIfValidator(() => {
         return this.isHoerenOtroskopieRechtsResultatAndereChecked()
       }));
-      this.group.controls.otoskopieLinksArray.addValidators(AppValidators.atLeastOneCheckedValidator());
       this.group.controls.otoskopieLinksResultatAndere.addValidators(AppValidators.requiredIfValidator(() => {
         return this.isHoerenOtroskopieLinksResultatAndereChecked();
       }));
@@ -105,12 +86,12 @@ export class UntersuchungHoerenOtoskopieForm
   }
 
   public isHoerenOtroskopieRechtsResultatAndereChecked(): boolean {
-    return checkIfArrayContainsCheckedValue(this.group.controls.otoskopieRechtsArray.controls,
+    return checkIfArrayContainsCheckedValue(this.otoskopieRechtsValueEnhancedForm.group.controls.valueArray.controls,
       [OtoskopieResultat.ANDERES]);
   }
 
   public isHoerenOtroskopieLinksResultatAndereChecked(): boolean {
-    return checkIfArrayContainsCheckedValue(this.group.controls.otoskopieLinksArray.controls,
+    return checkIfArrayContainsCheckedValue(this.otoskopieLinksValueEnhancedForm.group.controls.valueArray.controls,
       [OtoskopieResultat.ANDERES]);
   }
 }

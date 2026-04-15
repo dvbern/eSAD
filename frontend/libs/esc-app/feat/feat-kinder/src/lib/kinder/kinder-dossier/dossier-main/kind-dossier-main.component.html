@@ -4,14 +4,18 @@
   @if (kind()?.data?.kindAktivStatus === EntityAktivStatus.INAKTIV) {
     <div class="p-3">
       <svui-status-text icon="information" [statusColor]="'warning'">
-        {{ 'kind.dossier.kindIsInaktiv' | transloco }}
-        @if (canActivateKind()) {
-          <button svuiButton="primary"
-                  type="button"
-                  class="btn-primary"
-                  (click)="activateKind()">
-            {{ 'kind.dossier.activateKind' | transloco }}
-          </button>
+        @if (dossier()?.timestampDefinitivArchiviert) {
+          {{ 'kind.dossier.definitivArchiviert' | transloco }}
+        } @else {
+          {{ 'kind.dossier.kindIsInaktiv' | transloco }}
+          @if (canActivateKind()) {
+            <button svuiButton="primary"
+                    type="button"
+                    class="btn-primary"
+                    (click)="activateKind()">
+              {{ 'kind.dossier.activateKind' | transloco }}
+            </button>
+          }
         }
       </svui-status-text>
     </div>
@@ -40,24 +44,26 @@
             {{ 'kind.dossier.link.exportieren' | transloco }}
           </button>
         }
-        <button ngbDropdownItem
-                [disabled]="!canChangeIdNr()"
-                (click)="generateIdForKind()">{{ 'kind.dossier.id.generieren' | transloco }}
-        </button>
-        <button ngbDropdownItem
-                [disabled]="!canChangeIdNr()"
-                (click)="setIdForKind()">{{ 'kind.dossier.id.setzen' | transloco }}
-        </button>
-        @if (canViewBriefvorlagen()) {
+        @if (tenantSettingsStore.idEsadIdVisible()) {
           <button ngbDropdownItem
-                  (click)="briefGenerieren()">{{ 'kind.dossier.link.briefgenerieren' | transloco }}
+                  [disabled]="!canChangeIdNr()"
+                  (click)="generateIdForKind()">{{ 'kind.dossier.id.generieren' | transloco }}
+          </button>
+          <button ngbDropdownItem
+                  [disabled]="!canChangeIdNr()"
+                  (click)="setIdForKind()">{{ 'kind.dossier.id.setzen' | transloco }}
           </button>
         }
+      }
+      @if (canViewBriefvorlagen() && this.dossierStore.isKindAktiv()) {
+        <button ngbDropdownItem
+                (click)="briefGenerieren()">{{ 'kind.dossier.link.briefgenerieren' | transloco }}
+        </button>
       }
     </svui-collapsible-menu>
   </svui-card-header>
 
-  @if (idNr()) {
+  @if (tenantSettingsStore.idEsadIdVisible() && idNr()) {
     <p class="ms-3 mb-0">
       {{ 'kind.dossier.idNr' | transloco }} - {{ idNr() }}
     </p>
@@ -163,11 +169,11 @@
         [clearable]="false"
         [disabled]="!canEditKind()"
       >
-        <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+        <!-- null check can be removed once nc-select fixes the bug (> 20.2.0) -->
         @if (benutzerOptionsStore.arztOptionsIncluding(zustaendigArzt()); as zustaendigArztOptions) {
-          @for (each of zustaendigArztOptions; track each; ) {
-            <ng-option [value]="each" [disabled]="!each.aktiv">
-              {{ each.fullName }}
+          @for (arzt of zustaendigArztOptions; track arzt; ) {
+            <ng-option [value]="arzt" [disabled]="arzt.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
+              {{ arzt.fullName }}
             </ng-option>
           }
         }
@@ -190,10 +196,10 @@
         [disabled]="!canEditKind()"
       >
         <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-        @if (benutzerOptionsStore.mpaOrPfpOptionsIncluding(zustaendigMPA()); as zustaendigMPAOptions) {
-          @for (each of zustaendigMPAOptions; track each; ) {
-            <ng-option [value]="each" [disabled]="!each.aktiv">
-              {{ each.fullName }}
+        @if (benutzerOptionsStore.hilfspersonOptionsIncluding(zustaendigMPA()); as zustaendigMPAOptions) {
+          @for (mpa of zustaendigMPAOptions; track mpa; ) {
+            <ng-option [value]="mpa" [disabled]="mpa.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
+              {{ mpa.fullName }}
             </ng-option>
           }
         }

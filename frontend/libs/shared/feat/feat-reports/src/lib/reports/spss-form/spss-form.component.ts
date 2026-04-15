@@ -49,7 +49,7 @@ export class SpssFormComponent {
         documentQueueListSaveJson,
         onSuccess: () => {
           this.form.reset();
-          this.documentQueueStore.loadDocumentQueueList();
+          this.documentQueueStore.loadDocumentQueueListForCurrentBenutzer();
         },
       });
     }

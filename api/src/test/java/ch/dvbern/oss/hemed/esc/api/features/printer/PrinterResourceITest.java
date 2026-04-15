@@ -12,8 +12,8 @@ import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsEmpfang;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupport;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsEmpfangBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.NotizenApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.PrinterApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KinderdossierPrintVariantSpec;
@@ -45,7 +45,7 @@ class PrinterResourceITest extends AbstractITest {
     private final FixtureService fixtureService;
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void downloadKinderdossier() {
         // ARRANGE
         Einladung einladung = fixtureService.createEinladung();
@@ -79,7 +79,7 @@ class PrinterResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void downloadKinderdossier_withTabInName() {
         // ARRANGE
         String vorname = "Max";
@@ -120,7 +120,7 @@ class PrinterResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void downloadKinderdossierForAnlass() {
         // ARRANGE
         Einladung einladung = fixtureService.createEinladung();
@@ -153,7 +153,7 @@ class PrinterResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsEmpfang
+    @TestAsEmpfangBS
     void downloadKinderdossierForAnlass_should_fail_for_Empfang() {
         // ARRANGE
         Einladung einladung = fixtureService.createEinladung();
@@ -170,7 +170,7 @@ class PrinterResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void downloadKinderdossierWithNotizeListInZipFile() {
         // ARRANGE
         Einladung einladung = fixtureService.createEinladung();

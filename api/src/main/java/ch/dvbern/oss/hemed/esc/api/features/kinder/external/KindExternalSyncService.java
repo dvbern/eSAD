@@ -30,7 +30,7 @@ public class KindExternalSyncService {
 
     private final KindExternalSyncHelperService kindExternalSyncHelperService;
     private final ConfigService configService;
-    private final ManagedExecutor concurrentEscadaExecutor;
+    private final ManagedExecutor concurrentExecutor;
 
     // IMPORANT: for the @ManagedExecutorConfig annotation to work, it must be directly on the @Inject.
     // do NOT use private final quarkus magic or you will exhaust all db connections
@@ -38,11 +38,11 @@ public class KindExternalSyncService {
     public KindExternalSyncService(
         KindExternalSyncHelperService kindExternalSyncHelperService,
         ConfigService configService,
-        @ManagedExecutorConfig(maxAsync = 9) ManagedExecutor concurrentEscadaExecutor
+        @ManagedExecutorConfig(maxAsync = 9) ManagedExecutor concurrentExecutor
     ) {
         this.kindExternalSyncHelperService = kindExternalSyncHelperService;
         this.configService = configService;
-        this.concurrentEscadaExecutor = concurrentEscadaExecutor;
+        this.concurrentExecutor = concurrentExecutor;
     }
 
     @NonNull
@@ -75,11 +75,11 @@ public class KindExternalSyncService {
                         LOG.warn("{}: Error adding new Kind with externalId: '{}'", importTyp.toString().toUpperCase(), item.getExternalId(), e);
                         return ItemSyncResultJson.<Kind>createAddErrorItem(
                             item,
-                            Objects.toString(item.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo()), item.getExternalId()),
+                            Objects.toString(item.getFullNameIfAllowed(configService.isExternalImportRedactPersonalInfo()), item.getExternalId()),
                             e
                         );
                     }
-                }, concurrentEscadaExecutor))
+                }, concurrentExecutor))
             .toList();
 
         // Wait for all tasks to complete
@@ -87,7 +87,7 @@ public class KindExternalSyncService {
             .map(CompletableFuture::join)
             .toList();
 
-        LOG.info("{}: Finished persisting new Kinder, took {}ms", importTyp.toString().toUpperCase(), stopwatch.getTime(TimeUnit.MILLISECONDS));
+        LOG.info("{}: Finished persisting new Kinder, took {}ms", importTyp, stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 
@@ -97,7 +97,7 @@ public class KindExternalSyncService {
         @NonNull ImportTyp importTyp
     ) {
         var stopwatch = StopWatch.createStarted();
-        LOG.info("{}: Starting to deactivate {} Kinder", importTyp.toString().toUpperCase(), itemsToDelete.size());
+        LOG.info("{}: Starting to deactivate {} Kinder", importTyp, itemsToDelete.size());
 
         List<CompletableFuture<ItemSyncResultJson<Kind>>> futures = itemsToDelete.stream()
             .map(externalSystemIdDTO -> CompletableFuture.supplyAsync(
@@ -107,11 +107,11 @@ public class KindExternalSyncService {
                     } catch (Exception e) {
                         LOG.warn(
                             "{}: Error deactivating Kind with externalId: '{}', internalId: '{}'",
-                            importTyp.toString().toUpperCase(),
+                            importTyp,
                             externalSystemIdDTO.getExternalId(), externalSystemIdDTO.getInternalId(), e);
                         return ItemSyncResultJson.createDeactivateErrorItem(externalSystemIdDTO, Kind.class, e);
                     }
-                }, concurrentEscadaExecutor))
+                }, concurrentExecutor))
             .toList();
 
         // Wait for all tasks to complete
@@ -119,7 +119,7 @@ public class KindExternalSyncService {
             .map(CompletableFuture::join)
             .toList();
 
-        LOG.info("{}: Finished deactivating Kinder, took {}ms", importTyp.toString().toUpperCase(), stopwatch.getTime(TimeUnit.MILLISECONDS));
+        LOG.info("{}: Finished deactivating Kinder, took {}ms", importTyp, stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 
@@ -129,7 +129,7 @@ public class KindExternalSyncService {
         @NonNull ImportTyp importTyp
     ) {
         var stopwatch = StopWatch.createStarted();
-        LOG.info("{}: Starting to update {} Kinder", importTyp.toString().toUpperCase(), itemsToSync.size());
+        LOG.info("{}: Starting to update {} Kinder", importTyp, itemsToSync.size());
 
         List<CompletableFuture<ItemSyncResultJson<Kind>>> futures = itemsToSync.entrySet().stream()
             .map(entry -> CompletableFuture.supplyAsync(
@@ -140,12 +140,12 @@ public class KindExternalSyncService {
                     } catch (Exception e) {
                         LOG.warn(
                             "{}: Error updating Kind with externalId: '{}', internalId: '{}'",
-                            importTyp.toString().toUpperCase(),
+                            importTyp,
                             idDTO.getExternalId(), idDTO.getInternalId(), e);
                         return ItemSyncResultJson.createUpdateErrorItem(idDTO, Kind.class, e);
                     }
                 },
-                concurrentEscadaExecutor))
+                concurrentExecutor))
             .toList();
 
         // Wait for all tasks to complete
@@ -153,7 +153,7 @@ public class KindExternalSyncService {
             .map(CompletableFuture::join)
             .toList();
 
-        LOG.info("{}: Finished updating Kinder, took {}ms", importTyp.toString().toUpperCase(), stopwatch.getTime(TimeUnit.MILLISECONDS));
+        LOG.info("{}: Finished updating Kinder, took {}ms", importTyp, stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 }

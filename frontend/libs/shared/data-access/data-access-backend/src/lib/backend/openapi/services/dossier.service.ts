@@ -18,9 +18,10 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 import { BackendEntityId } from '@dvb/data-access-types';
+import { BenutzerOptionJson } from '../model/benutzer-option-json';
 import { DossierJson } from '../model/dossier-json';
 import { DossierMedizinischSaveJson } from '../model/dossier-medizinisch-save-json';
-import { DossierNichtMedizinischSaveJson } from '../model/dossier-nicht-medizinisch-save-json';
+import { PapierakteStatus } from '../model/papierakte-status';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -39,9 +40,19 @@ export interface DossierServiceUpdateDossierMedizinischRequestParams {
     dossierMedizinischSaveJson: DossierMedizinischSaveJson;
 }
 
-export interface DossierServiceUpdateDossierNichtMedizinischRequestParams {
+export interface DossierServiceUpdateDossierPapierakteStatusRequestParams {
     dossierId: BackendEntityId;
-    dossierNichtMedizinischSaveJson: DossierNichtMedizinischSaveJson;
+    status: PapierakteStatus;
+}
+
+export interface DossierServiceUpdateDossierVerantwortlichArztRequestParams {
+    dossierId: BackendEntityId;
+    benutzerOptionJson: BenutzerOptionJson;
+}
+
+export interface DossierServiceUpdateDossierVerantwortlichMpaRequestParams {
+    dossierId: BackendEntityId;
+    benutzerOptionJson: BenutzerOptionJson;
 }
 
 
@@ -336,22 +347,97 @@ export class DossierService {
     }
 
     /**
-     * Update Dossier Nicht Medizinisch
+     * Update Dossier Papierakte Status
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateDossierNichtMedizinisch$(requestParameters?: DossierServiceUpdateDossierNichtMedizinischRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<DossierJson>;
-    public updateDossierNichtMedizinisch$(requestParameters?: DossierServiceUpdateDossierNichtMedizinischRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<DossierJson>>;
-    public updateDossierNichtMedizinisch$(requestParameters?: DossierServiceUpdateDossierNichtMedizinischRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<DossierJson>>;
-    public updateDossierNichtMedizinisch$(requestParameters?: DossierServiceUpdateDossierNichtMedizinischRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public updateDossierPapierakteStatus$(requestParameters?: DossierServiceUpdateDossierPapierakteStatusRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<DossierJson>;
+    public updateDossierPapierakteStatus$(requestParameters?: DossierServiceUpdateDossierPapierakteStatusRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<DossierJson>>;
+    public updateDossierPapierakteStatus$(requestParameters?: DossierServiceUpdateDossierPapierakteStatusRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<DossierJson>>;
+    public updateDossierPapierakteStatus$(requestParameters?: DossierServiceUpdateDossierPapierakteStatusRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         const dossierId = requestParameters?.dossierId;
         if (dossierId === null || dossierId === undefined) {
-            throw new Error('Required parameter dossierId was null or undefined when calling updateDossierNichtMedizinisch.');
+            throw new Error('Required parameter dossierId was null or undefined when calling updateDossierPapierakteStatus.');
         }
-        const dossierNichtMedizinischSaveJson = requestParameters?.dossierNichtMedizinischSaveJson;
-        if (dossierNichtMedizinischSaveJson === null || dossierNichtMedizinischSaveJson === undefined) {
-            throw new Error('Required parameter dossierNichtMedizinischSaveJson was null or undefined when calling updateDossierNichtMedizinisch.');
+        const status = requestParameters?.status;
+        if (status === null || status === undefined) {
+            throw new Error('Required parameter status was null or undefined when calling updateDossierPapierakteStatus.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (SecurityScheme) required
+        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
+        if (localVarCredential) {
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/dossiers/${this.configuration.encodeParam({name: "dossierId", value: dossierId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/papieraktestatus/${this.configuration.encodeParam({name: "status", value: status, in: "path", style: "simple", explode: false, dataType: "PapierakteStatus", dataFormat: undefined})}`;
+        return this.httpClient.request<DossierJson>('put', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Update Dossier Verantwortlich Arzt
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public updateDossierVerantwortlichArzt$(requestParameters?: DossierServiceUpdateDossierVerantwortlichArztRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<DossierJson>;
+    public updateDossierVerantwortlichArzt$(requestParameters?: DossierServiceUpdateDossierVerantwortlichArztRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<DossierJson>>;
+    public updateDossierVerantwortlichArzt$(requestParameters?: DossierServiceUpdateDossierVerantwortlichArztRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<DossierJson>>;
+    public updateDossierVerantwortlichArzt$(requestParameters?: DossierServiceUpdateDossierVerantwortlichArztRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const dossierId = requestParameters?.dossierId;
+        if (dossierId === null || dossierId === undefined) {
+            throw new Error('Required parameter dossierId was null or undefined when calling updateDossierVerantwortlichArzt.');
+        }
+        const benutzerOptionJson = requestParameters?.benutzerOptionJson;
+        if (benutzerOptionJson === null || benutzerOptionJson === undefined) {
+            throw new Error('Required parameter benutzerOptionJson was null or undefined when calling updateDossierVerantwortlichArzt.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -405,11 +491,96 @@ export class DossierService {
             }
         }
 
-        let localVarPath = `/api/dossiers/${this.configuration.encodeParam({name: "dossierId", value: dossierId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/nicht-medizinisch`;
+        let localVarPath = `/api/dossiers/${this.configuration.encodeParam({name: "dossierId", value: dossierId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/verantwortlich-arzt`;
         return this.httpClient.request<DossierJson>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: dossierNichtMedizinischSaveJson,
+                body: benutzerOptionJson,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Update Dossier Verantwortlich Mpa
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public updateDossierVerantwortlichMpa$(requestParameters?: DossierServiceUpdateDossierVerantwortlichMpaRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<DossierJson>;
+    public updateDossierVerantwortlichMpa$(requestParameters?: DossierServiceUpdateDossierVerantwortlichMpaRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<DossierJson>>;
+    public updateDossierVerantwortlichMpa$(requestParameters?: DossierServiceUpdateDossierVerantwortlichMpaRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<DossierJson>>;
+    public updateDossierVerantwortlichMpa$(requestParameters?: DossierServiceUpdateDossierVerantwortlichMpaRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const dossierId = requestParameters?.dossierId;
+        if (dossierId === null || dossierId === undefined) {
+            throw new Error('Required parameter dossierId was null or undefined when calling updateDossierVerantwortlichMpa.');
+        }
+        const benutzerOptionJson = requestParameters?.benutzerOptionJson;
+        if (benutzerOptionJson === null || benutzerOptionJson === undefined) {
+            throw new Error('Required parameter benutzerOptionJson was null or undefined when calling updateDossierVerantwortlichMpa.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (SecurityScheme) required
+        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
+        if (localVarCredential) {
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/dossiers/${this.configuration.encodeParam({name: "dossierId", value: dossierId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/verantwortlich-mpa`;
+        return this.httpClient.request<DossierJson>('put', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: benutzerOptionJson,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

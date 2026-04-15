@@ -13,10 +13,15 @@ import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.RolesAugmentor;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerBerechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerLoginInfos;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.FachrollenService;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
+import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -29,22 +34,23 @@ import org.slf4j.MDC;
 @RequiredArgsConstructor
 public class EnsureBenutzerHelperService {
 
-    public static final FachRolle[] EMPTY_FACHROLLEN = new FachRolle[0];
     private final BenutzerService benutzerService;
+    private final TenantSettingsService tenantSettingsService;
+    private final ConfigService configService;
     private final TenantProducer tenantProducer;
+    private final FachrollenService fachrollenService;
 
     private final AppClock appClock;
 
     @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void createNewUserFromToken(JsonWebTokenDataDTO webTokenData) {
-
         Benutzer benutzerFromJWT = benutzerService.createBenutzerFromJWT(webTokenData);
         List<BenutzerBerechtigung> storedBerechtigungen = benutzerService.syncBerechtigungenToBenutzer(
             benutzerFromJWT.getId(),
             FachRolle.collectAllBerechtigungen(
                 tenantProducer.produceTenant(),
-                benutzerFromJWT.getFachRollen().toArray(EMPTY_FACHROLLEN))
+                benutzerFromJWT.getFachRollen().toArray(RolesAugmentor.EMPTY_FACHROLLEN))
         );
 
         LOG.info(
@@ -80,18 +86,28 @@ public class EnsureBenutzerHelperService {
         existingUser.setVorname(webTokenData.getGivenName());
         existingUser.setNachname(webTokenData.getFamilyName());
         existingUser.setEmail(webTokenData.getEmail());
-        existingUser.setFachRollen(EnumSetUtil.toEnumSet(
-            webTokenData.getFachRollen().stream().toList(),
-            FachRolle.class));
         existingUser.setTitel(webTokenData.getTitleClaim());
         existingUser.setTelefon(NormalizedPhoneNumber.parse(webTokenData.getPhoneNumberClaim()));
+        // timestampAGBAccepted wird ueber eigenen Endpoint gesetzt
+
+        existingUser.disableOptimisticLockingCheck();
+
+        boolean ignoreFachrollenFromKeycloak = tenantSettingsService.getTenantSetting()
+            .getTenantSettingFeatures()
+            .getBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature()
+            .isEnabledForDeploymentEnvironment(configService.getEnvironment());
+
+        if (!ignoreFachrollenFromKeycloak) {
+            fachrollenService.setFachrollen(EnumSetUtil.toEnumSet(
+                webTokenData.getFachRollen().stream().toList(),
+                FachRolle.class), existingUser, null);
+        }
 
         benutzerService.syncBerechtigungenToBenutzer(
             existingUser.getId(),
             FachRolle.collectAllBerechtigungen(
                 tenantProducer.produceTenant(),
-                existingUser.getFachRollen().toArray(EMPTY_FACHROLLEN)));
-
+                existingUser.getFachRollen().toArray(RolesAugmentor.EMPTY_FACHROLLEN)));
         // LastSessionId speichern
         this.storeLastLoginInfoForBenutzer(existingUser, webTokenData);
     }
@@ -110,7 +126,7 @@ public class EnsureBenutzerHelperService {
                 loginInfos.setLastUsedSessionId(session);
                 loginInfos.setLastUsedSessionTimestamp(appClock.offsetDateTime().now());
                 loginInfos.setOidcIssuer(webTokenData.getIssuer());
-                benutzer.setAktiv(true);
+                benutzer.setBenutzerAktivStatus(EntityAktivStatus.AKTIV);
             } else {
                 LOG.debug("Session {} for user {} was already stored", benutzer.getId(), session);
             }

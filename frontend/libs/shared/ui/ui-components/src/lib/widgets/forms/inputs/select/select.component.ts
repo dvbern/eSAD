@@ -26,7 +26,7 @@ export interface SelectItem {
     imports: [ReactiveFormsModule]
 })
 export class SelectComponent extends ValidatedInputWithIdDirective {
-  @HostBinding('class.form-select') private readonly bootstrapClass = true;
+  @HostBinding('class.form-select') readonly bootstrapClass = true;
 
   get controlType(): ControlType {
     return 'select';

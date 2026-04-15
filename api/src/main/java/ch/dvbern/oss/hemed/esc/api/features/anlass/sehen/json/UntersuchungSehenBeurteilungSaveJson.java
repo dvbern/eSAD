@@ -1,23 +1,14 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.json;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.SehenEmpfehlung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftretenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.ValueEnhancedJson;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
@@ -26,25 +17,30 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @JaxDTO
 public class UntersuchungSehenBeurteilungSaveJson implements SaveJsonWithOptimisticLocking {
 
-    @Nullable
-    @Schema(required = false)
-    private BrilleLinsenResultat brilleLinsen;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson brilleLinsen;
 
-    @Nullable
-    @Schema(required = false)
-    private StereotestResultat stereotest;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson stereotest;
 
-    @Nullable
-    @Schema(required = false)
-    private FarbsehenResultat farbsehen;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson farbsehen;
 
-    @Nullable
-    @Schema(required = false)
-    private VerwendetTafelResultat verwendeteTafel;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson verwendeteTafel;
 
-    @Nullable
-    @Schema(required = false)
-    private List<DistanzSehenResultat> fernvisus;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson fernvisus;
 
     @Nullable
     @Schema(required = false)
@@ -55,8 +51,19 @@ public class UntersuchungSehenBeurteilungSaveJson implements SaveJsonWithOptimis
     private BigDecimal fernvisusLinks;
 
     @Nullable
+    @Valid
     @Schema(required = false)
-    private List<DistanzSehenResultat> nahvisus;
+    private ValueEnhancedJson fernvisusAugeLinks;
+
+    @Nullable
+    @Valid
+    @Schema(required = false)
+    private ValueEnhancedJson fernvisusAugeRechts;
+
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson nahvisus;
 
     @Nullable
     @Schema(required = false)
@@ -66,33 +73,40 @@ public class UntersuchungSehenBeurteilungSaveJson implements SaveJsonWithOptimis
     @Schema(required = false)
     private BigDecimal nahvisusLinks;
 
-    @Nullable
-    @Schema(required = false)
-    private MotilitaetResultat motilitaet;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson motilitaet;
 
-    @Nullable
-    @Schema(required = false)
-    private List<StrabismusResultat> strabismus;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson strabismus;
 
-    @Nullable
-    @Schema(required = false)
-    private StrabismusAuspraegungResultat strabismusAuspraegung;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson strabismusAuspraegung;
 
-    @Nullable
-    @Schema(required = false)
-    private StrabismusAuftretenResultat strabismusAuftreten;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson strabismusAuftreten;
 
-    @Nullable
-    @Schema(required = false)
-    private InspektionKonvergenzResultat inspektion;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson inspektion;
 
-    @Nullable
-    @Schema(required = false)
-    private InspektionKonvergenzResultat konvergenz;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson konvergenz;
 
-    @Nullable
-    @Schema(required = false)
-    private List<SehenEmpfehlung> empfehlung;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson empfehlung;
 
     @Nullable
     @Schema(required = false)

@@ -5,9 +5,11 @@ import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+
 public class KrankheitJahrMonatDerLetztenImpfungCsvColumn extends AbstractCsvColumn {
 
-    public static final String NOT_AVAILABLE_VALUE = "55"; // will be set if not value is present
     @NonNull
     private final Krankheit krankheit;
 
@@ -27,9 +29,10 @@ public class KrankheitJahrMonatDerLetztenImpfungCsvColumn extends AbstractCsvCol
             einladung,
             krankheit,
             config,
-            impfstatus -> impfstatus.getDatumLetzteImpfung() != null ?
-                impfstatus.getDatumLetzteImpfung().getMonth() + " " + impfstatus.getDatumLetzteImpfung().getYear() :
-                NOT_AVAILABLE_VALUE);
+            impfstatus -> Optional.ofNullable(impfstatus.getDatumLetzteImpfung())
+                .map(datum -> datum.format(DateTimeFormatter.ofPattern("MM.yyyy")))
+                .orElse("")
+        );
     }
 
     @Override

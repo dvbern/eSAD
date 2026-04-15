@@ -1,0 +1,16 @@
+<svui-card>
+  <h2 svuiHeading="card" class="mb-3">
+    {{ 'admin.dev.printserverconf.title' | transloco }}
+    <svui-icon-with-tooltip>
+      {{ 'admin.dev.printserverconf.tooltip' | transloco }}
+    </svui-icon-with-tooltip>
+  </h2>
+  <button
+    type="button"
+    svuiButton="primary"
+    (click)="triggerServerConfPrint()"
+    [disabled]="systemAdminStore.loader.isLoading()"
+  >
+    {{ 'admin.dev.printserverconf.button' | transloco }}
+  </button>
+</svui-card>

@@ -5,17 +5,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.EinladungSaveJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.NaechsteStation;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.DossierService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
@@ -23,7 +25,10 @@ import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AufgabeService;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AutoAufgabeService;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.notizen.AutoNotizService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.features.FeatureEnabledSetting;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
 import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
 import jakarta.validation.constraints.NotNull;
@@ -40,7 +45,10 @@ public class EinladungService {
     private final AutoAufgabeService autoAufgabeService;
     private final AufgabeService aufgabeService;
     private final AutoNotizService autoNotizService;
+    private final AnlassService anlassService;
     private final AppClock appClock;
+    private final TenantSettingsService tenantSettingsService;
+    private final ConfigService configService;
 
     @NonNull
     public Einladung persist(@NonNull Einladung einladung) {
@@ -109,7 +117,8 @@ public class EinladungService {
                 Einladung einladung = persist(Einladung.create(anlass, dossier));
                 einladung.disableOptimisticLockingCheck();
                 Optional<Einladung>
-                    urspruenglicheEinladungForNachzuegler = findUrspruenglicheEinladungForNachzuegler(anlass, dossier.getKind().getId());
+                    urspruenglicheEinladungForNachzuegler =
+                    findUrspruenglicheEinladungForNachzuegler(anlass, dossier.getKind().getId());
                 if (urspruenglicheEinladungForNachzuegler.isPresent()) {
                     Einladung einladungNachzuegler = urspruenglicheEinladungForNachzuegler.get();
                     einladungNachzuegler.disableOptimisticLockingCheck();
@@ -127,16 +136,27 @@ public class EinladungService {
         @NonNull List<ID<Einladung>> einladungIdList
     ) {
         for (ID<Einladung> einladungID : einladungIdList) {
-            removeEinladung(einladungID);
+            removeEinladung(einladungID, false);
         }
     }
 
-    public void removeEinladung(@NonNull ID<Einladung> einladungID) {
+    public void removeEinladung(@NonNull ID<Einladung> einladungID, boolean deleteAnlassIfLastEinladung) {
         Einladung einladung = einladungRepo.getById(einladungID);
         if (einladung.getUntersuchung() != null) {
             untersuchungService.removeUntersuchung(einladung.getUntersuchung());
+            einladung.disableOptimisticLockingCheck();
+            einladung.setUntersuchung(null);
+            einladungRepo.persist(einladung);
         }
-        einladungRepo.remove(einladungID);
+
+        List<Einladung> einladungenAnlass = einladungRepo.findByAnlass(einladung.getAnlass().getId());
+        // Wenn es die einzige Einladung in diesem Anlass ist, kann gleich der ganze Anlass gelöscht werden.
+        if (einladungenAnlass.size() == 1 && deleteAnlassIfLastEinladung) {
+            einladungRepo.remove(einladungID);
+            anlassService.remove(einladung.getAnlass().getId());
+        } else {
+            einladungRepo.remove(einladungID);
+        }
     }
 
     @NonNull
@@ -184,14 +204,25 @@ public class EinladungService {
         return einladungRepo.findAllForCsvReport(zeitraum);
     }
 
+    @NonNull
+    public List<ID<Einladung>> findAllForCsvImpfstoffeReport(@NonNull DateRange zeitraum) {
+        return einladungRepo.findAllForCsvImpfstoffReport(zeitraum);
+    }
+
     public void markAsSpssExported(@NonNull List<ID<Einladung>> einladungIdList) {
         einladungRepo.markAsSpssExported(einladungIdList);
     }
 
     public void untersuchungAbschliessen(@NotNull @NonNull ID<Einladung> einladungId) {
         // Untersuchungen abschliessen
+        FeatureEnabledSetting nichtGeprueftGrundFeature =
+            tenantSettingsService.getTenantSetting().getTenantSettingFeatures().getNichtGeprueftGrundFeature();
+        DeploymentEnvironment deploymentEnvironment = configService.getEnvironment();
+        boolean nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv =
+            nichtGeprueftGrundFeature.isEnabledForDeploymentEnvironment(deploymentEnvironment);
+
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
-        untersuchungService.untersuchungAbschliessen(untersuchung);
+        untersuchungService.untersuchungAbschliessen(untersuchung, nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv);
         // Einladung auf FERTIG setzen
         Einladung einladung = getById(einladungId);
         einladung.setNaechsteStation(NaechsteStation.FERTIG);

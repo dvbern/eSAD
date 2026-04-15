@@ -9,7 +9,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.InfomaterialBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminWIN;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.InfomaterialApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.InfomaterialJsonSpec;
@@ -62,14 +62,14 @@ class InfomaterialResourceTenantITest extends AbstractITest {
     }
 
     @Test
-    @TestAsAdminWIN
+    @TestAsAdminBE
     @Order(20)
     void create_info_ad_admin_be() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.WIN); // Default ist BS
+        tenantProducer.setCurrentTenant(TenantEnum.BE); // Default ist BS
         this.numBernBeforeCreate = infomaterialService.findAll().size();
         // ACT
-        InfomaterialJsonSpec result = createAndRunInfomaterialRequest(TenantEnum.WIN);
+        InfomaterialJsonSpec result = createAndRunInfomaterialRequest(TenantEnum.BE);
         // ASSERT
         ID<Infomaterial> idToload = ID.of(UUID.fromString(result.getId()), Infomaterial.class);
         var loadedInfomaterial = infomaterialService.getById(idToload);
@@ -94,11 +94,11 @@ class InfomaterialResourceTenantITest extends AbstractITest {
     }
 
     @Test
-    @TestAsAdminWIN
+    @TestAsAdminBE
     @Order(40)
     void read_info_as_admin_be() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.WIN); // Default ist BS
+        tenantProducer.setCurrentTenant(TenantEnum.BE); // Default ist BS
         // ACT
         InfomaterialListJsonSpec result = api
             .infomaterialResourceFindAllInfomaterialien()
@@ -142,11 +142,11 @@ class InfomaterialResourceTenantITest extends AbstractITest {
     }
 
     @Test
-    @TestAsAdminWIN
+    @TestAsAdminBE
     @Order(70)
     void read_info_as_admin_bern_returns_still_1() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.WIN); // Default ist BS
+        tenantProducer.setCurrentTenant(TenantEnum.BE); // Default ist BS
         // ACT
         InfomaterialListJsonSpec result = api
             .infomaterialResourceFindAllInfomaterialien()

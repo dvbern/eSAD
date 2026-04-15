@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { AgbResponsability } from './agb-responsability';
 import { EinladungStatus } from './einladung-status';
 import { AppLanguages } from './app-languages';
 import { TenantSettingFeaturesJson } from './tenant-setting-features-json';
@@ -16,6 +17,9 @@ export interface TenantSettingSaveJson {
     defaultLanguage: AppLanguages;
     supportedLanguages: Array<AppLanguages>;
     folgeTermineMaxSlots: number;
+    customerAdminEmails: string;
+    supportEmail: string;
+    agbResponsability: AgbResponsability;
     features: TenantSettingFeaturesJson;
     einladungStatusValues: Array<EinladungStatus>;
 }

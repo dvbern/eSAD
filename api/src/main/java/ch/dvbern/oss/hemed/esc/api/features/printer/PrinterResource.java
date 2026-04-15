@@ -25,8 +25,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -39,7 +38,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = Tags.TAG_PRINTER)
 @RolesAllowed(BerechtigungName.SUPPORT)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "PrinterResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("PrinterResourceMS")
 public class PrinterResource {
 
     public static final String ATTACHMENT = "attachment";

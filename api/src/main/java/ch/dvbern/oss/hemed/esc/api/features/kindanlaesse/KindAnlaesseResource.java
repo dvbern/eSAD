@@ -16,8 +16,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/kindanlaesse")
@@ -26,7 +25,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = Tags.TAG_KINDANLAESSE)
 @RolesAllowed({ BerechtigungName.ANLASSLISTE_LESEN, BerechtigungName.ANLASSLISTE_LESEN_LAEUSE })
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "KindAnlaesseResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("KindAnlaesseResourceMS")
 public class KindAnlaesseResource {
 
     private final KindAnlaesseMapper kindAnlaesseMapper;

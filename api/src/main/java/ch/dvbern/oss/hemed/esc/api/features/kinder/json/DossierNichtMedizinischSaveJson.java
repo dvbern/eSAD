@@ -16,6 +16,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @JaxDTO
 @Schema(description = "Non medical business data for a Dossier")
 public class DossierNichtMedizinischSaveJson implements SaveJsonWithOptimisticLocking {
+
     @Nullable
     @Schema(required = false)
     @Valid

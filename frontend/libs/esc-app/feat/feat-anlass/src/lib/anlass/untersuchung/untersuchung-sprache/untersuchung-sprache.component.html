@@ -1,0 +1,63 @@
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabSprache) {
+
+  <form svuiFormLayout
+        [formType]="'kacheln'"
+        [mode]="'edit'"
+        [formGroup]="form.group"
+        (ngSubmit)="submitIfValid()">
+
+    <!-- nachsprechen -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungSpracheNachsprechen !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.nachsprechenSingleValueForm"
+        [valueTitleKey]="'untersuchung.tab.sprache.nachsprechen'"
+        [valuePrefix]="'Nachsprechen'"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+    }
+
+    <!-- wortschatz -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungSpracheWortschatz !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.wortschatzSingleValueForm"
+        [valueTitleKey]="'untersuchung.tab.sprache.wortschatz'"
+        [valuePrefix]="'Wortschatz'"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+    }
+
+    <!-- sprachverstaendnis -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungSpracheSprachverstaendnis !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.sprachverstaendnisSingleValueForm"
+        [valueTitleKey]="'untersuchung.tab.sprache.sprachverstaendnis'"
+        [valuePrefix]="'Sprachverstaendnis'"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+    }
+
+    <!-- Bemerkung -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungSpracheBemerkungen !== RequirementSetting.NOT_VISIBLE) {
+      <svui-title [context]="'formSection'"
+                  class="mb-3">{{ 'untersuchung.tab.sprache.bemerkung' | transloco }}
+      </svui-title>
+      <svui-form-control
+        [label]="'untersuchung.tab.sprache.bemerkung' | transloco"
+        [topLabelVisibility]="'hidden'"
+        [viewValue]="form.group.controls.bemerkungen.value">
+        <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
+      </svui-form-control>
+    }
+
+    <!-- Save / Cancel Buttons -->
+    @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+      <svui-save-cancel-buttons
+        [saving]="false"
+        [canEdit]="true"
+        (cancelClicked)="abbrechen()"/>
+    }
+  </form>
+}

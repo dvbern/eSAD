@@ -18,6 +18,8 @@ import {test as setup} from '@playwright/test';
 import {loginAsUser} from '../../routines/login.routines';
 import {testUsers} from '../../util/env.util';
 
+setup.describe.configure({ mode: 'parallel' });
+
 Object.entries(testUsers).forEach(([storage, user]) => {
   setup(`Create ${storage} Auth`, async ({page, context}) => {
     await loginAsUser(page, user);

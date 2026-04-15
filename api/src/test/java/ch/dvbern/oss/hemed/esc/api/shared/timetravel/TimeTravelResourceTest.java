@@ -3,7 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.timetravel;
 import java.time.LocalDate;
 
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupport;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.TimetravelApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.TimeTravelJsonSpec;
 import io.quarkus.test.junit.QuarkusTest;
@@ -20,7 +20,7 @@ class TimeTravelResourceTest {
     private final TimetravelApiSpec api = TimetravelApiSpec.timetravel(RequestSpecUtil.quarkusSpec());
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void getInitialNow() {
 
         // initially, we should not be timetravelling and the now date should be today
@@ -29,7 +29,7 @@ class TimeTravelResourceTest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void timetravelAndBack() {
 
         // timetravel back 22 days and check the new now date and timetravelling=true

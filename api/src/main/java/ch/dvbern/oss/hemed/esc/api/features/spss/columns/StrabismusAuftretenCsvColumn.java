@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftretenResultat;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -17,15 +18,15 @@ public class StrabismusAuftretenCsvColumn extends AbstractCsvColumn {
         return ExtractorForCsvUtil.extractUntersuchungSehen(
             einladung,
             sehen -> {
-                StrabismusAuftretenResultat resultat = sehen.getStrabismusAuftreten();
+                StrabismusAuftretenResultat resultat = ValueEnhancedUtil.getEnumValueOrNull(
+                    sehen.getStrabismusAuftreten(),
+                    StrabismusAuftretenResultat.class);
                 if (resultat == null) {
                     return "";
                 }
-
                 if (!config.forSpssReport()) {
                     return config.tl().translateValue(resultat);
                 }
-
                 return switch (resultat) {
                     case KEIN_STRABISMUS -> "";
                     case RECHTS -> "1";

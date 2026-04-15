@@ -21,7 +21,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungMassnahmenJsonSpe
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungSehenMassnahmenSaveJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungMassnahmenJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenMassnahmenSaveJsonSpec;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 

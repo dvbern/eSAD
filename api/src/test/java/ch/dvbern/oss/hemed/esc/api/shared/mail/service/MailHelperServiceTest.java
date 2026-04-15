@@ -2,7 +2,6 @@ package ch.dvbern.oss.hemed.esc.api.shared.mail.service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguageProvider;
@@ -10,10 +9,10 @@ import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TLProducer;
 import ch.dvbern.oss.commons.i18nl10n.I18nMessage;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import org.assertj.core.api.Assertions;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,7 +22,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-
 
 @ExtendWith(MockitoExtension.class)
 class MailHelperServiceTest {
@@ -39,6 +37,9 @@ class MailHelperServiceTest {
 
     @Mock
     private TL tl;
+
+    @Mock
+    private TenantProducer tenantProducer;
 
     @InjectMocks
     private MailHelperService mailHelperService;
@@ -124,12 +125,13 @@ class MailHelperServiceTest {
         String originalSubject = "Test Subject";
         when(configService.isStufeProd()).thenReturn(false);
         when(configService.getEnvironment()).thenReturn(DeploymentEnvironment.UNIT_TEST);
+        when(tenantProducer.produceTenant()).thenReturn(TenantEnum.BS);
 
         // Act
         String result = mailHelperService.prepareSubject(originalSubject);
 
         // Assert
-        assertEquals("eSAD (UNIT_TEST): Test Subject", result);
+        assertEquals("eSAD (UNIT_TEST, BS): Test Subject", result);
     }
 
     @Test

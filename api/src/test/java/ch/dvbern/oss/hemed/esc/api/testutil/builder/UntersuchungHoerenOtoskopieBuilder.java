@@ -7,16 +7,18 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoerenOtoskopieJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopieMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoerenOtoskopieJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.NichtGeprueftGrund;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungHoerenOtoskopieJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungHoerenOtoskopieJsonSpec;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -38,8 +40,7 @@ public class UntersuchungHoerenOtoskopieBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungHoerenOtoskopieBuilder forUntersuchungHoerenOtoskopie(
-        @NonNull UntersuchungHoerenOtoskopie existing) {
+    public UntersuchungHoerenOtoskopieBuilder forUntersuchungHoerenOtoskopie(@NonNull UntersuchungHoerenOtoskopie existing) {
         this.hoerenOtoskopie = existing;
         return this;
     }
@@ -53,8 +54,12 @@ public class UntersuchungHoerenOtoskopieBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungHoerenOtoskopieBuilder withOtoskopieRechts(@Nullable Collection<OtoskopieResultat> resultatList) {
-        this.hoerenOtoskopie.setOtoskopieRechts(EnumSetUtil.toEnumSet(resultatList, OtoskopieResultat.class));
+    public UntersuchungHoerenOtoskopieBuilder withOtoskopieRechts(
+        @Nullable Collection<OtoskopieResultat> resultatList,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.hoerenOtoskopie.setOtoskopieRechts(MultiValueEnhanced.of(
+            EnumSetUtil.toEnumSet(resultatList, OtoskopieResultat.class), nichtGeprueftGrund));
         return this;
     }
 
@@ -62,9 +67,10 @@ public class UntersuchungHoerenOtoskopieBuilder {
     @CanIgnoreReturnValue
     public UntersuchungHoerenOtoskopieBuilder withOtoskopieRechts(
         @Nullable List<OtoskopieResultat> resultatList,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund,
         @Nullable String bemerkung
     ) {
-        this.hoerenOtoskopie.setOtoskopieRechts(EnumSetUtil.toEnumSet(resultatList, OtoskopieResultat.class));
+        this.hoerenOtoskopie.setOtoskopieRechts(MultiValueEnhanced.of(EnumSetUtil.toEnumSet(resultatList, OtoskopieResultat.class), nichtGeprueftGrund));
         this.hoerenOtoskopie.setOtoskopieRechtsResultatAndere(bemerkung);
         return this;
     }
@@ -80,8 +86,11 @@ public class UntersuchungHoerenOtoskopieBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungHoerenOtoskopieBuilder withOtoskopieLinks(@Nullable Collection<OtoskopieResultat> resultatList) {
-        this.hoerenOtoskopie.setOtoskopieLinks(EnumSetUtil.toEnumSet(resultatList, OtoskopieResultat.class));
+    public UntersuchungHoerenOtoskopieBuilder withOtoskopieLinks(
+        @Nullable Collection<OtoskopieResultat> resultatList,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.hoerenOtoskopie.setOtoskopieLinks(MultiValueEnhanced.of(EnumSetUtil.toEnumSet(resultatList, OtoskopieResultat.class), nichtGeprueftGrund));
         return this;
     }
 
@@ -89,9 +98,10 @@ public class UntersuchungHoerenOtoskopieBuilder {
     @CanIgnoreReturnValue
     public UntersuchungHoerenOtoskopieBuilder withOtoskopieLinks(
         @Nullable Collection<OtoskopieResultat> resultatList,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund,
         @Nullable String bemerkung
     ) {
-        this.hoerenOtoskopie.setOtoskopieLinks(EnumSetUtil.toEnumSet(resultatList, OtoskopieResultat.class));
+        this.hoerenOtoskopie.setOtoskopieLinks(MultiValueEnhanced.of(EnumSetUtil.toEnumSet(resultatList, OtoskopieResultat.class), nichtGeprueftGrund));
         this.hoerenOtoskopie.setOtoskopieLinksResultatAndere(bemerkung);
         return this;
     }
@@ -99,7 +109,8 @@ public class UntersuchungHoerenOtoskopieBuilder {
     @NonNull
     @CanIgnoreReturnValue
     public UntersuchungHoerenOtoskopieBuilder withOtoskopieLinksResultatAndere(
-        @Nullable String otoskopieLinksResultatAndere) {
+        @Nullable String otoskopieLinksResultatAndere
+    ) {
         this.hoerenOtoskopie.setOtoskopieLinksResultatAndere(otoskopieLinksResultatAndere);
         return this;
     }

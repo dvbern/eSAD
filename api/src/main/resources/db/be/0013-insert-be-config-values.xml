@@ -1,0 +1,27 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="anst" id="1770114021041-5">
+    <update tableName="anlassconfig">
+      <column name="sehenbrillelinsenvalues" value="BRILLE,KONTAKTLINSEN,OHNE_KEINE,NICHT_GEPRUEFT"/>
+      <where>sehenbrillelinsen IN ('OPTIONAL', 'REQUIRED')</where>
+    </update>
+    <update tableName="anlassconfig">
+      <column name="sehenstrabismusvalues" value="KEIN_STRABISMUS,LINKS,RECHTS,NICHT_GEPRUEFT"/>
+      <where>sehenstrabismus IN ('OPTIONAL', 'REQUIRED')</where>
+    </update>
+    <update tableName="anlassconfig">
+      <column name="hoerenaudiogrammsimpel" value="REQUIRED"/>
+      <column name="hoerenhoerhilfe" value="REQUIRED"/>
+      <column name="hoerenaudiogramm" value="NOT_VISIBLE"/>
+      <column name="hoerenaudiogramm250hz" value="NOT_VISIBLE"/>
+      <column name="hoerenaudiogramm8000hz" value="NOT_VISIBLE"/>
+      <where>hoerenaudiogramm IN ('OPTIONAL', 'REQUIRED')</where>
+    </update>
+    <update tableName="anlassconfig">
+      <column name="sehenfernvisuslinks" value="REQUIRED"/>
+      <column name="sehenfernvisusrechts" value="REQUIRED"/>
+      <column name="sehenfernvisus" value="NOT_VISIBLE"/>
+      <where>sehenfernvisus IN ('OPTIONAL', 'REQUIRED')</where>
+    </update>
+  </changeSet>
+</databaseChangeLog>

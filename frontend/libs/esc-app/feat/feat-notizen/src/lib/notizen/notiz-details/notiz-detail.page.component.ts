@@ -80,4 +80,8 @@ export class NotizDetailPageComponent implements DirtyMarker {
       [Path.RELATIVE_ONE_UP],
       {relativeTo: this.#activatedRoute});
   }
+
+  public onMobileUpload(_: string) {
+    this.notizenListStore.loadNotizen();
+  }
 }

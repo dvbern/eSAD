@@ -18,7 +18,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungDurchfuehrungBui
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungKindDatenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsMpa;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsMpaBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.AnlassApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.UntersuchungDurchfuehrungApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassJsonSpec;
@@ -295,7 +295,7 @@ class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsMpa
+    @TestAsMpaBS
     void save_untersuchung_durchfuehrund_kind_daten_bei_abgeschlossenen_anlass_throw_wenn_nicht_admin() {
         // ARRANGE
         Untersuchung untersuchung = fixtureService.createUntersuchungWithEveryTab();

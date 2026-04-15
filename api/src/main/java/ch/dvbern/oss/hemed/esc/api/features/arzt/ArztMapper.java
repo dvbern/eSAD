@@ -32,7 +32,7 @@ public class ArztMapper {
             arzt.getId(), EntityInfoJson.fromEntity(arzt), new ArztSaveJson(
                 arzt.getAnrede(),
                 arzt.getFachrichtung(),
-                arzt.getOrganisation(),
+                arzt.getRechtsform(),
                 arzt.getVorname(),
                 arzt.getName(),
                 AdresseMapper.toJson(arzt.getAdresse()),
@@ -50,7 +50,7 @@ public class ArztMapper {
         return new Arzt(
             arztSaveJson.getAnrede(),
             arztSaveJson.getFachrichtung(),
-            arztSaveJson.getOrganisation(),
+            arztSaveJson.getRechtsform(),
             arztSaveJson.getVorname(),
             arztSaveJson.getName(),
             AdresseMapper.toEntity(arztSaveJson.getAdresse()),
@@ -64,7 +64,7 @@ public class ArztMapper {
     private Arzt toEntity(@NonNull Arzt existingArzt, @NonNull ArztSaveJson saveJson) {
         existingArzt.setAnrede(saveJson.getAnrede());
         existingArzt.setFachrichtung(saveJson.getFachrichtung());
-        existingArzt.setOrganisation(saveJson.getOrganisation());
+        existingArzt.setRechtsform(saveJson.getRechtsform());
         existingArzt.setVorname(saveJson.getVorname());
         existingArzt.setName(saveJson.getName());
         existingArzt.setAdresse(AdresseMapper.toEntity(saveJson.getAdresse()));

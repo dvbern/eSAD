@@ -13,6 +13,7 @@ import { BackendEntityId } from '@dvb/data-access-types';
 export interface UntersuchungTabsSavedJson { 
     untersuchungID: BackendEntityId;
     datenTabSaved: boolean;
+    vorabklaerungenTabSaved: boolean;
     impfungenTabSaved: boolean;
     sehenTabSaved: boolean;
     hoerenAudiogrammTabSaved: boolean;
@@ -20,6 +21,11 @@ export interface UntersuchungTabsSavedJson {
     groesseGewichtTabSaved: boolean;
     triageTabSaved: boolean;
     aerzlicheUnteruchungTabSaved: boolean;
+    spracheTabSaved: boolean;
+    bewegungsapparatTabSaved: boolean;
+    schulrelevanteBeeintrachtigungenTabSaved: boolean;
+    abschlussTabSaved: boolean;
+    signaturTabSaved: boolean;
     massnahmenTabSaved: boolean;
     laeusekontrolleTabSaved: boolean;
 }

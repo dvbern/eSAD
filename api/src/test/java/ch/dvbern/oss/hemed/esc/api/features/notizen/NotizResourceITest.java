@@ -18,6 +18,15 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.notizen;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.FailureType;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileNameUtil;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -58,14 +67,6 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import io.restassured.response.ResponseOptions;
 import jakarta.ws.rs.core.Response.Status;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.time.LocalDate;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
@@ -189,28 +190,28 @@ class NotizResourceITest extends AbstractITest {
             kind.getId());
 
         // ACT & ASSERT
-        AppValidationErrorJsonSpec validationError =  api
-                .kinderNotizResourceCreate()
-                .kindIdPath(kind.getId().getId())
-                .reqSpec(spec -> {
-                    spec.setContentType("multipart/form-data");
-                    spec.addMultiPart("notizCreateJson", saveNotizJsonString, "application/json");
-                })
-                ._fileMultiPart(testFile)
-                // using the generated file2 method does not work, it seems to be using the 'file' name as form name
-                .reqSpec(spec -> {
-                    spec.setContentType("multipart/form-data");
-                    spec.addMultiPart("file2", "terstfile2name.pdf", testFileBytes);
-                })
-                .execute(ResponseBody::prettyPeek)
-                .then()
-                .assertThat()
-                .statusCode(Status.BAD_REQUEST.getStatusCode())
-                .extract().as(AppValidationErrorJsonSpec.class);
+        AppValidationErrorJsonSpec validationError = api
+            .kinderNotizResourceCreate()
+            .kindIdPath(kind.getId().getId())
+            .reqSpec(spec -> {
+                spec.setContentType("multipart/form-data");
+                spec.addMultiPart("notizCreateJson", saveNotizJsonString, "application/json");
+            })
+            ._fileMultiPart(testFile)
+            // using the generated file2 method does not work, it seems to be using the 'file' name as form name
+            .reqSpec(spec -> {
+                spec.setContentType("multipart/form-data");
+                spec.addMultiPart("file2", "terstfile2name.pdf", testFileBytes);
+            })
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract().as(AppValidationErrorJsonSpec.class);
 
         assertThat(validationError.getViolations()).hasSize(1);
         assertThat(validationError.getViolations().getFirst().getKey())
-            .isEqualTo("CannotCeateEntityForInactiveKind");
+            .isEqualTo("CannotCreateEntityForInactiveKind");
         assertThat(validationError.getViolations().getFirst().getMessage())
             .isEqualTo(expectedValidationErrorMessage);
     }
@@ -389,14 +390,14 @@ class NotizResourceITest extends AbstractITest {
             notiz.getId());
 
         // ACT
-        AppValidationErrorJsonSpec validationError =  api
-                .notizResourceDeleteNotiz()
-                .notizIdPath(notiz.getId().getId())
-                .execute(ResponseBody::prettyPeek)
-                .then()
-                .assertThat()
-                .statusCode(Status.BAD_REQUEST.getStatusCode())
-                .extract().as(AppValidationErrorJsonSpec.class);
+        AppValidationErrorJsonSpec validationError = api
+            .notizResourceDeleteNotiz()
+            .notizIdPath(notiz.getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract().as(AppValidationErrorJsonSpec.class);
 
         assertThat(validationError.getViolations()).hasSize(1);
         assertThat(validationError.getViolations().getFirst().getKey())
@@ -404,7 +405,6 @@ class NotizResourceITest extends AbstractITest {
         assertThat(validationError.getViolations().getFirst().getMessage())
             .isEqualTo(expectedValidationErrorMessage);
     }
-
 
     @Test
     @TestAsAdminBS
@@ -529,7 +529,6 @@ class NotizResourceITest extends AbstractITest {
         }
     }
 
-
     @Test
     @TestAsAdminBS
     void updateNotizAllAtOnce_forInactiveKind_shouldThrow() throws IOException {
@@ -564,7 +563,6 @@ class NotizResourceITest extends AbstractITest {
 
         byte[] testFileBytes = Files.readAllBytes(TestUtil.loadTestWord().toPath());
 
-
         // Convert NotizSaveJsonSpec to JSON string
         String saveNotizJsonString = this.objectMapper.writeValueAsString(data);
         String expectedValidationErrorMessage = String.format(
@@ -575,21 +573,21 @@ class NotizResourceITest extends AbstractITest {
 
         // ACT
         // Use the NotizenApiSpec method for updateNotizAllAtOnce
-        AppValidationErrorJsonSpec validationError =  api.notizResourceUpdateNotiz()
-                .notizIdPath(notiz.getId().getId())
-                .reqSpec(spec -> {
-                    spec.addMultiPart("notizSaveJson", saveNotizJsonString, "application/json");
-                })
-                ._fileMultiPart(testFile)
-                .reqSpec(spec -> {
-                    spec.setContentType("multipart/form-data");
-                    spec.addMultiPart("file3", "terstfile3name.docx", testFileBytes);
-                })
-                .execute(ResponseBody::prettyPeek)
-                .then()
-                .assertThat()
-                .statusCode(Status.BAD_REQUEST.getStatusCode())
-                .extract().as(AppValidationErrorJsonSpec.class);
+        AppValidationErrorJsonSpec validationError = api.notizResourceUpdateNotiz()
+            .notizIdPath(notiz.getId().getId())
+            .reqSpec(spec -> {
+                spec.addMultiPart("notizSaveJson", saveNotizJsonString, "application/json");
+            })
+            ._fileMultiPart(testFile)
+            .reqSpec(spec -> {
+                spec.setContentType("multipart/form-data");
+                spec.addMultiPart("file3", "terstfile3name.docx", testFileBytes);
+            })
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract().as(AppValidationErrorJsonSpec.class);
 
         assertThat(validationError.getViolations()).hasSize(1);
         assertThat(validationError.getViolations().getFirst().getKey())
@@ -794,7 +792,7 @@ class NotizResourceITest extends AbstractITest {
                 .execute(ResponseOptions::andReturn)
                 .then()
                 .statusCode(Status.OK.getStatusCode())
-                .header("Content-Disposition", "attachment;filename=\"" + name+ '"')
+                .header("Content-Disposition", "attachment;filename=\"" + name + '"')
                 .extract()
                 .asByteArray();
 

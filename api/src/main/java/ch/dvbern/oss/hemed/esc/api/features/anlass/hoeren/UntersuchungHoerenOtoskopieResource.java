@@ -22,8 +22,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/hoeren/otoskopie")
@@ -32,7 +31,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = Tags.TAG_UNTERSUCHUNG_HOEREN_OTOSKOPIE)
 @RolesAllowed(BerechtigungName.SU_HOREN_LESEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "UntersuchungHoerenOtoskopieResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("UntersuchungHoerenOtoskopieResourceMS")
 public class UntersuchungHoerenOtoskopieResource {
 
     private final UntersuchungHoerenOtoskopieMapper untersuchungHoerenOtoskopieMapper;

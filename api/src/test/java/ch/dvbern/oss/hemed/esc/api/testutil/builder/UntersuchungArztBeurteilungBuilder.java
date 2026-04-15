@@ -10,11 +10,14 @@ import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilungMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.json.UntersuchungArztBeurteilungJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.BallFangen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.BallWerfen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Blutdruck;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinstand;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Fingeropposition;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Hampelmann;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Haut;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Herzauskultation;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Motorik;
@@ -26,7 +29,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungArztBeurteilungJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungArztBeurteilungJsonSpec;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -72,6 +75,20 @@ public class UntersuchungArztBeurteilungBuilder {
     @CanIgnoreReturnValue
     public UntersuchungArztBeurteilungBuilder withBlutdruck(@Nullable Blutdruck blutdruck) {
         this.untersuchungArzt.setBlutdruck(blutdruck);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungArztBeurteilungBuilder withBlutdruckSystolisch(@Nullable Integer blutdruckSystolisch) {
+        this.untersuchungArzt.setBlutdruckSystolisch(blutdruckSystolisch);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungArztBeurteilungBuilder withBlutdruckDiastolisch(@Nullable Integer blutdruckDiastolisch) {
+        this.untersuchungArzt.setBlutdruckDiastolisch(blutdruckDiastolisch);
         return this;
     }
 
@@ -228,6 +245,33 @@ public class UntersuchungArztBeurteilungBuilder {
         @Nullable String bemerkung) {
         this.untersuchungArzt.setFingeropposition(EnumSetUtil.toEnumSet(fingeropposition, Fingeropposition.class));
         this.untersuchungArzt.setFingeroppositionBemerkung(bemerkung);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungArztBeurteilungBuilder withHampelmann(
+        @Nullable Hampelmann hampelmann) {
+
+        this.untersuchungArzt.setHampelmann(hampelmann);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungArztBeurteilungBuilder withBallFangen(
+        @Nullable BallFangen ballFangen) {
+
+        this.untersuchungArzt.setBallFangen(ballFangen);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungArztBeurteilungBuilder withBallWerfen(
+        @Nullable BallWerfen ballWerfen) {
+
+        this.untersuchungArzt.setBallWerfen(ballWerfen);
         return this;
     }
 

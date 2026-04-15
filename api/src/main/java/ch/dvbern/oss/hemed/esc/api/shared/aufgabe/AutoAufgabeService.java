@@ -19,9 +19,9 @@ import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
@@ -29,6 +29,7 @@ import ch.dvbern.oss.hemed.esc.api.features.labels.LabelService;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.types.AufgabeStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+import ch.dvbern.oss.hemed.esc.api.shared.types.Path;
 import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,9 @@ public class AutoAufgabeService {
     private final TL tl;
     private final AppClock appClock;
 
+    private static final String ANLASS = "anlass";
+    private static final String KIND = "kind";
+
     public void createAufgabeDoppelkontrolleImpfentscheid(
         @NonNull Einladung einladung,
         @NonNull Benutzer empfaenger
@@ -62,8 +66,8 @@ public class AutoAufgabeService {
         Anlass anlass = einladung.getAnlass();
         String title = tl.translate(
             "aufgabe.doppelkontrolle.impfentscheid",
-            "kind", kind.getNameVorname(),
-            "anlass", anlass.getFullAnlassTitel(tl));
+            KIND, kind.getNameVorname(),
+            ANLASS, anlass.getFullAnlassTitel(tl));
         createAutomatischeAufgabe(
             title,
             Label.ID_LABEL_DOPPELKONTROLLE_IMPFENTSCHEID,
@@ -87,7 +91,7 @@ public class AutoAufgabeService {
         }
         String titel = tl.translate(
             "aufgabe.folgetermin.titel",
-            "anlass", anlass.getFullAnlassTitel(tl));
+            ANLASS, anlass.getFullAnlassTitel(tl));
         Aufgabe aufgabe;
         if (existing.size() == 1) {
             aufgabe = existing.getFirst();
@@ -112,8 +116,8 @@ public class AutoAufgabeService {
     ) {
         String title = tl.translate(
             "aufgabe.massnahme.information.eltern",
-            "kind", kind.getNameVorname(),
-            "anlass", anlass.getFullAnlassTitel(tl));
+            KIND, kind.getNameVorname(),
+            ANLASS, anlass.getFullAnlassTitel(tl));
         String bemerkung = null;
         if (massnahmen.getInformationEltern() != null && massnahmen.getInformationEltern() != InformationEltern.KEINE) {
             bemerkung = tl.translate(
@@ -137,8 +141,8 @@ public class AutoAufgabeService {
     ) {
         String title = tl.translate(
             "aufgabe.massnahme.ueberweisung.hausarzt",
-            "kind", kind.getNameVorname(),
-            "anlass", anlass.getFullAnlassTitel(tl));
+            KIND, kind.getNameVorname(),
+            ANLASS, anlass.getFullAnlassTitel(tl));
         if (massnahmen.getAufgabeUeberweisungHausarzt() != null) {
             updateAutomatischeAufgabe(massnahmen.getAufgabeUeberweisungHausarzt(), title, null);
         } else {
@@ -154,8 +158,8 @@ public class AutoAufgabeService {
     ) {
         String title = tl.translate(
             "aufgabe.massnahme.ueberweisung.augenarzt",
-            "kind", kind.getNameVorname(),
-            "anlass", anlass.getFullAnlassTitel(tl));
+            KIND, kind.getNameVorname(),
+            ANLASS, anlass.getFullAnlassTitel(tl));
         if (massnahmen.getAufgabeUeberweisungAugenarzt() != null) {
             updateAutomatischeAufgabe(massnahmen.getAufgabeUeberweisungAugenarzt(), title, null);
         } else {
@@ -171,8 +175,8 @@ public class AutoAufgabeService {
     ) {
         String title = tl.translate(
             "aufgabe.massnahme.nachkontrolle",
-            "kind", kind.getNameVorname(),
-            "anlass", anlass.getFullAnlassTitel(tl));
+            KIND, kind.getNameVorname(),
+            ANLASS, anlass.getFullAnlassTitel(tl));
         if (massnahmen.getAufgabeNachkontrolle() != null) {
             updateAutomatischeAufgabe(massnahmen.getAufgabeNachkontrolle(), title, null);
         } else {
@@ -189,8 +193,8 @@ public class AutoAufgabeService {
         Kind kind = einladung.getDossier().getKind();
         String title = tl.translate(
             "aufgabe.massnahme.impfen.information.eltern",
-            "kind", kind.getNameVorname(),
-            "anlass", anlass.getFullAnlassTitel(tl));
+            KIND, kind.getNameVorname(),
+            ANLASS, anlass.getFullAnlassTitel(tl));
         if (massnahmen.getAufgabeInformationEltern() != null) {
             updateAutomatischeAufgabe(massnahmen.getAufgabeInformationEltern(), title, null);
         } else {
@@ -209,8 +213,8 @@ public class AutoAufgabeService {
         Kind kind = einladung.getDossier().getKind();
         String title = tl.translate(
             "aufgabe.massnahme.impfen.information.hausarzt",
-            "kind", kind.getNameVorname(),
-            "anlass", anlass.getFullAnlassTitel(tl));
+            KIND, kind.getNameVorname(),
+            ANLASS, anlass.getFullAnlassTitel(tl));
         if (massnahmen.getAufgabeInformationHausarzt() != null) {
             updateAutomatischeAufgabe(massnahmen.getAufgabeInformationHausarzt(), title, null);
         } else {
@@ -229,8 +233,8 @@ public class AutoAufgabeService {
         Kind kind = einladung.getDossier().getKind();
         String title = tl.translate(
             "aufgabe.massnahme.impfen.rueckfrage.hausarzt",
-            "kind", kind.getNameVorname(),
-            "anlass", anlass.getFullAnlassTitel(tl));
+            KIND, kind.getNameVorname(),
+            ANLASS, anlass.getFullAnlassTitel(tl));
         if (massnahmen.getAufgabeRueckfrageHausarzt() != null) {
             updateAutomatischeAufgabe(massnahmen.getAufgabeRueckfrageHausarzt(), title, null);
         } else {
@@ -246,8 +250,8 @@ public class AutoAufgabeService {
         Kind kind = einladung.getDossier().getKind();
         String title = tl.translate(
             "aufgabe.massnahme.impfen.einzeltermin.erstellen",
-            "kind", kind.getNameVorname(),
-            "anlass", anlass.getFullAnlassTitel(tl));
+            KIND, kind.getNameVorname(),
+            ANLASS, anlass.getFullAnlassTitel(tl));
         createAutomatischeAufgabe(
             title,
             null,
@@ -263,8 +267,8 @@ public class AutoAufgabeService {
         Kind kind = einladung.getDossier().getKind();
         String title = tl.translate(
             "aufgabe.einladung.status.nachzuegler",
-            "kind", kind.getNameVorname(),
-            "anlass", anlass.getFullAnlassTitel(tl));
+            KIND, kind.getNameVorname(),
+            ANLASS, anlass.getFullAnlassTitel(tl));
         Optional<Aufgabe> aufgabeOptional =
             aufgabeService.findSingleAufgabeForKindWithLabel(kind, Label.ID_LABEL_NACHZUEGLER);
         if (aufgabeOptional.isPresent()) {

@@ -17,9 +17,15 @@
  */
 
 import {NonNullableFormBuilder, Validators} from '@angular/forms';
-import {AppLanguages, EinladungStatus, FeatureEnabledSetting, TenantSettingSaveJson} from '@dvb/data-access-backend';
+import {
+  AgbResponsability,
+  AppLanguages,
+  EinladungStatus,
+  FeatureEnabledSetting,
+  TenantSettingSaveJson
+} from '@dvb/data-access-backend';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensurePropsFlat, requireValue} from '@dvb/util-shared';
+import {ensureProps, requireFilledIn, requireValue, trimToUndefined} from '@dvb/util-shared';
 
 // Keep the structure and style similar to anlass-config-detail.form.ts but adapted for TenantSettingSaveJson
 
@@ -47,18 +53,57 @@ function makeForm(config: Config) {
       featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
       enabledForStage: fb.control<boolean>({value: false, disabled: true}),
     }),
-
+    massenbriefFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
+    nichtGeprueftGrundFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
+    arztListeFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
+    adHocImpfstoffChargenFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
+    footerFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
+    benutzerverwaltungInternFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
+    benutzerverwaltungIgnoreFachRolleFromKeycloakFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
+    archivierungFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
+    zentraleOrganisationFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
   });
 
-  const group = fb.group({
+  // ZentraleOrganisation kann nicht verändert werden
+  featuresGroup.controls.zentraleOrganisationFeature.disable();
+
+  return fb.group({
     defaultLanguage: fb.control<AppLanguages>(AppLanguages.DE, Validators.required),
     supportedLanguages: fb.control<AppLanguages[]>([], Validators.required),
     folgeTermineMaxSlots: fb.control<number>(0, AppValidators.zeroDecimalPlaces()),
+    customerAdminEmails: fb.control<string>('', [Validators.required, AppValidators.multipleEmailValidator()]),
+    supportEmail: fb.control<string>('', [Validators.required, AppValidators.emailValidator()]),
+    agbResponsability: fb.control<AgbResponsability>(AgbResponsability.AGB_MANAGED_BY_TENANT, Validators.required),
     einladungStatusValues: fb.control<EinladungStatus[]>([], Validators.required),
     features: featuresGroup,
   });
-
-  return group;
 }
 
 export class TenantSettingsForm extends BaseForm<ReturnType<typeof makeForm>, TenantSettingSaveJson> {
@@ -69,7 +114,11 @@ export class TenantSettingsForm extends BaseForm<ReturnType<typeof makeForm>, Te
   override valueOnValid(): TenantSettingSaveJson {
     const value = requireValue(this.group.getRawValue());
 
-    const val = ensurePropsFlat({
+    const val = ensureProps<TenantSettingSaveJson>({
+      defaultLanguage: value.defaultLanguage,
+      supportedLanguages: value.supportedLanguages,
+      folgeTermineMaxSlots: value.folgeTermineMaxSlots,
+      agbResponsability: value.agbResponsability,
       features: {
         esadIdFeature: {
           featureEnabled: value.features.esadIdFeature.featureEnabled,
@@ -87,12 +136,56 @@ export class TenantSettingsForm extends BaseForm<ReturnType<typeof makeForm>, Te
           featureEnabled: value.features.massenimportFeature.featureEnabled,
           enabledForStage: value.features.massenimportFeature.enabledForStage,
         },
+        massenbriefFeature: {
+          featureEnabled: value.features.massenbriefFeature.featureEnabled,
+          enabledForStage: value.features.massenbriefFeature.enabledForStage,
+        },
+        nichtGeprueftGrundFeature: {
+          featureEnabled: value.features.nichtGeprueftGrundFeature.featureEnabled,
+          enabledForStage: value.features.nichtGeprueftGrundFeature.enabledForStage,
+        },
+        arztListeFeature: {
+          featureEnabled: value.features.arztListeFeature.featureEnabled,
+          enabledForStage: value.features.arztListeFeature.enabledForStage,
+        },
+        adHocImpfstoffChargenFeature: {
+          featureEnabled: value.features.adHocImpfstoffChargenFeature.featureEnabled,
+          enabledForStage: value.features.adHocImpfstoffChargenFeature.enabledForStage,
+        },
+        footerFeature: {
+          featureEnabled: value.features.footerFeature.featureEnabled,
+          enabledForStage: value.features.footerFeature.enabledForStage,
+        },
+        benutzerverwaltungInternFeature: {
+          featureEnabled: value.features.benutzerverwaltungInternFeature.featureEnabled,
+          enabledForStage: value.features.benutzerverwaltungInternFeature.enabledForStage,
+        },
+        benutzerverwaltungIgnoreFachRolleFromKeycloakFeature: {
+          featureEnabled: value.features.benutzerverwaltungIgnoreFachRolleFromKeycloakFeature.featureEnabled,
+          enabledForStage: value.features.benutzerverwaltungIgnoreFachRolleFromKeycloakFeature.enabledForStage,
+        },
+        archivierungFeature: {
+          featureEnabled: value.features.archivierungFeature.featureEnabled,
+          enabledForStage: value.features.archivierungFeature.enabledForStage,
+        },
+        zentraleOrganisationFeature: {
+          featureEnabled: value.features.zentraleOrganisationFeature.featureEnabled,
+          enabledForStage: value.features.zentraleOrganisationFeature.enabledForStage,
+        },
       },
-      defaultLanguage: value.defaultLanguage,
-      supportedLanguages: value.supportedLanguages,
-      folgeTermineMaxSlots: value.folgeTermineMaxSlots,
       einladungStatusValues: value.einladungStatusValues,
+      customerAdminEmails: this.cleanCustomerAdminEmails(requireFilledIn(trimToUndefined(value.customerAdminEmails))),
+      supportEmail: requireFilledIn(trimToUndefined(value.supportEmail)),
     });
     return val;
+  }
+
+  private cleanCustomerAdminEmails(emails: string): string {
+    return emails
+      // Soll Kommas am Anfang und am Ende entfernen;
+      .replace(new RegExp(`^[${','}\\s]+|[${','}\\s]+$`, 'g'), '')
+      // Ausserdem sollen sämtliche Leerzeichen entfernt werden.
+      .replace(/\s/g, '')
+      .trim();
   }
 }

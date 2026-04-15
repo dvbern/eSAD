@@ -1,21 +1,34 @@
 import {computed, Inject, inject, Injectable, Optional} from '@angular/core';
-import { BenutzerService, Berechtigung, FachRolle } from '@dvb/data-access-backend';
+import {
+  AgbResponsability,
+  BenutzerService,
+  Berechtigung,
+  FachRolle,
+  OrganisationRollenJson
+} from '@dvb/data-access-backend';
 
-import { AbstractSignalStore } from '@dvb/util-angular';
-import { requireValue, RoleMatcher } from '@dvb/util-shared';
+import {AbstractSignalStore} from '@dvb/util-angular';
+import {isNotNullish, requireValue, RoleMatcher} from '@dvb/util-shared';
 import * as Sentry from '@sentry/browser';
-import { firstValueFrom } from 'rxjs';
+import {exhaustMap, firstValueFrom, pipe} from 'rxjs';
+import {BackendEntityId, ISODateTimeString} from "@dvb/data-access-types";
+import {rxMethod} from "@ngrx/signals/rxjs-interop";
+import {tapResponse} from "@ngrx/operators";
+import {TenantSettingsStore} from "../../tenant/tenant-settings.store";
 
 export interface AppUser {
-  id: string;
+  id: BackendEntityId;
   username: string;
   email: string;
   firstName: string;
   lastName: string;
   fullName: string;
   kuerzel: string;
-  fachRollen: FachRolle[];
+  fachRollen: FachRolle[]; // TODO ESC-1180: Das kommt dann spaeter weg
+  // TODO ESC-1180: Auf mehrere OrganisationRollen vorbereiten: OrganisationRollen[], currentOR, SystemRollen
+  organisationRollen?: OrganisationRollenJson;
   berechtigungen: Berechtigung[];
+  timestampAGBAccepted: ISODateTimeString | undefined;
 }
 
 export interface BenutzerState {
@@ -28,9 +41,10 @@ const initialState: BenutzerState = {
   errorMessage: undefined,
 };
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
   readonly benutzerService = inject(BenutzerService);
+  readonly tenantSettingsStore = inject(TenantSettingsStore);
 
   /**
    * @param testInit - for testing purposes only
@@ -40,11 +54,31 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
     super(testInit ?? initialState);
   }
 
+  // Signals
+  isLoggedIn = computed(() => this.state().user !== undefined);
+  isLoggedOut = computed(() => this.state().user === undefined);
+  benutzer = computed(() => this.state().user);
+  berechtigungen = computed(() => this.state().user?.berechtigungen ?? []);
+  isAgbAccepted = computed(() => {
+    if (this.tenantSettingsStore.agbResponsibility() == AgbResponsability.AGB_MANAGED_BY_USER) {
+      return isNotNullish(this.state().user?.timestampAGBAccepted);
+    }
+    return true; // Durch Arbeitsvertrag akzeptiert
+  });
+  requireBenutzer = computed(() => requireValue(this.state().user));
+
   async init(): Promise<void> {
     // nothing to do here
     return firstValueFrom(this.benutzerService.getMyBenutzerData$())
       .then(principal => {
         console.log('handleAuthSuccess', principal);
+
+        let fachrollen: FachRolle[] = [];
+        if (principal.benutzerJson.data.systemRollen) {
+          fachrollen = [...principal.benutzerJson.data.systemRollen.fachRollen];
+        } else if (principal.benutzerJson.data.organisationRollen.length > 0) {
+          fachrollen = [...principal.benutzerJson.data.organisationRollen[0].fachRollen];
+        }
 
         this.onUserAuthenticated(
           requireValue(principal.benutzerJson.id),
@@ -52,8 +86,13 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
           requireValue(principal.benutzerJson.data.email),
           requireValue(principal.benutzerJson.data.vorname),
           requireValue(principal.benutzerJson.data.name),
-          requireValue(principal.benutzerJson.data.fachRollen),
+          requireValue(fachrollen),
+          // TODO ESC-1180: Mehrere Organisationsrollen
+          principal.benutzerJson.data.organisationRollen.length > 0 ?
+            principal.benutzerJson.data.organisationRollen[0] :
+            undefined,
           requireValue(principal.berechtigungen),
+          principal.benutzerJson.timestampAGBAccepted
         );
       })
       .catch(err => {
@@ -65,13 +104,15 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
   }
 
   onUserAuthenticated(
-    id: string,
+    id: BackendEntityId,
     username: string,
     email: string,
     firstName: string,
     lastName: string,
     fachRollen: FachRolle[],
+    organisationRollen: OrganisationRollenJson | undefined,
     berechtigungen: Berechtigung[],
+    timestampAGBAccepted: ISODateTimeString | undefined,
   ) {
     const fullName = `${firstName} ${lastName}`;
     const kuerzel = this.buildKuerzel(firstName, lastName);
@@ -86,11 +127,13 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
         fullName,
         kuerzel,
         fachRollen,
+        organisationRollen,
         berechtigungen,
+        timestampAGBAccepted,
       };
       console.debug('BenutzerStore.onUserAuthenticated: user', user);
 
-      Sentry.setUser({ email: user.email, id: user.id, username: user.username });
+      Sentry.setUser({email: user.email, id: user.id, username: user.username});
 
       return {
         user,
@@ -125,19 +168,34 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
     });
   }
 
-  isLoggedIn = computed(() => this.state().user !== undefined);
-  isLoggedOut = computed(() => this.state().user === undefined);
-
-  benutzer = computed(() => this.state().user);
-
-  berechtigungen = computed(() => this.state().user?.berechtigungen ?? []);
-
-  requireBenutzer = computed(() => requireValue(this.state().user));
-
   // Factory-Function that returns a computed signal based on the passed argument
   createHasRequiredRoleSig = (matcher: RoleMatcher) =>
     computed(() => {
       const berechtigungen = this.state().user?.berechtigungen ?? [];
       return matcher(berechtigungen);
     });
+
+  acceptAGB = rxMethod<{ onSuccess: () => void; }>(
+    pipe(
+      exhaustMap((params) =>
+        this.benutzerService.acceptAGB$().pipe(
+          tapResponse({
+            next: (result) => {
+              // patch only the statusAGB on the current user
+              this.patchState(state => ({
+                user: state.user
+                  ? {...state.user, timestampAGBAccepted: result.timestampAGBAccepted}
+                  : undefined,
+                errorMessage: state.errorMessage,
+              }));
+              if (isNotNullish(params.onSuccess)) {
+                params.onSuccess();
+              }
+            },
+            error: (err) => console.error(err),
+          }),
+        )
+      ),
+    ),
+  );
 }

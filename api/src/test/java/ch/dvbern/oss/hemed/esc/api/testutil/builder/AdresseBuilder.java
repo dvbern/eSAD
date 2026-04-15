@@ -27,7 +27,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.person.Land;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.AdresseJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AdresseJsonSpec;
 import lombok.RequiredArgsConstructor;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 

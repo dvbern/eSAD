@@ -7,7 +7,6 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OrderBy;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,7 +21,6 @@ public class IdMapChild extends AbstractEntity<IdMapChild> {
     private static final long serialVersionUID = 1L;
 
 
-    @OrderBy
     @Column(nullable = false)
     private int orderIndex;
 

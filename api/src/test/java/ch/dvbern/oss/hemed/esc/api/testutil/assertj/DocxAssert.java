@@ -25,7 +25,7 @@ import org.assertj.core.api.AbstractAssert;
 
 import java.io.InputStream;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 
 public class DocxAssert extends AbstractAssert<DocxAssert, InputStream> {
 

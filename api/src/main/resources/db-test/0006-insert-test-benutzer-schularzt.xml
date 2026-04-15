@@ -2,8 +2,11 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
   <changeSet author="dvbern" id="2025-11-27-1800">
     <sql>
-      INSERT INTO benutzer (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, email, fachrollen, keycloakid, lastusedip, lastusedsessionid, lastusedsessiontimestamp, oidcissuer, nachname, vorname, aktiv, titel, telefon)
-      VALUES ('35e090d9-165d-4ef9-923b-8243b0d34f3a', '2024-12-01 12:00:00.118393', '2024-12-01 12:00:00.202890', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'schularzt@mailbucket.dvbern.ch', 'SCHULAERZTIN', '4839ea1f-2895-4887-a295-6243e8fe0d84', '172.19.1.193', '0c5436bc-2bc5-4629-b7f2-7937c5c585a6', '2024-12-04 12:00:00.202171', 'https://local-esc-bs.localhost:8989/realms/bs', 'Schularzt', 'Julien', true, 'Dr. Med.', '+41 61 123 45 72');
+      INSERT INTO benutzer (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, email, keycloakid, lastusedip, lastusedsessionid, lastusedsessiontimestamp, oidcissuer, nachname, vorname, benutzeraktivstatus, titel, telefon)
+      VALUES ('35e090d9-165d-4ef9-923b-8243b0d34f3a', '2024-12-01 12:00:00.118393', '2024-12-01 12:00:00.202890', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'schularzt@mailbucket.dvbern.ch', '4839ea1f-2895-4887-a295-6243e8fe0d84', '172.19.1.193', '0c5436bc-2bc5-4629-b7f2-7937c5c585a6', '2024-12-04 12:00:00.202171', 'https://local-esc-bs.localhost:8989/realms/bs', 'Schularzt', 'Julien', 'AKTIV', 'Dr. Med.', '+41 61 123 45 72');
+
+      INSERT INTO organisationrollen (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, organisation_id, benutzer_id, fachrollen)
+      VALUES (uuid_generate_v4(), current_timestamp, current_timestamp, '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 0, '08831a31-a62b-4c81-adfc-3f3bcb3a1fee', '35e090d9-165d-4ef9-923b-8243b0d34f3a', 'SCHULAERZTIN');
     </sql>
   </changeSet>
 </databaseChangeLog>

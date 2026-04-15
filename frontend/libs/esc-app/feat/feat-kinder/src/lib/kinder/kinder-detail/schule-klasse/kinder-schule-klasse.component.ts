@@ -18,9 +18,9 @@ import {
   HeadingDirective,
   NgSelectDirective,
 } from '@dvb/ui-components';
-import {DirtyMarker} from '@dvb/util-angular';
-import {hasKindEditBerechtigung, isNotNullish, isNullish, requireValue} from '@dvb/util-shared';
-import {TranslocoPipe} from '@jsverse/transloco';
+import {DetailMode, DirtyMarker} from '@dvb/util-angular';
+import {hasKindEditBerechtigung, isExternalObject, isNotNullish, isNullish, requireValue} from '@dvb/util-shared';
+import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {DossierStore} from '../../dossier.store';
 import {KinderSummaryStore} from '../../kinder-summary.store';
@@ -51,6 +51,7 @@ export class KinderSchuleKlasseComponent implements DirtyMarker {
   readonly klassenStore = inject(KlassenOptionsStore);
   readonly #router = inject(Router);
   readonly #activatedRoute = inject(ActivatedRoute);
+  readonly #transloco = inject(TranslocoService);
   readonly benutzerStore = inject(BenutzerStore);
   protected readonly Path = Path;
 
@@ -58,14 +59,18 @@ export class KinderSchuleKlasseComponent implements DirtyMarker {
     this.schulenOptionsStore.entitiesIncluding(this.dossierStore.selectedKind()?.data.schule),
   );
   klasseOptions = computed(() => {
-    return this.klassenStore.entitiesIncluding(this.dossierStore.selectedKind()?.data.klasse)
+    if (this.dossierStore.detailMode() == DetailMode.EDIT && this.form.group.controls.schule.dirty) {
+      return this.klassenStore.entities();
+    } else {
+      return this.klassenStore.entitiesIncluding(this.dossierStore.selectedKind()?.data.klasse);
+    }
   });
-  isEscadaObject = computed(() => {
+  getImportSchnittstelle = computed(() => {
     const externalImportInfo = this.dossierStore.selectedKind()?.externalImportInfoJson;
-    return isNotNullish(externalImportInfo)
-      && externalImportInfo?.aktivInExternalSystem
-      && externalImportInfo?.importTyp === ImportTyp.ESCADA;
+    return isNotNullish(externalImportInfo) ? this.#transloco.translate('ImportTyp.' + externalImportInfo.importTyp) : '';
   });
+  isExternalObject = computed(() => isExternalObject(this.dossierStore.selectedKind()));
+
   canEdit = this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung());
 
   public form = new KindSchuleKlasseForm({
@@ -83,7 +88,7 @@ export class KinderSchuleKlasseComponent implements DirtyMarker {
       }
       untracked(() => {
         this.form.reset(selectedEntity.data, mode);
-        if (this.isEscadaObject()) {
+        if (this.isExternalObject()) {
           this.form.group.controls.schule.disable();
           this.form.group.controls.klasse.disable();
         }
@@ -114,6 +119,12 @@ export class KinderSchuleKlasseComponent implements DirtyMarker {
         kind: value,
         kindSaveMode: KindSaveModeDuplikat.NO_CHECK,
         onSuccess: () => {
+          // Beim Ändern der Schule können MPA und Arzt auf dem Dossier geändert werden, deshalb laden wir diese Daten ebenfalls nach
+          const kindId = this.dossierStore.selectedKind()?.id;
+          if (this.form.group.controls.schule.dirty && kindId) {
+            this.dossierStore.loadDossierForKind(kindId);
+          }
+
           this.form.reset();
           this.#router.navigate([Path.RELATIVE_ONE_UP, 'view'], {relativeTo: this.#activatedRoute});
         },

@@ -29,8 +29,8 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.NachkontrolleBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungMassnahmenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsMpa;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularzt;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsMpaBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.UntersuchungMassnahmenApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungMassnahmenSaveJsonSpec;
 import io.quarkus.test.junit.QuarkusTest;
@@ -384,8 +384,8 @@ class AnlassServiceITest extends AbstractITest {
                 .withAnlassTyp(AnlassTyp.KLASSE_4)));
         fixtureService.createEinladung(anlassNichtTeilgenommen, dossier, EinladungStatus.NACHZUEGLER);
 
-        Benutzer mpa = benutzerService.getById(TestAsMpa.BENUTZER_ID_ID);
-        Benutzer arzt = benutzerService.getById(TestAsSchularzt.BENUTZER_ID_ID);
+        Benutzer mpa = benutzerService.getById(TestAsMpaBS.BENUTZER_ID_ID);
+        Benutzer arzt = benutzerService.getById(TestAsSchularztBS.BENUTZER_ID_ID);
         final Anlass anlass = anlassService.persist(
             AnlassBuilder.create(builder -> builder
                 .withDatumSetSchuljahr(LocalDate.of(2025, Month.FEBRUARY, 1))

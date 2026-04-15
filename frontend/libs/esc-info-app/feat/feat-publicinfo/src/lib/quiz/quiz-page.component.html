@@ -1,0 +1,67 @@
+<feat-page heading="Subbage Test" [showNav]="false" [showFooter]="true">
+  <div class="container mt-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h4 class="card-title mb-4">{{ currentQuiz().question }}</h4>
+
+        <div class="mb-4">
+          @for (option of currentQuiz().options; track option.label; let i = $index) {
+            <svui-single-radio-wrapper
+              [label]="option.label"
+              class="d-block mb-2"
+            >
+              <input
+                svuiRadio
+                type="radio"
+                name="quiz-options"
+                [id]="'option-' + i"
+                [value]="option"
+                [disabled]="showResult()"
+                [ngModel]="selectedOption()"
+                (ngModelChange)="selectOption($event)"
+              />
+              @if (showResult() && option.isCorrect) {
+                <span class="ms-2 badge bg-success rounded-pill">✓</span>
+              }
+              @if (showResult() && !option.isCorrect && selectedOption() === option) {
+                <span class="ms-2 badge bg-danger rounded-pill">✗</span>
+              }
+            </svui-single-radio-wrapper>
+          }
+        </div>
+
+        @if (showResult()) {
+          <div class="alert mb-4" [class.alert-success]="selectedOption()?.isCorrect" [class.alert-danger]="!selectedOption()?.isCorrect">
+            <h5 class="alert-heading">
+              {{ selectedOption()?.isCorrect ? 'Correct! 🎉' : 'Oops, not quite! 😅' }}
+            </h5>
+            <p class="mb-0">{{ currentQuiz().funFact }}</p>
+          </div>
+        }
+
+        <div class="d-flex gap-2">
+          @if (!showResult()) {
+            <button
+              type="button"
+              class="btn btn-primary"
+              [disabled]="!selectedOption()"
+              (click)="onOkPress()"
+            >
+              OK
+            </button>
+          }
+
+          @if (showResult()) {
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="resetQuiz()"
+            >
+              Try Again
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</feat-page>

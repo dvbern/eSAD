@@ -122,7 +122,7 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungGroesseGewicht entity = UntersuchungGroesseGewichtBuilder.create(
             builder -> builder
-                .withGroessePerzentile(perzentile));
+                .withGroessePerzentile(perzentile, null));
         entity.getUntersuchung()
             .getEinladung()
             .getAnlass()
@@ -153,7 +153,7 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungGroesseGewicht entity = UntersuchungGroesseGewichtBuilder.create(
             builder -> builder
-                .withGewichtPerzentile(perzentile));
+                .withGewichtPerzentile(perzentile, null));
         entity.getUntersuchung()
             .getEinladung()
             .getAnlass()
@@ -184,7 +184,7 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungGroesseGewicht entity = UntersuchungGroesseGewichtBuilder.create(
             builder -> builder
-                .withBmiPerzentile(perzentile));
+                .withBmiPerzentile(perzentile, null));
         entity.getUntersuchung()
             .getEinladung()
             .getAnlass()

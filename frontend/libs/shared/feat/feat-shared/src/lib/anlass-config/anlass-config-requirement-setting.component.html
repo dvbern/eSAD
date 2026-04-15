@@ -1,0 +1,17 @@
+<svui-form-control [label]="labelKey() | transloco"
+                   [viewValue]="'RequirementSetting.' + formControlAttr().value | transloco">
+  <ng-select
+    svuiNgSelect
+    bindLabel='dummy'
+    appendTo="body"
+    [formControl]="formControlAttr()"
+    [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+    [multiple]="false"
+  >
+    @for (requirement of requirementSettingOptions; track requirement) {
+      <ng-option [value]="requirement" >
+        {{ 'RequirementSetting.' + requirement | transloco }}
+      </ng-option>
+    }
+  </ng-select>
+</svui-form-control>

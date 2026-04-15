@@ -9,7 +9,7 @@
     <svui-form-group [label]="'kontaktperson.geschlecht' | transloco"
                      [direction]="'horizontal'"
                      [viewValue]="form.group.getRawValue().geschlecht ? ('Geschlecht.' + form.group.getRawValue().geschlecht | transloco) : null "
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
       @for (geschlecht of geschlechtOptions; track geschlecht) {
         <svui-single-radio-wrapper [label]="'Geschlecht.' + geschlecht | transloco">
           <input svuiRadio
@@ -25,7 +25,7 @@
     <!-- Name -->
     <svui-form-control [label]="'kontaktperson.name' | transloco"
                        [viewValue]="form.group.getRawValue().name"
-                       [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                       [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
       <input svuiTextInput
              [formControl]="form.controlAt('name')"
       />
@@ -34,7 +34,7 @@
     <!-- Vorname -->
     <svui-form-control [label]="'kontaktperson.vorname' | transloco"
                        [viewValue]="form.group.getRawValue().vorname"
-                       [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                       [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
       <input svuiTextInput
              [formControl]="form.controlAt('vorname')"
       />
@@ -55,9 +55,9 @@
     </svui-form-control>
 
     <!--Letzter Escada Import-->
-    @if (isEscadaObject()) {
+    @if (isExternalObject()) {
       <div>
-        <p>{{ 'global.escada.import.latest' | transloco: {date: getDateLatestImportIfEscadaObject() | date} }}</p>
+        <p>{{ 'global.import.latest' | transloco: {date: getDateLatestImportIfExternalObject() | date} }}</p>
       </div>
     }
 

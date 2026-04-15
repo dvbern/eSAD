@@ -1,0 +1,10 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="2026-03-13-1">
+    <sql>
+      -- Add ARCHIVIERUNG to ESC-BASEL-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, berechtigung, benutzer_id)
+      VALUES ('0d099a6a-82c3-457b-8159-e75b2fa7aa85', '2026-03-13 12:00:00.118393', '2026-03-13 12:00:00.202890', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'ARCHIVIERUNG', '11111111-1111-1111-1111-111111111112');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

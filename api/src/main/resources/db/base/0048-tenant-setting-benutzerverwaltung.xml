@@ -1,0 +1,41 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="1772446835321-1">
+    <addColumn tableName="tenantsetting">
+      <column name="benutzerverwaltungfachrolleinternfeature" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772446835321-2">
+    <sql>
+      update tenantsetting
+      set benutzerverwaltungfachrolleinternfeature = 'DISABLED'
+    </sql>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772446835321-3">
+    <addNotNullConstraint tableName="tenantsetting" columnName="benutzerverwaltungfachrolleinternfeature"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772446835321-4">
+    <addColumn tableName="tenantsetting_aud">
+      <column name="benutzerverwaltungfachrolleinternfeature" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772446835321-5">
+    <addColumn tableName="tenantsetting">
+      <column name="benutzerverwaltunginternfeature" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772446835321-6">
+    <sql>
+      update tenantsetting
+      set benutzerverwaltunginternfeature = 'DISABLED'
+    </sql>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772446835321-7">
+    <addNotNullConstraint tableName="tenantsetting" columnName="benutzerverwaltunginternfeature"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772446835321-8">
+    <addColumn tableName="tenantsetting_aud">
+      <column name="benutzerverwaltunginternfeature" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+</databaseChangeLog>

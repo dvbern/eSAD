@@ -10,12 +10,23 @@
       {{ config.consequence }}
     </div>
   }
+
+  @if (config.confirmCheckbox) {
+    <div class="modal-body">
+      <label [for]="'confirm-checkbox'">
+
+        <input type="checkbox" id="confirm-checkbox" svuiCheckbox [ngModel]="checkboxValue()" (ngModelChange)="checkboxValue.set($event)" />
+        {{config.confirmCheckbox}}
+      </label>
+    </div>
+  }
+
   <div class="modal-footer">
     <!-- cancel tut dasselbe wie esc, ein Klick ausserhalb oder der close-Button -->
     <!-- FIXME ngbAutofocus fokussiert zwar, aber nicht sichtbar -->
     <button type="button" svuiButton="secondary" (click)="dismiss.emit()" ngbAutofocus>{{ buttonCancelText }}</button>
 
     <!-- confirm ist gefaehrlich, deshalb muss man ja confirmen, deshalb ist er rot und soll keinen Fokus haben -->
-    <button type="button" svuiButton="primary" (click)="confirm.emit()">{{ buttonConfirmText }}</button>
+    <button type="button" svuiButton="primary" [disabled]="!allowConfirm()" (click)="confirm.emit()">{{ buttonConfirmText }}</button>
   </div>
 </div>

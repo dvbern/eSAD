@@ -6,6 +6,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -34,14 +35,14 @@ class StrabismusCsvColumnTest extends AbstractBaseColumnTest {
 
         // Check extract return empty value if strabismus list does not have the selected element
         if (resultat == StrabismusResultat.EXO) {
-            untersuchungSehenBeurteilung.setStrabismus(EnumSet.of(StrabismusResultat.ESO));
+            untersuchungSehenBeurteilung.setStrabismus(MultiValueEnhanced.of(EnumSet.of(StrabismusResultat.ESO), null));
             assertThat(column.extract(einladung)).isEmpty();
         } else {
-            untersuchungSehenBeurteilung.setStrabismus(EnumSet.of(StrabismusResultat.EXO));
+            untersuchungSehenBeurteilung.setStrabismus(MultiValueEnhanced.of(EnumSet.of(StrabismusResultat.EXO), null));
             assertThat(column.extract(einladung)).isEmpty();
         }
 
-        untersuchungSehenBeurteilung.setStrabismus(EnumSet.of(resultat));
+        untersuchungSehenBeurteilung.setStrabismus(MultiValueEnhanced.of(EnumSet.of(resultat), null));
         assertThat(column.extract(einladung)).isEqualTo("1");
     }
 }

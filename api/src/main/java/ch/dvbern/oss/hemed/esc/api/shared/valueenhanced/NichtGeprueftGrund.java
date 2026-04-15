@@ -1,0 +1,14 @@
+package ch.dvbern.oss.hemed.esc.api.shared.valueenhanced;
+
+public enum NichtGeprueftGrund {
+
+    FEHLENDE_INFRASTRUKTUR,
+    FEHLENDE_ZEIT,
+    UNPASSENDER_UNTERSUCHUNGSORT,
+    FEHLENDES_EINVERSTAENDNIS,
+    VERWEIGERTE_UNTERSUCHUNG,
+    KRANK,
+    VERSTAENDIGUNGS_PROBLEME,
+    UNTERSUCHUNG_NICHT_INDIZIERT,
+    ANDERER_GRUND,
+}

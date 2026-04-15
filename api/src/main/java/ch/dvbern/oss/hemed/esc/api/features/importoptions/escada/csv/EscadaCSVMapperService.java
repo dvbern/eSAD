@@ -265,6 +265,7 @@ public final class EscadaCSVMapperService {
             escadaCsvDTO.schuelerId(),
             escadaCsvDTO.adressierungNr(),
             escadaCsvDTO.adressierungAnrede(),
+            null, // Beziehung wird per ESCADA nicht importiert
             escadaCsvDTO.adressierungName(),
             escadaCsvDTO.adressierungVorname(),
             escadaCsvDTO.adressierungStrasse(),
@@ -298,6 +299,7 @@ public final class EscadaCSVMapperService {
             escadaCsvDTO.schuelerId(),
             escadaCsvDTO.adressierungNr2(),
             escadaCsvDTO.adressierungAnrede2(),
+            null, // Beziehung wird per ESCADA nicht importiert
             escadaCsvDTO.adressierungName2(),
             escadaCsvDTO.adressierungVorname2(),
             escadaCsvDTO.adressierungStrasse2(),

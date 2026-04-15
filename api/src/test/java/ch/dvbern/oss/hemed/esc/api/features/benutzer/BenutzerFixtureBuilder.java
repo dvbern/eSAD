@@ -5,6 +5,7 @@ import java.util.Set;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import lombok.With;
 
 @With
@@ -43,9 +44,11 @@ public record BenutzerFixtureBuilder(
             "Thomas",
             null,
             null,
+            Set.of(),
+            EntityAktivStatus.AKTIV,
+            null,
             null,
             Set.of(),
-            true,
             null
         );
     }

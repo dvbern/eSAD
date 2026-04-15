@@ -100,8 +100,8 @@ class UntersuchungHoerenOtoskopieResourceITest {
         UntersuchungHoerenOtoskopieSaveJsonSpec saveJsonSpec =
             UntersuchungHoerenOtoskopieBuilder.createJaxSpec(builder -> builder
                 .forUntersuchungHoerenOtoskopie(existingHoeren)
-                .withOtoskopieLinks(List.of(OtoskopieResultat.TROMMELFELL_CERUMEN))
-                .withOtoskopieRechts(List.of(OtoskopieResultat.TROMMELFELL_CERUMEN))
+                .withOtoskopieLinks(List.of(OtoskopieResultat.TROMMELFELL_CERUMEN), null)
+                .withOtoskopieRechts(List.of(OtoskopieResultat.TROMMELFELL_CERUMEN), null)
             ).getOtoskopieData();
 
         UntersuchungHoerenOtoskopieJsonSpec result = api
@@ -121,10 +121,10 @@ class UntersuchungHoerenOtoskopieResourceITest {
         assertThat(result.getOtoskopieData()).isNotNull();
         assertThat(result.getOtoskopieData().getOtoskopieRechts()).isNotNull();
         assertThat(result.getOtoskopieData().getOtoskopieLinks()).isNotNull();
-        assertThat(result.getOtoskopieData().getOtoskopieRechts())
-            .contains(OtoskopieResultatSpec.TROMMELFELL_CERUMEN);
-        assertThat(result.getOtoskopieData().getOtoskopieLinks())
-            .contains(OtoskopieResultatSpec.TROMMELFELL_CERUMEN);
+        assertThat(result.getOtoskopieData().getOtoskopieRechts().getValue())
+            .contains(OtoskopieResultatSpec.TROMMELFELL_CERUMEN.name());
+        assertThat(result.getOtoskopieData().getOtoskopieLinks().getValue())
+            .contains(OtoskopieResultatSpec.TROMMELFELL_CERUMEN.name());
     }
 
     @Test
@@ -148,9 +148,9 @@ class UntersuchungHoerenOtoskopieResourceITest {
 
         // ASSERT
         assertThat(result).isNotNull();
-        assertThat(result.getOtoskopieRechts()).isEqualTo(List.of(OtoskopieResultatSpec.NICHT_GEPRUEFT));
+        assertThat(result.getOtoskopieRechts().getValue()).isEqualTo(List.of(OtoskopieResultatSpec.NICHT_GEPRUEFT.name()));
         assertThat(result.getOtoskopieRechtsResultatAndere()).isNull();
-        assertThat(result.getOtoskopieLinks()).isEqualTo(List.of(OtoskopieResultatSpec.NICHT_GEPRUEFT));
+        assertThat(result.getOtoskopieLinks().getValue()).isEqualTo(List.of(OtoskopieResultatSpec.NICHT_GEPRUEFT.name()));
         assertThat(result.getOtoskopieLinksResultatAndere()).isNull();
     }
 
@@ -175,9 +175,9 @@ class UntersuchungHoerenOtoskopieResourceITest {
 
         // ASSERT
         assertThat(result).isNotNull();
-        assertThat(result.getOtoskopieRechts()).isNull();
+        assertThat(result.getOtoskopieRechts().getValue()).isEmpty();
         assertThat(result.getOtoskopieRechtsResultatAndere()).isNull();
-        assertThat(result.getOtoskopieLinks()).isNull();
+        assertThat(result.getOtoskopieLinks().getValue()).isEmpty();
         assertThat(result.getOtoskopieLinksResultatAndere()).isNull();
     }
 
@@ -202,9 +202,9 @@ class UntersuchungHoerenOtoskopieResourceITest {
 
         // ASSERT
         assertThat(result).isNotNull();
-        assertThat(result.getOtoskopieRechts()).isNull();
+        assertThat(result.getOtoskopieRechts().getValue()).isEmpty();
         assertThat(result.getOtoskopieRechtsResultatAndere()).isNull();
-        assertThat(result.getOtoskopieLinks()).isNull();
+        assertThat(result.getOtoskopieLinks().getValue()).isEmpty();
         assertThat(result.getOtoskopieLinksResultatAndere()).isNull();
     }
 }

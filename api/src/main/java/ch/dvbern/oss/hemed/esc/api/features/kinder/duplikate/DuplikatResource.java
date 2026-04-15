@@ -21,8 +21,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import static ch.dvbern.oss.hemed.esc.api.shared.scheduler.SuperAdminEventService.DUPLIKAT_RECALCULATION_EVENT;
@@ -33,7 +32,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.scheduler.SuperAdminEventServic
 @Tag(name = Tags.TAG_DUPLIKATE)
 @RolesAllowed(BerechtigungName.DUBLETTEN_ZUSAMMENFUHREN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "DuplikatResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("DuplikatResourceMS")
 public class DuplikatResource {
 
     private final SuperAdminRunnerService superAdminRunnerService;

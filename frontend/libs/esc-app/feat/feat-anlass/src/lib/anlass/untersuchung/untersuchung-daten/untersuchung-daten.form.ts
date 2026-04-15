@@ -15,7 +15,7 @@ import {
 import { ISODateString } from '@dvb/data-access-types';
 import { globalConstants } from '@dvb/feat-shared';
 import { AppValidators, BaseForm, DetailMode } from '@dvb/util-angular';
-import { ensureProps, Nullish, requireFilledIn, requireValue, trimToUndefined } from '@dvb/util-shared';
+import {ensureProps, ensurePropsFlat, Nullish, requireFilledIn, requireValue, trimToUndefined} from '@dvb/util-shared';
 
 function makeForm(fb: NonNullableFormBuilder) {
   const maxLength = AppValidators.dbMaxLength();
@@ -84,7 +84,7 @@ export class UntersuchungDatenForm extends BaseForm<ReturnType<typeof makeForm>,
 
   override valueOnValid(): UntersuchungDurchfuehrungSaveJson {
     const value = requireValue(this.group.getRawValue());
-    return ensureProps<UntersuchungDurchfuehrungSaveJson>({
+    return ensurePropsFlat<UntersuchungDurchfuehrungSaveJson>({
       arzt: value.arzt,
       mpa: value.mpa,
       nachkontrolle: value.nachkontrolle,

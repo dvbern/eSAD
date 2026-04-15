@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -22,6 +23,11 @@ public abstract class AbstractCsvColumn {
 
     @NonNull
     protected abstract String getDefaultHeaderKey();
+
+    @NonNull
+    public String extract(@NonNull UntersuchungImpfungIntern impfung) {
+        return extract(impfung.getUntersuchungImpfungen().getUntersuchung().getEinladung());
+    }
 
     @NonNull
     public String getHeader() {

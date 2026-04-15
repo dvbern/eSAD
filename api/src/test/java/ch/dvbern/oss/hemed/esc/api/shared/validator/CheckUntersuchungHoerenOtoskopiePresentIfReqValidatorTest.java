@@ -50,8 +50,8 @@ class CheckUntersuchungHoerenOtoskopiePresentIfReqValidatorTest {
             : null;
         UntersuchungHoerenOtoskopie hoeren = UntersuchungHoerenOtoskopieBuilder.create(
             builder -> builder
-                .withOtoskopieRechts(audiogrammRechtsList, bemerkungRechts)
-                .withOtoskopieLinks(audiogrammLinksList, bemerkungLinks));
+                .withOtoskopieRechts(audiogrammRechtsList, null, bemerkungRechts)
+                .withOtoskopieLinks(audiogrammLinksList, null, bemerkungLinks));
         hoeren.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setHoerenOtoskopie(requirementSetting);
         // ACT
         CheckUntersuchungHoerenOtoskopiePresentIfReqValidator validator =

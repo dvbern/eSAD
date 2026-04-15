@@ -42,6 +42,8 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_LE
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.MITARBEITERLISTE_BERECHTIGUNGEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SPSS_EXPORT;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_ABSCHLUSS_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_ABSCHLUSS_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_DATEN_LESEN;
@@ -60,6 +62,8 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_SEHEN_
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_SEHEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_TRIAGE_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_TRIAGE_SCHREIBEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_VORABKLAERUNGEN_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_VORABKLAERUNGEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VERANDERUNGEN_NACH_ABSCHLUSS;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_ADMIN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_LESEN;
@@ -82,6 +86,8 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         VERANDERUNGEN_NACH_ABSCHLUSS,
         SU_DATEN_LESEN,
         SU_DATEN_SCHREIBEN,
+        SU_VORABKLAERUNGEN_LESEN,
+        SU_VORABKLAERUNGEN_SCHREIBEN,
         SU_IMPFEN_LESEN,
         SU_IMPFEN_SCHREIBEN,
         SU_SEHEN_LESEN,
@@ -96,6 +102,8 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN,
         SU_MASSNAHMEN_LESEN,
         SU_MASSNAHMEN_SCHREIBEN,
+        SU_ABSCHLUSS_LESEN,
+        SU_ABSCHLUSS_SCHREIBEN,
         SU_LAEUSE_LESEN,
         SU_LAEUSE_SCHREIBEN,
         KINDER_LESEN_MEDIZINISCH,
@@ -131,8 +139,8 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
     claims = {
         @Claim(key = "sub", value = TestAsAdminBS.BENUTZER_ID_IN_KC),
         @Claim(key = "tenant", value = "BS"),
-        @Claim(key = "family_name", value = "Baseleti"),
-        @Claim(key = "given_name", value = "Basil"),
+        @Claim(key = "family_name", value = "Administrator"),
+        @Claim(key = "given_name", value = "Adrian"),
         @Claim(key = "preferred_username", value = TestAsAdminBS.USERNAME),
         @Claim(key = "email", value = TestAsAdminBS.EMAIL),
         @Claim(key = JsonWebTokenClaims.PHONE_CLAIM, value = TestAsAdminBS.TELEFON),
@@ -141,7 +149,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
 public @interface TestAsAdminBS {
     String BENUTZER_ID = "a0f624c9-7634-47fe-b49e-0d26e9310872";
     String BENUTZER_ID_IN_KC = "88aac6e0-ad5f-4a5a-8944-219dc12fa3ec";
-    String EMAIL = "admin.basel@example.com";
-    String USERNAME = "admin.basel@example.com";
+    String EMAIL = "admin@example.com";
+    String USERNAME = "admin@example.com";
     String TELEFON = "+41 61 123 45 70";
 }

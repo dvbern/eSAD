@@ -38,27 +38,30 @@ import ch.dvbern.dvbstarter.shared.i18n.translations.TLProducer;
 import ch.dvbern.lib.doctemplate.common.DocTemplateException;
 import ch.dvbern.lib.doctemplate.common.MergeContext;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Blutdruck;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.Arzt;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.docmerger.MergeSourceCreatorService;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.docmerger.RootMergeSource;
@@ -81,6 +84,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.KlasseBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.KontaktPersonKindBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.NachkontrolleBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.SchuleBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungArztBeurteilungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungHoerenAudiogrammBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungHoerenOtoskopieBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfstatusKrankheitBuilder;
@@ -107,7 +111,7 @@ class DocMergerTest {
 
     private static final String OUTPUT_PATH = Paths.get(FileUtils.getTempDirectoryPath(), "esc", "docmerge").toString();
 
-    private final TL tl = new TLProducer(() -> AppLanguages.DE).forAppLanguage(AppLanguages.DE);
+    private final TL tl = new TLProducer(() -> AppLanguages.DE, () -> TenantEnum.BS).forAppLanguage(AppLanguages.DE);
 
     @BeforeAll
     static void setUp() throws IOException {
@@ -269,6 +273,8 @@ class DocMergerTest {
             untersuchungSehenBeurteilung,
             null,
             null,
+            null,
+            null,
             anlassConfig);
     }
 
@@ -284,6 +290,8 @@ class DocMergerTest {
             expectedValue,
             untersuchungMassnahmen,
             untersuchungSehenBeurteilung,
+            null,
+            null,
             null,
             null,
             AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL));
@@ -304,6 +312,8 @@ class DocMergerTest {
             null,
             untersuchungHoerenAudiogramm,
             null,
+            null,
+            null,
             anlassConfig);
     }
 
@@ -319,6 +329,8 @@ class DocMergerTest {
             UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now()),
             null,
             untersuchungHoerenAudiogramm,
+            null,
+            null,
             null,
             AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL)
         );
@@ -339,6 +351,8 @@ class DocMergerTest {
             null,
             null,
             untersuchungHoerenOtoskopie,
+            null,
+            null,
             anlassConfig);
     }
 
@@ -356,6 +370,8 @@ class DocMergerTest {
             null,
             null,
             untersuchungHoerenOtoskopie,
+            null,
+            null,
             AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL));
 
         testRootMergeSource(
@@ -365,6 +381,50 @@ class DocMergerTest {
             null,
             null,
             untersuchungHoerenOtoskopie,
+            null,
+            null,
+            AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL));
+    }
+
+    @ParameterizedTest
+    @MethodSource("untersuchungArztBlutdruck")
+    void resultatUntersuchungArztBlutdruck(
+        @NonNull String expectedBlutdruck,
+        @NonNull String expectedBlutdruckSystolisch,
+        @NonNull String expectedBlutdruckDiastolisch,
+        @NonNull UntersuchungArztBeurteilung untersuchungArztBeurteilung
+    ) throws DocTemplateException {
+        testRootMergeSource(
+            "anlass.untersuchungArzt.blutdruckBewertung",
+            expectedBlutdruck,
+            UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now()),
+            null,
+            null,
+            null,
+            null,
+            untersuchungArztBeurteilung,
+            AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL));
+
+        testRootMergeSource(
+            "anlass.untersuchungArzt.blutdruckWertSystolisch",
+            expectedBlutdruckSystolisch,
+            UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now()),
+            null,
+            null,
+            null,
+            null,
+            untersuchungArztBeurteilung,
+            AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL));
+
+        testRootMergeSource(
+            "anlass.untersuchungArzt.blutdruckWertDiastolisch",
+            expectedBlutdruckDiastolisch,
+            UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now()),
+            null,
+            null,
+            null,
+            null,
+            untersuchungArztBeurteilung,
             AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL));
     }
 
@@ -375,6 +435,8 @@ class DocMergerTest {
         @Nullable UntersuchungSehenBeurteilung untersuchungSehenBeurteilung,
         @Nullable UntersuchungHoerenAudiogramm untersuchungHoerenAudiogramm,
         @Nullable UntersuchungHoerenOtoskopie untersuchungHoerenOtoskopie,
+        @Nullable UntersuchungGroesseGewicht untersuchungGroesseGewicht,
+        @Nullable UntersuchungArztBeurteilung untersuchungArztBeurteilung,
         @NonNull AnlassConfig anlassConfig
     ) throws DocTemplateException {
         // ARRANGE
@@ -387,6 +449,8 @@ class DocMergerTest {
         untersuchung.setUntersuchungHoerenAudiogramm(untersuchungHoerenAudiogramm);
         untersuchung.setUntersuchungHoerenOtoskopie(untersuchungHoerenOtoskopie);
         untersuchung.setUntersuchungMassnahmen(untersuchungMassnahmen);
+        untersuchung.setUntersuchungGroesseGewicht(untersuchungGroesseGewicht);
+        untersuchung.setUntersuchungArztBeurteilung(untersuchungArztBeurteilung);
 
         Anlass anlass =
             AnlassBuilder.create(builder -> builder.withAnlassConfig(anlassConfig));
@@ -429,15 +493,17 @@ class DocMergerTest {
             // Everything good
             Arguments.of(
                 "normal",
-                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.NORMAL)
-                    .withStereotest(StereotestResultat.NORMAL)
-                    .withBrilleLinsen(BrilleLinsenResultat.OHNE_KEINE)
-                    .withFernvisus(List.of(DistanzSehenResultat.NORMAL))
-                    .withNahvisus(List.of(DistanzSehenResultat.NORMAL))
-                    .withStrabismus(List.of(StrabismusResultat.KEIN_STRABISMUS))
-                    .withInspektion(InspektionKonvergenzResultat.UNAUFFAELLIG)
-                    .withKonvergenz(InspektionKonvergenzResultat.UNAUFFAELLIG)
-                    .withMotilitaet(MotilitaetResultat.NORMAL)),
+                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(
+                        FarbsehenResultat.NORMAL,
+                        null)
+                    .withStereotest(StereotestResultat.NORMAL, null)
+                    .withBrilleLinsen(BrilleLinsenResultat.OHNE_KEINE, null)
+                    .withFernvisus(List.of(DistanzSehenResultat.NORMAL), null)
+                    .withNahvisus(List.of(DistanzSehenResultat.NORMAL), null)
+                    .withStrabismus(List.of(StrabismusResultat.KEIN_STRABISMUS), null)
+                    .withInspektion(InspektionKonvergenzResultat.UNAUFFAELLIG, null)
+                    .withKonvergenz(InspektionKonvergenzResultat.UNAUFFAELLIG, null)
+                    .withMotilitaet(MotilitaetResultat.NORMAL, null)),
                 UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now()),
                 AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL)
             ),
@@ -451,7 +517,9 @@ class DocMergerTest {
             // Anything thats off -> "siehe begleitbrief"
             Arguments.of(
                 "siehe Begleitbrief",
-                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withBrilleLinsen(BrilleLinsenResultat.OHNE_VERGESSEN)),
+                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withBrilleLinsen(
+                    BrilleLinsenResultat.OHNE_VERGESSEN,
+                    null)),
                 UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now()),
                 AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL)
             ),
@@ -465,15 +533,17 @@ class DocMergerTest {
             // Nothing has been checked
             Arguments.arguments(
                 "nicht geprüft worden",
-                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.NICHT_GEPRUEFT)
-                    .withStereotest(StereotestResultat.NICHT_GEPRUEFT)
-                    .withBrilleLinsen(BrilleLinsenResultat.NICHT_GEPRUEFT)
-                    .withFernvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT))
-                    .withNahvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT))
-                    .withStrabismus(List.of(StrabismusResultat.NICHT_GEPRUEFT))
-                    .withInspektion(InspektionKonvergenzResultat.NICHT_GEPRUEFT)
-                    .withKonvergenz(InspektionKonvergenzResultat.NICHT_GEPRUEFT)
-                    .withMotilitaet(MotilitaetResultat.NICHT_GEPRUEFT)),
+                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(
+                        FarbsehenResultat.NICHT_GEPRUEFT,
+                        null)
+                    .withStereotest(StereotestResultat.NICHT_GEPRUEFT, null)
+                    .withBrilleLinsen(BrilleLinsenResultat.NICHT_GEPRUEFT, null)
+                    .withFernvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT), null)
+                    .withNahvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT), null)
+                    .withStrabismus(List.of(StrabismusResultat.NICHT_GEPRUEFT), null)
+                    .withInspektion(InspektionKonvergenzResultat.NICHT_GEPRUEFT, null)
+                    .withKonvergenz(InspektionKonvergenzResultat.NICHT_GEPRUEFT, null)
+                    .withMotilitaet(MotilitaetResultat.NICHT_GEPRUEFT, null)),
                 UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now()),
                 AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL)
             )
@@ -484,22 +554,30 @@ class DocMergerTest {
         return Stream.of(
             Arguments.of(
                 "unklar und muss daher von einem Augenarzt/ einer Augenärztin überprüft werden.",
-                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.UNSICHER)),
+                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(
+                    FarbsehenResultat.UNSICHER,
+                    null)),
                 UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now())
             ),
             Arguments.of(
                 "unklar und muss daher von einem Augenarzt/ einer Augenärztin überprüft werden.",
-                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.UNSICHER)),
+                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(
+                    FarbsehenResultat.UNSICHER,
+                    null)),
                 null
             ),
             Arguments.of(
                 "unklar und muss daher von einem Augenarzt/ einer Augenärztin überprüft werden.",
-                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.UNSICHER)),
+                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(
+                    FarbsehenResultat.UNSICHER,
+                    null)),
                 UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now())
             ),
             Arguments.of(
                 "unklar und wird in der nächsten schulärztlichen Untersuchung nochmals kontrolliert",
-                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(FarbsehenResultat.UNSICHER)),
+                UntersuchungSehenBeurteilungBuilder.create(builder -> builder.withFarbsehen(
+                    FarbsehenResultat.UNSICHER,
+                    null)),
                 UntersuchungMassnahmenBuilder.create(builder -> builder.withNachkontrolle(
                     true,
                     false,
@@ -519,8 +597,8 @@ class DocMergerTest {
             Arguments.of(
                 "normal",
                 UntersuchungHoerenAudiogrammBuilder.create(builder -> builder
-                    .withZusaetzlicheAngaben(List.of(HoerenZusaetzlicheAngaben.KEINE))
-                    .withAudiogrammBeurteilung(List.of(AudiogrammBeurteilung.NORMAL))
+                    .withZusaetzlicheAngaben(List.of(HoerenZusaetzlicheAngaben.KEINE), null)
+                    .withAudiogrammBeurteilung(List.of(AudiogrammBeurteilung.NORMAL), null)
                     .withAudiogrammLinks(Dezibel.DB20)
                     .withAudiogrammRechts(Dezibel.DB20)),
                 UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now()),
@@ -559,49 +637,59 @@ class DocMergerTest {
         return Stream.of(
             Arguments.of(
                 "beidseitig vermindert",
-                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(List.of(
-                    AudiogrammBeurteilung.LINKS_REDUZIERT,
-                    AudiogrammBeurteilung.RECHTS_REDUZIERT))
+                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(
+                    List.of(
+                        AudiogrammBeurteilung.LINKS_REDUZIERT,
+                        AudiogrammBeurteilung.RECHTS_REDUZIERT), null)
                 )),
             Arguments.of(
                 "links vermindert",
-                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(List.of(
-                    AudiogrammBeurteilung.LINKS_REDUZIERT)))),
+                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(
+                    List.of(
+                        AudiogrammBeurteilung.LINKS_REDUZIERT), null))),
             Arguments.of(
                 "rechts vermindert",
-                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(List.of(
-                    AudiogrammBeurteilung.RECHTS_REDUZIERT))
+                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(
+                    List.of(
+                        AudiogrammBeurteilung.RECHTS_REDUZIERT), null)
                 )),
             Arguments.of(
                 "unaufällig",
-                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(List.of(
-                    AudiogrammBeurteilung.NORMAL)))),
+                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(
+                    List.of(
+                        AudiogrammBeurteilung.NORMAL), null))),
             Arguments.of(
                 "nicht geprüft",
-                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(List.of(
-                    AudiogrammBeurteilung.NICHT_GEPRUEFT)))
+                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(
+                    List.of(
+                        AudiogrammBeurteilung.NICHT_GEPRUEFT), null))
             ),
             Arguments.of(
                 "",
-                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(List.of()))
+                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(
+                    List.of(),
+                    null))
             ),
             Arguments.of(
                 "unaufällig, nicht geprüft",
-                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(List.of(
-                    AudiogrammBeurteilung.NICHT_GEPRUEFT, AudiogrammBeurteilung.NORMAL)))
+                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(
+                    List.of(
+                        AudiogrammBeurteilung.NICHT_GEPRUEFT, AudiogrammBeurteilung.NORMAL), null))
             ),
             Arguments.of(
                 "beidseitig vermindert, unaufällig",
-                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(List.of(
-                    AudiogrammBeurteilung.NORMAL,
-                    AudiogrammBeurteilung.RECHTS_REDUZIERT,
-                    AudiogrammBeurteilung.LINKS_REDUZIERT)))
+                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(
+                    List.of(
+                        AudiogrammBeurteilung.NORMAL,
+                        AudiogrammBeurteilung.RECHTS_REDUZIERT,
+                        AudiogrammBeurteilung.LINKS_REDUZIERT), null))
             ),
             Arguments.of(
                 "unaufällig, rechts vermindert",
-                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(List.of(
-                    AudiogrammBeurteilung.NORMAL,
-                    AudiogrammBeurteilung.RECHTS_REDUZIERT)))
+                UntersuchungHoerenAudiogrammBuilder.create(builder -> builder.withAudiogrammBeurteilung(
+                    List.of(
+                        AudiogrammBeurteilung.NORMAL,
+                        AudiogrammBeurteilung.RECHTS_REDUZIERT), null))
             )
         );
     }
@@ -613,8 +701,8 @@ class DocMergerTest {
             Arguments.of(
                 "normal",
                 UntersuchungHoerenOtoskopieBuilder.create(builder -> builder
-                    .withOtoskopieLinks(List.of(OtoskopieResultat.NORMAL))
-                    .withOtoskopieRechts(List.of(OtoskopieResultat.NORMAL))),
+                    .withOtoskopieLinks(List.of(OtoskopieResultat.NORMAL), null)
+                    .withOtoskopieRechts(List.of(OtoskopieResultat.NORMAL), null)),
                 UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now()),
                 AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL)
             ),
@@ -629,7 +717,7 @@ class DocMergerTest {
             Arguments.of(
                 "siehe Begleitbrief",
                 UntersuchungHoerenOtoskopieBuilder.create(builder -> builder
-                    .withOtoskopieLinks(List.of(OtoskopieResultat.NICHT_EINSEHBAR))),
+                    .withOtoskopieLinks(List.of(OtoskopieResultat.NICHT_EINSEHBAR), null)),
                 UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now()),
                 AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL)
             ),
@@ -637,7 +725,7 @@ class DocMergerTest {
             Arguments.of(
                 "bereits in Behandlung",
                 UntersuchungHoerenOtoskopieBuilder.create(builder -> builder
-                    .withOtoskopieLinks(List.of(OtoskopieResultat.NICHT_EINSEHBAR))),
+                    .withOtoskopieLinks(List.of(OtoskopieResultat.NICHT_EINSEHBAR), null)),
                 UntersuchungMassnahmenBuilder.create(builder -> builder.withBereitsBehandeltHoeren(true)),
                 AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL)
             )
@@ -666,9 +754,9 @@ class DocMergerTest {
                         entry.getValue(),
                         entry.getValue(),
                         UntersuchungHoerenOtoskopieBuilder.create(builder -> builder
-                            .withOtoskopieLinks(List.of(entry.getKey()))
+                            .withOtoskopieLinks(List.of(entry.getKey()), null)
                             .withOtoskopieLinksResultatAndere("Bemerkung Links")
-                            .withOtoskopieRechts(List.of(entry.getKey()))
+                            .withOtoskopieRechts(List.of(entry.getKey()), null)
                             .withOtoskopieRechtsResultatAndere("Bemerkung Rechts")
                         )
                     ),
@@ -676,8 +764,8 @@ class DocMergerTest {
                         entry.getValue(),
                         entry.getValue(),
                         UntersuchungHoerenOtoskopieBuilder.create(builder -> builder
-                            .withOtoskopieLinks(List.of(entry.getKey()))
-                            .withOtoskopieRechts(List.of(entry.getKey()))
+                            .withOtoskopieLinks(List.of(entry.getKey()), null)
+                            .withOtoskopieRechts(List.of(entry.getKey()), null)
                         )
                     ))
 
@@ -688,9 +776,9 @@ class DocMergerTest {
                 "hat ergeben, dass es Abweichungen gibt: Bemerkung Links Andere",
                 "hat ergeben, dass es Abweichungen gibt: Bemerkung Rechts Andere",
                 UntersuchungHoerenOtoskopieBuilder.create(builder -> builder
-                    .withOtoskopieLinks(List.of(OtoskopieResultat.ANDERES))
+                    .withOtoskopieLinks(List.of(OtoskopieResultat.ANDERES), null)
                     .withOtoskopieLinksResultatAndere("Bemerkung Links Andere")
-                    .withOtoskopieRechts(List.of(OtoskopieResultat.ANDERES))
+                    .withOtoskopieRechts(List.of(OtoskopieResultat.ANDERES), null)
                     .withOtoskopieRechtsResultatAndere("Bemerkung Rechts Andere")
                 )
             ),
@@ -698,12 +786,45 @@ class DocMergerTest {
                 "hat ergeben, dass es Abweichungen gibt",
                 "hat ergeben, dass es Abweichungen gibt",
                 UntersuchungHoerenOtoskopieBuilder.create(builder -> builder
-                    .withOtoskopieLinks(List.of(OtoskopieResultat.ANDERES))
-                    .withOtoskopieRechts(List.of(OtoskopieResultat.ANDERES))
+                    .withOtoskopieLinks(List.of(OtoskopieResultat.ANDERES), null)
+                    .withOtoskopieRechts(List.of(OtoskopieResultat.ANDERES), null)
                 )
             )
         );
 
         return Stream.concat(testsDefinedResults, testsAnderes);
+    }
+
+    @NonNull
+    private static Stream<Arguments> untersuchungArztBlutdruck() {
+        return Map.of(
+            Blutdruck.NORMAL, "Normal",
+            Blutdruck.AUFFAELLIG, "Auffällig",
+            Blutdruck.NICHT_GEPRUEFT, "nicht geprüft"
+        ).entrySet().stream().flatMap(
+            entry -> Stream.of(
+                // With explicit systolic + diastolic values
+                Arguments.of(
+                    entry.getValue(),       // expectedBlutdruck
+                    "80",                   // expectedBlutdruckSystolisch
+                    "80",                   // expectedBlutdruckDiastolisch
+                    UntersuchungArztBeurteilungBuilder.create(builder -> builder
+                        .withBlutdruck(entry.getKey())
+                        .withBlutdruckSystolisch(80)
+                        .withBlutdruckDiastolisch(80)
+                    )
+                ),
+                // Without explicit values (null/default)
+                Arguments.of(
+                    entry.getValue(),       // expectedBlutdruck
+                    "",                     // expectedBlutdruckSystolisch — adjust to whatever your code returns for
+                    // null
+                    "",                     // expectedBlutdruckDiastolisch
+                    UntersuchungArztBeurteilungBuilder.create(builder -> builder
+                        .withBlutdruck(entry.getKey())
+                    )
+                )
+            )
+        );
     }
 }

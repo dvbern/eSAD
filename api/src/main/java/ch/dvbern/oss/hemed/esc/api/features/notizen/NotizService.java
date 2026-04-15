@@ -32,6 +32,7 @@ public class NotizService {
     private final FileValidationService fileValidationService;
     private final ConfigService configService;
     private final AppClock appClock;
+    private final FileDataService fileDataService;
 
     @NonNull
     public Notiz persist(@NonNull Notiz notiz) {
@@ -58,14 +59,18 @@ public class NotizService {
         return savedNotiz;
     }
 
-    public void remove(@NonNull ID<Notiz> notizId) {
+    public void remove(@NonNull ID<Notiz> notizId, boolean deleteFilesInS3) {
+        Notiz notizToDelete = notizRepo.getById(notizId);
+        // Die Notiz entfernen
         notizRepo.remove(notizId);
+        // Die Files in S3 entfernen
+        fileDataService.deleteFileData(notizToDelete.getFiles(), deleteFilesInS3);
     }
 
     public void removeForKind(@NonNull ID<Kind> kindID) {
         List<Notiz> notizen = findAllForKind(kindID);
         for (Notiz notiz : notizen) {
-            remove(notiz.getId());
+            remove(notiz.getId(), true);
         }
     }
 

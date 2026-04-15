@@ -1,7 +1,8 @@
   <button svuiButton="primary"
           type="submit"
           [disabled]="!canEdit()"
-          [working]="saving()">{{ primaryButtonTextOrDefault() | transloco }}</button>
+          [working]="saving()"
+          data-testid="button-confirm">{{ primaryButtonTextOrDefault() | transloco }}</button>
   <button svuiButton="secondary"
           type="button"
           (click)="cancel()">{{ 'global.cancel' | transloco }}</button>

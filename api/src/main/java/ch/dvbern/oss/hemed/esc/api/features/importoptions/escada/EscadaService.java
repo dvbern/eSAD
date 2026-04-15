@@ -214,7 +214,7 @@ public class EscadaService {
     ) {
         ImportPlanDTO<LehrpersonExternal> importPlanDTO =
             extractLehrpersonenAndDetermineUpdatePlan(escadaCsvDTOS);
-        return lehrpersonExternalSyncService.syncLehrpersonen(importPlanDTO);
+        return lehrpersonExternalSyncService.syncLehrpersonen(importPlanDTO, ImportTyp.ESCADA);
     }
 
     @NonNull
@@ -229,7 +229,7 @@ public class EscadaService {
     ) {
         ImportPlanDTO<KontaktPersonKindExternal> importPlanDTO =
             extractKontaktPersonenKindAndDetermineUpdatePlan(escadaCsvDTOS);
-        return kontaktPersonKindExternalSyncService.syncKontaktPersonKind(importPlanDTO);
+        return kontaktPersonKindExternalSyncService.syncKontaktPersonKind(importPlanDTO, ImportTyp.ESCADA);
     }
 
     @NonNull

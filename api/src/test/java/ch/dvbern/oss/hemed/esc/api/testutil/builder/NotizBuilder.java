@@ -25,7 +25,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizJsonSpec;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @RequiredArgsConstructor
@@ -51,6 +51,7 @@ public class NotizBuilder {
             NotizTyp.DEFAULT,
             defaultDossier,
             defaultVerantwortlicher,
+            null,
             defaultLabels,
             defaultFiles
         );
@@ -133,6 +134,13 @@ public class NotizBuilder {
     @CanIgnoreReturnValue
     public NotizBuilder withNotizTyp(@NonNull NotizTyp typ) {
         this.notiz.setTyp(typ);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public NotizBuilder withAnlassLink(@NonNull String link) {
+        this.notiz.setAnlassLink(link);
         return this;
     }
 

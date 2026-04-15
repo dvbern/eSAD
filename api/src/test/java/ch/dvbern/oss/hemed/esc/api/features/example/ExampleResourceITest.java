@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.UUID;
 
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupport;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -26,7 +26,7 @@ class ExampleResourceITest {
     URL url = null;
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void createExample_should_return_dto() {
 
         var email = EmailAddress.fromString("somebody-%s@somewhere.org".formatted(UUID.randomUUID().toString()));

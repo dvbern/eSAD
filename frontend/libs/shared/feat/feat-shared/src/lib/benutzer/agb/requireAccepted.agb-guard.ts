@@ -1,0 +1,86 @@
+/*
+ * Copyright (C) 2026 DV Bern AG, Switzerland
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+import {inject} from '@angular/core';
+import {ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot} from '@angular/router';
+
+import {AppNotificationStore} from '@dvb/util-angular';
+import {TranslocoService} from '@jsverse/transloco';
+import {BenutzerStore} from '../benutzer/benutzer.store';
+import {Path} from '../../core/path';
+
+export function requireAcceptedAgb(): CanActivateFn {
+  return async (_route: ActivatedRouteSnapshot, _state: RouterStateSnapshot) => {
+    const router = inject(Router);
+    const benutzerStore = inject(BenutzerStore);
+    const appNotificationStore = inject(AppNotificationStore);
+    const translationService = inject(TranslocoService);
+
+    const isLoggedIn = benutzerStore.isLoggedIn();
+
+    if (!isLoggedIn) {
+      console.log('redirecting to login');
+      triggerUnauthenticatedNotification(appNotificationStore, translationService);
+      return router.navigateByUrl('/info');
+    }
+
+    const isAccepted = benutzerStore.isAgbAccepted();
+
+    if (!isAccepted) {
+      console.warn('AGB not accepted, redirecting to AGB-Page');
+      return router.navigate([Path.AGB]);
+    }
+
+    return true;
+  };
+}
+
+export function requireNotAcceptedAgb(): CanActivateFn {
+  return async (_route: ActivatedRouteSnapshot, _state: RouterStateSnapshot) => {
+    const router = inject(Router);
+    const benutzerStore = inject(BenutzerStore);
+    const appNotificationStore = inject(AppNotificationStore);
+    const translationService = inject(TranslocoService);
+
+    const isLoggedIn = benutzerStore.isLoggedIn();
+
+    if (!isLoggedIn) {
+      console.log('redirecting to login');
+      triggerUnauthenticatedNotification(appNotificationStore, translationService);
+      return router.navigateByUrl('/info');
+    }
+
+    const isAccepted = benutzerStore.isAgbAccepted();
+
+    if (isAccepted) {
+      console.log('AGB already accepted, redirecting to Dashboard');
+      return router.navigate([Path.DASHBOARD]);
+    }
+
+    return true;
+  };
+}
+
+function triggerUnauthenticatedNotification(
+  appNotificationStore: AppNotificationStore,
+  translocoService: TranslocoService,
+) {
+  appNotificationStore.addNotification({
+    alertType: 'danger',
+    id: crypto.randomUUID(),
+    summary: translocoService.translate('common.auth.route.unauthenticated.title'),
+    autohide: true,
+  });
+}
+

@@ -41,6 +41,8 @@ enum FachRolleWIN {
 
             Berechtigung.SU_DATEN_LESEN,
             Berechtigung.SU_DATEN_SCHREIBEN,
+            Berechtigung.SU_VORABKLAERUNGEN_LESEN,
+            Berechtigung.SU_VORABKLAERUNGEN_SCHREIBEN,
             Berechtigung.SU_IMPFEN_LESEN,
             Berechtigung.SU_IMPFEN_SCHREIBEN,
             Berechtigung.SU_SEHEN_LESEN,
@@ -57,6 +59,8 @@ enum FachRolleWIN {
             Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN,
             Berechtigung.SU_MASSNAHMEN_LESEN,
             Berechtigung.SU_MASSNAHMEN_SCHREIBEN,
+            Berechtigung.SU_ABSCHLUSS_LESEN,
+            Berechtigung.SU_ABSCHLUSS_SCHREIBEN,
             Berechtigung.KINDER_LESEN_MEDIZINISCH,
             Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
             Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH,
@@ -84,6 +88,7 @@ enum FachRolleWIN {
     LAUSBEAUFTRAGTE(
         EnumSet.of(
             Berechtigung.SU_DATEN_LESEN,
+            Berechtigung.SU_VORABKLAERUNGEN_LESEN,
             Berechtigung.EIGENE_BERECHTIGUNGEN_LESEN,
             Berechtigung.ANLASSLISTE_LESEN_LAEUSE,
             Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE,
@@ -110,6 +115,8 @@ enum FachRolleWIN {
 
             Berechtigung.SU_DATEN_LESEN,
             Berechtigung.SU_DATEN_SCHREIBEN,
+            Berechtigung.SU_VORABKLAERUNGEN_LESEN,
+            Berechtigung.SU_VORABKLAERUNGEN_SCHREIBEN,
             Berechtigung.SU_IMPFEN_LESEN,
             Berechtigung.SU_IMPFEN_SCHREIBEN,
             Berechtigung.SU_SEHEN_LESEN,
@@ -126,6 +133,8 @@ enum FachRolleWIN {
             Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN,
             Berechtigung.SU_MASSNAHMEN_LESEN,
             Berechtigung.SU_MASSNAHMEN_SCHREIBEN,
+            Berechtigung.SU_ABSCHLUSS_LESEN,
+            Berechtigung.SU_ABSCHLUSS_SCHREIBEN,
             Berechtigung.KINDER_LESEN_MEDIZINISCH,
             Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
             Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH,
@@ -150,6 +159,9 @@ enum FachRolleWIN {
             Berechtigung.VORLAGEN_ADMIN_LESEN
         )
     ),
+    SCHOOL_NURSE(
+        EnumSet.noneOf(Berechtigung.class)
+    ),
     SUPERUSER(
         EnumSet.of(
             Berechtigung.IMPFSTOFFE_LESEN,
@@ -173,6 +185,8 @@ enum FachRolleWIN {
             Berechtigung.VERANDERUNGEN_NACH_ABSCHLUSS,
             Berechtigung.SU_DATEN_LESEN,
             Berechtigung.SU_DATEN_SCHREIBEN,
+            Berechtigung.SU_VORABKLAERUNGEN_LESEN,
+            Berechtigung.SU_VORABKLAERUNGEN_SCHREIBEN,
             Berechtigung.SU_IMPFEN_LESEN,
             Berechtigung.SU_IMPFEN_SCHREIBEN,
             Berechtigung.SU_SEHEN_LESEN,
@@ -189,6 +203,8 @@ enum FachRolleWIN {
             Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN,
             Berechtigung.SU_MASSNAHMEN_LESEN,
             Berechtigung.SU_MASSNAHMEN_SCHREIBEN,
+            Berechtigung.SU_ABSCHLUSS_LESEN,
+            Berechtigung.SU_ABSCHLUSS_SCHREIBEN,
             Berechtigung.KINDER_LESEN_MEDIZINISCH,
             Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
             Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH,
@@ -232,6 +248,8 @@ enum FachRolleWIN {
             Berechtigung.VERANDERUNGEN_NACH_ABSCHLUSS,
             Berechtigung.SU_DATEN_LESEN,
             Berechtigung.SU_DATEN_SCHREIBEN,
+            Berechtigung.SU_VORABKLAERUNGEN_LESEN,
+            Berechtigung.SU_VORABKLAERUNGEN_SCHREIBEN,
             Berechtigung.SU_IMPFEN_LESEN,
             Berechtigung.SU_IMPFEN_SCHREIBEN,
             Berechtigung.SU_SEHEN_LESEN,
@@ -248,6 +266,8 @@ enum FachRolleWIN {
             Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN,
             Berechtigung.SU_MASSNAHMEN_LESEN,
             Berechtigung.SU_MASSNAHMEN_SCHREIBEN,
+            Berechtigung.SU_ABSCHLUSS_LESEN,
+            Berechtigung.SU_ABSCHLUSS_SCHREIBEN,
             Berechtigung.KINDER_LESEN_MEDIZINISCH,
             Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
             Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH,
@@ -275,7 +295,10 @@ enum FachRolleWIN {
             Berechtigung.VORLAGEN_LESEN,
             Berechtigung.VORLAGEN_ADMIN_LESEN,
             Berechtigung.VORLAGEN_SCHREIBEN,
-            Berechtigung.SUPPORT
+            Berechtigung.BENUTZER_BERECHTIGUNGEN_LESEN,
+            Berechtigung.BENUTZER_BERECHTIGUNGEN_SCHREIBEN,
+            Berechtigung.SUPPORT,
+            Berechtigung.ARCHIVIERUNG
         )
     ),
     SYSTEM_ADMIN(
@@ -291,6 +314,8 @@ enum FachRolleWIN {
             Berechtigung.VERANDERUNGEN_NACH_ABSCHLUSS,
             Berechtigung.SU_DATEN_LESEN,
             Berechtigung.SU_DATEN_SCHREIBEN,
+            Berechtigung.SU_VORABKLAERUNGEN_LESEN,
+            Berechtigung.SU_VORABKLAERUNGEN_SCHREIBEN,
             Berechtigung.SU_IMPFEN_LESEN,
             Berechtigung.SU_IMPFEN_SCHREIBEN,
             Berechtigung.SU_SEHEN_LESEN,
@@ -307,6 +332,8 @@ enum FachRolleWIN {
             Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN,
             Berechtigung.SU_MASSNAHMEN_LESEN,
             Berechtigung.SU_MASSNAHMEN_SCHREIBEN,
+            Berechtigung.SU_ABSCHLUSS_LESEN,
+            Berechtigung.SU_ABSCHLUSS_SCHREIBEN,
             Berechtigung.KINDER_LESEN_MEDIZINISCH,
             Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
             Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH,
@@ -335,7 +362,8 @@ enum FachRolleWIN {
             Berechtigung.VORLAGEN_ADMIN_LESEN,
             Berechtigung.VORLAGEN_SCHREIBEN,
             Berechtigung.SUPPORT,
-            Berechtigung.SYSTEM_ADMIN
+            Berechtigung.SYSTEM_ADMIN,
+            Berechtigung.ARCHIVIERUNG
         )
     );
 

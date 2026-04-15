@@ -2,7 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.example.developer;
 
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupport;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.SuperAdminRunnerApiSpec;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
@@ -25,54 +25,57 @@ class SuperAdminRunnerResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void triggerDocumentQueueJob() {
-        // ARRANGE
-
         // ACT & ASSERT
         api.superAdminRunnerResourceTriggerDocumentQueueJob()
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
-            .statusCode(Status.OK.getStatusCode());
+            .statusCode(Status.NO_CONTENT.getStatusCode());
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void triggerDocumentQueueCleanUpJob() {
-        // ARRANGE
-
         // ACT & ASSERT
         api.superAdminRunnerResourceTriggerDocumentQueueCleanUpJob()
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
-            .statusCode(Status.OK.getStatusCode());
+            .statusCode(Status.NO_CONTENT.getStatusCode());
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void triggerBenutzerInaktivierenJob() {
-        // ARRANGE
-
         // ACT & ASSERT
         api.superAdminRunnerResourceTriggerBenutzerInaktivierenJob()
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
-            .statusCode(Status.OK.getStatusCode());
+            .statusCode(Status.NO_CONTENT.getStatusCode());
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void triggerKinderInaktivierenJob() {
-        // ARRANGE
-
         // ACT & ASSERT
         api.superAdminRunnerResourceTriggerKinderInaktivierenJob()
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
-            .statusCode(Status.OK.getStatusCode());
+            .statusCode(Status.NO_CONTENT.getStatusCode());
+    }
+
+    @Test
+    @TestAsSupportBS
+    void triggerArchivierungDeleteJob() {
+        // ACT & ASSERT
+        api.superAdminRunnerResourceTriggerArchivierungDeleteJob()
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.NO_CONTENT.getStatusCode());
     }
 }

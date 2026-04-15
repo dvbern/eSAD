@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.archivierung.ArchivdokumentService;
 import ch.dvbern.oss.hemed.esc.api.features.kindanlaesse.KindAnlaesseService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.DossierService;
@@ -33,27 +34,30 @@ public class RemoveKindService {
     private final NachkontrolleService nachkontrolleService;
     private final KindExternalService kindExternalService;
     private final AktivitaetHistoryService aktivitaetHistoryService;
-
+    private final ArchivdokumentService archivdokumentService;
 
     public void remove(@NonNull ID<Kind> kindID) {
         Optional<Dossier> dossierOptional = dossierService.findByKind(kindID);
-        // Abhaengige Objekte entfernen
-        // Kontaktpersonen kopieren
-        kontaktPersonKindService.removeForKind(kindID);
-        // Notizen kopieren
-        notizService.removeForKind(kindID);
-        // Aufgaben kopieren
-        aufgabeService.removeForKind(kindID);
-        // Anlaesse inkl. Untersuchungen kopieren
-        kindAnlaesseService.removeForKind(kindID);
-        // Duplikate
-        duplikatService.removeForKind(kindID);
 
+        // Abhaengige Objekte entfernen
+        // Kontaktpersonen entfernen
+        kontaktPersonKindService.removeForKind(kindID);
+        // Notizen entfernen
+        notizService.removeForKind(kindID);
+        // Aufgaben entfernen
+        aufgabeService.removeForKind(kindID);
+        // Anlaesse inkl. Untersuchungen entfernen
+        kindAnlaesseService.removeForKind(kindID, true);
+        // Duplikate entfernen
+        duplikatService.removeForKind(kindID);
         // KindAktivitaeten entfernen
         aktivitaetHistoryService.removeForKind(kindID);
+        // Dossier entfernen wenn vorhanden
         if (dossierOptional.isPresent()) {
             // Nachkontrollen entfernen
             nachkontrolleService.removeForDossier(dossierOptional.get().getId());
+            // Archivdokument entfernen
+            archivdokumentService.removeForDossier(dossierOptional.get().getId());
             // Dossier und Kind entfernen
             dossierService.remove(dossierOptional.get().getId());
         }

@@ -23,7 +23,8 @@ import java.io.Serial;
     indexes = {
         @Index(name = "ix_untersuchungimpfungen_visum_1", columnList = "visum1_id, id"),
         @Index(name = "ix_untersuchungimpfungen_visum_2", columnList = "visum2_id, id"),
-        @Index(name = "ix_untersuchungimpfungen_untersuchungimpfungenmassnahmen", columnList = "untersuchungimpfungenmassnahmen_id, id")
+        @Index(name = "ix_untersuchungimpfungen_untersuchungimpfungenmassnahmen", columnList = "untersuchungimpfungenmassnahmen_id, id"),
+        @Index(name = "ix_untersuchungimpfungen_untersuchungimpfungendataminimal", columnList = "untersuchungimpfungendataminimal_id, id"),
     }
 )
 @Audited
@@ -85,6 +86,11 @@ public class UntersuchungImpfungen extends AbstractEntity<UntersuchungImpfungen>
     @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchungimpfungen_untersuchungimpfungenmassnahmen"), nullable = true)
     private UntersuchungImpfungenMassnahmen untersuchungImpfungenMassnahmen;
+
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchungimpfungen_untersuchungimpfungendataminimal"), nullable = true)
+    private UntersuchungImpfungenDataMinimal untersuchungImpfungenDataMinimal;
 
 
     @NonNull

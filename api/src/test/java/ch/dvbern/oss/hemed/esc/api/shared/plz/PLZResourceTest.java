@@ -5,7 +5,7 @@ import java.util.List;
 
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupport;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.PlzApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.PLZDataJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.PLZDataListJsonSpec;
@@ -26,7 +26,7 @@ class PLZResourceTest {
     private final PlzApiSpec api = PlzApiSpec.plz(RequestSpecUtil.quarkusSpec());
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void importPlzFromCsv() {
 
         // ACT
@@ -34,7 +34,7 @@ class PLZResourceTest {
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
-            .statusCode(HttpURLConnection.HTTP_OK)
+            .statusCode(HttpURLConnection.HTTP_NO_CONTENT)
             .extract().asString();
 
         // ASSERT
@@ -42,14 +42,14 @@ class PLZResourceTest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void findPlzData() {
         // Import Plz Data
         api.pLZResourceImportPlzFromCsv()
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
-            .statusCode(HttpURLConnection.HTTP_OK)
+            .statusCode(HttpURLConnection.HTTP_NO_CONTENT)
             .extract().asString();
 
         // ACT

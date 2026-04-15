@@ -14,47 +14,56 @@
     />
   }
 
+  <!-- Audiogramm Simpel -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.hoerenAudiogrammSimpel !== RequirementSetting.NOT_VISIBLE) {
+    <feat-value-enhanced
+      [form]="form.audiogrammSimpelValueEnhancedForm"
+      valueTitleKey="untersuchung.tab.hoeren.audiogramm.audiogramsimpel"
+      valuePrefix="AudiogrammSimpel"
+      [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+      >
+    </feat-value-enhanced>
+  }
+
+  <!-- Audiogramm Hoerhilfe -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.hoerenHoerhilfe !== RequirementSetting.NOT_VISIBLE) {
+    <feat-value-enhanced
+      [form]="form.hoerhilfeValueEnhancedForm"
+      valueTitleKey="untersuchung.tab.hoeren.audiogramm.hoerhilfe"
+      valuePrefix="HoerenHoerhilfe"
+      [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+      >
+    </feat-value-enhanced>
+  }
+
   <!-- Audiogramm Beurteilung -->
   @if (anlassStore.selectedEntity()?.anlassConfig?.data?.hoerenAudiogrammBeurteilung !== RequirementSetting.NOT_VISIBLE) {
-    <svui-kachel-form-section [heading]=" 'untersuchung.tab.hoeren.audiogramm.beurteilung' | transloco">
-      @for (beurteilung of getAudiogrammBeurteilungArray().controls; track $index) {
-        <svui-kachel-control [label]="'AudiogrammBeurteilung.' + beurteilung.controls.resultat.value | transloco">
-          <input svuiCheckbox
-                 type="checkbox"
-                 name="beurteilung"
-                 [formControl]="beurteilung.controls.isChecked"/>
-        </svui-kachel-control>
-      }
-    </svui-kachel-form-section>
+    <feat-value-enhanced
+      [form]="form.audiogrammBeurteilungValueEnhancedForm"
+      [valueTitleKey]="'untersuchung.tab.hoeren.audiogramm.beurteilung'"
+      [valuePrefix]="'AudiogrammBeurteilung'"
+      [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+    </feat-value-enhanced>
   }
 
   <!-- ZusaetzlicheAngaben -->
   @if (anlassStore.selectedEntity()?.anlassConfig?.data?.hoerenAudiogrammZusaetzlicheAngaben !== RequirementSetting.NOT_VISIBLE) {
-    <svui-kachel-form-section [heading]=" 'untersuchung.tab.hoeren.zusaetzliche.angaben' | transloco">
-      @for (angaben of getZusaetzlicheAngabenArray().controls; track $index) {
-        <svui-kachel-control [label]="'HoerenZusaetzlicheAngaben.' + angaben.controls.resultat.value | transloco">
-          <input svuiCheckbox
-                 type="checkbox"
-                 name="angaben"
-                 [formControl]="angaben.controls.isChecked"/>
-        </svui-kachel-control>
-      }
-    </svui-kachel-form-section>
+    <feat-value-enhanced
+      [form]="form.zusaetzlicheAngabenValueEnhancedForm"
+      [valueTitleKey]="'untersuchung.tab.hoeren.zusaetzliche.angaben'"
+      [valuePrefix]="'HoerenZusaetzlicheAngaben'"
+      [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+    </feat-value-enhanced>
   }
 
   <!-- Empfehlung -->
   @if (anlassStore.selectedEntity()?.anlassConfig?.data?.hoerenAudiogrammEmpfehlung !== RequirementSetting.NOT_VISIBLE) {
-    <svui-kachel-form-section [heading]=" 'untersuchung.tab.hoeren.verwendete.empfehlung' | transloco">
-      @for (empfehlung of getEmpfehlungFormArray().controls; track $index) {
-        <svui-kachel-control [label]="'HoerenEmpfehlung.' + empfehlung.controls.resultat.value |transloco">
-          <input svuiCheckbox
-                 type="checkbox"
-                 name="empfehlung"
-                 [formControl]="empfehlung.controls.isChecked"
-          />
-        </svui-kachel-control>
-      }
-    </svui-kachel-form-section>
+    <feat-value-enhanced
+      [form]="form.empfehlungValueEnhancedForm"
+      [valueTitleKey]="'untersuchung.tab.hoeren.verwendete.empfehlung'"
+      [valuePrefix]="'HoerenEmpfehlung'"
+      [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+    </feat-value-enhanced>
   }
 
   <!-- Bemerkung -->

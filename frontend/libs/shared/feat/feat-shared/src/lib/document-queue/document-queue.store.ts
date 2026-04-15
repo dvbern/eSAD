@@ -25,7 +25,7 @@ import {exhaustMap, pipe} from 'rxjs';
 
 @Injectable()
 export class DocumentQueueStore extends signalStore(
-  { protectedState: false },
+  {protectedState: false},
   withDevtools('documentQueue') as SignalStoreFeature<EmptyFeatureResult, EmptyFeatureResult>,
   withEntities<DocumentQueueDisplayJson>(),
 ) {
@@ -57,7 +57,7 @@ export class DocumentQueueStore extends signalStore(
     pipe(
       exhaustMap(list =>
         this.loader.tapLoading$(
-          this.#documentQueueService.removeDocumentQueueItems$({ documentQueueIDListJson: list }),
+          this.#documentQueueService.removeDocumentQueueItems$({documentQueueIDListJson: list}),
           error => {
             this.#appErrorHandlerService.handleError(error);
           },
@@ -75,25 +75,9 @@ export class DocumentQueueStore extends signalStore(
     ),
   );
 
-  loadDocumentQueueList = rxMethod<void>(
-    pipe(
-      exhaustMap(() =>
-        this.loader.tapLoading$(this.#documentQueueService.findAll$(), error =>
-          this.#appErrorHandlerService.handleError(error),
-        ),
-      ),
-      tapResponse({
-        next: listJson => {
-          patchState(this, setAllEntities(listJson.list));
-        },
-        error: console.error,
-      }),
-    ),
-  );
-
   download = rxMethod<BackendEntityId>(
     pipe(
-      exhaustMap(id => this.#documentQueueService.downloadFile$({ documentQueueId: id }, 'response')),
+      exhaustMap(id => this.#documentQueueService.downloadFile$({documentQueueId: id}, 'response')),
       tapResponse({
         next: result => {
           handleBlobResponseDownload(result, true);
@@ -104,7 +88,7 @@ export class DocumentQueueStore extends signalStore(
   );
 
   createDocumentQueue = rxMethod<DocumentQueueSpssSaveJson>(
-    pipe(exhaustMap(documentQueueSpssSaveJson => this.#documentQueueService.create$({ documentQueueSpssSaveJson }))),
+    pipe(exhaustMap(documentQueueSpssSaveJson => this.#documentQueueService.create$({documentQueueSpssSaveJson}))),
   );
 
   forceTriggerBatchJob = rxMethod<void>(
@@ -116,9 +100,9 @@ export class DocumentQueueStore extends signalStore(
     onSuccess: () => void;
   }>(
     pipe(
-      exhaustMap(({ documentQueueListSaveJson, onSuccess }) =>
+      exhaustMap(({documentQueueListSaveJson, onSuccess}) =>
         this.saveLoader
-          .tapLoading$(this.#documentQueueService.createMultipleSpss$({ documentQueueListSaveJson }), error =>
+          .tapLoading$(this.#documentQueueService.createMultipleSpss$({documentQueueListSaveJson}), error =>
             this.#appErrorHandlerService.handleError(error),
           )
           .pipe(
@@ -138,8 +122,8 @@ export class DocumentQueueStore extends signalStore(
     onSuccess: () => void;
   }>(
     pipe(
-      exhaustMap(({ documentQueueCsvListSaveJson, onSuccess }) => this.saveLoader.tapLoading$(
-        this.#documentQueueService.createMultipleCsv$({ documentQueueCsvListSaveJson }),
+      exhaustMap(({documentQueueCsvListSaveJson, onSuccess}) => this.saveLoader.tapLoading$(
+        this.#documentQueueService.createMultipleCsv$({documentQueueCsvListSaveJson}),
         error => this.#appErrorHandlerService.handleError(error))
         .pipe(
           tapResponse({

@@ -1,0 +1,53 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <!-- New Columns -->
+  <changeSet author="hora" id="1773223522407-1">
+    <addColumn tableName="benutzer">
+      <column name="benutzeraktivstatus" type="VARCHAR(30)">
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora" id="1773223522407-2">
+    <addColumn tableName="benutzer_aud">
+      <column name="benutzeraktivstatus" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <!-- Migrate existing & add constraint -->
+  <changeSet author="hora" id="1773223522407-3">
+    <sql>
+      UPDATE benutzer
+      SET benutzeraktivstatus = CASE
+        WHEN aktiv = true
+          THEN 'AKTIV'
+        WHEN aktiv = false
+          THEN 'INAKTIV'
+        END;
+    </sql>
+  </changeSet>
+  <changeSet author="hora" id="1773223522407-4">
+    <addNotNullConstraint
+      tableName="benutzer"
+      columnName="benutzeraktivstatus"
+      columnDataType="VARCHAR(30)"/>
+  </changeSet>
+  <changeSet author="hora" id="1773223522407-5">
+    <sql>
+      UPDATE benutzer_aud
+      SET benutzeraktivstatus = CASE
+        WHEN aktiv = true
+          THEN 'AKTIV'
+        WHEN aktiv = false
+          THEN 'INAKTIV'
+        END;
+    </sql>
+  </changeSet>
+  <!-- drop old columns -->
+  <changeSet author="hora" id="1773223522407-6">
+    <dropColumn columnName="aktiv" tableName="benutzer"/>
+  </changeSet>
+  <changeSet author="hora" id="1773223522407-7">
+    <dropColumn columnName="aktiv" tableName="benutzer_aud"/>
+  </changeSet>
+
+</databaseChangeLog>

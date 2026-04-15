@@ -26,8 +26,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/schulen/{schuleID}/kontaktpersonen")
@@ -36,7 +35,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = Tags.TAG_KONTAKTPERSON_SCHULE)
 @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "KontaktPersonSchuleResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("KontaktPersonSchuleResourceMS")
 public class KontaktPersonSchuleResource {
 
     private final KontaktPersonSchuleMapper kontaktPersonSchuleMapper;

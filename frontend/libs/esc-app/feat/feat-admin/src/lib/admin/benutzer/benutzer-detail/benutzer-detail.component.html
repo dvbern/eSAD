@@ -1,0 +1,14 @@
+<feat-page [heading]="pageTitle() | transloco"
+           [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN + '/' + Path.BENUTZER}">
+  <svui-card>
+    @if (store.loader.isLoading()) {
+      <div>{{ 'global.loading' | transloco }}</div>
+    } @else {
+      <feat-shared-benutzer-details
+        (saveAction)="navigateToList()"
+        [organisation]="organisation()"
+        [canEditBenutzer]="canEdit()"
+        [alwaysCreateNewOrganisation]="false" />
+    }
+  </svui-card>
+</feat-page>

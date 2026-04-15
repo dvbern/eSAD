@@ -6,6 +6,7 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.NoTransactionService;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
+import ch.dvbern.oss.hemed.esc.api.shared.archivierung.ArchivierungRuleProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.mapper.BaseMapper;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.tngtech.archunit.base.DescribedPredicate;
@@ -30,6 +31,7 @@ import static com.tngtech.archunit.core.domain.JavaClass.Predicates.simpleNameSt
 import static com.tngtech.archunit.core.domain.properties.CanBeAnnotated.Predicates.annotatedWith;
 import static com.tngtech.archunit.core.domain.properties.CanBeAnnotated.Predicates.metaAnnotatedWith;
 import static com.tngtech.archunit.lang.conditions.ArchPredicates.are;
+import static com.tngtech.archunit.lang.conditions.ArchPredicates.have;
 import static com.tngtech.archunit.lang.conditions.ArchPredicates.is;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.codeUnits;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.constructors;
@@ -150,7 +152,9 @@ class LayeringTest {
                 .or(SHARED_PRINTER)
                 .or(UTIL)
                 .or(CSV_COLUMNS)
-                .or(DOC_MERGER))
+                .or(DOC_MERGER)
+                .or(have(simpleNameStartingWith(ArchivierungRuleProducer.class.getSimpleName())))
+            )
             .because("Entities should not be used in Resource Layer");
         rule.allowEmptyShould(true).check(APP_CLASSES);
     }
@@ -184,7 +188,9 @@ class LayeringTest {
                 .or(STARTER_SHARED)
                 .or(SHARED_PRINTER)
                 .or(CSV_COLUMNS)
-                .or(DOC_MERGER))
+                .or(DOC_MERGER)
+                .or(have(simpleNameStartingWith(ArchivierungRuleProducer.class.getSimpleName())))
+            )
             .because("Entities should not be used in Resource Layer");
         rule.allowEmptyShould(true).check(APP_CLASSES);
     }

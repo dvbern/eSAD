@@ -11,8 +11,8 @@ import {
   OnInit,
   ViewContainerRef,
 } from '@angular/core';
-import { NgControl, ReactiveFormsModule } from '@angular/forms';
-import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
+import {NgControl, ReactiveFormsModule} from '@angular/forms';
+import {NgbTypeahead} from '@ng-bootstrap/ng-bootstrap';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -24,8 +24,8 @@ import {
   Subject,
   switchMap,
 } from 'rxjs';
-import { ControlType, ValidatedInputWithIdDirective } from '../validated-input-with-id.directive';
-import { TypeaheadNoResultsComponent } from './typeahead-no-results/typeahead-no-results.component';
+import {ControlType, ValidatedInputWithIdDirective} from '../validated-input-with-id.directive';
+import {TypeaheadNoResultsComponent} from './typeahead-no-results/typeahead-no-results.component';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -62,17 +62,23 @@ export class TypeaheadComponent<T> extends ValidatedInputWithIdDirective impleme
 
   messageComponent?: ComponentRef<TypeaheadNoResultsComponent>;
 
-  @HostBinding('class.form-control') private readonly bootstrapClass = true;
+  @HostBinding('class.form-control') readonly bootstrapClass = true;
 
-  @HostListener('click', ['$event. target'])
-  onClick(target: HTMLInputElement): void {
-    console.log('click');
+  @HostListener('click', ['$event'])
+  onClick(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    if (!target) {
+      return;
+    }
     this.click$.next(target.value);
   }
 
-  @HostListener('focus', ['$event. target'])
-  onFocus(target: HTMLInputElement): void {
-    console.log('focus');
+  @HostListener('focus', ['$event'])
+  onFocus(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    if (!target) {
+      return;
+    }
     this.focus$.next(target.value);
   }
 
@@ -129,8 +135,7 @@ export class TypeaheadComponent<T> extends ValidatedInputWithIdDirective impleme
   }
 
   private addMessage(): void {
-    const messageComponent = this.viewContainerRef.createComponent(TypeaheadNoResultsComponent);
-    this.messageComponent = messageComponent;
+    this.messageComponent = this.viewContainerRef.createComponent(TypeaheadNoResultsComponent);
     // do not pass the inputs here directly because it does not work properly -> use effect
   }
 

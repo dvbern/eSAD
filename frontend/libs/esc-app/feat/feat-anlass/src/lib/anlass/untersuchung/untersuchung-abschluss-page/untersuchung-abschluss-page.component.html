@@ -1,0 +1,14 @@
+@if (anlassConfig()?.showTabAbschluss) {
+
+    @if (anlassConfig()?.showCardAbschlussAbschluss) {
+      <svui-card-in-card class="mb-3">
+        <feat-untersuchung-abschluss/>
+      </svui-card-in-card>
+    }
+
+    @if (anlassConfig()?.data?.showCardAbschlussSignatur) {
+      <svui-card-in-card class="mb-3">
+        <feat-untersuchung-signatur/>
+      </svui-card-in-card>
+    }
+}

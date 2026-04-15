@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import {AppLanguages, EinladungStatus, FeatureEnabledSetting} from '@dvb/data-access-backend';
+import {AgbResponsability, AppLanguages, EinladungStatus, FeatureEnabledSetting} from '@dvb/data-access-backend';
 import { PageComponent, Path, TenantSettingsStore, TranslatedEnumViewValuePipe } from '@dvb/feat-shared';
 import {
   CardComponent,
@@ -55,6 +55,7 @@ export class TenantSettingsPageComponent {
 
   // Options
   appLanguageOptions = Object.values(AppLanguages);
+  agbResponsabilityOptions = Object.values(AgbResponsability);
   featureSettingOptions = Object.values(FeatureEnabledSetting);
   einladungStatusOptions = Object.values(EinladungStatus);
 

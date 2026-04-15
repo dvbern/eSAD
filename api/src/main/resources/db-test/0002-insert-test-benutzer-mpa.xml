@@ -2,8 +2,11 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
   <changeSet author="dvbern" id="2025-11-27-1800">
     <sql>
-      INSERT INTO benutzer (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, email, fachrollen, keycloakid, lastusedip, lastusedsessionid, lastusedsessiontimestamp, oidcissuer, nachname, vorname, aktiv, titel, telefon)
-      VALUES ('0a610e49-d690-4670-b01b-7fe355b0c643', '2025-03-18 10:20:06.265461', '2025-03-18 10:20:06.308125', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'mpa@mailbucket.dvbern.ch', 'MPA', '1a41d20c-af56-4504-8500-4a72f11d26a7', '172.19.1.193', '41c9173a-7dc9-40de-9cbf-961a8aa3f2a3', '2025-03-18 10:20:06.306975', 'https://local-esc-bs.localhost:8989/realms/bs', 'MPA', 'Monika', true, 'Med. Praxisassistentin', '+41 61 123 45 68');
+      INSERT INTO benutzer (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, email, keycloakid, lastusedip, lastusedsessionid, lastusedsessiontimestamp, oidcissuer, nachname, vorname, benutzeraktivstatus, titel, telefon)
+      VALUES ('0a610e49-d690-4670-b01b-7fe355b0c643', '2025-03-18 10:20:06.265461', '2025-03-18 10:20:06.308125', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'mpa@mailbucket.dvbern.ch', '1a41d20c-af56-4504-8500-4a72f11d26a7', '172.19.1.193', '41c9173a-7dc9-40de-9cbf-961a8aa3f2a3', '2025-03-18 10:20:06.306975', 'https://local-esc-bs.localhost:8989/realms/bs', 'MPA', 'Monika', 'AKTIV', 'Med. Praxisassistentin', '+41 61 123 45 68');
+
+      INSERT INTO organisationrollen (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, organisation_id, benutzer_id, fachrollen)
+      VALUES (uuid_generate_v4(), current_timestamp, current_timestamp, '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 0, '08831a31-a62b-4c81-adfc-3f3bcb3a1fee', '0a610e49-d690-4670-b01b-7fe355b0c643', 'MPA');
     </sql>
   </changeSet>
 </databaseChangeLog>

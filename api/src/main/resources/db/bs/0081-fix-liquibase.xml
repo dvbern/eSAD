@@ -1,0 +1,58 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="hefr (generated)" id="1769077889637-15">
+        <createIndex indexName="IX_klasse_lehrperson_audPK" tableName="klasse_lehrperson_aud" unique="true">
+            <column name="klasse_id"/>
+            <column name="rev"/>
+            <column name="lehrperson_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1769077889637-16">
+        <dropPrimaryKey constraintName="klasse_lehrpersonPK" tableName="klasse_lehrperson"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1769077889637-1">
+        <modifyDataType columnName="kognitionpunkte" newDataType="number(38,2)" tableName="untersuchungarztbeurteilung"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1769077889637-2">
+        <modifyDataType columnName="kognitionpunkte" newDataType="number(38,2)" tableName="untersuchungarztbeurteilung_aud"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1769077889637-3">
+        <modifyDataType columnName="lesefitpunkte" newDataType="number(38,2)" tableName="untersuchungarztbeurteilung"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1769077889637-4">
+        <modifyDataType columnName="lesefitpunkte" newDataType="number(38,2)" tableName="untersuchungarztbeurteilung_aud"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1769077889637-5">
+        <modifyDataType columnName="motorikpunkte" newDataType="number(38,2)" tableName="untersuchungarztbeurteilung"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1769077889637-6">
+        <modifyDataType columnName="motorikpunkte" newDataType="number(38,2)" tableName="untersuchungarztbeurteilung_aud"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1769077889637-7">
+        <modifyDataType columnName="sprachfaehigkeitpunkte" newDataType="number(38,2)" tableName="untersuchungarztbeurteilung"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1769077889637-8">
+        <modifyDataType columnName="sprachfaehigkeitpunkte" newDataType="number(38,2)" tableName="untersuchungarztbeurteilung_aud"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1769077889637-9">
+        <modifyDataType columnName="zeichnenmenschpunkte" newDataType="number(38,2)" tableName="untersuchungarztbeurteilung"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1769077889637-10">
+        <modifyDataType columnName="zeichnenmenschpunkte" newDataType="number(38,2)" tableName="untersuchungarztbeurteilung_aud"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1769077889637-11">
+        <dropPrimaryKey tableName="klasse_lehrperson_aud"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1769077889637-12">
+        <addPrimaryKey columnNames="klasse_id, rev, lehrperson_id" constraintName="klasse_lehrperson_audPK" tableName="klasse_lehrperson_aud"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1769077889637-13">
+        <dropIndex indexName="ix_klasse_lehrperson_lehrperson" tableName="klasse_lehrperson"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1769077889637-14">
+        <createIndex indexName="ix_klasse_lehrperson_lehrperson" tableName="klasse_lehrperson" unique="false">
+            <column name="lehrperson_id"/>
+            <column name="klasse_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

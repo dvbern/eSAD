@@ -31,7 +31,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.ImpfstoffJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ImpfstoffJsonSpec;
 import lombok.RequiredArgsConstructor;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @RequiredArgsConstructor

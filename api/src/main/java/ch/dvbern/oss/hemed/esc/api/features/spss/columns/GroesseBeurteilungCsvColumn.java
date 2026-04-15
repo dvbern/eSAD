@@ -2,6 +2,8 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
+
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -20,13 +22,15 @@ public class GroesseBeurteilungCsvColumn extends AbstractCsvColumn {
         return ExtractorForCsvUtil.extractUntersuchungGroesseGewicht(
             einladung,
             untersuchungGroesseGewicht -> {
-                if (untersuchungGroesseGewicht.getGroessePerzentile() == null) {
+                PerzentileGroesse resultat =
+                    ValueEnhancedUtil.getEnumValueOrNull(untersuchungGroesseGewicht.getGroessePerzentile(), PerzentileGroesse.class);
+                if (resultat == null) {
                     return "";
                 }
                 if (!config.forSpssReport()) {
-                    return config.tl().translateValue(untersuchungGroesseGewicht.getGroessePerzentile());
+                    return config.tl().translateValue(resultat);
                 }
-                return switch (untersuchungGroesseGewicht.getGroessePerzentile()) {
+                return switch (resultat) {
                     case PerzentileGroesse.NORMAL -> "1";
                     case PerzentileGroesse.PERZENTILE_TIEF -> "5";
                     case PerzentileGroesse.PERZENTILE_HOCH -> "6";

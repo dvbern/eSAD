@@ -10,6 +10,7 @@ import { Observable, Subject } from 'rxjs';
 export interface EventMap {
   UNTERSUCHUNG_ABSCHLIESSEN_REQUESTED: { einladungId: string };
   KIND_DUPLIKAT_VORHANDEN: { kindTriedToSave: KindSaveJson, kindIdsOfDuplicates: BackendEntityId[] };
+  IMPFSTOFF_CHARGEN_POTENTIALLY_CHANGED: { impfstoffId: BackendEntityId };
 }
 
 export interface EventbusEvent<K extends keyof EventMap = keyof EventMap> {

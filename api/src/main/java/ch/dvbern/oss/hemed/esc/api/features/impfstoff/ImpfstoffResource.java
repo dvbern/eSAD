@@ -24,9 +24,8 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Counted;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/impfstoffe")
@@ -35,7 +34,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = Tags.TAG_IMPFSTOFFE)
 @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "ImpfstoffResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("ImpfstoffResourceMS")
 public class ImpfstoffResource {
 
     private final ImpfstoffMapper impfstoffMapper;
@@ -52,8 +51,8 @@ public class ImpfstoffResource {
 
     @POST
     @NonNull
-    @Counted(name = "createImpfstoffCount")
-    @Timed(name = "createImpfstoffMS", unit = MetricUnits.MILLISECONDS)
+    @Counted("createImpfstoffCount")
+    @Timed("createImpfstoffMS")
     @RolesAllowed(BerechtigungName.IMPFSTOFFE_SCHREIBEN)
     public ImpfstoffJson createImpfstoff(
         @NotNull @NonNull @Valid ImpfstoffSaveJson impfstoffSaveJson

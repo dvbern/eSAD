@@ -7,14 +7,14 @@
   <!--  Schulhaus-->
   <svui-form-control [label]="'schule.schulhaus' | transloco"
                      [viewValue]="form.group.getRawValue().schulhaus"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <input svuiTextInput
            [formControl]="form.controlAt('schulhaus')"/>
   </svui-form-control>
   <!-- Schulstandort-->
   <svui-form-control [label]="'schule.schulstandort' | transloco"
                      [viewValue]="form.group.getRawValue().schulstandort"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <input svuiTextInput
            [formControl]="form.controlAt('schulstandort')"
     />
@@ -22,7 +22,7 @@
   <!-- Schulkreis -->
   <svui-form-control [label]="'schule.schulkreis' | transloco"
                      [viewValue]="form.group.getRawValue().schulkreis"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <input svuiTextInput
            [formControl]="form.controlAt('schulkreis')"
     />
@@ -81,11 +81,11 @@
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
       [compareWith]="compareBenutzerFn"
     >
-      @for (each of benutzerOptionsStore.arztOptionsIncluding(form.group.value.zustaendigArzt); track each) {
+      @for (arzt of benutzerOptionsStore.arztOptionsIncluding(form.group.value.zustaendigArzt); track arzt) {
         <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-        @if (each) {
-          <ng-option [value]="each" [disabled]="!each.aktiv">
-            {{ each.fullName }}
+        @if (arzt) {
+          <ng-option [value]="arzt" [disabled]="arzt.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
+            {{ arzt.fullName }}
           </ng-option>
         }
       }
@@ -103,9 +103,9 @@
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
       [compareWith]="compareBenutzerFn"
     >
-      @for (each of benutzerOptionsStore.mpaOrPfpOptionsIncluding(form.group.value.zustaendigMPA); track each) {
-        <ng-option [value]="each" [disabled]="!each.aktiv">
-          {{ each.fullName }}
+      @for (hilfsperson of benutzerOptionsStore.hilfspersonOptionsIncluding(form.group.value.zustaendigMPA); track hilfsperson) {
+        <ng-option [value]="hilfsperson" [disabled]="hilfsperson.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
+          {{ hilfsperson.fullName }}
         </ng-option>
       }
     </ng-select>
@@ -144,12 +144,12 @@
   <!-- ADRESSE -->
   <h2 svuiHeading="formSection">{{ 'adresse.title' | transloco }}</h2>
   <!--  isEscadaObject is hardcoded to false because we dont get Schule-Adresse from Escada-->
-  <feat-adresse svuiFormFullWidth [form]="form.adresseForm" [mode]="store.detailMode()" [isEscadaObject]="false"/>
+  <feat-adresse svuiFormFullWidth [form]="form.adresseForm" [mode]="store.detailMode()" [isExternalObject]="false"/>
 
   <!--Letzter Escada Import-->
-  @if (isEscadaObject()) {
+  @if (isExternalObject()) {
     <div>
-      <p>{{ 'global.escada.import.latest' | transloco: {date: getDateLatestImportIfEscadaObject() | date} }}</p>
+      <p>{{ 'global.import.latest' | transloco: {date: getDateLatestImportIfExternalObject() | date} }}</p>
     </div>
   }
 

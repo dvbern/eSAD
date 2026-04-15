@@ -18,7 +18,7 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren;
 
-import java.util.List;
+import java.util.EnumSet;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
@@ -29,14 +29,18 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoerenAudiogrammJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoerenAudiogrammSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammSimpel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenHoerhilfe;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.shared.anlass.UntersuchungHoerenDefaultValueUtil;
-import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungHoerenUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhancedMapper;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhancedMapper;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -60,10 +64,14 @@ public class UntersuchungHoerenAudiogrammMapper {
             new UntersuchungHoerenAudiogrammSaveJson(
                 AudiogrammMapper.toJson(hoeren.getAudiogrammRechts()),
                 AudiogrammMapper.toJson(hoeren.getAudiogrammLinks()),
-                EnumSetUtil.toList(hoeren.getAudiogrammBeurteilung()),
-                EnumSetUtil.toList(hoeren.getZusaetzlicheAngaben()),
-                EnumSetUtil.toList(hoeren.getEmpfehlung()),
+                MultiValueEnhancedMapper.toJson(AudiogrammBeurteilung.class, hoeren.getAudiogrammBeurteilung()),
+                MultiValueEnhancedMapper.toJson(HoerenZusaetzlicheAngaben.class, hoeren.getZusaetzlicheAngaben()),
+                MultiValueEnhancedMapper.toJson(HoerenEmpfehlung.class, hoeren.getEmpfehlung()),
                 hoeren.getBemerkungen(),
+                SingleValueEnhancedMapper
+                    .toJson(AudiogrammSimpel.class, hoeren.getAudiogrammSimpel()),
+                SingleValueEnhancedMapper
+                    .toJson(HoerenHoerhilfe.class, hoeren.getHoerhilfe()),
                 hoeren.getVersion()
             )
         );
@@ -90,10 +98,12 @@ public class UntersuchungHoerenAudiogrammMapper {
         hoeren.setAudiogrammLinks(AudiogrammMapper.toEntity(
             hoeren.getAudiogrammLinks(),
             saveJson.getAudiogrammLinks()));
-        hoeren.setAudiogrammBeurteilung(EnumSetUtil.toEnumSet(saveJson.getAudiogrammBeurteilung(), AudiogrammBeurteilung.class));
-        hoeren.setZusaetzlicheAngaben(EnumSetUtil.toEnumSet(saveJson.getZusaetzlicheAngaben(), HoerenZusaetzlicheAngaben.class));
-        hoeren.setEmpfehlung(EnumSetUtil.toEnumSet(saveJson.getEmpfehlung(), HoerenEmpfehlung.class));
+        hoeren.setAudiogrammBeurteilung(MultiValueEnhancedMapper.toEntity(AudiogrammBeurteilung.class, saveJson.getAudiogrammBeurteilung()));
+        hoeren.setZusaetzlicheAngaben(MultiValueEnhancedMapper.toEntity(HoerenZusaetzlicheAngaben.class, saveJson.getZusaetzlicheAngaben()));
+        hoeren.setEmpfehlung(MultiValueEnhancedMapper.toEntity(HoerenEmpfehlung.class, saveJson.getEmpfehlung()));
         hoeren.setBemerkungen(saveJson.getBemerkungen());
+        hoeren.setAudiogrammSimpel(SingleValueEnhancedMapper.toEntity(AudiogrammSimpel.class, saveJson.getAudiogrammSimpel()));
+        hoeren.setHoerhilfe(SingleValueEnhancedMapper.toEntity(HoerenHoerhilfe.class, saveJson.getHoerhilfe()));
         return hoeren;
     }
 
@@ -124,17 +134,26 @@ public class UntersuchungHoerenAudiogrammMapper {
     ) {
         AnlassConfig anlassConfig = anlassService.getById(anlassID).getAnlassConfig();
         return new UntersuchungHoerenAudiogrammSaveJson(
+
             UntersuchungHoerenDefaultValueUtil.getDefaultAudiogramm(
                 anlassConfig.getHoerenAudiogramm(),
                 anlassConfig.getAnlassTyp()),
             UntersuchungHoerenDefaultValueUtil.getDefaultAudiogramm(
                 anlassConfig.getHoerenAudiogramm(),
                 anlassConfig.getAnlassTyp()),
-            EnumSetUtil.toList(UntersuchungHoerenUtil.getAudiogrammBeurteilung(
-                anlassConfig.getHoerenAudiogrammBeurteilung(), null, AudiogrammBeurteilung.NORMAL)),
-            EnumSetUtil.toList(UntersuchungHoerenUtil.getZusaetzlicheAngaben(
-                anlassConfig.getHoerenAudiogrammZusaetzlicheAngaben(), null, HoerenZusaetzlicheAngaben.KEINE)),
-            List.of(),
+            MultiValueEnhancedMapper.toJson(
+                AudiogrammBeurteilung.class,
+                UntersuchungHoerenUtil.getAudiogrammBeurteilungDefault(anlassConfig.getHoerenAudiogrammBeurteilung(), AudiogrammBeurteilung.NORMAL)),
+            MultiValueEnhancedMapper.toJson(
+                HoerenZusaetzlicheAngaben.class,
+                UntersuchungHoerenUtil.getZusaetzlicheAngabenDefault(
+                anlassConfig.getHoerenAudiogrammZusaetzlicheAngaben(), HoerenZusaetzlicheAngaben.KEINE)),
+            MultiValueEnhancedMapper.toJson(
+                HoerenEmpfehlung.class,
+                MultiValueEnhanced.of(EnumSet.noneOf(HoerenEmpfehlung.class), null)
+            ),
+            null,
+            null,
             null,
             0L
         );

@@ -29,7 +29,30 @@
     <input svuiTextInput="text" [formControl]="form.group.controls.bezeichnung"/>
   </svui-form-control>
 
-  <div></div>
+  @if (store.selectedIsNew()) {
+    <svui-form-control [label]="'anlassconfig.label.vorlage.config' | transloco"
+                       [viewValue]="''">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [clearable]="false"
+        [placeholder]="'global.select.sie-koennen-auswaehlen' | transloco"
+        (change)="selectBasis($event)"
+      >
+        <ng-option [value]="undefined">
+          {{ 'anlassconfig.vorlage.empty' | transloco }}
+        </ng-option>
+        @for (config of anlassConfigsAsBasis; track config.id) {
+          <ng-option [value]="config">
+            {{ config.data.bezeichnung }} ({{config.data.datumVon | date:'dd.MM.yyyy' }})
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+  } @else {
+    <div></div>
+  }
 
   <!-- Gültig ab-->
   <svui-form-control [label]="'anlassconfig.label.datumvon' | transloco"

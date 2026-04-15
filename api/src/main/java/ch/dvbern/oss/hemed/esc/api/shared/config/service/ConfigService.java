@@ -18,6 +18,13 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.config.service;
 
+import java.net.URL;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
@@ -36,12 +43,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import java.net.URL;
-import java.time.Duration;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
 @Slf4j
 @ApplicationScoped
 @Getter
@@ -49,6 +50,9 @@ import java.util.Set;
 @Service
 @Transactional(TxType.NOT_SUPPORTED)
 public class ConfigService {
+
+    public static final String UNKNOWN_TENANT = "Unknown tenant: ";
+    public static final String NOT_CONFIGURED_FOR_TENANT = "Configuration not supported for tenant: ";
 
     private final TenantProducer tenantProducer;
 
@@ -65,15 +69,15 @@ public class ConfigService {
     String instance;
 
     @Getter(AccessLevel.NONE)
-    @ConfigProperty(name = "app.deployment.public-url.bs" )
+    @ConfigProperty(name = "app.deployment.public-url.bs")
     URL publicUrlBS;
 
     @Getter(AccessLevel.NONE)
-    @ConfigProperty(name = "app.deployment.public-url.win" )
+    @ConfigProperty(name = "app.deployment.public-url.win")
     URL publicUrlWIN;
 
     @Getter(AccessLevel.NONE)
-    @ConfigProperty(name = "app.deployment.public-url.be" )
+    @ConfigProperty(name = "app.deployment.public-url.be")
     URL publicUrlBE;
 
     @ConfigProperty(name = "app.deployment.version")
@@ -101,6 +105,9 @@ public class ConfigService {
     @ConfigProperty(name = "app.allow-timetravel")
     boolean featureTimeTravelEndpointEnabled;
 
+    @ConfigProperty(name = "app.allow-configprint")
+    boolean featureConfigPrintEnabled;
+
     @ConfigProperty(name = "app.version-filter-enabled")
     boolean versionFilterEnabled;
 
@@ -114,8 +121,31 @@ public class ConfigService {
     @ConfigProperty(name = "esc.scheduler.inactivate.kinder.manual.inactivation.age", defaultValue = "16")
     int getInactiveKinderManualKinderInactivationAge;
 
+    @ConfigProperty(name = "esc.scheduler.deactivate.impfstoffchargen.unused.months", defaultValue = "6")
+    int deactivateImpfstoffChargenAfterUnusedMonths;
+
+    @ConfigProperty(name = "esc.scheduler.delete.impfstoffchargen.unreferenced.months", defaultValue = "6")
+    int deleteImpfstoffChargenAfterUnreferencedMonths;
+
+    //TODO ESC-1086: Team: remove after migrating buckets
+    @ConfigProperty(name = "esc.s3.use.single.bucket", defaultValue = "false")
+    boolean s3SingleBucket;
+
+    @Getter(AccessLevel.PACKAGE)
     @ConfigProperty(name = "esc.s3.bucket-name")
-    String s3BucketName;
+    String s3BucketNameSingle;
+
+    @Getter(AccessLevel.PACKAGE)
+    @ConfigProperty(name = "esc.s3.bucket-name.bs")
+    String s3BucketNameBS;
+
+    @Getter(AccessLevel.PACKAGE)
+    @ConfigProperty(name = "esc.s3.bucket-name.win")
+    String s3BucketNameWIN;
+
+    @Getter(AccessLevel.PACKAGE)
+    @ConfigProperty(name = "esc.s3.bucket-name.be")
+    String s3BucketNameBE;
 
     @ConfigProperty(name = "esc.s3.upload-timeout-seconds", defaultValue = "30s")
     Duration s3UploadTimeout;
@@ -142,7 +172,7 @@ public class ConfigService {
     String escadaAZP;
 
     @ConfigProperty(name = "esc.esca-sync.log.redact.personalinfo", defaultValue = "true")
-    boolean escadaRedactPersonalInfo;
+    boolean externalImportRedactPersonalInfo;
 
     @ConfigProperty(name = "esc.pupil-sync.error-mail.enabled", defaultValue = "true")
     boolean pupilSyncErrorMailEnabled;
@@ -153,17 +183,11 @@ public class ConfigService {
     @ConfigProperty(name = "esc.pupil-sync.client.azp", defaultValue = "pupil-client")
     String pupilAZP;
 
-    @ConfigProperty(name = "esc.pupil-sync.log.redact.personalinfo", defaultValue = "true")
-    boolean pupilRedactPersonalInfo;
-
     @ConfigProperty(name = "esc.file-ingress.client.user", defaultValue = "file-ingress-client@dvbern.ch")
     String fileIngressClientUser;
 
     @ConfigProperty(name = "esc.file-ingress.client.azp", defaultValue = "file-ingress-client")
     String fileIngressAZP;
-
-    @ConfigProperty(name = "esc.customer-admin-emails", defaultValue = "bs-esc@dvbern.ch")
-    List<String> customerAdminEmails;
 
     @ConfigProperty(name = "esc.mail.overriding.recipients.enabled", defaultValue = "false")
     boolean mailOverridingRecipientsEnabled;
@@ -179,6 +203,9 @@ public class ConfigService {
 
     @ConfigProperty(name = "esc.documentqueue.max.life.time", defaultValue = "P7D")
     Duration documentqueueMaxLifeTime;
+
+    @ConfigProperty(name = "esc.dossierqueue.max.life.time", defaultValue = "P7D")
+    Duration dossierQueueMaxLifeTime;
 
     /**
      * a list of file extensions that are allowed to be uploaded, can be extension or media type (e.g. .pdf or
@@ -213,6 +240,25 @@ public class ConfigService {
 
     @ConfigProperty(name = "esc.feature.optimistic.locking.disabled", defaultValue = "false")
     boolean featureOptimisticLockingDisabled;
+
+    // we 'reuse' the quarkus property to enable of disable the tenants database logically in esc
+    @ConfigProperty(name = "quarkus.datasource.bs.active")
+    Optional<Boolean> tenantBsActiveForCurrentEnvironment;
+
+    // we 'reuse' the quarkus property to enable of disable the tenants database logically in esc
+    @ConfigProperty(name = "quarkus.datasource.win.active")
+    Optional<Boolean> tenantWinActiveForCurrentEnvironment;
+
+    // we 'reuse' the quarkus property to enable of disable the tenants database logically in esc
+    @ConfigProperty(name = "quarkus.datasource.be.active")
+    Optional<Boolean> tenantBeActiveForCurrentEnvironment;
+
+    // Anzahl Monate nach welchen Kinder gelöscht werden nachdem sie archiviert worden sind.
+    @ConfigProperty(name = "esc.archive.months.before.deletion", defaultValue = "6")
+    int archiveMonthsBeforeDeletion;
+
+    @ConfigProperty(name = "esc.tmp.dir")
+    Path tmpDir;
 
     public void validateNotProdAndDbResetFeatureEnabled() {
         if (isStufeProd() || !isAllowDbReset()) {
@@ -254,23 +300,48 @@ public class ConfigService {
      */
     @NonNull
     public Optional<String> getS3EncryptionKey() {
-        TenantEnum tenantEnum = tenantProducer.produceTenant();
+        TenantEnum tenantEnum = getTenantProducer().produceTenant();
         return switch (tenantEnum) {
             case TenantEnum.BS -> s3EncryptionKeyBS;
             case TenantEnum.WIN -> s3EncryptionKeyWIN;
             case TenantEnum.BE -> s3EncryptionKeyBE;
-            default -> throw new AppFailureException(AppFailureMessage.internalError("Unknown tenant: " + tenantEnum));
+            default -> throw new AppFailureException(AppFailureMessage.internalError(UNKNOWN_TENANT + tenantEnum));
+        };
+    }
+
+    public boolean isTenantEnabledForCurrentEnvironment(@NonNull TenantEnum tenantEnum) {
+        return switch (tenantEnum) {
+            case TenantEnum.BS -> tenantBsActiveForCurrentEnvironment.orElse(Boolean.FALSE);
+            case TenantEnum.WIN -> tenantWinActiveForCurrentEnvironment.orElse(Boolean.FALSE);
+            case TenantEnum.BE -> tenantBeActiveForCurrentEnvironment.orElse(Boolean.FALSE);
+            default -> throw new AppFailureException(AppFailureMessage.internalError(UNKNOWN_TENANT + tenantEnum));
         };
     }
 
     @NonNull
     public URL getPublicUrl() {
-        TenantEnum tenantEnum = tenantProducer.produceTenant();
+        TenantEnum tenantEnum = getTenantProducer().produceTenant();
         return switch (tenantEnum) {
             case TenantEnum.BS -> publicUrlBS;
             case TenantEnum.WIN -> publicUrlWIN;
-            case  TenantEnum.BE -> publicUrlBE;
-            default -> throw new AppFailureException(AppFailureMessage.internalError("Unknown tenant: " + tenantEnum));
+            case TenantEnum.BE -> publicUrlBE;
+            default -> throw new AppFailureException(AppFailureMessage.internalError(UNKNOWN_TENANT + tenantEnum));
+        };
+    }
+
+    @NonNull
+    public String getS3BucketName() {
+        // return single bucket name if single bucket mode is enabled
+        if (isS3SingleBucket()) {
+            return this.getS3BucketNameSingle();
+        }
+
+        TenantEnum tenantEnum = getTenantProducer().produceTenant();
+        return switch (tenantEnum) {
+            case TenantEnum.BS -> getS3BucketNameBS();
+            case TenantEnum.WIN -> getS3BucketNameWIN();
+            case TenantEnum.BE -> getS3BucketNameBE();
+            default -> throw new AppFailureException(AppFailureMessage.internalError(UNKNOWN_TENANT + tenantEnum));
         };
     }
 }

@@ -33,7 +33,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.DocumentQueueJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DocumentQueueDisplayJsonSpec;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class DocumentQueueBuilder {
@@ -49,6 +49,7 @@ public class DocumentQueueBuilder {
     public static DocumentQueue defaultDocumentQueue() {
         return new DocumentQueue(
             FileTyp.PLAYGROUND,
+            "Beispiel Eintrag",
             DocumentQueueStatus.NEW,
             0,
             null,
@@ -60,6 +61,13 @@ public class DocumentQueueBuilder {
             BenutzerBuilder.defaultBenutzer(),
             AppLanguages.DE
         );
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public DocumentQueueBuilder withFileTyp(@NonNull FileTyp fileTyp) {
+        this.documentQueue.setType(fileTyp);
+        return this;
     }
 
     @NonNull
@@ -108,6 +116,13 @@ public class DocumentQueueBuilder {
     @CanIgnoreReturnValue
     public DocumentQueueBuilder withResult(@NonNull FileData fileData) {
         this.documentQueue.setResult(fileData);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public DocumentQueueBuilder withDisplayName(@NonNull String displayName) {
+        this.documentQueue.setDisplayName(displayName);
         return this;
     }
 

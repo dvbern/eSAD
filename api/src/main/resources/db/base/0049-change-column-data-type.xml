@@ -1,0 +1,129 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="gema (generated)" id="1772632071991-1">
+        <modifyDataType columnName="brillelinsen" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772632071991-2">
+        <modifyDataType columnName="brillelinsen" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772632071991-3">
+        <modifyDataType columnName="farbsehen" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772632071991-4">
+        <modifyDataType columnName="farbsehen" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772632071991-5">
+        <modifyDataType columnName="inspektion" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772632071991-6">
+        <modifyDataType columnName="inspektion" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772632071991-7">
+        <modifyDataType columnName="konvergenz" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772632071991-8">
+        <modifyDataType columnName="konvergenz" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772632071991-9">
+        <modifyDataType columnName="motilitaet" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772632071991-10">
+        <modifyDataType columnName="motilitaet" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772632071991-11">
+        <modifyDataType columnName="stereotest" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772632071991-12">
+        <modifyDataType columnName="stereotest" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772632071991-13">
+        <modifyDataType columnName="strabismusauftreten" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772632071991-14">
+        <modifyDataType columnName="strabismusauftreten" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772632071991-15">
+        <modifyDataType columnName="strabismusauspraegung" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772632071991-16">
+        <modifyDataType columnName="strabismusauspraegung" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772632071991-17">
+        <modifyDataType columnName="verwendetetafel" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772632071991-18">
+        <modifyDataType columnName="verwendetetafel" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung_aud"/>
+    </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-19">
+    <modifyDataType columnName="bmiperzentile" newDataType="varchar(255)" tableName="untersuchunggroessegewicht"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-20">
+    <modifyDataType columnName="bmiperzentile" newDataType="varchar(255)" tableName="untersuchunggroessegewicht_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-21">
+    <modifyDataType columnName="gewichtperzentile" newDataType="varchar(255)" tableName="untersuchunggroessegewicht"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-22">
+    <modifyDataType columnName="gewichtperzentile" newDataType="varchar(255)" tableName="untersuchunggroessegewicht_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-23">
+    <modifyDataType columnName="groesseperzentile" newDataType="varchar(255)" tableName="untersuchunggroessegewicht"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-24">
+    <modifyDataType columnName="groesseperzentile" newDataType="varchar(255)" tableName="untersuchunggroessegewicht_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-25">
+    <modifyDataType columnName="audiogrammbeurteilung" newDataType="varchar(255)" tableName="untersuchunghoerenaudiogramm"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-26">
+    <modifyDataType columnName="audiogrammbeurteilung" newDataType="varchar(255)" tableName="untersuchunghoerenaudiogramm_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-27">
+    <modifyDataType columnName="empfehlung" newDataType="varchar(255)" tableName="untersuchunghoerenaudiogramm"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-28">
+    <modifyDataType columnName="empfehlung" newDataType="varchar(255)" tableName="untersuchunghoerenaudiogramm_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-29">
+    <modifyDataType columnName="empfehlung" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-30">
+    <modifyDataType columnName="empfehlung" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-31">
+    <modifyDataType columnName="fernvisus" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-32">
+    <modifyDataType columnName="fernvisus" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-33">
+    <modifyDataType columnName="nahvisus" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-34">
+    <modifyDataType columnName="nahvisus" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-35">
+    <modifyDataType columnName="otoskopielinks" newDataType="varchar(255)" tableName="untersuchunghoerenotoskopie"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-36">
+    <modifyDataType columnName="otoskopielinks" newDataType="varchar(255)" tableName="untersuchunghoerenotoskopie_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-37">
+    <modifyDataType columnName="otoskopierechts" newDataType="varchar(255)" tableName="untersuchunghoerenotoskopie"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-38">
+    <modifyDataType columnName="otoskopierechts" newDataType="varchar(255)" tableName="untersuchunghoerenotoskopie_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-39">
+    <modifyDataType columnName="strabismus" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-40">
+    <modifyDataType columnName="strabismus" newDataType="varchar(255)" tableName="untersuchungsehenbeurteilung_aud"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-42">
+    <modifyDataType columnName="zusaetzlicheangaben" newDataType="varchar(255)" tableName="untersuchunghoerenaudiogramm"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="1772632071991-43">
+    <modifyDataType columnName="zusaetzlicheangaben" newDataType="varchar(255)" tableName="untersuchunghoerenaudiogramm_aud"/>
+  </changeSet>
+</databaseChangeLog>

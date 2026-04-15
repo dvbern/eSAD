@@ -14,8 +14,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/tenant-settings")
@@ -24,7 +23,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = Tags.TAG_SETTINGS)
 @PermitAll
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "TenantSettingsResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("TenantSettingsResourceMS")
 public class TenantSettingsResource {
 
     private final TenantSettingsMapper tenantSettingsMapper;

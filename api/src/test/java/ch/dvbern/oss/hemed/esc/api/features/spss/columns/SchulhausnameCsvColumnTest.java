@@ -3,6 +3,8 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDaten;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.DossierBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungKindDatenBuilder;
 import org.junit.jupiter.api.Test;
 
@@ -15,6 +17,8 @@ class SchulhausnameCsvColumnTest extends AbstractBaseColumnTest {
         // ARRANGE
         final SchulhausnameCsvColumn column = new SchulhausnameCsvColumn(config, null);
         final Einladung einladung = new Einladung();
+        final Dossier dossier = DossierBuilder.defaultDossier();
+        einladung.setDossier(dossier);
 
         assertThat(column.extract(einladung)).isEmpty();
 

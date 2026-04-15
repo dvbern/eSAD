@@ -32,7 +32,7 @@ export class IconOnlyButtonComponent extends ButtonElement implements OnInit {
     }
   });
 
-  @HostBinding('class.svui_icon-button') private readonly svuiStyles = true;
+  @HostBinding('class.svui_icon-button') readonly svuiStyles = true;
 
   @HostBinding('class')
   get buttonStyles(): string {

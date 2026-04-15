@@ -29,6 +29,7 @@ class KrankheitImpfstatusGenugendCsvColumnTest extends AbstractBaseColumnTest {
             new KrankheitImpfstatusGenugendCsvColumn(config, null, krankheit);
         final Einladung einladung = new Einladung();
         einladung.setAnlass(new Anlass());
+        Anlass andererAnlass = new Anlass();
 
         // without Untersuchung -> empty string
         assertThat(column.extract(einladung)).isEmpty();
@@ -68,5 +69,8 @@ class KrankheitImpfstatusGenugendCsvColumnTest extends AbstractBaseColumnTest {
             true));
         untersuchungImpfungIntern.setKrankheitenImmunitaeten(krankheitImmunitaetsList);
         assertThat(column.extract(einladung)).isEqualTo("1");
+
+        untersuchungImpfungIntern.setAnlassImpfungDurchgefuehrt(andererAnlass);
+        assertThat(column.extract(einladung)).isEmpty();
     }
 }

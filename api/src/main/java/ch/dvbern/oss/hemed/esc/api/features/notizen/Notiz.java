@@ -18,6 +18,12 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.notizen;
 
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
@@ -26,21 +32,31 @@ import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOp
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
-
-import java.io.Serial;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(
@@ -101,6 +117,10 @@ public class Notiz extends AbstractEntity<Notiz> implements EntityWithOptimistic
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_notiz_benutzer_verantwortlicher"), nullable = false)
     private Benutzer verantwortlicher;
 
+    @Nullable
+    @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
+    private String anlassLink;
+
     @NotNull
     @NonNull
     @ManyToMany
@@ -148,6 +168,7 @@ public class Notiz extends AbstractEntity<Notiz> implements EntityWithOptimistic
         setTyp(notiz.getTyp());
         setDossier(notiz.getDossier());
         setVerantwortlicher(notiz.getVerantwortlicher());
+        setAnlassLink(notiz.getAnlassLink());
         setLabels(new HashSet<>(notiz.getLabels()));
         // copy file data
         files = new ArrayList<>(notiz.getFiles().size());

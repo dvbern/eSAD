@@ -1,7 +1,9 @@
 import {withDevtools} from '@angular-architects/ngrx-toolkit';
 import {computed, inject, Injectable} from '@angular/core';
 import {
-  DossierJson, DossierMedizinischSaveJson, DossierNichtMedizinischSaveJson,
+  BenutzerOptionJson,
+  DossierJson,
+  DossierMedizinischSaveJson,
   DossierService,
   EntityAktivStatus,
   EntityAktivStatusSaveJson,
@@ -13,18 +15,20 @@ import {
   KindSaveJson,
   KindSaveModeDuplikat,
   LastImpfungJson,
+  PapierakteStatus,
   PrinterService,
 } from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
 import {EventBusStore, getOptionWithSuffix} from '@dvb/feat-shared';
 import {
   AppErrorHandlerService,
+  AppNotificationStore,
   handleBlobResponseDownload,
   Loader,
   withDetailModeState,
   withIsNewModeFeature,
 } from '@dvb/util-angular';
-import {isNotNullish, isNullish, isNullishOrEmpty, requireValue} from '@dvb/util-shared';
+import {isNullish, isNullishOrEmpty, requireValue} from '@dvb/util-shared';
 import {TranslocoService} from '@jsverse/transloco';
 import {tapResponse} from '@ngrx/operators';
 import {
@@ -90,6 +94,7 @@ export class DossierStore extends signalStore(
   readonly #printerService = inject(PrinterService);
   readonly #kindAnlaesseService = inject(KindanlaesseService);
   readonly #appErrorHandlerService = inject(AppErrorHandlerService);
+  readonly #appNotificationStore = inject(AppNotificationStore);
   readonly #transloco = inject(TranslocoService);
   readonly #eventBusStore = inject(EventBusStore);
 
@@ -255,19 +260,61 @@ export class DossierStore extends signalStore(
     ),
   );
 
-  updateDossierNichtMedizinisch = rxMethod<{ dossier: DossierNichtMedizinischSaveJson, onSuccess: () => void }>(
+  updateDossierVerantwortlichArzt = rxMethod<{ dossier: DossierJson, arztOption: BenutzerOptionJson }>(
     pipe(
-      exhaustMap(({dossier, onSuccess}) => this.saveLoader
+      exhaustMap(({dossier, arztOption}) => this.saveLoader
         .tapLoading$(
-          this.#dossierService.updateDossierNichtMedizinisch$({
-            dossierId: requireValue(this.selectedDossier()?.id),
-            dossierNichtMedizinischSaveJson: dossier,
+          this.#dossierService.updateDossierVerantwortlichArzt$({
+            dossierId: dossier.id,
+            benutzerOptionJson: arztOption,
           }), error => this.#appErrorHandlerService.handleError(error))
         .pipe(
           tapResponse({
             next: result => {
               patchState(this, {selectedDossier: result});
-              onSuccess();
+              this.#appNotificationStore.addSuccessNotification(this.#transloco.translate('global.data.saved'));
+            },
+            error: console.error,
+          }),
+        ),
+      ),
+    ),
+  );
+
+  updateDossierVerantwortlichMpa = rxMethod<{ dossier: DossierJson, mpaOption: BenutzerOptionJson }>(
+    pipe(
+      exhaustMap(({dossier, mpaOption}) => this.saveLoader
+        .tapLoading$(
+          this.#dossierService.updateDossierVerantwortlichMpa$({
+            dossierId: dossier.id,
+            benutzerOptionJson: mpaOption,
+          }), error => this.#appErrorHandlerService.handleError(error))
+        .pipe(
+          tapResponse({
+            next: result => {
+              patchState(this, {selectedDossier: result});
+              this.#appNotificationStore.addSuccessNotification(this.#transloco.translate('global.data.saved'));
+            },
+            error: console.error,
+          }),
+        ),
+      ),
+    ),
+  );
+
+  updateDossierPapierakteStatus = rxMethod<{ dossier: DossierJson, status: PapierakteStatus }>(
+    pipe(
+      exhaustMap(({dossier, status}) => this.saveLoader
+        .tapLoading$(
+          this.#dossierService.updateDossierPapierakteStatus$({
+            dossierId: dossier.id,
+            status: status,
+          }), error => this.#appErrorHandlerService.handleError(error))
+        .pipe(
+          tapResponse({
+            next: result => {
+              patchState(this, {selectedDossier: result});
+              this.#appNotificationStore.addSuccessNotification(this.#transloco.translate('global.data.saved'));
             },
             error: console.error,
           }),
@@ -299,7 +346,7 @@ export class DossierStore extends signalStore(
         },
       });
     } else {
-      throw Error('selectedDossier is undefined');
+      throw new Error('selectedDossier is undefined');
     }
   }
 }

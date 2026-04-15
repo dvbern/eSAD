@@ -4,6 +4,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftretenResultat;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,19 +29,19 @@ class StrabismusAuftretenCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungSehenBeurteilung.setStrabismusAuftreten(StrabismusAuftretenResultat.KEIN_STRABISMUS);
+        untersuchungSehenBeurteilung.setStrabismusAuftreten(SingleValueEnhanced.of(StrabismusAuftretenResultat.KEIN_STRABISMUS, null));
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungSehenBeurteilung.setStrabismusAuftreten(StrabismusAuftretenResultat.RECHTS);
+        untersuchungSehenBeurteilung.setStrabismusAuftreten(SingleValueEnhanced.of(StrabismusAuftretenResultat.RECHTS, null));
         assertThat(column.extract(einladung)).isEqualTo("1");
 
-        untersuchungSehenBeurteilung.setStrabismusAuftreten(StrabismusAuftretenResultat.LINKS);
+        untersuchungSehenBeurteilung.setStrabismusAuftreten(SingleValueEnhanced.of(StrabismusAuftretenResultat.LINKS, null));
         assertThat(column.extract(einladung)).isEqualTo("2");
 
-        untersuchungSehenBeurteilung.setStrabismusAuftreten(StrabismusAuftretenResultat.ALTERNNIEREND);
+        untersuchungSehenBeurteilung.setStrabismusAuftreten(SingleValueEnhanced.of(StrabismusAuftretenResultat.ALTERNNIEREND, null));
         assertThat(column.extract(einladung)).isEqualTo("3");
 
-        untersuchungSehenBeurteilung.setStrabismusAuftreten(StrabismusAuftretenResultat.NICHT_GEPRUEFT);
+        untersuchungSehenBeurteilung.setStrabismusAuftreten(SingleValueEnhanced.of(StrabismusAuftretenResultat.NICHT_GEPRUEFT, null));
         assertThat(column.extract(einladung)).isEqualTo("4");
 
     }

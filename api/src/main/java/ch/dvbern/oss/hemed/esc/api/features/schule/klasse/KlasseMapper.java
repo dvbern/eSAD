@@ -61,8 +61,7 @@ public final class KlasseMapper {
         if (existingKlasse.getExternalImportInfo() != null && existingKlasse.isAktivInExternalSystem()) {
             throw new AppValidationException(AppValidationMessage.escadaObjectsCannotBeUpdated(existingKlasse));
         }
-        Schule schule = schuleMapper.toEntity(saveJson.getSchule());
-        existingKlasse.setSchule(schule);
+        // Schule darf nicht überschrieben werden
         existingKlasse.setBezeichnung(saveJson.getBezeichnung());
         existingKlasse.setKlassenstufe(saveJson.getKlassenstufe());
         existingKlasse.setKlasseSchulart(saveJson.getKlasseSchulart());

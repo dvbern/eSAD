@@ -1,14 +1,24 @@
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
-import {FormArray, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
-import {RequirementSetting} from '@dvb/data-access-backend';
-import {BenutzerStore} from '@dvb/feat-shared';
+import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {
-  CheckboxDirective,
+  AudiogrammBeurteilung,
+  AudiogrammSimpel,
+  HoerenEmpfehlung,
+  HoerenHoerhilfe,
+  HoerenZusaetzlicheAngaben,
+  RequirementSetting
+} from '@dvb/data-access-backend';
+import {
+  BenutzerStore,
+  createMultiValueEnhancedForm,
+  createSingleValueEnhancedForm,
+  TenantSettingsStore,
+  ValueEnhancedComponent,
+} from '@dvb/feat-shared';
+import {
   FormControlComponent,
   FormLayoutComponent,
   HeadingDirective,
-  KachelControlComponent,
-  KachelFormSectionComponent,
   SaveCancelButtonsComponent,
   TextareaDirective,
   TitleComponent,
@@ -23,12 +33,7 @@ import {hasSomeNotNullishValueIgnoringVersion} from '../../untersuchung.util';
 import {AudiogrammForm} from './audiogramm/audiogramm-form';
 import {getAllAudiogrammKeys} from './audiogramm/audiogramm-util';
 import {AudiogrammComponent} from './audiogramm/audiogramm.component';
-import {
-  AudiogrammBeurteilungSubFormType,
-  EmpfehlungSubFormType,
-  UntersuchungHoerenAudiogrammForm,
-  ZusaetzlicheAngabenSubFormType,
-} from './untersuchung-hoeren-audiogramm.form';
+import {UntersuchungHoerenAudiogrammForm} from './untersuchung-hoeren-audiogramm.form';
 import {UntersuchungHoerenAudiogrammStore} from './untersuchung-hoeren-audiogramm.store';
 
 @Component({
@@ -36,16 +41,14 @@ import {UntersuchungHoerenAudiogrammStore} from './untersuchung-hoeren-audiogram
   imports: [
     FormLayoutComponent,
     HeadingDirective,
-    KachelControlComponent,
-    KachelFormSectionComponent,
     ReactiveFormsModule,
     SaveCancelButtonsComponent,
     TranslocoPipe,
-    CheckboxDirective,
     FormControlComponent,
     TextareaDirective,
     TitleComponent,
     AudiogrammComponent,
+    ValueEnhancedComponent,
   ],
   templateUrl: './untersuchung-hoeren-audiogramm.component.html',
   styleUrl: './untersuchung-hoeren-audiogramm.component.scss',
@@ -54,11 +57,14 @@ import {UntersuchungHoerenAudiogrammStore} from './untersuchung-hoeren-audiogram
 export class UntersuchungHoerenAudiogrammComponent implements DirtyMarker {
 
   protected readonly RequirementSetting = RequirementSetting;
+  readonly AudiogrammSimpel = Object.values(AudiogrammSimpel);
+  readonly HoerenHoerhilfe = Object.values(HoerenHoerhilfe);
 
   readonly hoerenAudiogrammStore = inject(UntersuchungHoerenAudiogrammStore);
   readonly anlassStore = inject(AnlassStore);
   readonly untersuchungStore = inject(UntersuchungStore);
   readonly benutzerStore = inject(BenutzerStore);
+  readonly tenantSettingsStore = inject(TenantSettingsStore);
 
   anlassConfig = computed(() => {
     if (this.anlassStore.selectedEntity() !== undefined) {
@@ -70,6 +76,10 @@ export class UntersuchungHoerenAudiogrammComponent implements DirtyMarker {
   canEdit = computed(() => this.benutzerStore.createHasRequiredRoleSig(hasHoerenEditBerechtigung())()
     && this.anlassStore.canUserEditAnlassInCurrentState());
 
+  audiogrammBeurteilungItems = Object.values(AudiogrammBeurteilung);
+  hoerenZusaetzlicheAngabenItems = Object.values(HoerenZusaetzlicheAngaben);
+  hoerenEmpfehlungItems = Object.values(HoerenEmpfehlung);
+
   public audiogrammForm: AudiogrammForm = new AudiogrammForm({
     fb: inject(NonNullableFormBuilder),
     destroyRef: inject(DestroyRef),
@@ -79,6 +89,11 @@ export class UntersuchungHoerenAudiogrammComponent implements DirtyMarker {
 
   form = new UntersuchungHoerenAudiogrammForm({
     fb: inject(NonNullableFormBuilder),
+    audiogrammSimpelValueEnhancedForm: createSingleValueEnhancedForm(this.AudiogrammSimpel),
+    hoerhilfeValueEnhancedForm: createSingleValueEnhancedForm(this.HoerenHoerhilfe),
+    audiogrammBeurteilungValueEnhancedForm: createMultiValueEnhancedForm(this.audiogrammBeurteilungItems),
+    zusaetzlicheAngabenValueEnhancedForm: createMultiValueEnhancedForm(this.hoerenZusaetzlicheAngabenItems),
+    empfehlungValueEnhancedForm: createMultiValueEnhancedForm(this.hoerenEmpfehlungItems),
     destroyRef: inject(DestroyRef),
     audiogrammForm: this.audiogrammForm,
   });
@@ -100,7 +115,9 @@ export class UntersuchungHoerenAudiogrammComponent implements DirtyMarker {
       const anlassConfig = this.anlassStore.selectedEntity()?.anlassConfig;
       if (anlassConfig) {
         untracked(() => {
-          this.form.setValidators(anlassConfig, hoeren?.audiogrammData);
+          this.form.setValidators(anlassConfig,
+            hoeren?.audiogrammData,
+            !!this.tenantSettingsStore.nichtGeprueftGrundEnabled());
         });
       }
       this.form.setDisabled(!this.canEdit());
@@ -112,8 +129,12 @@ export class UntersuchungHoerenAudiogrammComponent implements DirtyMarker {
       if (isNotNullish(defaultHoerenAudiogramm)) {
         const hasAnyValue = hasSomeNotNullishValueIgnoringVersion(defaultHoerenAudiogramm);
         if (hasAnyValue) {
+          console.log(defaultHoerenAudiogramm);
           this.form.resetForm(defaultHoerenAudiogramm);
           this.form.group.markAsDirty();
+          this.form.group.controls.audiogrammBeurteilung.controls.valueArray.markAsDirty();
+          this.form.group.controls.empfehlung.controls.valueArray.markAsDirty();
+          this.form.group.controls.zusaetzlicheAngaben.controls.valueArray.markAsDirty();
         }
         this.hoerenAudiogrammStore.resetApplyDefaultHoeren();
         this.form.setDisabled(!this.anlassStore.canUserEditAnlassInCurrentState());
@@ -147,17 +168,5 @@ export class UntersuchungHoerenAudiogrammComponent implements DirtyMarker {
         untersuchungHoerenAudiogrammSaveJson: payload,
       });
     }
-  }
-
-  getAudiogrammBeurteilungArray(): FormArray<AudiogrammBeurteilungSubFormType> {
-    return this.form.group.controls.audiogrammBeurteilungArray;
-  }
-
-  getZusaetzlicheAngabenArray(): FormArray<ZusaetzlicheAngabenSubFormType> {
-    return this.form.group.controls.zusaetzlicheAngabenArray;
-  }
-
-  getEmpfehlungFormArray(): FormArray<EmpfehlungSubFormType> {
-    return this.form.group.controls.empfehlungArray;
   }
 }

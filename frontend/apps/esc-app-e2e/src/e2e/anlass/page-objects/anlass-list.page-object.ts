@@ -16,6 +16,7 @@
  */
 
 import {BasePageObject} from '../../../page-objects';
+import { FormSelectComponentObject } from '../../../component-objects/form-select.component-object';
 
 export class AnlassListPageObject extends BasePageObject {
   path = '/anlass';
@@ -23,5 +24,9 @@ export class AnlassListPageObject extends BasePageObject {
 
   elements = {
     buttonHinzufuegen: () => this.page.getByTestId('button-create-anlass'),
+    linkAnlass: () => this.page.getByTestId('redirect-anlass-planung'),
+    invitedKinderCheckbox: () => this.page.getByTestId('invited-kinder-checkbox'),
+    buttonKinderAuswaehlen: () => this.page.getByTestId('button-kinder-auswaehlen'),
+    anlassStatusSelect: () => new FormSelectComponentObject('anlass-status-select', 'ng-select')
   }
 }

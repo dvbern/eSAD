@@ -23,9 +23,8 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Counted;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/impfstoffe/{impfstoffId}/chargen")
@@ -34,7 +33,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = Tags.TAG_IMPFSTOFF_CHARGEN)
 @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "ImpfstoffChargeResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("ImpfstoffChargeResourceMS")
 public class ImpfstoffChargeResource {
 
     private final ImpfstoffChargeMapper impfstoffChargeMapper;
@@ -53,8 +52,8 @@ public class ImpfstoffChargeResource {
 
     @POST
     @NonNull
-    @Counted(name = "createImpfstoffChargeCount")
-    @Timed(name = "createImpfstoffChargeMS", unit = MetricUnits.MILLISECONDS)
+    @Counted("createImpfstoffChargeCount")
+    @Timed("createImpfstoffChargeMS")
     @RolesAllowed(BerechtigungName.IMPFSTOFFE_SCHREIBEN)
     public ImpfstoffChargeJson createImpfstoffCharge(
         @NotNull @NonNull @PathParam("impfstoffId") ID<Impfstoff> impfstoffId,

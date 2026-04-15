@@ -7,7 +7,8 @@
     <!-- Schule -->
     <svui-form-control [label]="'anlass.detail.schule' | transloco"
                        [viewValue]="tableFilterForm.group.value.schule?.bezeichnung"
-                       [size]="'half'">
+                       [size]="'half'"
+                       data-testid="anlass-schule-select">
       <ng-select
         svuiNgSelect
         bindLabel='dummy'
@@ -32,7 +33,8 @@
     <!-- Klasse -->
     <svui-form-control [label]="'anlass.detail.klasse' | transloco"
                        [viewValue]="tableFilterForm.group.value.klasse?.bezeichnung"
-                       [size]="'half'">
+                       [size]="'half'"
+                       data-testid="anlass-klasse-select">
       <ng-select
         svuiNgSelect
         bindLabel='dummy'
@@ -130,6 +132,7 @@
         <th scope="col">
           @if (itemTable.filteredListSize() > 0) {
             <button svuiIconOnlyButton="tableRowAction"
+                    data-testid="button-add-kinder"
                     type="button"
                     [tooltip]="'global.tooltip.icon.hinzufuegen' | transloco "
                     [working]="anlassKinderStore.saveLoader.isLoading()"

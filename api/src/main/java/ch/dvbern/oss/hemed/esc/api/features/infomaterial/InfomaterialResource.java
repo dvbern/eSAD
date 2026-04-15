@@ -24,8 +24,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/infomaterialien")
@@ -34,7 +33,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = OpenApiConst.Tags.TAG_INFOMATERIAL)
 @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "InfomaterialResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("InfomaterialResourceMS")
 public class InfomaterialResource {
 
     private final InfomaterialMapper infomaterialMapper;

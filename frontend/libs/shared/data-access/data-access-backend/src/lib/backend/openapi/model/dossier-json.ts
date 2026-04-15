@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ISODateTimeString } from '@dvb/data-access-types';
 import { DossierNichtMedizinischSaveJson } from './dossier-nicht-medizinisch-save-json';
 import { EntityInfoJson } from './entity-info-json';
 import { BackendEntityId } from '@dvb/data-access-types';
@@ -20,6 +21,7 @@ export interface DossierJson {
     dataMedizinisch?: DossierMedizinischSaveJson;
     dataNichtMedizinisch: DossierNichtMedizinischSaveJson;
     kind: KindJson;
+    timestampDefinitivArchiviert?: ISODateTimeString;
 }
 
 

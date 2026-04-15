@@ -12,10 +12,13 @@ import {
 import {NavigationEnd, NavigationStart, Router, RouterLink, RouterLinkActive} from '@angular/router';
 import {
   CollapsibleMenuComponent,
+  IconComponent,
   IconOnlyButtonComponent,
   PageLayoutComponent,
   WithHeadingDirective,
 } from '@dvb/ui-components';
+import {AppLanguages} from '@dvb/data-access-backend';
+import {appLanguageToLanguage, LanguageStore} from '@dvb/util-i18n';
 import {
   hasAdminPageViewBerechtiung,
   hasAnlassViewBerechtigung,
@@ -35,11 +38,13 @@ import {AufgabenStore} from '../../admin-shared/aufgaben.store';
 import {BenutzerStore} from '../../benutzer/benutzer/benutzer.store';
 import {Path} from '../../core/path';
 import {DeploymentStore} from '../../deployment/deployment.store';
+import {TenantSettingsStore} from '../../tenant/tenant-settings.store';
 
 import {FachRollenListComponent} from './fach-rollen-list/fach-rollen-list.component';
 import {GlobalSearchComponent} from './global-search/global-search.component';
 import {TimetravelStatusComponent} from './timetravel-status/timetravel-status.component';
 import {VersionDisplayComponent} from './version-display/version-display.component';
+import {TenantFooterComponent} from "./tenant-footer/tenant-footer.component";
 
 @Component({
   selector: 'feat-page',
@@ -57,6 +62,8 @@ import {VersionDisplayComponent} from './version-display/version-display.compone
     TimetravelStatusComponent,
     FachRollenListComponent,
     VersionDisplayComponent,
+    IconComponent,
+    TenantFooterComponent,
   ],
   templateUrl: './page.component.html',
   styleUrl: './page.component.scss',
@@ -65,6 +72,8 @@ export class PageComponent extends WithHeadingDirective implements OnInit {
   readonly benutzerStore = inject(BenutzerStore);
   readonly deploymentStore = inject(DeploymentStore);
   readonly aufgabenStore = inject(AufgabenStore);
+  readonly languageStore = inject(LanguageStore);
+  readonly tenantSettingsStore = inject(TenantSettingsStore);
   private readonly offcanvasService = inject(NgbOffcanvas);
 
   public canViewReport = this.benutzerStore.createHasRequiredRoleSig(hasReportViewBerechtigung());
@@ -82,6 +91,7 @@ export class PageComponent extends WithHeadingDirective implements OnInit {
   closeResult: WritableSignal<string> = signal('');
 
   showNav = input<boolean>(true);
+  showFooter = input<boolean>(true);
 
   public logout(): void {
     // If the logoutRedirectUrl is not set, we redirect to the application root. Note that a passed logoutRedirectUrl
@@ -127,6 +137,10 @@ export class PageComponent extends WithHeadingDirective implements OnInit {
       default:
         return `with: ${reason}`;
     }
+  }
+
+  public switchActiveLanguage(lang: AppLanguages): void {
+    this.languageStore.setActiveLanguage(appLanguageToLanguage(lang));
   }
 
 }

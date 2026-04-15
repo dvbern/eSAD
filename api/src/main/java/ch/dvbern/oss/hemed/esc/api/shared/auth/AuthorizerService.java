@@ -11,6 +11,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.features.archivierung.Archivdokument;
+import ch.dvbern.oss.hemed.esc.api.features.archivierung.ArchivdokumentService;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
@@ -37,6 +39,7 @@ public class AuthorizerService {
     private final NotizService notizService;
     private final DocumentQueueService documentQueueService;
     private final KindService kindService;
+    private final ArchivdokumentService archivdokumentService;
 
     public void requireWriteAuthorizationAnlass(@NonNull ID<Anlass> anlassId) {
         Anlass anlass = anlassService.getById(anlassId);
@@ -97,7 +100,6 @@ public class AuthorizerService {
         }
     }
 
-
     public boolean hasReadAuthorizationAnlassListe(@NonNull Anlass anlass) {
         return hasReadAuthorizationAnlassListe(anlass.getAnlassConfig().getAnlassTyp());
     }
@@ -145,6 +147,18 @@ public class AuthorizerService {
             Berechtigung.KINDER_LESEN_MEDIZINISCH,
             Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH, Berechtigung.KOMPLETTER_EXPORT))) {
             throwViolation(kind);
+        }
+    }
+
+    public void requireArchivDownloadAuthorization(@NonNull ID<Archivdokument> archivDokumentID) {
+        Archivdokument archivdokument = archivdokumentService.getById(archivDokumentID);
+        Benutzer currentBenutzer = benutzerService.getCurrentBenutzerOrThrowException();
+        if (!benutzerService.hasCallerBerechtigung(Berechtigung.ARCHIVIERUNG)
+            || !(archivdokument.getOwner().equals(currentBenutzer)
+                || currentBenutzer.getFachRollen().contains(FachRolle.SUPPORT)
+            )
+        ) {
+            throwViolation(archivdokument);
         }
     }
 

@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class EmpfehlungHoerenCsvColumn extends AbstractCsvColumn {
@@ -23,7 +24,9 @@ public class EmpfehlungHoerenCsvColumn extends AbstractCsvColumn {
         return ExtractorForCsvUtil.extractUntersuchungHoerenAudiogramm(
             einladung,
             untersuchungHoeren ->
-                PrintUtil.trimToPlaceholder(untersuchungHoeren.getEmpfehlung().contains(this.empfehlung), config.tl())
+                PrintUtil.trimToPlaceholder(
+                    ValueEnhancedUtil.getEnumSetOrEmpty(untersuchungHoeren.getEmpfehlung(), HoerenEmpfehlung.class)
+                        .contains(this.empfehlung), config.tl())
         );
     }
 

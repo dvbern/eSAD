@@ -85,6 +85,10 @@ public class KontaktPersonKindExternal extends AbstractEntity<KontaktPersonKindE
 
     @Nullable
     @Column(nullable = true)
+    String adressierungBeziehung;
+
+    @Nullable
+    @Column(nullable = true)
     String adressierungName;
 
     @Nullable

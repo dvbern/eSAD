@@ -1,0 +1,44 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="dvbern" id="2025-11-27-1800">
+    <sql>
+      INSERT INTO benutzer (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, email, keycloakid, lastusedip, lastusedsessionid, lastusedsessiontimestamp, oidcissuer, nachname, vorname, benutzeraktivstatus, titel, telefon)
+      VALUES ('bb9e3b31-6937-4d71-a868-f858eef8a86b', '2024-12-01 12:00:00.118393', '2024-12-01 12:00:00.202890', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'example-schularzt@mailbucket.dvbern.ch', '30cd6679-573d-41de-834d-df6df5aa82e3', '172.19.1.193', '0c5436bc-2bc5-4629-b7f2-7937c5c585a6', '2024-12-04 12:00:00.202171', 'https://local-esc-bs.localhost:8989/realms/bs', 'Schularzt', 'Jaques', 'AKTIV', 'Dr. Med.', '+41 61 123 45 72')
+      ON CONFLICT (id) DO NOTHING;
+
+      INSERT INTO organisation (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version,
+                                verantwortlicherarzt_id)
+      SELECT '08831a31-a62b-4c81-adfc-3f3bcb3a1fee',
+             current_timestamp,
+             current_timestamp,
+             '11111111-1111-1111-1111-111111111111',
+             '11111111-1111-1111-1111-111111111111',
+             0,
+             'bb9e3b31-6937-4d71-a868-f858eef8a86b'
+        ON CONFLICT (id) DO NOTHING;
+
+      INSERT INTO organisationrollen (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, organisation_id, benutzer_id, fachrollen)
+      VALUES ('4d6b0ff6-f8dd-43bc-803c-ae51cead6ef0', current_timestamp, current_timestamp, '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 0, '08831a31-a62b-4c81-adfc-3f3bcb3a1fee', 'bb9e3b31-6937-4d71-a868-f858eef8a86b', 'SCHULAERZTIN')
+      ON CONFLICT (id) DO NOTHING;
+    </sql>
+  </changeSet>
+
+  <changeSet author="dvbern" id="2025-11-27-1801">
+    <sql>
+      INSERT INTO benutzer (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, email, keycloakid, lastusedip, lastusedsessionid, lastusedsessiontimestamp, oidcissuer, nachname, vorname, benutzeraktivstatus, titel, telefon)
+      VALUES ('71ca580d-1ddf-4229-8bf4-28544e926cf7', '2025-03-18 10:20:06.265461', '2025-03-18 10:20:06.308125', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'example-mpa@mailbucket.dvbern.ch', 'c9f29ff8-b995-4d07-a998-a5db12b0fa05', '172.19.1.193', '41c9173a-7dc9-40de-9cbf-961a8aa3f2a3', '2025-03-18 10:20:06.306975', 'https://local-esc-bs.localhost:8989/realms/bs', 'MPA', 'Marta', 'AKTIV', 'Med. Praxisassistentin', '+41 61 123 45 68');
+
+      INSERT INTO organisationrollen (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, organisation_id, benutzer_id, fachrollen)
+      VALUES (uuid_generate_v4(), current_timestamp, current_timestamp, '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 0, '08831a31-a62b-4c81-adfc-3f3bcb3a1fee', '71ca580d-1ddf-4229-8bf4-28544e926cf7', 'MPA');
+    </sql>
+  </changeSet>
+  <changeSet author="dvbern" id="2025-11-27-1802">
+    <sql>
+      INSERT INTO benutzer (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, email, keycloakid, lastusedip, lastusedsessionid, lastusedsessiontimestamp, oidcissuer, nachname, vorname, benutzeraktivstatus, titel, telefon)
+      VALUES ('efb816ae-c51c-4569-bbd0-5ee3a459ff10', '2025-03-18 09:46:42.178875', '2025-03-18 09:46:42.271767', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'example-empfang@mailbucket.dvbern.ch', '8f9e9e93-7f74-4220-ac09-097834540021', '172.19.1.193', 'a3eab01d-3f36-48a6-bd9f-a06a76916b3f', '2025-03-18 09:46:42.270799', 'https://local-esc-bs.localhost:8989/realms/bs', 'Empfang', 'Edith', 'AKTIV', null, '+41 61 123 45 69');
+
+      INSERT INTO organisationrollen (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, organisation_id, benutzer_id, fachrollen)
+      VALUES (uuid_generate_v4(), current_timestamp, current_timestamp, '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 0, '08831a31-a62b-4c81-adfc-3f3bcb3a1fee', 'efb816ae-c51c-4569-bbd0-5ee3a459ff10', 'EMPFANG');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

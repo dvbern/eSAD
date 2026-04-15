@@ -1,15 +1,35 @@
 package ch.dvbern.oss.hemed.esc.api.features.benutzer;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+import java.util.UUID;
+
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBE;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.BenutzerApiSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.*;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppFailureErrorJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerListJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionListJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EntityAktivStatusSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.PrincipalJsonSpec;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -23,11 +43,6 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
-import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,6 +60,10 @@ class BenutzerResourceITest {
 
     private final BenutzerService benutzerService;
     private final BenutzerRepo benutzerRepo;
+    private final OrganisationService organisationService;
+    private final TenantProducer tenantProducer;
+    private final BenutzerResourceHelper benutzerResourceHelper;
+
 
     @Test
     void error_returns_a_response_of_type_failure() throws Exception {
@@ -91,11 +110,11 @@ class BenutzerResourceITest {
         // ARRANGE
         Benutzer benutzerActive = BenutzerBuilder.create(
             builder -> builder
-                .withActive(true)
+                .withBenutzerAktivStatus(EntityAktivStatus.AKTIV)
         );
         Benutzer benutzerInactive = BenutzerBuilder.create(
             builder -> builder
-                .withActive(false)
+                .withBenutzerAktivStatus(EntityAktivStatus.INAKTIV)
         );
         benutzerRepo.persist(benutzerActive);
         benutzerRepo.persist(benutzerInactive);
@@ -145,6 +164,45 @@ class BenutzerResourceITest {
     }
 
     @Test
+    @TestAsAdminBE
+    void findAllBenutzerForOrganisation() {
+        // ARRANGE
+        Benutzer schularzt1 = benutzerResourceHelper.createSchularztAsOrganisationsChef(TenantEnum.BE);
+        Organisation organisation1 = organisationService.getById(schularzt1
+            .getOrganisationRollen().stream().findFirst().orElseThrow()
+            .getOrganisation().getId());
+        Benutzer schularzt2 = benutzerResourceHelper.createSchularztAsOrganisationsChef(TenantEnum.BE);
+        Organisation organisation2 = organisationService.getById(schularzt2
+            .getOrganisationRollen().stream().findFirst().orElseThrow()
+            .getOrganisation().getId());
+
+        Benutzer mpa1 = BenutzerBuilder.create(builder -> builder.withOrganisationRollen(organisation1, List.of(FachRolle.MPA)));
+        Benutzer mpa2 = BenutzerBuilder.create(builder -> builder.withOrganisationRollen(organisation2, List.of(FachRolle.MPA)));
+        benutzerService.persist(mpa1);
+        benutzerService.persist(mpa2);
+
+        // ACT
+        var benList = api.benutzerResourceFindAllBenutzerForOrganisation()
+            .organisationIDPath(organisation1.getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(HttpURLConnection.HTTP_OK)
+            .extract().as(BenutzerListJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(benList.getBenutzerList())
+            .isNotEmpty()
+            .hasSize(2)
+            .extracting(BenutzerJsonSpec::getData)
+            .extracting(BenutzerSaveJsonSpec::getVorname)
+            .contains(schularzt1.getVorname())
+            .contains(mpa1.getVorname())
+            .doesNotContain(schularzt2.getVorname())
+            .doesNotContain(mpa2.getVorname());
+    }
+
+    @Test
     @TestAsAdminBS
     void getMyBenutzerData() {
         // ACT
@@ -169,24 +227,24 @@ class BenutzerResourceITest {
     @TestAsAdminBS
     @ParameterizedTest
     @CsvSource({
-        "true, false",
-        "false, true",
-        "false, false",
-        "true, true"
+        "AKTIV, INAKTIV",
+        "INAKTIV, AKTIV",
+        "INAKTIV, INAKTIV",
+        "AKTIV, AKTIV"
     })
-    void updateActive(boolean oldActive, boolean newActive) {
+    void updateActive(EntityAktivStatus oldAktivStatus, EntityAktivStatus newAktivStatus) {
         // ARRANGE
         ID<Benutzer> id = ID.random(Benutzer.class);
         Benutzer benutzer = BenutzerBuilder.create(
             builder -> builder
-                .withActive(oldActive)
+                .withBenutzerAktivStatus(oldAktivStatus)
                 .withID(id)
         );
         benutzerRepo.persist(benutzer);
         BenutzerSaveJsonSpec saveJson = BenutzerBuilder.createJaxSpec(
             builder -> builder
                 .forBenutzer(benutzer)
-                .withActive(newActive)
+                .withBenutzerAktivStatus(newAktivStatus)
         ).getData();
 
         // ACT
@@ -202,42 +260,40 @@ class BenutzerResourceITest {
 
         // ASSERT
         assertThat(result).isNotNull();
-        if (oldActive == newActive) {
-            assertThat(benutzer.isAktiv()).isEqualTo(result.getData().getAktiv()).isEqualTo(oldActive).isEqualTo(newActive);
+        if (oldAktivStatus == newAktivStatus) {
+            assertThat(benutzer.getBenutzerAktivStatus()).isEqualTo(getAktivStatus(result.getData()
+                .getBenutzerAktivStatus())).isEqualTo(oldAktivStatus).isEqualTo(newAktivStatus);
         } else {
-            assertThat(result.getData().getAktiv()).isEqualTo(benutzer.isAktiv());
-            assertThat(result.getData().getAktiv()).isEqualTo(newActive);
-            assertThat(result.getData().getAktiv()).isNotEqualTo(oldActive);
+            assertThat(getAktivStatus(result.getData()
+                .getBenutzerAktivStatus())).isEqualTo(benutzer.getBenutzerAktivStatus());
+            assertThat(getAktivStatus(result.getData().getBenutzerAktivStatus())).isEqualTo(newAktivStatus);
+            assertThat(getAktivStatus(result.getData().getBenutzerAktivStatus())).isNotEqualTo(oldAktivStatus);
         }
 
     }
 
     @Test
-    @TestAsAdminBS
-    void updateBenutzerAsAdmin_only_allowed_fields_works() {
+    @TestAsSupportBE
+    void updateBenutzerAsSupport_only_allowed_fields_works() {
         // ARRANGE
-        EmailAddress originalEmail = EmailAddress.fromString("original@mailbucket.dvbern.ch");
-        Benutzer benutzer = BenutzerBuilder.create(
-            builder -> builder
-                .withFachRolle(List.of(FachRolle.EMPFANG))
-                .withEmail(originalEmail)
-                .withActive(false));
-        benutzerRepo.persist(benutzer);
+        Benutzer benutzer = benutzerResourceHelper.createSchularztAsOrganisationsChef(TenantEnum.BE);
+        EmailAddress originalEmail = benutzer.getEmail();
+        Organisation organisation = benutzer.getOrganisationRollen().stream().findFirst().get().getOrganisation();
 
         String updatedVorname = "NewVorname";
         String updatedNachname = "NewNachname";
         List<FachRolle> udpatedFachRollen = List.of(FachRolle.SCHULAERZTIN);
         EmailAddress updatedEmail = EmailAddress.fromString("updated@mailbucket.dvbern.ch");
         NormalizedPhoneNumber updatedTelefon = NormalizedPhoneNumber.parse("+41790000000");
-        boolean updatedActive = true;
+        EntityAktivStatus updatedActive = EntityAktivStatus.AKTIV;
         BenutzerSaveJsonSpec saveJson = BenutzerBuilder.createJaxSpec(builder -> builder
             .forBenutzer(benutzer)
             .withVorname(updatedVorname)
             .withNachname(updatedNachname)
             .withEmail(updatedEmail)
             .withTelefon(updatedTelefon)
-            .withFachRolle(udpatedFachRollen)
-            .withActive(updatedActive)).getData();
+            .withOrganisationRollen(organisation, udpatedFachRollen)
+            .withBenutzerAktivStatus(updatedActive)).getData();
 
         // ACT
         BenutzerJsonSpec result = api.
@@ -254,30 +310,26 @@ class BenutzerResourceITest {
         assertThat(result).isNotNull();
         assertThat(result.getData().getVorname()).isEqualTo(updatedVorname);
         assertThat(result.getData().getName()).isEqualTo(updatedNachname);
-        assertThat(result.getData().getEmail()).isNotEqualTo(updatedEmail.toString()).isEqualTo(originalEmail.toString());
+        assertThat(result.getData().getEmail()).isNotEqualTo(updatedEmail.toString())
+            .isEqualTo(originalEmail.toString());
         assertThat(result.getData().getTelefon()).isEqualTo(updatedTelefon.getFormattedPhoneNumber());
-        List<FachRolle> fachRollen = result.getData().getFachRollen().stream()
+        List<FachRolle> fachRollen = result.getData().getOrganisationRollen().getFirst().getFachRollen().stream()
             .map(spec -> FachRolle.valueOf(spec.name()))
             .toList();
         assertThat(fachRollen).containsExactlyElementsOf(udpatedFachRollen);
-        assertThat(result.getData().getAktiv()).isEqualTo(updatedActive);
+        assertThat(getAktivStatus(result.getData().getBenutzerAktivStatus())).isEqualTo(updatedActive);
     }
 
-
     @Test
-    @TestAsAdminBS
-    void updateBenutzerAsAdmin_tryAssigningSystemAdminRole_doesnotUpdateRoles() {
+    @TestAsSupportBE
+    void updateBenutzerAsSupport_tryAssigningSystemAdminRole_doesnotUpdateRoles() {
         // ARRANGE
-        List<FachRolle> originalFachRollen = List.of(FachRolle.SCHULAERZTIN);
-        Benutzer benutzer = BenutzerBuilder.create(
-            builder -> builder
-                .withFachRolle(originalFachRollen));
-        benutzerRepo.persist(benutzer);
+        Benutzer benutzer = benutzerResourceHelper.createSchularztAsOrganisationsChef(TenantEnum.BE);
 
         List<FachRolle> udpatedFachRollen = List.of(FachRolle.SYSTEM_ADMIN);
         BenutzerSaveJsonSpec saveJson = BenutzerBuilder.createJaxSpec(builder -> builder
             .forBenutzer(benutzer)
-            .withFachRolle(udpatedFachRollen)).getData();
+            .withSystemRolle(udpatedFachRollen)).getData();
 
         // ACT
         AppFailureErrorJsonSpec error = api.
@@ -292,6 +344,118 @@ class BenutzerResourceITest {
 
         // ASSERT
         Assertions.assertThat(error).isNotNull();
-        Assertions.assertThat(error.getSummary()).contains("Aktualisieren der Fachrollen ist nicht erlaubt, der Benutzer hat nicht die entsprechende Berechtigung.");
+        Assertions.assertThat(error.getSummary())
+            .contains(
+                "Aktualisieren der Fachrollen ist nicht erlaubt, der Benutzer hat nicht die entsprechende "
+                    + "Berechtigung.");
+    }
+
+    @Test
+    @TestAsSupportBE
+    void createBenutzerAsSupport_works_if_tenantSetting_is_enabled() {
+        // ARRANGE
+        EmailAddress benutzerEmail = EmailAddress.fromString("new-benutzer@mailbucket.dvbern.ch");
+        EntityAktivStatus aktivStatus = EntityAktivStatus.AKTIV;
+        Organisation organisation = organisationService.getZentraleOrganisation();
+
+        BenutzerJsonSpec benutzerJson = BenutzerBuilder.createJaxSpec(
+            builder -> builder
+                .withOrganisationRollen(organisation, List.of(FachRolle.SCHOOL_NURSE))
+                .withNachname("Smith")
+                .withVorname("John")
+                .withEmail(benutzerEmail)
+                .withBenutzerAktivStatus(aktivStatus));
+
+        // ACT
+        BenutzerJsonSpec result = api.
+            benutzerResourceCreateBenutzer()
+            .body(benutzerJson.getData())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(BenutzerJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getData().getVorname()).isEqualTo("John");
+        assertThat(result.getData().getName()).isEqualTo("Smith");
+        assertThat(result.getData().getEmail()).isEqualTo(benutzerEmail.toString());
+        List<FachRolle> fachRollen = result.getData().getOrganisationRollen().getFirst().getFachRollen().stream()
+            .map(spec -> FachRolle.valueOf(spec.name()))
+            .toList();
+        assertThat(fachRollen).containsExactlyElementsOf(List.of(FachRolle.SCHOOL_NURSE));
+        assertThat(getAktivStatus(result.getData().getBenutzerAktivStatus())).isEqualTo(aktivStatus);
+    }
+
+    @Test
+    @TestAsSupportBS
+    void createBenutzerAsSupport_fails_if_tenantSetting_is_disabled() {
+        // ARRANGE
+        EmailAddress benutzerEmail = EmailAddress.fromString("create-fails@mailbucket.dvbern.ch");
+        Organisation organisation = organisationService.getZentraleOrganisation();
+
+        BenutzerJsonSpec benutzerJson = BenutzerBuilder.createJaxSpec(
+            builder -> builder
+                .withOrganisationRollen(organisation, List.of(FachRolle.SCHOOL_NURSE))
+                .withNachname("Smith")
+                .withVorname("John")
+                .withEmail(benutzerEmail)
+                .withBenutzerAktivStatus(EntityAktivStatus.AKTIV));
+
+        // ACT
+        AppFailureErrorJsonSpec error = api.
+            benutzerResourceCreateBenutzer()
+            .body(benutzerJson.getData())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
+            .extract().as(AppFailureErrorJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(error).isNotNull();
+        Assertions.assertThat(error.getSummary())
+            .contains("Die Benutzerverwaltung ist für diesen Mandanten nicht erlaubt.");
+    }
+
+    @Test
+    @TestAsSupportBS
+    void updateBenutzerAsSupport_update_fachrolle_fails_if_tenantSetting_is_disabled() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        Organisation organisation = organisationService.getZentraleOrganisation();
+
+        List<FachRolle> originalFachRollen = List.of(FachRolle.SCHULAERZTIN);
+        Benutzer benutzer = BenutzerBuilder.create(
+            builder -> builder
+                .withOrganisationRollen(organisation, originalFachRollen));
+        benutzerRepo.persist(benutzer);
+
+        List<FachRolle> udpatedFachRollen = List.of(FachRolle.EMPFANG);
+        BenutzerSaveJsonSpec saveJson = BenutzerBuilder.createJaxSpec(builder -> builder
+            .forBenutzer(benutzer)
+            .withOrganisationRollen(organisation, udpatedFachRollen)).getData();
+
+        // ACT
+        AppFailureErrorJsonSpec error = api.
+            benutzerResourceUpdate()
+            .benutzerIDPath(benutzer.getId().getId())
+            .body(saveJson)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
+            .extract().as(AppFailureErrorJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(error).isNotNull();
+        Assertions.assertThat(error.getSummary())
+            .contains(
+                "Die Benutzerverwaltung ist für diesen Mandanten nicht erlaubt.");
+    }
+
+    private static EntityAktivStatus getAktivStatus(EntityAktivStatusSpec statusSpec) {
+        return EntityAktivStatus.valueOf(statusSpec.toString());
     }
 }

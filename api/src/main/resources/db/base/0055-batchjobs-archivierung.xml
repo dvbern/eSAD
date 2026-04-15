@@ -1,0 +1,22 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="dvbern" id="2026-03-13-10-05">
+    <sql>
+      INSERT INTO schedulerconfig (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, batchsize, disabled, schedulertyp) VALUES ('989a9c7e-6b73-49c2-92a5-f0202a9f8933', '2025-03-28 10:38:45.573423 +00:00', '2025-03-28 10:38:45.573423 +00:00', 'liquibase', 'liquibase', 0, 100, true, 'MARK_FOR_ARCHIVIERUNG');
+      INSERT INTO schedulerconfig (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, batchsize, disabled, schedulertyp) VALUES ('d1c49e4a-4a04-46a0-bb0a-a0b0d2febff4', '2025-04-01 09:38:45.573423 +00:00', '2025-04-01 09:38:45.573423 +00:00', 'liquibase', 'liquibase', 0, 100, false, 'DOSSIER_QUEUE_PROCESSING');
+      INSERT INTO schedulerconfig (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, batchsize, disabled, schedulertyp) VALUES ('396f343c-4bef-4c7b-ac1a-7f0bd50cba08', '2025-05-19 16:35:17.642000 +00:00', '2025-05-19 16:35:17.642000 +00:00', 'liquibase', 'liquibase', 0, 100, false, 'DOSSIER_QUEUE_CLEAN_UP');
+    </sql>
+  </changeSet>
+  <changeSet author="dvbern" id="2026-03-17-10-05">
+    <addColumn tableName="archivdokument" >
+      <column name="dossierid" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+  </changeSet>
+  <changeSet author="dvbern" id="2026-03-17-10-06">
+    <addColumn tableName="archivdokument_aud" >
+      <column name="dossierid" type="UUID"/>
+    </addColumn>
+  </changeSet>
+</databaseChangeLog>

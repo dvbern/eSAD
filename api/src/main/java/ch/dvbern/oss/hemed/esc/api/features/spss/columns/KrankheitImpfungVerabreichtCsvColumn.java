@@ -37,13 +37,23 @@ public class KrankheitImpfungVerabreichtCsvColumn extends AbstractCsvColumn {
         return krankheitImmunitaetList.stream()
             .map(UntersuchungImpfungKrankheitImmunitaet::getImpfung)
             .filter(impfung -> impfung.getImpfStatus() == ImpfStatus.DURCHGEFUEHRT)
+            .filter(impfung -> impfung.getAnlassImpfungDurchgefuehrt() != null
+                && impfung.getAnlassImpfungDurchgefuehrt()
+                .getId()
+                .getId()
+                .equals(einladung.getAnlass().getId().getId()))
             .toList()
-            .isEmpty() ? "" : formatPositivResponse();
+            .isEmpty() ? formatNegativResponse() : formatPositivResponse();
     }
 
     @NonNull
     private String formatPositivResponse() {
         return config.forSpssReport() ? "1" : PrintUtil.trimToPlaceholder(true, config.tl());
+    }
+
+    @NonNull
+    private String formatNegativResponse() {
+        return config.forSpssReport() ? "" : PrintUtil.trimToPlaceholder(false, config.tl());
     }
 
     String printBoolean(boolean input) {

@@ -10,8 +10,8 @@ import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.assertj.AppValidationErrorJsonSpecAssert;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminWIN;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsPupil;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsPupilBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.DeveloperApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.PupilApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppValidationErrorJsonSpec;
@@ -61,6 +61,7 @@ class PupilResourceITest extends AbstractITest {
     @Nullable
     private Integer socketTimeoutBefore;
 
+
     @BeforeAll
     @ActivateRequestContext
     void beforeAll() {
@@ -95,7 +96,7 @@ class PupilResourceITest extends AbstractITest {
                 .setParam(SO_TIMEOUT, timeout));
     }
 
-    @TestAsPupil
+    @TestAsPupilBS
     @Test
     @Order(10)
     void pupil_csv_upload_throws_if_file_empty() {
@@ -122,7 +123,7 @@ class PupilResourceITest extends AbstractITest {
             .allMatch(k -> k.equals("InvalidCSVFormat"));
     }
 
-    @TestAsPupil
+    @TestAsPupilBS
     @Test
     @Order(40)
     void pupil_csv_upload_pseudo_data() {
@@ -143,14 +144,14 @@ class PupilResourceITest extends AbstractITest {
             .hasSize(31)
             .isNotEmpty()
             .asInstanceOf(InstanceOfAssertFactories.list(EscadaImportResultJsonSchuleImportResultJsonsInnerSpec.class))
-            .anyMatch(r -> Objects.equals(r.getExternalId(), "222221"))
+            .anyMatch(r -> Objects.equals(r.getExternalId(), "95b8a129-5020-4814-ab4c-ca37360dbc49"))
             .allMatch(r -> r.getStatus() == ImportStatusSpec.OK);
 
         Assertions.assertThat(result.getKlasseImportResultJsons())
             .hasSize(46)
             .isNotEmpty()
             .asInstanceOf(InstanceOfAssertFactories.list(EscadaImportResultJsonKlasseImportResultJsonsInnerSpec.class))
-            .anyMatch(k -> Objects.equals(k.getExternalId(), "111111"))
+            .anyMatch(k -> Objects.equals(k.getExternalId(), "30ebaf49-46f2-4895-a71b-d0d67be64ea3"))
             .allMatch(k -> k.getStatus() == ImportStatusSpec.OK);
 
         Assertions.assertThat(result.getKindImportResultJsons())
@@ -161,7 +162,7 @@ class PupilResourceITest extends AbstractITest {
 
     }
 
-    @TestAsAdminWIN
+    @TestAsAdminBS
     @Test
     @SuppressWarnings("java:S5976")
     @Order(50)
@@ -178,7 +179,7 @@ class PupilResourceITest extends AbstractITest {
     }
 
     @TestSecurity(
-        user = TestAsPupil.USERNAME,
+        user = TestAsPupilBS.USERNAME,
         // java Annotation require compile time Constants so we need to define the array each time :(
         roles = {
             PUPIL_PUSH
@@ -186,12 +187,12 @@ class PupilResourceITest extends AbstractITest {
     )
     @OidcSecurity(
         claims = {
-            @Claim(key = "sub", value = TestAsPupil.BENUTZER_ID),
+            @Claim(key = "sub", value = TestAsPupilBS.BENUTZER_ID),
             @Claim(key = "tenant", value = "WIN"),
             @Claim(key = "family_name", value = "Serviceaccount"),
             @Claim(key = "given_name", value = "Pupil"),
-            @Claim(key = "preferred_username", value = TestAsPupil.USERNAME),
-            @Claim(key = "email", value = TestAsPupil.EMAIL),
+            @Claim(key = "preferred_username", value = TestAsPupilBS.USERNAME),
+            @Claim(key = "email", value = TestAsPupilBS.EMAIL),
             @Claim(key = "azp", value = "invalid_client"),
         }
     )
@@ -210,7 +211,7 @@ class PupilResourceITest extends AbstractITest {
     }
 
     @TestSecurity(
-        user = TestAsPupil.USERNAME,
+        user = TestAsPupilBS.USERNAME,
         // java Annotation require compile time Constants so we need to define the array each time :(
         roles = {
             PUPIL_PUSH
@@ -218,13 +219,13 @@ class PupilResourceITest extends AbstractITest {
     )
     @OidcSecurity(
         claims = {
-            @Claim(key = "sub", value = TestAsPupil.BENUTZER_ID),
+            @Claim(key = "sub", value = TestAsPupilBS.BENUTZER_ID),
             @Claim(key = "tenant", value = "WIN"),
             @Claim(key = "family_name", value = "Serviceaccount"),
             @Claim(key = "given_name", value = "Pupil"),
             @Claim(key = "preferred_username", value = "invalid_username"),
-            @Claim(key = "email", value = TestAsPupil.EMAIL),
-            @Claim(key = "azp", value = TestAsPupil.AZP),
+            @Claim(key = "email", value = TestAsPupilBS.EMAIL),
+            @Claim(key = "azp", value = TestAsPupilBS.AZP),
         }
     )
     @Test
@@ -241,7 +242,7 @@ class PupilResourceITest extends AbstractITest {
             .statusCode(Status.FORBIDDEN.getStatusCode());
     }
 
-    @TestAsPupil
+    @TestAsPupilBS
     @Test
     @Order(80)
     void pupil_client_blocked_from_other_apis() {
@@ -253,7 +254,7 @@ class PupilResourceITest extends AbstractITest {
             .statusCode(Status.FORBIDDEN.getStatusCode());
     }
 
-    @TestAsPupil
+    @TestAsPupilBS
     @Test
     @Order(110)
     void pupil_csv_upload_async_pseudo_data() {
@@ -265,7 +266,7 @@ class PupilResourceITest extends AbstractITest {
             ._fileMultiPart(firstFile)
             .execute(v -> v)
             .then()
-            .statusCode(Status.OK.getStatusCode());
+            .statusCode(Status.NO_CONTENT.getStatusCode());
     }
 
     @NonNull

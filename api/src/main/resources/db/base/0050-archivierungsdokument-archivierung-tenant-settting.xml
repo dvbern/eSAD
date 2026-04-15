@@ -1,0 +1,107 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hefr (generated)" id="1773137678514-1">
+    <createTable tableName="archivdokument">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="archivdokumentPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="archivierungstatus" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="archivierungtyp" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="betroffeneskind" type="VARCHAR(2000)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestamparchiviert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampdownloaded" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="filedata_id" type="UUID"/>
+      <column name="owner_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1773137678514-2">
+    <createTable tableName="archivdokument_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="archivierungstatus" type="VARCHAR(30)"/>
+      <column name="archivierungtyp" type="VARCHAR(30)"/>
+      <column name="betroffeneskind" type="VARCHAR(2000)"/>
+      <column name="timestamparchiviert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampdownloaded" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="filedata_id" type="UUID"/>
+      <column name="owner_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1773137678514-3">
+    <addColumn tableName="tenantsetting">
+      <column name="archivierungfeature" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1773137678514-3a">
+    <sql>
+      UPDATE tenantsetting SET archivierungfeature = 'DISABLED' where archivierungfeature IS NULL
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1773137678514-3b">
+    <addNotNullConstraint tableName="tenantsetting" columnName="archivierungfeature"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1773137678514-4">
+    <addColumn tableName="tenantsetting_aud">
+      <column name="archivierungfeature" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1773137678514-5">
+    <addPrimaryKey columnNames="rev, id" constraintName="archivdokument_audPK" tableName="archivdokument_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1773137678514-6">
+    <addUniqueConstraint columnNames="filedata_id" constraintName="UC_ARCHIVDOKUMENTFILEDATA_ID_COL" tableName="archivdokument"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1773137678514-7">
+    <createIndex indexName="ix_archivdokument_filedata" tableName="archivdokument">
+      <column name="filedata_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1773137678514-8">
+    <createIndex indexName="ix_archivdokument_benutzer" tableName="archivdokument">
+      <column name="owner_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1773137678514-9">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="archivdokument_aud" constraintName="FKfaxrlhclkpdc8vch70ghwp1a5" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1773137678514-10">
+    <addForeignKeyConstraint baseColumnNames="filedata_id" baseTableName="archivdokument" constraintName="fk_archivdokument_filedata" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="filedata" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1773137678514-11">
+    <addForeignKeyConstraint baseColumnNames="owner_id" baseTableName="archivdokument" constraintName="fk_archivdokument_benutzer" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+</databaseChangeLog>

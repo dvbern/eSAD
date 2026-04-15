@@ -1,5 +1,13 @@
 package ch.dvbern.oss.hemed.esc.api.shared.printer;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Objects;
+import java.util.regex.Pattern;
+
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
@@ -22,12 +30,26 @@ import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.font.PdfFontFactory.EmbeddingStrategy;
 import com.itextpdf.kernel.geom.PageSize;
-import com.itextpdf.kernel.pdf.*;
+import com.itextpdf.kernel.pdf.PdfAConformanceLevel;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfDocumentInfo;
+import com.itextpdf.kernel.pdf.PdfOutputIntent;
+import com.itextpdf.kernel.pdf.PdfPage;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfString;
+import com.itextpdf.kernel.pdf.PdfVersion;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.WriterProperties;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.kernel.pdf.xobject.PdfFormXObject;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
-import com.itextpdf.layout.element.*;
+import com.itextpdf.layout.element.AreaBreak;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.ListItem;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
@@ -37,14 +59,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.mime.MediaType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Objects;
-import java.util.regex.Pattern;
 
 @Slf4j
 public class BasePrinter {
@@ -69,7 +83,7 @@ public class BasePrinter {
         @NonNull TenantEnum tenant,
         @NonNull FileStoreService fileStoreService
     ) {
-        this.tl = new TLProducer(() -> appLanguage).forAppLanguage(appLanguage);
+        this.tl = new TLProducer(() -> appLanguage, () -> tenant).forAppLanguage(appLanguage);
         this.appLanguages = appLanguage;
         this.tenant = tenant;
         this.fileStoreService = fileStoreService;
@@ -112,19 +126,25 @@ public class BasePrinter {
 
                 Image image = new Image(imageData);
                 image.setMaxHeight(60);
+                if (tenant == TenantEnum.WIN) {
+                    image.setMaxWidth(250);
+                }
 
                 Paragraph adressBlock = new Paragraph();
                 adressBlock.setMultipliedLeading(1.0f);
+
                 adressBlock.add(PDFAPrintUtil.sanitizeForPDFA(tl.translate("printer.kinderdossier.tenant.adresse")));
+
                 adressBlock.setFontSize(10);
 
                 var table = new Table(2).useAllAvailableWidth();
                 table.addCell(new Cell().add(image)
-                    .setBorder(Border.NO_BORDER));
+                    .setBorder(Border.NO_BORDER)
+                    .setHorizontalAlignment(HorizontalAlignment.LEFT));
                 table.addCell(new Cell().add(adressBlock)
                     .setBorder(Border.NO_BORDER)
                     .setVerticalAlignment(VerticalAlignment.MIDDLE)
-                    .setHorizontalAlignment(HorizontalAlignment.CENTER));
+                    .setHorizontalAlignment(HorizontalAlignment.RIGHT));
                 document.add(table);
             }
 
@@ -220,7 +240,7 @@ public class BasePrinter {
         float keyPercentage = getKeyWidthPercentage(translatedKey.length());
         float valuePercentage = 100 - keyPercentage;
 
-        Table keyValueTable = new Table(UnitValue.createPercentArray(new float[]{keyPercentage, valuePercentage}));
+        Table keyValueTable = new Table(UnitValue.createPercentArray(new float[] { keyPercentage, valuePercentage }));
 
         keyValueTable.useAllAvailableWidth();
         keyValueTable.setMarginTop(0.0f);
@@ -410,7 +430,6 @@ public class BasePrinter {
             table.useAllAvailableWidth();
         }
 
-
         addHeaderToTable(headerColumns, table);
 
         if (rows.isEmpty()) {
@@ -431,14 +450,14 @@ public class BasePrinter {
 
         MediaType fileMediaType = fileData.getFileInfoBucket().getMediaType();
         switch (fileMediaType.toString()) {
-            case "application/pdf" -> addPdf(fileBytesSync, document);
-            // According to this documentation: https://kb.itextpdf.com/itext/which-image-types-are-supported-by-itext#:~:text=iText%20supports%20JPEG%2C%20JPEG2000%2C%20GIF,TIFF%2C%20CCITT%20and%20JBIG2%20images.
-            case "image/jpeg", "image/png", "image/gif", "image/svg+xml", "image/bmp", "windows/metafile",
-                 "image/tiff" -> addImage(fileBytesSync, document);
-            default -> {
-                document.add(new AreaBreak());
-                addValue(I18nMessage.of("printer.file-format.not-supported", "extension", fileMediaType), true, document);
-            }
+        case "application/pdf" -> addPdf(fileBytesSync, document);
+        // According to this documentation: https://kb.itextpdf.com/itext/which-image-types-are-supported-by-itext#:~:text=iText%20supports%20JPEG%2C%20JPEG2000%2C%20GIF,TIFF%2C%20CCITT%20and%20JBIG2%20images.
+        case "image/jpeg", "image/png", "image/gif", "image/svg+xml", "image/bmp", "windows/metafile",
+             "image/tiff" -> addImage(fileBytesSync, document);
+        default -> {
+            document.add(new AreaBreak());
+            addValue(I18nMessage.of("printer.file-format.not-supported", "extension", fileMediaType), true, document);
+        }
         }
     }
 
@@ -448,7 +467,8 @@ public class BasePrinter {
             InputStream fontStream = BasePrinter.class.getResourceAsStream(OPEN_SANS_REGULAR);
             Objects.requireNonNull(fontStream);
             byte[] bytes = fontStream.readAllBytes();
-            PdfFont pdfFont = PdfFontFactory.createFont(bytes, PdfEncodings.IDENTITY_H, EmbeddingStrategy.FORCE_EMBEDDED);
+            PdfFont pdfFont =
+                PdfFontFactory.createFont(bytes, PdfEncodings.IDENTITY_H, EmbeddingStrategy.FORCE_EMBEDDED);
             fontStream.close();
             return pdfFont;
         } catch (IOException e) {

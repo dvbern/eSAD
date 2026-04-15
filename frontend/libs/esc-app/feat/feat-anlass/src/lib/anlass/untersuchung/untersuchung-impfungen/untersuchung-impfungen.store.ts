@@ -1,5 +1,5 @@
-import {withDevtools} from '@angular-architects/ngrx-toolkit';
-import {inject, Injectable} from '@angular/core';
+import { withDevtools } from '@angular-architects/ngrx-toolkit';
+import { inject, Injectable } from '@angular/core';
 import {
   AnlassService,
   AnlassTyp,
@@ -9,40 +9,45 @@ import {
   EinladungenService,
   UntersuchungImpfstatusListSaveJson,
   UntersuchungImpfungenChecklisteSaveJson,
+  UntersuchungImpfungenDataMinimalJson,
   UntersuchungImpfungenDoppelkontrolleSaveJson,
   UntersuchungImpfungenImpfausweisSaveJson,
   UntersuchungImpfungenJson,
   UntersuchungImpfungenMassnahmenJson,
   UntersuchungImpfungenSaveJson,
   UntersuchungImpfungenService,
+  UntersuchungImpfungenServiceSaveUntersuchungImpfungenDataMinimalRequestParams,
   UntersuchungImpfungenServiceSaveUntersuchungMassnahmenRequestParams,
   UntersuchungImpfungInternJson,
   UntersuchungImpfungInternSaveJson,
 } from '@dvb/data-access-backend';
-import {BackendEntityId, requireValidBackendEntityId} from '@dvb/data-access-types';
-import {AppErrorHandlerService, AppNotificationStore, Loader} from '@dvb/util-angular';
-import {ensurePropsFlat, requireValue} from '@dvb/util-shared';
-import {TranslocoService} from '@jsverse/transloco';
-import {tapResponse} from '@ngrx/operators';
-import {EmptyFeatureResult, patchState, signalStore, SignalStoreFeature, withMethods, withState} from '@ngrx/signals';
-import {rxMethod} from '@ngrx/signals/rxjs-interop';
-import {exhaustMap, filter, map, pipe, switchMap, take, tap} from 'rxjs';
-import {UntersuchungStore} from '../untersuchung.store';
-import {toObservable} from "@angular/core/rxjs-interop";
+import { BackendEntityId, requireValidBackendEntityId } from '@dvb/data-access-types';
+import { AppErrorHandlerService, AppNotificationStore, Loader } from '@dvb/util-angular';
+import { ensurePropsFlat, requireValue } from '@dvb/util-shared';
+import { TranslocoService } from '@jsverse/transloco';
+import { tapResponse } from '@ngrx/operators';
+import { EmptyFeatureResult, patchState, signalStore, SignalStoreFeature, withMethods, withState } from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { exhaustMap, filter, map, pipe, switchMap, take, tap } from 'rxjs';
+import { UntersuchungStore } from '../untersuchung.store';
+import { toObservable } from '@angular/core/rxjs-interop';
+import {EventBusStore} from "@dvb/feat-shared";
 
 type UntersuchungState = {
-  impfausweis: UntersuchungImpfungenImpfausweisSaveJson | undefined,
-  checklist: UntersuchungImpfungenChecklisteSaveJson | undefined,
-  doppelkontrolle: UntersuchungImpfungenDoppelkontrolleSaveJson | undefined,
-  versionUntersuchungImpfungen: number | undefined,
-  massnahmen: UntersuchungImpfungenMassnahmenJson | undefined,
-  impfstatusList: UntersuchungImpfstatusListSaveJson | undefined,
-  impfungenInternList: UntersuchungImpfungInternJson[],
-  imfanlaesseScheduled: AnlassWithDateTimeJson[],
-  impffolgetermine: AnlassWithOpenSlotsListJson,
+  dataMinimal: UntersuchungImpfungenDataMinimalJson | undefined;
+  impfausweis: UntersuchungImpfungenImpfausweisSaveJson | undefined;
+  checklist: UntersuchungImpfungenChecklisteSaveJson | undefined;
+  doppelkontrolle: UntersuchungImpfungenDoppelkontrolleSaveJson | undefined;
+  versionUntersuchungImpfungen: number | undefined;
+  massnahmen: UntersuchungImpfungenMassnahmenJson | undefined;
+  impfstatusList: UntersuchungImpfstatusListSaveJson | undefined;
+  impfungenInternList: UntersuchungImpfungInternJson[];
+  imfanlaesseScheduled: AnlassWithDateTimeJson[];
+  impffolgetermine: AnlassWithOpenSlotsListJson;
 };
 
 const initialState: UntersuchungState = {
+  dataMinimal: undefined,
   impfausweis: undefined,
   checklist: undefined,
   doppelkontrolle: undefined,
@@ -53,8 +58,8 @@ const initialState: UntersuchungState = {
   imfanlaesseScheduled: [],
   impffolgetermine: {
     maximalAnzahlSlots: 0,
-    anlaesseWithOpenEinladungenSlots: []
-  }
+    anlaesseWithOpenEinladungenSlots: [],
+  },
 };
 
 @Injectable()
@@ -62,14 +67,14 @@ export class UntersuchungImpfungenStore extends signalStore(
   { protectedState: false },
   withDevtools('untersuchungImpfung') as SignalStoreFeature<EmptyFeatureResult, EmptyFeatureResult>,
   withState(initialState),
-  withMethods((store) => ({
+  withMethods(store => ({
     prepareUntersuchungSaveJson(): UntersuchungImpfungenSaveJson {
       return ensurePropsFlat<UntersuchungImpfungenSaveJson>({
         impfausweis: requireValue(store.impfausweis()),
         checkliste: requireValue(store.checklist()),
         doppelkontrolle: requireValue(store.doppelkontrolle()),
         version: requireValue(store.versionUntersuchungImpfungen()),
-      })
+      });
     },
     patchImpfausweis(data: UntersuchungImpfungenJson): void {
       patchState(store, {
@@ -96,6 +101,7 @@ export class UntersuchungImpfungenStore extends signalStore(
   readonly #einladungenService = inject(EinladungenService);
   readonly #appErrorHandlerService = inject(AppErrorHandlerService);
   readonly #untersuchungStore = inject(UntersuchungStore);
+  readonly #eventBusStore = inject(EventBusStore);
 
   readonly #appNotificationStore = inject(AppNotificationStore);
   readonly #transloco = inject(TranslocoService);
@@ -103,9 +109,10 @@ export class UntersuchungImpfungenStore extends signalStore(
   readonly loader = new Loader();
   readonly saveImpfungenLoader = new Loader();
   readonly saveMassnahmenLoader = new Loader();
+  readonly saveDataMinimalLoader = new Loader();
   readonly impffolgetermineLoader = new Loader();
 
-  loadUntersuchungImpfungenData = rxMethod<{ anlassId: BackendEntityId, einladungId: BackendEntityId }>(
+  loadUntersuchungImpfungenData = rxMethod<{ anlassId: BackendEntityId; einladungId: BackendEntityId }>(
     pipe(
       tap(() => patchState(this, initialState)),
       switchMap(payload =>
@@ -120,6 +127,7 @@ export class UntersuchungImpfungenStore extends signalStore(
       tapResponse({
         next: result => {
           patchState(this, {
+            dataMinimal: result.dataMinimal,
             impfausweis: result.untersuchungImpfungen.data.impfausweis,
             checklist: result.untersuchungImpfungen.data.checkliste,
             doppelkontrolle: result.untersuchungImpfungen.data.doppelkontrolle,
@@ -135,39 +143,40 @@ export class UntersuchungImpfungenStore extends signalStore(
   );
 
   changeImpfausweisUnvollstaendig = rxMethod<{
-    anlassId: BackendEntityId,
-    einladungId: BackendEntityId,
-    impfausweisUnvollstaendig: boolean,
+    anlassId: BackendEntityId;
+    einladungId: BackendEntityId;
+    impfausweisUnvollstaendig: boolean;
   }>(
     pipe(
       exhaustMap(payload =>
         this.saveImpfungenLoader.tapLoading$(
-          this.#impfungenService.saveUntersuchungImpfungen$({
-            anlassId: payload.anlassId,
-            einladungId: payload.einladungId,
-            untersuchungImpfungenSaveJson: {
-              ... this.prepareUntersuchungSaveJson(),
-              impfausweis: {
-                ...requireValue(this.impfausweis()),
-                impfausweisUnvollstaendig: payload.impfausweisUnvollstaendig,
+          this.#impfungenService
+            .saveUntersuchungImpfungen$({
+              anlassId: payload.anlassId,
+              einladungId: payload.einladungId,
+              untersuchungImpfungenSaveJson: {
+                ...this.prepareUntersuchungSaveJson(),
+                impfausweis: {
+                  ...requireValue(this.impfausweis()),
+                  impfausweisUnvollstaendig: payload.impfausweisUnvollstaendig,
+                },
               },
-            },
-          }).pipe(
-            map(impfungen => ({ result: impfungen , params: payload }))
-          ),
+            })
+            .pipe(map(impfungen => ({ result: impfungen, params: payload }))),
           error => this.#appErrorHandlerService.handleError(error),
         ),
       ),
       tapResponse({
-        next: ({params, result}) => {
+        next: ({ params, result }) => {
           this.patchImpfausweis(result);
           // we have to reload checkmark state
           this.#untersuchungStore.loadTabsSaved({
             anlassId: params.anlassId,
             einladungId: params.einladungId,
           });
-          this.#appNotificationStore.addSuccessNotification(this.#transloco.translate(
-            'untersuchung.impfungen.impfausweisUnvollstaendig.changed'));
+          this.#appNotificationStore.addSuccessNotification(
+            this.#transloco.translate('untersuchung.impfungen.impfausweisUnvollstaendig.changed'),
+          );
         },
         error: console.error,
       }),
@@ -175,26 +184,26 @@ export class UntersuchungImpfungenStore extends signalStore(
   );
 
   changeImpfausweisNichtVorhanden = rxMethod<{
-    anlassId: BackendEntityId,
-    einladungId: BackendEntityId,
-    impfausweisNichtVorhanden: boolean,
+    anlassId: BackendEntityId;
+    einladungId: BackendEntityId;
+    impfausweisNichtVorhanden: boolean;
   }>(
     pipe(
       exhaustMap(payload =>
         this.saveImpfungenLoader.tapLoading$(
-          this.#impfungenService.saveUntersuchungImpfungen$({
-            anlassId: payload.anlassId,
-            einladungId: payload.einladungId,
-            untersuchungImpfungenSaveJson: {
-              ...this.prepareUntersuchungSaveJson(),
-              impfausweis: {
-                ...requireValue(this.impfausweis()),
-                impfausweisNichtVorhanden: payload.impfausweisNichtVorhanden,
+          this.#impfungenService
+            .saveUntersuchungImpfungen$({
+              anlassId: payload.anlassId,
+              einladungId: payload.einladungId,
+              untersuchungImpfungenSaveJson: {
+                ...this.prepareUntersuchungSaveJson(),
+                impfausweis: {
+                  ...requireValue(this.impfausweis()),
+                  impfausweisNichtVorhanden: payload.impfausweisNichtVorhanden,
+                },
               },
-            },
-          }).pipe(
-            map(impfungen => ({ result: impfungen, params: payload }))
-          ),
+            })
+            .pipe(map(impfungen => ({ result: impfungen, params: payload }))),
           error => this.#appErrorHandlerService.handleError(error),
         ),
       ),
@@ -216,26 +225,26 @@ export class UntersuchungImpfungenStore extends signalStore(
   );
 
   changeImpfausweisZweiPlusEinsSchema = rxMethod<{
-    anlassId: BackendEntityId,
-    einladungId: BackendEntityId,
-    impfausweisZweiPlusEinsSchema: boolean,
+    anlassId: BackendEntityId;
+    einladungId: BackendEntityId;
+    impfausweisZweiPlusEinsSchema: boolean;
   }>(
     pipe(
       exhaustMap(payload =>
         this.saveImpfungenLoader.tapLoading$(
-          this.#impfungenService.saveUntersuchungImpfungen$({
-            anlassId: payload.anlassId,
-            einladungId: payload.einladungId,
-            untersuchungImpfungenSaveJson: {
-              ...this.prepareUntersuchungSaveJson(),
-              impfausweis: {
-                ...requireValue(this.impfausweis()),
-                impfausweisZweiPlusEinsSchema: payload.impfausweisZweiPlusEinsSchema,
+          this.#impfungenService
+            .saveUntersuchungImpfungen$({
+              anlassId: payload.anlassId,
+              einladungId: payload.einladungId,
+              untersuchungImpfungenSaveJson: {
+                ...this.prepareUntersuchungSaveJson(),
+                impfausweis: {
+                  ...requireValue(this.impfausweis()),
+                  impfausweisZweiPlusEinsSchema: payload.impfausweisZweiPlusEinsSchema,
+                },
               },
-            },
-          }).pipe(
-            map(impfungen => ({ result: impfungen, params: payload }))
-          ),
+            })
+            .pipe(map(impfungen => ({ result: impfungen, params: payload }))),
           error => this.#appErrorHandlerService.handleError(error),
         ),
       ),
@@ -256,7 +265,33 @@ export class UntersuchungImpfungenStore extends signalStore(
     ),
   );
 
-  visierenDoppelkontrolleVisum1 = rxMethod<{ anlassId: BackendEntityId, einladungId: BackendEntityId }>(
+  saveDataMinimal = rxMethod<UntersuchungImpfungenServiceSaveUntersuchungImpfungenDataMinimalRequestParams>(
+    pipe(
+      exhaustMap(params =>
+        this.saveDataMinimalLoader.tapLoading$(
+          this.#impfungenService
+            .saveUntersuchungImpfungenDataMinimal$(params)
+            .pipe(map(dataMinimal => ({ dataMinimal, params }))),
+          error => this.#appErrorHandlerService.handleError(error),
+        ),
+      ),
+      tapResponse({
+        next: ({ dataMinimal, params }) => {
+          patchState(this, { dataMinimal: dataMinimal });
+          // have to reload checkmark state and whole impfungData for version number
+          this.#untersuchungStore.loadTabsSaved({
+            anlassId: params.anlassId,
+            einladungId: params.einladungId,
+          });
+          this.loadUntersuchungImpfungenData({ anlassId: params.anlassId, einladungId: params.einladungId });
+          this.#appNotificationStore.addSuccessNotification(this.#transloco.translate('global.data.saved'));
+        },
+        error: console.error,
+      }),
+    ),
+  );
+
+  visierenDoppelkontrolleVisum1 = rxMethod<{ anlassId: BackendEntityId; einladungId: BackendEntityId }>(
     pipe(
       exhaustMap(payload =>
         this.saveImpfungenLoader.tapLoading$(
@@ -264,7 +299,7 @@ export class UntersuchungImpfungenStore extends signalStore(
             anlassId: payload.anlassId,
             einladungId: payload.einladungId,
             untersuchungImpfungenSaveJson: {
-              ... this.prepareUntersuchungSaveJson(),
+              ...this.prepareUntersuchungSaveJson(),
             },
           }),
           error => this.#appErrorHandlerService.handleError(error),
@@ -280,9 +315,9 @@ export class UntersuchungImpfungenStore extends signalStore(
   );
 
   anfordernDoppelkontrolleVisum2 = rxMethod<{
-    anlassId: BackendEntityId,
-    einladungId: BackendEntityId,
-    user: BenutzerOptionJson,
+    anlassId: BackendEntityId;
+    einladungId: BackendEntityId;
+    user: BenutzerOptionJson;
   }>(
     pipe(
       exhaustMap(payload =>
@@ -294,31 +329,8 @@ export class UntersuchungImpfungenStore extends signalStore(
               ...this.prepareUntersuchungSaveJson(),
               doppelkontrolle: {
                 ...requireValue(this.doppelkontrolle()),
-                visumPerson2:  payload.user,
+                visumPerson2: payload.user,
               },
-            }
-          }),
-          error => this.#appErrorHandlerService.handleError(error),
-        ),
-      ),
-      tapResponse({
-        next: result => {
-          this.patchDoppelkontrolle(result);
-        },
-        error: console.error,
-      }),
-    ),
-  );
-
-  visierenDoppelkontrolleVisum2 = rxMethod<{ anlassId: BackendEntityId, einladungId: BackendEntityId }>(
-    pipe(
-      exhaustMap(payload =>
-        this.saveImpfungenLoader.tapLoading$(
-          this.#impfungenService.visierenDoppelkontrolleVisum2$({
-            anlassId: payload.anlassId,
-            einladungId: payload.einladungId,
-            untersuchungImpfungenSaveJson: {
-              ... this.prepareUntersuchungSaveJson(),
             },
           }),
           error => this.#appErrorHandlerService.handleError(error),
@@ -333,7 +345,30 @@ export class UntersuchungImpfungenStore extends signalStore(
     ),
   );
 
-  resetDoppelkontrolle = rxMethod<{ anlassId: BackendEntityId, einladungId: BackendEntityId }>(
+  visierenDoppelkontrolleVisum2 = rxMethod<{ anlassId: BackendEntityId; einladungId: BackendEntityId }>(
+    pipe(
+      exhaustMap(payload =>
+        this.saveImpfungenLoader.tapLoading$(
+          this.#impfungenService.visierenDoppelkontrolleVisum2$({
+            anlassId: payload.anlassId,
+            einladungId: payload.einladungId,
+            untersuchungImpfungenSaveJson: {
+              ...this.prepareUntersuchungSaveJson(),
+            },
+          }),
+          error => this.#appErrorHandlerService.handleError(error),
+        ),
+      ),
+      tapResponse({
+        next: result => {
+          this.patchDoppelkontrolle(result);
+        },
+        error: console.error,
+      }),
+    ),
+  );
+
+  resetDoppelkontrolle = rxMethod<{ anlassId: BackendEntityId; einladungId: BackendEntityId }>(
     pipe(
       exhaustMap(payload =>
         this.saveImpfungenLoader.tapLoading$(
@@ -341,7 +376,7 @@ export class UntersuchungImpfungenStore extends signalStore(
             anlassId: payload.anlassId,
             einladungId: payload.einladungId,
             untersuchungImpfungenSaveJson: {
-              ... this.prepareUntersuchungSaveJson(),
+              ...this.prepareUntersuchungSaveJson(),
             },
           }),
           error => this.#appErrorHandlerService.handleError(error),
@@ -360,22 +395,19 @@ export class UntersuchungImpfungenStore extends signalStore(
     pipe(
       exhaustMap(params =>
         this.saveMassnahmenLoader.tapLoading$(
-          this.#impfungenService.saveUntersuchungMassnahmen$(params).pipe(
-            map(massnahmen => ({ massnahmen, params }))
-          ),
+          this.#impfungenService.saveUntersuchungMassnahmen$(params).pipe(map(massnahmen => ({ massnahmen, params }))),
           error => this.#appErrorHandlerService.handleError(error),
         ),
       ),
       tapResponse({
         next: ({ massnahmen, params }) => {
-
-          patchState(this, {massnahmen: massnahmen});
+          patchState(this, { massnahmen: massnahmen });
           // have to reload checkmark state and whole impfungData for version number
           this.#untersuchungStore.loadTabsSaved({
             anlassId: params.anlassId,
             einladungId: params.einladungId,
           });
-          this.loadUntersuchungImpfungenData({anlassId: params.anlassId, einladungId: params.einladungId});
+          this.loadUntersuchungImpfungenData({ anlassId: params.anlassId, einladungId: params.einladungId });
           this.#appNotificationStore.addSuccessNotification(this.#transloco.translate('global.data.saved'));
         },
         error: console.error,
@@ -384,8 +416,8 @@ export class UntersuchungImpfungenStore extends signalStore(
   );
 
   einzelTerminErstellen = rxMethod<{
-    anlassId: BackendEntityId,
-    einladungId: BackendEntityId,
+    anlassId: BackendEntityId;
+    einladungId: BackendEntityId;
     onSuccess: () => void;
   }>(
     pipe(
@@ -411,9 +443,9 @@ export class UntersuchungImpfungenStore extends signalStore(
   );
 
   saveUntersuchungImpfstatusList = rxMethod<{
-    anlassId: BackendEntityId,
-    einladungId: BackendEntityId,
-    impfstatusList: UntersuchungImpfstatusListSaveJson,
+    anlassId: BackendEntityId;
+    einladungId: BackendEntityId;
+    impfstatusList: UntersuchungImpfstatusListSaveJson;
   }>(
     pipe(
       exhaustMap(payload =>
@@ -445,9 +477,9 @@ export class UntersuchungImpfungenStore extends signalStore(
   );
 
   createImpfungIntern = rxMethod<{
-    anlassId: BackendEntityId,
-    einladungId: BackendEntityId,
-    impfung: UntersuchungImpfungInternSaveJson,
+    anlassId: BackendEntityId;
+    einladungId: BackendEntityId;
+    impfung: UntersuchungImpfungInternSaveJson;
   }>(
     pipe(
       exhaustMap(payload =>
@@ -466,6 +498,9 @@ export class UntersuchungImpfungenStore extends signalStore(
                 patchState(this, {
                   impfungenInternList: [...this.impfungenInternList(), result],
                 });
+                // Vorsichtshalber die Impfstoffchargen neu laden
+                this.#eventBusStore.emit('IMPFSTOFF_CHARGEN_POTENTIALLY_CHANGED',
+                  {impfstoffId: result.data.impfstoff.id});
               },
               error: console.error,
             }),
@@ -475,39 +510,41 @@ export class UntersuchungImpfungenStore extends signalStore(
   );
 
   updateImpfungIntern = rxMethod<{
-    anlassId: BackendEntityId,
-    einladungId: BackendEntityId,
-    impfungId: BackendEntityId,
-    impfung: UntersuchungImpfungInternSaveJson,
+    anlassId: BackendEntityId;
+    einladungId: BackendEntityId;
+    impfungId: BackendEntityId;
+    impfung: UntersuchungImpfungInternSaveJson;
   }>(
     pipe(
       exhaustMap(payload =>
         this.saveImpfungenLoader
           .tapLoading$(
-            this.#impfungenService.updateUntersuchungImpfungenIntern$({
-              anlassId: payload.anlassId,
-              einladungId: payload.einladungId,
-              impfungInternId: requireValue(payload.impfungId),
-              untersuchungImpfungInternSaveJson: payload.impfung,
-            }).pipe(
-              map(result => ({ params: payload, result  }))
-            ),
+            this.#impfungenService
+              .updateUntersuchungImpfungenIntern$({
+                anlassId: payload.anlassId,
+                einladungId: payload.einladungId,
+                impfungInternId: requireValue(payload.impfungId),
+                untersuchungImpfungInternSaveJson: payload.impfung,
+              })
+              .pipe(map(result => ({ params: payload, result }))),
             error => this.#appErrorHandlerService.handleError(error),
           )
           .pipe(
             tapResponse({
-              next: ({params, result}) => {
+              next: ({ params, result }) => {
                 patchState(this, {
                   impfungenInternList: this.impfungenInternList().map(impfung =>
                     impfung.id === result.id ? result : impfung,
                   ),
-                }
-                );
+                });
                 // we have to reload checkmark state
                 this.#untersuchungStore.loadTabsSaved({
                   anlassId: params.anlassId,
                   einladungId: params.einladungId,
                 });
+                // Vorsichtshalber die Impfstoffchargen neu laden
+                this.#eventBusStore.emit('IMPFSTOFF_CHARGEN_POTENTIALLY_CHANGED',
+                  {impfstoffId: result.data.impfstoff.id});
               },
               error: console.error,
             }),
@@ -517,9 +554,9 @@ export class UntersuchungImpfungenStore extends signalStore(
   );
 
   removeImpfungIntern = rxMethod<{
-    anlassId: BackendEntityId,
-    einladungId: BackendEntityId,
-    impfungId: BackendEntityId,
+    anlassId: BackendEntityId;
+    einladungId: BackendEntityId;
+    impfungId: BackendEntityId;
   }>(
     pipe(
       exhaustMap(payload =>
@@ -547,9 +584,9 @@ export class UntersuchungImpfungenStore extends signalStore(
   );
 
   changeUntersuchungImpfungenChecklist = rxMethod<{
-    anlassId: BackendEntityId,
-    einladungId: BackendEntityId,
-    checklist: UntersuchungImpfungenChecklisteSaveJson,
+    anlassId: BackendEntityId;
+    einladungId: BackendEntityId;
+    checklist: UntersuchungImpfungenChecklisteSaveJson;
   }>(
     pipe(
       exhaustMap(({ anlassId, einladungId, checklist }) =>
@@ -558,7 +595,7 @@ export class UntersuchungImpfungenStore extends signalStore(
             anlassId: anlassId,
             einladungId: einladungId,
             untersuchungImpfungenSaveJson: {
-              ... this.prepareUntersuchungSaveJson(),
+              ...this.prepareUntersuchungSaveJson(),
               checkliste: checklist,
             },
           }),
@@ -568,8 +605,9 @@ export class UntersuchungImpfungenStore extends signalStore(
       tapResponse({
         next: result => {
           this.patchChecklist(result);
-          this.#appNotificationStore.addSuccessNotification(this.#transloco.translate(
-            'untersuchung.impfungen.checklist.changed'));
+          this.#appNotificationStore.addSuccessNotification(
+            this.#transloco.translate('untersuchung.impfungen.checklist.changed'),
+          );
         },
         error: console.error,
       }),
@@ -577,49 +615,53 @@ export class UntersuchungImpfungenStore extends signalStore(
   );
 
   addKindToFolgetermin = rxMethod<{
-    folgeTerminAnlassId: BackendEntityId,
-    kindId: BackendEntityId,
-    currentAnlassId: BackendEntityId,
+    folgeTerminAnlassId: BackendEntityId;
+    kindId: BackendEntityId;
+    currentAnlassId: BackendEntityId;
   }>(
     pipe(
-      exhaustMap(({folgeTerminAnlassId, kindId, currentAnlassId}) =>
-        this.impffolgetermineLoader.tapLoading$(
-          this.#einladungenService.createEinladungenForAnlass$({
-            anlassId: folgeTerminAnlassId,
-            kindIdListJson: {kinderIdList: [kindId]}
-          }),
-          error => this.#appErrorHandlerService.handleError(error),
-        ).pipe(
-          tapResponse({
-            next: () => {
-              this.#appNotificationStore.addSuccessNotification(this.#transloco.translate('untersuchung.tab.impfungen.massnahmen.folgetermin.success'));
-              this.#loadImpffolgetermin({kindId: requireValidBackendEntityId(kindId)});
-              this.#loadScheduledImpftermine({kindId, excludedAnlassId: currentAnlassId});
-            },
-            error: console.error,
-          }),
-        ),
+      exhaustMap(({ folgeTerminAnlassId, kindId, currentAnlassId }) =>
+        this.impffolgetermineLoader
+          .tapLoading$(
+            this.#einladungenService.createEinladungenForAnlass$({
+              anlassId: folgeTerminAnlassId,
+              kindIdListJson: { kinderIdList: [kindId] },
+            }),
+            error => this.#appErrorHandlerService.handleError(error),
+          )
+          .pipe(
+            tapResponse({
+              next: () => {
+                this.#appNotificationStore.addSuccessNotification(
+                  this.#transloco.translate('untersuchung.tab.impfungen.massnahmen.folgetermin.success'),
+                );
+                this.#loadImpffolgetermin({ kindId: requireValidBackendEntityId(kindId) });
+                this.#loadScheduledImpftermine({ kindId, excludedAnlassId: currentAnlassId });
+              },
+              error: console.error,
+            }),
+          ),
       ),
     ),
   );
 
   initializeFolgeTermine = rxMethod<{ currentAnlassId: BackendEntityId }>(
     pipe(
-      switchMap( ({ currentAnlassId }) =>
+      switchMap(({ currentAnlassId }) =>
         toObservable(this.#untersuchungStore.currentDossier).pipe(
           map(dossier => dossier?.kind.id),
           filter((id): id is BackendEntityId => !!id),
           take(1),
-          map(kindId => ({ currentAnlassId, kindId }))
-        )
+          map(kindId => ({ currentAnlassId, kindId })),
+        ),
       ),
       tapResponse({
-        next: ( { currentAnlassId, kindId }) => {
-          this.#loadImpffolgetermin({kindId: requireValidBackendEntityId(kindId)});
-          this.#loadScheduledImpftermine({kindId, excludedAnlassId: currentAnlassId});
+        next: ({ currentAnlassId, kindId }) => {
+          this.#loadImpffolgetermin({ kindId: requireValidBackendEntityId(kindId) });
+          this.#loadScheduledImpftermine({ kindId, excludedAnlassId: currentAnlassId });
         },
         error: console.error,
-      })
+      }),
     ),
   );
 
@@ -629,7 +671,7 @@ export class UntersuchungImpfungenStore extends signalStore(
         this.impffolgetermineLoader.tapLoading$(
           this.#anlassService.searchAnlassTermineWithAvailableSlots$({
             kindId,
-            anlassTyp: [AnlassTyp.IMPFAKTION, AnlassTyp.IMPFTERMIN, AnlassTyp.IMPFSPRECHSTUNDE]
+            anlassTyp: [AnlassTyp.IMPFAKTION, AnlassTyp.IMPFTERMIN, AnlassTyp.IMPFSPRECHSTUNDE],
           }),
           error => this.#appErrorHandlerService.handleError(error),
         ),
@@ -637,7 +679,7 @@ export class UntersuchungImpfungenStore extends signalStore(
       tapResponse({
         next: result => {
           patchState(this, {
-            impffolgetermine: result
+            impffolgetermine: result,
           });
         },
         error: console.error,
@@ -645,14 +687,14 @@ export class UntersuchungImpfungenStore extends signalStore(
     ),
   );
 
-  #loadScheduledImpftermine = rxMethod<{ kindId: BackendEntityId, excludedAnlassId: BackendEntityId }>(
+  #loadScheduledImpftermine = rxMethod<{ kindId: BackendEntityId; excludedAnlassId: BackendEntityId }>(
     pipe(
       switchMap(({ kindId, excludedAnlassId }) =>
         this.impffolgetermineLoader.tapLoading$(
           this.#anlassService.findScheduledAnlaesseForKind$({
             kindId,
             excludeAnlassIds: [excludedAnlassId],
-            anlassTyp: [AnlassTyp.IMPFAKTION, AnlassTyp.IMPFTERMIN, AnlassTyp.IMPFSPRECHSTUNDE]
+            anlassTyp: [AnlassTyp.IMPFAKTION, AnlassTyp.IMPFTERMIN, AnlassTyp.IMPFSPRECHSTUNDE],
           }),
           error => this.#appErrorHandlerService.handleError(error),
         ),
@@ -660,7 +702,7 @@ export class UntersuchungImpfungenStore extends signalStore(
       tapResponse({
         next: result => {
           patchState(this, {
-            imfanlaesseScheduled: result.anlaesseWithDateTime
+            imfanlaesseScheduled: result.anlaesseWithDateTime,
           });
         },
         error: console.error,

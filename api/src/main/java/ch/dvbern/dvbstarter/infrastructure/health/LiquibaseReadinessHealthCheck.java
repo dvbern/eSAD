@@ -14,7 +14,7 @@ import static java.util.Objects.requireNonNull;
 @Readiness
 @Slf4j
 public class LiquibaseReadinessHealthCheck implements HealthCheck {
-    private static final String NAME = "Liquibase";
+    private static final String NAME = "LiquibaseRaceConditionWorkaround";
 
     private final LiquibaseRaceConditionWorkaround liquibaseWorkaround;
 

@@ -18,6 +18,7 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.anlass.einladung;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.QAnlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.QAnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
@@ -170,10 +172,48 @@ public class EinladungRepo extends BaseRepo<Einladung> {
             .from(QEinladung.einladung)
             .innerJoin(QEinladung.einladung.anlass, QAnlass.anlass)
             .where(QAnlass.anlass.datum.loe(zeitraum.getDatumBis())
-                .and(QAnlass.anlass.datum.goe(zeitraum.getDatumVon())
-                .and(QEinladung.einladung.einladungStatus.eq(EinladungStatus.TEILNAHME_BESTAETIGT)))
+                .and(QAnlass.anlass.datum.goe(zeitraum.getDatumVon()))
             ).fetch();
         return einladungIdList.stream().map(uuid -> ID.of(uuid, Einladung.class)).toList();
+    }
+
+    @NonNull
+    public List<ID<Einladung>> findAllForCsvImpfstoffReport(@NonNull DateRange zeitraum) {
+        // Wir holen sämtliche DossierIds welche in den Anlässen im zeitraum eine Einladung haben.
+        List<UUID> uniqueDossierIds = db
+            .select(QDossier.dossier.id)
+            .distinct()
+            .from(QEinladung.einladung)
+            .innerJoin(QEinladung.einladung.anlass, QAnlass.anlass)
+            .innerJoin(QEinladung.einladung.dossier, QDossier.dossier)
+            .innerJoin(QAnlass.anlass.anlassConfig, QAnlassConfig.anlassConfig)
+            .where(QAnlass.anlass.datum.loe(zeitraum.getDatumBis())
+                .and(QAnlass.anlass.datum.goe(zeitraum.getDatumVon()))
+                .and(QAnlassConfig.anlassConfig.impfungenListe.ne(RequirementSetting.NOT_VISIBLE))
+            ).fetch();
+
+        List<ID<Einladung>> einladungenIds = new ArrayList<>(List.of());
+
+        // Für jede ermittelte DossierId suchen wir die Einladung im letzten Anlass da es mehrere Einladungen geben kann.
+        for (UUID dossierId : uniqueDossierIds) {
+            Einladung einladung = db
+                .selectFrom(QEinladung.einladung)
+                .innerJoin(QEinladung.einladung.anlass, QAnlass.anlass)
+                .innerJoin(QEinladung.einladung.dossier, QDossier.dossier)
+                .innerJoin(QAnlass.anlass.anlassConfig, QAnlassConfig.anlassConfig)
+                .where(QDossier.dossier.id.eq(dossierId)
+                    .and(QAnlass.anlass.datum.loe(zeitraum.getDatumBis()))
+                    .and(QAnlass.anlass.datum.goe(zeitraum.getDatumVon()))
+                    .and(QAnlassConfig.anlassConfig.impfungenListe.ne(RequirementSetting.NOT_VISIBLE))
+                )
+                .orderBy(QAnlass.anlass.datum.desc())
+                .limit(1)
+                .fetchFirst();
+            if (einladung != null) {
+                einladungenIds.add(einladung.getId());
+            }
+        }
+        return einladungenIds;
     }
 
     public void markAsSpssExported(@NonNull List<ID<Einladung>> einladungIdList) {

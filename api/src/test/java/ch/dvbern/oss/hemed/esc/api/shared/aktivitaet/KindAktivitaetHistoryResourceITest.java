@@ -11,8 +11,8 @@ import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsOrthoptist;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularzt;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsOrthoptistBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.AktivitaetApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.AnlassApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.DossierApiSpec;
@@ -64,7 +64,7 @@ class KindAktivitaetHistoryResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsOrthoptist // this user is seldom used, assume it has no aktivaet
+    @TestAsOrthoptistBS // this user is seldom used, assume it has no aktivaet
     @Order(20)
     void getAktivitaetenKind_should_return_empty_list_if_no_entry() {
         // ARRANGE
@@ -82,7 +82,7 @@ class KindAktivitaetHistoryResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsOrthoptist // this user is seldom used, assume it has no aktivaet
+    @TestAsOrthoptistBS // this user is seldom used, assume it has no aktivaet
     @Order(30)
     void getAktivitaetenAnlaesse_should_return_empty_list_if_no_entry() {
         // ARRANGE
@@ -199,7 +199,7 @@ class KindAktivitaetHistoryResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSchularzt
+    @TestAsSchularztBS
     @Order(70)
     void getAktivitaetenAnlaesse_opening_anlassplanung_should_create_entry_as_schularzt() {
         // ARRANGE
@@ -234,7 +234,7 @@ class KindAktivitaetHistoryResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSchularzt
+    @TestAsSchularztBS
     @Order(80)
     void testAsSchularzt_cannot_see_admin_aktivitaeten() {
         // ARRANGE

@@ -28,7 +28,7 @@ class BerechtigungsMatrixTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "BS", "WIN" })
+    @ValueSource(strings = { "BS", "WIN", "BE" })
     void checkExpectedCSVFileExistsAndContainsExpectedSeparator(@NonNull String tenant) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(
             getExpectedPath(tenant).toFile(),
@@ -43,7 +43,7 @@ class BerechtigungsMatrixTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "BS", "WIN" })
+    @ValueSource(strings = { "BS", "WIN", "BE" })
     void exportedCSVMatchesExpectedOutput(@NonNull String tenant) throws IOException {
 
         TenantEnum tenantEnum = TenantEnum.valueOf(tenant);

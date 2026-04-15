@@ -5,9 +5,12 @@ import java.util.List;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammSimpel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenHoerhilfe;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungHoerenAudiogrammBuilder;
 import org.assertj.core.api.Assertions;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -306,6 +309,58 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
 
     @ParameterizedTest
     @CsvSource({
+        "REQUIRED	,	        ,false",
+        "REQUIRED	,DB_TIEF    ,true",
+        "OPTIONAL	,           ,true",
+        "OPTIONAL	,DB_TIEF    ,true",
+        "NOT_VISIBLE,           ,true",
+        "NOT_VISIBLE,DB_TIEF    ,true",
+    })
+    void validateAudiogrammSimpel(
+        @NonNull RequirementSetting requirementSetting,
+        @Nullable AudiogrammSimpel audiogrammSimpel,
+        boolean expectedValid
+    ) {
+        // ARRANGE
+        UntersuchungHoerenAudiogramm hoeren = UntersuchungHoerenAudiogrammBuilder.create(builder -> {});
+        hoeren.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setHoerenAudiogrammSimpel(requirementSetting);
+        hoeren.setAudiogrammSimpel(SingleValueEnhanced.of(audiogrammSimpel, null));
+        // ACT
+        CheckUntersuchungHoerenAudiogrammPresentIfReqValidator
+            validator = new CheckUntersuchungHoerenAudiogrammPresentIfReqValidator();
+        boolean result = validator.isEntityValid(hoeren);
+        // ASSERT
+        Assertions.assertThat(result).isEqualTo(expectedValid);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "REQUIRED	,	    ,false",
+        "REQUIRED	,JA     ,true",
+        "OPTIONAL	,       ,true",
+        "OPTIONAL	,JA     ,true",
+        "NOT_VISIBLE,       ,true",
+        "NOT_VISIBLE,JA     ,true",
+    })
+    void validateHoerhilfe(
+        @NonNull RequirementSetting requirementSetting,
+        @Nullable HoerenHoerhilfe hoerhilfe,
+        boolean expectedValid
+    ) {
+        // ARRANGE
+        UntersuchungHoerenAudiogramm hoeren = UntersuchungHoerenAudiogrammBuilder.create(builder -> {});
+        hoeren.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setHoerenHoerhilfe(requirementSetting);
+        hoeren.setHoerhilfe(SingleValueEnhanced.of(hoerhilfe, null));
+        // ACT
+        CheckUntersuchungHoerenAudiogrammPresentIfReqValidator
+            validator = new CheckUntersuchungHoerenAudiogrammPresentIfReqValidator();
+        boolean result = validator.isEntityValid(hoeren);
+        // ASSERT
+        Assertions.assertThat(result).isEqualTo(expectedValid);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
         "REQUIRED	,	    ,false",
         "REQUIRED	,NORMAL	,true",
         "OPTIONAL	,       ,true",
@@ -324,7 +379,7 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
             : null;
         UntersuchungHoerenAudiogramm hoeren = UntersuchungHoerenAudiogrammBuilder.create(
             builder -> builder
-                .withAudiogrammBeurteilung(beurteilungList));
+                .withAudiogrammBeurteilung(beurteilungList, null));
         hoeren.getUntersuchung()
             .getEinladung()
             .getAnlass()
@@ -365,7 +420,7 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
             builder -> builder
                 .withAudiogrammRechts(audiogrammRechts)
                 .withAudiogrammLinks(audiogrammLinks)
-                .withAudiogrammBeurteilung(beurteilungList));
+                .withAudiogrammBeurteilung(beurteilungList, null));
         hoeren.getUntersuchung()
             .getEinladung()
             .getAnlass()
@@ -405,7 +460,7 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
             : null;
         UntersuchungHoerenAudiogramm hoeren = UntersuchungHoerenAudiogrammBuilder.create(
             builder -> builder
-                .withZusaetzlicheAngaben(beurteilungList));
+                .withZusaetzlicheAngaben(beurteilungList, null));
         hoeren.getUntersuchung()
             .getEinladung()
             .getAnlass()
@@ -439,7 +494,7 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
             : List.of(empfehlung);
         UntersuchungHoerenAudiogramm hoeren = UntersuchungHoerenAudiogrammBuilder.create(
             builder -> builder
-                .withEmpfehlung(empfehlungList));
+                .withEmpfehlung(empfehlungList, null));
         hoeren.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setHoerenAudiogrammEmpfehlung(requirementSetting);
         // ACT
         CheckUntersuchungHoerenAudiogrammPresentIfReqValidator

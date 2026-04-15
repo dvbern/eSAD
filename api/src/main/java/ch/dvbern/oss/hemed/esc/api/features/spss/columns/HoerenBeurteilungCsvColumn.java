@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -13,7 +14,8 @@ public class HoerenBeurteilungCsvColumn extends AbstractCsvColumn {
     public HoerenBeurteilungCsvColumn(
         @NonNull CsvColumnConfig config,
         @Nullable String overrideHeader,
-        @NonNull AudiogrammBeurteilung audiogrammBeurteilung) {
+        @NonNull AudiogrammBeurteilung audiogrammBeurteilung
+    ) {
         super(config, overrideHeader);
         this.audiogrammBeurteilung = audiogrammBeurteilung;
     }
@@ -24,10 +26,13 @@ public class HoerenBeurteilungCsvColumn extends AbstractCsvColumn {
         return ExtractorForCsvUtil.extractUntersuchungHoerenAudiogramm(
             einladung,
             untersuchungHoeren -> {
+                boolean resultat = ValueEnhancedUtil.getEnumSetOrEmpty(
+                    untersuchungHoeren.getAudiogrammBeurteilung(),
+                    AudiogrammBeurteilung.class).contains(audiogrammBeurteilung);
                 if (config.forSpssReport()) {
-                    return untersuchungHoeren.getAudiogrammBeurteilung().contains(audiogrammBeurteilung) ? "1" : "";
+                    return resultat ? "1" : "";
                 }
-                return PrintUtil.trimToPlaceholder(untersuchungHoeren.getAudiogrammBeurteilung().contains(audiogrammBeurteilung), config.tl());
+                return PrintUtil.trimToPlaceholder(resultat, config.tl());
             }
         );
     }

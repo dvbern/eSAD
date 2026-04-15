@@ -28,17 +28,17 @@ import org.eclipse.microprofile.context.ManagedExecutor;
 public class KlasseExternalSyncService {
 
     private final KlasseExternalSyncHelperService klasseExternalSyncHelperService;
-    private final ManagedExecutor concurrentEscadaExecutor;
+    private final ManagedExecutor concurrentExecutor;
 
     // IMPORANT: for the @ManagedExecutorConfig annotation to work, it must be directly on the @Inject.
     // do NOT use private final quarkus magic or you will exhaust all db connections
     @Inject
     public KlasseExternalSyncService(
         KlasseExternalSyncHelperService klasseExternalSyncHelperService,
-        @ManagedExecutorConfig(maxAsync = 9) ManagedExecutor concurrentEscadaExecutor
+        @ManagedExecutorConfig(maxAsync = 9) ManagedExecutor concurrentExecutor
     ) {
         this.klasseExternalSyncHelperService = klasseExternalSyncHelperService;
-        this.concurrentEscadaExecutor = concurrentEscadaExecutor;
+        this.concurrentExecutor = concurrentExecutor;
     }
 
     @NonNull
@@ -64,7 +64,7 @@ public class KlasseExternalSyncService {
         @NonNull Set<KlasseExternal> itemsToPersist,
         @NonNull ImportTyp importTyp) {
         var stopwatch = StopWatch.createStarted();
-        LOG.info("{}: Starting to add {} Klassen", importTyp.toString().toUpperCase(), itemsToPersist.size());
+        LOG.info("{}: Starting to add {} Klassen", importTyp, itemsToPersist.size());
 
         List<CompletableFuture<ItemSyncResultJson<Klasse>>> futures = itemsToPersist.stream()
             .map(klasseExternalToAdd -> CompletableFuture.supplyAsync(
@@ -74,7 +74,7 @@ public class KlasseExternalSyncService {
                     } catch (Exception e) {
                         LOG.warn(
                             "{}: Error adding new Klasse with externalId: '{}'",
-                            importTyp.toString().toUpperCase(),
+                            importTyp,
                             klasseExternalToAdd.getExternalId(), e);
                         return ItemSyncResultJson.<Klasse>createAddErrorItem(
                             klasseExternalToAdd,
@@ -83,7 +83,7 @@ public class KlasseExternalSyncService {
                                 klasseExternalToAdd.getExternalId()),
                             e);
                     }
-                }, concurrentEscadaExecutor))
+                }, concurrentExecutor))
             .toList();
 
         List<ItemSyncResultJson<Klasse>> resultDtos = futures.stream()
@@ -92,7 +92,7 @@ public class KlasseExternalSyncService {
 
         LOG.info(
             "{}: Finished persisting new Klassen, took {}ms",
-            importTyp.toString().toUpperCase(),
+            importTyp,
             stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
@@ -102,7 +102,7 @@ public class KlasseExternalSyncService {
         @NonNull Set<ExternalSystemIdDTO> itemsToDelete,
         @NonNull ImportTyp importTyp) {
         var stopwatch = StopWatch.createStarted();
-        LOG.info("{}: Starting to deactivate {} Klassen", importTyp.toString().toUpperCase(), itemsToDelete.size());
+        LOG.info("{}: Starting to deactivate {} Klassen", importTyp, itemsToDelete.size());
 
         List<CompletableFuture<ItemSyncResultJson<Klasse>>> futures = itemsToDelete.stream()
             .map(externalSystemIdDTO -> CompletableFuture.supplyAsync(
@@ -112,11 +112,11 @@ public class KlasseExternalSyncService {
                     } catch (Exception e) {
                         LOG.warn(
                             "{}: Error deactivating Klasse with externalId: '{}', internalId: '{}'",
-                            importTyp.toString().toUpperCase(),
+                            importTyp,
                             externalSystemIdDTO.getExternalId(), externalSystemIdDTO.getInternalId(), e);
                         return ItemSyncResultJson.createDeactivateErrorItem(externalSystemIdDTO, Klasse.class, e);
                     }
-                }, concurrentEscadaExecutor))
+                }, concurrentExecutor))
             .toList();
 
         List<ItemSyncResultJson<Klasse>> resultDtos = futures.stream()
@@ -125,7 +125,7 @@ public class KlasseExternalSyncService {
 
         LOG.info(
             "{}: Finished deactivating Klassen, took {}ms",
-            importTyp.toString().toUpperCase(),
+            importTyp,
             stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
@@ -136,7 +136,7 @@ public class KlasseExternalSyncService {
         @NonNull ImportTyp importTyp
     ) {
         var stopwatch = StopWatch.createStarted();
-        LOG.info("{}: Starting to update {} Klassen", importTyp.toString().toUpperCase(), itemsToSync.size());
+        LOG.info("{}: Starting to update {} Klassen", importTyp, itemsToSync.size());
 
         List<CompletableFuture<ItemSyncResultJson<Klasse>>> futures = itemsToSync.entrySet().stream()
             .map(entry -> CompletableFuture.supplyAsync(
@@ -147,11 +147,11 @@ public class KlasseExternalSyncService {
                     } catch (Exception e) {
                         LOG.warn(
                             "{}: Error updating Klasse with externalId: '{}', internalId: '{}'",
-                            importTyp.toString().toUpperCase(),
+                            importTyp,
                             idDTO.getExternalId(), idDTO.getInternalId(), e);
                         return ItemSyncResultJson.createUpdateErrorItem(idDTO, Klasse.class, e);
                     }
-                }, concurrentEscadaExecutor))
+                }, concurrentExecutor))
             .toList();
 
         List<ItemSyncResultJson<Klasse>> resultDtos = futures.stream()
@@ -160,7 +160,7 @@ public class KlasseExternalSyncService {
 
         LOG.info(
             "{}: Finished updating Klassen, took {}ms",
-            importTyp.toString().toUpperCase(),
+            importTyp,
             stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }

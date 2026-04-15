@@ -12,23 +12,36 @@ export class BenutzerOptionsStore extends signalStore(
   {protectedState: false},
   withEntities<BenutzerOptionJson>(),
   withSelectedEntity<BenutzerOptionJson>(),
-  withComputed(({entities}) => ({
+  withMethods(() => ({
+    organisationsRollen(current: BenutzerOptionJson): FachRolle[] | Nullish {
+      if (current.organisationRollen.length > 0) {
+        return current.organisationRollen[0].fachRollen;
+      }
+      return null;
+    },
+    systemRollen(current: BenutzerOptionJson): FachRolle[] | Nullish {
+      return current.systemRollen?.fachRollen;
+    }
+  })),
+  withComputed(({entities, organisationsRollen, systemRollen}) => ({
     arztOptions: computed((): BenutzerOptionJson[] => {
-      return entities().filter(benutzerOption => benutzerOption.fachrollen.includes(FachRolle.SCHULAERZTIN))
+      return entities().filter(benutzerOption => organisationsRollen(benutzerOption)?.includes(FachRolle.SCHULAERZTIN))
     }),
-    mpaOrPfpOptions: computed((): BenutzerOptionJson[] => {
+    hilfspersonOptions: computed((): BenutzerOptionJson[] => {
       return entities()
-        .filter(benutzerOption => benutzerOption.fachrollen.includes(FachRolle.MPA)
-          || benutzerOption.fachrollen.includes(FachRolle.PFP))
+        .filter(benutzerOption => organisationsRollen(benutzerOption)?.some(
+          organisationsRolle => [FachRolle.MPA, FachRolle.PFP, FachRolle.SCHOOL_NURSE].includes(organisationsRolle)
+        ))
     }),
     supportOptions: computed((): BenutzerOptionJson[] => {
-      return entities().filter(benutzerOption => benutzerOption.fachrollen.includes(FachRolle.SUPPORT));
+      return entities()
+        .filter(benutzerOption => systemRollen(benutzerOption)?.includes(FachRolle.SUPPORT));
     }),
     supperuserOptions: computed((): BenutzerOptionJson[] => {
-      return entities().filter(benutzerOption => benutzerOption.fachrollen.includes(FachRolle.SUPERUSER));
+      return entities().filter(benutzerOption => organisationsRollen(benutzerOption)?.includes(FachRolle.SUPERUSER));
     }),
     adminuserOptions: computed((): BenutzerOptionJson[] => {
-      return entities().filter(benutzerOption => benutzerOption.fachrollen.includes(FachRolle.ADMIN));
+      return entities().filter(benutzerOption => organisationsRollen(benutzerOption)?.includes(FachRolle.ADMIN));
     }),
   })),
   withMethods((store) => ({
@@ -47,11 +60,11 @@ export class BenutzerOptionsStore extends signalStore(
       }
       return [...store.arztOptions(), current];
     },
-    mpaOrPfpOptionsIncluding(current: BenutzerOptionJson | Nullish): BenutzerOptionJson[] {
-      if (isNullish(current) || this.contains(store.mpaOrPfpOptions(), current)) {
-        return store.mpaOrPfpOptions();
+    hilfspersonOptionsIncluding(current: BenutzerOptionJson | Nullish): BenutzerOptionJson[] {
+      if (isNullish(current) || this.contains(store.hilfspersonOptions(), current)) {
+        return store.hilfspersonOptions();
       }
-      return [...store.mpaOrPfpOptions(), current];
+      return [...store.hilfspersonOptions(), current];
     },
     entitiesIncluding(current: BenutzerOptionJson | Nullish): BenutzerOptionJson[] {
       if (isNullish(current) || this.contains(store.entities(), current)) {

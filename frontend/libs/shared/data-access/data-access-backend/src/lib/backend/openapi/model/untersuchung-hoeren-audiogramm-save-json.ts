@@ -7,19 +7,19 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { HoerenEmpfehlung } from './hoeren-empfehlung';
 import { AudiogrammSaveJson } from './audiogramm-save-json';
-import { AudiogrammBeurteilung } from './audiogramm-beurteilung';
-import { HoerenZusaetzlicheAngaben } from './hoeren-zusaetzliche-angaben';
+import { ValueEnhancedJson } from './value-enhanced-json';
 
 
 export interface UntersuchungHoerenAudiogrammSaveJson { 
     audiogrammRechts?: AudiogrammSaveJson;
     audiogrammLinks?: AudiogrammSaveJson;
-    audiogrammBeurteilung?: Array<AudiogrammBeurteilung>;
-    zusaetzlicheAngaben?: Array<HoerenZusaetzlicheAngaben>;
-    empfehlung?: Array<HoerenEmpfehlung>;
+    audiogrammBeurteilung: ValueEnhancedJson;
+    zusaetzlicheAngaben: ValueEnhancedJson;
+    empfehlung: ValueEnhancedJson;
     bemerkungen?: string;
+    audiogrammSimpel?: ValueEnhancedJson;
+    hoerhilfe?: ValueEnhancedJson;
     version: number;
 }
 

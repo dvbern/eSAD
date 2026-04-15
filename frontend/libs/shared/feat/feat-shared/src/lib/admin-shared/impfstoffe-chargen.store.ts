@@ -16,6 +16,7 @@ import {patchState, signalStore, withMethods, withState} from '@ngrx/signals';
 import {addEntity, removeEntity, setAllEntities, setEntity, withEntities} from '@ngrx/signals/entities';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, pipe, switchMap} from 'rxjs';
+import {ImpfstoffChargeOption} from "../core/impfstoff-charge-option";
 
 type ImpfstoffeChargenState = {
   chargenList: ImpfstoffChargeJson[];
@@ -38,6 +39,9 @@ export class ImpfstoffeChargenStore extends signalStore(
     },
     activeChargenForImpfstoff(impfstoffId: BackendEntityId | undefined): ImpfstoffChargeJson[] {
       return store.chargenList().filter((el: ImpfstoffChargeJson) => el.data.aktiv && el.impfstoffId === impfstoffId);
+    },
+    activeChargenForImpfstoffOptions(impfstoffId: BackendEntityId | undefined): ImpfstoffChargeOption[] {
+      return this.activeChargenForImpfstoff(impfstoffId).map(charge => ({ label: charge.data.name }))
     },
     getKrankheitenTranslatedList(krankheiten: Krankheit[]): string {
       return krankheiten.map(krankheit => translocoService.translate(`Krankheit.${krankheit}`)).join(', ');

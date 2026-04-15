@@ -1,0 +1,16 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="1767015691253-1">
+    <!-- Benutzer Pupil client to run pupil tests on BS-database -->
+    <sql>
+
+      INSERT INTO benutzer (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, email, keycloakid, lastusedip, lastusedsessionid, lastusedsessiontimestamp, oidcissuer, nachname, telefon, timestamplastmanuallyactivated, titel, vorname, benutzeraktivstatus, timestampagbaccepted)
+      VALUES ('774e7a9f-8908-4aab-8fa2-2d21cdc7cda8', '2025-12-29 11:00:00.118393 +00:00', '2025-12-29 11:00:00.202890 +00:00', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 0, 'pupil-client@dvbern.ch', null, null, null, null, null, 'Serviceaccount', null, null, null, 'Pupil', 'INAKTIV', null);
+
+      -- add Berechtigung to  do escada push
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, berechtigung, benutzer_id)
+      VALUES ('d211f7a8-f7a4-4186-8b05-cc26676fb368', '2025-12-29 11:00:00.118393 +00:00', '2025-12-29 11:00:00.202890 +00:00', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'PUPIL_PUSH', '774e7a9f-8908-4aab-8fa2-2d21cdc7cda8');
+
+    </sql>
+  </changeSet>
+</databaseChangeLog>

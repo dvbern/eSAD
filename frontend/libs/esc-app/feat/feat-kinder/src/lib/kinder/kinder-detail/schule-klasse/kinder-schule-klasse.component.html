@@ -5,7 +5,7 @@
   <!-- SCHULE -->
   <svui-form-control [label]="'kind.schule' | transloco"
                      [viewValue]="form.group.getRawValue().schule?.bezeichnung"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <ng-select
       svuiNgSelect
       bindLabel='dummy'
@@ -28,7 +28,7 @@
   <!-- KLASSE -->
   <svui-form-control [label]="'kind.klasse' | transloco"
                      [viewValue]="form.group.getRawValue().klasse?.bezeichnung"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <ng-select
       svuiNgSelect
       bindLabel='dummy'

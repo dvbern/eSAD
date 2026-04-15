@@ -78,6 +78,7 @@ class RequireRoleAuthGuard {
   }
 }
 
+
 function triggerUnauthenticatedNotification(
   appNotificationStore: AppNotificationStore,
   translocoService: TranslocoService,

@@ -35,7 +35,9 @@ import {DocumentQueueStore} from './document-queue.store';
 })
 export class DocumentQueueComponent {
   readonly documentQueueStore = inject(DocumentQueueStore);
-  itemTable = new TableModel<DocumentQueueDisplayJson>({rawListSignal: this.documentQueueStore.entities},
+
+  itemTable = new TableModel<DocumentQueueDisplayJson>(
+    {rawListSignal: this.documentQueueStore.entities},
     {frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll'});
   readonly documentQueueFilterForm = new DocumentQueueFilterForm({
     fb: inject(NonNullableFormBuilder),

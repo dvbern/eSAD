@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import static ch.dvbern.oss.hemed.esc.api.features.schule.EscadaDummySchulenIds.DUMMY_SCHULE_ID;
+import static ch.dvbern.oss.hemed.esc.api.features.schule.DummySchulenIds.DUMMY_SCHULE_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -71,11 +71,11 @@ public class SchuleService {
     }
 
     @NonNull
-    public Schule getDummySchuleForUnassignedEscadaKlassen(@Nullable String schulkreisBezeichnung) {
+    public Schule getDummySchuleForUnassignedKlassenFromImport(@Nullable String schulkreisBezeichnung) {
         if (StringUtils.isEmpty(schulkreisBezeichnung)) {
             return schuleRepo.getById(DUMMY_SCHULE_ID);
         }
-        ID<Schule> schuleID = EscadaDummySchulenIds.getDummySchuleForUnassignedEscadaKlassen(
+        ID<Schule> schuleID = DummySchulenIds.getDummySchuleForUnassignedEscadaKlassen(
             Objects.requireNonNull(schulkreisBezeichnung)
         );
         return schuleRepo.getById(Objects.requireNonNullElse(schuleID, DUMMY_SCHULE_ID));

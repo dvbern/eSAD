@@ -14,23 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import {expect, Page} from '@playwright/test';
-import {matchUrl} from '../util/url-e2e.utils';
+import {Page} from '@playwright/test';
 import {DetailPageMode} from './types';
+import {WithSubpaths} from "./with-subpahts";
 
-export abstract class DetailFormWithModePageObject {
-  protected abstract paths: Record<DetailPageMode, string>;
-  protected abstract selector: string;
-
-  constructor(public page: Page) {
-  }
-
-  async isCurrentPage(mode: DetailPageMode) {
-    await this.page.waitForURL((url) => matchUrl(url, this.paths[mode]));
-    await expect(this.page.locator(this.selector)).toBeVisible();
-  }
-
-  baseForm = {
-    submitButton: () => this.page.locator('button[type=submit]'),
+export abstract class DetailFormWithModePageObject extends WithSubpaths<DetailPageMode>{
+  constructor(page: Page) {
+    super(page);
   }
 }

@@ -1,4 +1,4 @@
-import { Translation } from '@jsverse/transloco';
+import {Translation} from '@jsverse/transloco';
 
 export function verifyScopeInTranslations(scope: string, translationsPerLang: Translation | undefined): Translation {
   if (!translationsPerLang) {
@@ -6,12 +6,7 @@ export function verifyScopeInTranslations(scope: string, translationsPerLang: Tr
     return {};
   }
 
-  const invalidKeys = findInvalidTranslationKeys(scope, translationsPerLang);
-
-  // if (invalidKeys.length > 0) {
-  //   const keys = invalidKeys.join(', ');
-  //   throw new Error(`The following translation-keys do not start with the scope "${scope}": ${keys}`);
-  // }
+  findInvalidTranslationKeys(scope, translationsPerLang);
 
   return translationsPerLang;
 }

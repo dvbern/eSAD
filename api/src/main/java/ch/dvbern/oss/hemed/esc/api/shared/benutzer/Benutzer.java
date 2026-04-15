@@ -11,25 +11,31 @@ import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumberConverter;
+import ch.dvbern.oss.hemed.esc.api.features.benutzer.SystemRollen;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationRollen;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
-import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckBenutzerFachRollen;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -57,6 +63,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@CheckBenutzerFachRollen
 public class Benutzer extends AbstractEntity<Benutzer> implements EntityWithOptimisticLocking {
 
     @Serial
@@ -113,13 +120,6 @@ public class Benutzer extends AbstractEntity<Benutzer> implements EntityWithOpti
     @Nullable
     private BenutzerLoginInfos loginInfos;
 
-    @Nullable
-    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
-    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private String fachRollen;
-
     @NonNull
     @Valid
     @OneToMany(mappedBy = "benutzer", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -130,12 +130,29 @@ public class Benutzer extends AbstractEntity<Benutzer> implements EntityWithOpti
      * The actual deactivation happens in the login system (i.e. Keycloak or Entra) but this serves as a flag, so we
      * know which users were last thought of by esc as deaktiviert, this will be used to remove them from dropdowns etc
      */
-    @Column(nullable = false)
-    private boolean aktiv = true;
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private EntityAktivStatus benutzerAktivStatus = EntityAktivStatus.AKTIV;
 
     @Nullable
     @Column(nullable = true)
     private OffsetDateTime timestampLastManuallyActivated;
+
+    @Nullable
+    @Column(nullable = true)
+    private OffsetDateTime timestampAGBAccepted;
+
+    @NonNull
+    @Valid
+    @OneToMany(mappedBy = "benutzer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ToString.Exclude
+    private Set<OrganisationRollen> organisationRollen = new HashSet<>();
+
+    @Nullable
+    @OneToOne(mappedBy = "benutzer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private SystemRollen systemRollen;
 
     @NonNull
     public String getNameVorname() {
@@ -147,15 +164,6 @@ public class Benutzer extends AbstractEntity<Benutzer> implements EntityWithOpti
         return vorname + ' ' + nachname;
     }
 
-    public void setFachRollen(@NonNull EnumSet<FachRolle> fachRollen) {
-        this.fachRollen = EnumSetUtil.toString(fachRollen);
-    }
-
-    @NonNull
-    public EnumSet<FachRolle> getFachRollen() {
-        return EnumSetUtil.fromString(FachRolle.class, fachRollen);
-    }
-
     @NonNull
     public static ID<Benutzer> getSystemAdminId(@NonNull TenantEnum tenant) {
         return switch (tenant) {
@@ -164,5 +172,28 @@ public class Benutzer extends AbstractEntity<Benutzer> implements EntityWithOpti
             case WIN -> SYSTEM_ADMIN_WIN_ID;
             default -> throw new IllegalArgumentException("Unknown tenant: " + tenant);
         };
+    }
+
+    @NonNull
+    public EnumSet<FachRolle> getFachRollen() {
+        EnumSet<FachRolle> combinedFachrollen = EnumSet.noneOf(FachRolle.class);
+        if (this.getSystemRollen() != null) {
+            combinedFachrollen.addAll(this.getSystemRollen().getFachRollen());
+        }
+        this.getOrganisationRollen()
+            .stream()
+            .map(OrganisationRollen::getFachRollen)
+            .forEach(combinedFachrollen::addAll);
+        return combinedFachrollen;
+    }
+
+    public void addOrganisation(@NonNull OrganisationRollen newRollen) {
+        if (this.getOrganisationRollen().isEmpty()) {
+            this.setOrganisationRollen(Set.of(newRollen));
+        } else {
+            Set<OrganisationRollen> existingOrganisationen = this.getOrganisationRollen();
+            existingOrganisationen.add(newRollen);
+            this.setOrganisationRollen(existingOrganisationen);
+        }
     }
 }

@@ -2,8 +2,10 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung;
 
 import java.io.Serial;
 
+import ch.dvbern.oss.hemed.esc.api.features.anlass.abschluss.UntersuchungAbschluss;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.UntersuchungBewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
@@ -13,9 +15,13 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen
 import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDaten;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.UntersuchungLaeusekontrolle;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.UntersuchungSchulrelevanteBeeintraechtigung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBemerkungFragebogen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.signatur.UntersuchungSignatur;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.UntersuchungSprache;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.vorabklaerungen.UntersuchungVorabklaerungen;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -39,6 +45,7 @@ import org.hibernate.envers.Audited;
     indexes = {
         @Index(name = "ix_untersuchung_untersuchungkinddaten", columnList = "untersuchungkinddaten_id, id"),
         @Index(name = "ix_untersuchung_untersuchungdurchfuehrung", columnList = "untersuchungdurchfuehrung_id, id"),
+        @Index(name = "ix_untersuchung_untersuchungvorabklaerungen", columnList = "untersuchungvorabklaerungen_id, id"),
         @Index(name = "ix_untersuchung_untersuchungtriage", columnList = "untersuchungtriage_id, id"),
         @Index(name = "ix_untersuchung_untersuchungimpfungen", columnList = "untersuchungimpfungen_id, id"),
         @Index(name = "ix_untersuchung_untersuchungsehenbeurteilung", columnList = "untersuchungsehenbeurteilung_id, id"),
@@ -50,6 +57,11 @@ import org.hibernate.envers.Audited;
         @Index(name = "ix_untersuchung_untersuchunglaeusekontrolle", columnList = "untersuchunglaeusekontrolle_id, id"),
         @Index(name = "ix_untersuchung_untersuchungarztbeurteilung", columnList = "untersuchungarztbeurteilung_id, id"),
         @Index(name = "ix_untersuchung_untersuchungarztbemerkung", columnList = "untersuchungarztbemerkung_id, id"),
+        @Index(name = "ix_untersuchung_untersuchungsprache", columnList = "untersuchungsprache_id, id"),
+        @Index(name = "ix_untersuchung_untersuchungbewegungsapparat", columnList = "untersuchungbewegungsapparat_id, id"),
+        @Index(name = "ix_untersuchung_untersuchungschulrelevantebeintraechtigung", columnList = "untersuchungschulrelevantebeeintraechtigung_id, id"),
+        @Index(name = "ix_untersuchung_untersuchungabschluss", columnList = "untersuchungabschluss_id, id"),
+        @Index(name = "ix_untersuchung_untersuchungsignatur", columnList = "untersuchungsignatur_id, id")
     }
 )
 @Audited
@@ -82,6 +94,11 @@ public class Untersuchung extends AbstractEntity<Untersuchung> {
     @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungdurchfuehrung"), nullable = true)
     private UntersuchungDurchfuehrung untersuchungDurchfuehrung;
+
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungvorabklaerungen"), nullable = true)
+    private UntersuchungVorabklaerungen untersuchungVorabklaerungen;
 
     @Nullable
     @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
@@ -137,6 +154,32 @@ public class Untersuchung extends AbstractEntity<Untersuchung> {
     @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungarztbemerkung"), nullable = true)
     private UntersuchungArztBemerkung untersuchungArztBemerkung;
+
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungsprache"), nullable = true)
+    private UntersuchungSprache untersuchungSprache;
+
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungbewegungsapparat"), nullable = true)
+    private UntersuchungBewegungsapparat untersuchungBewegungsapparat;
+
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungschulrelevantebeeintraechtigung"), nullable = true)
+    private UntersuchungSchulrelevanteBeeintraechtigung untersuchungSchulrelevanteBeeintraechtigung;
+
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungabschluss"), nullable = true)
+    private UntersuchungAbschluss untersuchungAbschluss;
+
+    @Nullable
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungsignatur"), nullable = true)
+    private UntersuchungSignatur untersuchungSignatur;
+
 
     @NonNull
     public static Untersuchung forEinladung(@NonNull Einladung einladung) {

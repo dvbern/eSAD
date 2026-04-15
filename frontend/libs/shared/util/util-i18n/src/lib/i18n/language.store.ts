@@ -1,7 +1,7 @@
-import { inject, Injectable } from '@angular/core';
-import { AbstractSignalStore } from '@dvb/util-angular';
-import { TranslocoService } from '@jsverse/transloco';
-import { DEFAULT_LANGUAGE, isSupportedLanguage, Language } from './Language';
+import {inject, Injectable} from '@angular/core';
+import {AbstractSignalStore} from '@dvb/util-angular';
+import {TranslocoService} from '@jsverse/transloco';
+import {DEFAULT_LANGUAGE, isSupportedLanguage, Language} from './Language';
 
 type LanguageState = {
   selectedLanguage: Language;
@@ -15,6 +15,7 @@ const languageStateInitialState: LanguageState = {
 export class LanguageStore extends AbstractSignalStore<LanguageState> {
   private static readonly languageLocalStorageKey = 'language';
   readonly #translocoService = inject(TranslocoService);
+
 
   /**
    * @param testInit - for testing purposes only
@@ -30,6 +31,7 @@ export class LanguageStore extends AbstractSignalStore<LanguageState> {
 
     if (!language) {
       const browserLanguage = this.getBrowserLanguage();
+      // TODO ESC-1089: Team: check against languages from TenantSettingsStore?
       if (isSupportedLanguage(browserLanguage)) {
         language = browserLanguage;
       }
@@ -64,9 +66,9 @@ export class LanguageStore extends AbstractSignalStore<LanguageState> {
   }
 
   private getBrowserLanguage(): string {
-    // FIXME: implement properly
     const browserLanguage = navigator.language;
-    return browserLanguage.includes('-') ? browserLanguage.split('-')[0] : browserLanguage;
+    const normalizedLang = browserLanguage.split(';')[0].trim();
+    return normalizedLang.includes('-') ? normalizedLang.split('-')[0] : normalizedLang;
   }
 
   private syncLanguage(language: string): void {
@@ -78,4 +80,5 @@ export class LanguageStore extends AbstractSignalStore<LanguageState> {
   activeLocale(): Language {
     return this.state().selectedLanguage;
   }
+
 }

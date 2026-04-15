@@ -6,6 +6,7 @@ import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
@@ -25,7 +26,8 @@ class KindAnlaesseServiceTest {
 
     private final KindAnlaesseRepo repo = Mockito.mock(KindAnlaesseRepo.class, Mockito.CALLS_REAL_METHODS);
     private final EinladungService einladungService = Mockito.mock(EinladungService.class);
-    private final KindAnlaesseService service = new KindAnlaesseService(repo, einladungService);
+    private final AnlassService anlassService = Mockito.mock(AnlassService.class);
+    private final KindAnlaesseService service = new KindAnlaesseService(repo, einladungService, anlassService);
     private final AuthorizerService authorizerService = Mockito.mock(AuthorizerService.class);
     private final KindAnlaesseMapper mapper = new KindAnlaesseMapper(
         service,

@@ -15,6 +15,15 @@ export interface TenantSettingFeaturesJson {
     laenderCodeFeature: TenantSettingFeatureStateJson;
     mobileScannerFeature: TenantSettingFeatureStateJson;
     massenimportFeature: TenantSettingFeatureStateJson;
+    massenbriefFeature: TenantSettingFeatureStateJson;
+    nichtGeprueftGrundFeature: TenantSettingFeatureStateJson;
+    arztListeFeature: TenantSettingFeatureStateJson;
+    adHocImpfstoffChargenFeature: TenantSettingFeatureStateJson;
+    footerFeature: TenantSettingFeatureStateJson;
+    benutzerverwaltungInternFeature: TenantSettingFeatureStateJson;
+    benutzerverwaltungIgnoreFachRolleFromKeycloakFeature: TenantSettingFeatureStateJson;
+    archivierungFeature: TenantSettingFeatureStateJson;
+    zentraleOrganisationFeature: TenantSettingFeatureStateJson;
 }
 
 

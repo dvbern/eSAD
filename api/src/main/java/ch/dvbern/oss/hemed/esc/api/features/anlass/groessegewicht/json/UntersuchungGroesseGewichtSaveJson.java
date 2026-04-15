@@ -3,12 +3,12 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.json;
 import java.math.BigDecimal;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.ValueEnhancedJson;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
@@ -25,17 +25,20 @@ public class UntersuchungGroesseGewichtSaveJson implements SaveJsonWithOptimisti
     @Schema(required = false)
     private BigDecimal gewicht;
 
-    @Nullable
-    @Schema(required = false)
-    private PerzentileGroesse groessePerzentile;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson groessePerzentile;
 
-    @Nullable
-    @Schema(required = false)
-    private PerzentileGewicht gewichtPerzentile;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson gewichtPerzentile;
 
-    @Nullable
-    @Schema(required = false)
-    private PerzentileBmi bmiPerzentile;
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson bmiPerzentile;
 
     @Nullable
     @Schema(required = false)

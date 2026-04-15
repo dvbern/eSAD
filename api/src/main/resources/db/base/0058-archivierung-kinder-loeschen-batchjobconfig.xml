@@ -1,0 +1,9 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="anst" id="1773311291276-1">
+    <sql>
+		INSERT INTO schedulerconfig (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, batchsize, disabled, schedulertyp)
+		VALUES ('3ef82605-46d5-41e2-b58f-ca713558eb9a', current_timestamp, current_timestamp, 'liquibase', 'liquibase', 0, 100, true, 'ARCHIVIERUNG_KIND_DELETE');
+	</sql>
+  </changeSet>
+</databaseChangeLog>

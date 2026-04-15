@@ -23,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.microprofile.context.ManagedExecutor;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -79,7 +78,7 @@ class EdokidIdGeneratorSequenceServiceITest extends AbstractITest {
         );
     }
 
-//    @AfterAll
+    //    @AfterAll
     @ActivateRequestContext
     void restoreSequence() {
         // Restore previous sequence if it existed
@@ -231,7 +230,6 @@ class EdokidIdGeneratorSequenceServiceITest extends AbstractITest {
             .extracting(EdokidId::toFormattedString)
             .allMatch(s -> s.matches(EdokidIdTestGenerator.EDOKID_ID_REGEX_PATTERN))
             .allMatch(s -> s.endsWith(" 97"));
-
 
         restoreSequence(); // since this is the last test we clean up the sequence
 

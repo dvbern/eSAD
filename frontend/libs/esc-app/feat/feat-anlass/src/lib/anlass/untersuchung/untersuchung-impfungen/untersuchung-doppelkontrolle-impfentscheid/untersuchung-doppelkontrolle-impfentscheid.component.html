@@ -38,7 +38,9 @@
   @if (status === 'Visum1Visiert') {
     <svui-form-control [label]="'untersuchung.doppelkontrolle.visum2' | transloco"
                        [size]="'oneAndHalf'"
-                       [viewValue]="form.group.value.visumPerson2?.fullName">
+                       [viewValue]="form.group.value.visumPerson2?.fullName"
+                       data-testid="visum-select"
+    >
       <ng-select
         svuiNgSelect
         bindLabel='dummy'
@@ -82,7 +84,7 @@
 
   <!-- BUTTONS -->
   @if (canEdit()) {
-    <button customFormButtons svuiButton="primary" type="submit">{{ getActionText() }}</button>
+    <button customFormButtons svuiButton="primary" type="submit" data-testid="button-visieren">{{ getActionText() }}</button>
   }
 
 </form>

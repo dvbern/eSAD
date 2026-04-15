@@ -21,16 +21,17 @@ package ch.dvbern.dvbstarter.infrastructure.health.tenant;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerRepo;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
-import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.scheduler.SchedulerConfigService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import io.smallrye.health.api.Wellness;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -58,7 +59,8 @@ public class TenantHealthCheck extends AbstractTenantHealthCheck implements Heal
         @NonNull BenutzerRepo benutzerRepo,
         @NonNull AnlassConfigService anlassConfigService,
         @NonNull SchedulerConfigService schedulerConfigService,
-        @NonNull ConfigService configService
+        @NonNull ConfigService configService,
+        @NonNull AppClock appClock
     ) {
         super(
             tenantProducer,
@@ -67,14 +69,16 @@ public class TenantHealthCheck extends AbstractTenantHealthCheck implements Heal
             benutzerRepo,
             anlassConfigService,
             schedulerConfigService,
-            configService
+            configService,
+            appClock
         );
 
-        tenantesToCheckHealthFor = List.of(
-            new TenantInfos(TenantEnum.BS, Benutzer.SYSTEM_ADMIN_BS_ID),
-            new TenantInfos(TenantEnum.WIN, Benutzer.SYSTEM_ADMIN_WIN_ID),
-            new TenantInfos(TenantEnum.BE, Benutzer.SYSTEM_ADMIN_BE_ID)
-        );
+        tenantesToCheckHealthFor = new ArrayList<>();
+        for (TenantEnum tenant : TenantEnum.values()) {
+            if (tenant.isAktiv() && configService.isTenantEnabledForCurrentEnvironment(tenant)) {
+                tenantesToCheckHealthFor.add(new TenantInfos(tenant, Benutzer.getSystemAdminId(tenant)));
+            }
+        }
     }
 
     @Override
@@ -94,7 +98,7 @@ public class TenantHealthCheck extends AbstractTenantHealthCheck implements Heal
 
             // Add tenant-specific information when health checks fail
             for (TenantHealthCheckResult result : listOfResults) {
-                String tenantPrefix = result.currentTenant().name() + "_";
+                String tenantPrefix = result.currentTenant().name() + '_';
 
                 builder
                     .withData(tenantPrefix + "tenantSettingsPresent", result.tenantSettingsPresent())

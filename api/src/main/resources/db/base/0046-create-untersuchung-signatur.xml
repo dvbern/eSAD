@@ -1,0 +1,99 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <!-- Untersuchung Signatur -->
+  <changeSet author="hefr (generated)" id="1771486958457-1">
+    <createTable tableName="untersuchungsignatur">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungsignaturPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampvisiert" type="TIMESTAMP(6) WITHOUT TIME ZONE"/>
+      <column name="person_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1771486958457-2">
+    <createTable tableName="untersuchungsignatur_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="timestampvisiert" type="TIMESTAMP(6) WITHOUT TIME ZONE"/>
+      <column name="person_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1771486958457-3">
+    <addColumn tableName="untersuchung">
+      <column name="untersuchungsignatur_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1771486958457-4">
+    <addColumn tableName="untersuchung_aud">
+      <column name="untersuchungsignatur_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1771486958457-5">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungsignatur_audPK" tableName="untersuchungsignatur_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1771486958457-6">
+    <addUniqueConstraint columnNames="untersuchungsignatur_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGSIGNATUR_ID_COL" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1771486958457-7">
+    <createIndex indexName="ix_untersuchung_untersuchungsignatur" tableName="untersuchung">
+      <column name="untersuchungsignatur_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1771486958457-8">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungsignatur_aud" constraintName="FKpkivh28t98hy7c7s9tbckqcdo" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1771486958457-9">
+    <addForeignKeyConstraint baseColumnNames="untersuchungsignatur_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchungsignatur" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungsignatur" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1771486958457-10">
+    <addForeignKeyConstraint baseColumnNames="person_id" baseTableName="untersuchungsignatur" constraintName="fk_untersuchungsignatur_benutzer" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="benutzer" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1771486958457-11">
+    <createIndex indexName="ix_untersuchungsignatur_benutzer" tableName="untersuchungsignatur">
+      <column name="person_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <!-- AnlassConfig fuer Untersuchung Signatur -->
+  <changeSet author="hefr (generated)" id="1771488415087-3">
+    <addColumn tableName="anlassconfig">
+      <column name="showcardabschlusssignatur" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1771488415087-3a">
+    <sql>update anlassconfig set showcardabschlusssignatur = false where showcardabschlusssignatur is null</sql>
+  </changeSet>
+  <changeSet author="hefr" id="1771488415087-3b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="showcardabschlusssignatur"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1771488415087-4">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="showcardabschlusssignatur" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+</databaseChangeLog>

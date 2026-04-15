@@ -1,0 +1,67 @@
+@if (anlassStore.selectedEntity()?.anlassConfig?.showCardAbschlussAbschluss) {
+
+  <h3 svuiHeading="formSection" class="mb-3">{{ 'untersuchung.tab.abschluss.card.abschluss' | transloco }}</h3>
+
+  <form svuiFormLayout
+        [formType]="'kacheln'"
+        [mode]="'edit'"
+        [formGroup]="form.group"
+        (ngSubmit)="submitIfValid()">
+
+    <!-- Überweisung Erfolgt -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.abschlussUeberweisungErfolgt !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.ueberweisungValueEnhancedForm"
+        [valueTitleKey]="'untersuchung.tab.abschluss.abschlussUeberweisungErfolgt'"
+        [valuePrefix]="'AbschlussResultat'"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+    }
+
+    <!-- Ärztliche Validierung Erfordferlich -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.abschlussAerztlicheValidierungErforderlich !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.aerztlicheValidierungValueEnhancedForm"
+        [valueTitleKey]="'untersuchung.tab.abschluss.aerztlicheValidierungErforderlich'"
+        [valuePrefix]="'AbschlussResultat'"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+    }
+
+    <!-- Beratung Durchgeführt -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.abschlussBeratungDurchgefuehrt !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.beratungValueEnhancedForm"
+        [valueTitleKey]="'untersuchung.tab.abschluss.beratungDurchgefuehrt'"
+        [valuePrefix]="'AbschlussResultat'"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+    }
+
+    <!-- Bemerkung -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.abschlussBeurteilungEmpfohleneMassnahmen !== RequirementSetting.NOT_VISIBLE) {
+      <svui-title [context]="'formSection'"
+                  class="mb-3">{{ 'untersuchung.tab.abschluss.beurteilungEmpfohleneMassnahmen' | transloco }}
+      </svui-title>
+      <svui-form-control
+        [label]="'untersuchung.tab.abschluss.beurteilungEmpfohleneMassnahmen' | transloco"
+        [topLabelVisibility]="'hidden'"
+        [viewValue]="form.group.controls.beurteilungEmpfohleneMassnahmen.value">
+        <textarea svuiTextarea
+                  [formControl]="form.group.controls.beurteilungEmpfohleneMassnahmen"
+                  [minHeightPx]="120"></textarea>
+      </svui-form-control>
+    }
+
+    <!-- Save / Cancel Buttons -->
+    @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+      <svui-save-cancel-buttons
+        [saving]="false"
+        [canEdit]="canEditAbschluss()"
+        (cancelClicked)="abbrechen()"/>
+    }
+  </form>
+}

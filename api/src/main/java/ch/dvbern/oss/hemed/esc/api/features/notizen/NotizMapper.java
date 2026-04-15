@@ -48,6 +48,7 @@ public final class NotizMapper {
                 notiz.getStatus(),
                 notiz.getTyp(),
                 BenutzerMapper.toOptionJson(notiz.getVerantwortlicher()),
+                notiz.getAnlassLink(),
                 notiz.getLabels().stream().map(LabelMapper::toJson).toList(),
                 notiz.getFiles().stream().map(FileDataMapper::toJson).toList(),
                 notiz.getVersion()
@@ -88,6 +89,7 @@ public final class NotizMapper {
             notizJson.getTyp(),
             dossier,
             verantwortlicher,
+            notizJson.getAnlassLink(),
             desiredLabels,
             new ArrayList<>()
         );
@@ -133,7 +135,7 @@ public final class NotizMapper {
             AppValidationMessage.cannotRemoveEntityFromInactiveKind(
                 kind,
                 notiz));
-        notizService.remove(notizID);
+        notizService.remove(notizID, true);
     }
 
     @NonNull

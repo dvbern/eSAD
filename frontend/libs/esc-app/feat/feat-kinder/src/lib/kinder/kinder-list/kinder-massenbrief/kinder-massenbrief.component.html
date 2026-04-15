@@ -1,0 +1,69 @@
+<!--
+  ~ Copyright (C) 2026 DV Bern AG, Switzerland
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<feat-dialogs-modal [modalTitle]="'kinder.list.massenbrief.modal.title' | transloco">
+  <span>{{
+      'kinder.list.massenbrief.selectedKinder' | transloco: {count: this.store.selectedKinderCount()}
+    }} </span>
+  <hr>
+  <form svuiFormLayout [mode]="'edit'" [formGroup]="form.group" (ngSubmit)="submitIfValid()">
+    <svui-form-control [label]="'kinder.list.massenbrief.vorlage' | transloco"
+                       [viewValue]="''"
+                       [size]="'full'">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.briefvorlageID"
+        [clearable]="false"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      >
+        @for (briefvorlage of briefVorlageOptions; track briefvorlage) {
+          <ng-option [value]="briefvorlage.id">
+            {{ briefvorlage.data.name }}
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+    <!--Arzt-->
+    <svui-form-control [label]="'kinder.list.massenbrief.arzt' | transloco"
+                       [viewValue]="''"
+                       [size]="'full'">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.arztID"
+        [clearable]="true"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      >
+        @for (item of aerzteStore.entities(); track item.id; ) {
+          <ng-option [value]="item.id">
+            <span class="w-100 d-flex justify-content-between">
+              <span>{{ item.data.name + ' ' + (item.data.vorname ?? '') }}</span>
+            </span>
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+
+    <!-- BUTTONS -->
+    <svui-save-cancel-buttons
+      [primaryButtonText]="'kinder.list.massenbrief.button'"
+      [saving]="false"
+      [canEdit]="canGenerateMassenbrief()"
+      (cancelClicked)="onCancelClicked()"/>
+
+  </form>
+</feat-dialogs-modal>

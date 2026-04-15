@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.person;
 
 import java.util.List;
+import java.util.Optional;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
@@ -24,6 +25,7 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizService;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AufgabeService;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.ZustaendigePersonService;
 import ch.dvbern.oss.hemed.esc.api.shared.notizen.AutoNotizService;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintService;
@@ -48,6 +50,7 @@ public class DuplikatMergeService {
     private final KindService kindService;
     private final AutoNotizService autoNotizService;
     private final KinderdossierPrintService kinderdossierPrintService;
+    private final ZustaendigePersonService zustaendigePersonService;
     private final EntityManager entityManager;
 
     @NonNull
@@ -71,6 +74,12 @@ public class DuplikatMergeService {
             kinderdossierPrintService.printKinderdossier(KinderdossierPrintVariant.GESAMTES, otherKind.getId(), null);
         // Notiz auf BasisKind erstellen
         autoNotizService.createDuplikatMergeNotiz(basisDossier, exportBasisKind, exportOtherKind);
+
+        // https://intra.dvbern.ch/spaces/HEM/pages/284263663/Zust%C3%A4ndigkeiten+Archivierung
+        // Fall 11: Falls notwendig, das zu löschende Kind vor dem mergen archivieren
+        Optional<Dossier> otherDossier = dossierService.findByKind(otherKind.getId());
+        otherDossier.ifPresent(dossier ->
+            zustaendigePersonService.verantwortlicherChangedByDuplikatMerge(basisDossier, dossier));
 
         // ExternalImportInfo umhaengen wenn basiskind nicht aus escada
         ExternalImportInfo otherKindExternalImportInfo = otherKind.getExternalImportInfo();

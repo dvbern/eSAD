@@ -27,9 +27,7 @@ public class EnsureBenutzerService {
             return;
         }
         // Informationen aus dem Token lesen
-        JsonWebTokenDataDTO webTokenData = JsonWebTokenDataDTO.fromJsonWebToken(
-            jsonWebToken
-        );
+        JsonWebTokenDataDTO webTokenData = JsonWebTokenDataDTO.fromJsonWebToken(jsonWebToken);
         createOrUpdateBenutzerFromToken(webTokenData);
     }
 

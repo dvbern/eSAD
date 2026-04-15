@@ -42,7 +42,7 @@ class JsonParseExceptionMapperTest {
                 {
                   "type": "FAILURE",
                   "id": "${json-unit.matches:exceptionId}",
-                  "summary": "Interner Server-Fehler: JSON_PARSING error at location line: 1, column: 6. Message: Unrecognized token 'asdf': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')."
+                  "summary": "Interner Server-Fehler: JSON_PARSING error at location line: 1, column: 1. Message: Unrecognized token 'asdf': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')."
                 }
                 """);
     }

@@ -1,0 +1,35 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <!-- ADD NEW COLUMNS -->
+  <changeSet author="anst" id="1771230092525-1">
+    <addColumn tableName="anlassconfig">
+      <column name="sehenstrabismusauspraegung" type="VARCHAR(30)"/>
+      <column name="sehenstrabismusauftreten" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <!-- PROVIDE NEW VALUES WHERE NEEDED -->
+  <changeSet id="1771230092525-2" author="anst">
+    <update tableName="anlassconfig">
+      <column name="sehenstrabismusauspraegung" valueComputed="sehenstrabismus"/>
+      <column name="sehenstrabismusauftreten" valueComputed="sehenstrabismus"/>
+    </update>
+  </changeSet>
+
+  <!-- ADD CONSTRAINTS -->
+  <changeSet id="1771230092525-3" author="anst">
+    <addNotNullConstraint tableName="anlassconfig" columnName="sehenstrabismusauspraegung" columnDataType="VARCHAR(30)"/>
+    <addNotNullConstraint tableName="anlassconfig" columnName="sehenstrabismusauftreten" columnDataType="VARCHAR(30)"/>
+  </changeSet>
+
+  <!-- UPDATE AUDIT -->
+  <changeSet author="anst" id="1771230092525-4">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="sehenstrabismusauspraegung" type="VARCHAR(30)"/>
+      <column name="sehenstrabismusauftreten" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+</databaseChangeLog>
+

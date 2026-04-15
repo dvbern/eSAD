@@ -2,9 +2,18 @@ import {DatePipe} from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {AnlassArt, AnlassConfigOptionJson, AnlassTyp, BenutzerOptionJson} from '@dvb/data-access-backend';
 import {
-  AnlassConfigOptionsStore,BenutzerOptionsStore, BenutzerStore, KlassenOptionsStore,
+  AnlassArt,
+  AnlassConfigOptionJson,
+  AnlassTyp,
+  BenutzerOptionJson,
+  EntityAktivStatus
+} from '@dvb/data-access-backend';
+import {
+  AnlassConfigOptionsStore,
+  BenutzerOptionsStore,
+  BenutzerStore,
+  KlassenOptionsStore,
   Path,
   TimetravelStore,
 } from '@dvb/feat-shared';
@@ -82,11 +91,11 @@ export class AnlassDatenComponent {
   #showLaeuseAnlass = this.benutzerStore.createHasRequiredRoleSig(hasLaeuseAnlassBerechtigungen());
   #showAlleAnlaesse = this.benutzerStore.createHasRequiredRoleSig(hasAlleAnlaesseBerechtigungen());
   anlassTypen = computed(() => {
-    if(this.#showAlleAnlaesse()){
+    if (this.#showAlleAnlaesse()) {
       return Object.values(this.anlassConfigOptionsStore.getVisibleAnlassTypen());
     }
-    if(this.#showLaeuseAnlass()){
-      return [ AnlassTyp.LAEUSEKONTROLLE ];
+    if (this.#showLaeuseAnlass()) {
+      return [AnlassTyp.LAEUSEKONTROLLE];
     }
     return [];
   });
@@ -108,7 +117,7 @@ export class AnlassDatenComponent {
       untracked(() => {
         // prefill only once and only if no selected entity is present
         const prefilledAnlass = this.store.prefilledAnlass();
-        if (prefilledAnlass && !selectedEntity){
+        if (prefilledAnlass && !selectedEntity) {
           this.form.group.reset(prefilledAnlass);
         }
       });
@@ -151,7 +160,7 @@ export class AnlassDatenComponent {
 
             this.store.resetPrefill();
             if (prefillKindId) {
-              this.anlassKinderStore.addKinder({ anlassId: anlassId, kindIds: [prefillKindId] });
+              this.anlassKinderStore.addKinder({anlassId: anlassId, kindIds: [prefillKindId]});
             }
 
             // reset form
@@ -159,7 +168,7 @@ export class AnlassDatenComponent {
             // navigate
             this.#router.navigate(
               [Path.RELATIVE_ONE_UP, result.id, Path.ANLASS_BEARBEITUNG],
-              { relativeTo: this.#activatedRoute })
+              {relativeTo: this.#activatedRoute})
           },
         });
       } else {
@@ -176,4 +185,6 @@ export class AnlassDatenComponent {
       }
     }
   }
+
+  protected readonly EntityAktivStatus = EntityAktivStatus;
 }

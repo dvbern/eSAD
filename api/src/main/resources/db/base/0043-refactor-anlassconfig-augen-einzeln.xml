@@ -1,0 +1,15 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="hefr (generated)" id="1771407257428-1">
+      <renameColumn tableName="anlassconfig" oldColumnName="sehenfernvisuslinks" newColumnName="sehenfernvisusaugeeinzeln"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1771407257428-2">
+      <renameColumn tableName="anlassconfig_aud" oldColumnName="sehenfernvisuslinks" newColumnName="sehenfernvisusaugeeinzeln"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1771407257428-5">
+        <dropColumn columnName="sehenfernvisusrechts" tableName="anlassconfig"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1771407257428-6">
+        <dropColumn columnName="sehenfernvisusrechts" tableName="anlassconfig_aud"/>
+    </changeSet>
+</databaseChangeLog>

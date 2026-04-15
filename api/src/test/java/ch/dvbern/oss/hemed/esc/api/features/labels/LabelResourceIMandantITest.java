@@ -9,10 +9,10 @@ import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.LabelBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminWIN;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminWithInvalidTenant;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupport;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.LabelsApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LabelJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LabelListJsonSpec;
@@ -82,10 +82,10 @@ class LabelResourceIMandantITest extends AbstractITest {
     }
 
     @Test
-    @TestAsAdminWIN
+    @TestAsAdminBE
     @Order(30)
-    void create_label_as_admin_win() {
-        tenantProducer.setCurrentTenant(TenantEnum.WIN);
+    void create_label_as_admin_be() {
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
         LabelJsonSpec createdForBern = labelResourceHelper.createNewLabel("CreatedForBern", LabelTyp.NOTIZEN);
         Assertions.assertThat(createdForBern).isNotNull();
         createdLabelWinId = createdForBern.getId();
@@ -141,7 +141,7 @@ class LabelResourceIMandantITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     @Order(60)
     void updateLabel_should_update_user_mutiert() {
         tenantProducer.setCurrentTenant(TenantEnum.BS);
@@ -181,7 +181,7 @@ class LabelResourceIMandantITest extends AbstractITest {
             .extracting(TranslatedStringJsonSpec::getDe).isEqualTo("MyLabelNameChange_" + uuid);
 
         Assertions.assertThat(changedLabel.getEntityInfo().getUserErstellt()).isNotNull().isEqualTo(TestAsAdminBS.BENUTZER_ID);
-        Assertions.assertThat(changedLabel.getEntityInfo().getUserMutiert()).isNotNull().isEqualTo(TestAsSupport.BENUTZER_ID);
+        Assertions.assertThat(changedLabel.getEntityInfo().getUserMutiert()).isNotNull().isEqualTo(TestAsSupportBS.BENUTZER_ID);
 
     }
 }

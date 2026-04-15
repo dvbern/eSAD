@@ -9,13 +9,15 @@
  */
 
 
-export type StrabismusResultat = 'KEIN_STRABISMUS' | 'EXO' | 'ESO' | 'HYPER' | 'NICHT_GEPRUEFT';
+export type StrabismusResultat = 'KEIN_STRABISMUS' | 'EXO' | 'ESO' | 'HYPER' | 'LINKS' | 'RECHTS' | 'NICHT_GEPRUEFT';
 
 export const StrabismusResultat = {
     KEIN_STRABISMUS: 'KEIN_STRABISMUS' as StrabismusResultat,
     EXO: 'EXO' as StrabismusResultat,
     ESO: 'ESO' as StrabismusResultat,
     HYPER: 'HYPER' as StrabismusResultat,
+    LINKS: 'LINKS' as StrabismusResultat,
+    RECHTS: 'RECHTS' as StrabismusResultat,
     NICHT_GEPRUEFT: 'NICHT_GEPRUEFT' as StrabismusResultat
 } as const;
 

@@ -6,7 +6,7 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.schule.quartier.Quartier;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import lombok.RequiredArgsConstructor;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @RequiredArgsConstructor

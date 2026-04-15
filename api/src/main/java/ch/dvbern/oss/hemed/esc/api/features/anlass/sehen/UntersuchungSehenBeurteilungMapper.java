@@ -19,21 +19,19 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.sehen;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.EnumSet;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.json.UntersuchungSehenBeurteilungJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.json.UntersuchungSehenBeurteilungSaveJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenAugeEinzelnResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
@@ -44,10 +42,15 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftret
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
-import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungSehenUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhancedMapper;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhancedMapper;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -72,23 +75,25 @@ public class UntersuchungSehenBeurteilungMapper {
             sehen.getId(),
             EntityInfoJson.fromEntity(sehen),
             new UntersuchungSehenBeurteilungSaveJson(
-                sehen.getBrilleLinsen(),
-                sehen.getStereotest(),
-                sehen.getFarbsehen(),
-                sehen.getVerwendeteTafel(),
-                EnumSetUtil.toList(sehen.getFernvisus()),
+                SingleValueEnhancedMapper.toJson(BrilleLinsenResultat.class, sehen.getBrilleLinsen()),
+                SingleValueEnhancedMapper.toJson(StereotestResultat.class, sehen.getStereotest()),
+                SingleValueEnhancedMapper.toJson(FarbsehenResultat.class, sehen.getFarbsehen()),
+                SingleValueEnhancedMapper.toJson(VerwendetTafelResultat.class, sehen.getVerwendeteTafel()),
+                MultiValueEnhancedMapper.toJson(DistanzSehenResultat.class, sehen.getFernvisus()),
                 sehen.getFernvisusRechts(),
                 sehen.getFernvisusLinks(),
-                EnumSetUtil.toList(sehen.getNahvisus()),
+                SingleValueEnhancedMapper.toJson(DistanzSehenAugeEinzelnResultat.class, sehen.getFernvisusAugeLinks()),
+                SingleValueEnhancedMapper.toJson(DistanzSehenAugeEinzelnResultat.class, sehen.getFernvisusAugeRechts()),
+                MultiValueEnhancedMapper.toJson(DistanzSehenResultat.class, sehen.getNahvisus()),
                 sehen.getNahvisusRechts(),
                 sehen.getNahvisusLinks(),
-                sehen.getMotilitaet(),
-                EnumSetUtil.toList(sehen.getStrabismus()),
-                sehen.getStrabismusAuspraegung(),
-                sehen.getStrabismusAuftreten(),
-                sehen.getInspektion(),
-                sehen.getKonvergenz(),
-                EnumSetUtil.toList(sehen.getEmpfehlung()),
+                SingleValueEnhancedMapper.toJson(MotilitaetResultat.class, sehen.getMotilitaet()),
+                MultiValueEnhancedMapper.toJson(StrabismusResultat.class, sehen.getStrabismus()),
+                SingleValueEnhancedMapper.toJson(StrabismusAuspraegungResultat.class, sehen.getStrabismusAuspraegung()),
+                SingleValueEnhancedMapper.toJson(StrabismusAuftretenResultat.class, sehen.getStrabismusAuftreten()),
+                SingleValueEnhancedMapper.toJson(InspektionKonvergenzResultat.class, sehen.getInspektion()),
+                SingleValueEnhancedMapper.toJson(InspektionKonvergenzResultat.class, sehen.getKonvergenz()),
+                MultiValueEnhancedMapper.toJson(SehenEmpfehlung.class, sehen.getEmpfehlung()),
                 sehen.getBemerkungen(),
                 sehen.getVersion()
             )
@@ -104,24 +109,42 @@ public class UntersuchungSehenBeurteilungMapper {
         if (sehen == null) {
             sehen = UntersuchungSehenBeurteilung.forUntersuchung(untersuchung);
         }
-        sehen.setBrilleLinsen(saveJson.getBrilleLinsen());
-        sehen.setStereotest(saveJson.getStereotest());
-        sehen.setFarbsehen(saveJson.getFarbsehen());
-        sehen.setVerwendeteTafel(saveJson.getVerwendeteTafel());
-        sehen.setFernvisus(EnumSetUtil.toEnumSet(saveJson.getFernvisus(), DistanzSehenResultat.class));
+        sehen.setBrilleLinsen(SingleValueEnhancedMapper.toEntity(
+            BrilleLinsenResultat.class,
+            saveJson.getBrilleLinsen()));
+        sehen.setStereotest(SingleValueEnhancedMapper.toEntity(StereotestResultat.class, saveJson.getStereotest()));
+        sehen.setFarbsehen(SingleValueEnhancedMapper.toEntity(FarbsehenResultat.class, saveJson.getFarbsehen()));
+        sehen.setVerwendeteTafel(SingleValueEnhancedMapper.toEntity(
+            VerwendetTafelResultat.class,
+            saveJson.getVerwendeteTafel()));
+        sehen.setFernvisus(MultiValueEnhancedMapper.toEntity(DistanzSehenResultat.class, saveJson.getFernvisus()));
         sehen.setFernvisusRechts(saveJson.getFernvisusRechts());
         sehen.setFernvisusLinks(saveJson.getFernvisusLinks());
-        sehen.setNahvisus(EnumSetUtil.toEnumSet(saveJson.getNahvisus(), DistanzSehenResultat.class));
+        sehen.setNahvisus(MultiValueEnhancedMapper.toEntity(DistanzSehenResultat.class, saveJson.getNahvisus()));
         sehen.setNahvisusRechts(saveJson.getNahvisusRechts());
         sehen.setNahvisusLinks(saveJson.getNahvisusLinks());
-        sehen.setMotilitaet(saveJson.getMotilitaet());
-        sehen.setStrabismus(EnumSetUtil.toEnumSet(saveJson.getStrabismus(), StrabismusResultat.class));
-        sehen.setStrabismusAuspraegung(saveJson.getStrabismusAuspraegung());
-        sehen.setStrabismusAuftreten(saveJson.getStrabismusAuftreten());
-        sehen.setInspektion(saveJson.getInspektion());
-        sehen.setKonvergenz(saveJson.getKonvergenz());
-        sehen.setEmpfehlung(EnumSetUtil.toEnumSet(saveJson.getEmpfehlung(), SehenEmpfehlung.class));
+        sehen.setMotilitaet(SingleValueEnhancedMapper.toEntity(MotilitaetResultat.class, saveJson.getMotilitaet()));
+        sehen.setStrabismus(MultiValueEnhancedMapper.toEntity(StrabismusResultat.class, saveJson.getStrabismus()));
+        sehen.setStrabismusAuspraegung(SingleValueEnhancedMapper.toEntity(
+            StrabismusAuspraegungResultat.class,
+            saveJson.getStrabismusAuspraegung()));
+        sehen.setStrabismusAuftreten(SingleValueEnhancedMapper.toEntity(
+            StrabismusAuftretenResultat.class,
+            saveJson.getStrabismusAuftreten()));
+        sehen.setInspektion(SingleValueEnhancedMapper.toEntity(
+            InspektionKonvergenzResultat.class,
+            saveJson.getInspektion()));
+        sehen.setKonvergenz(SingleValueEnhancedMapper.toEntity(
+            InspektionKonvergenzResultat.class,
+            saveJson.getKonvergenz()));
+        sehen.setEmpfehlung(MultiValueEnhancedMapper.toEntity(SehenEmpfehlung.class, saveJson.getEmpfehlung()));
         sehen.setBemerkungen(saveJson.getBemerkungen());
+        sehen.setFernvisusAugeLinks(SingleValueEnhancedMapper.toEntity(
+            DistanzSehenAugeEinzelnResultat.class,
+            saveJson.getFernvisusAugeLinks()));
+        sehen.setFernvisusAugeRechts(SingleValueEnhancedMapper.toEntity(
+            DistanzSehenAugeEinzelnResultat.class,
+            saveJson.getFernvisusAugeRechts()));
         return sehen;
 
     }
@@ -157,29 +180,71 @@ public class UntersuchungSehenBeurteilungMapper {
         boolean isFremdsprachen = config.getAnlassTyp() == AnlassTyp.FREMDSPRACHEN;
         BigDecimal fernvisus = isKindergarten ? BigDecimal.valueOf(0.8) : BigDecimal.valueOf(1.0);
         return new UntersuchungSehenBeurteilungSaveJson(
-            tenant == TenantEnum.BS ? null: BrilleLinsenResultat.OHNE_KEINE,
-            UntersuchungSehenUtil.getStereoTest(
-                config,
-                null,
-                isFremdsprachen ? StereotestResultat.NICHT_GEPRUEFT : StereotestResultat.NORMAL),
-            UntersuchungSehenUtil.getFarbsehen(config, null, FarbsehenResultat.NORMAL),
-            UntersuchungSehenUtil.getVerwendeteTafel(
-                config,
-                null,
-                isKindergarten ? VerwendetTafelResultat.E_TAFEL : VerwendetTafelResultat.C_TAFEL),
-            EnumSetUtil.toList(UntersuchungSehenUtil.getFernvisus(config, null, DistanzSehenResultat.NORMAL)),
+            SingleValueEnhancedMapper.toJson(
+                BrilleLinsenResultat.class,
+                UntersuchungSehenUtil.getBrilleLinsenDefault(
+                    config,
+                    tenant == TenantEnum.BS ? null : BrilleLinsenResultat.OHNE_KEINE)
+            ),
+            SingleValueEnhancedMapper.toJson(
+                StereotestResultat.class,
+                UntersuchungSehenUtil.getStereoTestDefault(
+                    config,
+                    isFremdsprachen ? StereotestResultat.NICHT_GEPRUEFT : StereotestResultat.NORMAL)
+            ),
+            SingleValueEnhancedMapper.toJson(
+                FarbsehenResultat.class,
+                UntersuchungSehenUtil.getFarbsehenDefault(config, FarbsehenResultat.NORMAL)
+            ),
+            SingleValueEnhancedMapper.toJson(
+                VerwendetTafelResultat.class,
+                UntersuchungSehenUtil.getVerwendeteTafelDefault(
+                    config,
+                    isKindergarten ? VerwendetTafelResultat.E_TAFEL : VerwendetTafelResultat.C_TAFEL)
+            ),
+            MultiValueEnhancedMapper.toJson(
+                DistanzSehenResultat.class,
+                UntersuchungSehenUtil.getFernvisusDefault(
+                    config, DistanzSehenResultat.NORMAL)),
             UntersuchungSehenUtil.getFernvisusRechts(config, null, fernvisus),
             UntersuchungSehenUtil.getFernvisusLinks(config, null, fernvisus),
-            EnumSetUtil.toList(UntersuchungSehenUtil.getNahvisus(config, null, DistanzSehenResultat.NICHT_GEPRUEFT)),
             null,
             null,
-            UntersuchungSehenUtil.getMotilitaet(config, null, MotilitaetResultat.NORMAL),
-            EnumSetUtil.toList(UntersuchungSehenUtil.getStrabismus(config, null, StrabismusResultat.KEIN_STRABISMUS)),
-            UntersuchungSehenUtil.getStrabismusAuspraegung(config, null, StrabismusAuspraegungResultat.KEIN_STRABISMUS),
-            UntersuchungSehenUtil.getStrabismusAuftreten(config, null, StrabismusAuftretenResultat.KEIN_STRABISMUS),
-            UntersuchungSehenUtil.getInspektion(config, null, InspektionKonvergenzResultat.UNAUFFAELLIG),
-            UntersuchungSehenUtil.getKonvergenz(config, null, InspektionKonvergenzResultat.UNAUFFAELLIG),
-            List.of(),
+            MultiValueEnhancedMapper.toJson(
+                DistanzSehenResultat.class,
+                UntersuchungSehenUtil.getNahvisusDefault(
+                    config, DistanzSehenResultat.NICHT_GEPRUEFT)),
+            null,
+            null,
+            SingleValueEnhancedMapper.toJson(
+                MotilitaetResultat.class,
+                UntersuchungSehenUtil.getMotilitaetDefault(config, MotilitaetResultat.NORMAL)
+            ),
+            MultiValueEnhancedMapper.toJson(
+                StrabismusResultat.class,
+                UntersuchungSehenUtil.getStrabismusDefault(
+                    config, StrabismusResultat.KEIN_STRABISMUS)),
+
+            SingleValueEnhancedMapper.toJson(
+                StrabismusAuspraegungResultat.class,
+                UntersuchungSehenUtil.getStrabismusAuspraegung(config, StrabismusAuspraegungResultat.KEIN_STRABISMUS)
+            ),
+            SingleValueEnhancedMapper.toJson(
+                StrabismusAuftretenResultat.class,
+                UntersuchungSehenUtil.getStrabismusAuftreten(config, StrabismusAuftretenResultat.KEIN_STRABISMUS)
+            ),
+            SingleValueEnhancedMapper.toJson(
+                InspektionKonvergenzResultat.class,
+                UntersuchungSehenUtil.getInspektion(config, InspektionKonvergenzResultat.UNAUFFAELLIG)
+            ),
+            SingleValueEnhancedMapper.toJson(
+                InspektionKonvergenzResultat.class,
+                UntersuchungSehenUtil.getKonvergenz(config, InspektionKonvergenzResultat.UNAUFFAELLIG)
+            ),
+            MultiValueEnhancedMapper.toJson(
+                SehenEmpfehlung.class,
+                MultiValueEnhanced.of(EnumSet.noneOf(SehenEmpfehlung.class), null)
+            ),
             null,
             0L
         );

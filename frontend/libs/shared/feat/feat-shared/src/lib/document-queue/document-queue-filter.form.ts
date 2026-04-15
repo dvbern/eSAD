@@ -93,7 +93,7 @@ function makeForm(config: Config) {
         filterValue: name ?? '',
         filterMethod: FilterMethod.ENUM,
         filterCombinationMethod: FilterCombinationMethod.AND,
-        filterName: 'documentQueueParams.spssReportType',
+        filterName: 'displayname',
       });
     },
     error: console.error,

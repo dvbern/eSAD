@@ -7,42 +7,31 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { FarbsehenResultat } from './farbsehen-resultat';
-import { BrilleLinsenResultat } from './brille-linsen-resultat';
-import { MotilitaetResultat } from './motilitaet-resultat';
-import { VerwendetTafelResultat } from './verwendet-tafel-resultat';
-import { DistanzSehenResultat } from './distanz-sehen-resultat';
-import { InspektionKonvergenzResultat } from './inspektion-konvergenz-resultat';
-import { StrabismusResultat } from './strabismus-resultat';
-import { StrabismusAuspraegungResultat } from './strabismus-auspraegung-resultat';
-import { StereotestResultat } from './stereotest-resultat';
-import { StrabismusAuftretenResultat } from './strabismus-auftreten-resultat';
-import { SehenEmpfehlung } from './sehen-empfehlung';
+import { ValueEnhancedJson } from './value-enhanced-json';
 
 
 export interface UntersuchungSehenBeurteilungSaveJson { 
-    brilleLinsen?: BrilleLinsenResultat;
-    stereotest?: StereotestResultat;
-    farbsehen?: FarbsehenResultat;
-    verwendeteTafel?: VerwendetTafelResultat;
-    fernvisus?: Array<DistanzSehenResultat>;
+    brilleLinsen: ValueEnhancedJson;
+    stereotest: ValueEnhancedJson;
+    farbsehen: ValueEnhancedJson;
+    verwendeteTafel: ValueEnhancedJson;
+    fernvisus: ValueEnhancedJson;
     fernvisusRechts?: number;
     fernvisusLinks?: number;
-    nahvisus?: Array<DistanzSehenResultat>;
+    fernvisusAugeLinks?: ValueEnhancedJson;
+    fernvisusAugeRechts?: ValueEnhancedJson;
+    nahvisus: ValueEnhancedJson;
     nahvisusRechts?: number;
     nahvisusLinks?: number;
-    motilitaet?: MotilitaetResultat;
-    strabismus?: Array<StrabismusResultat>;
-    strabismusAuspraegung?: StrabismusAuspraegungResultat;
-    strabismusAuftreten?: StrabismusAuftretenResultat;
-    inspektion?: InspektionKonvergenzResultat;
-    konvergenz?: InspektionKonvergenzResultat;
-    empfehlung?: Array<SehenEmpfehlung>;
+    motilitaet: ValueEnhancedJson;
+    strabismus: ValueEnhancedJson;
+    strabismusAuspraegung: ValueEnhancedJson;
+    strabismusAuftreten: ValueEnhancedJson;
+    inspektion: ValueEnhancedJson;
+    konvergenz: ValueEnhancedJson;
+    empfehlung: ValueEnhancedJson;
     bemerkungen?: string;
     version: number;
 }
-export namespace UntersuchungSehenBeurteilungSaveJson {
-}
-
 
 

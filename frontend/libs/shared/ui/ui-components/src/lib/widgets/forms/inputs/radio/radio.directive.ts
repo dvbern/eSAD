@@ -17,7 +17,7 @@ export class RadioDirective extends ValidatedInputWithIdDirective {
   readonly type = input.required<'radio'>();
   readonly name = input.required<string>();
 
-  @HostBinding('class.form-check-input') private readonly bootstrapClass = true;
+  @HostBinding('class.form-check-input') readonly bootstrapClass = true;
 
   get controlType(): ControlType {
     return 'radios';

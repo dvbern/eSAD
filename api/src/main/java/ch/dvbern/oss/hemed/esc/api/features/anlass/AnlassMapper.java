@@ -27,13 +27,19 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.*;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassListJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassOptionJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithDateTimeJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithDateTimeListJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithOpenSlotsListJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithOpenSlotsOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
-import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleMapper;
 import ch.dvbern.oss.hemed.esc.api.features.schule.json.SchulInformationenJson;
@@ -42,6 +48,8 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.LehrpersonMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.ZustaendigePersonService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateTimeRange;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +68,7 @@ public final class AnlassMapper {
     private final AktivitaetHistoryService aktivitaetHistoryService;
     private final AuthorizerService authorizerService;
     private final TenantSettingsService tenantSettingsService;
+    private final ZustaendigePersonService zustaendigePersonService;
 
     @NonNull
     public static AnlassJson toJson(@NonNull Anlass anlass) {
@@ -88,7 +97,7 @@ public final class AnlassMapper {
                 anlass.getWeiterePersonInfo(),
                 anlass.getVersion()
             ),
-            AnlassConfigMapper.toJson(anlass.getAnlassConfig(), true, anlass.getDatum())
+            AnlassConfigMapper.toJson(anlass.getAnlassConfig(), anlass.getDatum())
         );
     }
 
@@ -145,11 +154,8 @@ public final class AnlassMapper {
         existingAnlass.setSchuljahr(saveJson.getSchuljahr());
         existingAnlass.setZeitVonBis(dateTimeRange);
         existingAnlass.setAnlassArt(saveJson.getAnlassArt());
-        Benutzer arzt = saveJson.getArzt() != null ? benutzerService.getById(saveJson.getArzt().getId()) : null;
-        existingAnlass.setArzt(arzt);
+        // Arzt und MPA werden separat behandelt
         existingAnlass.setArztInfo(saveJson.getArztInfo());
-        Benutzer mpa = saveJson.getMpa() != null ? benutzerService.getById(saveJson.getMpa().getId()) : null;
-        existingAnlass.setMpa(mpa);
         existingAnlass.setMpaInfo(saveJson.getMpaInfo());
         Benutzer weiterePerson =
             saveJson.getWeiterePerson() != null ? benutzerService.getById(saveJson.getWeiterePerson().getId()) : null;
@@ -184,7 +190,16 @@ public final class AnlassMapper {
     public AnlassJson update(@NonNull ID<Anlass> anlassID, @NonNull AnlassSaveJson saveJson) {
         Anlass existingAnlass = anlassService.getById(anlassID);
         Anlass entity = toEntity(existingAnlass, saveJson);
-        return toJson(anlassService.persistWithOptimisticLocking(entity, saveJson.getVersion()));
+        Anlass updatedAnlass = anlassService.persistWithOptimisticLocking(entity, saveJson.getVersion());
+
+        // https://intra.dvbern.ch/spaces/HEM/pages/284263663/Zust%C3%A4ndigkeiten+Archivierung
+        // Change Zustaendigkeiten: Fall 4: Neue Verantwortliche auf Anlass
+        zustaendigePersonService.verantwortlicherChangedOnAnlass(
+            updatedAnlass,
+            saveJson.getArzt() != null ? saveJson.getArzt().getId() : null,
+            saveJson.getMpa() != null ? saveJson.getMpa().getId() : null);
+
+        return toJson(updatedAnlass);
     }
 
     @NonNull
@@ -234,14 +249,20 @@ public final class AnlassMapper {
     }
 
     @NonNull
-    public AnlassWithOpenSlotsListJson searchAnlassTermineWithAvailableSlots(@NonNull List<AnlassTyp> anlassTypen, @NonNull ID<Kind> kindId) {
+    public AnlassWithOpenSlotsListJson searchAnlassTermineWithAvailableSlots(
+        @NonNull List<AnlassTyp> anlassTypen,
+        @NonNull ID<Kind> kindId) {
 
         int maxEinladungenPerAnlass = this.tenantSettingsService.getTenantSetting().getFolgeTermineMaxSlots();
 
-        List<AnlassWithOpenSlotsOptionJson> options = anlassService.findFutureGruppenAnlaesseOfTypeHavingLessThanMaxEinladungen(anlassTypen, kindId, maxEinladungenPerAnlass)
-            .stream()
-            .filter(anlasOption -> authorizerService.hasReadAuthorizationAnlassListe(anlasOption.getAnlassTyp()))
-            .toList();
+        List<AnlassWithOpenSlotsOptionJson> options =
+            anlassService.findFutureGruppenAnlaesseOfTypeHavingLessThanMaxEinladungen(
+                    anlassTypen,
+                    kindId,
+                    maxEinladungenPerAnlass)
+                .stream()
+                .filter(anlasOption -> authorizerService.hasReadAuthorizationAnlassListe(anlasOption.getAnlassTyp()))
+                .toList();
 
         return new AnlassWithOpenSlotsListJson(options, maxEinladungenPerAnlass);
     }
@@ -251,11 +272,12 @@ public final class AnlassMapper {
         @NonNull List<AnlassTyp> anlassTypen,
         @NonNull ID<Kind> kindId,
         @NonNull List<ID<Anlass>> excludeAnlassIds
-    ){
-        List<AnlassWithDateTimeJson> kindAnlaesse = anlassService.findScheduledAnlaesseOfTypeForKind(anlassTypen, kindId, excludeAnlassIds)
-            .stream()
-            .filter(anlass -> authorizerService.hasReadAuthorizationAnlassListe(anlass.getAnlassTyp()))
-            .toList();
+    ) {
+        List<AnlassWithDateTimeJson> kindAnlaesse =
+            anlassService.findScheduledAnlaesseOfTypeForKind(anlassTypen, kindId, excludeAnlassIds)
+                .stream()
+                .filter(anlass -> authorizerService.hasReadAuthorizationAnlassListe(anlass.getAnlassTyp()))
+                .toList();
 
         return new AnlassWithDateTimeListJson(kindAnlaesse);
     }

@@ -18,6 +18,8 @@ import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.BriefvorlageType;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.internal.mapping.Jackson2Mapper;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -182,6 +184,11 @@ public class TestUtil {
 
     public static FileUpload fileToFileUpload(@NonNull File file, @Nullable String originalFilename) {
         return new FileUpload() {
+            @Override
+            public MultivaluedMap<String, String> getHeaders() {
+                return new MultivaluedHashMap<>();
+            }
+
             @Override
             public String name() {
                 return null == originalFilename ? file.getName() : originalFilename;

@@ -2,11 +2,11 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import java.util.EnumSet;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -36,7 +36,7 @@ class HoerenOtoskopieLinksCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        hoerenOtoskopie.setOtoskopieLinks(EnumSet.allOf(OtoskopieResultat.class));
+        hoerenOtoskopie.setOtoskopieLinks(MultiValueEnhanced.of(EnumSet.allOf(OtoskopieResultat.class), null));
 
         assertThat(column.extract(einladung)).isEqualTo("1");
     }
@@ -61,7 +61,7 @@ class HoerenOtoskopieLinksCsvColumnTest extends AbstractBaseColumnTest {
         assertThat(column.extract(einladung)).isEmpty();
 
         when(tlMock.translate("printer.boolean.true")).thenReturn("Ja");
-        hoerenOtoskopie.setOtoskopieLinks(EnumSet.allOf(OtoskopieResultat.class));
+        hoerenOtoskopie.setOtoskopieLinks(MultiValueEnhanced.of(EnumSet.allOf(OtoskopieResultat.class), null));
 
         assertThat(column.extract(einladung)).isEqualTo("Ja");
     }

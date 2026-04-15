@@ -1,0 +1,133 @@
+<table
+  svuiTable
+  [loading]="store.loader.isLoading()"
+  [totalRows]="itemTable.filteredListSize()"
+  (pageChanged)="itemTable.onPageChanged($event)"
+  [pagination]="itemTable.pagination()"
+>
+  <thead>
+  <!-- Headers for sorting -->
+  <tr>
+    <th
+      scope="col"
+      svuiSortable
+      [sortState]="itemTable.findColSortDTO('timestampArchiviert')"
+      (sort)="itemTable.onColSort($event, 'timestampArchiviert')"
+    >{{ 'archiv.list.timestampArchiviert' | transloco }}
+    </th>
+    @if (!store.isArchivModusOffen()) {
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('timestampDownloaded')"
+        (sort)="itemTable.onColSort($event, 'timestampDownloaded')"
+      >{{ 'archiv.list.timestampDownloaded' | transloco }}
+      </th>
+    }
+    <th
+      scope="col"
+      svuiSortable
+      [sortState]="itemTable.findColSortDTO('archivierungTyp')"
+      (sort)="itemTable.onColSort($event, 'archivierungTyp')"
+    >{{ 'archiv.list.archivierungTyp' | transloco }}
+    </th>
+    <th
+      scope="col"
+      svuiSortable
+      [sortState]="itemTable.findColSortDTO('betroffenesKind')"
+      (sort)="itemTable.onColSort($event, 'betroffenesKind')"
+    >{{ 'archiv.list.betroffenesKind' | transloco }}
+    </th>
+    <th
+      scope="col"
+      svuiSortable
+      [sortState]="itemTable.findColSortDTO('archivierungStatus')"
+      (sort)="itemTable.onColSort($event, 'archivierungStatus')"
+    >{{ 'archiv.list.archivierungStatus' | transloco }}
+    </th>
+    <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
+  </tr>
+  <!-- Headers for filtering-->
+  <tr>
+    <th scope="col">
+      <svui-table-filter [columnHeader]="'archiv.list.timestampArchiviert' | transloco">
+        <input svuiTextInput="date" [formControl]="tableFilterForm.group.controls.datumArchivierung"/>
+      </svui-table-filter>
+    </th>
+
+    @if (!store.isArchivModusOffen()) {
+      <th scope="col">
+        <svui-table-filter [columnHeader]="'archiv.list.timestampDownloaded' | transloco">
+          <input svuiTextInput="date" [formControl]="tableFilterForm.group.controls.datumDownload"/>
+        </svui-table-filter>
+      </th>
+    }
+
+    <th scope="col">
+      <svui-table-filter [columnHeader]="'archiv.list.archivierungTyp' | transloco">
+        <ng-select svuiNgSelect
+                   bindLabel="dummy"
+                   appendTo="body"
+                   [multiple]="true"
+                   [formControl]="tableFilterForm.group.controls.typ">
+
+          @for (typ of archivTypen; track typ) {
+            <ng-option [value]="typ">
+              {{ 'ArchivierungTyp.' + typ | transloco }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-table-filter>
+    </th>
+    <th scope="col">
+      <svui-table-filter [columnHeader]="'archiv.list.betroffenesKind' | transloco">
+        <input svuiTextInput [formControl]="tableFilterForm.group.controls.betroffenesKind"/>
+      </svui-table-filter>
+    </th>
+    <th scope="col">
+      @if (!store.isArchivModusOffen()) {
+        <svui-table-filter [columnHeader]="'archiv.list.archivierungStatus' | transloco">
+          <ng-select svuiNgSelect
+                     bindLabel="dummy"
+                     appendTo="body"
+                     [multiple]="true"
+                     [formControl]="tableFilterForm.group.controls.status">
+
+            @for (status of archivStatus; track status) {
+              <ng-option [value]="status">
+                {{ 'ArchivierungStatus.' + status | transloco }}
+              </ng-option>
+            }
+          </ng-select>
+        </svui-table-filter>
+      }
+    </th>
+    <th scope="col"></th>
+  </tr>
+  </thead>
+  <tbody>
+    @for (item of itemTable.displayedList(); track item.id) {
+      <tr>
+        <td>{{ item.timestampArchiviert | date: 'dd.MM.yyyy HH:mm' }}</td>
+        @if (!store.isArchivModusOffen()) {
+          <td>{{ item.timestampDownloaded | date: 'dd.MM.yyyy HH:mm' }}</td>
+        }
+        <td>{{ 'ArchivierungTyp.' + item.archivierungTyp | transloco }}</td>
+        <td>{{ item.betroffenesKind }}</td>
+        <td>{{ 'ArchivierungStatus.' + item.archivierungStatus | transloco }}</td>
+        <td>
+          <svui-collapsible-menu
+            [loading]="store.saveLoader.isLoading()"
+            label="{{ 'global.actionmenu.tooltip' | transloco }}">
+            <button ngbDropdownItem (click)="downloadArchivdokument(item)">
+              {{ downloadText(item) | transloco }}
+            </button>
+          </svui-collapsible-menu>
+        </td>
+      </tr>
+
+    } @empty {
+      <tr svui-empty-table-message [message]="'archiv.list.empty' | transloco"></tr>
+    }
+  </tbody>
+</table>

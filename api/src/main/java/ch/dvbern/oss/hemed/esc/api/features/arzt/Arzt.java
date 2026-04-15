@@ -26,7 +26,7 @@ import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumberConverter;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Fachrichtung;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.HpvTeilnahme;
-import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Organisation;
+import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Rechtsform;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
@@ -75,7 +75,7 @@ public class Arzt extends AbstractEntity<Arzt> implements EntityWithOptimisticLo
     @NonNull
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
-    private Organisation organisation;
+    private Rechtsform rechtsform;
 
     @Nullable
     @Size(max = DbConst.DB_DEFAULT_MAX_LENGTH)

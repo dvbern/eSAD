@@ -25,8 +25,6 @@ import ch.dvbern.dvbstarter.infrastructure.db.baserepo.BaseRepo;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
-import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.QAnlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -52,18 +50,5 @@ public class AnlassConfigRepo extends BaseRepo<AnlassConfig> {
             )
             .fetchOne()
             .orElseThrow(() -> new AppFailureException(AppFailureMessage.anlassConfigNotFound(anlassTyp, stichtag)));
-    }
-
-    // Only use for test purposes
-    public void removeAllAnlassConfigsWithTyp(@NonNull AnlassTyp anlassTyp) {
-        db.delete(QAnlassConfig.anlassConfig).where(QAnlassConfig.anlassConfig.anlassTyp.eq(anlassTyp)).execute();
-    }
-
-    public boolean isUsedInAtLeastOneAnlass(@NonNull ID<AnlassConfig> anlassConfigId) {
-        return !db.select(QAnlass.anlass.id)
-            .from(QAnlass.anlass)
-            .leftJoin(QAnlass.anlass.anlassConfig)
-            .where(QAnlassConfig.anlassConfig.id.eq(anlassConfigId.getUUID()))
-            .fetch().isEmpty();
     }
 }

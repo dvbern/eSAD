@@ -3,16 +3,15 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {
   AnlassConfigJson,
-  PerzentileBmi,
   PerzentileGewicht,
   PerzentileGroesse,
   RequirementSetting,
   UntersuchungGroesseGewichtDataJson,
   UntersuchungGroesseGewichtSaveJson,
 } from '@dvb/data-access-backend';
-import {globalConstants} from '@dvb/feat-shared';
+import {globalConstants, ValueEnhancedForm} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensureProps, isNullish, Nullish, requireValue, trimToUndefined} from '@dvb/util-shared';
+import {ensurePropsFlat, isNullish, Nullish, requireValue, trimToUndefined} from '@dvb/util-shared';
 import {PercentileChartData, PercentileMainDataPoint} from '@dvb/viz';
 import {distinctUntilChanged} from 'rxjs';
 import {PercentileDiagramConfigService} from './config/percentile-diagram-config.service';
@@ -21,6 +20,9 @@ type Config = {
   fb: NonNullableFormBuilder,
   destroyRef: DestroyRef,
   diagramConfigService: PercentileDiagramConfigService,
+  groessePerzentileValueEnhancedForm: ValueEnhancedForm;
+  gewichtPerzentileValueEnhancedForm: ValueEnhancedForm;
+  bmiPerzentileValueEnhancedForm: ValueEnhancedForm;
 }
 
 export function calculateBmi(groesse: number | undefined, gewicht: number | undefined): number | undefined {
@@ -34,21 +36,24 @@ export function calculateBmi(groesse: number | undefined, gewicht: number | unde
 
 function makeForm(config: Config) {
   const fb = config.fb;
-  const group = fb.group({
+  return fb.group({
     groesse: fb.control<number | undefined>(undefined, AppValidators.zeroDecimalPlaces()),
-    groessePerzentile: fb.control<PerzentileGroesse | undefined>(undefined),
+    groessePerzentile: config.groessePerzentileValueEnhancedForm.group,
     gewicht: fb.control<number | undefined>(undefined, AppValidators.oneDecimalPlace()),
-    gewichtPerzentile: fb.control<PerzentileGewicht | undefined>(undefined),
+    gewichtPerzentile: config.gewichtPerzentileValueEnhancedForm.group,
     bmi: fb.control<number | undefined>(undefined),
-    bmiPerzentile: fb.control<PerzentileBmi | undefined>(undefined),
+    bmiPerzentile: config.bmiPerzentileValueEnhancedForm.group,
     bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength2000()),
     version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
-  return group;
 }
 
 export class UntersuchungGroesseGewichtForm
   extends BaseForm<ReturnType<typeof makeForm>, UntersuchungGroesseGewichtSaveJson> {
+
+  readonly groessePerzentileValueEnhancedForm: ValueEnhancedForm;
+  readonly gewichtPerzentileValueEnhancedForm: ValueEnhancedForm;
+  readonly bmiPerzentileValueEnhancedForm: ValueEnhancedForm;
 
   private readonly dataPointsGroesse: Map<number, PercentileMainDataPoint> = new Map<number, PercentileMainDataPoint>();
   private readonly dataPointsGewicht: Map<number, PercentileMainDataPoint> = new Map<number, PercentileMainDataPoint>();
@@ -74,6 +79,10 @@ export class UntersuchungGroesseGewichtForm
     this.chartGroesseFemale = this.config.diagramConfigService.getChartDataGroesse('female');
     this.chartGewichtFemale = this.config.diagramConfigService.getChartDataGewicht('female');
     this.chartBmiFemale = this.config.diagramConfigService.getChartDataBmi('female');
+
+    this.groessePerzentileValueEnhancedForm = config.groessePerzentileValueEnhancedForm;
+    this.gewichtPerzentileValueEnhancedForm = config.gewichtPerzentileValueEnhancedForm;
+    this.bmiPerzentileValueEnhancedForm = config.bmiPerzentileValueEnhancedForm;
 
     this.group.controls.groesse.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
       .subscribe({
@@ -107,7 +116,7 @@ export class UntersuchungGroesseGewichtForm
         },
         error: console.error,
       });
-    this.group.controls.groessePerzentile.valueChanges.pipe(distinctUntilChanged(),
+    this.groessePerzentileValueEnhancedForm.group.controls.value.valueChanges.pipe(distinctUntilChanged(),
       takeUntilDestroyed(config.destroyRef))
       .subscribe({
         next: value => {
@@ -119,7 +128,7 @@ export class UntersuchungGroesseGewichtForm
           this.group.controls.groesse.updateValueAndValidity();
         },
       });
-    this.group.controls.gewichtPerzentile.valueChanges.pipe(distinctUntilChanged(),
+    this.gewichtPerzentileValueEnhancedForm.group.controls.value.valueChanges.pipe(distinctUntilChanged(),
       takeUntilDestroyed(config.destroyRef))
       .subscribe({
         next: value => {
@@ -141,7 +150,12 @@ export class UntersuchungGroesseGewichtForm
     this.alter = alter;
     this.alterDuodezimal = alterDuodezimal;
     const currentData: UntersuchungGroesseGewichtSaveJson | undefined = value?.untersuchungGroesseGewichtJson?.data;
-    this.group.reset({...currentData});
+    super.reset(currentData);
+
+    this.groessePerzentileValueEnhancedForm.resetForm(currentData?.groessePerzentile);
+    this.gewichtPerzentileValueEnhancedForm.resetForm(currentData?.gewichtPerzentile);
+    this.bmiPerzentileValueEnhancedForm.resetForm(currentData?.bmiPerzentile);
+
     this.group.controls.bmi.disable();
     const bmi = calculateBmi(
       currentData?.groesse,
@@ -158,12 +172,12 @@ export class UntersuchungGroesseGewichtForm
 
   public override valueOnValid(): UntersuchungGroesseGewichtSaveJson {
     const value = requireValue(this.group.getRawValue());
-    return ensureProps<UntersuchungGroesseGewichtSaveJson>({
+    return ensurePropsFlat<UntersuchungGroesseGewichtSaveJson>({
       groesse: value.groesse,
-      groessePerzentile: value.groessePerzentile,
+      groessePerzentile: this.groessePerzentileValueEnhancedForm.valueOnValid(),
       gewicht: value.gewicht,
-      gewichtPerzentile: value.gewichtPerzentile,
-      bmiPerzentile: value.bmiPerzentile,
+      gewichtPerzentile: this.gewichtPerzentileValueEnhancedForm.valueOnValid(),
+      bmiPerzentile: this.bmiPerzentileValueEnhancedForm.valueOnValid(),
       bemerkungen: trimToUndefined(value.bemerkungen),
       version: value.version ?? globalConstants.entityPrePersistVersion,
     });

@@ -6,6 +6,7 @@ import com.tngtech.archunit.base.DescribedPredicate;
 import jakarta.ws.rs.Path;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @UtilityClass
@@ -51,7 +52,7 @@ public class PathAnnotation {
                 int endIndex = value.indexOf('}');
                 String param = value.substring(index, endIndex + 1);
                 validateParam(param);
-                value = StringUtils.replace(value, param, "x");
+                value = Strings.CS.replace(value, param, "x");
                 index = value.indexOf('{');
             }
             return value;

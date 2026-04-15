@@ -1,11 +1,15 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import {CommonModule, DatePipe} from '@angular/common';
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {ImpfStatus, UntersuchungImpfungInternJson, UntersuchungImpfungInternSaveJson} from '@dvb/data-access-backend';
-import {BenutzerOptionsStore, ImpfstoffeChargenStore} from '@dvb/feat-shared';
-import {BenutzerStore} from '@dvb/feat-shared';
-import {Path} from '@dvb/feat-shared';
-import {ConfirmService} from '@dvb/feat-shared';
+import {
+  BenutzerOptionsStore,
+  BenutzerStore,
+  ConfirmService,
+  EventBusStore,
+  ImpfstoffeChargenStore,
+  Path
+} from '@dvb/feat-shared';
 import {
   ButtonsRightContainerComponent,
   CollapsibleMenuComponent,
@@ -30,6 +34,7 @@ import {
   UntersuchungImpfungenInternComponent,
 } from '../untersuchung-impfungen-intern/untersuchung-impfungen-intern.component';
 import {UntersuchungImpfungenStore} from '../untersuchung-impfungen.store';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'feat-untersuchung-impfungen-intern-list',
@@ -46,7 +51,8 @@ import {UntersuchungImpfungenStore} from '../untersuchung-impfungen.store';
     ButtonsRightContainerComponent,
     NgbDropdownItem,
     EmptyTableMessageComponent,
-  ColWidthComponent,],
+    ColWidthComponent,
+  ],
   providers: [DatePipe],
   templateUrl: './untersuchung-impfungen-intern-list.component.html',
   styleUrl: './untersuchung-impfungen-intern-list.component.scss',
@@ -64,6 +70,7 @@ export class UntersuchungImpfungenInternListComponent {
   readonly #translationService = inject(TranslocoService);
   readonly #confirmService = inject(ConfirmService);
   readonly #datePipe = inject(DatePipe);
+  readonly #eventBusStore = inject(EventBusStore);
 
   protected readonly Path = Path;
 
@@ -72,6 +79,16 @@ export class UntersuchungImpfungenInternListComponent {
   itemTable = new TableModel<UntersuchungImpfungInternJson>(
     {rawListSignal: this.untersuchungImpfungenStore.impfungenInternList},
     {frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll'});
+
+  constructor() {
+    // Reload ImpfstoffChargen, falls sie geaendert haben
+    this.#eventBusStore
+      .on('IMPFSTOFF_CHARGEN_POTENTIALLY_CHANGED')
+      .pipe(takeUntilDestroyed())
+      .subscribe(_event => {
+        this.impfstoffeChargenStore.loadImpfstoffeAndChargen();
+      });
+  }
 
   async createImpfung() {
     await this.openImpfung(undefined, 'create');
@@ -91,13 +108,13 @@ export class UntersuchungImpfungenInternListComponent {
 
   private async openImpfung(impfung: UntersuchungImpfungInternJson | undefined, inputMode: ImpfungPopupMode) {
     const user = this.#benutzerOptionsStore.getOptionForBenutzer(this.benutzerStore.benutzer()?.id);
-    const ngbModalRef = this.#ngModal.open(UntersuchungImpfungenInternComponent, { size: 'lg' });
+    const ngbModalRef = this.#ngModal.open(UntersuchungImpfungenInternComponent, {size: 'lg'});
     ngbModalRef.componentInstance.impfung.set(impfung?.data);
     ngbModalRef.componentInstance.inputMode.set(inputMode);
     ngbModalRef.componentInstance.currentUser.set(requireValue(user));
     ngbModalRef.componentInstance.anlassConfig.set(requireValue(this.anlassStore.selectedEntity()?.anlassConfig));
     const result: UntersuchungImpfungInternSaveJson = await firstValueFrom(ngbModalRef.closed,
-      { defaultValue: undefined });
+      {defaultValue: undefined});
     if (result) {
       if (impfung) {
         if (inputMode === 'verabreicht') {
@@ -145,7 +162,7 @@ export class UntersuchungImpfungenInternListComponent {
 
   getImmunitaeten(item: UntersuchungImpfungInternJson): string {
     const immunitaeten = item.data.krankheitenImmunitaeten;
-    if(immunitaeten.length !== 0) {
+    if (immunitaeten.length !== 0) {
       if (immunitaeten.every(i => i.immunitaetGenuegend)) {
         return this.#translationService.translate('Immunitaet.GENUEGEND');
       }

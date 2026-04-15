@@ -1,0 +1,96 @@
+<form svuiFormLayout
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="store.detailMode()">
+  <h2 svuiHeading="formSection">{{ 'anlassconfig.detail.tab.bewegungsapparat' | transloco }}</h2>
+
+  <!-- Skoliose -->
+  <svui-form-control [label]="'anlassconfig.label.bewegungsapparatSkoliose' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().bewegungsapparatSkoliose | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.bewegungsapparatSkoliose"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Haltungsschwaeche-->
+  <svui-form-control [label]="'anlassconfig.label.bewegungsapparatHaltungsschwache' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().bewegungsapparatHaltungsschwaeche | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.bewegungsapparatHaltungsschwaeche"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- VerkuerzungHamstringmuskulatur-->
+  <svui-form-control [label]="'anlassconfig.label.bewegungsapparatVerkuerzungHamstringmuskulatur' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().bewegungsapparatVerkuerzungHamstringmuskulatur | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.bewegungsapparatVerkuerzungHamstringmuskulatur"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Bemerkungen -->
+  <svui-form-control [label]="'anlassconfig.label.bewegungsapparratBemerkungen' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().bewegungsapparatBemerkung | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.bewegungsapparatBemerkung"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!--messages for whole form -->
+  <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="store.detailMode()"
+    [isCreate]="store.selectedIsNew()"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="anlassConfigHelperService.canEdit()"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+    [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"
+  />
+</form>

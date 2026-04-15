@@ -20,7 +20,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.fileio;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 @JaxMapper
 public final class FileDataMapper {
@@ -30,8 +30,11 @@ public final class FileDataMapper {
     private FileDataMapper() {
     }
 
-    @NonNull
-    public static FileDataJson toJson(@NonNull FileData data) {
+    @Nullable
+    public static FileDataJson toJson(@Nullable FileData data) {
+        if (data == null) {
+            return null;
+        }
         return new FileDataJson(
             data.getId(),
             EntityInfoJson.fromEntity(data),

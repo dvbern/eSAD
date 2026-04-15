@@ -1,0 +1,116 @@
+<div>
+  <form svuiFormLayout [mode]="benutzerListStore.detailMode()" [formGroup]="form.group" (ngSubmit)="submitIfValid()">
+
+    <!--Name-->
+    <svui-form-control [label]="'benutzer.detail.name' | transloco" [viewValue]="form.group.controls.name.value">
+      <svui-input-with-icon [useCase]="'information'" [tooltip]="'benutzer.detail.name.tooltip' | transloco">
+        <input svuiTextInput [formControl]="form.group.controls.name"/>
+      </svui-input-with-icon>
+    </svui-form-control>
+
+    <!--Vorname-->
+    <svui-form-control [label]="'benutzer.detail.vorname' | transloco"
+                       [viewValue]="form.group.controls.vorname.value">
+      <svui-input-with-icon [useCase]="'information'" [tooltip]="'benutzer.detail.vorname.tooltip' | transloco">
+        <input svuiTextInput [formControl]="form.group.controls.vorname"/>
+      </svui-input-with-icon>
+    </svui-form-control>
+
+    <!--Telefonnummer-->
+    <svui-form-control [label]="'benutzer.detail.telefonnummer' | transloco"
+                       [viewValue]="form.group.controls.telefon.value">
+      <input svuiTextInput [formControl]="form.group.controls.telefon"/>
+    </svui-form-control>
+
+    <!--Titel-->
+    <svui-form-control [label]="'benutzer.detail.titel' | transloco"
+                       [viewValue]="form.group.controls.titel.value">
+      <input svuiTextInput [formControl]="form.group.controls.titel"/>
+    </svui-form-control>
+
+    <!--E-Mail-->
+    <svui-form-control [label]="'benutzer.detail.email' | transloco"
+                       [viewValue]="form.group.controls.email.value">
+      <input svuiTextInput [formControl]="form.group.controls.email"/>
+    </svui-form-control>
+
+    <!--Fachrollen-->
+    <svui-form-control [label]="'benutzer.detail.fachrollen' | transloco"
+                       [viewValue]="form.group.getRawValue().fachRollen | translatedEnumViewValuePipe:'FachRolle'"
+    >
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.fachRollen"
+        [allowBadgesToWrap]="true"
+        [multiple]="true"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      >
+        @for (value of fachrollen; track value) {
+          <ng-option [value]="value" [disabled]="isFachrolleDisabled(value)">
+            {{ 'FachRolle.' + value | transloco }}
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+
+    <!-- BenutzerAktivStatus -->
+    <svui-form-control [label]="'global.entityAktivStatus' | transloco"
+                       [viewValue]="'EntityAktivStatus.' + form.group.value.benutzerAktivStatus | transloco">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.controlAt('benutzerAktivStatus')"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      >
+        @for (status of benutzerAktivStati; track status) {
+          <ng-option [value]="status">
+            {{ 'EntityAktivStatus.' + status | transloco }}
+          </ng-option>
+        }
+      </ng-select>
+    </svui-form-control>
+
+    @if (showOrganisation()) {
+      <!-- Organisation -->
+      <svui-form-control [label]="'benutzer.detail.organisation' | transloco"
+                         [viewValue]="getOrganisationName(form.group.controls.organisationRollen.value)">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.organisationRollen"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          <ng-option [value]="[]">
+            {{ 'benutzer.detail.organisation.create.new' | transloco }}
+          </ng-option>
+          @for (organisationRollen of possibleOrganisationsRollen(); track organisationRollen) {
+            @if (organisationRollen.organisation !== undefined) {
+              <ng-option [value]="[organisationRollen]">
+                {{ organisationRollen.organisation.verantwortlicherArztFullname }}
+              </ng-option>
+            }
+          }
+        </ng-select>
+      </svui-form-control>
+    }
+
+    <!--messages for whole form -->
+    <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+    <!-- BUTTONS -->
+    <svui-form-buttons
+      [mode]="benutzerListStore.detailMode()"
+      [isCreate]="benutzerListStore.selectedIsNew()"
+      [saving]="benutzerListStore.loaderSave.isLoading()"
+      [canEdit]="canEditBenutzer()"
+      routeToEdit="../edit"
+      [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+      [routeOnCancelCreate]="[Path.RELATIVE_ONE_UP]"
+    />
+
+  </form>
+</div>

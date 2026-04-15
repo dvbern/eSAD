@@ -10,7 +10,7 @@
   @for (pair of checklistPair; track pair) {
     @if (pair.isVisible) {
       <svui-standalone-control [label]="pair.label | transloco">
-        <input type="checkbox" svuiCheckbox [formControl]="form.controlAt(pair.nameCheckbox)">
+        <input type="checkbox" svuiCheckbox [formControl]="form.controlAt(pair.nameCheckbox)" data-testid="checkbox-checklist">
       </svui-standalone-control>
     }
   }

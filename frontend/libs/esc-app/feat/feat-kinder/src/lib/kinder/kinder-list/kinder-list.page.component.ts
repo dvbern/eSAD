@@ -1,7 +1,13 @@
 import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
-import {EntityAktivStatus, Geschlecht, Klassenstufe, SearchSummaryJson} from '@dvb/data-access-backend';
+import {
+  DocumentQueueMassenbriefSaveJson,
+  EntityAktivStatus,
+  Geschlecht,
+  Klassenstufe,
+  SearchSummaryJson
+} from '@dvb/data-access-backend';
 import {isISODateString} from '@dvb/data-access-types';
 import {
   BenutzerStore,
@@ -15,6 +21,7 @@ import {
   ButtonComponent,
   ButtonsRightContainerComponent,
   CardComponent,
+  CheckboxDirective,
   CollapsibleMenuComponent,
   ColWidthComponent,
   EmptyTableMessageComponent,
@@ -34,14 +41,15 @@ import {AppNotificationStore, FilterSessionStorage, SortDTO, TableModel} from '@
 import {
   ensurePropsFlat,
   hasKindEditBerechtigung,
+  hasKindVorlagenViewBerechtigung,
   isNotNullish,
   isValidEnumValue,
   toValidEnumList,
 } from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
-import {NgbDropdownItem, NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDropdownItem, NgbModal, NgbTooltip} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
-import {firstValueFrom} from 'rxjs';
+import {filter, firstValueFrom} from 'rxjs';
 
 import {KinderSummaryStore} from '../kinder-summary.store';
 import {KinderFilterComponent} from './kinder-filter/kinder-filter.component';
@@ -49,6 +57,10 @@ import {ErweiterteFilterJson} from './kinder-filter/kinder-filter.form';
 import {KinderImportComponent} from './kinder-import/kinder-import.component';
 import {KinderImportJsonEnhanced, KinderImportStore} from './kinder-import/kinder-import.store';
 import {KinderFilterForm, KinderListFilterForm} from './kinder-list-filter.form';
+import {KinderMassenbriefStore} from "./kinder-massenbrief/kinder-massenbrief.store";
+import {KinderMassenbriefComponent} from "./kinder-massenbrief/kinder-massenbrief.component";
+import {NavigationStart, Router} from "@angular/router";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'feat-kinder-list.page',
@@ -77,6 +89,8 @@ import {KinderFilterForm, KinderListFilterForm} from './kinder-list-filter.form'
     InputWithIconComponent,
     ButtonComponent,
     ButtonsRightContainerComponent,
+    CheckboxDirective,
+    NgbTooltip,
   ],
   templateUrl: './kinder-list.page.component.html',
   styleUrl: './kinder-list.page.component.scss',
@@ -85,6 +99,7 @@ import {KinderFilterForm, KinderListFilterForm} from './kinder-list-filter.form'
 export class KinderListPageComponent extends FilterSessionStorage<KinderFilterForm> implements OnInit {
   readonly kinderSummaryStore = inject(KinderSummaryStore);
   readonly kinderImportStore = inject(KinderImportStore);
+  readonly massenbriefStore = inject(KinderMassenbriefStore);
   readonly #transloco = inject(TranslocoService);
   readonly confirmService = inject(ConfirmService);
   readonly benutzerStore = inject(BenutzerStore);
@@ -95,11 +110,40 @@ export class KinderListPageComponent extends FilterSessionStorage<KinderFilterFo
   readonly Path = Path;
   readonly klassenstufen = Object.values(Klassenstufe);
   readonly geschlechter = Object.values(Geschlecht);
+  readonly #router = inject(Router);
 
   readonly #ngModal = inject(NgbModal);
 
   readonly SESSIONSTORAGE_KEY = 'kinderFilter';
 
+  canEditKind = this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung());
+  canGenerateMassenbrief = computed(() => {
+    if (this.tenantSettingsStore.isMassenbriefVisible()) {
+      return this.benutzerStore.createHasRequiredRoleSig(hasKindVorlagenViewBerechtigung())()
+    }
+    return false;
+  });
+  isMassenbriefMode = computed(() => {
+    if (this.tenantSettingsStore.isMassenbriefVisible()) {
+      return this.massenbriefStore.massenbriefMode();
+    }
+    return false;
+  });
+  pageTitle = computed(() => {
+    if (this.isMassenbriefMode()) {
+      return this.#transloco.translate('kinder.list.page.title.massenbriefmode');
+    }
+    return this.#transloco.translate('kinder.list.page.title');
+  });
+  backLink = computed(() => {
+    if (this.isMassenbriefMode()) {
+      return {
+        label: this.#transloco.translate('global.back'),
+        routerLink: '/' + Path.KINDER
+      };
+    }
+    return undefined;
+  });
   itemTable = new TableModel<SearchSummaryJson>(
     {
       rawListSignal: this.kinderSummaryStore.kinderListWithSchuleMarkedInactive,
@@ -129,7 +173,6 @@ export class KinderListPageComponent extends FilterSessionStorage<KinderFilterFo
     paginatedTable: this.itemTable,
   });
 
-  canEditKind = this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung());
   schuleOptions = computed(() => this.#schulenOptionsStore.entitiesMarkedInactive());
 
   summaryItems = computed(() => {
@@ -153,6 +196,14 @@ export class KinderListPageComponent extends FilterSessionStorage<KinderFilterFo
       ],
     };
     this.itemTable.onSort(initialSortConfig);
+    this.#router.events.pipe(
+      filter(e => e instanceof NavigationStart),
+      takeUntilDestroyed()
+    ).subscribe(() => {
+      if (this.isMassenbriefMode()) {
+        this.massenbriefStore.resetState();
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -211,22 +262,39 @@ export class KinderListPageComponent extends FilterSessionStorage<KinderFilterFo
       if (result.standardImport) {
         this.kinderImportStore.importKinderStandard({
           kinderImportJson: result,
-          onSuccess: () => this.showImportStartedNotification(),
+          onSuccess: () => this.showSuccessNotification('kinder.list.import.started'),
         });
       } else {
         this.kinderImportStore.importKinderKlassen({
           kinderImportJson: result,
-          onSuccess: () => this.showImportStartedNotification(),
+          onSuccess: () => this.showSuccessNotification('kinder.list.import.started'),
         });
       }
     }
   }
 
-  private showImportStartedNotification(): void {
+  async openMassenbriefPopup(): Promise<void> {
+    const ngbModalRef = this.#ngModal.open(KinderMassenbriefComponent, {size: 'l'});
+
+    const result: DocumentQueueMassenbriefSaveJson = await firstValueFrom(ngbModalRef.closed, {
+      defaultValue: undefined,
+    });
+    if (isNotNullish(result)) {
+      this.massenbriefStore.triggerMassenbriefgenerierung({
+        massenbriefParams: result,
+        onSuccess: () => {
+          this.showSuccessNotification('kinder.list.massenbrief.placedInQueue');
+          this.massenbriefStore.resetState();
+        }
+      })
+    }
+  }
+
+  private showSuccessNotification(key: string): void {
     this.#appNotificationStore.addNotification({
       alertType: 'success',
       id: crypto.randomUUID(),
-      summary: this.#transloco.translate('kinder.list.import.started'),
+      summary: this.#transloco.translate(key),
       autohide: true,
     });
   }

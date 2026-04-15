@@ -1,20 +1,29 @@
 <!-- Header -->
-<svui-card-in-card class="mb-3">
-  <feat-untersuchung-impfungen-header
-    [einladung]="einladung()"
-    [impfausweisUnvollstaendig]="!!untersuchungImpfungenStore.impfausweis()?.impfausweisUnvollstaendig"
-    [impfausweisNichtVorhanden]="!!untersuchungImpfungenStore.impfausweis()?.impfausweisNichtVorhanden"
-    [impfausweisZweiPlusEinsSchema]="!!untersuchungImpfungenStore.impfausweis()?.impfausweisZweiPlusEinsSchema"
-    (impfausweisUnvollstaendigChanged)="impfausweisUnvollstaendigChanged($event)"
-    (impfausweisNichtVorhandenChanged)="impfausweisNichtVorhandenChanged($event)"
-    (impfausweisZweiPlusEinsSchemaChanged)="impfausweisZweiPlusEinsSchemaChanged($event)"
-    (gotoImpfausweisClicked)="gotoImpfausweis()"
-  >
-  </feat-untersuchung-impfungen-header>
-</svui-card-in-card>
+@if (anlassStore.selectedEntity()?.anlassConfig?.showCardImpfungenHeader) {
+  <svui-card-in-card class="mb-3">
+    <feat-untersuchung-impfungen-header
+      [einladung]="einladung()"
+      [impfausweisUnvollstaendig]="!!untersuchungImpfungenStore.impfausweis()?.impfausweisUnvollstaendig"
+      [impfausweisNichtVorhanden]="!!untersuchungImpfungenStore.impfausweis()?.impfausweisNichtVorhanden"
+      [impfausweisZweiPlusEinsSchema]="!!untersuchungImpfungenStore.impfausweis()?.impfausweisZweiPlusEinsSchema"
+      (impfausweisUnvollstaendigChanged)="impfausweisUnvollstaendigChanged($event)"
+      (impfausweisNichtVorhandenChanged)="impfausweisNichtVorhandenChanged($event)"
+      (impfausweisZweiPlusEinsSchemaChanged)="impfausweisZweiPlusEinsSchemaChanged($event)"
+      (gotoImpfausweisClicked)="gotoImpfausweis()"
+    >
+    </feat-untersuchung-impfungen-header>
+  </svui-card-in-card>
+}
+
+<!-- Data Minimal -->
+@if (anlassStore.selectedEntity()?.anlassConfig?.showCardImpfungenDataMinimal) {
+  <svui-card-in-card class="mb-3">
+    <feat-untersuchung-impfungen-data-minimal #dataMinimal/>
+  </svui-card-in-card>
+}
 
 <!-- Aktueller Impfstatus -->
-@if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenUebersicht !== RequirementSetting.NOT_VISIBLE) {
+@if (anlassStore.selectedEntity()?.anlassConfig?.showCardImpfungenImpfstatus) {
   <svui-card-in-card class="mb-3">
     <feat-untersuchung-impfstatus
       #impfstatus
@@ -28,7 +37,7 @@
 }
 
 <!-- Geplante Impfungen -->
-@if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenListe !== RequirementSetting.NOT_VISIBLE) {
+@if (anlassStore.selectedEntity()?.anlassConfig?.showCardImpfungenListeIntern) {
   <svui-card-in-card class="mb-3">
     <feat-untersuchung-impfungen-intern-list/>
   </svui-card-in-card>
@@ -37,22 +46,24 @@
 <svui-layout-two-columns>
 
   <!-- Checkliste -->
-  @if (anlassStore.selectedEntity()?.anlassConfig?.showChecklist) {
+  @if (anlassStore.selectedEntity()?.anlassConfig?.showCardImpfungenChecklist) {
     <svui-card-in-card left>
       <feat-untersuchung-impfungen-checklist/>
     </svui-card-in-card>
   }
 
   <!-- Doppelkontrolle Impfentscheid -->
-  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showImpfungenDoppelkontrolle) {
+  @if (anlassStore.selectedEntity()?.anlassConfig?.showCardImpfungenDoppelkontrolle) {
     <svui-card-in-card left>
       <feat-untersuchung-doppelkontrolle-impfentscheid #doppelkontrolle/>
     </svui-card-in-card>
   }
 
   <!-- Massnahmen -->
-  <svui-card-in-card right>
-    <feat-untersuchung-impfungen-massnahmen/>
-  </svui-card-in-card>
+  @if (anlassStore.selectedEntity()?.anlassConfig?.showCardImpfungenMassnahmen) {
+    <svui-card-in-card right>
+      <feat-untersuchung-impfungen-massnahmen/>
+    </svui-card-in-card>
+  }
 
 </svui-layout-two-columns>

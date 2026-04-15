@@ -18,6 +18,8 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.fileio;
 
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 import java.io.File;
@@ -74,6 +76,11 @@ public class FileUploadWrapper implements FileUpload {
     @Override
     public Path uploadedFile() {
         return file.toPath();
+    }
+
+    @Override
+    public MultivaluedMap<String, String> getHeaders() {
+        return new MultivaluedHashMap<>();
     }
 
     @NonNull

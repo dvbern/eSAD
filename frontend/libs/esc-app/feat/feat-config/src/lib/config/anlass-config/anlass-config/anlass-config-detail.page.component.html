@@ -1,5 +1,23 @@
 <feat-page [heading]="pageTitle()"
            [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.CONFIG + '/' + Path.ANLASS_CONFIG}">
+
+  @if (anlassConfigHelperService.neverEditable()) {
+    <div class="pb-3">
+      <svui-status-text [icon]="'warning'"
+                        class="pt-3"
+                        statusColor="warning">{{ 'anlassconfig.info.never.editable'|transloco }}
+      </svui-status-text>
+    </div>
+  }
+  @if (anlassConfigHelperService.canEdit()) {
+    <div class="pb-3">
+      <svui-status-text [icon]="'warning'"
+                        class=""
+                        statusColor="warning">{{ 'anlassconfig.info.editable'|transloco }}
+      </svui-status-text>
+    </div>
+  }
+
   <svui-card>
     <ul ngbNav style="margin-bottom: 2rem;">
       <li ngbNavItem>
@@ -14,6 +32,14 @@
                 [routerLink]="Path.ANLASS_CONFIG_DATEN"
                 [routerLinkActive]="'active'"
                 aria-current="page">{{ 'anlassconfig.detail.tab.daten' | transloco }}
+        </button>
+      </li>
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.selectedIsNew()"
+                [routerLink]="Path.ANLASS_CONFIG_VORABKLAERUNGEN"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'anlassconfig.detail.tab.vorabklaerungen' | transloco }}
         </button>
       </li>
       <li ngbNavItem>
@@ -78,6 +104,38 @@
                 [routerLink]="Path.ANLASS_CONFIG_AERZTLICHE_UNTERSUCHUNG"
                 [routerLinkActive]="'active'"
                 aria-current="page">{{ 'anlassconfig.detail.tab.aerztlicheuntersuchung' | transloco }}
+        </button>
+      </li>
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.selectedIsNew()"
+                [routerLink]="Path.ANLASS_CONFIG_SPRACHE"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'anlassconfig.detail.tab.sprache' | transloco }}
+        </button>
+      </li>
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.selectedIsNew()"
+                [routerLink]="Path.ANLASS_CONFIG_SCHULRELEVANTE_BEEINTRAECHTIGUNG"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'anlassconfig.detail.tab.schulrelevante.beeintraechtigung' | transloco }}
+        </button>
+      </li>
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.selectedIsNew()"
+                [routerLink]="Path.ANLASS_CONFIG_BEWEGUNGSPPARAT"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'anlassconfig.detail.tab.bewegungsapparat' | transloco }}
+        </button>
+      </li>
+      <li ngbNavItem>
+        <button class="nav-link"
+                [disabled]="store.selectedIsNew()"
+                [routerLink]="Path.ANLASS_CONFIG_ABSCHLUSS"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'anlassconfig.detail.tab.abschluss' | transloco }}
         </button>
       </li>
       <li ngbNavItem>

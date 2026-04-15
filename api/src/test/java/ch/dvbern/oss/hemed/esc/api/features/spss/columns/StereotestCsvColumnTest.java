@@ -1,10 +1,10 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,16 +30,16 @@ class StereotestCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungSehenBeurteilung.setStereotest(StereotestResultat.NORMAL);
+        untersuchungSehenBeurteilung.setStereotest(SingleValueEnhanced.of(StereotestResultat.NORMAL, null));
         assertThat(column.extract(einladung)).isEqualTo("1");
 
-        untersuchungSehenBeurteilung.setStereotest(StereotestResultat.PATHOLOGISCH);
+        untersuchungSehenBeurteilung.setStereotest(SingleValueEnhanced.of(StereotestResultat.PATHOLOGISCH, null));
         assertThat(column.extract(einladung)).isEqualTo("2");
 
-        untersuchungSehenBeurteilung.setStereotest(StereotestResultat.UNSICHER);
+        untersuchungSehenBeurteilung.setStereotest(SingleValueEnhanced.of(StereotestResultat.UNSICHER, null));
         assertThat(column.extract(einladung)).isEqualTo("3");
 
-        untersuchungSehenBeurteilung.setStereotest(StereotestResultat.NICHT_GEPRUEFT);
+        untersuchungSehenBeurteilung.setStereotest(SingleValueEnhanced.of(StereotestResultat.NICHT_GEPRUEFT, null));
         assertThat(column.extract(einladung)).isEqualTo("4");
     }
 
@@ -62,7 +62,7 @@ class StereotestCsvColumnTest extends AbstractBaseColumnTest {
         assertThat(column.extract(einladung)).isEmpty();
 
         when(tlMock.translateValue(StereotestResultat.PATHOLOGISCH)).thenReturn("Pathologisch");
-        untersuchungSehenBeurteilung.setStereotest(StereotestResultat.PATHOLOGISCH);
+        untersuchungSehenBeurteilung.setStereotest(SingleValueEnhanced.of(StereotestResultat.PATHOLOGISCH, null));
         assertThat(column.extract(einladung)).isEqualTo("Pathologisch");
     }
 

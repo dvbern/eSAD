@@ -15,7 +15,7 @@ import { ISODateString } from '@dvb/data-access-types';
 import { AnlassConfigOptionsStore, globalConstants, KlassenOptionsStore, TimetravelStore } from '@dvb/feat-shared';
 import { AppValidators, BaseForm, DetailMode } from '@dvb/util-angular';
 import {
-  ensureProps,
+  ensureProps, ensurePropsFlat,
   getDateTimeFromDateAndTime,
   getSchoolYearFromISODateString,
   getTimeFromISODateTimeString,
@@ -157,7 +157,7 @@ export class AnlassDatenForm extends BaseForm<ReturnType<typeof makeForm>, Anlas
 
   override valueOnValid(): AnlassSaveJson {
     const value = requireValue(this.group.getRawValue());
-    return ensureProps<AnlassSaveJson>({
+    return ensurePropsFlat<AnlassSaveJson>({
       anlassTyp: requireFilledIn(value.anlassTyp),
       titel: requireFilledIn(value.titel),
       anlassStatus: requireFilledIn(value.anlassStatus),

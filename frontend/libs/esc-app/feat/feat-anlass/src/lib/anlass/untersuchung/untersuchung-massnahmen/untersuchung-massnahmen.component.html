@@ -138,7 +138,8 @@
         <svui-form-control [label]="'untersuchung.tab.massnahmen.information.eltern' | transloco"
                            [topLabelVisibility]="'hidden'"
                            [viewValue]="form.group.value.informationEltern"
-                           [size]="'half'">
+                           [size]="'half'"
+                           data-testid="information-eltern-select">
           <ng-select
             svuiNgSelect
             bindLabel='dummy'

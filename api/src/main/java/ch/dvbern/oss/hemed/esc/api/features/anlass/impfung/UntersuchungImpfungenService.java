@@ -23,6 +23,7 @@ public class UntersuchungImpfungenService {
     private final AutoAufgabeService autoAufgabeService;
     private final UntersuchungImpfstatusKrankheitRepo untersuchungImpfstatusKrankheitRepo;
     private final UntersuchungImpfungInternRepo untersuchungImpfungInternRepo;
+    private final UntersuchungImpfungenDataMinimalService impfungenDataMinimalService;
     private final AppClock appClock;
 
     @NonNull
@@ -116,6 +117,8 @@ public class UntersuchungImpfungenService {
 
     public void untersuchungAbschliessen(@NonNull Untersuchung untersuchung) {
         UntersuchungImpfungen impfungen = getOrCreateUntersuchungImpfungen(untersuchung.getId());
+        impfungenDataMinimalService.untersuchungAbschliessen(impfungen);
+        impfungen.disableOptimisticLockingCheck();
         persist(impfungen);
     }
 }

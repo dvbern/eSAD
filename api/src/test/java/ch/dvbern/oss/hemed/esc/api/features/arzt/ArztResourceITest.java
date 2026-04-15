@@ -12,7 +12,7 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Fachrichtung;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.HpvTeilnahme;
-import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Organisation;
+import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Rechtsform;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
@@ -52,7 +52,7 @@ class ArztResourceITest extends AbstractITest {
                 .withBemerkungen("Bemerkung")
                 .withEmail("test@mailbucket.dvbern.ch")
                 .withFachrichtung(Fachrichtung.ANDERES)
-                .withOrganisation(Organisation.JURISTISCHE_PERSON)
+                .withOrganisation(Rechtsform.JURISTISCHE_PERSON)
                 .withHpvTeilnahme(HpvTeilnahme.JA)
                 .withAdresse(AdresseBuilder.defaultAdresse())
                 .withName(TestUtil.getRandomString("Name")));
@@ -77,7 +77,7 @@ class ArztResourceITest extends AbstractITest {
         Assertions.assertThat(actual.getBemerkungen()).isEqualTo(expectedArztSaveJson.getBemerkungen());
         Assertions.assertThat(actual.getEmail()).isNotNull().hasToString(expectedArztSaveJson.getEmail());
         Assertions.assertThat(actual.getFachrichtung()).hasToString(expectedArztSaveJson.getFachrichtung().toString());
-        Assertions.assertThat(actual.getOrganisation()).hasToString(expectedArztSaveJson.getOrganisation().toString());
+        Assertions.assertThat(actual.getRechtsform()).hasToString(expectedArztSaveJson.getRechtsform().toString());
         Assertions.assertThat(actual.getHpvTeilnahme()).hasToString(expectedArztSaveJson.getHpvTeilnahme().toString());
         Assertions.assertThat(actual.getName()).isEqualTo(expectedArztSaveJson.getName());
         Assertions.assertThat(actual.getVorname()).isEqualTo(expectedArztSaveJson.getVorname());
@@ -129,9 +129,9 @@ class ArztResourceITest extends AbstractITest {
         Assertions.assertThat(actual.getFachrichtung())
             .isNotNull()
             .hasToString(expectedArztSaveJson.getFachrichtung().toString());
-        Assertions.assertThat(actual.getOrganisation())
+        Assertions.assertThat(actual.getRechtsform())
             .isNotNull()
-            .hasToString(expectedArztSaveJson.getOrganisation().toString());
+            .hasToString(expectedArztSaveJson.getRechtsform().toString());
         Assertions.assertThat(actual.getHpvTeilnahme())
             .isNotNull()
             .hasToString(expectedArztSaveJson.getHpvTeilnahme().toString());
@@ -153,7 +153,7 @@ class ArztResourceITest extends AbstractITest {
                 .withEmail("arzt2@mailbucket.dvbern.ch")
                 .withTelefon(NormalizedPhoneNumber.parse(expectedTelefon))
                 .withFachrichtung(Fachrichtung.KINDERARZT)
-                .withOrganisation(Organisation.NATUERLICHE_PERSON)
+                .withOrganisation(Rechtsform.NATUERLICHE_PERSON)
                 .withHpvTeilnahme(HpvTeilnahme.NEIN)
                 .withName("Doktor")
                 .withVorame("Maxine")
@@ -176,7 +176,7 @@ class ArztResourceITest extends AbstractITest {
         Assertions.assertThat(resultData.getBemerkungen()).isEqualTo(expectedArztSaveJson.getBemerkungen());
         Assertions.assertThat(resultData.getEmail()).isEqualTo(expectedArztSaveJson.getEmail());
         Assertions.assertThat(resultData.getFachrichtung()).isEqualTo(expectedArztSaveJson.getFachrichtung());
-        Assertions.assertThat(resultData.getOrganisation()).isEqualTo(expectedArztSaveJson.getOrganisation());
+        Assertions.assertThat(resultData.getRechtsform()).isEqualTo(expectedArztSaveJson.getRechtsform());
         Assertions.assertThat(resultData.getHpvTeilnahme()).isEqualTo(expectedArztSaveJson.getHpvTeilnahme());
         Assertions.assertThat(resultData.getName()).isEqualTo(expectedArztSaveJson.getName());
         Assertions.assertThat(resultData.getVorname()).isEqualTo(expectedArztSaveJson.getVorname());
@@ -239,7 +239,7 @@ class ArztResourceITest extends AbstractITest {
         final Arzt arztArrange = ArztBuilder.create(builder -> builder.withName("ChangeName")
             .withEmail("change@mailbucket.dvbern.ch")
             .withFachrichtung(Fachrichtung.OPHTHALMOLOGIE_OHNE_ORTHOPTIK)
-            .withOrganisation(Organisation.JURISTISCHE_PERSON));
+            .withOrganisation(Rechtsform.JURISTISCHE_PERSON));
 
         final Arzt arztPersisted = arztService.persist(arztArrange);
 

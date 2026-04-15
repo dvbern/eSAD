@@ -13,7 +13,8 @@
         <h2 svuiHeading="formSection">{{ 'notizen.detail.titel' | transloco }}</h2>
 
         <svui-form-control [label]="'notizen.titel' | transloco"
-                           [viewValue]="form.group.value.titel">
+                           [viewValue]="form.group.value.titel"
+                            data-testid="notiz-titel-input">
           <input svuiTextInput [formControl]="form.controlAt('titel')"/>
         </svui-form-control>
 
@@ -47,7 +48,7 @@
             [placeholder]="'global.select.bitte-auswaehlen' | transloco"
           >
             @for (benutzer of benutzerOptionsStore.entitiesIncluding(form.group.value.verantwortlicher); track benutzer.id) {
-              <ng-option [value]="benutzer" [disabled]="!benutzer.aktiv">
+              <ng-option [value]="benutzer" [disabled]="benutzer.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
                 {{ benutzer.fullName }}
               </ng-option>
             }
@@ -55,7 +56,7 @@
         </svui-form-control>
         <svui-form-control [label]="'notizen.label' | transloco"
                            [viewValue]="form.group.value.labels?.join(',')"
-        >
+                           data-testid="notiz-label-select">
           <ng-select
             svuiNgSelect
             bindLabel='dummy'
@@ -76,6 +77,25 @@
             }
           </ng-select>
         </svui-form-control>
+
+
+        <!--Verknuepfter Anlass-->
+        <svui-form-control [label]="'notiz.anlass' | transloco"
+                           [viewValue]="form.group.controls.anlassLink.value">
+          @if (mode() === 'edit' && form.group.controls.anlassLink.value) {
+            <ul ngbNav class="mt-1">
+              <li ngbNavItem class="p-0">
+                <a class="nav-link fw-bold" target="_blank" [href]="anlassLink()">
+                  <svui-icon [useCase]="'link'"></svui-icon>
+                  {{ 'notiz.anlasslink' | transloco }}
+                </a>
+              </li>
+            </ul>
+          } @else {
+            <span>-</span>
+          }
+        </svui-form-control>
+
 
         @if (inaktivLabels().length !== 0) {
           <svui-form-control [label]="'notizen.label.deaktiviert' | transloco"
@@ -112,20 +132,19 @@
             <!-- QRCode -->
             <div style="margin-top: 17px;">
               <feat-mobile-upload
-              (clicked)="onMobileClick()">
+                (clicked)="onMobileClick()">
               </feat-mobile-upload>
             </div>
 
           </div>
+        } @else {
+
+          <feat-file-drop
+            (filesToUpload)="onFilesSelected($event)"
+            [acceptedFiletypes]="acceptedFiletypes"
+          ></feat-file-drop>
+
         }
-        @else {
-
-        <feat-file-drop
-          (filesToUpload)="onFilesSelected($event)"
-          [acceptedFiletypes]="acceptedFiletypes"
-        ></feat-file-drop>
-
-      }
 
         <!--messages for whole form -->
         <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>

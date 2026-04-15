@@ -24,13 +24,48 @@ import java.util.stream.Collectors;
 
 import ch.dvbern.oss.commons.i18nl10n.I18nMessage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigUtil;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.UntersuchungBewegungsapparat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.types.Haltungsschwaeche;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.types.Skoliose;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.types.VerkuerzungHamstringmuskulatur;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammSimpel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenHoerhilfe;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithDateTimeJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDaten;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.UntersuchungSchulrelevanteBeeintraechtigung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.Feinmotorik;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.FreiesGehen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.GleichgewichtEinbeinstand;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.Grafomotorik;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.GrobmotorikEinbeinhuepfen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.OhneStuetzradVelofahren;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenAugeEinzelnResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.SehenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftretenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.UntersuchungSprache;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Nachsprechen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Sprachverstaendnis;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Wortschatz;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
@@ -42,11 +77,12 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtos
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.anlass.anlassflags.AnlassFlags;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PDFAPrintUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtilRecord;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.AreaBreak;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -75,14 +111,22 @@ public final class KinderdossierAnlassPrinter {
         for (KinderdossierAnlassPrintDTO item : sortedList) {
             addAnlassdaten(item.getEinladung(), basePrinter, document);
             if (item.getEinladung().getEinladungStatus() == EinladungStatus.TEILNAHME_BESTAETIGT) {
-                addImpungenUntersuchung(item, basePrinter, document);
+                addUntersuchungImpfungen(item, basePrinter, document);
                 addUntersuchungSehen(item.getEinladung(), basePrinter, document);
                 addUntersuchungHoerenAudiogramm(item.getEinladung(), basePrinter, document);
                 addUntersuchungHoerenOtoskopie(item.getEinladung(), basePrinter, document);
                 addUntersuchungGroesseGewicht(item.getEinladung(), basePrinter, document);
                 adduntersuchungTriage(item.getEinladung(), basePrinter, document);
+                addLaeusekontrolle(item.getEinladung(), basePrinter, document);
                 addUntersuchungArzt(item.getEinladung(), basePrinter, document);
-                addUntersuchungImpfungenMassnahmen(item.getEinladung(), basePrinter, document);
+                addUntersuchungSprache(item.getEinladung(), basePrinter, document);
+                addBewegungsapparat(item.getEinladung(), basePrinter, document);
+                addUntersuchungSchulrelevanteBeeintraechtigung(item.getEinladung(), basePrinter, document);
+                addUntersuchungImpfungenMassnahmen(
+                    item.getEinladung(),
+                    item.getFolgeImpfAnlassList(),
+                    basePrinter,
+                    document);
                 addUntersuchungMassnahmen(item.getEinladung(), basePrinter, document);
             }
         }
@@ -94,18 +138,7 @@ public final class KinderdossierAnlassPrinter {
         @NonNull Document document
     ) {
         AnlassConfig anlassConfig = einladung.getAnlass().getAnlassConfig();
-        if (!isAnyVisible(
-            anlassConfig.getSehenBrilleLinsen(),
-            anlassConfig.getSehenFarbsehen(),
-            anlassConfig.getSehenTafel(),
-            anlassConfig.getSehenFernvisus(),
-            anlassConfig.getSehenStereoTest(),
-            anlassConfig.getSehenStrabismus(),
-            anlassConfig.getSehenInspektion(),
-            anlassConfig.getSehenKonvergenz(),
-            anlassConfig.getSehenMotilitaet(),
-            anlassConfig.getSehenNahvisus(),
-            anlassConfig.getSehenBemerkungen())) {
+        if (!AnlassConfigUtil.isSehenBeurteilungVisible(anlassConfig)) {
             return;
         }
 
@@ -113,169 +146,143 @@ public final class KinderdossierAnlassPrinter {
             I18nMessage.of("printer.kinderdossier.anlass.sehen"),
             document);
 
-        // brilleLinsen
-        if (anlassConfig.getSehenBrilleLinsen().isVisible()) {
-            basePrinter.addKeyValue(
+        List<PrintUtilRecord<UntersuchungSehenBeurteilung>> printerList = List.of(
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.brilleLinsen",
-                KinderdossierPrintUtil.extractUntersuchungSehen(
-                    einladung,
-                    untersuchungSehen -> basePrinter.translateValue(untersuchungSehen.getBrilleLinsen())),
-                document);
-        }
-
-        // stereotest
-        if (anlassConfig.getSehenStereoTest().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getSehenBrilleLinsen().isVisible(),
+                untersuchungSehen -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehen.getBrilleLinsen(),
+                    BrilleLinsenResultat.class))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.stereotest",
-                KinderdossierPrintUtil.extractUntersuchungSehen(
-                    einladung,
-                    untersuchungSehen -> basePrinter.translateValue(untersuchungSehen.getStereotest())),
-                document);
-        }
-
-        // farbsehen
-        if (anlassConfig.getSehenFarbsehen().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getSehenStereoTest().isVisible(),
+                untersuchungSehen -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehen.getStereotest(),
+                    StereotestResultat.class))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.farbsehen",
-                KinderdossierPrintUtil.extractUntersuchungSehen(
-                    einladung,
-                    untersuchungSehen -> basePrinter.translateValue(untersuchungSehen.getFarbsehen())),
-                document);
-        }
-
-        // verwendeteTafel
-        if (anlassConfig.getSehenTafel().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getSehenFarbsehen().isVisible(),
+                untersuchungSehen -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehen.getFarbsehen(),
+                    FarbsehenResultat.class))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.verwendeteTafel",
-                KinderdossierPrintUtil.extractUntersuchungSehen(
-                    einladung,
-                    untersuchungSehen -> basePrinter.translateValue(untersuchungSehen.getVerwendeteTafel())),
-                document);
-        }
-
-        if (anlassConfig.getSehenFernvisus().isVisible()) {
-            // fernvisus
-            basePrinter.addKeyValue(
+                anlassConfig.getSehenTafel().isVisible(),
+                untersuchungSehen -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehen.getVerwendeteTafel(),
+                    VerwendetTafelResultat.class))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.fernvisus",
-                KinderdossierPrintUtil.extractUntersuchungSehen(
-                    einladung,
-                    untersuchungSehen -> untersuchungSehen.getFernvisus().stream()
-                        .map(basePrinter::translateValue)
-                        .collect(Collectors.joining(", "))),
-                document);
-
-            // fernvisusRechts
-            basePrinter.addKeyValue(
+                anlassConfig.getSehenFernvisus().isVisible(),
+                untersuchungSehen -> ValueEnhancedUtil.getEnumSetOrEmpty(
+                        untersuchungSehen.getFernvisus(),
+                        DistanzSehenResultat.class)
+                    .stream()
+                    .map(basePrinter::translateValue)
+                    .collect(Collectors.joining(", "))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.fernvisusRechts",
-                KinderdossierPrintUtil.extractUntersuchungSehen(
-                    einladung,
-                    untersuchungSehen -> PrintUtil.trimToPlaceholder(untersuchungSehen.getFernvisusRechts())),
-                document);
-
-            // fernvisusLinks
-            basePrinter.addKeyValue(
+                anlassConfig.getSehenFernvisus().isVisible(),
+                untersuchungSehen -> trimToPlaceholder(untersuchungSehen.getFernvisusRechts())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.fernvisusLinks",
-                KinderdossierPrintUtil.extractUntersuchungSehen(
-                    einladung,
-                    untersuchungSehen -> PrintUtil.trimToPlaceholder(untersuchungSehen.getFernvisusLinks())),
-                document);
-        }
-
-        if (anlassConfig.getSehenNahvisus().isVisible()) {
-            // nahvisus
-            basePrinter.addKeyValue(
+                anlassConfig.getSehenFernvisus().isVisible(),
+                untersuchungSehen -> trimToPlaceholder(untersuchungSehen.getFernvisusLinks())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.fernvisusAugeLinks",
+                anlassConfig.getSehenFernvisusAugeEinzeln().isVisible(),
+                untersuchungSehen -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehen.getFernvisusAugeLinks(),
+                    DistanzSehenAugeEinzelnResultat.class))),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.fernvisusAugeRechts",
+                anlassConfig.getSehenFernvisusAugeEinzeln().isVisible(),
+                untersuchungSehen -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehen.getFernvisusAugeRechts(),
+                    DistanzSehenAugeEinzelnResultat.class))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.nahvisus",
-                KinderdossierPrintUtil.extractUntersuchungSehen(
-                    einladung,
-                    untersuchungSehen -> untersuchungSehen.getNahvisus().stream()
-                        .map(basePrinter::translateValue)
-                        .collect(Collectors.joining(", "))),
-                document);
-
-            // nahvisusRechts
-            basePrinter.addKeyValue(
+                anlassConfig.getSehenNahvisus().isVisible(),
+                untersuchungSehen -> ValueEnhancedUtil.getEnumSetOrEmpty(
+                        untersuchungSehen.getNahvisus(),
+                        DistanzSehenResultat.class)
+                    .stream()
+                    .map(basePrinter::translateValue)
+                    .collect(Collectors.joining(", "))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.nahvisusRechts",
-                KinderdossierPrintUtil.extractUntersuchungSehen(
-                    einladung,
-                    untersuchungSehen -> PrintUtil.trimToPlaceholder(untersuchungSehen.getNahvisusRechts())),
-                document);
-
-            // nahvisusLinks
-            basePrinter.addKeyValue(
+                anlassConfig.getSehenNahvisus().isVisible(),
+                untersuchungSehen -> trimToPlaceholder(untersuchungSehen.getNahvisusRechts())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.nahvisusLinks",
-                KinderdossierPrintUtil.extractUntersuchungSehen(
-                    einladung,
-                    untersuchungSehen -> PrintUtil.trimToPlaceholder(untersuchungSehen.getNahvisusLinks())),
-                document);
-        }
-
-        // motilitaet
-        if (anlassConfig.getSehenMotilitaet().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getSehenNahvisus().isVisible(),
+                untersuchungSehen -> trimToPlaceholder(untersuchungSehen.getNahvisusLinks())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.motilitaet",
-                KinderdossierPrintUtil.extractUntersuchungSehen(
-                    einladung,
-                    untersuchungSehen -> basePrinter.translateValue(untersuchungSehen.getMotilitaet())),
-                document);
-        }
-
-        if (anlassConfig.getSehenStrabismus().isVisible()) {
-            // strabismus
-            basePrinter.addKeyValue(
+                anlassConfig.getSehenMotilitaet().isVisible(),
+                untersuchungSehen -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehen.getMotilitaet(),
+                    MotilitaetResultat.class))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.strabismus",
-                KinderdossierPrintUtil.extractUntersuchungSehen(
-                    einladung,
-                    untersuchungSehen -> untersuchungSehen.getStrabismus().stream()
-                        .map(basePrinter::translateValue)
-                        .collect(Collectors.joining(", "))),
-                document);
-
-            // strabismusAuspraegung
-            basePrinter.addKeyValue(
+                anlassConfig.getSehenStrabismus().isVisible(),
+                untersuchungSehen -> ValueEnhancedUtil.getEnumSetOrEmpty(
+                        untersuchungSehen.getStrabismus(),
+                        StrabismusResultat.class)
+                    .stream()
+                    .map(basePrinter::translateValue)
+                    .collect(Collectors.joining(", "))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.strabismusAuspraegung",
-                KinderdossierPrintUtil.extractUntersuchungSehen(
-                    einladung,
-                    untersuchungSehen -> basePrinter.translateValue(untersuchungSehen.getStrabismusAuspraegung())),
-                document);
-
-            // strabismusAuftreten
-            basePrinter.addKeyValue(
+                anlassConfig.getSehenStrabismusAuspraegung().isVisible(),
+                untersuchungSehen -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehen.getStrabismusAuspraegung(),
+                    StrabismusAuspraegungResultat.class))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.strabismusAuftreten",
-                KinderdossierPrintUtil.extractUntersuchungSehen(
-                    einladung,
-                    untersuchungSehen -> basePrinter.translateValue(untersuchungSehen.getStrabismusAuftreten())),
-                document);
-        }
-
-        // inspektion
-        if (anlassConfig.getSehenInspektion().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getSehenStrabismusAuftreten().isVisible(),
+                untersuchungSehen -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehen.getStrabismusAuftreten(),
+                    StrabismusAuftretenResultat.class))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.inspektion",
-                KinderdossierPrintUtil.extractUntersuchungSehen(
-                    einladung,
-                    untersuchungSehen -> basePrinter.translateValue(untersuchungSehen.getInspektion())),
-                document);
-        }
-
-        // konvergenz
-        if (anlassConfig.getSehenKonvergenz().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getSehenInspektion().isVisible(),
+                untersuchungSehen -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehen.getInspektion(),
+                    InspektionKonvergenzResultat.class))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.konvergenz",
-                KinderdossierPrintUtil.extractUntersuchungSehen(
-                    einladung,
-                    untersuchungSehen -> basePrinter.translateValue(untersuchungSehen.getKonvergenz())),
-                document);
-        }
-
-        // bemerkungen
-        if (anlassConfig.getSehenBemerkungen().isVisible()) {
-            basePrinter.addVerticalKeyValue(
+                anlassConfig.getSehenKonvergenz().isVisible(),
+                untersuchungSehen -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungSehen.getKonvergenz(),
+                    InspektionKonvergenzResultat.class))),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.sehenEmpfehlung",
+                anlassConfig.getSehenEmpfehlung().isVisible(),
+                untersuchungSehen -> ValueEnhancedUtil.getEnumSetOrEmpty(
+                        untersuchungSehen.getEmpfehlung(),
+                        SehenEmpfehlung.class)
+                    .stream()
+                    .map(basePrinter::translateValue)
+                    .collect(Collectors.joining(", "))),
+            new PrintUtilRecord<>(
                 BEMERKUNG_KEY,
-                KinderdossierPrintUtil.extractUntersuchungSehen(
-                    einladung,
-                    UntersuchungSehenBeurteilung::getBemerkungen),
-                document);
-        }
+                anlassConfig.getSehenBemerkungen().isVisible(),
+                UntersuchungSehenBeurteilung::getBemerkungen)
+        );
+
+        printerList.stream()
+            .filter(PrintUtilRecord::isVisible)
+            .forEach(printerRecord ->
+                basePrinter.addKeyValue(
+                    printerRecord.titleKey(),
+                    KinderdossierPrintUtil.extractUntersuchungSehen(
+                        einladung,
+                        printerRecord.stringTransformer()
+                    ),
+                    document
+                )
+            );
     }
 
     private static void addUntersuchungHoerenAudiogramm(
@@ -284,12 +291,7 @@ public final class KinderdossierAnlassPrinter {
         @NonNull Document document
     ) {
         AnlassConfig anlassConfig = einladung.getAnlass().getAnlassConfig();
-        if (!isAnyVisible(
-            anlassConfig.getHoerenAudiogramm(),
-            anlassConfig.getHoerenAudiogrammBeurteilung(),
-            anlassConfig.getHoerenAudiogrammZusaetzlicheAngaben(),
-            anlassConfig.getHoerenAudiogrammBemerkungen())
-        ) {
+        if (!AnlassConfigUtil.isHoerenAudiogrammVisible(anlassConfig)) {
             return;
         }
         basePrinter.addH3Title(I18nMessage.of("printer.kinderdossier.anlass.hoeren.audiogramm"), document);
@@ -308,41 +310,65 @@ public final class KinderdossierAnlassPrinter {
             addAudiogramTable(audiogrammLinks, basePrinter, document);
         }
 
-        // audiogrammBeurteilung
-        if (anlassConfig.getHoerenAudiogrammBeurteilung().isVisible()) {
-            basePrinter.addKeyValue(
+        List<PrintUtilRecord<UntersuchungHoerenAudiogramm>> printerList = List.of(
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.audiogramm.audiogrammSimpel",
+                anlassConfig.getHoerenAudiogrammSimpel().isVisible(),
+                untersuchungHoerenAudiogramm -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungHoerenAudiogramm.getAudiogrammSimpel(),
+                    AudiogrammSimpel.class))),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.audiogramm.hoerhilfe",
+                anlassConfig.getHoerenHoerhilfe().isVisible(),
+                untersuchungHoerenAudiogramm -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungHoerenAudiogramm.getHoerhilfe(),
+                    HoerenHoerhilfe.class))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.audiogramm.audiogrammBeurteilung",
-                KinderdossierPrintUtil.extractUntersuchungHoerenAudiogramm(
-                    einladung,
-                    untersuchungHoeren -> untersuchungHoeren.getAudiogrammBeurteilung()
-                        .stream()
-                        .map(basePrinter::translateValue)
-                        .collect(Collectors.joining(", "))),
-                document);
-        }
-
-        // zusaetzlicheAngaben
-        if (anlassConfig.getHoerenAudiogrammZusaetzlicheAngaben().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getHoerenAudiogrammBeurteilung().isVisible(),
+                untersuchungHoerenAudiogramm -> ValueEnhancedUtil.getEnumSetOrEmpty(
+                        untersuchungHoerenAudiogramm.getAudiogrammBeurteilung(),
+                        AudiogrammBeurteilung.class)
+                    .stream()
+                    .map(basePrinter::translateValue)
+                    .collect(Collectors.joining(", "))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.audiogramm.zusaetzlicheAngaben",
-                KinderdossierPrintUtil.extractUntersuchungHoerenAudiogramm(
-                    einladung,
-                    untersuchungHoeren -> untersuchungHoeren.getZusaetzlicheAngaben()
+                anlassConfig.getHoerenAudiogrammZusaetzlicheAngaben().isVisible(),
+                untersuchungHoerenAudiogramm ->
+                    ValueEnhancedUtil.getEnumSetOrEmpty(
+                            untersuchungHoerenAudiogramm.getZusaetzlicheAngaben(),
+                            HoerenZusaetzlicheAngaben.class)
                         .stream()
                         .map(basePrinter::translateValue)
                         .collect(Collectors.joining(", "))),
-                document);
-        }
-
-        // bemerkungen
-        if (anlassConfig.getHoerenAudiogrammBemerkungen().isVisible()) {
-            basePrinter.addVerticalKeyValue(
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.audiogramm.empfehlungen",
+                anlassConfig.getHoerenAudiogrammEmpfehlung().isVisible(),
+                untersuchungHoeren -> ValueEnhancedUtil.getEnumSetOrEmpty(
+                        untersuchungHoeren.getEmpfehlung(),
+                        HoerenEmpfehlung.class)
+                    .stream()
+                    .map(basePrinter::translateValue)
+                    .collect(Collectors.joining(", "))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.audiogramm.bemerkungen",
-                KinderdossierPrintUtil.extractUntersuchungHoerenAudiogramm(
-                    einladung,
-                    UntersuchungHoerenAudiogramm::getBemerkungen),
-                document);
-        }
+                anlassConfig.getHoerenAudiogrammBemerkungen().isVisible(),
+                UntersuchungHoerenAudiogramm::getBemerkungen)
+        );
+
+        printerList.stream()
+            .filter(PrintUtilRecord::isVisible)
+            .forEach(printerRecord ->
+                basePrinter.addKeyValue(
+                    printerRecord.titleKey(),
+                    KinderdossierPrintUtil.extractUntersuchungHoerenAudiogramm(
+                        einladung,
+                        printerRecord.stringTransformer()
+                    ),
+                    document
+                )
+            );
     }
 
     private static void addUntersuchungHoerenOtoskopie(
@@ -351,63 +377,55 @@ public final class KinderdossierAnlassPrinter {
         @NonNull Document document
     ) {
         AnlassConfig anlassConfig = einladung.getAnlass().getAnlassConfig();
-        if (!isAnyVisible(
-            anlassConfig.getHoerenOtoskopie(),
-            anlassConfig.getHoerenOtoskopieBemerkungen())
-        ) {
+        if (!AnlassConfigUtil.isHoerenOtoskopieVisible(anlassConfig)) {
             return;
         }
         basePrinter.addH3Title(I18nMessage.of("printer.kinderdossier.anlass.hoeren.otoskopie"), document);
 
-        // otoskopieRechts
-        if (anlassConfig.getHoerenOtoskopie().isVisible()) {
-            basePrinter.addKeyValue(
+        List<PrintUtilRecord<UntersuchungHoerenOtoskopie>> printerList = List.of(
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.otoskopie.otoskopieRechts",
-                KinderdossierPrintUtil.extractUntersuchungHoerenOtoskopie(
-                    einladung,
-                    untersuchungHoeren -> untersuchungHoeren.getOtoskopieRechts()
-                        .stream()
-                        .map(basePrinter::translateValue)
-                        .collect(Collectors.joining(", "))),
-                document);
-
-            // otoskopieRechtsResultatAndere
-            basePrinter.addKeyValue(
+                anlassConfig.getHoerenOtoskopie().isVisible(),
+                untersuchungHoeren -> ValueEnhancedUtil.getEnumSetOrEmpty(
+                        untersuchungHoeren.getOtoskopieRechts(),
+                        OtoskopieResultat.class)
+                    .stream()
+                    .map(basePrinter::translateValue)
+                    .collect(Collectors.joining(", "))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.otoskopie.otoskopieRechtsResultatAndere",
-                KinderdossierPrintUtil.extractUntersuchungHoerenOtoskopie(
-                    einladung,
-                    UntersuchungHoerenOtoskopie::getOtoskopieRechtsResultatAndere),
-                document);
-
-            // otoskopieLinks
-            basePrinter.addKeyValue(
+                anlassConfig.getHoerenOtoskopie().isVisible(),
+                UntersuchungHoerenOtoskopie::getOtoskopieRechtsResultatAndere),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.otoskopie.otoskopieLinks",
-                KinderdossierPrintUtil.extractUntersuchungHoerenOtoskopie(
-                    einladung,
-                    untersuchungHoeren -> untersuchungHoeren.getOtoskopieLinks()
+                anlassConfig.getHoerenOtoskopie().isVisible(),
+                untersuchungHoeren ->
+                    ValueEnhancedUtil.getEnumSetOrEmpty(untersuchungHoeren.getOtoskopieLinks(), OtoskopieResultat.class)
                         .stream()
                         .map(basePrinter::translateValue)
                         .collect(Collectors.joining(", "))),
-                document);
-
-            // otoskopieLinksResultatAndere
-            basePrinter.addKeyValue(
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.otoskopie.otoskopieLinksResultatAndere",
-                KinderdossierPrintUtil.extractUntersuchungHoerenOtoskopie(
-                    einladung,
-                    UntersuchungHoerenOtoskopie::getOtoskopieLinksResultatAndere),
-                document);
-        }
-
-        // bemerkungen
-        if (anlassConfig.getHoerenOtoskopieBemerkungen().isVisible()) {
-            basePrinter.addVerticalKeyValue(
+                anlassConfig.getHoerenOtoskopie().isVisible(),
+                UntersuchungHoerenOtoskopie::getOtoskopieLinksResultatAndere),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.otoskopie.bemerkungen",
-                KinderdossierPrintUtil.extractUntersuchungHoerenOtoskopie(
-                    einladung,
-                    UntersuchungHoerenOtoskopie::getBemerkungen),
-                document);
-        }
+                anlassConfig.getHoerenOtoskopieBemerkungen().isVisible(),
+                UntersuchungHoerenOtoskopie::getBemerkungen)
+        );
+
+        printerList.stream()
+            .filter(PrintUtilRecord::isVisible)
+            .forEach(printerRecord ->
+                basePrinter.addKeyValue(
+                    printerRecord.titleKey(),
+                    KinderdossierPrintUtil.extractUntersuchungHoerenOtoskopie(
+                        einladung,
+                        printerRecord.stringTransformer()
+                    ),
+                    document
+                )
+            );
     }
 
     private static void addUntersuchungGroesseGewicht(
@@ -416,323 +434,356 @@ public final class KinderdossierAnlassPrinter {
         @NonNull Document document
     ) {
         AnlassConfig anlassConfig = einladung.getAnlass().getAnlassConfig();
-        if (!isAnyVisible(
-            anlassConfig.getGroesseGewichtGroesse(),
-            anlassConfig.getGroesseGewichtGewicht(),
-            anlassConfig.getGroesseGewichtBmi(),
-            anlassConfig.getGroesseGewichtGroessePerzentile(),
-            anlassConfig.getGroesseGewichtGewichtPerzentile(),
-            anlassConfig.getGroesseGewichtBmiPerzentile(),
-            anlassConfig.getGroesseGewichtBemerkungen())) {
+        if (!AnlassConfigUtil.showTabGroesseGewicht(anlassConfig)) {
             return;
         }
         basePrinter.addH3Title(I18nMessage.of("printer.kinderdossier.anlass.grosse"), document);
 
-        // alter
-        basePrinter.addKeyValue(
-            "printer.kinderdossier.anlass.alter",
-            KinderdossierPrintUtil.extractUntersuchungGroesseGewicht(
-                einladung,
+        List<PrintUtilRecord<UntersuchungGroesseGewicht>> printerList = List.of(
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.alter",
+                true,
                 groesseGewicht -> PrintUtil.trimToPlaceholder(groesseGewicht.getAlter())),
-            document);
-
-        // groesse
-        if (anlassConfig.getGroesseGewichtGroesse().isVisible()) {
-            basePrinter.addKeyValue(
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.groesse",
-                KinderdossierPrintUtil.extractUntersuchungGroesseGewicht(
-                    einladung,
-                    groesseGewicht -> PrintUtil.trimToPlaceholder(groesseGewicht.getGroesse())),
-                document);
-        }
-
-        // groessePerzentile
-        if (anlassConfig.getGroesseGewichtGroessePerzentile().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getGroesseGewichtGroesse().isVisible(),
+                groesseGewicht -> PrintUtil.trimToPlaceholder(groesseGewicht.getGroesse())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.groessePerzentile",
-                KinderdossierPrintUtil.extractUntersuchungGroesseGewicht(
-                    einladung,
-                    groesseGewicht -> basePrinter.translateValue(groesseGewicht.getGroessePerzentile())),
-                document);
-        }
-
-        // gewicht
-        if (anlassConfig.getGroesseGewichtGewicht().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getGroesseGewichtGroessePerzentile().isVisible(),
+                groesseGewicht -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    groesseGewicht.getGroessePerzentile(),
+                    PerzentileGroesse.class))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.gewicht",
-                KinderdossierPrintUtil.extractUntersuchungGroesseGewicht(
-                    einladung,
-                    groesseGewicht -> PrintUtil.trimToPlaceholder(groesseGewicht.getGewicht())),
-                document);
-        }
-
-        // gewichtPerzentile
-        if (anlassConfig.getGroesseGewichtGewichtPerzentile().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getGroesseGewichtGewicht().isVisible(),
+                groesseGewicht -> PrintUtil.trimToPlaceholder(groesseGewicht.getGewicht())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.gewichtPerzentile",
-                KinderdossierPrintUtil.extractUntersuchungGroesseGewicht(
-                    einladung,
-                    groesseGewicht -> basePrinter.translateValue(groesseGewicht.getGewichtPerzentile())),
-                document);
-        }
-
-        // bmi
-        if (anlassConfig.getGroesseGewichtBmi().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getGroesseGewichtGewichtPerzentile().isVisible(),
+                groesseGewicht -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    groesseGewicht.getGewichtPerzentile(),
+                    PerzentileGewicht.class))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.bmi",
-                KinderdossierPrintUtil.extractUntersuchungGroesseGewicht(
-                    einladung,
-                    groesseGewicht -> PrintUtil.trimToPlaceholder(groesseGewicht.getBmi())),
-                document);
-        }
-
-        // bmiPerzentile
-        if (anlassConfig.getGroesseGewichtBmiPerzentile().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getGroesseGewichtBmi().isVisible(),
+                groesseGewicht -> PrintUtil.trimToPlaceholder(groesseGewicht.getBmi())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.bmiPerzentile",
-                KinderdossierPrintUtil.extractUntersuchungGroesseGewicht(
-                    einladung,
-                    groesseGewicht -> basePrinter.translateValue(groesseGewicht.getBmiPerzentile())),
-                document);
-        }
-
-        // bemerkungen
-        if (anlassConfig.getGroesseGewichtBemerkungen().isVisible()) {
-            basePrinter.addVerticalKeyValue(
+                anlassConfig.getGroesseGewichtBmiPerzentile().isVisible(),
+                groesseGewicht -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    groesseGewicht.getBmiPerzentile(),
+                    PerzentileBmi.class))),
+            new PrintUtilRecord<>(
                 BEMERKUNG_KEY,
-                KinderdossierPrintUtil.extractUntersuchungGroesseGewicht(
-                    einladung,
-                    UntersuchungGroesseGewicht::getBemerkungen),
-                document);
-        }
+                anlassConfig.getGroesseGewichtBemerkungen().isVisible(),
+                UntersuchungGroesseGewicht::getBemerkungen)
+        );
+
+        printerList.stream()
+            .filter(PrintUtilRecord::isVisible)
+            .forEach(printerRecord ->
+                basePrinter.addKeyValue(
+                    printerRecord.titleKey(),
+                    KinderdossierPrintUtil.extractUntersuchungGroesseGewicht(
+                        einladung,
+                        printerRecord.stringTransformer()
+                    ),
+                    document
+                )
+            );
     }
 
+    private static void addBewegungsapparat(
+        @NonNull Einladung einladung,
+        @NonNull BasePrinter basePrinter,
+        @NonNull Document document
+    ) {
+        AnlassConfig anlassConfig = einladung.getAnlass().getAnlassConfig();
+        if (!AnlassConfigUtil.showTabBewegungsapparat(anlassConfig)) {
+            return;
+        }
+        basePrinter.addH3Title(I18nMessage.of("printer.kinderdossier.anlass.bewegungsapparat.titel"), document);
+
+        List<PrintUtilRecord<UntersuchungBewegungsapparat>> printerList = List.of(
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.skoliose",
+                anlassConfig.getBewegungsapparatSkoliose().isVisible(),
+                bewegungsapparat -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    bewegungsapparat.getSkoliose(),
+                    Skoliose.class))),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.haltungsschwaeche",
+                anlassConfig.getBewegungsapparatHaltungsschwaeche().isVisible(),
+                bewegungsapparat -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    bewegungsapparat.getHaltungsschwaeche(),
+                    Haltungsschwaeche.class))),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.verkuerzungHamstringmuskulatur",
+                anlassConfig.getBewegungsapparatVerkuerzungHamstringmuskulatur().isVisible(),
+                bewegungsapparat -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    bewegungsapparat.getVerkuerzungHamstringmuskulatur(),
+                    VerkuerzungHamstringmuskulatur.class))),
+            new PrintUtilRecord<>(
+                BEMERKUNG_KEY,
+                anlassConfig.getBewegungsapparatBemerkung().isVisible(),
+                UntersuchungBewegungsapparat::getBemerkungen)
+        );
+
+        printerList.stream()
+            .filter(PrintUtilRecord::isVisible)
+            .forEach(printerRecord ->
+                basePrinter.addKeyValue(
+                    printerRecord.titleKey(),
+                    KinderdossierPrintUtil.extractUntersuchungBewegungsapparat(
+                        einladung,
+                        printerRecord.stringTransformer()
+                    ),
+                    document
+                )
+            );
+    }
+
+    /* acceptable complexity */
+    @SuppressWarnings("java:S3776")
     private static void addUntersuchungArzt(
         @NonNull Einladung einladung,
         @NonNull BasePrinter basePrinter,
         @NonNull Document document
     ) {
         AnlassConfig anlassConfig = einladung.getAnlass().getAnlassConfig();
-        if (!isAnyVisible(
-            anlassConfig.getUntersuchungBewegungsapparat(),
-            anlassConfig.getUntersuchungEinbeinstand(),
-            anlassConfig.getUntersuchungEinbeinhuepfen(),
-            anlassConfig.getUntersuchungFingeropposition(),
-            anlassConfig.getUntersuchungMotorik(),
-            anlassConfig.getUntersuchungSprachfaehigkeitMultiValue(),
-            anlassConfig.getUntersuchungMundZaehne(),
-            anlassConfig.getUntersuchungHaut(),
-            anlassConfig.getUntersuchungHerz(),
-            anlassConfig.getUntersuchungBlutdruck(),
-            anlassConfig.getUntersuchungVerhalten(),
-            anlassConfig.getUntersuchungBemerkungen())) {
+        if (!AnlassConfigUtil.isArztUntersuchungBeurteilungVisible(anlassConfig)) {
             return;
         }
         basePrinter.addH3Title(I18nMessage.of("printer.kinderdossier.anlass.untersuchungArzt"), document);
 
-        // verhalten
-        if (anlassConfig.getUntersuchungVerhalten().isVisible()) {
-            basePrinter.addKeyValue(
+        List<PrintUtilRecord<UntersuchungArztBeurteilung>> printerList = List.of(
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.einverstaendniserklaerung",
+                anlassConfig.getUnterlagenEinverstaendnis().isVisible(),
+                untersuchungArzt -> untersuchungArzt.getEinverstaendniserklaerung()
+                    .stream()
+                    .map(basePrinter::translateValue)
+                    .collect(Collectors.joining(", "))),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.verhaltenfragebogen",
+                anlassConfig.getUnterlagenVerhaltensfragebogen().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getVerhaltensfragebogen())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.verhalten",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getVerhalten())),
-                document);
-        }
-
-        // blutdruck
-        if (anlassConfig.getUntersuchungBlutdruck().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungVerhalten().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getVerhalten())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.blutdruck",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getBlutdruck())),
-                document);
-
-            // blutdruckSystolisch
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungBlutdruck().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getBlutdruck())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.blutdruckSystolisch",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    untersuchungArzt -> PrintUtil.trimToPlaceholder(untersuchungArzt.getBlutdruckSystolisch())),
-                document);
-
-            // blutdruckDiastolisch
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungBlutdruck().isVisible(),
+                untersuchungArzt -> PrintUtil.trimToPlaceholder(untersuchungArzt.getBlutdruckSystolisch())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.blutdruckDiastolisch",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    untersuchungArzt -> PrintUtil.trimToPlaceholder(untersuchungArzt.getBlutdruckDiastolisch())),
-                document);
-        }
-
-        // herzauskultation
-        if (anlassConfig.getUntersuchungHerz().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungBlutdruck().isVisible(),
+                untersuchungArzt -> PrintUtil.trimToPlaceholder(untersuchungArzt.getBlutdruckDiastolisch())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.herzauskultation",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getHerzauskultation())),
-                document);
-
-            // herzauskultationBemerkung
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungHerz().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getHerzauskultation())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.herzauskultationBemerkung",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    UntersuchungArztBeurteilung::getHerzauskultationBemerkung),
-                document);
-        }
-
-        // haut
-        if (anlassConfig.getUntersuchungHaut().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungHerz().isVisible(),
+                UntersuchungArztBeurteilung::getHerzauskultationBemerkung),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.haut",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getHaut())),
-                document);
-
-            // hautBemerkung
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungHaut().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getHaut())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.hautBemerkung",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    UntersuchungArztBeurteilung::getHautBemerkung),
-                document);
-        }
-
-        // mundAndZaehne
-        if (anlassConfig.getUntersuchungMundZaehne().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungHaut().isVisible(),
+                UntersuchungArztBeurteilung::getHautBemerkung),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.mundAndZaehne",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    untersuchungArzt -> untersuchungArzt.getMundAndZaehne()
-                        .stream()
-                        .map(basePrinter::translateValue)
-                        .collect(Collectors.joining(", "))),
-                document);
-
-            // mundAndZaehneBemerkung
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungMundZaehne().isVisible(),
+                untersuchungArzt -> untersuchungArzt.getMundAndZaehne()
+                    .stream()
+                    .map(basePrinter::translateValue)
+                    .collect(Collectors.joining(", "))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.mundAndZaehneBemerkung",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    UntersuchungArztBeurteilung::getMundAndZaehneBemerkung),
-                document);
-        }
-
-        // sprachfaehigkeit
-        if (anlassConfig.getUntersuchungSprachfaehigkeitMultiValue().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungMundZaehne().isVisible(),
+                UntersuchungArztBeurteilung::getMundAndZaehneBemerkung),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.sprachfaehigkeit",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    untersuchungArzt -> untersuchungArzt.getSprachfaehigkeitMultiValue()
-                        .stream()
-                        .map(basePrinter::translateValue)
-                        .collect(Collectors.joining(", "))),
-                document);
-
-            // sprachfaehigkeitBemerkung
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungSprachfaehigkeitMultiValue().isVisible(),
+                untersuchungArzt -> untersuchungArzt.getSprachfaehigkeitMultiValue()
+                    .stream()
+                    .map(basePrinter::translateValue)
+                    .collect(Collectors.joining(", "))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.sprachfaehigkeitBemerkung",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    UntersuchungArztBeurteilung::getSprachfaehigkeitBemerkung),
-                document);
-        }
-
-        // motorik
-        if (anlassConfig.getUntersuchungMotorik().isVisible()) {
-            basePrinter.addKeyValue(
-                "printer.kinderdossier.anlass.motorik",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getMotorik())),
-                document);
-        }
-
-        // bewegungsapparat
-        if (anlassConfig.getUntersuchungBewegungsapparat().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungSprachfaehigkeitMultiValue().isVisible(),
+                UntersuchungArztBeurteilung::getSprachfaehigkeitBemerkung),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.sprachfaehigkeit",
+                anlassConfig.getUntersuchungSprachfaehigkeitSingleValue().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getSprachfaehigkeitSingleValue())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.bewegungsapparat",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    untersuchungArzt -> untersuchungArzt.getBewegungsapparat()
-                        .stream()
-                        .map(basePrinter::translateValue)
-                        .collect(Collectors.joining(", "))),
-                document);
-
-            // bewegungsapparatBemerkung
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungBewegungsapparat().isVisible(),
+                untersuchungArzt -> untersuchungArzt.getBewegungsapparat()
+                    .stream()
+                    .map(basePrinter::translateValue)
+                    .collect(Collectors.joining(", "))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.bewegungsapparatBemerkung",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    UntersuchungArztBeurteilung::getBewegungsapparatBemerkung),
-                document);
-        }
-
-        // einbeinstand
-        if (anlassConfig.getUntersuchungEinbeinstand().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungBewegungsapparat().isVisible(),
+                UntersuchungArztBeurteilung::getBewegungsapparatBemerkung),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.einbeinstand",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getEinbeinstand())),
-                document);
-
-            // einbeinstandBemerkung
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungEinbeinstand().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getEinbeinstand())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.einbeinstandBemerkung",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    UntersuchungArztBeurteilung::getEinbeinhuepfenBemerkung),
-                document);
-        }
-
-        // einbeinhuepfen
-        if (anlassConfig.getUntersuchungEinbeinhuepfen().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungEinbeinstand().isVisible(),
+                UntersuchungArztBeurteilung::getEinbeinhuepfenBemerkung),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.einbeinstand.links",
+                anlassConfig.getUntersuchungEinbeinstandRechtsLinks().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getEinbeinstandLinks())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.einbeinstand.rechts",
+                anlassConfig.getUntersuchungEinbeinstandRechtsLinks().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getEinbeinstandRechts())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.einbeinhuepfen",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getEinbeinhuepfen())),
-                document);
-
-            // einbeinhuepfenBemerkung
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungEinbeinhuepfen().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getEinbeinhuepfen())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.einbeinhuepfenBemerkung",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    UntersuchungArztBeurteilung::getEinbeinhuepfenBemerkung),
-                document);
-        }
-
-        // fingeropposition
-        if (anlassConfig.getUntersuchungFingeropposition().isVisible()) {
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungEinbeinhuepfen().isVisible(),
+                UntersuchungArztBeurteilung::getEinbeinhuepfenBemerkung),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.einbeinhuepfen.links",
+                anlassConfig.getUntersuchungEinbeinhuepfenRechtsLinks().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getEinbeinhuepfenLinks())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.einbeinhuepfen.rechts",
+                anlassConfig.getUntersuchungEinbeinhuepfenRechtsLinks().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getEinbeinhuepfenRechts())),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.fingeropposition",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    untersuchungArzt -> untersuchungArzt.getFingeropposition()
-                        .stream()
-                        .map(basePrinter::translateValue)
-                        .collect(Collectors.joining(", "))),
-                document);
-
-            // fingeroppositionBemerkung
-            basePrinter.addKeyValue(
+                anlassConfig.getUntersuchungFingeropposition().isVisible(),
+                untersuchungArzt -> untersuchungArzt.getFingeropposition()
+                    .stream()
+                    .map(basePrinter::translateValue)
+                    .collect(Collectors.joining(", "))),
+            new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.fingeroppositionBemerkung",
-                KinderdossierPrintUtil.extractUntersuchungArzt(
-                    einladung,
-                    UntersuchungArztBeurteilung::getFingeroppositionBemerkung),
-                document);
-        }
+                anlassConfig.getUntersuchungFingeropposition().isVisible(),
+                UntersuchungArztBeurteilung::getFingeroppositionBemerkung),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.hampelmann",
+                anlassConfig.getUntersuchungHampelmann().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getHampelmann())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.ballFangen",
+                anlassConfig.getUntersuchungBallFangen().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getBallFangen())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.ballWerfen",
+                anlassConfig.getUntersuchungBallWerfen().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getBallWerfen())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.nameSchreiben",
+                anlassConfig.getUntersuchungNameSchreiben().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getNameSchreiben())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.figurNachmalen",
+                anlassConfig.getUntersuchungFigurNachmalen().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getFigurNachmalen())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.stifthaltung",
+                anlassConfig.getUntersuchungStifthaltung().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getStifthaltung())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.aussprache",
+                anlassConfig.getUntersuchungAussprache().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getAussprache())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.lesefitPunkte",
+                anlassConfig.getUntersuchungLesefitPunkte().isVisible(),
+                untersuchungArzt -> PrintUtil.trimToPlaceholder(untersuchungArzt.getLesefitPunkte())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.lesefit",
+                anlassConfig.getUntersuchungLesefit().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getLesefit())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.zahlenNachsprechen4",
+                anlassConfig.getUntersuchungZahlenNachsprechen4().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getZahlenNachsprechen4())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.zahlenNachsprechen5",
+                anlassConfig.getUntersuchungZahlenNachsprechen5().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getZahlenNachsprechen5())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.zeichnenKreis",
+                anlassConfig.getUntersuchungZeichnenKreis().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getZeichnenKreis())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.zeichnenViereck",
+                anlassConfig.getUntersuchungZeichnenViereck().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getZeichnenViereck())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.zeichnenDreieck",
+                anlassConfig.getUntersuchungZeichnenDreieck().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getZeichnenDreieck())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.zeichnenMenschPunkte",
+                anlassConfig.getUntersuchungZeichnenMenschPunkte().isVisible(),
+                untersuchungArzt -> PrintUtil.trimToPlaceholder(untersuchungArzt.getZeichnenMenschPunkte())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.zeichnenMensch",
+                anlassConfig.getUntersuchungZeichnenMensch().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getZeichnenMensch())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.motorikPunkte",
+                anlassConfig.getUntersuchungMotorikPunkte().isVisible(),
+                untersuchungArzt -> PrintUtil.trimToPlaceholder(untersuchungArzt.getMotorikPunkte())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.motorik",
+                anlassConfig.getUntersuchungMotorik().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getMotorik())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.sprachePunkte",
+                anlassConfig.getUntersuchungSprachePunkte().isVisible(),
+                untersuchungArzt -> PrintUtil.trimToPlaceholder(untersuchungArzt.getSprachfaehigkeitPunkte())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.spracheBeurteilung",
+                anlassConfig.getUntersuchungSprachfaehigkeitSingleValue().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getSprachfaehigkeitSingleValue())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.kognitionPunkte",
+                anlassConfig.getUntersuchungKognitionPunkte().isVisible(),
+                untersuchungArzt -> PrintUtil.trimToPlaceholder(untersuchungArzt.getKognitionPunkte())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.kognition",
+                anlassConfig.getUntersuchungKognition().isVisible(),
+                untersuchungArzt -> basePrinter.translateValue(untersuchungArzt.getKognition()))
+        );
 
-        // bemerkungen
+        printerList.stream()
+            .filter(PrintUtilRecord::isVisible)
+            .forEach(printerRecord ->
+                basePrinter.addKeyValue(
+                    printerRecord.titleKey(),
+                    KinderdossierPrintUtil.extractUntersuchungArzt(
+                        einladung,
+                        printerRecord.stringTransformer()
+                    ),
+                    document
+                )
+            );
+
         if (anlassConfig.getUntersuchungBemerkungen().isVisible()) {
             basePrinter.addVerticalKeyValue(
                 BEMERKUNG_KEY,
@@ -743,28 +794,157 @@ public final class KinderdossierAnlassPrinter {
         }
     }
 
-    private static void addUntersuchungImpfungenMassnahmen(
+    private static void addUntersuchungSprache(
         @NonNull Einladung einladung,
         @NonNull BasePrinter basePrinter,
         @NonNull Document document
     ) {
         AnlassConfig anlassConfig = einladung.getAnlass().getAnlassConfig();
-        if (!(anlassConfig.isImpfungenMassnahmeInfoKinderarzt()
-            || anlassConfig.isImpfungenMassnahmeBeratungMPA()
-            || anlassConfig.isImpfungenMassnahmeInfoEltern()
-            || anlassConfig.isImpfungenMassnahmeRueckfrageKinderarzt())) {
+        if (!AnlassConfigUtil.showTabSprache(anlassConfig)) {
+            return;
+        }
+        basePrinter.addH3Title(I18nMessage.of("printer.kinderdossier.anlass.sprache"), document);
+
+        List<PrintUtilRecord<UntersuchungSprache>> printerList = List.of(
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.sprache.nachsprechen",
+                anlassConfig.getUntersuchungSpracheNachsprechen().isVisible(),
+                sprache -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    sprache.getNachsprechen(),
+                    Nachsprechen.class))),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.sprache.wortschatz",
+                anlassConfig.getUntersuchungSpracheWortschatz().isVisible(),
+                sprache -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    sprache.getWortschatz(),
+                    Wortschatz.class))),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.sprache.sprachverstaendnis",
+                anlassConfig.getUntersuchungSpracheSprachverstaendnis().isVisible(),
+                sprache -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    sprache.getSprachverstaendnis(),
+                    Sprachverstaendnis.class))),
+            new PrintUtilRecord<>(
+                BEMERKUNG_KEY,
+                anlassConfig.getUntersuchungSpracheBemerkungen().isVisible(),
+                UntersuchungSprache::getBemerkungen)
+        );
+
+        printerList.stream()
+            .filter(PrintUtilRecord::isVisible)
+            .forEach(printerRecord ->
+                basePrinter.addKeyValue(
+                    printerRecord.titleKey(),
+                    KinderdossierPrintUtil.extractUntersuchungSprache(
+                        einladung,
+                        printerRecord.stringTransformer()
+                    ),
+                    document
+                )
+            );
+    }
+
+    private static void addUntersuchungSchulrelevanteBeeintraechtigung(
+        @NonNull Einladung einladung,
+        @NonNull BasePrinter basePrinter,
+        @NonNull Document document
+    ) {
+        AnlassConfig anlassConfig = einladung.getAnlass().getAnlassConfig();
+        if (!isAnyVisible(
+            anlassConfig.getUntersuchungBeeintraechtigungFreiesGehen(),
+            anlassConfig.getUntersuchungBeeintraechtigungOhneStuetzradVelofahren(),
+            anlassConfig.getUntersuchungBeeintraechtigungGrafomotorik(),
+            anlassConfig.getUntersuchungBeeintraechtigungFeinmotorik(),
+            anlassConfig.getUntersuchungBeeintraechtigungGrobmotorik(),
+            anlassConfig.getUntersuchungBeeintraechtigungGleichgewicht(),
+            anlassConfig.getUntersuchungBeeintraechtigungBemerkung()
+        )) {
+            return;
+        }
+
+        basePrinter.addH3Title(
+            I18nMessage.of("printer.kinderdossier.anlass.schulrelevanteBeeintraechtigung"),
+            document);
+
+        List<PrintUtilRecord<UntersuchungSchulrelevanteBeeintraechtigung>> printerList = List.of(
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.freiesGehen",
+                anlassConfig.getUntersuchungBeeintraechtigungFreiesGehen().isVisible(),
+                beeintraechtigung -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    beeintraechtigung.getFreiesGehen(),
+                    FreiesGehen.class))),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.ohneStuetzradVelofahren",
+                anlassConfig.getUntersuchungBeeintraechtigungOhneStuetzradVelofahren().isVisible(),
+                beeintraechtigung -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    beeintraechtigung.getOhneStuetzradVelofahren(),
+                    OhneStuetzradVelofahren.class))),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.grafomotorik",
+                anlassConfig.getUntersuchungBeeintraechtigungGrafomotorik().isVisible(),
+                beeintraechtigung -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    beeintraechtigung.getGrafomotorik(),
+                    Grafomotorik.class))),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.feinmotorik",
+                anlassConfig.getUntersuchungBeeintraechtigungFeinmotorik().isVisible(),
+                beeintraechtigung -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    beeintraechtigung.getFeinmotorik(),
+                    Feinmotorik.class))),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.grobmotorik",
+                anlassConfig.getUntersuchungBeeintraechtigungGrobmotorik().isVisible(),
+                beeintraechtigung -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    beeintraechtigung.getGrobmotorikEinbeinhuepfen(),
+                    GrobmotorikEinbeinhuepfen.class))),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.gleichgewicht",
+                anlassConfig.getUntersuchungBeeintraechtigungGleichgewicht().isVisible(),
+                beeintraechtigung -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                    beeintraechtigung.getGleichgewichtEinbeinstand(),
+                    GleichgewichtEinbeinstand.class))),
+            new PrintUtilRecord<>(
+                BEMERKUNG_KEY,
+                anlassConfig.getUntersuchungBeeintraechtigungBemerkung().isVisible(),
+                UntersuchungSchulrelevanteBeeintraechtigung::getBemerkungen)
+        );
+
+        printerList.stream()
+            .filter(PrintUtilRecord::isVisible)
+            .forEach(printerRecord ->
+                basePrinter.addKeyValue(
+                    printerRecord.titleKey(),
+                    KinderdossierPrintUtil.extractUntersuchungSchulrelevanteBeeintraechtigung(
+                        einladung,
+                        printerRecord.stringTransformer()
+                    ),
+                    document
+                )
+            );
+    }
+
+    private static void addUntersuchungImpfungenMassnahmen(
+        @NonNull Einladung einladung,
+        @NonNull List<AnlassWithDateTimeJson> listeImpfFolgetermine,
+        @NonNull BasePrinter basePrinter,
+        @NonNull Document document
+    ) {
+        AnlassConfig anlassConfig = einladung.getAnlass().getAnlassConfig();
+        if (!(AnlassConfigUtil.isImpfungenMassnahmenVisible(anlassConfig))) {
             return;
         }
 
         basePrinter.addH3Title(I18nMessage.of("printer.kinderdossier.anlass.massnahmen"), document);
 
         // keineMassnahmen
-        basePrinter.addKeyValue(
-            "printer.kinderdossier.anlass.keineImpfMassnahmen",
-            KinderdossierPrintUtil.extractUntersuchungImpfungenMassnahmenBooleanFn(
-                einladung,
-                UntersuchungImpfungenMassnahmen::isKeineMassnahmen),
-            document);
+        if (anlassConfig.isImpfungenMassnahmeKeineMassnahmen()) {
+            basePrinter.addKeyValue(
+                "printer.kinderdossier.anlass.keineImpfMassnahmen",
+                KinderdossierPrintUtil.extractUntersuchungImpfungenMassnahmenBooleanFn(
+                    einladung,
+                    UntersuchungImpfungenMassnahmen::isKeineMassnahmen),
+                document);
+        }
 
         // impfberatungMpaDurchgefuehrt
         if (anlassConfig.isImpfungenMassnahmeBeratungMPA()) {
@@ -806,6 +986,57 @@ public final class KinderdossierAnlassPrinter {
                 document);
         }
 
+        if (anlassConfig.getUntersuchungImpfungEmpfehlung().isVisible()) {
+            basePrinter.addKeyValue(
+                "printer.kinderdossier.anlass.impfungEmpfehlung",
+                KinderdossierPrintUtil.extractUntersuchungImpfungenMassnahmen(
+                    einladung,
+                    untersuchungImpfungenMassnahmen -> untersuchungImpfungenMassnahmen.getEmpfehlung().stream()
+                        .map(basePrinter::translateValue)
+                        .collect(Collectors.joining(", "))),
+                document);
+        }
+
+        if (anlassConfig.getUntersuchungImpfungAchtung().isVisible()) {
+            basePrinter.addKeyValue(
+                "printer.kinderdossier.anlass.impfungAchtung",
+                KinderdossierPrintUtil.extractUntersuchungImpfungenMassnahmen(
+                    einladung,
+                    untersuchungImpfungenMassnahmen -> PrintUtil.trimToPlaceholder(untersuchungImpfungenMassnahmen.getAchtung())),
+                document);
+        }
+
+        if (anlassConfig.isImpfungenMassnahmeImpfenFolgetermin()) {
+            basePrinter.addKeyValue(
+                "printer.kinderdossier.anlass.impfenFolgetermin",
+                KinderdossierPrintUtil.extractImpfungenFolgetermin(
+                    listeImpfFolgetermine,
+                    folgetermin -> folgetermin.getTitel()
+                        + ' '
+                        + trimToPlaceholder(folgetermin.getDatum())
+                        + getZeitraum(folgetermin)
+                ),
+                document);
+        }
+
+        if (anlassConfig.isImpfungenMassnahmeGruppenFolgetermin()) {
+            basePrinter.addKeyValue(
+                "printer.kinderdossier.anlass.vormerkenGruppenFolgetermin",
+                KinderdossierPrintUtil.extractUntersuchungImpfungenMassnahmenBooleanFn(
+                    einladung,
+                    UntersuchungImpfungenMassnahmen::isVormerkenFuerGruppenFolgetermin),
+                document);
+        }
+
+        if (anlassConfig.isImpfungenMassnahmeInfomaterialAbgegeben()) {
+            basePrinter.addKeyValue(
+                "printer.kinderdossier.anlass.infomaterialAbgegeben",
+                KinderdossierPrintUtil.extractUntersuchungImpfungenMassnahmenBooleanFn(
+                    einladung,
+                    UntersuchungImpfungenMassnahmen::isInfomaterialAbgegeben),
+                document);
+        }
+
         // bemerkungen
         basePrinter.addVerticalKeyValue(
             BEMERKUNG_KEY,
@@ -815,13 +1046,22 @@ public final class KinderdossierAnlassPrinter {
             document);
     }
 
+    private static String getZeitraum(AnlassWithDateTimeJson anlass) {
+        if (anlass.getZeitVon() == null) {
+            return "";
+        }
+        return ' ' + PrintUtil.formatLocalDateTime(anlass.getZeitVon())
+            + " - "
+            + PrintUtil.formatLocalDateTime(anlass.getZeitBis());
+    }
+
     private static void addUntersuchungMassnahmen(
         @NonNull Einladung einladung,
         @NonNull BasePrinter basePrinter,
         @NonNull Document document
     ) {
         AnlassConfig anlassConfig = einladung.getAnlass().getAnlassConfig();
-        if (noMassnahmeConfigured(anlassConfig)) {
+        if (!AnlassConfigUtil.isMassnahmenBeurteilungVisible(anlassConfig)) {
             return;
         }
 
@@ -942,18 +1182,6 @@ public final class KinderdossierAnlassPrinter {
         if (anlassConfig.isShowMassnahmenNachkontrolleSaed()) {
             addNachkontrolleTable(einladung, basePrinter, document);
         }
-    }
-
-    private static boolean noMassnahmeConfigured(AnlassConfig anlassConfig) {
-        return !(anlassConfig.isShowMassnahmenKeine()
-            || anlassConfig.isShowMassnahmenBeratungMpa()
-            || anlassConfig.isShowMassnahmenBereitsBehandelt()
-            || anlassConfig.isShowMassnahmenInfomaterial()
-            || anlassConfig.isShowMassnahmenInfoEltern()
-            || anlassConfig.isShowMassnahmenUeberweisungHausarzt()
-            || anlassConfig.isShowMassnahmenUeberweisungAugenarzt()
-            || anlassConfig.isShowMassnahmenNachkontrolleSaed()
-            || anlassConfig.isShowMassnahmenAnderes());
     }
 
     private static void addNachkontrolleTable(
@@ -1145,9 +1373,15 @@ public final class KinderdossierAnlassPrinter {
                 einladung,
                 u -> trimToPlaceholder(u.getMpa())),
             document);
+        basePrinter.addKeyValue(
+            "printer.kinderdossier.anlass.durchfuehrung.bemerkungen",
+            KinderdossierPrintUtil.extractUntersuchungDurchfuehrung(
+                einladung,
+                u -> trimToPlaceholder(u.getBemerkungen())),
+            document);
     }
 
-    private static void addImpungenUntersuchung(
+    private static void addUntersuchungImpfungen(
         @NonNull KinderdossierAnlassPrintDTO anlassPrintDTO,
         @NonNull BasePrinter basePrinter,
         @NonNull Document document
@@ -1155,10 +1389,11 @@ public final class KinderdossierAnlassPrinter {
         AnlassConfig anlassConfig = anlassPrintDTO.getEinladung().getAnlass().getAnlassConfig();
         if (!isAnyVisible(
             anlassConfig.getImpfungenUebersicht(),
-            anlassConfig.getImpfungenListe(),
-            anlassConfig.getCheckKontraindikationenAbgeklaert(),
-            anlassConfig.getCheckDoppelkontrolleImpfentscheidDurchgefuehrt(),
-            anlassConfig.getCheckEinwilligungVorhanden())) {
+            anlassConfig.getImpfungenListe()
+        )
+            && !AnlassConfigUtil.showCardImpfungenChecklist(anlassConfig)
+            && !AnlassConfigUtil.showCardImpfungDataMinimal(anlassConfig)
+        ) {
             return;
         }
 
@@ -1167,71 +1402,75 @@ public final class KinderdossierAnlassPrinter {
         basePrinter.addH3Title(
             I18nMessage.of("printer.kinderdossier.anlass.subtitle.ergebnisse.label"),
             document);
-        basePrinter.addKeyValue(
-            "printer.kinderdossier.anlass.impfausweisUnvollstaendig",
-            KinderdossierPrintUtil.extractUntersuchungImpfungenBooleanFn(
-                einladung,
-                UntersuchungImpfungen::isImpfausweisUnvollstaendig),
-            document);
-        basePrinter.addKeyValue(
-            "printer.kinderdossier.anlass.impfausweisNichtVorhanden",
-            KinderdossierPrintUtil.extractUntersuchungImpfungenBooleanFn(
-                einladung,
-                UntersuchungImpfungen::isImpfausweisNichtVorhanden),
-            document);
-        basePrinter.addKeyValue(
-            "printer.kinderdossier.anlass.impfausweisZweiPlusEinsSchema",
-            KinderdossierPrintUtil.extractUntersuchungImpfungenBooleanFn(
-                einladung,
-                UntersuchungImpfungen::isImpfausweisZweiPlusEinsSchema),
-            document);
 
+        if (AnlassConfigUtil.showCardImpfungenHeader(anlassConfig)) {
+            KinderdossierUntersuchungImpfungenUtil.printImpfungenHeader(einladung, basePrinter, document);
+        }
+        if (AnlassConfigUtil.showCardImpfungDataMinimal(anlassConfig)) {
+            KinderdossierUntersuchungImpfungenUtil.printImpfungenDataMinimal(einladung, basePrinter, document);
+        }
         if (anlassConfig.getImpfungenUebersicht().isVisible()) {
-            addTableImpfstatus(anlassPrintDTO.getImpfstatusList(), basePrinter, document);
-        }
-
-        if (anlassConfig.getCheckEinwilligungVorhanden().isVisible()) {
-            basePrinter.addKeyValue(
-                "printer.kinderdossier.anlass.checkEinwilligungVorhanden",
-                KinderdossierPrintUtil.extractUntersuchungImpfungenBooleanFn(
-                    einladung,
-                    UntersuchungImpfungen::isCheckEinwilligungVorhanden),
+            KinderdossierUntersuchungImpfungenUtil.printTableImpfstatus(
+                anlassPrintDTO.getImpfstatusList(),
+                basePrinter,
                 document);
         }
-
-        if (anlassConfig.getCheckKontraindikationenAbgeklaert().isVisible()) {
-            basePrinter.addKeyValue(
-                "printer.kinderdossier.anlass.checkKontraindikationenAbgeklaert",
-                KinderdossierPrintUtil.extractUntersuchungImpfungenBooleanFn(
-                    einladung,
-                    UntersuchungImpfungen::isCheckKontraindikationenAbgeklaert),
-                document);
-        }
-
-        if (anlassConfig.getCheckDoppelkontrolleImpfentscheidDurchgefuehrt().isVisible()) {
-            basePrinter.addKeyValue(
-                "printer.kinderdossier.anlass.checkDoppelkontrolleImpfentscheidDurchgefuehrt",
-                KinderdossierPrintUtil.extractUntersuchungImpfungenBooleanFn(
-                    einladung,
-                    UntersuchungImpfungen::isCheckDoppelkontrolleImpfentscheidDurchgefuehrt),
-                document);
-        }
-
-        basePrinter.addKeyValue(
-            "printer.kinderdossier.anlass.doppelkontrolle.visum1",
-            KinderdossierPrintUtil.extractUntersuchungImpfungen(
+        if (AnlassConfigUtil.showCardImpfungenChecklist(anlassConfig)) {
+            KinderdossierUntersuchungImpfungenUtil.printImpfungenCheckliste(
+                anlassConfig,
                 einladung,
-                ui -> trimToPlaceholder(ui.getVisum1() != null ? ui.getVisum1().getPerson() : null)),
-            document);
-        basePrinter.addKeyValue(
-            "printer.kinderdossier.anlass.doppelkontrolle.visum2",
-            KinderdossierPrintUtil.extractUntersuchungImpfungen(
-                einladung,
-                ui -> trimToPlaceholder(ui.getVisum2() != null ? ui.getVisum2().getPerson() : null)),
-            document);
-
+                basePrinter,
+                document);
+        }
+        if (anlassConfig.isShowImpfungenDoppelkontrolle()) {
+            KinderdossierUntersuchungImpfungenUtil.printImpfungenDoppelkontrolle(einladung, basePrinter, document);
+        }
         if (anlassConfig.getImpfungenListe().isVisible()) {
-            addTableImpfliste(anlassPrintDTO.getImpfungInternList(), basePrinter, document);
+            KinderdossierUntersuchungImpfungenUtil.printImpfungenTableImpfliste(
+                anlassPrintDTO.getImpfungInternList(),
+                basePrinter,
+                document);
+        }
+    }
+
+    private static void addLaeusekontrolle(
+        @NonNull Einladung einladung,
+        @NonNull BasePrinter basePrinter,
+        @NonNull Document document
+    ) {
+        AnlassConfig anlassConfig = einladung.getAnlass().getAnlassConfig();
+        if (!AnlassConfigUtil.showTabLaeusekontrolle(anlassConfig)) {
+            return;
+        }
+
+        if (einladung.getUntersuchung() != null
+            && einladung.getUntersuchung().getUntersuchungLaeusekontrolle() != null) {
+
+            basePrinter.addH3Title(
+                I18nMessage.of("printer.kinderdossier.anlass.subtitle.laeusekontrolle.label"),
+                document);
+
+            // Beurteilung
+            if (anlassConfig.getLaeusekontrolleBeurteilung().isVisible()) {
+                basePrinter.addVerticalKeyValue(
+                    "printer.kinderdossier.anlass.laeusekontrolle.beurteilung",
+                    KinderdossierPrintUtil.extractUntersuchungLaeusekontrolle(
+                        einladung,
+                        untersuchungHoeren -> untersuchungHoeren.getBeurteilung().stream()
+                            .map(basePrinter::translateValue)
+                            .collect(Collectors.joining(", "))),
+                    document);
+            }
+
+            // Bemerkung
+            if (anlassConfig.getLaeusekontrolleBemerkungen().isVisible()) {
+                basePrinter.addKeyValue(
+                    "printer.kinderdossier.anlass.laeusekontrolle.bemerkungen",
+                    KinderdossierPrintUtil.extractUntersuchungLaeusekontrolle(
+                        einladung,
+                        u -> trimToPlaceholder(u.getBemerkungen())),
+                    document);
+            }
         }
     }
 
@@ -1241,131 +1480,48 @@ public final class KinderdossierAnlassPrinter {
         @NonNull Document document
     ) {
         AnlassConfig anlassConfig = einladung.getAnlass().getAnlassConfig();
-        if (!(anlassConfig.isShowTriageTriage())) {
+        if (
+            !(anlassConfig.isShowTriageTriage()) ||
+                einladung.getUntersuchung() == null ||
+                einladung.getUntersuchung().getUntersuchungTriage() == null
+        ) {
             return;
         }
 
-        if (einladung.getUntersuchung() != null && einladung.getUntersuchung().getUntersuchungTriage() != null) {
-            basePrinter.addH3Title(I18nMessage.of("printer.kinderdossier.anlass.subtitle.triage.label"), document);
+        basePrinter.addH3Title(I18nMessage.of("printer.kinderdossier.anlass.subtitle.triage.label"), document);
+        UntersuchungTriage untersuchungTriage = einladung.getUntersuchung().getUntersuchungTriage();
 
-            UntersuchungTriage untersuchungTriage = einladung.getUntersuchung().getUntersuchungTriage();
-
-            addTriageRemark(
-                "triage-su",
+        List<PrintUtilRecord<UntersuchungTriage>> printerList = List.of(
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.triage.triage-su.label",
                 untersuchungTriage.isTriageSu(),
-                untersuchungTriage.getTriageSuBemerkungen(),
-                basePrinter,
-                document);
-            addTriageRemark(
-                "triage-mpa",
+                t -> trimToPlaceholder(t.getTriageSuBemerkungen())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.triage.triage-mpa.label",
                 untersuchungTriage.isTriageMpa(),
-                untersuchungTriage.getTriageMpaBemerkungen(),
-                basePrinter,
-                document);
-            addTriageRemark(
-                "befund-su",
+                t -> trimToPlaceholder(t.getTriageMpaBemerkungen())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.triage.befund-su.label",
                 untersuchungTriage.isBefundSu(),
-                untersuchungTriage.getBefundSuBemerkungen(),
-                basePrinter,
-                document);
-            addTriageRemark(
-                "wunsch-schueler",
+                t -> trimToPlaceholder(t.getBefundSuBemerkungen())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.triage.wunsch-schueler.label",
                 untersuchungTriage.isWunschSchueler(),
-                untersuchungTriage.getWunschSchuelerBemerkungen(),
-                basePrinter,
-                document);
-            addTriageRemark(
-                "vorinformation-lehrperson",
+                t -> trimToPlaceholder(t.getWunschSchuelerBemerkungen())),
+            new PrintUtilRecord<>(
+                "printer.kinderdossier.anlass.triage.vorinformation-lehrperson.label",
                 untersuchungTriage.isVorinformationLehrperson(),
-                untersuchungTriage.getVorinformationLehrpersonBemerkungen(),
-                basePrinter,
-                document);
-        }
-    }
-
-    private static void addTableImpfstatus(
-        @NonNull List<UntersuchungImpfstatusKrankheit> untersuchungImpfstatusKrankheitList,
-        @NonNull BasePrinter basePrinter,
-        @NonNull Document document
-    ) {
-        basePrinter.addH3Title(I18nMessage.of("printer.kinderdossier.anlass.table.impfstatus.label"), document);
-
-        basePrinter.addTable(
-            List.of(
-                I18nMessage.of("printer.kinderdossier.anlass.table.impfstatus.column.krankheit.label"),
-                I18nMessage.of("printer.kinderdossier.anlass.table.impfstatus.column.anzahl.label"),
-                I18nMessage.of("printer.kinderdossier.anlass.table.impfstatus.column.datum.label"),
-                I18nMessage.of("printer.kinderdossier.anlass.table.impfstatus.column.impfschutz.label"),
-                I18nMessage.of("printer.kinderdossier.anlass.table.impfstatus.column.impfempfehlung.label"),
-                I18nMessage.of("printer.kinderdossier.anlass.table.impfstatus.column.impf.label")),
-            untersuchungImpfstatusKrankheitList.stream()
-                .map(untersuchungImpfstatusKrankheit -> List.of(
-                    basePrinter.translateValue(untersuchungImpfstatusKrankheit.getKrankheit()),
-                    trimToPlaceholder(untersuchungImpfstatusKrankheit.getAnzahlImpfungen()),
-                    trimToPlaceholder(untersuchungImpfstatusKrankheit.getDatumLetzteImpfung(), "MM/yyyy"),
-                    basePrinter.translateValue(untersuchungImpfstatusKrankheit.isImpfschutzGegeben()),
-                    basePrinter.translateValue(untersuchungImpfstatusKrankheit.isImpfempfehlung()),
-                    basePrinter.translateValue(untersuchungImpfstatusKrankheit.isImpfentscheid())))
-                .toList(),
-            document
+                t -> trimToPlaceholder(t.getVorinformationLehrpersonBemerkungen()))
         );
-    }
 
-    private static void addTableImpfliste(
-        @NonNull List<UntersuchungImpfungIntern> impfungInternList,
-        @NonNull BasePrinter basePrinter,
-        @NonNull Document document
-    ) {
-        basePrinter.addH3Title(I18nMessage.of("printer.kinderdossier.anlass.table.impfliste.label"), document);
-
-        basePrinter.addTable(
-            List.of(
-                I18nMessage.of("printer.kinderdossier.anlass.table.impfliste.column.impfstoff.label"),
-                I18nMessage.of("printer.kinderdossier.anlass.table.impfliste.column.indikation.label"),
-                I18nMessage.of("printer.kinderdossier.anlass.table.impfliste.column.datum.label"),
-                I18nMessage.of("printer.kinderdossier.anlass.table.impfliste.column.charge.label"),
-                I18nMessage.of("printer.kinderdossier.anlass.table.impfliste.column.erstellt-durch.label"),
-                I18nMessage.of("printer.kinderdossier.anlass.table.impfliste.column.verabreicht-durch.label"),
-                I18nMessage.of("printer.kinderdossier.anlass.table.impfliste.column.impfschutz-krankheit.label"),
-                I18nMessage.of("printer.kinderdossier.anlass.table.impfliste.column.impfung.label")),
-            impfungInternList.stream()
-                .map(untersuchungImpfungIntern -> List.of(
-                    untersuchungImpfungIntern.getImpfstoff().getName(),
-                    untersuchungImpfungIntern.getImpfstoff().getKrankheiten().stream()
-                        .map(basePrinter::translateValue)
-                        .collect(Collectors.joining(", ")),
-                    trimToPlaceholder(untersuchungImpfungIntern.getDatumImpfung()),
-                    KinderdossierPrintUtil.getImpfungInternChargeName(untersuchungImpfungIntern),
-                    trimToPlaceholder(untersuchungImpfungIntern.getUserErfasst()),
-                    trimToPlaceholder(untersuchungImpfungIntern.getUserDurchgefuehrt()),
-                    untersuchungImpfungIntern.getKrankheitenImmunitaeten()
-                        .stream()
-                        .map(item -> String.format(
-                            "%s: %s",
-                            basePrinter.translateValue(item.getKrankheit()),
-                            basePrinter.translateValue(item.isImmunitaetGenuegend())))
-                        .collect(Collectors.joining("\n ")),
-                    basePrinter.translateValue(untersuchungImpfungIntern.getImpfStatus() == ImpfStatus.DURCHGEFUEHRT))
-                )
-                .toList(),
-            document
-        );
-    }
-
-    private static void addTriageRemark(
-        @NonNull String labelKeySuffix,
-        boolean isTriage,
-        @Nullable String bemerkungen,
-        @NonNull BasePrinter basePrinter,
-        @NonNull Document document
-    ) {
-        if (isTriage) {
-            basePrinter.addVerticalKeyValue(
-                "printer.kinderdossier.anlass.triage." + labelKeySuffix + ".label",
-                trimToPlaceholder(bemerkungen),
-                document
+        printerList.stream()
+            .filter(PrintUtilRecord::isVisible)
+            .forEach(printerRecord ->
+                basePrinter.addVerticalKeyValue(
+                    printerRecord.titleKey(),
+                    printerRecord.stringTransformer().apply(untersuchungTriage),
+                    document)
             );
-        }
     }
 
     @NonNull

@@ -8,15 +8,13 @@ import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMember;
 import com.tngtech.archunit.core.domain.properties.HasAnnotations;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Counted;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 
-import static ch.dvbern.oss.hemed.esc.api.shared.archunit.predicates.AnnotationPredicates.annotationThatHas;
 import static com.tngtech.archunit.core.domain.properties.CanBeAnnotated.Predicates.annotatedWith;
 import static com.tngtech.archunit.lang.conditions.ArchConditions.have;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
@@ -25,12 +23,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class MetricsTest {
 
-    private static final DescribedPredicate<JavaClass> REQUIRE_METRICS = annotatedWith(JaxResource.class)
-        .forSubtype();
-    private static final DescribedPredicate<Timed> UNIT_IN_MILLISECONDS = DescribedPredicate.describe(
-        "unit MetricUnits.MILLISECONDS",
-        timed -> timed.unit().equals(MetricUnits.MILLISECONDS)
-    );
+    private static final DescribedPredicate<JavaClass> REQUIRE_METRICS = annotatedWith(JaxResource.class).forSubtype();
 
     // FIXME: starter: decide if this is relevant to the project
     @Test
@@ -66,9 +59,9 @@ class MetricsTest {
         var rule = classes()
             .that()
             .areAnnotatedWith(Counted.class)
-            .should(have(annotationWithPropertyEndingWithSuffix(Counted.class, Counted::name, "Count")));
+            .should(have(annotationWithPropertyEndingWithSuffix(Counted.class, Counted::value, "Count")));
 
-        rule.check(ArchConst.APP_CLASSES);
+        rule.allowEmptyShould(true).check(ArchConst.APP_CLASSES);
     }
 
     @Test
@@ -76,7 +69,7 @@ class MetricsTest {
         var rule = methods()
             .that()
             .areAnnotatedWith(Counted.class)
-            .should(have(annotationWithPropertyEndingWithSuffix(Counted.class, Counted::name, "Count")));
+            .should(have(annotationWithPropertyEndingWithSuffix(Counted.class, Counted::value, "Count")));
 
         rule.check(ArchConst.APP_CLASSES);
     }
@@ -86,9 +79,7 @@ class MetricsTest {
         var rule = classes()
             .that()
             .areAnnotatedWith(Timed.class)
-            .should(have(annotationWithPropertyEndingWithSuffix(Timed.class, Timed::name, "MS")))
-            .andShould()
-            .beAnnotatedWith(annotationThatHas(Timed.class, UNIT_IN_MILLISECONDS));
+            .should(have(annotationWithPropertyEndingWithSuffix(Timed.class, Timed::value, "MS")));
 
         rule.check(ArchConst.APP_CLASSES);
     }
@@ -98,9 +89,7 @@ class MetricsTest {
         var rule = methods()
             .that()
             .areAnnotatedWith(Timed.class)
-            .should(have(annotationWithPropertyEndingWithSuffix(Timed.class, Timed::name, "MS")))
-            .andShould()
-            .beAnnotatedWith(annotationThatHas(Timed.class, UNIT_IN_MILLISECONDS));
+            .should(have(annotationWithPropertyEndingWithSuffix(Timed.class, Timed::value, "MS")));
 
         rule.check(ArchConst.APP_CLASSES);
     }

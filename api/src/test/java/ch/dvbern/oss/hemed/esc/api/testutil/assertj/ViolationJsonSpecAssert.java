@@ -23,7 +23,7 @@ import java.util.Objects;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ViolationJsonSpec;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 
 @SuppressWarnings({ "UnusedReturnValue", "unused" })
 public class ViolationJsonSpecAssert extends AbstractAssert<ViolationJsonSpecAssert, ViolationJsonSpec> {

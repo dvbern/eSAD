@@ -9,7 +9,7 @@
  */
 
 
-export type Klassenstufe = 'KINDERGARTEN_1' | 'KINDERGARTEN_2' | 'PRIMAR_KLASSE_1' | 'PRIMAR_KLASSE_2' | 'PRIMAR_KLASSE_3' | 'PRIMAR_KLASSE_4' | 'PRIMAR_KLASSE_5' | 'PRIMAR_KLASSE_6' | 'SEK_I_KLASSE_1' | 'SEK_I_KLASSE_2' | 'SEK_I_KLASSE_3' | 'SEK_II_KLASSE_1' | 'SEK_II_KLASSE_2' | 'SEK_II_KLASSE_3' | 'SEK_II_KLASSE_4';
+export type Klassenstufe = 'KINDERGARTEN_1' | 'KINDERGARTEN_2' | 'PRIMAR_KLASSE_1' | 'PRIMAR_KLASSE_2' | 'PRIMAR_KLASSE_3' | 'PRIMAR_KLASSE_4' | 'PRIMAR_KLASSE_5' | 'PRIMAR_KLASSE_6' | 'SEK_I_KLASSE_1' | 'SEK_I_KLASSE_2' | 'SEK_I_KLASSE_3' | 'SEK_II_KLASSE_1' | 'SEK_II_KLASSE_2' | 'SEK_II_KLASSE_3' | 'SEK_II_KLASSE_4' | 'ANDERE';
 
 export const Klassenstufe = {
     KINDERGARTEN_1: 'KINDERGARTEN_1' as Klassenstufe,
@@ -26,6 +26,7 @@ export const Klassenstufe = {
     SEK_II_KLASSE_1: 'SEK_II_KLASSE_1' as Klassenstufe,
     SEK_II_KLASSE_2: 'SEK_II_KLASSE_2' as Klassenstufe,
     SEK_II_KLASSE_3: 'SEK_II_KLASSE_3' as Klassenstufe,
-    SEK_II_KLASSE_4: 'SEK_II_KLASSE_4' as Klassenstufe
+    SEK_II_KLASSE_4: 'SEK_II_KLASSE_4' as Klassenstufe,
+    ANDERE: 'ANDERE' as Klassenstufe
 } as const;
 

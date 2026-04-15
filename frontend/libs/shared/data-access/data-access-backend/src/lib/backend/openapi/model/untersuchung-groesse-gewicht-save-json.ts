@@ -7,22 +7,17 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { PerzentileGroesse } from './perzentile-groesse';
-import { PerzentileBmi } from './perzentile-bmi';
-import { PerzentileGewicht } from './perzentile-gewicht';
+import { ValueEnhancedJson } from './value-enhanced-json';
 
 
 export interface UntersuchungGroesseGewichtSaveJson { 
     groesse?: number;
     gewicht?: number;
-    groessePerzentile?: PerzentileGroesse;
-    gewichtPerzentile?: PerzentileGewicht;
-    bmiPerzentile?: PerzentileBmi;
+    groessePerzentile: ValueEnhancedJson;
+    gewichtPerzentile: ValueEnhancedJson;
+    bmiPerzentile: ValueEnhancedJson;
     bemerkungen?: string;
     version: number;
 }
-export namespace UntersuchungGroesseGewichtSaveJson {
-}
-
 
 

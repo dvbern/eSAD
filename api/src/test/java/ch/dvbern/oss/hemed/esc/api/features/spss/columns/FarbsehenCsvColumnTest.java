@@ -1,10 +1,10 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,16 +30,16 @@ class FarbsehenCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungSehenBeurteilung.setFarbsehen(FarbsehenResultat.NORMAL);
+        untersuchungSehenBeurteilung.setFarbsehen(SingleValueEnhanced.of(FarbsehenResultat.NORMAL, null));
         assertThat(column.extract(einladung)).isEqualTo("1");
 
-        untersuchungSehenBeurteilung.setFarbsehen(FarbsehenResultat.PATHOLOGISCH);
+        untersuchungSehenBeurteilung.setFarbsehen(SingleValueEnhanced.of(FarbsehenResultat.PATHOLOGISCH, null));
         assertThat(column.extract(einladung)).isEqualTo("2");
 
-        untersuchungSehenBeurteilung.setFarbsehen(FarbsehenResultat.UNSICHER);
+        untersuchungSehenBeurteilung.setFarbsehen(SingleValueEnhanced.of(FarbsehenResultat.UNSICHER, null));
         assertThat(column.extract(einladung)).isEqualTo("3");
 
-        untersuchungSehenBeurteilung.setFarbsehen(FarbsehenResultat.NICHT_GEPRUEFT);
+        untersuchungSehenBeurteilung.setFarbsehen(SingleValueEnhanced.of(FarbsehenResultat.NICHT_GEPRUEFT, null));
         assertThat(column.extract(einladung)).isEqualTo("4");
     }
 
@@ -62,7 +62,7 @@ class FarbsehenCsvColumnTest extends AbstractBaseColumnTest {
         assertThat(column.extract(einladung)).isEmpty();
 
         when(tlMock.translateValue(FarbsehenResultat.NORMAL)).thenReturn("Farbsehen Normal");
-        untersuchungSehenBeurteilung.setFarbsehen(FarbsehenResultat.NORMAL);
+        untersuchungSehenBeurteilung.setFarbsehen(SingleValueEnhanced.of(FarbsehenResultat.NORMAL, null));
         assertThat(column.extract(einladung)).isEqualTo("Farbsehen Normal");
     }
 }

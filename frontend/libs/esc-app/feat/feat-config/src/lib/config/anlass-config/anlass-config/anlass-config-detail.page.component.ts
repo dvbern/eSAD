@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { PageComponent, Path, TenantSettingsStore } from '@dvb/feat-shared';
-import { CardComponent } from '@dvb/ui-components';
+import {CardComponent, StatusTextComponent} from '@dvb/ui-components';
 import { isNotNullish } from '@dvb/util-shared';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { NgbNav, NgbNavItem } from '@ng-bootstrap/ng-bootstrap';
 import { AnlassConfigStore } from '../anlass-config.store';
+import {AnlassConfigHelperService} from "../anlass-config-helper.service";
 
 @Component({
   selector: 'feat-anlass-config',
@@ -18,6 +19,7 @@ import { AnlassConfigStore } from '../anlass-config.store';
     TranslocoPipe,
     RouterLink,
     RouterLinkActive,
+    StatusTextComponent,
   ],
   templateUrl: './anlass-config-detail.page.component.html',
   styleUrl: './anlass-config-detail.page.component.scss',
@@ -27,6 +29,7 @@ export class AnlassConfigDetailPageComponent {
   readonly store = inject(AnlassConfigStore);
   readonly tenantSettingsStore = inject(TenantSettingsStore);
   readonly #translocoService = inject(TranslocoService);
+  readonly anlassConfigHelperService = inject(AnlassConfigHelperService);
   protected readonly Path = Path;
 
   pageTitle = computed(() => {

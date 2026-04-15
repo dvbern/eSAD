@@ -1,0 +1,18 @@
+<feat-page [heading]="'publicinfo.heading' | transloco"
+           [showNav]="false"
+           [showFooter]="true"
+>
+  <div class="container mt-4">
+    <p>Hello World!</p>
+
+    <div class="mt-4 pt-4 border-top">
+      Test subpage
+      <button svuiIconOnlyButton="primary"
+              type="button"
+              [tooltip]="'global.tooltip.icon.next' | transloco"
+              [icon]="'next'"
+              [routerLink]="'/quiz'">
+        </button>
+    </div>
+  </div>
+</feat-page>

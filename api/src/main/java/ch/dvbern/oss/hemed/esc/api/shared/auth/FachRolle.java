@@ -25,11 +25,15 @@ public enum FachRolle {
     SCHULAERZTIN,
     LAUSBEAUFTRAGTE,
     PFP,
+    SCHOOL_NURSE,
     SUPERUSER,
     ADMIN,
     SUPPORT,
     SYSTEM_ADMIN;
 
+    public static List<FachRolle> fachrollenHilfsperson() {
+        return List.of(FachRolle.MPA, FachRolle.PFP, FachRolle.SCHOOL_NURSE);
+    }
 
     @NonNull
     public Set<Berechtigung> getBerechtigungen(@NonNull TenantEnum tenant) {
@@ -50,7 +54,9 @@ public enum FachRolle {
     }
 
     @NonNull
-    public static Set<Berechtigung> collectAllBerechtigungen(@NonNull TenantEnum tenant, @NonNull FachRolle... fachRolle) {
+    public static Set<Berechtigung> collectAllBerechtigungen(
+        @NonNull TenantEnum tenant,
+        @NonNull FachRolle... fachRolle) {
         return Arrays.stream(fachRolle)
             .flatMap(f -> f.getBerechtigungen(tenant).stream())
             .collect(Collectors.toSet());
@@ -61,5 +67,16 @@ public enum FachRolle {
         return Arrays.stream(FachRolle.values())
             .filter(fachRolle -> !fachRolle.getBerechtigungen(tenant).isEmpty())
             .toList();
+    }
+
+    @NonNull
+    public static List<FachRolle> getSystemRollen() {
+        return List.of(SUPPORT, SYSTEM_ADMIN);
+    }
+
+    @NonNull
+    public static List<FachRolle> getOrganisationRollen() {
+        return Arrays.stream(FachRolle.values())
+            .filter(fr -> !getSystemRollen().contains(fr)).toList();
     }
 }

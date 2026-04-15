@@ -1,9 +1,10 @@
 import {Location} from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, effect, inject, input, output, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Router} from '@angular/router';
 import {
   BenutzerOptionJson,
+  EntityAktivStatus,
   FileDataJson,
   LabelJson,
   NotizJson,
@@ -20,6 +21,7 @@ import {
   FormErrorMessageComponent,
   FormLayoutComponent,
   HeadingDirective,
+  IconComponent,
   NgSelectDirective,
   PageHeaderEntityInfoComponent,
   SaveCancelButtonsComponent,
@@ -29,7 +31,7 @@ import {
 import {DetailMode, DirtyMarker, Loader, TableModel} from '@dvb/util-angular';
 import {compareFn, hasNotizEditBerechtigung, isNotNullish, Nullish, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal, NgbNav, NgbNavItem} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {BenutzerOptionsStore} from '../admin-shared/benutzer-options.store';
 import {LabelsStore} from '../admin-shared/labels.store';
@@ -71,6 +73,9 @@ import {NotizenStore} from './notizen.store';
     PageHeaderEntityInfoComponent,
     SaveCancelButtonsComponent,
     BadgeComponent,
+    IconComponent,
+    NgbNav,
+    NgbNavItem,
     MobileUploadComponent,
   ],
   templateUrl: './notizen.component.html',
@@ -93,7 +98,6 @@ export class NotizenComponent implements DirtyMarker {
   readonly #transloco = inject(TranslocoService);
   readonly location = inject(Location);
   readonly router = inject(Router);
-  readonly route = inject(ActivatedRoute);
 
   kindId = input<BackendEntityId>();
   initialNotiz = input<NotizSaveJson>();
@@ -112,6 +116,7 @@ export class NotizenComponent implements DirtyMarker {
   saveNotiz = output<NotizenSaveParams>();
   saveNotizSilent = output<NotizenSaveParams>();
   removeNotizFile = output<NotizenFileParams>();
+  mobileUpload = output<string>();
 
   fileUploads: File[] | undefined;
 
@@ -120,6 +125,8 @@ export class NotizenComponent implements DirtyMarker {
 
   entityInfo = computed(() => this.existingNotiz()?.entityInfo);
   inaktivLabels = computed(() => this.existingNotiz()?.data?.labels?.filter(label => !label.data.aktiv) ?? []);
+
+  readonly NotizTyp = NotizTyp;
 
   notizStatus = Object.values(NotizStatus);
 
@@ -142,7 +149,6 @@ export class NotizenComponent implements DirtyMarker {
     }
 
     this.qrData = `${baseUrl}/${Path.UPLOAD}`;
-
   }
 
   uploadTable = new TableModel<FileDataJson>(
@@ -153,6 +159,11 @@ export class NotizenComponent implements DirtyMarker {
   form = new NotizenForm({
     fb: inject(NonNullableFormBuilder),
     currentBenutzer: this.benutzerOptionsStore.getOptionForBenutzer(this.benutzerStore.benutzer()?.id),
+  });
+
+  anlassLink = computed(() => {
+    const notiz = this.existingNotiz();
+    return `${notiz?.data.anlassLink}/${Path.ANLASS_PLANUNG}`;
   });
 
   constructor() {
@@ -177,7 +188,7 @@ export class NotizenComponent implements DirtyMarker {
       if (id) {
         this.setQr(id);
       }
-    })
+    });
   }
 
   async submitIfValid(): Promise<void> {
@@ -220,17 +231,20 @@ export class NotizenComponent implements DirtyMarker {
 
   public onFileDelete($event: FileDataJson): void {
     const notizId = requireValidBackendEntityId(this.existingNotiz()?.id);
-    this.confirmService.confirm({
-      question: this.#transloco.translate('ui.upload.table.action.delete.confirm.question',
-        {filename: $event.calculatedFileName}),
-      consequence: this.#transloco.translate('ui.upload.table.action.delete.confirm.consequence'),
-      decision: this.#transloco.translate('ui.upload.table.action.delete.decision'),
-    }).subscribe(() => {
-      this.removeNotizFile.emit({
-        notizId: notizId,
-        fileId: $event.id,
+    this.confirmService
+      .confirm({
+        question: this.#transloco.translate('ui.upload.table.action.delete.confirm.question', {
+          filename: $event.calculatedFileName,
+        }),
+        consequence: this.#transloco.translate('ui.upload.table.action.delete.confirm.consequence'),
+        decision: this.#transloco.translate('ui.upload.table.action.delete.decision'),
+      })
+      .subscribe(() => {
+        this.removeNotizFile.emit({
+          notizId: notizId,
+          fileId: $event.id,
+        });
       });
-    });
   }
 
   public onFileView($event: FileDataJson): void {
@@ -279,20 +293,16 @@ export class NotizenComponent implements DirtyMarker {
       ngbModalRef.componentInstance.qrCodeData.set(this.qrData);
 
       ngbModalRef.result
-        .catch(() => {/* empty since we always just trigger a reload*/
+        .catch(() => {
+          /* empty since we always just trigger a reload*/
         })
         .finally(() => {
-          if (this.mode() === 'create') {
-            this.router.navigate(['../', notizId], {
-              relativeTo: this.route,
-              replaceUrl: true,
-            });
-          } else {
-            window.location.reload();
-          }
-        })
+          this.mobileUpload.emit(notizId);
+        });
     } catch (error) {
       console.error('Failed to prepare mobile upload:', error);
     }
   }
+
+  protected readonly EntityAktivStatus = EntityAktivStatus;
 }

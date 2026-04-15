@@ -35,13 +35,24 @@ public class KrankheitImpfstatusGenugendCsvColumn extends AbstractCsvColumn {
         // If any Impfung has covered the immunitaet for this Krankheit, we can return 1.
         return krankheitImmunitaetList.stream()
             .filter(UntersuchungImpfungKrankheitImmunitaet::isImmunitaetGenuegend)
+            .filter(immunitaet -> immunitaet.getImpfung().getAnlassImpfungDurchgefuehrt() != null
+                && immunitaet.getImpfung()
+                .getAnlassImpfungDurchgefuehrt()
+                .getId()
+                .getId()
+                .equals(einladung.getAnlass().getId().getId()))
             .toList()
-            .isEmpty() ? "" : formatPositivResponse();
+            .isEmpty() ? formatNegativResponse() : formatPositivResponse();
     }
 
     @NonNull
     private String formatPositivResponse() {
         return config.forSpssReport() ? "1" : PrintUtil.trimToPlaceholder(true, config.tl());
+    }
+
+    @NonNull
+    private String formatNegativResponse() {
+        return config.forSpssReport() ? "" : PrintUtil.trimToPlaceholder(false, config.tl());
     }
 
     @Override

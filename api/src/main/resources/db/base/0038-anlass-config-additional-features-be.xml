@@ -1,0 +1,64 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  
+  <!-- ADD NEW COLUMNS -->
+  <changeSet author="anst" id="1770114021041-1">
+    <addColumn tableName="anlassconfig">
+      <column name="sehenbrillelinsenvalues" type="VARCHAR(2000)"/>
+      <column name="sehenstrabismusvalues" type="VARCHAR(2000)"/>
+      <column name="hoerenaudiogrammsimpel" type="VARCHAR(30)"/>
+      <column name="hoerenhoerhilfe" type="VARCHAR(30)"/>
+      <column name="sehenfernvisuslinks" type="VARCHAR(30)"/>
+      <column name="sehenfernvisusrechts" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <!-- PROVIDE NEW VALUES WHERE NEEDED -->
+  <changeSet id="1770114021041-2" author="anst">
+    <update tableName="anlassconfig">
+      <column name="sehenbrillelinsenvalues" value="OHNE_KEINE,OHNE_VERGESSEN,MIT,NICHT_GEPRUEFT"/>
+      <where>sehenbrillelinsen IN ('OPTIONAL', 'REQUIRED')</where>
+    </update>
+    <update tableName="anlassconfig">
+      <column name="sehenstrabismusvalues" value="KEIN_STRABISMUS,EXO,ESO,HYPER,NICHT_GEPRUEFT"/>
+      <where>sehenstrabismus IN ('OPTIONAL', 'REQUIRED')</where>
+    </update>
+    <update tableName="anlassconfig">
+      <column name="hoerenaudiogrammsimpel" value="NOT_VISIBLE"/>
+      <where>hoerenaudiogrammsimpel IS NULL</where>
+    </update>
+    <update tableName="anlassconfig">
+      <column name="hoerenhoerhilfe" value="NOT_VISIBLE"/>
+      <where>hoerenhoerhilfe IS NULL</where>
+    </update>
+    <update tableName="anlassconfig">
+      <column name="sehenfernvisuslinks" value="NOT_VISIBLE"/>
+      <where>sehenfernvisuslinks IS NULL</where>
+    </update>
+    <update tableName="anlassconfig">
+      <column name="sehenfernvisusrechts" value="NOT_VISIBLE"/>
+      <where>sehenfernvisusrechts IS NULL</where>
+    </update>
+  </changeSet>
+
+  <!-- ADD CONSTRAINTS -->
+  <changeSet id="1770114021041-3" author="anst">
+    <addNotNullConstraint tableName="anlassconfig" columnName="hoerenaudiogrammsimpel" columnDataType="VARCHAR(30)"/>
+    <addNotNullConstraint tableName="anlassconfig" columnName="hoerenhoerhilfe" columnDataType="VARCHAR(30)"/>
+    <addNotNullConstraint tableName="anlassconfig" columnName="sehenfernvisuslinks" columnDataType="VARCHAR(30)"/>
+    <addNotNullConstraint tableName="anlassconfig" columnName="sehenfernvisusrechts" columnDataType="VARCHAR(30)"/>
+  </changeSet>
+  
+  <!-- UPDATE AUDIT -->
+  <changeSet author="anst" id="1770114021041-4">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="sehenbrillelinsenvalues" type="VARCHAR(2000)"/>
+      <column name="sehenstrabismusvalues" type="VARCHAR(2000)"/>
+      <column name="hoerenaudiogrammsimpel" type="VARCHAR(30)"/>
+      <column name="hoerenhoerhilfe" type="VARCHAR(30)"/>
+      <column name="sehenfernvisuslinks" type="VARCHAR(30)"/>
+      <column name="sehenfernvisusrechts" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  
+</databaseChangeLog>

@@ -4,350 +4,184 @@
       [mode]="store.detailMode()">
   <h2 svuiHeading="formSection">{{ 'anlassconfig.detail.tab.impfungen' | transloco }}</h2>
 
+  <!-- Impfungen Data Minimal -->
+
+  <!-- impfungenDataMinimalImpfausweisGeprueft -->
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.impfungenDataMinimalImpfausweisGeprueft'"
+    [formControlAttr]="form.group.controls.impfungenDataMinimalImpfausweisGeprueft"></feat-anlass-config-requirement-setting>
+
+  <!-- impfungenDataMinimalImmunsuppression -->
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.impfungenDataMinimalImmunsuppression'"
+    [formControlAttr]="form.group.controls.impfungenDataMinimalImmunsuppression"></feat-anlass-config-requirement-setting>
+
+  <!-- impfungenDataMinimalMasernImpfstatus -->
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.impfungenDataMinimalMasernImpfstatus'"
+    [formControlAttr]="form.group.controls.impfungenDataMinimalMasernImpfstatus"></feat-anlass-config-requirement-setting>
+
+  <!-- impfungenDataMinimalMasernAnzahlImpfungen -->
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.impfungenDataMinimalMasernAnzahlImpfungen'"
+    [formControlAttr]="form.group.controls.impfungenDataMinimalMasernAnzahlImpfungen"></feat-anlass-config-requirement-setting>
+
+  <!-- impfungenDataMinimalHpvImpfstatus -->
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.impfungenDataMinimalHpvImpfstatus'"
+    [formControlAttr]="form.group.controls.impfungenDataMinimalHpvImpfstatus"></feat-anlass-config-requirement-setting>
+
+  <!-- impfungenDataMinimalHpvAnzahlImpfungen -->
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.impfungenDataMinimalHpvAnzahlImpfungen'"
+    [formControlAttr]="form.group.controls.impfungenDataMinimalHpvAnzahlImpfungen"></feat-anlass-config-requirement-setting>
+
+  <!-- impfungenDataMinimalImpfempfehlung -->
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.impfungenDataMinimalImpfempfehlung'"
+    [formControlAttr]="form.group.controls.impfungenDataMinimalImpfempfehlung"></feat-anlass-config-requirement-setting>
+
+  <!-- impfungenDataMinimalImpfungDurchgefuehrt -->
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.impfungenDataMinimalImpfungDurchgefuehrt'"
+    [formControlAttr]="form.group.controls.impfungenDataMinimalImpfungDurchgefuehrt"></feat-anlass-config-requirement-setting>
+
+  <!--showImpfungenHeaderImpfausweisUnvollstaendig -->
+  <feat-anlass-config-select-boolean
+    [labelKey]="'anlassconfig.label.showImpfungenHeaderImpfausweisUnvollstaendig'"
+    [formControlAttr]="form.group.controls.showImpfungenHeaderImpfausweisUnvollstaendig"></feat-anlass-config-select-boolean>
+
+  <!--showImpfungenHeaderImpfausweisNichtVorhanden -->
+  <feat-anlass-config-select-boolean
+    [labelKey]="'anlassconfig.label.showImpfungenHeaderImpfausweisNichtVorhanden'"
+    [formControlAttr]="form.group.controls.showImpfungenHeaderImpfausweisNichtVorhanden"></feat-anlass-config-select-boolean>
+
+  <!--showImpfungenHeaderImpfausweisZweiPlusEinsSchema -->
+  <feat-anlass-config-select-boolean
+    [labelKey]="'anlassconfig.label.showImpfungenHeaderImpfausweisZweiPlusEinsSchema'"
+    [formControlAttr]="form.group.controls.showImpfungenHeaderImpfausweisZweiPlusEinsSchema"></feat-anlass-config-select-boolean>
+
+  <!--showImpfungenHeaderImpfausweisUpload -->
+  <feat-anlass-config-select-boolean
+    [labelKey]="'anlassconfig.label.showImpfungenHeaderImpfausweisUpload'"
+    [formControlAttr]="form.group.controls.showImpfungenHeaderImpfausweisUpload"></feat-anlass-config-select-boolean>
+
 
   <!-- impfungenUebersicht -->
-  <svui-form-control [label]="'anlassconfig.label.impfungenUebersicht' | transloco"
-                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().impfungenUebersicht | transloco">
-    <ng-select
-      svuiNgSelect
-      bindLabel='dummy'
-      appendTo="body"
-      [formControl]="form.group.controls.impfungenUebersicht"
-      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
-    >
-      @for (requirement of requirementSettingOptions; track requirement) {
-        <ng-option [value]="requirement">
-          {{ 'RequirementSetting.' + requirement | transloco }}
-        </ng-option>
-      }
-    </ng-select>
-  </svui-form-control>
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.impfungenUebersicht'"
+    [formControlAttr]="form.group.controls.impfungenUebersicht"></feat-anlass-config-requirement-setting>
+
   <!-- impfungenListe-->
-  <svui-form-control [label]="'anlassconfig.label.impfungenListe' | transloco"
-                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().impfungenListe | transloco">
-    <ng-select
-      svuiNgSelect
-      bindLabel='dummy'
-      appendTo="body"
-      [formControl]="form.group.controls.impfungenListe"
-      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
-    >
-      @for (requirement of requirementSettingOptions; track requirement) {
-        <ng-option [value]="requirement">
-          {{ 'RequirementSetting.' + requirement | transloco }}
-        </ng-option>
-      }
-    </ng-select>
-  </svui-form-control>
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.impfungenListe'"
+    [formControlAttr]="form.group.controls.impfungenListe"></feat-anlass-config-requirement-setting>
 
   <!--  impfungenMassnahmeKeineMassnahmen-->
-  <svui-form-control [label]="'anlassconfig.label.impfungenMassnahmeKeineMassnahmen' | transloco"
-                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().impfungenMassnahmeKeineMassnahmen | transloco">
-    <ng-select
-      svuiNgSelect
-      bindLabel='dummy'
-      appendTo="body"
-      [formControl]="form.group.controls.impfungenMassnahmeKeineMassnahmen"
-      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
-    >
-      <ng-option [value]="true">
-        {{ 'RequirementSetting.boolean.true' | transloco }}
-      </ng-option>
-      <ng-option [value]="false">
-        {{ 'RequirementSetting.boolean.false' | transloco }}
-      </ng-option>
-    </ng-select>
-  </svui-form-control>
+  <feat-anlass-config-select-boolean
+    [labelKey]="'anlassconfig.label.impfungenMassnahmeKeineMassnahmen'"
+    [formControlAttr]="form.group.controls.impfungenMassnahmeKeineMassnahmen"></feat-anlass-config-select-boolean>
 
   <!--  impfungenMassnahmeGruppenFolgetermin-->
-  <svui-form-control [label]="'anlassconfig.label.impfungenMassnahmeGruppenFolgetermin' | transloco"
-                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().impfungenMassnahmeGruppenFolgetermin | transloco">
-    <ng-select
-      svuiNgSelect
-      bindLabel='dummy'
-      appendTo="body"
-      [formControl]="form.group.controls.impfungenMassnahmeGruppenFolgetermin"
-      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
-    >
-      <ng-option [value]="true">
-        {{ 'RequirementSetting.boolean.true' | transloco }}
-      </ng-option>
-      <ng-option [value]="false">
-        {{ 'RequirementSetting.boolean.false' | transloco }}
-      </ng-option>
-    </ng-select>
-  </svui-form-control>
+  <feat-anlass-config-select-boolean
+    [labelKey]="'anlassconfig.label.impfungenMassnahmeGruppenFolgetermin'"
+    [formControlAttr]="form.group.controls.impfungenMassnahmeGruppenFolgetermin"></feat-anlass-config-select-boolean>
 
   <!--  impfungenMassnahmeImpfenFolgetermin-->
-  <svui-form-control [label]="'anlassconfig.label.impfungenMassnahmeImpfenFolgetermin' | transloco"
-                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().impfungenMassnahmeImpfenFolgetermin | transloco">
-    <ng-select
-      svuiNgSelect
-      bindLabel='dummy'
-      appendTo="body"
-      [formControl]="form.group.controls.impfungenMassnahmeImpfenFolgetermin"
-      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
-    >
-      <ng-option [value]="true">
-        {{ 'RequirementSetting.boolean.true' | transloco }}
-      </ng-option>
-      <ng-option [value]="false">
-        {{ 'RequirementSetting.boolean.false' | transloco }}
-      </ng-option>
-    </ng-select>
-  </svui-form-control>
+  <feat-anlass-config-select-boolean
+    [labelKey]="'anlassconfig.label.impfungenMassnahmeImpfenFolgetermin'"
+    [formControlAttr]="form.group.controls.impfungenMassnahmeImpfenFolgetermin"></feat-anlass-config-select-boolean>
 
   <!--  impfungenMassnahmeEinzelFolgetermin -->
-  <svui-form-control [label]="'anlassconfig.label.impfungenMassnahmeEinzelFolgetermin' | transloco"
-                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().impfungenMassnahmeEinzelFolgetermin | transloco">
-    <ng-select
-      svuiNgSelect
-      bindLabel='dummy'
-      appendTo="body"
-      [formControl]="form.group.controls.impfungenMassnahmeEinzelFolgetermin"
-      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
-    >
-      <ng-option [value]="true">
-        {{ 'RequirementSetting.boolean.true' | transloco }}
-      </ng-option>
-      <ng-option [value]="false">
-        {{ 'RequirementSetting.boolean.false' | transloco }}
-      </ng-option>
-    </ng-select>
-  </svui-form-control>
+  <feat-anlass-config-select-boolean
+    [labelKey]="'anlassconfig.label.impfungenMassnahmeEinzelFolgetermin'"
+    [formControlAttr]="form.group.controls.impfungenMassnahmeEinzelFolgetermin"></feat-anlass-config-select-boolean>
+
   <!--  impfungenMassnahmeInfoKinderarzt-->
-  <svui-form-control [label]="'anlassconfig.label.impfungenMassnahmeInfoKinderarzt' | transloco"
-                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().impfungenMassnahmeInfoKinderarzt | transloco">
-    <ng-select
-      svuiNgSelect
-      bindLabel='dummy'
-      appendTo="body"
-      [formControl]="form.group.controls.impfungenMassnahmeInfoKinderarzt"
-      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
-    >
-      <ng-option [value]="true">
-        {{ 'RequirementSetting.boolean.true' | transloco }}
-      </ng-option>
-      <ng-option [value]="false">
-        {{ 'RequirementSetting.boolean.false' | transloco }}
-      </ng-option>
-    </ng-select>
-  </svui-form-control>
+  <feat-anlass-config-select-boolean
+    [labelKey]="'anlassconfig.label.impfungenMassnahmeInfoKinderarzt'"
+    [formControlAttr]="form.group.controls.impfungenMassnahmeInfoKinderarzt"></feat-anlass-config-select-boolean>
+
   <!--  impfungenMassnahmeBeratungMPA-->
-  <svui-form-control [label]="'anlassconfig.label.impfungenMassnahmeBeratungMPA' | transloco"
-                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().impfungenMassnahmeBeratungMPA | transloco">
-    <ng-select
-      svuiNgSelect
-      bindLabel='dummy'
-      appendTo="body"
-      [formControl]="form.group.controls.impfungenMassnahmeBeratungMPA"
-      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
-    >
-      <ng-option [value]="true">
-        {{ 'RequirementSetting.boolean.true' | transloco }}
-      </ng-option>
-      <ng-option [value]="false">
-        {{ 'RequirementSetting.boolean.false' | transloco }}
-      </ng-option>
-    </ng-select>
-  </svui-form-control>
+  <feat-anlass-config-select-boolean
+    [labelKey]="'anlassconfig.label.impfungenMassnahmeBeratungMPA'"
+    [formControlAttr]="form.group.controls.impfungenMassnahmeBeratungMPA"></feat-anlass-config-select-boolean>
+
   <!--  impfungenMassnahmeInfomaterialAbgegeben-->
-  <svui-form-control [label]="'anlassconfig.label.impfungenMassnahmeInfomaterialAbgegeben' | transloco"
-                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().impfungenMassnahmeInfomaterialAbgegeben | transloco">
-    <ng-select
-      svuiNgSelect
-      bindLabel='dummy'
-      appendTo="body"
-      [formControl]="form.group.controls.impfungenMassnahmeInfomaterialAbgegeben"
-      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
-    >
-      <ng-option [value]="true">
-        {{ 'RequirementSetting.boolean.true' | transloco }}
-      </ng-option>
-      <ng-option [value]="false">
-        {{ 'RequirementSetting.boolean.false' | transloco }}
-      </ng-option>
-    </ng-select>
-  </svui-form-control>
+  <feat-anlass-config-select-boolean
+    [labelKey]="'anlassconfig.label.impfungenMassnahmeInfomaterialAbgegeben'"
+    [formControlAttr]="form.group.controls.impfungenMassnahmeInfomaterialAbgegeben"></feat-anlass-config-select-boolean>
+
   <!--  impfungenMassnahmeInfoEltern-->
-  <svui-form-control [label]="'anlassconfig.label.impfungenMassnahmeInfoEltern' | transloco"
-                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().impfungenMassnahmeInfoEltern | transloco">
-    <ng-select
-      svuiNgSelect
-      bindLabel='dummy'
-      appendTo="body"
-      [formControl]="form.group.controls.impfungenMassnahmeInfoEltern"
-      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
-    >
-      <ng-option [value]="true">
-        {{ 'RequirementSetting.boolean.true' | transloco }}
-      </ng-option>
-      <ng-option [value]="false">
-        {{ 'RequirementSetting.boolean.false' | transloco }}
-      </ng-option>
-    </ng-select>
-  </svui-form-control>
+  <feat-anlass-config-select-boolean
+    [labelKey]="'anlassconfig.label.impfungenMassnahmeInfoEltern'"
+    [formControlAttr]="form.group.controls.impfungenMassnahmeInfoEltern"></feat-anlass-config-select-boolean>
+
   <!--  impfungenMassnahmeRueckfrageKinderarzt-->
-  <svui-form-control [label]="'anlassconfig.label.impfungenMassnahmeRueckfrageKinderarzt' | transloco"
-                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().impfungenMassnahmeRueckfrageKinderarzt | transloco">
-    <ng-select
-      svuiNgSelect
-      bindLabel='dummy'
-      appendTo="body"
-      [formControl]="form.group.controls.impfungenMassnahmeRueckfrageKinderarzt"
-      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
-    >
-      <ng-option [value]="true">
-        {{ 'RequirementSetting.boolean.true' | transloco }}
-      </ng-option>
-      <ng-option [value]="false">
-        {{ 'RequirementSetting.boolean.false' | transloco }}
-      </ng-option>
-    </ng-select>
-  </svui-form-control>
+  <feat-anlass-config-select-boolean
+    [labelKey]="'anlassconfig.label.impfungenMassnahmeRueckfrageKinderarzt'"
+    [formControlAttr]="form.group.controls.impfungenMassnahmeRueckfrageKinderarzt"></feat-anlass-config-select-boolean>
+
+  <!--impfungenMassnahmeBemerkungen -->
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.impfungenMassnahmeBemerkungen'"
+    [formControlAttr]="form.group.controls.impfungenMassnahmeBemerkungen"></feat-anlass-config-requirement-setting>
+
   <!-- checkEinwilligungVorhanden-->
-  <svui-form-control [label]="'anlassconfig.label.checkEinwilligungVorhanden' | transloco"
-                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().checkEinwilligungVorhanden | transloco">
-    <ng-select
-      svuiNgSelect
-      bindLabel='dummy'
-      appendTo="body"
-      [formControl]="form.group.controls.checkEinwilligungVorhanden"
-      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
-    >
-      @for (requirement of requirementSettingOptions; track requirement) {
-        <ng-option [value]="requirement">
-          {{ 'RequirementSetting.' + requirement | transloco }}
-        </ng-option>
-      }
-    </ng-select>
-  </svui-form-control>
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.checkEinwilligungVorhanden'"
+    [formControlAttr]="form.group.controls.checkEinwilligungVorhanden"></feat-anlass-config-requirement-setting>
+
   <!-- checkKontraindikationenAbgeklaert-->
-  <svui-form-control [label]="'anlassconfig.label.checkKontraindikationenAbgeklaert' | transloco"
-                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().checkKontraindikationenAbgeklaert | transloco">
-    <ng-select
-      svuiNgSelect
-      bindLabel='dummy'
-      appendTo="body"
-      [formControl]="form.group.controls.checkKontraindikationenAbgeklaert"
-      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
-    >
-      @for (requirement of requirementSettingOptions; track requirement) {
-        <ng-option [value]="requirement">
-          {{ 'RequirementSetting.' + requirement | transloco }}
-        </ng-option>
-      }
-    </ng-select>
-  </svui-form-control>
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.checkKontraindikationenAbgeklaert'"
+    [formControlAttr]="form.group.controls.checkKontraindikationenAbgeklaert"></feat-anlass-config-requirement-setting>
 
   <!--  showimpfungendoppelkontrolle-->
-  <svui-form-control [label]="'anlassconfig.label.showImpfungenDoppelkontrolle' | transloco"
-                     [viewValue]="'RequirementSetting.boolean.' + form.group.getRawValue().showImpfungenDoppelkontrolle | transloco">
-    <ng-select
-      svuiNgSelect
-      bindLabel='dummy'
-      appendTo="body"
-      [formControl]="form.group.controls.showImpfungenDoppelkontrolle"
-      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
-    >
-      <ng-option [value]="true">
-        {{ 'RequirementSetting.boolean.true' | transloco }}
-      </ng-option>
-      <ng-option [value]="false">
-        {{ 'RequirementSetting.boolean.false' | transloco }}
-      </ng-option>
-    </ng-select>
-  </svui-form-control>
+  <feat-anlass-config-select-boolean
+    [labelKey]="'anlassconfig.label.showImpfungenDoppelkontrolle'"
+    [formControlAttr]="form.group.controls.showImpfungenDoppelkontrolle"></feat-anlass-config-select-boolean>
 
   <!-- checkDoppelkontrolleImpfentscheidDurchgefuehrt-->
-  <svui-form-control [label]="'anlassconfig.label.checkDoppelkontrolleImpfentscheidDurchgefuehrt' | transloco"
-                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().checkDoppelkontrolleImpfentscheidDurchgefuehrt | transloco">
-    <ng-select
-      svuiNgSelect
-      bindLabel='dummy'
-      appendTo="body"
-      [formControl]="form.group.controls.checkDoppelkontrolleImpfentscheidDurchgefuehrt"
-      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
-    >
-      @for (requirement of requirementSettingOptions; track requirement) {
-        <ng-option [value]="requirement">
-          {{ 'RequirementSetting.' + requirement | transloco }}
-        </ng-option>
-      }
-    </ng-select>
-  </svui-form-control>
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.checkDoppelkontrolleImpfentscheidDurchgefuehrt'"
+    [formControlAttr]="form.group.controls.checkDoppelkontrolleImpfentscheidDurchgefuehrt"></feat-anlass-config-requirement-setting>
 
   <!-- untersuchungImpfungEmpfehlung-->
-  <svui-form-control [label]="'anlassconfig.label.untersuchungImpfungEmpfehlung' | transloco"
-                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungImpfungEmpfehlung | transloco">
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.untersuchungImpfungEmpfehlung'"
+    [formControlAttr]="form.group.controls.untersuchungImpfungEmpfehlung"></feat-anlass-config-requirement-setting>
+
+  <!-- untersuchungImpfungEmpfehlung Values -->
+  <svui-form-control [label]="'anlassconfig.label.untersuchungImpfungEmpfehlungValues' | transloco"
+                     [viewValue]="form.group.getRawValue().untersuchungImpfungEmpfehlungValues | translatedEnumViewValuePipe:'ImpfungenMassnahmenEmpfehlung'"
+  >
     <ng-select
       svuiNgSelect
       bindLabel='dummy'
       appendTo="body"
-      [formControl]="form.group.controls.untersuchungImpfungEmpfehlung"
+      [formControl]="form.group.controls.untersuchungImpfungEmpfehlungValues"
+      [allowBadgesToWrap]="true"
+      [multiple]="true"
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
     >
-      @for (requirement of requirementSettingOptions; track requirement) {
-        <ng-option [value]="requirement">
-          {{ 'RequirementSetting.' + requirement | transloco }}
+      @for (value of impfungenEmpfehlungOptions; track value) {
+        <ng-option [value]="value">
+          {{ 'ImpfungenMassnahmenEmpfehlung.' + value | transloco }}
         </ng-option>
       }
     </ng-select>
   </svui-form-control>
 
   <!-- untersuchungImpfungAchtung-->
-  <svui-form-control [label]="'anlassconfig.label.untersuchungImpfungAchtung' | transloco"
-                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungImpfungAchtung | transloco">
-    <ng-select
-      svuiNgSelect
-      bindLabel='dummy'
-      appendTo="body"
-      [formControl]="form.group.controls.untersuchungImpfungAchtung"
-      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
-    >
-      @for (requirement of requirementSettingOptions; track requirement) {
-        <ng-option [value]="requirement">
-          {{ 'RequirementSetting.' + requirement | transloco }}
-        </ng-option>
-      }
-    </ng-select>
-  </svui-form-control>
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.untersuchungImpfungAchtung'"
+    [formControlAttr]="form.group.controls.untersuchungImpfungAchtung"></feat-anlass-config-requirement-setting>
 
   <!-- untersuchungImpfungBemerkungen-->
-  <svui-form-control [label]="'anlassconfig.label.untersuchungImpfungBemerkungen' | transloco"
-                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungImpfungBemerkungen | transloco">
-    <ng-select
-      svuiNgSelect
-      bindLabel='dummy'
-      appendTo="body"
-      [formControl]="form.group.controls.untersuchungImpfungBemerkungen"
-      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      [multiple]="false"
-    >
-      @for (requirement of requirementSettingOptions; track requirement) {
-        <ng-option [value]="requirement">
-          {{ 'RequirementSetting.' + requirement | transloco }}
-        </ng-option>
-      }
-    </ng-select>
-  </svui-form-control>
+  <feat-anlass-config-requirement-setting
+    [labelKey]="'anlassconfig.label.untersuchungImpfungBemerkungen'"
+    [formControlAttr]="form.group.controls.untersuchungImpfungBemerkungen"></feat-anlass-config-requirement-setting>
 
   <!-- untersuchungImpfungKrankheitenLinks Values -->
   <svui-form-control [label]="'anlassconfig.label.untersuchungImpfungKrankheitenLinksValues' | transloco"

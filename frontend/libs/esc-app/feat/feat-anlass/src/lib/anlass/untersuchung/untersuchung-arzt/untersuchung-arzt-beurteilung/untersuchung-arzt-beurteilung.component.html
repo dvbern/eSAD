@@ -648,7 +648,8 @@
           <svui-form-control
             class="linksrechts"
             [label]="'untersuchung.tab.arzt.blutdruck.systolisch' | transloco"
-            [viewValue]="''">
+            [viewValue]="''"
+            data-testid="untersuchung-systolisch-input">
             <input svuiTextInput="number" [formControl]="form.group.controls.blutdruckSystolisch"/>
             <span class="fs-6"
                   control-message>{{ 'untersuchung.tab.arzt.blutdruck.blutdruck.einheit' | transloco }}</span>
@@ -656,7 +657,8 @@
           <svui-form-control
             class="linksrechts"
             [label]="'untersuchung.tab.arzt.blutdruck.diastolisch' | transloco"
-            [viewValue]="''">
+            [viewValue]="''"
+            data-testid="untersuchung-diastolisch-input">
             <input svuiTextInput="number" [formControl]="form.group.controls.blutdruckDiastolisch"/>
             <span class="fs-6"
                   control-message>{{ 'untersuchung.tab.arzt.blutdruck.blutdruck.einheit' | transloco }}</span>

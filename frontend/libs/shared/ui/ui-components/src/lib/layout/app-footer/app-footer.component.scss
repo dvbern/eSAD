@@ -1,0 +1,16 @@
+@use '../../../styles/core/border';
+@use '../../../styles/core/size';
+@use '../../../styles/core/spacing';
+
+:host {
+  display: block;
+}
+
+.svui_app-footer:has(*) {
+  padding: spacing.$layout-outer;
+  box-shadow: border.$box-shadow-footer;
+
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}

@@ -118,8 +118,8 @@ class UntersuchungHoerenAudiogrammResourceITest extends AbstractITest {
                 .forUntersuchungHoerenAudiogramm(existingHoeren)
                 .withAudiogrammRechts(Dezibel.DB30)
                 .withAudiogrammLinks(Dezibel.DB30)
-                .withAudiogrammBeurteilung(List.of(AudiogrammBeurteilung.LINKS_REDUZIERT))
-                .withZusaetzlicheAngaben(HoerenZusaetzlicheAngaben.ERKAELTUNG)
+                .withAudiogrammBeurteilung(List.of(AudiogrammBeurteilung.LINKS_REDUZIERT), null)
+                .withZusaetzlicheAngaben(List.of(HoerenZusaetzlicheAngaben.ERKAELTUNG), null)
                 .withBemerkung("Bemerkung Audiogramm")).getAudiogrammData();
 
         UntersuchungHoerenAudiogrammJsonSpec result = api
@@ -141,10 +141,10 @@ class UntersuchungHoerenAudiogrammResourceITest extends AbstractITest {
         Assertions.assertThat(result.getAudiogrammData().getAudiogrammLinks()).isNotNull();
         Assertions.assertThat(result.getAudiogrammData().getAudiogrammRechts()).isEqualTo(expectedAudiogramm);
         Assertions.assertThat(result.getAudiogrammData().getAudiogrammLinks()).isEqualTo(expectedAudiogramm);
-        Assertions.assertThat(result.getAudiogrammData().getAudiogrammBeurteilung())
-            .contains(AudiogrammBeurteilungSpec.LINKS_REDUZIERT);
-        Assertions.assertThat(result.getAudiogrammData().getZusaetzlicheAngaben())
-            .contains(HoerenZusaetzlicheAngabenSpec.ERKAELTUNG);
+        Assertions.assertThat(result.getAudiogrammData().getAudiogrammBeurteilung().getValue())
+            .contains(AudiogrammBeurteilungSpec.LINKS_REDUZIERT.name());
+        Assertions.assertThat(result.getAudiogrammData().getZusaetzlicheAngaben().getValue())
+            .contains(HoerenZusaetzlicheAngabenSpec.ERKAELTUNG.name());
         Assertions.assertThat(result.getAudiogrammData().getBemerkungen())
             .isNotNull()
             .isEqualTo("Bemerkung Audiogramm");
@@ -183,8 +183,8 @@ class UntersuchungHoerenAudiogrammResourceITest extends AbstractITest {
         assertThat(result).isNotNull();
         assertThat(result.getAudiogrammRechts()).isEqualTo(defaultAudiogramm);
         assertThat(result.getAudiogrammLinks()).isEqualTo(defaultAudiogramm);
-        assertThat(result.getAudiogrammBeurteilung()).isEqualTo(List.of(AudiogrammBeurteilungSpec.NORMAL));
-        assertThat(result.getZusaetzlicheAngaben()).isEqualTo(List.of(HoerenZusaetzlicheAngabenSpec.KEINE));
+        assertThat(result.getAudiogrammBeurteilung().getValue()).isEqualTo(List.of(AudiogrammBeurteilungSpec.NORMAL.name()));
+        assertThat(result.getZusaetzlicheAngaben().getValue()).isEqualTo(List.of(HoerenZusaetzlicheAngabenSpec.KEINE.name()));
         assertThat(result.getBemerkungen()).isNull();
     }
 
@@ -211,7 +211,7 @@ class UntersuchungHoerenAudiogrammResourceITest extends AbstractITest {
         assertThat(result).isNotNull();
         assertThat(result.getAudiogrammRechts()).isNull();
         assertThat(result.getAudiogrammLinks()).isNull();
-        assertThat(result.getAudiogrammBeurteilung()).isEmpty();
-        assertThat(result.getZusaetzlicheAngaben()).isEmpty();
+        assertThat(result.getAudiogrammBeurteilung().getValue()).isEmpty();
+        assertThat(result.getZusaetzlicheAngaben().getValue()).isEmpty();
     }
 }

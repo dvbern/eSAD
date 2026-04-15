@@ -12,7 +12,7 @@
         [clearable]="false"
         [placeholder]="'global.select.bitte-auswaehlen' | transloco"
       >
-        @for (briefvorlage of this.briefvorlagenStore.entities(); track briefvorlage) {
+        @for (briefvorlage of briefvorlagenStore.entities(); track briefvorlage) {
           <ng-option [value]="briefvorlage">
             {{ briefvorlage.data.name }}
           </ng-option>
@@ -32,7 +32,7 @@
           [placeholder]="'global.select.bitte-auswaehlen' | transloco"
 
         >
-          @for (anlass of this.anlassList(); track anlass.id) {
+          @for (anlass of anlassList(); track anlass.id) {
             <ng-option [value]="anlass">
               {{ anlass.titel }}
             </ng-option>
@@ -40,27 +40,30 @@
         </ng-select>
       </svui-form-control>
     }
+
     <!--Arzt-->
-    <svui-form-control [label]="'kind.dossier.briefgenerieren.modal.arzt' | transloco"
-                       [viewValue]="''"
-                       [size]="'full'">
-      <ng-select
-        svuiNgSelect
-        bindLabel='dummy'
-        appendTo="body"
-        [formControl]="form.group.controls.arztId"
-        [clearable]="true"
-        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-      >
-        @for (item of aerzteStore.entities(); track item.id; ) {
-          <ng-option [value]="item.id" >
+    @if (tenantSettingsStore.arztListeEnabled()) {
+      <svui-form-control [label]="'kind.dossier.briefgenerieren.modal.arzt' | transloco"
+                         [viewValue]="''"
+                         [size]="'full'">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.arztId"
+          [clearable]="true"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          @for (item of aerzteStore.entities(); track item.id; ) {
+            <ng-option [value]="item.id" >
             <span class="w-100 d-flex justify-content-between">
               <span>{{ item.data.name + ' ' + (item.data.vorname ?? '') }}</span>
             </span>
-          </ng-option>
-        }
-      </ng-select>
-    </svui-form-control>
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+    }
 
     <!-- BUTTONS -->
     <svui-save-cancel-buttons

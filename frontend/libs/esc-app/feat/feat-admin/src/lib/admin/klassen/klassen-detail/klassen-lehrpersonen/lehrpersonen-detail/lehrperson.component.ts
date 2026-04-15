@@ -2,7 +2,7 @@ import {DatePipe} from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Geschlecht, ImportTyp} from '@dvb/data-access-backend';
+import {Geschlecht} from '@dvb/data-access-backend';
 import {KlassenStore, Path} from '@dvb/feat-shared';
 import {
   FormButtonsComponent,
@@ -16,8 +16,8 @@ import {
   TextInputDirective,
 } from '@dvb/ui-components';
 import {DirtyMarker} from '@dvb/util-angular';
-import {fromISODateTimeString, isNotNullish, isNullish, requireValue} from '@dvb/util-shared';
-import {TranslocoPipe} from '@jsverse/transloco';
+import {fromISODateTimeString, isExternalObject, isNotNullish, isNullish, requireValue} from '@dvb/util-shared';
+import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {LehrpersonenStore} from '../lehrpersonen.store';
 import {LehrpersonForm} from './lehrperson.form';
 
@@ -47,20 +47,21 @@ export class LehrpersonComponent implements DirtyMarker {
   readonly #klassenStore = inject(KlassenStore);
   readonly #router = inject(Router);
   readonly #activatedRoute = inject(ActivatedRoute);
+  readonly #transloco = inject(TranslocoService);
 
   readonly geschlechtOptions = Object.values(Geschlecht);
 
   protected readonly Path = Path;
 
-  isEscadaObject = computed(() => {
+  getImportSchnittstelle = computed(() => {
     const externalImportInfo = this.store.selectedEntity()?.externalImportInfoJson;
-    return isNotNullish(externalImportInfo)
-      && externalImportInfo?.aktivInExternalSystem
-      && externalImportInfo?.importTyp === ImportTyp.ESCADA;
+    return isNotNullish(externalImportInfo) ? this.#transloco.translate('ImportTyp.' + externalImportInfo.importTyp) : '';
   });
 
-  getDateLatestImportIfEscadaObject() {
-    if (this.isEscadaObject()) {
+  isExternalObject = computed(() => isExternalObject(this.store.selectedEntity()));
+
+  getDateLatestImportIfExternalObject() {
+    if (this.isExternalObject()) {
       return fromISODateTimeString(this.store.selectedEntity()?.externalImportInfoJson?.timestampLatestImport);
     }
     return undefined;
@@ -87,7 +88,7 @@ export class LehrpersonComponent implements DirtyMarker {
       }
       untracked(() => {
         this.form.reset(selectedEntity.data, mode);
-        if (this.isEscadaObject()) {
+        if (this.isExternalObject()) {
           this.form.controlAt('geschlecht').disable();
           this.form.controlAt('name').disable();
           this.form.controlAt('vorname').disable();

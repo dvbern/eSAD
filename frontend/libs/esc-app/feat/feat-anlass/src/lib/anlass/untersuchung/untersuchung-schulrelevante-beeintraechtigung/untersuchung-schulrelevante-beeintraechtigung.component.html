@@ -1,0 +1,96 @@
+@if (anlassStore.selectedEntity()?.anlassConfig?.showTabSchulrelevanteBeeintraechtigung) {
+
+  <form svuiFormLayout
+        [formType]="'kacheln'"
+        [mode]="'edit'"
+        [formGroup]="form.group"
+        (ngSubmit)="submitIfValid()">
+
+    <!-- Freies Gehen -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungFreiesGehen !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.freiesGehenSingleValueForm"
+        [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.freiesGehen'"
+        [valuePrefix]="'FreiesGehen'"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+    }
+
+    <!-- Ohne Stuetzrad Velofahren -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungOhneStuetzradVelofahren !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.ohneStuetzradVelofahrenSingleValueForm"
+        [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.ohneStuetzradVelofahren'"
+        [valuePrefix]="'OhneStuetzradVelofahren'"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+    }
+
+    <!-- Grafamotorik -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungGrafomotorik !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.grafomotorikSingleValueForm"
+        [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.grafomotorik'"
+        [valuePrefix]="'Grafomotorik'"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+    }
+
+    <!-- Feinmotorik -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungFeinmotorik !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.feinmotorikSingleValueForm"
+        [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.feinmotorik'"
+        [valuePrefix]="'Feinmotorik'"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+    }
+
+    <!-- Grobmotorik -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungGrobmotorik !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.grobmotorikEinbeinhuepfenSingleValueForm"
+        [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.grobmotorik'"
+        [valuePrefix]="'GrobmotorikEinbeinhuepfen'"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+    }
+
+    <!-- Gleichgewicht -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungGleichgewicht !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.gleichgewichtEinbeinstandSingleValueForm"
+        [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.gleichgewicht'"
+        [valuePrefix]="'GleichgewichtEinbeinstand'"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+    }
+
+    <!-- Bemerkung -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungBemerkung !== RequirementSetting.NOT_VISIBLE) {
+      <svui-title [context]="'formSection'"
+                  class="mb-3">{{ 'untersuchung.tab.schulrelevanteBeeintraechtigung.bemerkung' | transloco }}
+      </svui-title>
+      <svui-form-control
+        [label]="'untersuchung.tab.schulrelevanteBeeintraechtigung.bemerkung' | transloco"
+        [topLabelVisibility]="'hidden'"
+        [viewValue]="form.group.controls.bemerkungen.value">
+        <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
+      </svui-form-control>
+    }
+
+    <!-- Save / Cancel Buttons -->
+    @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+      <svui-save-cancel-buttons
+        [saving]="false"
+        [canEdit]="true"
+        (cancelClicked)="abbrechen()"/>
+    }
+  </form>
+}

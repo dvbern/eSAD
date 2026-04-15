@@ -8,273 +8,245 @@
 
     <!-- Inspektion -->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.sehenInspektion !== RequirementSetting.NOT_VISIBLE) {
-      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.verwendete.inspektion' | transloco">
-        @for (each of inspektionKonvergenzItems; track each) {
-          <svui-kachel-control [label]="'InspektionKonvergenzResultat.' + each |transloco">
-            <input svuiRadio
-                   type="radio"
-                   name="inspektion"
-                   [formControl]="form.group.controls.inspektion"
-                   [value]="each"/>
-          </svui-kachel-control>
-        }
-      </svui-kachel-form-section>
+      <feat-value-enhanced
+        [form]="form.inspektionEnhancedForm"
+        valueTitleKey="untersuchung.tab.sehen.verwendete.inspektion"
+        valuePrefix="InspektionKonvergenzResultat"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+      </feat-value-enhanced>
     }
 
     <!-- Brille Linsen -->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.sehenBrilleLinsen !== RequirementSetting.NOT_VISIBLE) {
-      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.brillelinsen' | transloco">
-        @for (each of brilleLinsenItems; track each) {
-          <svui-kachel-control [label]="'BrilleLinsenResultat.' + each |transloco">
-            <input svuiRadio
-                   type="radio"
-                   name="brillelinsen"
-                   [formControl]="form.group.controls.brilleLinsen"
-                   [value]="each"/>
-          </svui-kachel-control>
-        }
-      </svui-kachel-form-section>
+      <feat-value-enhanced
+        [form]="form.brilleLinsenEnhancedForm"
+        valueTitleKey="untersuchung.tab.sehen.brillelinsen"
+        valuePrefix="BrilleLinsenResultat"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()"
+        data-testid="untersuchung-groesse-input">
+      </feat-value-enhanced>
     }
 
     <!-- Stereotest -->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.sehenStereoTest !== RequirementSetting.NOT_VISIBLE) {
-      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.stereotest' | transloco">
-        @for (each of stereotestItems; track each) {
-          <svui-kachel-control [label]="'StereotestResultat.' + each |transloco">
-            <input svuiRadio
-                   type="radio"
-                   name="stereoTest"
-                   [formControl]="form.group.controls.stereotest"
-                   [value]="each"/>
-          </svui-kachel-control>
-        }
-      </svui-kachel-form-section>
+      <feat-value-enhanced
+        [form]="form.stereotestEnhancedForm"
+        valueTitleKey="untersuchung.tab.sehen.stereotest"
+        valuePrefix="StereotestResultat"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()"
+        data-testid="checkbox-stereotest"
+        >
+      </feat-value-enhanced>
     }
 
     <!-- Farbsehen -->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.sehenFarbsehen !== RequirementSetting.NOT_VISIBLE) {
-      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.farbsehen' | transloco">
-        @for (each of farbsehenItems; track each) {
-          <svui-kachel-control [label]="'FarbsehenResultat.' + each |transloco">
-            <input svuiRadio
-                   type="radio"
-                   name="farbsehen"
-                   [formControl]="form.group.controls.farbsehen"
-                   [value]="each"/>
-          </svui-kachel-control>
-        }
-      </svui-kachel-form-section>
+      <feat-value-enhanced
+        [form]="form.farbsehenEnhancedForm"
+        valueTitleKey="untersuchung.tab.sehen.farbsehen"
+        valuePrefix="FarbsehenResultat"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
     }
 
     <!-- Verwendete Tafel -->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.sehenTafel !== RequirementSetting.NOT_VISIBLE) {
-      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.verwendete.tafel' | transloco">
-        @for (each of verwendeteTafelItems; track each) {
-          <svui-kachel-control [label]="'VerwendetTafelResultat.' + each |transloco">
-            <input svuiRadio
-                   type="radio"
-                   name="verwendeteTafel"
-                   [formControl]="form.group.controls.verwendeteTafel"
-                   [value]="each"/>
-          </svui-kachel-control>
-        }
+      <feat-value-enhanced
+        [form]="form.verwendeteTafelEnhancedForm"
+        valueTitleKey="untersuchung.tab.sehen.verwendete.tafel"
+        valuePrefix="VerwendetTafelResultat"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+    }
+
+    <!-- Fernvisus-->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.sehenFernvisus !== RequirementSetting.NOT_VISIBLE) {
+      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.fernvisus' | transloco">
+        <feat-value-enhanced
+          [form]="form.fernvisusEnhancedForm"
+          [valueTitleKey]="''"
+          [valuePrefix]="'DistanzSehenResultat'"
+          [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+
+          <!-- Links / Rechts -->
+            <div class="linksrechts_wrapper" ngProjectAs="fieldsAfterMulti">
+              <svui-form-control [label]="'untersuchung.tab.sehen.rechts' | transloco"
+                                 [size]="'oneAndHalf'"
+                                 [viewValue]="form.group.controls.fernvisusRechts.value?.toString()">
+                <ng-select
+                  class="linksrechts"
+                  svuiNgSelect
+                  bindLabel='dummy'
+                  appendTo="body"
+                  [formControl]="form.group.controls.fernvisusRechts"
+                  [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+                >
+                  @for (option of visusOptions; track option) {
+                    <ng-option [value]="option">
+                      {{ option.toFixed(1) }}
+                    </ng-option>
+                  }
+                </ng-select>
+              </svui-form-control>
+              <svui-form-control [label]="'untersuchung.tab.sehen.links' | transloco"
+                                 [size]="'oneAndHalf'"
+                                 [viewValue]="form.group.controls.fernvisusLinks.value?.toString()">
+                <ng-select
+                  class="linksrechts"
+
+                  svuiNgSelect
+                  bindLabel='dummy'
+                  appendTo="body"
+                  [formControl]="form.group.controls.fernvisusLinks"
+                  [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+                >
+                  @for (option of visusOptions; track option) {
+                    <ng-option [value]="option">
+                      {{ option.toFixed(1) }}
+                    </ng-option>
+                  }
+                </ng-select>
+              </svui-form-control>
+            </div>
+        </feat-value-enhanced>
       </svui-kachel-form-section>
     }
 
-    <!--    Fernvisus-->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.sehenFernvisus !== RequirementSetting.NOT_VISIBLE) {
-      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.fernvisus' | transloco">
-        @for (fernvisus of getFernvisusFormArray().controls; track $index) {
-          <svui-kachel-control [label]="'DistanzSehenResultat.' + fernvisus.controls.resultat.value | transloco">
-            <input svuiCheckbox
-                   type="checkbox"
-                   name="fernvisus"
-                   [formControl]="fernvisus.controls.isChecked"
-            />
-          </svui-kachel-control>
-        }
-
-        <div class="linksrechts_wrapper">
-          <svui-form-control [label]="'untersuchung.tab.sehen.rechts' | transloco"
-                             [size]="'oneAndHalf'"
-                             [viewValue]="form.group.controls.fernvisusRechts.value?.toString()">
-            <ng-select
-              class="linksrechts"
-              svuiNgSelect
-              bindLabel='dummy'
-              appendTo="body"
-              [formControl]="form.group.controls.fernvisusRechts"
-              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-            >
-              @for (option of visusOptions; track option) {
-                <ng-option [value]="option">
-                  {{ option.toFixed(1) }}
-                </ng-option>
-              }
-            </ng-select>
-          </svui-form-control>
-
-          <svui-form-control [label]="'untersuchung.tab.sehen.links' | transloco"
-                             [size]="'oneAndHalf'"
-                             [viewValue]="form.group.controls.fernvisusLinks.value?.toString()">
-            <ng-select
-              class="linksrechts"
-
-              svuiNgSelect
-              bindLabel='dummy'
-              appendTo="body"
-              [formControl]="form.group.controls.fernvisusLinks"
-              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-            >
-              @for (option of visusOptions; track option) {
-                <ng-option [value]="option">
-                  {{ option.toFixed(1) }}
-                </ng-option>
-              }
-            </ng-select>
-          </svui-form-control>
-        </div>
-      </svui-kachel-form-section>
+    <!-- Fernvisus Einzeln -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.sehenFernvisusAugeEinzeln !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.fernvisusAugeLinksEnhancedForm"
+        valueTitleKey="untersuchung.tab.sehen.fernvisusAugeLinks"
+        valuePrefix="DistanzSehenAugeEinzelnResultat"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+      <feat-value-enhanced
+        [form]="form.fernvisusAugeRechtsEnhancedForm"
+        valueTitleKey="untersuchung.tab.sehen.fernvisusAugeRechts"
+        valuePrefix="DistanzSehenAugeEinzelnResultat"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
     }
 
     <!-- Nahvisus -->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.sehenNahvisus !== RequirementSetting.NOT_VISIBLE) {
       <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.nahvisus' | transloco">
-        @for (nahvisus of getNahvisusFormArray().controls; track $index) {
-          <svui-kachel-control [label]="'DistanzSehenResultat.' + nahvisus.controls.resultat.value | transloco">
-            <input svuiCheckbox
-                   type="checkbox"
-                   name="nahvisus"
-                   [formControl]="nahvisus.controls.isChecked"/>
-          </svui-kachel-control>
-        }
+        <feat-value-enhanced
+          [form]="form.nahvisusEnhancedForm"
+          [valueTitleKey]="''"
+          [valuePrefix]="'DistanzSehenResultat'"
+          [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
 
-        <div class="linksrechts_wrapper">
-          <svui-form-control [label]="'untersuchung.tab.sehen.rechts' | transloco"
-                             [size]="'oneAndHalf'"
-                             [viewValue]="form.group.controls.nahvisusRechts.value?.toString()">
-            <ng-select
-              class="linksrechts"
-              svuiNgSelect
-              bindLabel='dummy'
-              appendTo="body"
-              [formControl]="form.group.controls.nahvisusRechts"
-              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-            >
-              @for (option of visusOptions; track option) {
-                <ng-option [value]="option">
-                  {{ option.toFixed(1) }}
-                </ng-option>
-              }
-            </ng-select>
-          </svui-form-control>
+          <!-- Links / Rechts -->
+          <div class="linksrechts_wrapper" ngProjectAs="fieldsAfterMulti">
+            <svui-form-control [label]="'untersuchung.tab.sehen.rechts' | transloco"
+                               [size]="'oneAndHalf'"
+                               [viewValue]="form.group.controls.nahvisusRechts.value?.toString()">
+              <ng-select
+                class="linksrechts"
+                svuiNgSelect
+                bindLabel='dummy'
+                appendTo="body"
+                [formControl]="form.group.controls.nahvisusRechts"
+                [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+              >
+                @for (option of visusOptions; track option) {
+                  <ng-option [value]="option">
+                    {{ option.toFixed(1) }}
+                  </ng-option>
+                }
+              </ng-select>
+            </svui-form-control>
+            <svui-form-control [label]="'untersuchung.tab.sehen.links' | transloco"
+                               [size]="'oneAndHalf'"
+                               [viewValue]="form.group.controls.nahvisusLinks.value?.toString()">
+              <ng-select
+                class="linksrechts"
+                svuiNgSelect
+                bindLabel='dummy'
+                appendTo="body"
+                [formControl]="form.group.controls.nahvisusLinks"
+                [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+              >
+                @for (option of visusOptions; track option) {
+                  <ng-option [value]="option">
+                    {{ option.toFixed(1) }}
+                  </ng-option>
+                }
+              </ng-select>
+            </svui-form-control>
+          </div>
 
-          <svui-form-control [label]="'untersuchung.tab.sehen.links' | transloco"
-                             [size]="'oneAndHalf'"
-                             [viewValue]="form.group.controls.nahvisusLinks.value?.toString()">
-            <ng-select
-              class="linksrechts"
-              svuiNgSelect
-              bindLabel='dummy'
-              appendTo="body"
-              [formControl]="form.group.controls.nahvisusLinks"
-              [placeholder]="'global.select.bitte-auswaehlen' | transloco"
-            >
-              @for (option of visusOptions; track option) {
-                <ng-option [value]="option">
-                  {{ option.toFixed(1) }}
-                </ng-option>
-              }
-            </ng-select>
-          </svui-form-control>
-        </div>
+        </feat-value-enhanced>
       </svui-kachel-form-section>
     }
 
     <!-- Motilität -->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.sehenMotilitaet !== RequirementSetting.NOT_VISIBLE) {
-      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.verwendete.motilitaet' | transloco">
-        @for (each of motilitaetItems; track each) {
-          <svui-kachel-control [label]="'MotilitaetResultat.' + each |transloco">
-            <input svuiRadio
-                   type="radio"
-                   name="motilitaet"
-                   [formControl]="form.group.controls.motilitaet"
-                   [value]="each"/>
-          </svui-kachel-control>
-        }
-      </svui-kachel-form-section>
+      <feat-value-enhanced
+        [form]="form.motilitaetEnhancedForm"
+        valueTitleKey="untersuchung.tab.sehen.verwendete.motilitaet"
+        valuePrefix="MotilitaetResultat"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
     }
 
     <!-- Konvergenz -->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.sehenKonvergenz !== RequirementSetting.NOT_VISIBLE) {
-      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.verwendete.konvergenz' | transloco">
-        @for (each of inspektionKonvergenzItems; track each) {
-          <svui-kachel-control [label]="'InspektionKonvergenzResultat.' + each |transloco">
-            <input svuiRadio
-                   type="radio"
-                   name="konvergenz"
-                   [formControl]="form.group.controls.konvergenz"
-                   [value]="each"/>
-          </svui-kachel-control>
-        }
-      </svui-kachel-form-section>
+      <feat-value-enhanced
+        [form]="form.konvergenzEnhancedForm"
+        valueTitleKey="untersuchung.tab.sehen.verwendete.konvergenz"
+        valuePrefix="InspektionKonvergenzResultat"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
     }
 
     <!-- Strabismus -->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.sehenStrabismus !== RequirementSetting.NOT_VISIBLE) {
-      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.verwendete.strabismus' | transloco">
-        @for (strabismus of getStrabismusFormArray().controls; track $index) {
-          <svui-kachel-control [label]="'StrabismusResultat.' + strabismus.controls.resultat.value |transloco">
-            <input svuiCheckbox
-                   type="checkbox"
-                   name="strabismus"
-                   [formControl]="strabismus.controls.isChecked"
-            />
-          </svui-kachel-control>
-        }
-      </svui-kachel-form-section>
-      <!-- Strabismus Ausprägung-->
-      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.verwendete.strabismus.auspraegung' | transloco">
-        @for (auspraegung of strabismusAuspraegungItems; track auspraegung) {
-          <svui-kachel-control
-            [label]="'StrabismusAuspraegungResultat.' + auspraegung |transloco">
-            <input svuiRadio
-                   type="radio"
-                   name="strabismusAuspraegung"
-                   [formControl]="form.group.controls.strabismusAuspraegung"
-                   [value]="auspraegung"/>
-          </svui-kachel-control>
-        }
-      </svui-kachel-form-section>
+      <feat-value-enhanced
+        [form]="form.strabismusEnhancedForm"
+        [valueTitleKey]="'untersuchung.tab.sehen.verwendete.strabismus'"
+        [valuePrefix]="'StrabismusResultat'"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+      </feat-value-enhanced>
+    }
 
-      <!-- Strabismus Auftreten -->
-      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.verwendete.strabismus.auftreten' | transloco">
-        @for (auftreten of strabismusAuftretenItems; track auftreten) {
-          <svui-kachel-control [label]="'StrabismusAuftretenResultat.' + auftreten |transloco">
-            <input svuiRadio
-                   type="radio"
-                   name="strabismusAuftreten"
-                   [formControl]="form.group.controls.strabismusAuftreten"
-                   [value]="auftreten"/>
-          </svui-kachel-control>
-        }
-      </svui-kachel-form-section>
+    <!-- Strabismus Ausprägung-->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.sehenStrabismusAuspraegung !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.strabismusAuspraegungEnhancedForm"
+        valueTitleKey="untersuchung.tab.sehen.verwendete.strabismus.auspraegung"
+        valuePrefix="StrabismusAuspraegungResultat"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
+    }
+
+    <!-- Strabismus Auftreten -->
+    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.sehenStrabismusAuftreten !== RequirementSetting.NOT_VISIBLE) {
+      <feat-value-enhanced
+        [form]="form.strabismusAuftretenEnhancedForm"
+        valueTitleKey="untersuchung.tab.sehen.verwendete.strabismus.auftreten"
+        valuePrefix="StrabismusAuftretenResultat"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        >
+      </feat-value-enhanced>
     }
 
     <!-- Empfehlung -->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.sehenEmpfehlung !== RequirementSetting.NOT_VISIBLE) {
-      <svui-kachel-form-section [heading]=" 'untersuchung.tab.sehen.verwendete.empfehlung' | transloco">
-        @for (empfehlung of getEmpfehlungFormArray().controls; track $index) {
-          <svui-kachel-control [label]="'SehenEmpfehlung.' + empfehlung.controls.resultat.value |transloco">
-            <input svuiCheckbox
-                   type="checkbox"
-                   name="empfehlung"
-                   [formControl]="empfehlung.controls.isChecked"
-            />
-          </svui-kachel-control>
-        }
-      </svui-kachel-form-section>
+      <feat-value-enhanced
+        [form]="form.empfehlungEnhancedForm"
+        [valueTitleKey]="'untersuchung.tab.sehen.verwendete.empfehlung'"
+        [valuePrefix]="'SehenEmpfehlung'"
+        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+      </feat-value-enhanced>
     }
 
     <!-- Bemerkung -->

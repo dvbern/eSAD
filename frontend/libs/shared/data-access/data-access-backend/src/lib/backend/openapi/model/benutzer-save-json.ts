@@ -7,7 +7,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { FachRolle } from './fach-rolle';
+import { OrganisationRollenJson } from './organisation-rollen-json';
+import { EntityAktivStatus } from './entity-aktiv-status';
+import { SystemRollenJson } from './system-rollen-json';
 
 
 export interface BenutzerSaveJson { 
@@ -18,9 +20,13 @@ export interface BenutzerSaveJson {
     username: string;
     email: string;
     telefon?: string;
-    aktiv: boolean;
-    fachRollen: Array<FachRolle>;
+    benutzerAktivStatus: EntityAktivStatus;
+    organisationRollen: Array<OrganisationRollenJson>;
+    systemRollen?: SystemRollenJson;
     version: number;
 }
+export namespace BenutzerSaveJson {
+}
+
 
 

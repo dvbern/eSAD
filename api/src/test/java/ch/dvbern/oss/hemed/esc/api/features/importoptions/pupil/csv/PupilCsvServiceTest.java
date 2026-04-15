@@ -29,16 +29,16 @@ class PupilCsvServiceTest {
         //ASSERT
         Assertions.assertThat(pupilCsvDTOS).isNotEmpty().hasSize(49);
         Assertions.assertThat(pupilCsvDTOS.getFirst())
-            .returns("S84475", PupilCsvDTO::schuelerId)
-            .returns("Jankovic", PupilCsvDTO::schuelerName)
-            .returns("Ana", PupilCsvDTO::schuelerVorname)
-            .returns("2", PupilCsvDTO::schuelerGeschlecht)
-            .returns("30.09.2019", PupilCsvDTO::schuelerGeburtsdatum)
-            .returns("111111", PupilCsvDTO::klasseId)
-            .returns("KIGA 2A Wasserwiesen", PupilCsvDTO::klasseBezeichnung)
+            .returns("S84860", PupilCsvDTO::schuelerId)
+            .returns("Šabani", PupilCsvDTO::schuelerName)
+            .returns("Zuzanna", PupilCsvDTO::schuelerVorname)
+            .returns("1", PupilCsvDTO::schuelerGeschlecht)
+            .returns("21.08.2002", PupilCsvDTO::schuelerGeburtsdatum)
+            .returns("32a368ec-669f-4fd8-a503-806b72322fe5", PupilCsvDTO::klasseId)
+            .returns("KIGA 2b Gerzler", PupilCsvDTO::klasseBezeichnung)
             .returns("Kindergarten", PupilCsvDTO::klasseStufe)
-            .returns("1", PupilCsvDTO::klasseProgrammjahr)
-            .returns("222221", PupilCsvDTO::schuleId)
-            .returns("Wasserwiesen", PupilCsvDTO::schuleBezeichnung);
+            .returns("2", PupilCsvDTO::klasseProgrammjahr)
+            .returns("95b8a129-5020-4814-ab4c-ca37360dbc49", PupilCsvDTO::schuleId)
+            .returns("Kindergarten Gerzler", PupilCsvDTO::schuleBezeichnung);
     }
 }

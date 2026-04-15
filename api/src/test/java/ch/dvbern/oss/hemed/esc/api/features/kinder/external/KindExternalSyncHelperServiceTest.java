@@ -60,12 +60,12 @@ class KindExternalSyncHelperServiceTest {
         kind.setSchuelerEMail(email);
         kind.setSchuelerId("irrelevant");
         if (expected != null) {
-            Assertions.assertThat(KindExternalSyncHelperService.mapValidEmailAdressOrNull(kind))
+            Assertions.assertThat(KindExternalSyncHelperService.mapValidEmailAdressOrNull(kind, ImportTyp.ESCADA))
                 .isNotNull()
                 .extracting(EmailAddress::getAddress)
                 .isEqualTo(expected);
         } else {
-            Assertions.assertThat(KindExternalSyncHelperService.mapValidEmailAdressOrNull(kind)).isNull();
+            Assertions.assertThat(KindExternalSyncHelperService.mapValidEmailAdressOrNull(kind, ImportTyp.ESCADA)).isNull();
         }
     }
 
@@ -82,12 +82,12 @@ class KindExternalSyncHelperServiceTest {
         kind.setSchuelerMobile(phone);
         kind.setSchuelerId("irrelevantForParsing_only_for_logging");
         if (expected != null) {
-            Assertions.assertThat(KindExternalSyncHelperService.mapValidPhoneNumberOrNull(kind))
+            Assertions.assertThat(KindExternalSyncHelperService.mapValidPhoneNumberOrNull(kind, ImportTyp.ESCADA))
                 .isNotNull()
                 .extracting(NormalizedPhoneNumber::getFormattedPhoneNumber)
                 .isEqualTo(expected);
         } else {
-            Assertions.assertThat(KindExternalSyncHelperService.mapValidPhoneNumberOrNull(kind)).isNull();
+            Assertions.assertThat(KindExternalSyncHelperService.mapValidPhoneNumberOrNull(kind, ImportTyp.ESCADA)).isNull();
         }
     }
 
@@ -104,12 +104,12 @@ class KindExternalSyncHelperServiceTest {
         kind.setSchuelerSozialversicherung(svnr);
         kind.setSchuelerId("irrelevantForParsing_only_for_logging");
         if (expected != null) {
-            Assertions.assertThat(KindExternalSyncHelperService.mapValidSvnrOrNull(kind))
+            Assertions.assertThat(KindExternalSyncHelperService.mapValidSvnrOrNull(kind, ImportTyp.ESCADA))
                 .isNotNull()
                 .extracting(SozialversicherungsNummer::toFormattedString)
                 .isEqualTo(expected);
         } else {
-            Assertions.assertThat(KindExternalSyncHelperService.mapValidSvnrOrNull(kind)).isNull();
+            Assertions.assertThat(KindExternalSyncHelperService.mapValidSvnrOrNull(kind, ImportTyp.ESCADA)).isNull();
         }
     }
 

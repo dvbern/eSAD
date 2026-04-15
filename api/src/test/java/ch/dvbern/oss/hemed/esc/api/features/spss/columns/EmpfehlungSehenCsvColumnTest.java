@@ -3,12 +3,10 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 import java.util.EnumSet;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenEmpfehlung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBemerkungFragebogen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.SehenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +33,7 @@ class EmpfehlungSehenCsvColumnTest extends AbstractBaseColumnTest {
         assertThat(column.extract(einladung)).isEmpty();
 
         when(tlMock.translate("printer.boolean.true")).thenReturn("Ja");
-        untersuchungSehen.setEmpfehlung(EnumSet.of(SehenEmpfehlung.UEBERPRUEFUNG_AUGENARZT));
+        untersuchungSehen.setEmpfehlung(MultiValueEnhanced.of(EnumSet.of(SehenEmpfehlung.UEBERPRUEFUNG_AUGENARZT), null));
         assertThat(column.extract(einladung)).isEqualTo("Ja");
     }
 }

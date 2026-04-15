@@ -13,8 +13,11 @@ package ch.dvbern.oss.hemed.esc.api.shared.auth;
 import java.util.Objects;
 import java.util.Set;
 
+import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
+import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.JsonWebTokenDataDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import io.quarkus.security.identity.AuthenticationRequestContext;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.security.identity.SecurityIdentityAugmentor;
@@ -39,23 +42,59 @@ import static ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.JsonWebTokenC
 @RequiredArgsConstructor
 public class RolesAugmentor implements SecurityIdentityAugmentor {
 
-    private static final FachRolle[] EMPTY_FACHROLLEN = new FachRolle[0];
+    public static final FachRolle[] EMPTY_FACHROLLEN = new FachRolle[0];
+
+    private final TenantSettingsService tenantSettingsService;
+    private final BenutzerService benutzerService;
     private final ConfigService configService;
+    private final TenantProducer tenantProducer;
 
     @Override
-    public Uni<SecurityIdentity> augment(SecurityIdentity identity, AuthenticationRequestContext context) {
-       if (identity.isAnonymous()) {
-           return Uni.createFrom().item(identity);
-       }
-       return context.runBlocking(() -> augmentFromjsonWebToken(identity));
+    @NonNull
+    public Uni<SecurityIdentity> augment(@NonNull SecurityIdentity identity, @NonNull AuthenticationRequestContext context) {
+        if (identity.isAnonymous()) {
+            return Uni.createFrom().item(identity);
+        }
+        return context.runBlocking(() -> augmentWithRoles(identity));
     }
 
-    private SecurityIdentity augmentFromjsonWebToken(SecurityIdentity identity) {
+    @NonNull
+    @ActivateRequestContext
+    SecurityIdentity augmentWithRoles(@NonNull SecurityIdentity identity) {
+        // Tenant ist zu diesem Zeitpunkt noch nicht korrekt gesetzt! Aus dem Token lesen
+        JsonWebToken jsonWebToken = (JsonWebToken) identity.getPrincipal();
+        String tenantClaim = jsonWebToken.getClaim(TENANT_CLAIM);
+        TenantEnum tenantEnum = tenantClaim != null ? TenantEnum.fromString(tenantClaim) : null;
+        if (tenantEnum != null) {
+            tenantProducer.setCurrentTenant(tenantEnum);
+        }
+        // Je nach TenantSetting: Die Rollen aus dem Token oder aus der DB lesen
+        boolean ignoreFachrollenFromKeycloak = tenantSettingsService.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled();
+        if (ignoreFachrollenFromKeycloak) {
+            return augmentFromDatabase(identity);
+        }
+        return augmentFromJsonWebToken(identity);
+    }
+
+    @NonNull
+    private SecurityIdentity augmentFromDatabase(@NonNull SecurityIdentity identity) {
+        QuarkusSecurityIdentity.Builder builder = QuarkusSecurityIdentity.builder(identity);
+        JsonWebToken jsonWebToken = (JsonWebToken) identity.getPrincipal();
+        String email = jsonWebToken.getClaim(Claims.email);
+        benutzerService.getDesiredBerechtigungen(EmailAddress.fromString(email))
+            .stream()
+            .map(Berechtigung::getBerechtigungName)
+            .forEach(builder::addRole);
+        return builder.build();
+    }
+
+    @NonNull
+    private SecurityIdentity augmentFromJsonWebToken(@NonNull SecurityIdentity identity) {
         return determineRoles(identity);
     }
 
-    @ActivateRequestContext
-    public SecurityIdentity determineRoles(SecurityIdentity identity) {
+    @NonNull
+    private SecurityIdentity determineRoles(@NonNull SecurityIdentity identity) {
         QuarkusSecurityIdentity.Builder builder = QuarkusSecurityIdentity.builder(identity);
         // cast to json web token to get the keycloak id from the token (subject)
         JsonWebToken jsonWebToken = (JsonWebToken) identity.getPrincipal();

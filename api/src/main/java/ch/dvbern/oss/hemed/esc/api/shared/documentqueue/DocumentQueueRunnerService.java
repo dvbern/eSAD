@@ -1,6 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.shared.documentqueue;
 
-import java.time.OffsetDateTime;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
@@ -13,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 @Service
 @RequiredArgsConstructor
@@ -67,33 +68,44 @@ public class DocumentQueueRunnerService {
                 documentQueue.getId());
             return false;
         }
+        Path filePath = null;
         try {
             documentQueueService.markAsInProgress(documentQueue.getId());
-            byte[] content = documentQueueService.triggerGenerationFunction(documentQueue);
-            documentQueueService.storeResult(documentQueue.getId(), content);
+            filePath = documentQueueService.triggerGenerationFunction(documentQueue);
+            documentQueueService.storeResult(documentQueue.getId(), filePath);
             markAsSuccess(documentQueue);
 
             documentMailService.sendDocumentQueueFinishedSuccessMail(documentQueue);
             return true;
         } catch (Exception e) {
             String rootCauseMessage = ExceptionUtils.getRootCauseMessage(e);
-            markAsFailed(documentQueue, rootCauseMessage);
+            markAsFailedAndSendMailIfLastRetry(documentQueue, rootCauseMessage);
 
-            documentMailService.sendDocumentQueueFinishedFailureMail(documentQueue);
+            LOG.error("ESC-DOCUMENT-QUEUE: ", e);
             return false;
         } finally {
             documentQueueService.update(documentQueue);
+            if (filePath != null) {
+                try {
+                    Files.deleteIfExists(filePath);
+                } catch (IOException e) {
+                    LOG.warn("Failed to delete temp DocumentQueue file: {}", filePath, e);
+                }
+            }
         }
     }
 
     private void markAsSuccess(@NonNull DocumentQueue documentQueue) {
         documentQueue.setStatus(DocumentQueueStatus.SUCCESS);
-        documentQueue.setTimestampResult(OffsetDateTime.now());
+        documentQueue.setTimestampResult(appClock.offsetDateTime().now());
     }
 
-    private void markAsFailed(@NonNull DocumentQueue documentQueue, @Nullable String rootCauseMessage) {
+    private void markAsFailedAndSendMailIfLastRetry(
+        @NonNull DocumentQueue documentQueue,
+        @NonNull String rootCauseMessage) {
         if (documentQueue.getErrorCount() >= MAX_RETRIES) {
             documentQueue.setStatus(DocumentQueueStatus.FAILED);
+            documentMailService.sendDocumentQueueFinishedFailureMail(documentQueue, rootCauseMessage);
         } else {
             documentQueue.setErrorCount(documentQueue.getErrorCount() + 1);
             documentQueue.setStatus(DocumentQueueStatus.FAILED_RETRY);

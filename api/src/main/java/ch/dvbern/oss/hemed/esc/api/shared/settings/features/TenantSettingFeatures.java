@@ -66,4 +66,58 @@ public class TenantSettingFeatures implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     private FeatureEnabledSetting massenimportFeature;
+
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private FeatureEnabledSetting massenbriefFeature;
+
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private FeatureEnabledSetting nichtGeprueftGrundFeature;
+
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private FeatureEnabledSetting arztListeFeature;
+
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private FeatureEnabledSetting adHocImpfstoffChargenFeature;
+
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private FeatureEnabledSetting footerFeature;
+
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private FeatureEnabledSetting benutzerverwaltungInternFeature;
+
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private FeatureEnabledSetting benutzerverwaltungIgnoreFachRolleFromKeycloakFeature;
+
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private FeatureEnabledSetting archivierungFeature;
+
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private FeatureEnabledSetting zentraleOrganisationFeature;
 }

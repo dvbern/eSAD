@@ -24,21 +24,23 @@ import java.math.RoundingMode;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateUtil;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
-import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungGroesseGewichtUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungGroesseGewichtPresentIfReq;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -73,27 +75,32 @@ public class UntersuchungGroesseGewicht extends AbstractEntity<UntersuchungGroes
     private Integer groesse;
 
     @Nullable
-    @Enumerated(EnumType.STRING)
-    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
-    private PerzentileGroesse groessePerzentile;
+    @Embedded
+    @Valid
+    @AttributeOverride(name = "value",
+        column = @Column(name = "groessePerzentile", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private SingleValueEnhanced<PerzentileGroesse> groessePerzentile = SingleValueEnhanced.of();
 
     @Nullable
     @Column(nullable = true, precision = DbConst.DB_DEFAULT_PRECISION, scale = DbConst.DB_ZAHL_SCALE_1)
     private BigDecimal gewicht;
 
     @Nullable
-    @Enumerated(EnumType.STRING)
-    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
-    private PerzentileGewicht gewichtPerzentile;
+    @Embedded
+    @Valid
+    @AttributeOverride(name = "value",
+        column = @Column(name = "gewichtPerzentile", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private SingleValueEnhanced<PerzentileGewicht> gewichtPerzentile = SingleValueEnhanced.of();
 
     @Nullable
     @Column(nullable = true)
     private BigDecimal bmi;
 
     @Nullable
-    @Enumerated(EnumType.STRING)
-    @Column(length = DbConst.DB_ENUM_LENGTH, nullable = true)
-    private PerzentileBmi bmiPerzentile;
+    @Embedded
+    @Valid
+    @AttributeOverride(name = "value", column = @Column(name = "bmiPerzentile", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private SingleValueEnhanced<PerzentileBmi> bmiPerzentile = SingleValueEnhanced.of();
 
     @Nullable
     @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
@@ -130,7 +137,8 @@ public class UntersuchungGroesseGewicht extends AbstractEntity<UntersuchungGroes
 
     @NonNull
     public static UntersuchungGroesseGewicht forUntersuchungAbschliessen(
-        @NonNull Untersuchung untersuchung
+        @NonNull Untersuchung untersuchung,
+        boolean nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
     ) {
         UntersuchungGroesseGewicht groesseGewicht = untersuchung.getUntersuchungGroesseGewicht();
         if (groesseGewicht == null) {
@@ -138,12 +146,36 @@ public class UntersuchungGroesseGewicht extends AbstractEntity<UntersuchungGroes
         }
         AnlassConfig config = untersuchung.getEinladung().getAnlass().getAnlassConfig();
 
-        groesseGewicht.setGroessePerzentile(UntersuchungGroesseGewichtUtil.getGroessePerzentile(
-            config, groesseGewicht, PerzentileGroesse.NICHT_GEPRUEFT));
-        groesseGewicht.setGewichtPerzentile(UntersuchungGroesseGewichtUtil.getGewichtPerzentile(
-            config, groesseGewicht, PerzentileGewicht.NICHT_GEPRUEFT));
-        groesseGewicht.setBmiPerzentile(UntersuchungGroesseGewichtUtil.getBmiPerzentile(
-            config, groesseGewicht, PerzentileBmi.NICHT_GEPRUEFT));
+        groesseGewicht.setGroessePerzentile(
+            ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getGroesseGewichtGroessePerzentile,
+                groesseGewicht,
+                UntersuchungGroesseGewicht::getGroessePerzentile,
+                PerzentileGroesse.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        groesseGewicht.setGewichtPerzentile(
+            ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getGroesseGewichtGewichtPerzentile,
+                groesseGewicht,
+                UntersuchungGroesseGewicht::getGewichtPerzentile,
+                PerzentileGewicht.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        groesseGewicht.setBmiPerzentile(
+            ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getGroesseGewichtBmiPerzentile,
+                groesseGewicht,
+                UntersuchungGroesseGewicht::getBmiPerzentile,
+                PerzentileBmi.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
         return groesseGewicht;
     }
 }

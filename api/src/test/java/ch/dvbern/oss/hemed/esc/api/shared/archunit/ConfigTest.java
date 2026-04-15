@@ -7,7 +7,7 @@ import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMember.Predicates;
 import io.smallrye.config.ConfigMapping;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -32,7 +32,7 @@ class ConfigTest {
         .forSubtype();
     private static final DescribedPredicate<ConfigProperty> ONLY_QUARKUS_PROPERTY_VALUES = DescribedPredicate.describe(
         "only quarkus property values",
-        configProperty -> StringUtils.startsWithIgnoreCase(configProperty.name(), "quarkus.")
+        configProperty -> Strings.CI.startsWith(configProperty.name(), "quarkus.")
     );
 
     @Test

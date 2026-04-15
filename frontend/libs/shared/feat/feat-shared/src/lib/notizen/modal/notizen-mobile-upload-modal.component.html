@@ -9,13 +9,13 @@
     {{ 'notizen.modal.hochladen.description' | transloco }}
   </p>
 
-  <feat-qr-code-upload
-    [qrUrl]="qrCodeData()"
-    [title]="'ui.upload.qr.title' | transloco "
-    [width]="275"
-    [text]="'ui.upload.qr.title' | transloco "
-    [notizTyp]="notizTyp()">
-  </feat-qr-code-upload>
+    <feat-qr-code-upload
+      [qrUrl]="qrCodeData()"
+      [title]="'ui.upload.qr.title' | transloco "
+      [width]="275"
+      [text]="'ui.upload.qr.title' | transloco "
+      [notizTyp]="notizTyp()">
+    </feat-qr-code-upload>
 
   <div class="button-wrapper">
     <button svuiButton="primary" type="button" (click)="close()">

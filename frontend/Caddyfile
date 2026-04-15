@@ -4,11 +4,19 @@
 }
 
 :8080 {
+        # Serve Public Application under /publicapp/
+        handle_path /publicapp/* {
+                root * /srv/app_public
+                try_files {path} /index.html
+                file_server
+        }
 
-
-        try_files {path} /
-        root * /srv/app
-        file_server
+        # Main Application (fallback)
+        handle {
+                root * /srv/app
+                try_files {path} /index.html
+                file_server
+        }
 
         log {
           format console

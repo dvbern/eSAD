@@ -19,7 +19,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.example.developer;
 
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupport;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.DeveloperApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DBInfoJsonSpec;
 import io.quarkus.test.junit.QuarkusTest;
@@ -35,7 +35,7 @@ class DatabaseResourceITest {
     DeveloperApiSpec developerApiSpec = DeveloperApiSpec.developer(RequestSpecUtil.quarkusSpec());
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void testResetAndReinitDatabasePreservingHibernateSequenceValue() {
         var result = developerApiSpec
             .databaseResourceReturnDbInfo()

@@ -31,7 +31,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassConfigBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupport;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.AnlassConfigApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassConfigJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassConfigListJsonSpec;
@@ -64,7 +64,7 @@ class AnlassConfigResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void testFindAll() {
         // ARRANGE
         AnlassConfig config = fixtureService.createAnlassConfigAllOptional(AnlassTyp.KINDERGARTEN);
@@ -87,7 +87,7 @@ class AnlassConfigResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void testCreateAnlassConfigDisableOldIfExists() {
         // ARRANGE
         AnlassConfig oldAnlassConfig =
@@ -126,7 +126,7 @@ class AnlassConfigResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void testUpdateAnlassConfig() {
         // ARRANGE
         AnlassConfig config = fixtureService.createAnlassConfigAllOptional(2025, AnlassTyp.KINDERGARTEN);

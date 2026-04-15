@@ -28,7 +28,8 @@ public enum Klassenstufe {
     SEK_II_KLASSE_1(EscadaKlasseStufe.SEKUNDARSTUFE_II, PupilKlasseStufe.SEKUNDARSTUFE_II,1),
     SEK_II_KLASSE_2(EscadaKlasseStufe.SEKUNDARSTUFE_II, PupilKlasseStufe.SEKUNDARSTUFE_II,2),
     SEK_II_KLASSE_3(EscadaKlasseStufe.SEKUNDARSTUFE_II, PupilKlasseStufe.SEKUNDARSTUFE_II,3),
-    SEK_II_KLASSE_4(EscadaKlasseStufe.SEKUNDARSTUFE_II, PupilKlasseStufe.SEKUNDARSTUFE_II, 4);
+    SEK_II_KLASSE_4(EscadaKlasseStufe.SEKUNDARSTUFE_II, PupilKlasseStufe.SEKUNDARSTUFE_II, 4),
+    ANDERE(null, null, 0);
 
     private final EscadaKlasseStufe matchingEscadaKlassenStufe;
     private final PupilKlasseStufe matchingPupilKlassenStufe;

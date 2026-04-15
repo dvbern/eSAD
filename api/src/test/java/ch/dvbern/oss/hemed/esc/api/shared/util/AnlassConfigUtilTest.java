@@ -5,7 +5,7 @@ import java.util.List;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupport;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ class AnlassConfigUtilTest {
     private final AnlassConfigService anlassConfigService;
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void createSqlUpdateQuery() {
         List<AnlassConfig> all = anlassConfigService.findAll();
         for (AnlassConfig anlassConfig : all) {
@@ -31,7 +31,7 @@ class AnlassConfigUtilTest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void createSqlInsertQuery() {
         List<AnlassConfig> all = anlassConfigService.findAll();
         for (AnlassConfig anlassConfig : all) {
@@ -41,7 +41,7 @@ class AnlassConfigUtilTest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void createSqlUpdateQueryWithDefault() {
         List<AnlassConfig> all = anlassConfigService.findAll();
         for (AnlassConfig anlassConfig : all) {
@@ -52,7 +52,7 @@ class AnlassConfigUtilTest {
     }
 
     @Test
-    @TestAsSupport
+    @TestAsSupportBS
     void createSqlInsertQueryWithDefault() {
         List<AnlassConfig> all = anlassConfigService.findAll();
         for (AnlassConfig anlassConfig : all) {

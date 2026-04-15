@@ -12,6 +12,7 @@
       [ngModel]="anlassStatus()"
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
       (change)="onStatusChange($event)"
+      data-testid="anlass-status-select"
     >
       @for (status of anlassStatusList; track status) {
         <ng-option [value]="status">
@@ -31,6 +32,7 @@
 
     <!-- Bearbeitung -->
     <button [disabled]="!store.canUserEditAnlassInCurrentState()"
+            data-testid="button-anlass-bearbeiten"
             svuiButton="secondary"
             type="button"
             [icon]="'previous'"
@@ -45,7 +47,8 @@
   <feat-anlass-planung-einladungen-liste/>
 
   @if (anzahlAusgewaehlteKinder() > 0) {
-    <button svuiButton="primary" type="button" (click)="gotoUntersuchung()" class="mt-3">
+    <button svuiButton="primary" type="button" (click)="gotoUntersuchung()" class="mt-3"
+    data-testid="button-kinder-auswaehlen">
       {{ 'anlass.kinder.untersuchung.anzahl' | transloco: {anzahl: anzahlAusgewaehlteKinder()} }}
     </button>
   }

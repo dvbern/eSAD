@@ -95,6 +95,11 @@ FIELD_anlass.krankheit.FSME.anzahlImpfungen : 3
 FIELD_anlass.krankheit.FSME.datumLetzteImpfung : 05/2025
 FIELD_anlass.krankheit.FSME.Impfempfehlung : Nein
 
+HAEMOPHILUS_INFLUENZAE
+FIELD_anlass.krankheit.HAEMOPHILUS_INFLUENZAE.anzahlImpfungen : 3
+FIELD_anlass.krankheit.HAEMOPHILUS_INFLUENZAE.datumLetzteImpfung : 05/2025
+FIELD_anlass.krankheit.HAEMOPHILUS_INFLUENZAE.Impfempfehlung : Nein
+
 FIELD_anlass.impfung.impfungList : 20.04.2025 VARIVAX (Varizellen)
 13.03.2025 Boostrix (Diphtherie, Tetanus, Pertussis)
 13.03.2025 VARIVAX (Varizellen)
@@ -109,6 +114,9 @@ FIELD_anlass.sehen.tafel: E-Tafel
 FIELD_anlass.sehen.fernvisus: normal/links reduziert
 FIELD_anlass.sehen.fernvisusSehschaerfeRechts: 100
 FIELD_anlass.sehen.fernvisusSehschaerfeLinks: 200
+FIELD_anlass.sehen.fernvisusAugeLinks: normal
+FIELD_anlass.sehen.fernvisusAugeRechts: reduziert
+
 FIELD_anlass.sehen.nahvisus: normal/rechts reduziert
 FIELD_anlass.sehen.nahvisusSehschaerfeRechts: 300
 FIELD_anlass.sehen.nahvisusSehschaerfeLinks: 400
@@ -119,12 +127,16 @@ FIELD_anlass.sehen.inspektion: auffällig
 FIELD_anlass.sehen.konvergenz: nicht geprüft
 FIELD_anlass.sehen.beurteilung: siehe Begleitbrief
 FIELD_anlass.sehen.motilitaet: unauffällig
+FIELD_anlass.sehen.empfehlung: Wir bitten Sie um weitere Abklärung/Behandlung bei ihrer Ärztin/ihrem Arzt.
 
 HOEREN AUDIOGRAMM
 FIELD_anlass.hoeren.audiogramm.beurteilungErkaeltung: Solch eine Hörminderung ist im Kindesalter meist vorübergehend, z.B. bei oder nach zurückliegender Erkältung. Um jedoch sicher zu sein, dass Ihr Kind gut hört, empfehle ich Ihnen, in 6 bis 8 Wochen noch einmal eine Kontrolle bei Ihrem Kinderarzt/ Ihrer Kinderärztin durchführen zu lassen.
+FIELD_anlass.hoeren.audiogramm.audiogrammSimpel: überdurchschnittlich hoch
+FIELD_anlass.hoeren.audiogramm.hoerhilfe: ja
 FIELD_anlass.hoeren.audiogramm.beurteilungHoerhilfe: mit Hörhilfe
 FIELD_anlass.hoeren.audiogramm.zusammenfassungOhren: siehe Begleitbrief
 FIELD_anlass.hoeren.audiogramm.beurteilungAudiogramm: beidseitig vermindert, unaufällig
+FIELD_anlass.hoeren.audiogramm.empfehlung: Der Hörtest zeigte eine Auffälligkeit. Wir bitten Sie um weitere Abklärung bei ihrer Ärztin/ihrem Arzt.
 
 AUDIOGRAMM RECHTS
 	Rechts
@@ -292,6 +304,14 @@ FIELD_anlass.groesseGewicht.gewichtWert: 70.0 kg
 FIELD_anlass.groesseGewicht.gewichtBeurteilung: starkes Übergewicht
 FIELD_anlass.groesseGewicht.bmiWert: 31.1
 FIELD_anlass.groesseGewicht.bmiBeurteilung: >95%ile
+
+
+UNTERSUCHUNG ARZT
+
+FIELD_anlass.untersuchungArzt.blutdruckBewertung: Normal
+FIELD_anlass.untersuchungArzt.blutdruckWertSystolisch: 80
+FIELD_anlass.untersuchungArzt.blutdruckWertDiastolisch: 80
+
 
 Arzt
 

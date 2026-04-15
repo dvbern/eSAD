@@ -45,6 +45,7 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.util.AnlassUtil;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.kindanlaesse.KindAnlaesseService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
@@ -284,6 +285,7 @@ public class FileIngressService {
             NotizTyp.FRAGEBOGEN,
             einladung.getDossier(),
             admin,
+            AnlassUtil.createAnlassLink(einladung),
             Set.of(labelService.getById(Label.ID_LABEL_FRAGEBOGEN)),
             new ArrayList<>() // Files werden separat hinzugefügt
         );

@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import ch.dvbern.dvbstarter.infrastructure.health.tenant.TenantHealthCheck.TenantInfos;
+import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
@@ -80,7 +81,10 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
     private AnlassConfigService anlassConfigService = null;
     private SchedulerConfigService schedulerConfigService = null;
     private ConfigService configService = null;
+    private AppClock appClock = null;
 
+    /* we need all of those services injected */
+    @SuppressWarnings("java:S107")
     protected AbstractTenantHealthCheck(
         @NonNull TenantProducer tenantProducer,
         @NonNull TenantSettingsService tenantSettingsService,
@@ -88,7 +92,8 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
         @NonNull BenutzerRepo benutzerRepo,
         @NonNull AnlassConfigService anlassConfigService,
         @NonNull SchedulerConfigService schedulerConfigService,
-        @NonNull ConfigService configService
+        @NonNull ConfigService configService,
+        @NonNull AppClock appClock
     ) {
         this.tenantProducer = tenantProducer;
         this.tenantSettingsService = tenantSettingsService;
@@ -97,6 +102,7 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
         this.anlassConfigService = anlassConfigService;
         this.schedulerConfigService = schedulerConfigService;
         this.configService = configService;
+        this.appClock = appClock;
     }
 
     @NonNull
@@ -179,7 +185,7 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
 
     private boolean isAnlassConfigPresentForEveryAnlassTyp(@NonNull TenantInfos tenantInfos) {
         try {
-            LocalDate stichtag = LocalDate.now();
+            LocalDate stichtag = appClock.getToday();
             for (AnlassTyp anlassTyp : AnlassTyp.values()) {
                 AnlassConfig anlassConfig = anlassConfigService.getByAnlassTypAndStichtag(anlassTyp, stichtag);
                 Validate.isTrue(anlassConfig.getAnlassTyp() == anlassTyp);

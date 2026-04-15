@@ -7,6 +7,7 @@ import java.util.Optional;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.UntersuchungBewegungsapparatService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
@@ -23,8 +24,11 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.UntersuchungL
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmenService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmenService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.UntersuchungSchulrelevanteBeeintraechtigungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.UntersuchungSpracheService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriageService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.vorabklaerungen.UntersuchungVorabklaerungenService;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungImpfungenUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -48,6 +52,10 @@ public class UntersuchungService {
     private final UntersuchungImpfstatusKrankheitService untersuchungImpfstatusKrankheitService;
     private final UntersuchungImpfungInternService untersuchungImpfungInternService;
     private final UntersuchungImpfungenMassnahmenService untersuchungImpfungenMassnahmenService;
+    private final UntersuchungBewegungsapparatService untersuchungBewegungsapparatService;
+    private final UntersuchungSpracheService untersuchungSpracheService;
+    private final UntersuchungVorabklaerungenService untersuchungVorabklaerungenService;
+    private final UntersuchungSchulrelevanteBeeintraechtigungService untersuchungSchulrelevanteBeeintraechtigungService;
 
     @NonNull
     public Untersuchung getOrCreateUntersuchung(
@@ -73,7 +81,7 @@ public class UntersuchungService {
 
     }
 
-    private void createImpfungen(Untersuchung untersuchung) {
+    private void createImpfungen(@NonNull Untersuchung untersuchung) {
         UntersuchungImpfungen impfungen =
             untersuchungImpfungenService.getOrCreateUntersuchungImpfungen(untersuchung.getId());
 
@@ -137,7 +145,8 @@ public class UntersuchungService {
 
         Optional<String> achtungLastEinladung = getMassnahmeAchtungFromLastEinladung(lastEinladung);
 
-        // UntersuchungImpfungenMassnahmen muss nur kopiert werden falls Achtung in der vorherigen Untersuchung ausgefüllt worden ist.
+        // UntersuchungImpfungenMassnahmen muss nur kopiert werden falls Achtung in der vorherigen Untersuchung
+        // ausgefüllt worden ist.
         if (achtungLastEinladung.isPresent()) {
             UntersuchungImpfungenMassnahmen massnahmen = new UntersuchungImpfungenMassnahmen();
             massnahmen.setUntersuchungImpfungen(impfungen);
@@ -166,16 +175,23 @@ public class UntersuchungService {
         untersuchungRepo.remove(untersuchung.getId());
     }
 
-    public void untersuchungAbschliessen(@NonNull Untersuchung untersuchung) {
+    public void untersuchungAbschliessen(
+        @NonNull Untersuchung untersuchung,
+        boolean needsNichtGeprueftGrund
+    ) {
         untersuchungDurchfuehrungService.untersuchungAbschliessen(untersuchung);
         untersuchungImpfungenService.untersuchungAbschliessen(untersuchung);
-        untersuchungSehenBeurteilungService.untersuchungAbschliessen(untersuchung);
-        untersuchungHoerenAudiogrammService.untersuchungAbschliessen(untersuchung);
-        untersuchungHoerenOtoskopieService.untersuchungAbschliessen(untersuchung);
-        untersuchungGroesseGewichtService.untersuchungAbschliessen(untersuchung);
+        untersuchungSehenBeurteilungService.untersuchungAbschliessen(untersuchung, needsNichtGeprueftGrund);
+        untersuchungHoerenAudiogrammService.untersuchungAbschliessen(untersuchung, needsNichtGeprueftGrund);
+        untersuchungHoerenOtoskopieService.untersuchungAbschliessen(untersuchung, needsNichtGeprueftGrund);
+        untersuchungGroesseGewichtService.untersuchungAbschliessen(untersuchung, needsNichtGeprueftGrund);
         untersuchungTriageService.untersuchungAbschliessen(untersuchung);
         untersuchungLaeusekontrolleService.untersuchungAbschliessen(untersuchung);
         untersuchungArztBeurteilungService.untersuchungAbschliessen(untersuchung);
         untersuchungMassnahmenService.untersuchungAbschliessen(untersuchung);
+        untersuchungSchulrelevanteBeeintraechtigungService.untersuchungAbschliessen(untersuchung, needsNichtGeprueftGrund);
+        untersuchungSpracheService.untersuchungAbschliessen(untersuchung, needsNichtGeprueftGrund);
+        untersuchungBewegungsapparatService.untersuchungAbschliessen(untersuchung, needsNichtGeprueftGrund);
+        untersuchungVorabklaerungenService.untersuchungAbschliessen(untersuchung, needsNichtGeprueftGrund);
     }
 }

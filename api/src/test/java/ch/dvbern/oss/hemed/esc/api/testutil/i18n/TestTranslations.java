@@ -10,5 +10,5 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class TestTranslations {
     public static final Function<AppLanguage, Translator> TL_FACTORY =
-        new TLProducer(() -> null)::forAppLanguage;
+        new TLProducer(() -> null, () -> null)::forAppLanguage;
 }

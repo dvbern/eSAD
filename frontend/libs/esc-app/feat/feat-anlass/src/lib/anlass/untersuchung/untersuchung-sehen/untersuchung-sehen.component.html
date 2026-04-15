@@ -5,7 +5,8 @@
       <div style="display: flex; justify-content: end;">
         <button
           class="nav-link"
-          (click)="loadDefault()">
+          (click)="loadDefault()"
+        data-testid="untersuchung-sehen-defaultwerte">
           <svui-icon [useCase]="'edit'"></svui-icon>
           {{ 'untersuchung.tab.sehen.defaultwerte' | transloco }}
         </button>

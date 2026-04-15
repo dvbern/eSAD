@@ -1,0 +1,43 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="anst (generated)" id="1770276817515-1">
+    <addColumn tableName="untersuchunghoerenaudiogramm">
+      <column name="audiogrammsimpel" type="VARCHAR(255)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="anst (generated)" id="1770276817515-2">
+    <addColumn tableName="untersuchunghoerenaudiogramm_aud">
+      <column name="audiogrammsimpel" type="VARCHAR(255)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="anst (generated)" id="1770276817515-3">
+    <addColumn tableName="untersuchunghoerenaudiogramm">
+      <column name="hoerhilfe" type="VARCHAR(255)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="anst (generated)" id="1770276817515-4">
+    <addColumn tableName="untersuchunghoerenaudiogramm_aud">
+      <column name="hoerhilfe" type="VARCHAR(255)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="anst (generated)" id="1770280341072-1">
+    <addColumn tableName="untersuchungsehenbeurteilung">
+      <column name="fernvisusaugelinks" type="VARCHAR(255)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="anst (generated)" id="1770280341072-2">
+    <addColumn tableName="untersuchungsehenbeurteilung_aud">
+      <column name="fernvisusaugelinks" type="VARCHAR(255)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="anst (generated)" id="1770280341072-3">
+    <addColumn tableName="untersuchungsehenbeurteilung">
+      <column name="fernvisusaugerechts" type="VARCHAR(255)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="anst (generated)" id="1770280341072-4">
+    <addColumn tableName="untersuchungsehenbeurteilung_aud">
+      <column name="fernvisusaugerechts" type="VARCHAR(255)"/>
+    </addColumn>
+  </changeSet>
+</databaseChangeLog>

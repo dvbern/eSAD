@@ -11,7 +11,8 @@
     @if (isInputModeOneOf('create', 'edit')) {
       <svui-form-control [label]="'impfungintern.impfstoff' | transloco"
         [viewValue]="form.group.value.impfstoff?.data?.name"
-        [size]="'double'">
+        [size]="'double'"
+        data-testid="modal-impfstoff-select">
         <ng-select
           svuiNgSelect
           bindLabel='dummy'
@@ -36,7 +37,8 @@
     <!-- Charge -->
     @if (isInputModeOneOf('create', 'edit', 'verabreicht')) {
       <svui-form-control [label]="'impfungintern.charge' | transloco"
-        [viewValue]="form.group.value.charge?.data?.name">
+        [viewValue]="form.group.value.charge?.label"
+        data-testid="modal-charge-select">
         <ng-select
           svuiNgSelect
           bindLabel='dummy'
@@ -44,19 +46,25 @@
           [formControl]="form.group.controls.charge"
           [placeholder]="'global.select.bitte-auswaehlen' | transloco"
           [searchable]="true"
-          [compareWith]="compareFnCharge"
+          [addTag]="requireValue(tenantSettingStore.adHocImpfstoffChargenEnabled())"
+          [addTagText]="'impfungintern.charge.adhoc' | transloco"
+          [compareWith]="compareChargeFn"
           >
           <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
           @if (form.chargeOptions()) {
-            @for (item of form.chargeOptions(); track item.id) {
+            @for (item of form.chargeOptions(); track item.label) {
               <ng-option [value]="item">
-                <span>{{ item.data.name }}</span>
+                <span>{{ item.label }} </span>
               </ng-option>
             }
           }
         </ng-select>
+
       </svui-form-control>
     }
+
+
+
 
     <!-- Datum -->
     @if (isInputModeOneOf('create', 'edit')) {

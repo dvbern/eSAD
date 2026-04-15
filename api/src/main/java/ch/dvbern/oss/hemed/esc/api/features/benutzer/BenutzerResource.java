@@ -13,6 +13,7 @@ import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionListJson
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.PrincipalJson;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.TestingResponseJson;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
@@ -25,6 +26,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -34,8 +36,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/benutzer")
@@ -44,7 +45,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = Tags.TAG_BENUTZER)
 @RolesAllowed(BerechtigungName.SUPPORT)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "BenutzerResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("BenutzerResourceMS")
 @Slf4j
 public class BenutzerResource {
 
@@ -79,6 +80,18 @@ public class BenutzerResource {
     }
 
     @GET
+    @NonNull
+    @Path("/{organisationID}")
+    @RateLimit(RateLimitConst.DEFAULT_LIMIT)
+    @RolesAllowed(BerechtigungName.ORGANISATION_VERWALTEN_LESEN)
+    public BenutzerListJson findAllBenutzerForOrganisation(
+        @NonNull @NotNull @PathParam("organisationID") ID<Organisation> organisationID
+    ) {
+        // TODO ESC-1180 authorizer
+        return new BenutzerListJson(mapper.findAllBenutzerForOrganisation(organisationID));
+    }
+
+    @GET
     @Nullable
     @Path("/self")
     @PermitAll
@@ -91,17 +104,28 @@ public class BenutzerResource {
         return optionalBenutzer.map(BenutzerMapper::toPrincipalJson).orElseThrow();
     }
 
+    @POST
+    @NonNull
+    @RateLimit(RateLimitConst.DEFAULT_LIMIT)
+    @RolesAllowed({ BerechtigungName.BENUTZER_BERECHTIGUNGEN_SCHREIBEN, BerechtigungName.ORGANISATION_VERWALTEN_SCHREIBEN })
+    public BenutzerJson createBenutzer(
+        // TODO ESC-1180: Eigene Berechtigung für Organisationsbenutzer
+        @NonNull @NotNull @Valid BenutzerSaveJson saveJson
+    ) {
+        return mapper.create(saveJson);
+    }
+
     @PUT
     @NonNull
     @Path("/{benutzerID}")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    // TODO ESC-1180: Eigene Berechtigung für Organisationsbenutzer
+    @RolesAllowed({ BerechtigungName.BENUTZER_BERECHTIGUNGEN_SCHREIBEN, BerechtigungName.ORGANISATION_VERWALTEN_LESEN })
     public BenutzerJson update(
         @NonNull @NotNull @PathParam("benutzerID") ID<Benutzer> benutzerID,
         @NonNull @NotNull @Valid BenutzerSaveJson saveJson
     ) {
-        ID<Benutzer> currentBenutzerID = currentUserService.currentUserID();
-        return mapper.update(currentBenutzerID, benutzerID, saveJson);
+        return mapper.update(benutzerID, saveJson);
     }
 
     @PUT
@@ -113,6 +137,15 @@ public class BenutzerResource {
         @NonNull @NotNull @PathParam("benutzerID") ID<Benutzer> benutzerID,
         @NonNull @NotNull @Valid BenutzerSaveJson saveJson
     ) {
-        return mapper.updateBenutzerAktivStatus(benutzerID, saveJson.isAktiv());
+        return mapper.updateBenutzerAktivStatus(benutzerID, saveJson.getBenutzerAktivStatus());
+    }
+
+    @PUT
+    @NonNull
+    @Path("/agb")
+    @RateLimit(RateLimitConst.DEFAULT_LIMIT)
+    @RolesAllowed("**")
+    public BenutzerJson acceptAGB() {
+        return mapper.acceptAGB();
     }
 }

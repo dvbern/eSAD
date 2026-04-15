@@ -15,7 +15,6 @@ import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -52,14 +51,12 @@ public class PupilResource {
     @RolesAllowed(BerechtigungName.PUPIL_PUSH)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Transactional(TxType.NOT_SUPPORTED)
-    public Response syncWithPupilAsync(
+    public void syncWithPupilAsync(
         @FormParam(value = "file")
         @Schema(implementation = UploadItemSchema.class)
         // schema genaration produces object instead of binary string otherwise
         FileUpload csvFile
     ) {
         pupilWorkerService.processPupilCsvUploadUsingEventBus(csvFile);
-        return Response.ok().build();
     }
-
 }

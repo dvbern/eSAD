@@ -44,7 +44,11 @@ import io.restassured.response.ResponseOptions;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -52,6 +56,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 @RequiredArgsConstructor
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class DuplikatResourceITest extends AbstractITest {
 
     private final DuplikateApiSpec api = DuplikateApiSpec.duplikate(RequestSpecUtil.quarkusSpec());
@@ -69,6 +75,7 @@ class DuplikatResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
+    @Order(10)
     void reloadDuplikate() {
         // ARRANGE
         Kind kind1 = fixtureService.createKind("Laura", "Müller", LocalDate.of(2000, 1, 5), Geschlecht.WEIBLICH);
@@ -88,6 +95,7 @@ class DuplikatResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
+    @Order(20)
     void reloadDuplikateAsync() {
         // ARRANGE
         // ACT
@@ -103,6 +111,7 @@ class DuplikatResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
+    @Order(30)
     void findAllDuplikate() {
         // ARRANGE
         Kind kind1 = fixtureService.createKind("Miriam", "Müller", LocalDate.of(2000, 1, 1), Geschlecht.WEIBLICH);
@@ -129,6 +138,7 @@ class DuplikatResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
+    @Order(40)
     void markAsFalsePositive() {
         // ARRANGE
         Kind kind1 = fixtureService.createKind("Hannelore", "Müller", LocalDate.of(2000, 1, 1), Geschlecht.WEIBLICH);
@@ -151,6 +161,7 @@ class DuplikatResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
+    @Order(50)
     void merge() {
         // ARRANGE
         String name = TestUtil.getRandomString("DuplikatMergeTest");
@@ -250,6 +261,7 @@ class DuplikatResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
+    @Order(60)
     void merge_escada_and_manual_choose_manual() {
         // ARRANGE
         String name = TestUtil.getRandomString("DuplikatMergeTest");
@@ -294,6 +306,7 @@ class DuplikatResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
+    @Order(70)
     void merge_escada_and_manual_choose_escada() {
         // ARRANGE
         String name = TestUtil.getRandomString("DuplikatMergeTest");

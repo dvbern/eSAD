@@ -1,0 +1,61 @@
+@if (itemTable(); as itemTable) {
+  <table
+    svuiTable
+    [loading]="isLoading()"
+    [totalRows]="itemTable.filteredListSize()"
+    (pageChanged)="itemTable.onPageChanged($event)"
+    [pagination]="itemTable.pagination()"
+  >
+    <!-- col widths -->
+    <colgroup>
+      <col svuiColWidth colWidth="text-large">
+      <col svuiColWidth colWidth="options">
+    </colgroup>
+    <thead>
+    <!-- Headers for sorting -->
+    <tr>
+      <th
+        scope="col"
+        svuiSortable
+        [sortState]="itemTable.findColSortDTO('verantwortlicherArztFullname')"
+        (sort)="itemTable.onColSort($event, 'verantwortlicherArztFullname')"
+      >{{ 'organisation.verantwortlicher.name' | transloco }}
+      </th>
+      <th></th>
+    </tr>
+    <tr>
+      @if (tableFilterForm(); as tableFilterForm) {
+        <th scope="col">
+          <svui-table-filter [columnHeader]="'verantwortlicherArztFullname' | transloco">
+            <input svuiTextInput [formControl]="tableFilterForm.group.controls.verantwortlicherArzt"/>
+          </svui-table-filter>
+        </th>
+        <th scope="col"></th>
+      }
+    </tr>
+    </thead>
+    <tbody>
+      @for (item of itemTable.displayedList(); track item.id) {
+        <tr>
+          <td>
+            <svui-table-link
+              type="text"
+              [myRouterLink]="[item.id]">
+              {{ item.verantwortlicherArztFullname }}
+            </svui-table-link>
+          </td>
+          <td>
+            <svui-collapsible-menu
+              [loading]="false"
+              label="{{ 'global.actionmenu.tooltip' | transloco }}"
+            >
+            </svui-collapsible-menu>
+          </td>
+        </tr>
+
+      } @empty {
+        <tr svui-empty-table-message [message]="'organisation.list.empty' | transloco"></tr>
+      }
+    </tbody>
+  </table>
+}

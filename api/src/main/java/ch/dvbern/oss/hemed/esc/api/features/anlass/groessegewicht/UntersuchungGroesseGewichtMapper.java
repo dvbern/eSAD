@@ -13,8 +13,12 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.json.GroesseGe
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.json.UntersuchungGroesseGewichtDataJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.json.UntersuchungGroesseGewichtJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.json.UntersuchungGroesseGewichtSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhancedMapper;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -26,7 +30,6 @@ public class UntersuchungGroesseGewichtMapper {
     private final UntersuchungService untersuchungService;
     private final UntersuchungGroesseGewichtService untersuchungGroesseGewichtService;
     private final EinladungService einladungService;
-
 
     @NonNull
     public UntersuchungGroesseGewichtDataJson getUntersuchungGroesseGewicht(
@@ -56,9 +59,9 @@ public class UntersuchungGroesseGewichtMapper {
             new UntersuchungGroesseGewichtSaveJson(
                 groesseGewicht.getGroesse(),
                 groesseGewicht.getGewicht(),
-                groesseGewicht.getGroessePerzentile(),
-                groesseGewicht.getGewichtPerzentile(),
-                groesseGewicht.getBmiPerzentile(),
+                SingleValueEnhancedMapper.toJson(PerzentileGroesse.class, groesseGewicht.getGroessePerzentile()),
+                SingleValueEnhancedMapper.toJson(PerzentileGewicht.class, groesseGewicht.getGewichtPerzentile()),
+                SingleValueEnhancedMapper.toJson(PerzentileBmi.class, groesseGewicht.getBmiPerzentile()),
                 groesseGewicht.getBemerkungen(),
                 groesseGewicht.getVersion()
             ),
@@ -81,9 +84,15 @@ public class UntersuchungGroesseGewichtMapper {
         groesseGewicht.setBmi(GroesseGewichtUtil.calculateBmi(
             groesseGewicht.getGroesse(),
             groesseGewicht.getGewicht()));
-        groesseGewicht.setGroessePerzentile(saveJson.getGroessePerzentile());
-        groesseGewicht.setGewichtPerzentile(saveJson.getGewichtPerzentile());
-        groesseGewicht.setBmiPerzentile(saveJson.getBmiPerzentile());
+        groesseGewicht.setGroessePerzentile(SingleValueEnhancedMapper.toEntity(
+            PerzentileGroesse.class,
+            saveJson.getGroessePerzentile()));
+        groesseGewicht.setGewichtPerzentile(SingleValueEnhancedMapper.toEntity(
+            PerzentileGewicht.class,
+            saveJson.getGewichtPerzentile()));
+        groesseGewicht.setBmiPerzentile(SingleValueEnhancedMapper.toEntity(
+            PerzentileBmi.class,
+            saveJson.getBmiPerzentile()));
         groesseGewicht.setBemerkungen(saveJson.getBemerkungen());
         return groesseGewicht;
     }
@@ -102,7 +111,8 @@ public class UntersuchungGroesseGewichtMapper {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
         UntersuchungGroesseGewicht groesseGewicht = untersuchung.getUntersuchungGroesseGewicht();
         UntersuchungGroesseGewicht entity = toEntity(untersuchung, groesseGewicht, saveJson);
-        UntersuchungGroesseGewicht persisted = untersuchungGroesseGewichtService.persistWithOptimisticLocking(entity, saveJson.getVersion());
+        UntersuchungGroesseGewicht persisted =
+            untersuchungGroesseGewichtService.persistWithOptimisticLocking(entity, saveJson.getVersion());
         return toJson(persisted);
     }
 

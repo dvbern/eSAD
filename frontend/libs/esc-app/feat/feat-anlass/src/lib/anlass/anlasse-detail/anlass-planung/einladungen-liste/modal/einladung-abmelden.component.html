@@ -17,7 +17,9 @@
 
     <svui-form-control [label]="'anlass.kinder.abmeldegrund.modal.grund' | transloco"
                        [viewValue]="form.group.controls.grundAbmeldung.value"
-                       [size]="'full'">
+                       [size]="'full'"
+                       data-testid="abmeldung-grund-select"
+    >
       <ng-select
         svuiNgSelect
         bindLabel='dummy'
@@ -35,7 +37,8 @@
 
     <svui-form-control [label]="'anlass.kinder.abmeldegrund.modal.art' | transloco"
                        [viewValue]="form.group.controls.artAbmeldung.value"
-                       [size]="'full'">
+                       [size]="'full'"
+                       data-testid="abmeldung-art-select">
       <ng-select
         svuiNgSelect
         bindLabel='dummy'

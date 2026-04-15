@@ -22,8 +22,7 @@ import jakarta.ws.rs.core.Context;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -35,7 +34,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_SC
 @Tag(name = Tags.TAG_SEARCH)
 @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "SearchResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("SearchResourceMS")
 public class SearchResource {
 
 	private final SearchMapper searchMapper;

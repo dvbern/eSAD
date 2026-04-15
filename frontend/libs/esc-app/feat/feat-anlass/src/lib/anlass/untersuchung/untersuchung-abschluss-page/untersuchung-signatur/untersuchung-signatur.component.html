@@ -1,0 +1,10 @@
+@if (anlassStore.selectedEntity()?.anlassConfig?.showCardAbschlussSignatur) {
+
+  <h3 svuiHeading="formSection" class="mb-3">{{ 'untersuchung.tab.abschluss.card.signatur' | transloco }}</h3>
+
+  <div class="mb-3">{{ statusText() }}</div>
+
+  @if (canEditAbschluss()) {
+    <button svuiButton="secondary" type="submit" (click)="changeSignatur()">{{ buttonText() }}</button>
+  }
+}

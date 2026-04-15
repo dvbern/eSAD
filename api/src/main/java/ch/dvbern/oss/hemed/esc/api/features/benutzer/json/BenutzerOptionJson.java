@@ -4,12 +4,15 @@ import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.json.OrganisationRollenJson;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @JaxDTO
@@ -40,9 +43,15 @@ public class BenutzerOptionJson {
     @NotNull
     @NonNull
     @Schema(required = true)
-    private List<FachRolle> fachrollen;
+    @Valid
+    private List<OrganisationRollenJson> organisationRollen;
+
+    @Nullable
+    @Schema(required = false)
+    @Valid
+    private SystemRollenJson systemRollen;
 
     @NotNull
     @Schema(required = true)
-    private boolean aktiv;
+    private EntityAktivStatus benutzerAktivStatus;
 }

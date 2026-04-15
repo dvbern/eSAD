@@ -1,0 +1,14 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="2026-02-13-1">
+    <sql>
+      -- Add SU_VORABKLAERUNGEN_LESEN to ESC-BERN-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, berechtigung, benutzer_id)
+      VALUES ('6df5b048-ec0c-45a2-ae74-09578e43c76f', '2026-02-13 10:01:50.889111 +00:00', '2026-02-13 10:01:50.889111 +00:00', '11111111-1111-1111-1111-111111111113', '11111111-1111-1111-1111-111111111113', 0, 'SU_VORABKLAERUNGEN_LESEN', '11111111-1111-1111-1111-111111111113');
+
+      -- Add SU_VORABKLAERUNGEN_SCHREIBEN to ESC-BERN-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, berechtigung, benutzer_id)
+      VALUES ('3f47322a-01a7-4b22-9e81-8763bebf992e', '2026-02-13 10:01:50.889111 +00:00', '2026-02-13 10:01:50.889111 +00:00', '11111111-1111-1111-1111-111111111113', '11111111-1111-1111-1111-111111111113', 0, 'SU_VORABKLAERUNGEN_SCHREIBEN', '11111111-1111-1111-1111-111111111113');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

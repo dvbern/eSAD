@@ -158,8 +158,8 @@
               [multiple]="true"
             >
               <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-              @if (benutzerOptionsStore.mpaOrPfpOptions()) {
-                @for (each of benutzerOptionsStore.mpaOrPfpOptions(); track each; ) {
+              @if (benutzerOptionsStore.hilfspersonOptions()) {
+                @for (each of benutzerOptionsStore.hilfspersonOptions(); track each; ) {
                   <ng-option [value]="each.id">
                     {{ each.fullName }}
                   </ng-option>
@@ -202,6 +202,7 @@
           <tr>
             <td>
               <svui-table-link
+                data-testid="redirect-anlass-planung"
                 type="text"
                 [myRouterLink]="this.canViewAnlass() ? [item.id, Path.ANLASS_PLANUNG] : null">
                 {{ anlassTitle(item.data, transloco) }}

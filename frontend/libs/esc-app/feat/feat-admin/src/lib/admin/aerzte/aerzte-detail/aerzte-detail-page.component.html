@@ -68,18 +68,18 @@
 				</svui-form-control>
 
 				<!-- ORGANISATION -->
-				<svui-form-control label="{{ 'arzt.organisation' | transloco }}"
-								   [viewValue]="form.group.controls.organisation.value ? (('Organisation.' + form.group.controls.organisation.value) | transloco) : null">
+				<svui-form-control label="{{ 'arzt.rechtsform' | transloco }}"
+								   [viewValue]="form.group.controls.rechtsform.value ? (('Rechtsform.' + form.group.controls.rechtsform.value) | transloco) : null">
 					<ng-select
 							svuiNgSelect
 							bindLabel='dummy'
 							appendTo="body"
-							[formControl]="form.group.controls.organisation"
+							[formControl]="form.group.controls.rechtsform"
 							[placeholder]="'global.select.bitte-auswaehlen' | transloco"
 					>
-						@for (organisation of organsisationen; track organisation) {
+						@for (organisation of rechtsformen; track organisation) {
 							<ng-option [value]="organisation">
-								{{ 'Organisation.' + organisation | transloco }}
+								{{ 'Rechtsform.' + organisation | transloco }}
 							</ng-option>
 						}
 					</ng-select>
@@ -126,7 +126,7 @@
 				<feat-adresse svuiFormFullWidth
 							  [form]="form.adresseForm"
 							  [mode]="aerzteStore.detailMode()"
-							  [isEscadaObject]="false"/>
+							  [isExternalObject]="false"/>
 
 				<!-- BUTTONS -->
 				<svui-form-buttons

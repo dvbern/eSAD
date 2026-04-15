@@ -1,30 +1,38 @@
-
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
-import {BenutzerJson, FachRolle} from '@dvb/data-access-backend';
-import { BenutzerStore, PageComponent, Path, TenantSettingsStore, TranslatedStringPipe } from '@dvb/feat-shared';
+import {BenutzerJson, EntityAktivStatus, FachRolle} from '@dvb/data-access-backend';
+import {
+  BenutzerEnhancedJson, BenutzerListStore,
+  BenutzerStore,
+  PageComponent,
+  Path,
+  TenantSettingsStore,
+  TranslatedStringPipe
+} from '@dvb/feat-shared';
 import {
   CardComponent,
   CollapsibleMenuComponent,
   ColWidthComponent,
   EmptyTableMessageComponent,
   NgSelectDirective,
+  PageHeaderAddButtonComponent,
   PageHeaderButtonsComponent,
   PageHeaderListSummaryComponent,
   SortableComponent,
   SummaryListItem,
   TableComponent,
   TableFilterComponent,
+  TableLinkComponent,
   TextInputDirective,
 } from '@dvb/ui-components';
 import {TableModel} from '@dvb/util-angular';
-import {hasListEditBerechtigung} from '@dvb/util-shared';
+import {hasBenutzerverwaltungEditBerechtigungen, hasListEditBerechtigung} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbDropdownItem} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 
 import {BenutzerListFilterForm} from './benutzer-list-filter.form';
-import {BenutzerListStore} from './benutzer-list.store';
+import {DatePipe} from "@angular/common";
 
 @Component({
   selector: 'feat-benutzer-list.page',
@@ -46,8 +54,11 @@ import {BenutzerListStore} from './benutzer-list.store';
     CollapsibleMenuComponent,
     CardComponent,
     EmptyTableMessageComponent,
-    ColWidthComponent
-],
+    ColWidthComponent,
+    PageHeaderAddButtonComponent,
+    TableLinkComponent,
+    DatePipe
+  ],
   templateUrl: './benutzer-list-page.component.html',
   styles: ':host { display:block;}',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,10 +73,11 @@ export class BenutzerListPageComponent {
 
   readonly Path = Path;
   readonly rollen = this.tenantSettingsStore.settings()?.fachrollen;
+  benutzerAktivStati = Object.values(EntityAktivStatus);
 
   benutzerTranslated = this.transloco.translate('benutzer.list.summary.benutzer');
 
-  itemTable = new TableModel<BenutzerJson>(
+  itemTable = new TableModel<BenutzerEnhancedJson>(
     {rawListSignal: this.benutzerListStore.entities},
     {frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll'});
   readonly tableFilterForm = new BenutzerListFilterForm({
@@ -92,9 +104,11 @@ export class BenutzerListPageComponent {
   });
 
   canEditActive = this.benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
+  canEditBenutzer = computed(() => this.benutzerStore.createHasRequiredRoleSig(hasBenutzerverwaltungEditBerechtigungen())
+    && this.tenantSettingsStore.benutzerverwaltungInternEnabled());
 
   public isUserActive(benutzerJson: BenutzerJson): boolean {
-    return benutzerJson.data.aktiv;
+    return benutzerJson.data.benutzerAktivStatus === EntityAktivStatus.AKTIV;
   }
 
   public toggleActive(item: BenutzerJson): void {

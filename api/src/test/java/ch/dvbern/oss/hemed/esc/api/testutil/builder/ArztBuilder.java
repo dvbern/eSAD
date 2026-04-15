@@ -9,15 +9,14 @@ import ch.dvbern.oss.hemed.esc.api.features.arzt.ArztMapper;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.json.ArztJson;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Fachrichtung;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.HpvTeilnahme;
-import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Organisation;
+import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Rechtsform;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.ArztJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ArztJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ArztSaveJsonSpec;
 import lombok.RequiredArgsConstructor;
-import org.assertj.core.util.CanIgnoreReturnValue;
-import org.bouncycastle.math.ec.AbstractECLookupTable;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -36,7 +35,7 @@ public class ArztBuilder {
         return new Arzt(
             null,
             Fachrichtung.ANDERES,
-            Organisation.NATUERLICHE_PERSON,
+            Rechtsform.NATUERLICHE_PERSON,
             null,
             "NameArztDefault",
             AdresseBuilder.defaultAdresse(),
@@ -111,8 +110,8 @@ public class ArztBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public ArztBuilder withOrganisation(@NonNull Organisation organisation) {
-        this.arzt.setOrganisation(organisation);
+    public ArztBuilder withOrganisation(@NonNull Rechtsform rechtsform) {
+        this.arzt.setRechtsform(rechtsform);
         return this;
     }
 

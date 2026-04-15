@@ -1,0 +1,19 @@
+{
+  "anlass.detail.infoMPA": "Info PFP",
+  "anlass.detail.mpa": "PFP",
+  "anlass.mpa": "PFP",
+  "anlass.summary.mpa": "PFP:",
+  "anlassconfig.label.impfungenMassnahmeBeratungMPA": "Impfmassnahme Beratung PFP",
+  "anlassconfig.label.showMassnahmenBeratungMpa": "Beratung PFP",
+  "global.tooltip.icon.mpa": "PFP",
+  "kind.dossier.mpa": "PFP",
+  "kinder.filter.erweitert.anlass.mpa": "Anlass PFP",
+  "kinder.filter.erweitert.verantwortliche.mpa": "Zuständige/r PFP Kind",
+  "kinder.filter.erweitert.verantwortliche.mpa.unassigned": "Keine PFP zugewiesen",
+  "NaechsteStation.MPA": "PFP",
+  "publicinfo.heading": "Öffentliche Informationen zur eSAD Applikation für Winterthur",
+  "schule.zustaendigMPA": "PFP",
+  "untersuchung.tab.daten.untersuchung.mpa": "PFP",
+  "untersuchung.tab.massnahmen.beratung.mpa": "Beratung PFP",
+  "untersuchung.tab.triage.triageMpa": "Triage PFP"
+}

@@ -1,14 +1,22 @@
 package ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure;
 
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.UUID;
 
+import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerRepo;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSetting;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.features.FeatureEnabledSetting;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.TenantSettingBuilder;
+import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
@@ -16,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 @QuarkusTest
 @DisplayNameGeneration(ReplaceUnderscores.class)
@@ -26,9 +35,20 @@ class EnsureBenutzerHelperServiceTest {
     private final BenutzerRepo benutzerRepo;
     private final TenantProducer tenantProducer;
 
+    private TenantSettingsService tenantSettingsServiceMock;
+
     @BeforeEach
     void setUp() {
         tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantSettingsServiceMock = Mockito.mock(TenantSettingsService.class);
+        ConfigService configServiceMock = Mockito.mock(ConfigService.class);
+        QuarkusMock.installMockForType(tenantSettingsServiceMock, TenantSettingsService.class);
+        QuarkusMock.installMockForType(configServiceMock, ConfigService.class);
+        // default: ignoreFachrollenFromKeycloak is disabled (the old default behavior)
+        TenantSetting tenantSetting = TenantSettingBuilder.create(builder ->
+            builder.withBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature(FeatureEnabledSetting.DISABLED));
+        Mockito.when(tenantSettingsServiceMock.getTenantSetting()).thenReturn(tenantSetting);
+        Mockito.when(configServiceMock.getEnvironment()).thenReturn(DeploymentEnvironment.UNIT_TEST);
     }
 
     @Test
@@ -77,6 +97,114 @@ class EnsureBenutzerHelperServiceTest {
         Assertions.assertThat(updatedUser.get().getTelefon()).isEqualTo(NormalizedPhoneNumber.parse("+41 61 123 45 90"));
         Assertions.assertThat(updatedUser.get().getTitel()).isEqualTo("Herr");
 
+    }
+
+    @Test
+    void updateExistingUser_ignoreFachrollenFromKeycloak_enabled_does_not_sync_fachRollen() {
+        // ARRANGE: Create a user with SYSTEM_ADMIN FachRolle
+        UUID subjectId = UUID.randomUUID();
+        var testemail = "ignfr-" + subjectId.toString().substring(0, 8) + "@example.com";
+        JsonWebTokenDataDTO jwtData = new JsonWebTokenDataDTO(
+            null,
+            subjectId,
+            testemail,
+            "testcreate",
+            "testcreate",
+            EmailAddress.fromString(testemail),
+            "issuer",
+            "+41 76 123 45 56",
+            "+41 61 123 45 56",
+            "Dr. Med",
+            TenantEnum.BS.name(),
+            Set.of(FachRolle.SYSTEM_ADMIN)
+        );
+        ensureBenutzerHelperService.createNewUserFromToken(jwtData);
+        var storedUser = benutzerRepo.findByEmail(EmailAddress.fromString(testemail));
+        Assertions.assertThat(storedUser).isPresent();
+        var userToUpdate = storedUser.get();
+        EnumSet<FachRolle> originalFachRollen = userToUpdate.getFachRollen();
+        Assertions.assertThat(originalFachRollen).contains(FachRolle.SYSTEM_ADMIN);
+
+        // Now enable ignoreFachrollenFromKeycloak
+        TenantSetting tenantSettingIgnore = TenantSettingBuilder.create(builder ->
+            builder.withBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature(FeatureEnabledSetting.ENABLED));
+        Mockito.when(tenantSettingsServiceMock.getTenantSetting()).thenReturn(tenantSettingIgnore);
+
+        // ACT: Update with a different FachRolle (MPA), but ignoreFachrollenFromKeycloak=true
+        JsonWebTokenDataDTO jwtDataChanged = new JsonWebTokenDataDTO(
+            null,
+            subjectId,
+            testemail,
+            "changed",
+            "changed",
+            EmailAddress.fromString(testemail),
+            "issuer",
+            "+41 76 123 45 56",
+            "+41 61 123 45 90",
+            "Herr",
+            TenantEnum.BS.name(),
+            Set.of(FachRolle.MPA)
+        );
+        ensureBenutzerHelperService.updateExistingUser(userToUpdate.getId(), jwtDataChanged);
+
+        // ASSERT: User data was updated but FachRollen were NOT changed (still SYSTEM_ADMIN)
+        var updatedUser = benutzerRepo.findByEmail(EmailAddress.fromString(testemail));
+        Assertions.assertThat(updatedUser).isPresent();
+        Assertions.assertThat(updatedUser.get().getVorname()).isEqualTo("changed");
+        Assertions.assertThat(updatedUser.get().getTitel()).isEqualTo("Herr");
+        // FachRollen should remain SYSTEM_ADMIN (not changed to MPA from token)
+        Assertions.assertThat(updatedUser.get().getFachRollen()).contains(FachRolle.SYSTEM_ADMIN);
+        Assertions.assertThat(updatedUser.get().getFachRollen()).doesNotContain(FachRolle.MPA);
+    }
+
+    @Test
+    void updateExistingUser_ignoreFachrollenFromKeycloak_disabled_syncs_fachRollen() {
+        // ARRANGE: Create a user with SYSTEM_ADMIN FachRolle
+        UUID subjectId = UUID.randomUUID();
+        var testemail = "syncfr-" + subjectId.toString().substring(0, 8) + "@example.com";
+        JsonWebTokenDataDTO jwtData = new JsonWebTokenDataDTO(
+            null,
+            subjectId,
+            testemail,
+            "testcreate",
+            "testcreate",
+            EmailAddress.fromString(testemail),
+            "issuer",
+            "+41 76 123 45 56",
+            "+41 61 123 45 56",
+            "Dr. Med",
+            TenantEnum.BS.name(),
+            Set.of(FachRolle.SYSTEM_ADMIN)
+        );
+        ensureBenutzerHelperService.createNewUserFromToken(jwtData);
+        var storedUser = benutzerRepo.findByEmail(EmailAddress.fromString(testemail));
+        Assertions.assertThat(storedUser).isPresent();
+
+        // Keep ignoreFachrollenFromKeycloak disabled (default in setUp)
+
+        // ACT: Update with a different FachRolle (MPA)
+        var userToUpdate = storedUser.get();
+        JsonWebTokenDataDTO jwtDataChanged = new JsonWebTokenDataDTO(
+            null,
+            subjectId,
+            testemail,
+            "changed",
+            "changed",
+            EmailAddress.fromString(testemail),
+            "issuer",
+            "+41 76 123 45 56",
+            "+41 61 123 45 90",
+            "Herr",
+            TenantEnum.BS.name(),
+            Set.of(FachRolle.MPA)
+        );
+        ensureBenutzerHelperService.updateExistingUser(userToUpdate.getId(), jwtDataChanged);
+
+        // ASSERT: FachRollen WERE changed to MPA
+        var updatedUser = benutzerRepo.findByEmail(EmailAddress.fromString(testemail));
+        Assertions.assertThat(updatedUser).isPresent();
+        Assertions.assertThat(updatedUser.get().getFachRollen()).contains(FachRolle.MPA);
+        Assertions.assertThat(updatedUser.get().getFachRollen()).doesNotContain(FachRolle.SYSTEM_ADMIN);
     }
 
     /**

@@ -30,7 +30,7 @@ import { CharacterCountComponent } from './textarea-counter/textarea-counter.com
   ],
 })
 export class TextareaDirective extends ValidatedInputWithIdDirective implements OnInit, AfterViewInit {
-  @HostBinding('class.form-control') private readonly bootstrapClass = true;
+  @HostBinding('class.form-control') readonly bootstrapClass = true;
   readonly defaultMinHeightPx = 60;
   readonly defaultMaxHeightPx = 500;
   readonly charCountMax = input<number>();
@@ -88,10 +88,14 @@ export class TextareaDirective extends ValidatedInputWithIdDirective implements 
     // do not pass the inputs here directly because it does not work properly -> use effect
   }
 
-  @HostListener('keyup', ['$event. target'])
-  @HostListener('input', ['$event. target'])
-  @HostListener('change', ['$event. target'])
-  onKeyup(target: HTMLTextAreaElement) {
+  @HostListener('keyup', ['$event'])
+  @HostListener('input', ['$event'])
+  @HostListener('change', ['$event'])
+  onKeyup(event: Event) {
+    const target = event.target as HTMLTextAreaElement | null;
+    if (!target) {
+      return;
+    }
     this.characterCount$.set(target.value.length);
   }
 

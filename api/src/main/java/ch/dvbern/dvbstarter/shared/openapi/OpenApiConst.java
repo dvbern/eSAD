@@ -73,6 +73,14 @@ public class OpenApiConst {
         public static final String TAG_UNTERSUCHUNG_SEHEN = "UntersuchungSehen";
         public static final String TAG_UNTERSUCHUNG_TRIAGE = "UntersuchungTriage";
         public static final String TAG_UNTERSUCHUNG_LAEUSEKONTROLLE = "UntersuchungLaeusekontrolle";
+        public static final String TAG_UNTERSUCHUNG_SPRACHE = "UntersuchungSprache";
+        public static final String TAG_UNTERSUCHUNG_BEWEGUNGSAPPARAT = "UntersuchungBewegungsapparat";
+        public static final String TAG_UNTERSUCHUNG_SCHULRELEVANTE_BEEINTRAECHTIGUNG = "UntersuchungSchulrelevanteBeeintraechtigung";
+        public static final String TAG_UNTERSUCHUNG_ABSCHLUSS = "UntersuchungAbschluss";
+        public static final String TAG_UNTERSUCHUNG_VORABKLAERUNGEN = "UntersuchungVorabklaerungen";
+        public static final String TAG_UNTERSUCHUNG_SIGNATUR = "UntersuchungSignatur";
+        public static final String TAG_ARCHIVDOKUMENT = "Archivdokument";
+        public static final String TAG_ORGANISATION = "Organisation";
     }
 
     @UtilityClass

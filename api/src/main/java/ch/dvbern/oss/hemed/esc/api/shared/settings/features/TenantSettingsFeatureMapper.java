@@ -37,7 +37,16 @@ public class TenantSettingsFeatureMapper {
             toTenantSettingFeatureState(featureSettings.getEsadIdFeature()),
             toTenantSettingFeatureState(featureSettings.getLaenderCodeFeature()),
             toTenantSettingFeatureState(featureSettings.getMobileScannerFeature()),
-            toTenantSettingFeatureState(featureSettings.getMassenimportFeature())
+            toTenantSettingFeatureState(featureSettings.getMassenimportFeature()),
+            toTenantSettingFeatureState(featureSettings.getMassenbriefFeature()),
+            toTenantSettingFeatureState(featureSettings.getNichtGeprueftGrundFeature()),
+            toTenantSettingFeatureState(featureSettings.getArztListeFeature()),
+            toTenantSettingFeatureState(featureSettings.getAdHocImpfstoffChargenFeature()),
+            toTenantSettingFeatureState(featureSettings.getFooterFeature()),
+            toTenantSettingFeatureState(featureSettings.getBenutzerverwaltungInternFeature()),
+            toTenantSettingFeatureState(featureSettings.getBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature()),
+            toTenantSettingFeatureState(featureSettings.getArchivierungFeature()),
+            toTenantSettingFeatureState(featureSettings.getZentraleOrganisationFeature())
         );
     }
 
@@ -55,10 +64,21 @@ public class TenantSettingsFeatureMapper {
 
     public void toEntity(
         @Valid @NotNull @NonNull TenantSettingFeatures existingFeatures,
-        @NotNull @NonNull @Valid TenantSettingFeaturesJson features) {
+        @NotNull @NonNull @Valid TenantSettingFeaturesJson features
+    ) {
         existingFeatures.setEsadIdFeature(features.getEsadIdFeature().getFeatureEnabled());
         existingFeatures.setLaenderCodeFeature(features.getLaenderCodeFeature().getFeatureEnabled());
         existingFeatures.setMobileScannerFeature(features.getMobileScannerFeature().getFeatureEnabled());
         existingFeatures.setMassenimportFeature(features.getMassenimportFeature().getFeatureEnabled());
+        existingFeatures.setMassenbriefFeature(features.getMassenbriefFeature().getFeatureEnabled());
+        existingFeatures.setNichtGeprueftGrundFeature(features.getNichtGeprueftGrundFeature().getFeatureEnabled());
+        existingFeatures.setArztListeFeature(features.getArztListeFeature().getFeatureEnabled());
+        existingFeatures.setAdHocImpfstoffChargenFeature(features.getAdHocImpfstoffChargenFeature()
+            .getFeatureEnabled());
+        existingFeatures.setFooterFeature(features.getFooterFeature().getFeatureEnabled());
+        existingFeatures.setBenutzerverwaltungInternFeature(features.getBenutzerverwaltungInternFeature().getFeatureEnabled());
+        existingFeatures.setBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature(features.getBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature().getFeatureEnabled());
+        existingFeatures.setArchivierungFeature(features.getArchivierungFeature().getFeatureEnabled());
+        existingFeatures.setZentraleOrganisationFeature(features.getZentraleOrganisationFeature().getFeatureEnabled());
     }
 }

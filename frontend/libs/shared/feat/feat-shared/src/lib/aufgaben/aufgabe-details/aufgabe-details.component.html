@@ -53,9 +53,8 @@
             [placeholder]="'global.select.bitte-auswaehlen' | transloco"
             [compareWith]="compareBenutzer"
           >
-            @for (
-              benutzer of benutzerOptionsStore.entitiesIncluding(store.selectedEntity()?.data?.empfaenger); track benutzer.id) {
-              <ng-option [value]="benutzer" [disabled]="!benutzer.aktiv">
+            @for (benutzer of benutzerOptionsStore.entitiesIncluding(store.selectedEntity()?.data?.empfaenger); track benutzer.id) {
+              <ng-option [value]="benutzer" [disabled]="benutzer.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
                 {{ benutzer.fullName }}
               </ng-option>
             }
@@ -74,8 +73,7 @@
             [placeholder]="'global.select.bitte-auswaehlen' | transloco"
             [compareWith]="compareBenutzer"
           >
-            @for (
-              benutzer of benutzerOptionsStore.entitiesIncluding(store.selectedEntity()?.data?.userErfasst); track benutzer.id) {
+            @for (benutzer of benutzerOptionsStore.entitiesIncluding(store.selectedEntity()?.data?.userErfasst); track benutzer.id) {
               <ng-option [value]="benutzer">
                 {{ benutzer.fullName }}
               </ng-option>
@@ -146,7 +144,7 @@
           >
             <div class="subBadges">
               @for (label of inaktivLabels(); track label.id) {
-                  <svui-badge>{{ label.data.name | translatedStringPipe }}</svui-badge>
+                <svui-badge>{{ label.data.name | translatedStringPipe }}</svui-badge>
               }
             </div>
           </svui-form-control>

@@ -1,0 +1,66 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="hefr (generated)" id="1773389029459-1">
+        <createTable tableName="dossierqueue">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="dossierqueuePK"/>
+            </column>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usererstellt" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usermutiert" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dossierid" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dossierqueuetyp" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="errorcount" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lasterror" type="VARCHAR(32768)"/>
+            <column name="status" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestampresult" type="TIMESTAMP(6) WITH TIME ZONE"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1773389029459-2">
+        <createTable tableName="dossierqueue_aud">
+            <column name="id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="usererstellt" type="VARCHAR(255)"/>
+            <column name="usermutiert" type="VARCHAR(255)"/>
+            <column name="dossierid" type="UUID"/>
+            <column name="dossierqueuetyp" type="VARCHAR(30)"/>
+            <column name="errorcount" type="INTEGER"/>
+            <column name="lasterror" type="VARCHAR(32768)"/>
+            <column name="status" type="VARCHAR(30)"/>
+            <column name="timestampresult" type="TIMESTAMP(6) WITH TIME ZONE"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1773389029459-3">
+        <addPrimaryKey columnNames="rev, id" constraintName="dossierqueue_audPK" tableName="dossierqueue_aud"/>
+    </changeSet>
+    <changeSet author="hefr (generated)" id="1773389029459-4">
+        <addForeignKeyConstraint baseColumnNames="rev" baseTableName="dossierqueue_aud" constraintName="FK3rhdydk3r5qbrlc73ogo2y2i4" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

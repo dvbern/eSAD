@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -9,7 +10,8 @@ public class BMIBeurteilungCsvColumn extends AbstractCsvColumn {
 
     public BMIBeurteilungCsvColumn(
         @NonNull CsvColumnConfig config,
-        @Nullable String overrideHeader) {
+        @Nullable String overrideHeader
+    ) {
         super(config, overrideHeader);
     }
 
@@ -19,13 +21,15 @@ public class BMIBeurteilungCsvColumn extends AbstractCsvColumn {
         return ExtractorForCsvUtil.extractUntersuchungGroesseGewicht(
             einladung,
             untersuchungGroesseGewicht -> {
-                if (untersuchungGroesseGewicht.getBmiPerzentile() == null) {
+                PerzentileBmi resultat =
+                    ValueEnhancedUtil.getEnumValueOrNull(untersuchungGroesseGewicht.getBmiPerzentile(), PerzentileBmi.class);
+                if (resultat == null) {
                     return "";
                 }
                 if (!config.forSpssReport()) {
-                    return config.tl().translateValue(untersuchungGroesseGewicht.getBmiPerzentile());
+                    return config.tl().translateValue(resultat);
                 }
-                return switch (untersuchungGroesseGewicht.getBmiPerzentile()) {
+                return switch (resultat) {
                     case PerzentileBmi.NORMAL -> "1";
                     case PerzentileBmi.PERZENTILE_TIEF -> "2";
                     case PerzentileBmi.PERZENTILE_HOCH -> "3";

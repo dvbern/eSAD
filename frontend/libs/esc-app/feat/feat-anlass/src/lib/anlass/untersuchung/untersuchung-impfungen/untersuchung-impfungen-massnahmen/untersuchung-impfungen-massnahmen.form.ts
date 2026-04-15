@@ -13,7 +13,7 @@ import { AppValidators, BaseForm } from '@dvb/util-angular';
 import { ensureProps, Nullish, requireValue, trimToUndefined } from '@dvb/util-shared';
 import { distinctUntilChanged } from 'rxjs';
 import { markAllMultiCheckboxesAsTouched } from '../../untersuchung.util';
-import {BackendEntityId, requireValidBackendEntityId} from "@dvb/data-access-types";
+import {BackendEntityId} from "@dvb/data-access-types";
 
 type Config = {
   fb: NonNullableFormBuilder;
@@ -72,17 +72,25 @@ export class UntersuchungImpfungenMassnahmenForm extends BaseForm<
     super(() => makeForm(config));
   }
 
-  resetForm(value: UntersuchungImpfungenMassnahmenSaveJson | undefined): void {
+  resetForm(
+    value: UntersuchungImpfungenMassnahmenSaveJson | undefined,
+    anlassConfig: AnlassConfigJson | undefined
+  ): void {
     this.group.reset(value);
-    this.resetEmpfehlung(value);
+    this.resetEmpfehlung(value, anlassConfig);
   }
 
-  private resetEmpfehlung(value: UntersuchungImpfungenMassnahmenSaveJson | Nullish): void {
+  private resetEmpfehlung(
+    value: UntersuchungImpfungenMassnahmenSaveJson | Nullish,
+    anlassConfig: AnlassConfigJson | undefined
+  ): void {
     this.group.controls.empfehlungArray.clear();
-    for (const resultat of Object.values(ImpfungenMassnahmenEmpfehlung)) {
-      const subForm = makeEmpfehlungSubForm(this.config.fb, resultat);
-      subForm.controls.isChecked.reset(!!value?.empfehlung?.find(fv => fv === resultat));
-      this.group.controls.empfehlungArray.push(subForm);
+    if (anlassConfig?.data?.untersuchungImpfungEmpfehlungValues) {
+      for (const resultat of anlassConfig.data.untersuchungImpfungEmpfehlungValues) {
+        const subForm = makeEmpfehlungSubForm(this.config.fb, resultat);
+        subForm.controls.isChecked.reset(!!value?.empfehlung?.find(fv => fv === resultat));
+        this.group.controls.empfehlungArray.push(subForm);
+      }
     }
   }
 

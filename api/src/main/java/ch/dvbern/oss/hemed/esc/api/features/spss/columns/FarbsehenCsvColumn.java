@@ -1,6 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -16,15 +18,15 @@ public class FarbsehenCsvColumn extends AbstractCsvColumn {
         return ExtractorForCsvUtil.extractUntersuchungSehen(
             einladung,
             sehen -> {
-                if (sehen.getFarbsehen() == null) {
+                FarbsehenResultat resultat =
+                    ValueEnhancedUtil.getEnumValueOrNull(sehen.getFarbsehen(), FarbsehenResultat.class);
+                if (resultat == null) {
                     return "";
                 }
-
                 if (!config.forSpssReport()) {
-                    return config.tl().translateValue(sehen.getFarbsehen());
+                    return config.tl().translateValue(resultat);
                 }
-
-                return switch (sehen.getFarbsehen()) {
+                return switch (resultat) {
                     case NORMAL -> "1";
                     case PATHOLOGISCH -> "2";
                     case UNSICHER -> "3";

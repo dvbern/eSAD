@@ -26,7 +26,7 @@ const ErrorMessageTranslations: TranslationMap<typeof AppValidatorKeys> | Record
   nonNegativeNumber: 'ui.validation-error.nonNegativeNumber',
   nonPastDates: 'ui.validation-error.nonPastDates',
   numberOrNumericChars: 'ui.validation-error.numberOrNumericChars',
-  oneDecimalPlace: "ui.validation-error.oneDecimalPlace",
+  oneDecimalPlace: 'ui.validation-error.oneDecimalPlace',
   ort: 'ui.validation-error.ort',
   pattern: 'ui.validation-error.pattern',
   phone: 'ui.validation-error.phone',
@@ -37,11 +37,13 @@ const ErrorMessageTranslations: TranslationMap<typeof AppValidatorKeys> | Record
   textareaMaxLength: 'ui.validation-error.textareaMaxLength',
   unique: 'ui.validation-error.unique',
   zeitVonAfterZeitBis: 'ui.validation-error.zeitVonAfterZeitBis',
-  zeroDecimalPlaces: "ui.validation-error.zeroDecimalPlaces",
-  changeSchuljahr: "ui.validation-error.changeSchuljahr",
-  einmalAuswahlKrankheiten: "ui.validation-error.einmalAuswahlKrankheiten",
-  datumVonAfterDatumBis: "ui.validation-error.datumVonAfterDatumBis",
-  dateRangeIsMaximumNumberOfYears: "ui.validation-error.dateRangeIsMaximumNumberOfYears"
+  zeroDecimalPlaces: 'ui.validation-error.zeroDecimalPlaces',
+  changeSchuljahr: 'ui.validation-error.changeSchuljahr',
+  einmalAuswahlKrankheiten: 'ui.validation-error.einmalAuswahlKrankheiten',
+  datumBisAfterDatumVon: 'ui.validation-error.datumBisAfterDatumVon',
+  datumBisAtleastDatumVonOrAfter: 'ui.validation-error.datumBisAtleastDatumVonOrAfter',
+  dateRangeIsMaximumNumberOfYears: 'ui.validation-error.dateRangeIsMaximumNumberOfYears',
+  multipleEmails: 'ui.validation-error.multipleEmails',
 };
 
 function translationIsDefined(messageKey: string): messageKey is keyof typeof ErrorMessageTranslations {

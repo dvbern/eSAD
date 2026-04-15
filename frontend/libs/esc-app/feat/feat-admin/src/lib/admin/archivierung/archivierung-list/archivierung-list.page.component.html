@@ -1,0 +1,29 @@
+<feat-page [heading]="'archiv.list.page.title' | transloco"
+           [backLink]="{label: 'global.back' | transloco, routerLink: '/' + Path.ADMIN}">
+
+  <svui-card>
+    <ul ngbNav style="margin-bottom: 2rem;">
+
+      <li ngbNavItem>
+        <button class="nav-link"
+                [routerLink]="Path.ARCHIVIERUNG_OFFEN"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'archiv.tab.offen' | transloco }}
+        </button>
+      </li>
+
+      <li ngbNavItem>
+        <button class="nav-link"
+                [routerLink]="Path.ARCHIVIERUNG_ABGESCHLOSSEN"
+                [routerLinkActive]="'active'"
+                aria-current="page">{{ 'archiv.tab.abgeschlossen' | transloco }}
+        </button>
+      </li>
+
+    </ul>
+
+    <router-outlet/>
+
+  </svui-card>
+
+</feat-page>

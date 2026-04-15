@@ -44,7 +44,8 @@
                 [icon]="'aufgaben'"
                 [tooltip]="'global.tooltip.aufgaben' | transloco"
                 [badgeContent]="aufgabenStore.numOfOffeneFaelligeAufgaben()"
-                [routerLink]="'/' + Path.AUFGABEN">
+                [routerLink]="'/' + Path.AUFGABEN"
+        data-testid="button-aufgaben-list">
         </button>
       }
 
@@ -57,6 +58,26 @@
           [label]="benutzerStore.requireBenutzer().fullName">
           <button ngbDropdownItem (click)="logout()">{{ 'shared.header.menu.logout' | transloco }}</button>
 
+          @if (tenantSettingsStore.supportedLanguages().length > 1) {
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-item-text d-flex align-items-center">
+              <!-- LANGUAGE SWITCH -->
+                <span> {{ 'shared.header.menu.language' | transloco }} </span>
+                <svui-icon [useCase]="'language'" class="ms-1"></svui-icon>
+                <span class="me-3">:</span>
+                <div>
+                  @for (lang of tenantSettingsStore.supportedLanguages(); track lang) {
+                    <button class="btn btn-link p-0 me-2 align-baseline text-reset"
+                            type="button"
+                            [style.text-decoration]="languageStore.activeLocale() === lang.toLowerCase() ? 'underline' : 'none'"
+                            [style.text-underline-offset]="'4px'"
+                            (click)="switchActiveLanguage(lang)">
+                      {{ lang }}
+                    </button>
+                  }
+              </div>
+            </div>
+          }
           <!-- FachRolle(n) Section -->
           <div class="dropdown-divider"></div>
           <div class="dropdown-item-text py-2" style="max-width: 340px">
@@ -91,9 +112,18 @@
 
   <ng-content select="svui-page-header-add-button" ngProjectAs="svui-page-header-add-button"/>
 
-
   <!-- MAIN CONTENT -->
   <ng-content/>
+
+  <!-- FOOTER -->
+  @if(showFooter() && tenantSettingsStore.footerEnabled()){
+    <feat-page-tenant-footer
+      class="svui-page-footer-content"
+      [tenant]="tenantSettingsStore.settings()?.tenant"
+    >
+    </feat-page-tenant-footer>
+  }
+
 </svui-page-layout>
 
 
@@ -112,6 +142,20 @@
           <h3>{{ 'shared.header.menu.menu' | transloco }}</h3>
         </li>
         <ng-container *ngTemplateOutlet="navcontent"/>
+
+        <!-- LANGUAGE SWITCH -->
+        <li class="nav-item mt-5">
+          <h3>{{ 'shared.header.menu.language' | transloco }}</h3>
+        </li>
+        @for (lang of tenantSettingsStore.supportedLanguages(); track lang) {
+          <li class="nav-item">
+            <button class="nav-link"
+                    [class.active]="languageStore.activeLocale() === lang.toLowerCase()"
+                    (click)="switchActiveLanguage(lang)">
+              {{ lang }}
+            </button>
+          </li>
+        }
 
         <!--BENUTZER -->
         @if (benutzerStore.isLoggedIn()) {

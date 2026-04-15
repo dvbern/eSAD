@@ -1,0 +1,10 @@
+<feat-page [heading]="pageTitle() | transloco"
+           [backLink]="{label: 'global.back' | transloco, routerLink: getBackRouterLink()}">
+  <svui-card>
+      <feat-shared-benutzer-details
+        (saveAction)="navigateToList()"
+        [organisation]="organisation()"
+        [canEditBenutzer]="canEditMitglieder()"
+        [alwaysCreateNewOrganisation]="true" />
+  </svui-card>
+</feat-page>

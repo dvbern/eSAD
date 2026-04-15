@@ -27,6 +27,10 @@ public final class BerechtigungName {
     public static final String SU_MASSNAHMEN_SCHREIBEN = "SU_MASSNAHMEN_SCHREIBEN";
     public static final String SU_LAEUSE_LESEN = "SU_LAEUSE_LESEN";
     public static final String SU_LAEUSE_SCHREIBEN = "SU_LAEUSE_SCHREIBEN";
+    public static final String SU_ABSCHLUSS_LESEN = "SU_ABSCHLUSS_LESEN";
+    public static final String SU_ABSCHLUSS_SCHREIBEN = "SU_ABSCHLUSS_SCHREIBEN";
+    public static final String SU_VORABKLAERUNGEN_LESEN = "SU_VORABKLAERUNGEN_LESEN";
+    public static final String SU_VORABKLAERUNGEN_SCHREIBEN = "SU_VORABKLAERUNGEN_SCHREIBEN";
     public static final String KINDER_LESEN_MEDIZINISCH = "KINDER_LESEN_MEDIZINISCH";
     public static final String KINDER_LESEN_NICHT_MEDIZINISCH = "KINDER_LESEN_NICHT_MEDIZINISCH";
     public static final String KINDER_SCHREIBEN_MEDIZINISCH = "KINDER_SCHREIBEN_MEDIZINISCH";
@@ -64,6 +68,11 @@ public final class BerechtigungName {
     public static final String ANLASSLISTE_LESEN_LAEUSE = "ANLASSLISTE_LESEN_LAEUSE";
     public static final String ANLASSPLANUNG_LESEN_LAEUSE = "ANLASSPLANUNG_LESEN_LAEUSE";
     public static final String ANLASSPLANUNG_SCHREIBEN_LAEUSE = "ANLASSPLANUNG_SCHREIBEN_LAEUSE";
+    public static final String BENUTZER_BERECHTIGUNGEN_LESEN = "BENUTZER_BERECHTIGUNGEN_LESEN";
+    public static final String BENUTZER_BERECHTIGUNGEN_SCHREIBEN = "BENUTZER_BERECHTIGUNGEN_SCHREIBEN";
+    public static final String ARCHIVIERUNG = "ARCHIVIERUNG";
+    public static final String ORGANISATION_VERWALTEN_LESEN = "ORGANISATION_VERWALTEN_LESEN";
+    public static final String ORGANISATION_VERWALTEN_SCHREIBEN = "ORGANISATION_VERWALTEN_SCHREIBEN";
 
     private BerechtigungName() {
         //constants only

@@ -14,19 +14,21 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenAugeEinzelnResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.SehenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftretenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBeurteilungBuilder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -54,11 +56,75 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
-                .withBrilleLinsen(brilleLinsen));
+                .withBrilleLinsen(brilleLinsen, null));
         sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenBrilleLinsen(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
-				validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
+            validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
+        boolean result = validator.isEntityValid(sehen);
+        // ASSERT
+        assertThat(result).isEqualTo(expectedValid);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "REQUIRED   ,       ,false",
+        "REQUIRED   ,NORMAL ,true",
+        "OPTIONAL   ,       ,true",
+        "OPTIONAL   ,NORMAL ,true",
+        "NOT_VISIBLE,       ,true",
+        "NOT_VISIBLE,NORMAL ,true",
+    })
+    void validateSehenFernvisusLinks(
+        @NonNull RequirementSetting requirementSetting,
+        @Nullable DistanzSehenAugeEinzelnResultat fernvisusAugeLinks,
+        boolean expectedValid
+    ) {
+        // ARRANGE
+        UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(builder -> {
+        });
+        sehen.getUntersuchung()
+            .getEinladung()
+            .getAnlass()
+            .getAnlassConfig()
+            .setSehenFernvisusAugeEinzeln(requirementSetting);
+        sehen.setFernvisusAugeLinks(SingleValueEnhanced.of(fernvisusAugeLinks, null));
+        sehen.setFernvisusAugeRechts(SingleValueEnhanced.of(fernvisusAugeLinks, null));
+        // ACT
+        CheckUntersuchungSehenBeurteilungPresentIfReqValidator
+            validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
+        boolean result = validator.isEntityValid(sehen);
+        // ASSERT
+        assertThat(result).isEqualTo(expectedValid);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "REQUIRED   ,       ,false",
+        "REQUIRED   ,NORMAL ,true",
+        "OPTIONAL   ,       ,true",
+        "OPTIONAL   ,NORMAL ,true",
+        "NOT_VISIBLE,       ,true",
+        "NOT_VISIBLE,NORMAL ,true",
+    })
+    void validateSehenFernvisusRechts(
+        @NonNull RequirementSetting requirementSetting,
+        @Nullable DistanzSehenAugeEinzelnResultat fernvisusAugeRechts,
+        boolean expectedValid
+    ) {
+        // ARRANGE
+        UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(builder -> {
+        });
+        sehen.getUntersuchung()
+            .getEinladung()
+            .getAnlass()
+            .getAnlassConfig()
+            .setSehenFernvisusAugeEinzeln(requirementSetting);
+        sehen.setFernvisusAugeRechts(SingleValueEnhanced.of(fernvisusAugeRechts, null));
+        sehen.setFernvisusAugeLinks(SingleValueEnhanced.of(fernvisusAugeRechts, null));
+        // ACT
+        CheckUntersuchungSehenBeurteilungPresentIfReqValidator
+            validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
         boolean result = validator.isEntityValid(sehen);
         // ASSERT
         assertThat(result).isEqualTo(expectedValid);
@@ -81,11 +147,11 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
-                .withFarbsehen(farbsehen));
+                .withFarbsehen(farbsehen, null));
         sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenFarbsehen(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
-				validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
+            validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
         boolean result = validator.isEntityValid(sehen);
         // ASSERT
         assertThat(result).isEqualTo(expectedValid);
@@ -108,11 +174,11 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
-                .withVerwendeteTafel(verwendeteTafel));
+                .withVerwendeteTafel(verwendeteTafel, null));
         sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenTafel(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
-				validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
+            validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
         boolean result = validator.isEntityValid(sehen);
         // ASSERT
         assertThat(result).isEqualTo(expectedValid);
@@ -167,13 +233,13 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
                 .toList();
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
-                .withFernvisus(distanzSehenResultat)
+                .withFernvisus(distanzSehenResultat, null)
                 .withFernvisusLinks(fernvisusLinks)
                 .withFernvisusRechts(fernvisusRechts));
         sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenFernvisus(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
-				validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
+            validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
         boolean result = validator.isEntityValid(sehen);
         // ASSERT
         assertThat(result).isEqualTo(expectedValid);
@@ -228,13 +294,13 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
                 .toList();
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
-                .withNahvisus(distanzSehenResultat)
+                .withNahvisus(distanzSehenResultat, null)
                 .withNahvisusLinks(nahvisusLinks)
                 .withNahvisusRechts(nahvisusRechts));
         sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenNahvisus(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
-				validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
+            validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
         boolean result = validator.isEntityValid(sehen);
         // ASSERT
         assertThat(result).isEqualTo(expectedValid);
@@ -257,11 +323,11 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
-                .withStereotest(stereotest));
+                .withStereotest(stereotest, null));
         sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenStereoTest(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
-				validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
+            validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
         boolean result = validator.isEntityValid(sehen);
         // ASSERT
         assertThat(result).isEqualTo(expectedValid);
@@ -269,35 +335,16 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
 
     @ParameterizedTest
     @CsvSource({
-        "REQUIRED   ,                   ,                   ,                   ,false",
-        "REQUIRED   ,'KEIN_STRABISMUS'  ,                   ,                   ,false",
-        "REQUIRED   ,                   ,'KEIN_STRABISMUS'  ,                   ,false",
-        "REQUIRED   ,                   ,                   ,'KEIN_STRABISMUS'  ,false",
-        "REQUIRED   ,'KEIN_STRABISMUS'  ,'KEIN_STRABISMUS'  ,                   ,false",
-        "REQUIRED   ,'KEIN_STRABISMUS'  ,                   ,'KEIN_STRABISMUS'  ,false",
-        "REQUIRED   ,'KEIN_STRABISMUS'  ,'KEIN_STRABISMUS'  ,'KEIN_STRABISMUS'  ,true",
-        "OPTIONAL   ,                   ,                   ,                   ,true",
-        "OPTIONAL   ,'KEIN_STRABISMUS'  ,'LINKS'            ,'LATENT'           ,true",
-        "OPTIONAL   ,'KEIN_STRABISMUS'  ,'KEIN_STRABISMUS'  ,'LATENT'           ,true",
-        "OPTIONAL   ,'KEIN_STRABISMUS'  ,'LINKS'            ,'KEIN_STRABISMUS'  ,true",
-        "OPTIONAL   ,                   ,'KEIN_STRABISMUS'  ,                   ,true",
-        "OPTIONAL   ,                   ,                   ,'KEIN_STRABISMUS'  ,true",
-        "OPTIONAL   ,'KEIN_STRABISMUS'  ,'KEIN_STRABISMUS'  ,                   ,true",
-        "OPTIONAL   ,'KEIN_STRABISMUS'  ,                   ,'KEIN_STRABISMUS'  ,true",
-        "OPTIONAL   ,'KEIN_STRABISMUS'  ,'KEIN_STRABISMUS'  ,'KEIN_STRABISMUS'  ,true",
-        "NOT_VISIBLE,                   ,                   ,                   ,true",
-        "NOT_VISIBLE,'KEIN_STRABISMUS'  ,                   ,                   ,true",
-        "NOT_VISIBLE,                   ,'KEIN_STRABISMUS'  ,                   ,true",
-        "NOT_VISIBLE,                   ,                   ,'KEIN_STRABISMUS'  ,true",
-        "NOT_VISIBLE,'KEIN_STRABISMUS'  ,'KEIN_STRABISMUS'  ,                   ,true",
-        "NOT_VISIBLE,'KEIN_STRABISMUS'  ,                   ,'KEIN_STRABISMUS'  ,true",
-        "NOT_VISIBLE,'KEIN_STRABISMUS'  ,'KEIN_STRABISMUS'  ,'KEIN_STRABISMUS'  ,true",
+        "REQUIRED   ,                   ,false",
+        "REQUIRED   ,'KEIN_STRABISMUS'  ,true",
+        "OPTIONAL   ,                   ,true",
+        "OPTIONAL   ,'KEIN_STRABISMUS'  ,true",
+        "NOT_VISIBLE,                   ,true",
+        "NOT_VISIBLE,'KEIN_STRABISMUS'  ,true",
     })
     void validateSehenStrabismus(
         @NonNull RequirementSetting requirementSetting,
         @Nullable String strabismusString,
-        @Nullable StrabismusAuftretenResultat strabismusAuftreten,
-        @Nullable StrabismusAuspraegungResultat strabismusAuspraegung,
         boolean expectedValid
     ) {
         // ARRANGE
@@ -310,15 +357,78 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
 
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
-                .withStrabismus(strabismus)
-                .withStrabismusAuftreten(strabismusAuftreten)
-                .withStrabismusAuspraegung(strabismusAuspraegung)
+                .withStrabismus(strabismus, null)
 
         );
         sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenStrabismus(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
-				validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
+            validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
+        boolean result = validator.isEntityValid(sehen);
+        // ASSERT
+        assertThat(result).isEqualTo(expectedValid);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "REQUIRED   ,                   ,false",
+        "REQUIRED   ,KEIN_STRABISMUS    ,true",
+        "OPTIONAL   ,                   ,true",
+        "OPTIONAL   ,LINKS              ,true",
+        "NOT_VISIBLE,                   ,true",
+        "NOT_VISIBLE,RECHTS             ,true",
+    })
+    void validateSehenStrabismusAuftreten(
+        @NonNull RequirementSetting requirementSetting,
+        @Nullable StrabismusAuftretenResultat strabismusAuftreten,
+        boolean expectedValid
+    ) {
+        // ARRANGE
+        UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
+            builder -> builder
+                .withStrabismusAuftreten(strabismusAuftreten, null)
+        );
+        sehen.getUntersuchung()
+            .getEinladung()
+            .getAnlass()
+            .getAnlassConfig()
+            .setSehenStrabismusAuftreten(requirementSetting);
+        // ACT
+        CheckUntersuchungSehenBeurteilungPresentIfReqValidator
+            validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
+        boolean result = validator.isEntityValid(sehen);
+        // ASSERT
+        assertThat(result).isEqualTo(expectedValid);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "REQUIRED   ,                   ,false",
+        "REQUIRED   ,'MANIFEST'         ,true",
+        "OPTIONAL   ,                   ,true",
+        "OPTIONAL   ,'LATENT'           ,true",
+        "NOT_VISIBLE,                   ,true",
+        "NOT_VISIBLE,'KEIN_STRABISMUS'  ,true",
+    })
+    void validateSehenStrabismusAuspraegung(
+        @NonNull RequirementSetting requirementSetting,
+        @Nullable StrabismusAuspraegungResultat strabismusAuspraegung,
+        boolean expectedValid
+    ) {
+        // ARRANGE
+        UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
+            builder -> builder
+                .withStrabismusAuspraegung(strabismusAuspraegung, null)
+
+        );
+        sehen.getUntersuchung()
+            .getEinladung()
+            .getAnlass()
+            .getAnlassConfig()
+            .setSehenStrabismusAuspraegung(requirementSetting);
+        // ACT
+        CheckUntersuchungSehenBeurteilungPresentIfReqValidator
+            validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
         boolean result = validator.isEntityValid(sehen);
         // ASSERT
         assertThat(result).isEqualTo(expectedValid);
@@ -341,11 +451,11 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
-                .withInspektion(inspektion));
+                .withInspektion(inspektion, null));
         sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenInspektion(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
-				validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
+            validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
         boolean result = validator.isEntityValid(sehen);
         // ASSERT
         assertThat(result).isEqualTo(expectedValid);
@@ -368,11 +478,11 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
-                .withKonvergenz(konvergenz));
+                .withKonvergenz(konvergenz, null));
         sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenKonvergenz(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
-				validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
+            validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
         boolean result = validator.isEntityValid(sehen);
         // ASSERT
         assertThat(result).isEqualTo(expectedValid);
@@ -395,11 +505,11 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
-                .withMotilitaet(motilitaet));
+                .withMotilitaet(motilitaet, null));
         sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenMotilitaet(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
-				validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
+            validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
         boolean result = validator.isEntityValid(sehen);
         // ASSERT
         assertThat(result).isEqualTo(expectedValid);
@@ -425,7 +535,7 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
             : List.of(empfehlung);
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
-                .withEmpfehlung(empfehlungList));
+                .withEmpfehlung(empfehlungList, null));
         sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenEmpfehlung(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
@@ -456,7 +566,7 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenBemerkungen(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
-				validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
+            validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
         boolean result = validator.isEntityValid(sehen);
         // ASSERT
         assertThat(result).isEqualTo(expectedValid);

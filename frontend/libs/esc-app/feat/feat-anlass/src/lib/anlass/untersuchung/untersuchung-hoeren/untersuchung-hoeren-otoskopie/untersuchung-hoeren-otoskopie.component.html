@@ -7,16 +7,13 @@
   <!-- Otoskopie -->
   @if (anlassStore.selectedEntity()?.anlassConfig?.data?.hoerenOtoskopie !== RequirementSetting.NOT_VISIBLE) {
     <!-- Otoskopie Rechts -->
-    <svui-kachel-form-section [heading]=" 'untersuchung.tab.hoeren.otoskopie.rechts' | transloco">
-      @for (angaben of getOtoskopieRechtsArray().controls; track $index) {
-        <svui-kachel-control [label]="'OtoskopieResultat.' + angaben.controls.resultat.value | transloco">
-          <input svuiCheckbox
-                 type="checkbox"
-                 name="angaben"
-                 [formControl]="angaben.controls.isChecked"/>
-        </svui-kachel-control>
-      }
-    </svui-kachel-form-section>
+    <feat-value-enhanced
+      [form]="form.otoskopieRechtsValueEnhancedForm"
+      [valueTitleKey]="'untersuchung.tab.hoeren.otoskopie.rechts'"
+      [valuePrefix]="'OtoskopieResultat'"
+      [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+    </feat-value-enhanced>
+
     @if (form.isHoerenOtroskopieRechtsResultatAndereChecked()) {
       <svui-form-control
         class="linksrechts"
@@ -27,16 +24,14 @@
     }
 
     <!-- Otoskopie Links -->
-    <svui-kachel-form-section [heading]=" 'untersuchung.tab.hoeren.otoskopie.links' | transloco">
-      @for (angaben of getOtoskopieLinksArray().controls; track $index) {
-        <svui-kachel-control [label]="'OtoskopieResultat.' + angaben.controls.resultat.value | transloco">
-          <input svuiCheckbox
-                 type="checkbox"
-                 name="angaben"
-                 [formControl]="angaben.controls.isChecked"/>
-        </svui-kachel-control>
-      }
-    </svui-kachel-form-section>
+    <feat-value-enhanced
+      [form]="form.otoskopieLinksValueEnhancedForm"
+      [valueTitleKey]="'untersuchung.tab.hoeren.otoskopie.links'"
+      [valuePrefix]="'OtoskopieResultat'"
+      [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+      >
+    </feat-value-enhanced>
+
     @if (form.isHoerenOtroskopieLinksResultatAndereChecked()) {
       <svui-form-control
         [label]="'untersuchung.tab.hoeren.otoskopie.andere' | transloco"

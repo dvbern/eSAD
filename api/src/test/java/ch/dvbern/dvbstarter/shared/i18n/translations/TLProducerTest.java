@@ -1,7 +1,12 @@
 package ch.dvbern.dvbstarter.shared.i18n.translations;
 
+import java.util.List;
+
 import ch.dvbern.oss.commons.i18nl10n.AppLanguage;
 import ch.dvbern.oss.commons.i18nl10n.I18nMessage;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProvider;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -17,13 +22,14 @@ class TLProducerTest {
     );
 
     private final AppLanguageProvider appLanguageProvider = () -> AppLanguages.DE;
-    private final TLProducer sut = TLProducer.forTesting(appLanguageProvider, TESTING_BUNDLE_NAME);
+    private final TenantProvider tenantProvider = () -> TenantEnum.BS;
+    private final TLProducer sut = TLProducer.forTesting(appLanguageProvider, tenantProvider, TESTING_BUNDLE_NAME);
 
     @ParameterizedTest
     @EnumSource(AppLanguages.class)
     @SuppressWarnings({ "TestMethodWithoutAssertion", "ResultOfMethodCallIgnored" })
     void resource_bundles_exist_for_all_languages(AppLanguage appLanguage) {
-        assertThatCode(() -> new TLProducer(() -> appLanguage).produceTL())
+        assertThatCode(() -> new TLProducer(() -> appLanguage, () -> TenantEnum.BS).produceTL())
             .doesNotThrowAnyException();
     }
 
@@ -52,8 +58,33 @@ class TLProducerTest {
     }
 
     @Test
+    void forTenant_produces_for_the_given_Tenant_and_not_from_LocaleProvider() {
+        TL actual = TLProducer.forTesting(appLanguageProvider, () -> TenantEnum.WIN, TESTING_BUNDLE_NAME).produceTL();
+
+        assertThat(actual.translate(I18nMessage.of("hello.world")))
+            .isEqualTo("Hallo Welt WIN");
+    }
+
+    @Test
+    void testTranslationForAllTenantsAndCurrentlyRelevantLanguages() {
+        List<TenantEnum> tenants = List.of(TenantEnum.BS, TenantEnum.WIN, TenantEnum.BE);
+        List<AppLanguages> languages = List.of(AppLanguages.DE, AppLanguages.FR);
+
+        tenants.forEach(tenantEnum -> {
+            languages.forEach(language -> {
+
+                TL actual = TLProducer.forTesting(() -> language, () -> tenantEnum, TESTING_BUNDLE_NAME).produceTL();
+
+                assertThat(actual.translate(I18nMessage.of("tenant.test")))
+                    .isEqualTo("Test for tenant %s in language %s".formatted(tenantEnum.name(), language));
+            });
+        });
+    }
+
+    @Test
     void throws_if_base_bundle_is_missing() {
-        var brokenProducer = TLProducer.forTesting(appLanguageProvider, "resource-bundle-does-not-exist");
+        var brokenProducer =
+            TLProducer.forTesting(appLanguageProvider, tenantProvider, "resource-bundle-does-not-exist");
 
         var ex = assertThrows(
             IllegalStateException.class,
@@ -62,5 +93,9 @@ class TLProducerTest {
 
         assertThat(ex)
             .hasMessageContaining("resource-bundle-does-not-exist");
+    }
+
+    TLProducer getTLProducerForTest(@NonNull AppLanguages language, @NonNull TenantEnum tenantEnum) {
+        return TLProducer.forTesting(() -> language, () -> tenantEnum, TESTING_BUNDLE_NAME);
     }
 }

@@ -1,7 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.klasseexternal.KlasseExternal;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class KlasseExternalBuilder {

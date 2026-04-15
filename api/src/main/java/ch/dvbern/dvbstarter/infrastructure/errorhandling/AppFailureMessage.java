@@ -197,6 +197,34 @@ public class AppFailureMessage {
         ));
     }
 
+    @NonNull
+    public static AppFailureMessage benutzerverwaltungIsNotIntern() {
+        return build(I18nMessage.of(
+            "AppFailure.BENUTZERVERWALTUNG_NOT_INTERN"
+        ));
+    }
+
+    @NonNull
+    public static AppFailureMessage zentraleOrganisationNotUnique() {
+        return build(I18nMessage.of(
+            "AppFailure.ZENTRALE_ORGANISATION_NOT_UNIQUE"
+        ));
+    }
+
+    @NonNull
+    public static AppFailureMessage organisationRolesCannotBeSetWithoutOrganisation() {
+        return build(I18nMessage.of(
+            "AppFailure.ORGANISATION_ROLES_WITHOUT_ORGANISATION"
+        ));
+    }
+
+    @NonNull
+    public static AppFailureMessage notPossibleToHaveOrganisationRolesAndSystemRoles() {
+        return build(I18nMessage.of(
+            "AppFailure.NOT_POSSIBLE_ORGANISATION_ROLES_WITH_SYSTEM_ROLES"
+        ));
+    }
+
     private final I18nMessage i18nMessage;
 
     @IgnoreForIdClassTest

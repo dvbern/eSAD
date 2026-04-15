@@ -134,15 +134,67 @@
   <include file="db/base/0026-add-krankheiten-to-anlass-config.xml"/>
   <include file="db/base/0025-externalimportinfo-add-importtyp.xml"/>
   <include file="db/bs/0080-migrate-escada-externalimportinfo.xml"/>
+  <include file="db/base/0026-add-pupilsyncevent.xml"/>
   <include file="db/base/0027-add-feature-massenimport-to-tenantsetting.xml"/>
   <include file="db/base/0028-modify-document-queue.xml"/>
-  <include file="/db/base/0026-add-pupilsyncevent.xml"/>
-  
+  <include file="db/base/0029-notiz-add-field-anlasslink.xml"/>
+  <include file="db/bs/0081-fix-liquibase.xml"/>
+  <include file="db/base/0030-anlass-config-perzentile-values-nullable.xml"/>
+  <include file="db/base/0031-add-adressierungbeziehung-to-kontaktpersonexternal.xml"/>
+  <include file="db/base/0032-untersuchung-sprache.xml"/>
+  <include file="db/base/0032-nicht-geprueft-grund-feature.xml"/>
+  <include file="db/base/0033-create-bewegungsapparat.xml"/>
+  <include file="db/base/0034-create-untersuchung-schulrelevante-beeintraechtigung.xml"/>
+  <include file="db/base/0035-create-impfungen-data-minimal.xml"/>
+  <include file="db/bs/0082-fix-liquibase.xml"/>
+  <include file="db/base/0036-add-customeradminemails-to-tenantsetting.xml"/>
+  <include file="db/base/0037-add-impfung-empfehlungen.xml"/>
+  <include file="db/base/0037-tenant-setting-arzt-liste.xml"/>
+  <include file="db/bs/0083-enable-tenant-setting-arzt-liste.xml"/>
+  <include file="db/base/0038-anlass-config-additional-features-be.xml"/>
+  <include file="db/base/0039-untersuchungs-entities-additional-fields.xml"/>
+  <include file="db/bs/0084-update-anlassconfig-bs.xml"/>
+  <include file="db/bs/0085-anlassconfig-bs-26.2.2.xml"/>
+  <include file="db/base/0040-ad-hoc-impfstoff-feature-and-schedulerconfig.xml"/>
+  <include file="db/base/0041-create-untersuchung-abschluss.xml"/>
+  <include file="db/bs/0085-add-berechtigung-abschluss-bs.xml"/>
+  <include file="db/base/0042-create-untersuchung-vorabklaerungen.xml"/>
+  <include file="db/bs/0086-add-berechtigung-vorabklaerungen-bs.xml"/>
+  <include file="db/base/0043-refactor-anlassconfig-augen-einzeln.xml"/>
+  <include file="db/base/0044-tenant-settings-footer-feature.xml"/>
+  <include file="db/base/0045-config-sehen-split-starbismus.xml"/>
+  <include file="db/base/0046-create-untersuchung-signatur.xml"/>
+  <include file="db/base/0047-change-column-data-type.xml"/>
+  <include file="db/bs/0087-add-benutzer-berechtigung-bs.xml"/>
+  <include file="db/base/0048-tenant-setting-benutzerverwaltung.xml"/>
+  <include file="db/base/0049-change-column-data-type.xml"/>
+  <include file="db/base/0050-archivierungsdokument-archivierung-tenant-settting.xml"/>
+  <include file="db/base/0051_benutzerAktivStatus_new_data_type.xml"/>
+  <include file="db/bs/0088-add-archiv-benutzer-berechtigung-bs.xml"/>
+  <include file="db/base/0052-archivierung-email-reminder-batchjobconfig.xml"/>
+  <include file="db/base/0053-add-massenbrief-as-tenantsetting.xml"/>
+  <include file="db/base/0054-documentqueue-displayname.xml"/>
+  <include file="db/base/0055-batchjobs-archivierung.xml"/>
+  <include file="db/base/0056-create-dossierqueue.xml"/>
+  <include file="db/base/0057-tenant-setting-supportmail-timestamp-archiviert.xml"/>
+  <include file="db/base/0056-add-tenant-setting-zentral-organisiert.xml"/>
+  <include file="db/base/0058-archivierung-kinder-loeschen-batchjobconfig.xml"/>
+  <include file="db/base/0059-agb-as-tenantsetting.xml"/>
+  <include file="db/base/0060-dossierqueue-arguments.xml"/>
+  <include file="db/base/0061-tenant-setting-rename.xml"/>
+  <include file="db/bs/0089-update-anlassconfig-bs-dev-20260327.xml"/>
+  <include file="db/base/0062-create-organisation.xml"/>
+  <include file="db/base/0063-insert-uuid-extension.xml" />
+  <include file="db/bs/0090-create-organisation-bs.xml"/>
+  <include file="db/base/0064-change-arzt-organisation-to-rechtsform.xml"/>
+  <include file="db/base/0065-fix-value-enhanced-migration.xml"/>
+  <include file="db/bs/0091-add-berechtigung-organisation-bs.xml"/>
+
   <!--  The following scripts only run in the 'test' context-->
   <include file="db-test/0001-insert-test-benutzer-support.xml" context="@test"/>
   <include file="db-test/0002-insert-test-benutzer-mpa.xml" context="@test"/>
   <include file="db-test/0003-insert-test-benutzer-empfang.xml" context="@test"/>
-  <include file="db-test/0004-insert-test-benutzer-admin-bs.xml" context="@test"/>
+  <include file="db-test/0004-insert-test-benutzer-admin.xml" context="@test"/>
   <include file="db-test/0006-insert-test-benutzer-schularzt.xml" context="@test"/>
   <include file="db-test/0007-insert-test-benutzer-orthoptist.xml" context="@test"/>
   <include file="db-test/0008-insert-test-benutzer-mpa-super.xml" context="@test"/>
@@ -152,12 +204,13 @@
   <include file="db-test/0013-update-anlassconfig-all-optional.xml" context="@test"/>
   <include file="db-test/0014-insert-test-benutzer-pfp-win.xml" context="@test"/>
   <include file="db-test/0015-insert-labels-datenverlust.xml" context="@test"/>
+  <include file="db-test/0017-run-pupil-tests-on-bs.xml" context="@test"/>
 
   <!-- The following scripts only run in the 'dev' context
 	  To use it, insert the following in your .env:
 	  _DEV_QUARKUS_LIQUIBASE_CONTEXTS=dev,test
   -->
-  <include file="db-dev/0000-insert-example-benutzer-mpa-arzt.xml" context="@dev"/>
+  <include file="db-dev/0000-insert-example-benutzer-mpa-arzt-bs-win.xml" context="@dev"/>
   <include file="db-dev/0001-insert-example-schulen.xml" context="@dev"/>
   <include file="db-dev/0002-insert-example-klassen.xml" context="@dev"/>
   <include file="db-dev/0003-insert-example-kinder.xml" context="@dev"/>

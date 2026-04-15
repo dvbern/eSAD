@@ -36,9 +36,7 @@ import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.HasExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.features.example.developer.dbinfo.DatabaseService;
 import ch.dvbern.oss.hemed.esc.api.features.importoptions.escada.csv.EscadaCsvDTO;
-import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ImportMode;
 import ch.dvbern.oss.hemed.esc.api.features.importoptions.escada.json.EscadaImportResultJson;
-import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ImportStatus;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.external.KindExternal;
@@ -47,7 +45,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPe
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKindService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.external.KontaktPersonKindExternal;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.external.KontaktPersonKindExternalRepo;
-import ch.dvbern.oss.hemed.esc.api.features.schule.EscadaDummySchulenIds;
+import ch.dvbern.oss.hemed.esc.api.features.schule.DummySchulenIds;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
@@ -63,6 +61,8 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.schulenexternal.SchuleExterna
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ImportMode;
+import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ImportStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ItemSyncResultJson;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Land;
@@ -72,12 +72,12 @@ import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.KindBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsEscada;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsEscadaBS;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 import org.junit.jupiter.api.AfterAll;
@@ -90,10 +90,11 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import static ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil.createReaderFromPath;
+import static ch.dvbern.oss.hemed.esc.api.features.schule.DummySchulenIds.isDummySchule;
 import static ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ImportMode.CREATE;
 import static ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ImportMode.DELETE;
 import static ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ImportMode.UPDATE;
-import static ch.dvbern.oss.hemed.esc.api.features.schule.EscadaDummySchulenIds.isDummySchule;
+import static ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus.isInaktiv;
 
 @QuarkusTest
 @RequiredArgsConstructor
@@ -139,7 +140,7 @@ class EscadaServiceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsEscada
+    @TestAsEscadaBS
     @Order(10)
     void testSchuleUpload_should_be_runnable_multiple_times() {
         String fileImport = "/EscadaTest/schulen/csv_schulen_1.csv";
@@ -171,7 +172,9 @@ class EscadaServiceITest extends AbstractITest {
             .returns("Volksschulen", Schule::getSchulkreis)
             .returns("57", Schule::getExternalSystemIdOrNull);
         assertExternalImportInfo(schuleBeforeUpdate, "57", true, this.getAppClock().offsetDateTime().now());
-        fixtureService.setSchuleAktivStatus(schuleBeforeUpdate.getId(), EntityAktivStatus.INAKTIV); // set inaktiv to test if update will activate it again
+        fixtureService.setSchuleAktivStatus(
+            schuleBeforeUpdate.getId(),
+            EntityAktivStatus.INAKTIV); // set inaktiv to test if update will activate it again
 
         // ACT
         resetTime();
@@ -219,7 +222,7 @@ class EscadaServiceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsEscada
+    @TestAsEscadaBS
     @Order(11)
     void testSchuleUpload_should_set_timestampFirstImport_even_if_unset() {
         // ARRANGE
@@ -247,7 +250,7 @@ class EscadaServiceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsEscada
+    @TestAsEscadaBS
     @Order(20)
     @SuppressWarnings("java:S5961" /* Keep number of assertions */)
     void testKlassenImportShouldBeRunnableMultipleTimes() {
@@ -367,7 +370,7 @@ class EscadaServiceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsEscada
+    @TestAsEscadaBS
     @Order(30)
     void testLehrpersonImportShouldBeRunnableMultipleTimes() {
 
@@ -475,7 +478,7 @@ class EscadaServiceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsEscada
+    @TestAsEscadaBS
     @Order(40)
     @SuppressWarnings("java:S5961" /* Keep number of assertions */)
     void testKinderImportShouldBeRunnableMultipleTimes() {
@@ -674,23 +677,23 @@ class EscadaServiceITest extends AbstractITest {
         Kind kindSgf1 = kindService.getByExternalId("528310");
         Assertions.assertThat(kindSgf1)
             .extracting(Kind::getSchule)
-            .returns(EscadaDummySchulenIds.SCHULE_FUER_GESTALTUNG, s -> s != null ? s.getId() : null);
+            .returns(DummySchulenIds.SCHULE_FUER_GESTALTUNG, s -> s != null ? s.getId() : null);
 
         Kind kindSgf2 = kindService.getByExternalId("442859");
         Assertions.assertThat(kindSgf2)
             .extracting(Kind::getSchule)
-            .returns(EscadaDummySchulenIds.SCHULE_FUER_GESTALTUNG, s -> s != null ? s.getId() : null);
+            .returns(DummySchulenIds.SCHULE_FUER_GESTALTUNG, s -> s != null ? s.getId() : null);
 
         Kind kindNotSgf = kindService.getByExternalId("307324");
         Assertions.assertThat(kindNotSgf)
             .extracting(Kind::getSchule)
             .returns(
-                EscadaDummySchulenIds.ALLGEMEINE_GEWERBESCHULE_BASEL,
+                DummySchulenIds.ALLGEMEINE_GEWERBESCHULE_BASEL,
                 s -> s != null ? s.getId() : null);
     }
 
     @Test
-    @TestAsEscada
+    @TestAsEscadaBS
     @Order(50)
     @SuppressWarnings("java:S5961" /* Keep number of assertions */)
     void testKontaktpersonKindImportShouldBeRunnableMultipleTimes() {
@@ -808,7 +811,7 @@ class EscadaServiceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsEscada
+    @TestAsEscadaBS
     @Order(60)
     @SuppressWarnings("java:S5961" /* Keep number of assertions */)
     void testDeactivateAndReactivate() {
@@ -826,7 +829,8 @@ class EscadaServiceITest extends AbstractITest {
             "/EscadaTest/kontaktpersonkind/csv_kontaktpersonkind_1.csv");
 
         // ACT IMPORT EMPTY
-        FileUpload minimalCSV = TestUtil.fileToFileUpload(TestUtil.loadTestfile("/EscadaTest/csv_escada_minimal.csv"), "minimal-csv.csv");
+        FileUpload minimalCSV =
+            TestUtil.fileToFileUpload(TestUtil.loadTestfile("/EscadaTest/csv_escada_minimal.csv"), "minimal-csv.csv");
 
         // import a completly empty csv
         EscadaImportResultJson escadaImportResultJson = escadaService.processEscadaCsvUpload(minimalCSV);
@@ -858,10 +862,10 @@ class EscadaServiceITest extends AbstractITest {
         // check that non-dummy-Schulen and Klassen are deactivated
         var deactSchulen = schuleService.findAll().stream().filter(s -> !isDummySchule(s.getId()));
         Assertions.assertThat(deactSchulen).isNotEmpty()
-            .allMatch(schule -> schule.getSchuleAktivStatus() == EntityAktivStatus.INAKTIV);
+            .allMatch(schule -> isInaktiv(schule.getSchuleAktivStatus()));
         var deactKlassen = klasseService.findAll();
         Assertions.assertThat(deactKlassen).isNotEmpty()
-            .allMatch(klasse -> klasse.getKlasseAktivStatus() == EntityAktivStatus.INAKTIV);
+            .allMatch(klasse -> isInaktiv(klasse.getKlasseAktivStatus()));
 
         // REIMPORT
         // import a full csv, should reactivate disabled entities
@@ -930,7 +934,7 @@ class EscadaServiceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsEscada
+    @TestAsEscadaBS
     @Order(61)
     void testDuplicateSozialversicherungsnummer() {
         // ARRANGE

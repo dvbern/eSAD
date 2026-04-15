@@ -1,0 +1,124 @@
+package ch.dvbern.oss.hemed.esc.api.features.anlass.vorabklaerungen;
+
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.vorabklaerungen.types.FragebogenStatus;
+import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
+import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungVorabklaerungenBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.generated.restassured.api.UntersuchungVorabklaerungenApiSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungVorabklaerungenJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungVorabklaerungenSaveJsonSpec;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.response.ResponseBody;
+import jakarta.ws.rs.core.Response.Status;
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@QuarkusTest
+@RequiredArgsConstructor
+class UntersuchungVorabklaerungenResourceITest extends AbstractITest {
+
+    private final UntersuchungVorabklaerungenApiSpec api = UntersuchungVorabklaerungenApiSpec.untersuchungVorabklaerungen(RequestSpecUtil.quarkusSpec());
+
+    private final UntersuchungService untersuchungService;
+    private final UntersuchungVorabklaerungenService untersuchungVorabklaerungenService;
+    private final FixtureService fixtureService;
+
+    @Override
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+    }
+
+    @Test
+    @TestAsAdminBS
+    void getUntersuchungVorabklaerungen_non_existing_should_not_create_data() {
+        // ARRANGE
+        Einladung einladung = fixtureService.createEinladung();
+        untersuchungService.getOrCreateUntersuchung(einladung.getId());
+        // ACT / ASSERT
+        api.untersuchungVorabklaerungenResourceGetUntersuchungVorabklaerungen()
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .einladungIdPath(einladung.getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.NO_CONTENT.getStatusCode());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void getUntersuchungVorabklaerungen_existing_should_return_existing() {
+        // ARRANGE
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithVorabklaerungen();
+        assertThat(untersuchung.getUntersuchungVorabklaerungen()).isNotNull();
+
+        UntersuchungVorabklaerungen
+            existingVorabklaerungen = untersuchungVorabklaerungenService.getById(untersuchung.getUntersuchungVorabklaerungen().getId());
+        assertThat(existingVorabklaerungen).isNotNull();
+        assertThat(existingVorabklaerungen.getFragebogenStatus().getEnumValue(FragebogenStatus.class))
+            .isNotNull()
+            .isEqualTo(FragebogenStatus.ERHALTEN_VOLLSTAENDIG);
+
+        // ACT
+        UntersuchungVorabklaerungenJsonSpec result = api.untersuchungVorabklaerungenResourceGetUntersuchungVorabklaerungen()
+            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungVorabklaerungenJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(existingVorabklaerungen.getId().getId());
+        assertThat(result.getData().getFragebogenStatus()).isNotNull();
+        assertThat(result.getData().getFragebogenStatus().getValue()).contains(FragebogenStatus.ERHALTEN_VOLLSTAENDIG.name());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void saveUntersuchungVorabklaerungen() {
+        // ARRANGE
+        Einladung einladung = fixtureService.createEinladung();
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithVorabklaerungen();
+        assertThat(untersuchung.getUntersuchungVorabklaerungen()).isNotNull();
+        UntersuchungVorabklaerungen
+            existingVorabklaerungen = untersuchungVorabklaerungenService.getById(untersuchung.getUntersuchungVorabklaerungen().getId());
+        assertThat(existingVorabklaerungen).isNotNull();
+        assertThat(existingVorabklaerungen.getFragebogenStatus().getEnumValue(FragebogenStatus.class)).isEqualTo(FragebogenStatus.ERHALTEN_VOLLSTAENDIG);
+
+        // ACT
+        UntersuchungVorabklaerungenSaveJsonSpec saveJsonSpec =
+            UntersuchungVorabklaerungenBuilder.createJaxSpec(builder -> builder
+                .forUntersuchungVorabklaerungen(existingVorabklaerungen)
+                .withFragebogenStatus(FragebogenStatus.NICHT_ERHALTEN, null)).getData();
+
+        UntersuchungVorabklaerungenJsonSpec result = api.untersuchungVorabklaerungenResourceSaveUntersuchungVorabklaerungen()
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .einladungIdPath(einladung.getId().getId())
+            .body(saveJsonSpec)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungVorabklaerungenJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getData().getFragebogenStatus()).isNotNull();
+        assertThat(result.getData().getFragebogenStatus().getValue()).contains(FragebogenStatus.NICHT_ERHALTEN.name());
+    }
+}
+

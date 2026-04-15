@@ -1,0 +1,14 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="2026-04-02-1">
+    <sql>
+      -- Add ORGANISATION_VERWALTEN_LESEN to ESC-BASEL-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, berechtigung, benutzer_id)
+      VALUES ('99a1c4d1-f30a-4673-a7fa-db2b8096cccd', '2026-04-02 12:00:00.118393', '2026-04-02 12:00:00.202890', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'ORGANISATION_VERWALTEN_LESEN', '11111111-1111-1111-1111-111111111112');
+
+      -- Add ORGANISATION_VERWALTEN_SCHREIBEN to ESC-BASEL-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, berechtigung, benutzer_id)
+      VALUES ('8bce8987-44d0-4154-bc96-f23506ce18f8', '2026-04-02 12:00:00.118393', '2026-04-02 12:00:00.202890', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'ORGANISATION_VERWALTEN_SCHREIBEN', '11111111-1111-1111-1111-111111111112');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

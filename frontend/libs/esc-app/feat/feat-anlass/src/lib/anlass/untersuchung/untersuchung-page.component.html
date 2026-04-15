@@ -62,6 +62,23 @@
           </a>
         </li>
       }
+      <!-- Vorabklaerungen -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showTabVorabklaerungen && canViewUntersuchungVorabklaerungen()) {
+        <li ngbNavItem class="row">
+          <a class="nav-link"
+             [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_VORABKLAERUNGEN"
+             [routerLinkActive]="'active'"
+             [queryParamsHandling]="'preserve'"
+             aria-current="page">
+            {{ 'untersuchung.tab.vorabklaerungen' | transloco }}
+            @if (untersuchungStore.tabsSaved()?.vorabklaerungenTabSaved) {
+              <svui-icon-with-tooltip [iconColor]="'success'" [iconUseCase]="'check-circle'">
+                {{ 'untersuchung.tab.completed' | transloco }}
+              </svui-icon-with-tooltip>
+            }
+          </a>
+        </li>
+      }
       <!-- Impfungen -->
       @if (anlassStore.selectedEntity()?.anlassConfig?.showTabImpfungen && canViewUntersuchungImpfung()) {
         <li ngbNavItem>
@@ -69,7 +86,8 @@
              [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_IMPFUNGEN"
              [routerLinkActive]="'active'"
              [queryParamsHandling]="'preserve'"
-             aria-current="page">
+             aria-current="page"
+             data-testid="untersuchung-tab-impfungen">
             {{ 'untersuchung.tab.impfungen' | transloco }}
             @if (untersuchungStore.tabsSaved()?.impfungenTabSaved) {
               <svui-icon-with-tooltip [iconColor]="'success'" [iconUseCase]="'check-circle'">
@@ -86,7 +104,8 @@
              [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_SEHEN"
              [routerLinkActive]="'active'"
              [queryParamsHandling]="'preserve'"
-             aria-current="page">
+             aria-current="page"
+             data-testid="untersuchung-tab-sehen">
             @if (untersuchungStore.currentEinladung()?.nachkontrolle?.data?.anlassFlags?.nachkontrolleSehen) {
               <svui-icon-with-tooltip [iconColor]="'danger'" [iconUseCase]="'flag'">
                 {{ 'Nachkontrolle.NachkontrolleSehen' | transloco }}
@@ -108,7 +127,8 @@
              [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_HOEREN"
              [routerLinkActive]="'active'"
              [queryParamsHandling]="'preserve'"
-             aria-current="page">
+             aria-current="page"
+          data-testid="untersuchung-tab-hoeren">
             @if (untersuchungStore.currentEinladung()?.nachkontrolle?.data?.anlassFlags?.nachkontrolleHoeren) {
               <svui-icon-with-tooltip [iconColor]="'danger'" [iconUseCase]="'flag'">
                 {{ 'Nachkontrolle.NachkontrolleHoeren' | transloco }}
@@ -130,7 +150,8 @@
              [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_GROESSEGEWICHT"
              [routerLinkActive]="'active'"
              [queryParamsHandling]="'preserve'"
-             aria-current="page">
+             aria-current="page"
+             data-testid="untersuchung-tab-groesse-gewicht">
             @if (untersuchungStore.currentEinladung()?.nachkontrolle?.data?.anlassFlags?.nachkontrolleGroesseGewicht) {
               <svui-icon-with-tooltip [iconColor]="'danger'" [iconUseCase]="'flag'">
                 {{ 'Nachkontrolle.NachkontrolleGroesseGewicht' | transloco }}
@@ -169,7 +190,8 @@
              [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_ARZT"
              [routerLinkActive]="'active'"
              [queryParamsHandling]="'preserve'"
-             aria-current="page">
+             aria-current="page"
+             data-testid="untersuchung-tab-arzt">
             @if (untersuchungStore.currentEinladung()?.nachkontrolle?.data?.anlassFlags?.nachkontrolleSprache
             || untersuchungStore.currentEinladung()?.nachkontrolle?.data?.anlassFlags?.nachkontrolleMotorik
             || untersuchungStore.currentEinladung()?.nachkontrolle?.data?.anlassFlags?.nachkontrolleAnderes) {
@@ -197,6 +219,43 @@
         </li>
       }
 
+      <!-- Untersuchung Sprache -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showTabSprache && canViewUntersuchungAertzlicheUntersuchung()) {
+
+        <li ngbNavItem>
+          <a class="nav-link"
+             [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_SPRACHE"
+             [routerLinkActive]="'active'"
+             [queryParamsHandling]="'preserve'"
+             aria-current="page">
+            {{ 'untersuchung.tab.sprache' | transloco }}
+            @if (untersuchungStore.tabsSaved()?.spracheTabSaved) {
+              <svui-icon-with-tooltip [iconColor]="'success'" [iconUseCase]="'check-circle'">
+                {{ 'untersuchung.tab.completed' | transloco }}
+              </svui-icon-with-tooltip>
+            }
+          </a>
+        </li>
+      }
+
+      <!-- Untersuchung Schulrelevante Beeinträchtigung -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showTabSchulrelevanteBeeintraechtigung && canViewUntersuchungAertzlicheUntersuchung()) {
+        <li ngbNavItem>
+          <a class="nav-link"
+             [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_SCHULRELEVANTE_BEEINTRAECHTIGUNG"
+             [routerLinkActive]="'active'"
+             [queryParamsHandling]="'preserve'"
+             aria-current="page">
+            {{ 'untersuchung.tab.schulrelevanteBeeintraechtigung' | transloco }}
+            @if (untersuchungStore.tabsSaved()?.schulrelevanteBeeintrachtigungenTabSaved) {
+              <svui-icon-with-tooltip [iconColor]="'success'" [iconUseCase]="'check-circle'">
+                {{ 'untersuchung.tab.completed' | transloco }}
+              </svui-icon-with-tooltip>
+            }
+          </a>
+        </li>
+      }
+
       <!-- Läusekontrolle -->
       @if (anlassStore.selectedEntity()?.anlassConfig?.showTabLaeusekontrolle && canViewUntersuchungLaeusekontrolle()) {
         <li ngbNavItem>
@@ -215,6 +274,24 @@
         </li>
       }
 
+      <!-- Bewegungsapparat -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showTabBewegungsapparat && canViewUntersuchungAertzlicheUntersuchung()) {
+        <li ngbNavItem>
+          <a class="nav-link"
+             [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_BEWEGUNGSAPPARAT"
+             [routerLinkActive]="'active'"
+             [queryParamsHandling]="'preserve'"
+             aria-current="page">
+            {{ 'untersuchung.tab.bewegungsapparat' | transloco }}
+            @if (untersuchungStore.tabsSaved()?.bewegungsapparatTabSaved) {
+              <svui-icon-with-tooltip [iconColor]="'success'" [iconUseCase]="'check-circle'">
+                {{ 'untersuchung.tab.completed' | transloco }}
+              </svui-icon-with-tooltip>
+            }
+          </a>
+        </li>
+      }
+
       <!-- Massnahmen -->
       @if (anlassStore.selectedEntity()?.anlassConfig?.showTabMassnahmen && canViewUntersuchungMassnahmen()) {
         <li ngbNavItem>
@@ -222,7 +299,8 @@
              [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_MASSNAHMEN"
              [queryParamsHandling]="'preserve'"
              [routerLinkActive]="'active'"
-             aria-current="page">
+             aria-current="page"
+             data-testid="untersuchung-tab-massnahmen">
             {{ 'untersuchung.tab.massnahmen' | transloco }}
             @if (untersuchungStore.tabsSaved()?.massnahmenTabSaved) {
               <svui-icon-with-tooltip [iconColor]="'success'" [iconUseCase]="'check-circle'">
@@ -233,6 +311,26 @@
 
         </li>
       }
+
+      <!-- Abschluss -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.showTabAbschluss && canViewAbschluss()) {
+        <li ngbNavItem>
+          <a class="nav-link"
+             [routerLink]="'einladung/' + untersuchungStore.currentTabId() + '/' + Path.ANLASS_UNTERSUCHUNG_EINLADUNG_ABSCHLUSS"
+             [queryParamsHandling]="'preserve'"
+             [routerLinkActive]="'active'"
+             aria-current="page">
+            {{ 'untersuchung.tab.abschluss' | transloco }}
+            @if (isAbschlussTabSaved()) {
+              <svui-icon-with-tooltip [iconColor]="'success'" [iconUseCase]="'check-circle'">
+                {{ 'untersuchung.tab.completed' | transloco }}
+              </svui-icon-with-tooltip>
+            }
+          </a>
+
+        </li>
+      }
+
       <!-- Abstand -->
       <li style="flex-grow: 1;"></li>
       <!-- Dossier Button -->

@@ -1,5 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.example.developer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileDownloadUtil;
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
@@ -15,6 +18,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueCsvSav
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueIDListJson;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueListJson;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueListSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueMassenbriefSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueSpssSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
@@ -33,8 +37,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -59,7 +61,7 @@ public class DocumentQueueResource {
     private final AuthorizerService authorizerService;
 
     @POST
-    @RolesAllowed({BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT, BerechtigungName.INDIVIDUELLE_REPORTS})
+    @RolesAllowed({ BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT, BerechtigungName.INDIVIDUELLE_REPORTS })
     public Response create(@NotNull @NonNull @Valid DocumentQueueSpssSaveJson saveJson) {
         documentQueueMapper.create(saveJson);
         return Response.status(Status.CREATED.getStatusCode()).build();
@@ -67,13 +69,17 @@ public class DocumentQueueResource {
 
     @GET
     @Path("/self")
-    @RolesAllowed({BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT, BerechtigungName.INDIVIDUELLE_REPORTS})
+    @RolesAllowed({
+        BerechtigungName.SUPPORT,
+        BerechtigungName.SPSS_EXPORT,
+        BerechtigungName.INDIVIDUELLE_REPORTS,
+        BerechtigungName.VORLAGEN_ADMIN_LESEN })
     public DocumentQueueListJson findAllByCurrentBenutzer() {
         return documentQueueMapper.findAllByCurrentBenutzer();
     }
 
     @GET
-    @RolesAllowed({BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT, BerechtigungName.INDIVIDUELLE_REPORTS})
+    @RolesAllowed({ BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT, BerechtigungName.INDIVIDUELLE_REPORTS })
     public DocumentQueueListJson findAll() {
         return documentQueueMapper.findAll();
     }
@@ -84,7 +90,7 @@ public class DocumentQueueResource {
         schema = @Schema(type = SchemaType.STRING, format = "binary")), description = "OK", responseCode = "200")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Path("/{documentQueueId}/sync")
-    @RolesAllowed({BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT, BerechtigungName.INDIVIDUELLE_REPORTS})
+    @RolesAllowed({ BerechtigungName.SUPPORT, BerechtigungName.SPSS_EXPORT, BerechtigungName.INDIVIDUELLE_REPORTS })
     @NonNull
     @Blocking
     public Response downloadFile(
@@ -113,6 +119,16 @@ public class DocumentQueueResource {
         for (DocumentQueueCsvSaveJson saveJson : saveJsonList.getList()) {
             documentQueueMapper.createCsv(saveJson);
         }
+        return Response.status(Status.CREATED.getStatusCode()).build();
+    }
+
+    @POST
+    @Path("/create-massenbrief")
+    @RolesAllowed({ BerechtigungName.SUPPORT, BerechtigungName.VORLAGEN_LESEN })
+    public Response createMassenbrief(
+        @NotNull @NonNull @Valid DocumentQueueMassenbriefSaveJson saveJson
+    ) {
+        documentQueueMapper.createMassenbrief(saveJson);
         return Response.status(Status.CREATED.getStatusCode()).build();
     }
 

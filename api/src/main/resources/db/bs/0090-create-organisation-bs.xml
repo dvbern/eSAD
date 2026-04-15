@@ -1,0 +1,64 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="2026-03-23-1">
+    <sql>
+      <!-- Benutzer Dummy Verantwortlicher Arzt Organisation -->
+      INSERT INTO benutzer (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, email,
+                            keycloakid, nachname, vorname, lastusedip, lastusedsessionid,
+                            lastusedsessiontimestamp, oidcissuer, benutzeraktivstatus, fachrollen)
+      VALUES ('b7611438-6764-4e1f-8f51-fc4eda7af54e',
+              '2026-03-23 09:09:00.118393',
+              '2026-03-23 09:09:00.202890',
+              '11111111-1111-1111-1111-111111111111',
+              '11111111-1111-1111-1111-111111111111',
+              0,
+              'esc@dvbern.ch',
+              null,
+              'BS',
+              'Verantwortlicher Schularzt',
+              null,
+              null,
+              null,
+              null,
+              'AKTIV',
+              'SCHULAERZTIN');
+      
+      <!-- Zentrale Organisation BS -->
+      INSERT INTO organisation (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version,
+                                verantwortlicherarzt_id)
+      VALUES ('08831a31-a62b-4c81-adfc-3f3bcb3a1fee',
+              '2026-03-23 09:09:00.118393',
+              '2026-03-23 09:09:00.202890',
+              '11111111-1111-1111-1111-111111111111',
+              '11111111-1111-1111-1111-111111111111',
+              0,
+              'b7611438-6764-4e1f-8f51-fc4eda7af54e');
+
+      <!-- Sämtliche Benutzer als Mitglied in zentrale Organisation hinzufügen -->
+      INSERT INTO organisationrollen (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, organisation_id, benutzer_id, fachrollen)
+      SELECT uuid_generate_v4(), current_timestamp, current_timestamp, '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 0,
+             '08831a31-a62b-4c81-adfc-3f3bcb3a1fee', id, fachrollen
+      FROM benutzer
+      WHERE fachrollen NOT LIKE '%SUPPORT%' AND fachrollen NOT LIKE '%SYSTEM_ADMIN%';
+
+    <!-- Systemrollen verschieben -->
+      INSERT INTO systemrollen (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, benutzer_id, fachrollen)
+      SELECT uuid_generate_v4(),
+             current_timestamp,
+             current_timestamp,
+             '11111111-1111-1111-1111-111111111111',
+             '11111111-1111-1111-1111-111111111111',
+             0,
+             id,
+             fachrollen
+      FROM benutzer
+      WHERE fachrollen LIKE '%SUPPORT%' OR fachrollen LIKE '%SYSTEM_ADMIN%';
+    </sql>
+  </changeSet>
+  <changeSet author="gema (generated)" id="2026-03-23-2">
+    <dropColumn columnName="fachrollen" tableName="benutzer"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="2026-03-23-3">
+    <dropColumn columnName="fachrollen" tableName="benutzer_aud"/>
+  </changeSet>
+</databaseChangeLog>

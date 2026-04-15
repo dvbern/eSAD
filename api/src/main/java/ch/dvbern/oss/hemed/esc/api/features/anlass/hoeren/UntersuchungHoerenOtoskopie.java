@@ -19,24 +19,25 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren;
 
 import java.io.Serial;
-import java.util.EnumSet;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
-import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
-import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungHoerenUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungHoerenOtoskopiePresentIfReq;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -67,24 +68,24 @@ public class UntersuchungHoerenOtoskopie extends AbstractEntity<UntersuchungHoer
     @OneToOne(optional = false, mappedBy = "untersuchungHoerenOtoskopie")
     private Untersuchung untersuchung;
 
+    @Valid
+    @Embedded
     @Nullable
-    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
-    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private String otoskopieRechts;
+    @AttributeOverride(name = "value",
+        column = @Column(name = "otoskopieRechts", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private MultiValueEnhanced<OtoskopieResultat> otoskopieRechts = MultiValueEnhanced.of();
 
     @Nullable
     @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     @Column(nullable = true, length = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
     private String otoskopieRechtsResultatAndere;
 
+    @Valid
+    @Embedded
     @Nullable
-    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
-    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private String otoskopieLinks;
+    @AttributeOverride(name = "value",
+        column = @Column(name = "otoskopieLinks", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private MultiValueEnhanced<OtoskopieResultat> otoskopieLinks = MultiValueEnhanced.of();
 
     @Nullable
     @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
@@ -106,7 +107,8 @@ public class UntersuchungHoerenOtoskopie extends AbstractEntity<UntersuchungHoer
 
     @NonNull
     public static UntersuchungHoerenOtoskopie forUntersuchungAbschliessen(
-        @NonNull Untersuchung untersuchung
+        @NonNull Untersuchung untersuchung,
+        boolean nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
     ) {
         UntersuchungHoerenOtoskopie hoerenOtoskopie = untersuchung.getUntersuchungHoerenOtoskopie();
         if (hoerenOtoskopie == null) {
@@ -114,32 +116,28 @@ public class UntersuchungHoerenOtoskopie extends AbstractEntity<UntersuchungHoer
         }
         AnlassConfig config = untersuchung.getEinladung().getAnlass().getAnlassConfig();
 
-        hoerenOtoskopie.setOtoskopieRechts(UntersuchungHoerenUtil.getOtoskopieRechts(
-            config.getHoerenOtoskopie(), hoerenOtoskopie, OtoskopieResultat.NICHT_GEPRUEFT));
-        hoerenOtoskopie.setOtoskopieLinks(UntersuchungHoerenUtil.getOtoskopieLinks(
-            config.getHoerenOtoskopie(), hoerenOtoskopie, OtoskopieResultat.NICHT_GEPRUEFT));
+        hoerenOtoskopie.setOtoskopieRechts(
+            ValueEnhancedUtil.getMultiValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getHoerenOtoskopie,
+                hoerenOtoskopie,
+                UntersuchungHoerenOtoskopie::getOtoskopieRechts,
+                OtoskopieResultat.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        hoerenOtoskopie.setOtoskopieLinks(
+            ValueEnhancedUtil.getMultiValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getHoerenOtoskopie,
+                hoerenOtoskopie,
+                UntersuchungHoerenOtoskopie::getOtoskopieLinks,
+                OtoskopieResultat.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
 
         return hoerenOtoskopie;
-    }
-
-    // Otoskopie Rechts
-    public void setOtoskopieRechts(@Nullable EnumSet<OtoskopieResultat> otoskopieResultatList) {
-        this.otoskopieRechts = EnumSetUtil.toString(otoskopieResultatList);
-    }
-
-    @NonNull
-    public EnumSet<OtoskopieResultat> getOtoskopieRechts() {
-        return EnumSetUtil.fromString(OtoskopieResultat.class, otoskopieRechts);
-    }
-
-    // Otoskopie Links
-    public void setOtoskopieLinks(@Nullable EnumSet<OtoskopieResultat> otoskopieResultatList) {
-        this.otoskopieLinks = EnumSetUtil.toString(otoskopieResultatList);
-    }
-
-    @NonNull
-    public EnumSet<OtoskopieResultat> getOtoskopieLinks() {
-        return EnumSetUtil.fromString(OtoskopieResultat.class, otoskopieLinks);
     }
 }
 

@@ -26,9 +26,12 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinstand;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Motorik;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.ImpfungenMassnahmenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
@@ -130,7 +133,43 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @Enumerated(EnumType.STRING)
     private RequirementSetting datenBemerkung;
 
+    // Vorabklaerungen
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting vorabklaerungenFragebogenStatus;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting vorabklaerungenEinverstaendnisImpfungen;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting vorabklaerungenChronischeKrankheiten;
+
     // Impfungen
+
+    @NotNull
+    @Column(nullable = false)
+    private boolean showImpfungenHeaderImpfausweisUnvollstaendig;
+
+    @NotNull
+    @Column(nullable = false)
+    private boolean showImpfungenHeaderImpfausweisNichtVorhanden;
+
+    @NotNull
+    @Column(nullable = false)
+    private boolean showImpfungenHeaderImpfausweisZweiPlusEinsSchema;
+
+    @NotNull
+    @Column(nullable = false)
+    private boolean showImpfungenHeaderImpfausweisUpload;
 
     @NotNull
     @NonNull
@@ -188,6 +227,12 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @NonNull
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
+    private RequirementSetting impfungenMassnahmeBemerkungen;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
     private RequirementSetting checkEinwilligungVorhanden;
 
     @NotNull
@@ -207,6 +252,13 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
     private RequirementSetting untersuchungImpfungEmpfehlung;
+
+    @Nullable
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LIST_LENGTH)
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private String untersuchungImpfungEmpfehlungValues;
 
     @NotNull
     @NonNull
@@ -234,6 +286,56 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @Setter(AccessLevel.NONE)
     private String untersuchungImpfungKrankheitenRechtsValues;
 
+    // ImpfungenDataMinimal
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting impfungenDataMinimalImpfausweisGeprueft;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting impfungenDataMinimalImmunsuppression;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting impfungenDataMinimalMasernImpfstatus;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting impfungenDataMinimalMasernAnzahlImpfungen;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting impfungenDataMinimalHpvImpfstatus;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting impfungenDataMinimalHpvAnzahlImpfungen;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting impfungenDataMinimalImpfempfehlung;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting impfungenDataMinimalImpfungDurchgefuehrt;
+
     // Sehen
 
     @NotNull
@@ -241,6 +343,13 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
     private RequirementSetting sehenBrilleLinsen;
+
+   @Nullable
+   @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+   @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
+   @Getter(AccessLevel.NONE)
+   @Setter(AccessLevel.NONE)
+   private String sehenBrilleLinsenValues;
 
     @NotNull
     @NonNull
@@ -264,6 +373,12 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @NonNull
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
+    private RequirementSetting sehenFernvisusAugeEinzeln;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
     private RequirementSetting sehenStereoTest;
 
     @NotNull
@@ -271,6 +386,25 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
     private RequirementSetting sehenStrabismus;
+
+    @Nullable
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private String sehenStrabismusValues;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting sehenStrabismusAuspraegung;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting sehenStrabismusAuftreten;
 
     @NotNull
     @NonNull
@@ -346,6 +480,12 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @NonNull
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
+    private RequirementSetting hoerenAudiogrammSimpel;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
     private RequirementSetting hoerenAudiogrammBeurteilung;
 
     @NotNull
@@ -365,6 +505,13 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
     private RequirementSetting hoerenAudiogrammBemerkungen;
+
+    // Hoeren - Hoerhilfe
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting hoerenHoerhilfe;
 
     // Hoeren - Otoskopie
 
@@ -725,6 +872,132 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @Enumerated(EnumType.STRING)
     private RequirementSetting untersuchungBemerkungen;
 
+    // Untersuchung Sprache
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting untersuchungSpracheNachsprechen;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting untersuchungSpracheWortschatz;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting untersuchungSpracheSprachverstaendnis;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting untersuchungSpracheBemerkungen;
+
+    // Bewegungsapparat
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting bewegungsapparatSkoliose;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting bewegungsapparatHaltungsschwaeche;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting bewegungsapparatVerkuerzungHamstringmuskulatur;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting bewegungsapparatBemerkung;
+
+    // Untersuchung Schulrelevante Beeinträchtigung
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting untersuchungBeeintraechtigungFreiesGehen;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting untersuchungBeeintraechtigungOhneStuetzradVelofahren;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting untersuchungBeeintraechtigungGrafomotorik;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting untersuchungBeeintraechtigungFeinmotorik;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting untersuchungBeeintraechtigungGrobmotorik;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting untersuchungBeeintraechtigungGleichgewicht;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting untersuchungBeeintraechtigungBemerkung;
+
+    // Abschluss
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting abschlussUeberweisungErfolgt;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting abschlussAerztlicheValidierungErforderlich;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting abschlussBeratungDurchgefuehrt;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting abschlussBeurteilungEmpfohleneMassnahmen;
+
+    @NotNull
+    @Column(nullable = false)
+    private boolean showCardAbschlussSignatur;
+
     // Massnahmen
 
     @NotNull
@@ -845,5 +1118,41 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @NonNull
     public EnumSet<Krankheit> getUntersuchungImpfungKrankheitenRechtsValues() {
         return EnumSetUtil.fromString(Krankheit.class, untersuchungImpfungKrankheitenRechtsValues);
+    }
+
+    // Sehen Brille Linsen
+    public void setSehenBrilleLinsenValues(
+        @NonNull EnumSet<BrilleLinsenResultat> sehenBrilleLinsen) {
+        this.sehenBrilleLinsenValues =
+            EnumSetUtil.toString(sehenBrilleLinsen);
+    }
+
+    @NonNull
+    public EnumSet<BrilleLinsenResultat> getSehenBrilleLinsenValues() {
+        return EnumSetUtil.fromString(BrilleLinsenResultat.class, sehenBrilleLinsenValues);
+    }
+
+    // Sehen Strabismus
+    public void setSehenStrabismusValues(
+        @NonNull EnumSet<StrabismusResultat> sehenStrabismus) {
+        this.sehenStrabismusValues =
+            EnumSetUtil.toString(sehenStrabismus);
+    }
+
+    @NonNull
+    public EnumSet<StrabismusResultat> getSehenStrabismusValues() {
+        return EnumSetUtil.fromString(StrabismusResultat.class, sehenStrabismusValues);
+    }
+
+    // Impfungen Empfehlung Values
+    public void setUntersuchungImpfungEmpfehlungValues(
+        @NonNull EnumSet<ImpfungenMassnahmenEmpfehlung> untersuchungImpfungEmpfehlungValues) {
+        this.untersuchungImpfungEmpfehlungValues =
+            EnumSetUtil.toString(untersuchungImpfungEmpfehlungValues);
+    }
+
+    @NonNull
+    public EnumSet<ImpfungenMassnahmenEmpfehlung> getUntersuchungImpfungEmpfehlungValues() {
+        return EnumSetUtil.fromString(ImpfungenMassnahmenEmpfehlung.class, untersuchungImpfungEmpfehlungValues);
     }
 }

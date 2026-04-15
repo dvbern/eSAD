@@ -21,6 +21,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.scheduler;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
@@ -36,18 +37,14 @@ public class ScheduledTaskService {
 
     private final SuperAdminRunnerService superAdminRunnerService;
     private final TenantProducer tenantProducer;
+    private final ConfigService configService;
 
+    // Divers
 
     @Scheduled(cron = "{app.scheduler.benutzer.inaktivieren.cronexpression}")
     @Transactional(TxType.NOT_SUPPORTED)
     public void scheduleBenutzerInaktivierenJob() {
         runForActiveTenants(() -> superAdminRunnerService.runBenutzerInaktivierenJob(false));
-    }
-
-    @Scheduled(cron = "{app.scheduler.document-queue.cronexpression}")
-    @Transactional(TxType.NOT_SUPPORTED)
-    public void scheduleDocumentQueueJob() {
-        runForActiveTenants(() -> superAdminRunnerService.runDocumentQueueJob(false));
     }
 
     @Scheduled(cron = "{app.scheduler.kinder.inaktivieren.cronexpression}")
@@ -56,21 +53,77 @@ public class ScheduledTaskService {
         runForActiveTenants(() -> superAdminRunnerService.runKinderInaktivierenJob(false));
     }
 
-    @Scheduled(cron = "{app.scheduler.document-queue.clean-up.cronexpression}")
-    @Transactional(TxType.NOT_SUPPORTED)
-    public void scheduleDocumentQueueCleanupJob() {
-        runForActiveTenants(() -> superAdminRunnerService.runDocumentQueueCleanupJob(false));
-    }
-
     @Scheduled(cron = "{app.scheduler.reload.duplikate.cronexpression}")
     @Transactional(TxType.NOT_SUPPORTED)
     public void scheduleReloadDuplikateJob() {
         runForActiveTenants(() -> superAdminRunnerService.runReloadDuplikateJob(false));
     }
 
+    // Impfstoffe
+
+    @Scheduled(cron = "{app.scheduler.deactivate.impfstoffchargen.cronexpression}")
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void scheduleDeactivateImpfstoffChargenJob() {
+        runForActiveTenants(() -> superAdminRunnerService.runDeactivateImpfstoffChargenJob(false));
+    }
+
+    @Scheduled(cron = "{app.scheduler.delete.impfstoffchargen.cronexpression}")
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void scheduleDeleteImpfstoffChargenJob() {
+        runForActiveTenants(() -> superAdminRunnerService.runDeleteImpfstoffChargenJob(false));
+    }
+
+    // DocumentQueue
+
+    @Scheduled(cron = "{app.scheduler.document-queue.cronexpression}")
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void scheduleDocumentQueueJob() {
+        runForActiveTenants(() -> superAdminRunnerService.runDocumentQueueJob(false));
+    }
+
+    @Scheduled(cron = "{app.scheduler.document-queue.clean-up.cronexpression}")
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void scheduleDocumentQueueCleanupJob() {
+        runForActiveTenants(() -> superAdminRunnerService.runDocumentQueueCleanupJob(false));
+    }
+
+    // DossierQueue/ Archivierung
+
+    @Scheduled(cron = "{app.scheduler.archive.documents.download.cronexpression}")
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void scheduleArchiveDownloadEmailReminderJob() {
+        runForActiveTenants(() -> superAdminRunnerService.runArchiveDocumentDownloadEmailReminderJob(false));
+    }
+
+    @Scheduled(cron = "{app.scheduler.archivierung.cronexpression}")
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void scheduleMarkForArchivierungJob() {
+        runForActiveTenants(() -> superAdminRunnerService.runMarkForArchivierungJob(false));
+    }
+
+    @Scheduled(cron = "{app.scheduler.dossier.queue.processing.cronexpression}")
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void scheduleDossierQueueProcessingJob() {
+        runForActiveTenants(() -> superAdminRunnerService.runDossierQueueProcessingJob(false));
+    }
+
+    @Scheduled(cron = "{app.scheduler.dossier.queue.cleanup.cronexpression}")
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void scheduleDossierQueueCleanupJob() {
+        runForActiveTenants(() -> superAdminRunnerService.runDossierQueueCleanupJob(false));
+    }
+
+    @Scheduled(cron = "{app.scheduler.archive.kind.delete.cronexpression}")
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void scheduleArchiveDeleteKindJob() {
+        runForActiveTenants(() -> superAdminRunnerService.runArchiveDocumentKindDeleteJob(false));
+    }
+
+    // Helper Methods
+
     private void runForActiveTenants(@NonNull Runnable task) {
         for (TenantEnum tenant : TenantEnum.values()) {
-            if (tenant.isAktiv()) {
+            if (tenant.isAktiv() && configService.isTenantEnabledForCurrentEnvironment(tenant)) {
                 // Set the current tenant for the super admin runner service
                 tenantProducer.setCurrentTenant(tenant);
                 task.run();

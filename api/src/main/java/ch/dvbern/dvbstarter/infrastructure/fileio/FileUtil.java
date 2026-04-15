@@ -37,6 +37,8 @@ import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -243,6 +245,11 @@ public class FileUtil {
 
     public static FileUpload fileToFileUpload(@NonNull Path path, @NonNull String originalFilename) {
         return new FileUpload() {
+            @Override
+            public MultivaluedMap<String, String> getHeaders() {
+                return new MultivaluedHashMap<>();
+            }
+
             @Override
             public String name() {
                 return originalFilename;

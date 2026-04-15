@@ -1,8 +1,8 @@
 import {TestBed} from '@angular/core/testing';
 import {NonNullableFormBuilder} from '@angular/forms';
+import {ISODateString} from '@dvb/data-access-types';
 import {toDateStr, toISODateString} from '@dvb/util-shared';
 import {AppValidatorKeys, AppValidators} from './AppValidators';
-import {ISODateString} from "@dvb/data-access-types";
 
 describe('AppValidators', () => {
   let fb: NonNullableFormBuilder;
@@ -315,7 +315,7 @@ describe('AppValidators', () => {
     });
 
     it.each(
-      [new Date('2024-01-02'), new Date('2024-06-06')]
+      [new Date('2024-01-02'), new Date('2024-06-06')],
     )('accepts for valid input: %s', (input) => {
       const date = new Date('2024-01-01');
       jest.useFakeTimers().setSystemTime(date);
@@ -328,7 +328,7 @@ describe('AppValidators', () => {
     });
 
     it.each(
-      [new Date('2024-01-01')]
+      [new Date('2024-01-01')],
     )('accepts for equal input: %s', (input) => {
       const date = new Date('2024-01-01');
       jest.useFakeTimers().setSystemTime(date);
@@ -341,7 +341,7 @@ describe('AppValidators', () => {
     });
 
     it.each(
-      [new Date('2023-12-31'), new Date('2023-06-06')]
+      [new Date('2023-12-31'), new Date('2023-06-06')],
     )('rejects for invalid input: %s', (input) => {
       const date = new Date('2024-01-01');
       jest.useFakeTimers().setSystemTime(date);
@@ -359,7 +359,7 @@ describe('AppValidators', () => {
     it('works with undefined', () => {
       const group = fb.group({
           zeitVon: fb.control<`${number}:${number}` | undefined>(undefined),
-          zeitBis: fb.control<`${number}:${number}` | undefined>(undefined)
+          zeitBis: fb.control<`${number}:${number}` | undefined>(undefined),
         },
         {validators: [AppValidators.zeitBisIsAfterZeitVon('zeitVon', 'zeitBis')]});
 
@@ -372,7 +372,7 @@ describe('AppValidators', () => {
     it('works with valid input: 10:00, 12:00', () => {
       const group = fb.group({
           zeitVon: fb.control<`${number}:${number}` | undefined>('10:00'),
-          zeitBis: fb.control<`${number}:${number}` | undefined>('12:00')
+          zeitBis: fb.control<`${number}:${number}` | undefined>('12:00'),
         },
         {validators: [AppValidators.zeitBisIsAfterZeitVon('zeitVon', 'zeitBis')]});
 
@@ -385,7 +385,7 @@ describe('AppValidators', () => {
     it('fails with invalid input: 12:00, 10:00', () => {
       const group = fb.group({
           zeitVon: fb.control<`${number}:${number}` | undefined>('12:00'),
-          zeitBis: fb.control<`${number}:${number}` | undefined>('10:00')
+          zeitBis: fb.control<`${number}:${number}` | undefined>('10:00'),
         },
         {validators: [AppValidators.zeitBisIsAfterZeitVon('zeitVon', 'zeitBis')]});
 
@@ -398,7 +398,7 @@ describe('AppValidators', () => {
     it('fails with equal input: 12:00, 10:00', () => {
       const group = fb.group({
           zeitVon: fb.control<`${number}:${number}` | undefined>('10:00'),
-          zeitBis: fb.control<`${number}:${number}` | undefined>('10:00')
+          zeitBis: fb.control<`${number}:${number}` | undefined>('10:00'),
         },
         {validators: [AppValidators.zeitBisIsAfterZeitVon('zeitVon', 'zeitBis')]});
 
@@ -411,7 +411,7 @@ describe('AppValidators', () => {
     it('works if only 1 zeitVon is provided', () => {
       const group = fb.group({
           zeitVon: fb.control<`${number}:${number}` | undefined>('10:00'),
-          zeitBis: fb.control<`${number}:${number}` | undefined>(undefined)
+          zeitBis: fb.control<`${number}:${number}` | undefined>(undefined),
         },
         {validators: [AppValidators.zeitBisIsAfterZeitVon('zeitVon', 'zeitBis')]});
 
@@ -424,7 +424,7 @@ describe('AppValidators', () => {
     it('works if only 1 zeitBis is provided', () => {
       const group = fb.group({
           zeitVon: fb.control<`${number}:${number}` | undefined>(undefined),
-          zeitBis: fb.control<`${number}:${number}` | undefined>('10:00')
+          zeitBis: fb.control<`${number}:${number}` | undefined>('10:00'),
         },
         {validators: [AppValidators.zeitBisIsAfterZeitVon('zeitVon', 'zeitBis')]});
 
@@ -440,7 +440,7 @@ describe('AppValidators', () => {
     it('works with undefined', () => {
       const group = fb.group({
           datumVon: fb.control<ISODateString | undefined>(undefined),
-          datumBis: fb.control<ISODateString | undefined>(undefined)
+          datumBis: fb.control<ISODateString | undefined>(undefined),
         },
         {validators: [AppValidators.datumBisIsAfterDatumVon('datumVon', 'datumBis')]});
 
@@ -452,8 +452,8 @@ describe('AppValidators', () => {
 
     it('works with valid input: 01.01.2025, 31.05.2025', () => {
       const group = fb.group({
-          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,1,1))),
-          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 1, 1))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 5, 31))),
         },
         {validators: [AppValidators.datumBisIsAfterDatumVon('datumVon', 'datumBis')]});
 
@@ -465,33 +465,72 @@ describe('AppValidators', () => {
 
     it('fails with invalid input: 31.05.2025, 01.01.2025', () => {
       const group = fb.group({
-          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
-          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,1,1))),
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 5, 31))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 1, 1))),
         },
         {validators: [AppValidators.datumBisIsAfterDatumVon('datumVon', 'datumBis')]});
 
       group.updateValueAndValidity();
 
       expect(group.valid).toBe(false);
-      expect(group.errors).toEqual({[AppValidatorKeys.datumVonAfterDatumBis]: true});
+      expect(group.errors).toEqual({[AppValidatorKeys.datumBisAfterDatumVon]: true});
     });
 
     it('fails with equal input: 31.05.2025', () => {
       const group = fb.group({
-          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
-          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 5, 31))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 5, 31))),
         },
         {validators: [AppValidators.datumBisIsAfterDatumVon('datumVon', 'datumBis')]});
 
       group.updateValueAndValidity();
 
       expect(group.valid).toBe(false);
-      expect(group.errors).toEqual({[AppValidatorKeys.datumVonAfterDatumBis]: true});
+      expect(group.errors).toEqual({[AppValidatorKeys.datumBisAfterDatumVon]: true});
+    });
+
+    it('works with valid input: 01.01.2025, 31.05.2025', () => {
+      const group = fb.group({
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 1, 1))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 5, 31))),
+        },
+        {validators: [AppValidators.datumBisIsAtleastDatumVonOrAfter('datumVon', 'datumBis')]});
+
+      group.updateValueAndValidity();
+
+      expect(group.valid).toBe(true);
+      expect(group.errors).toBeNull();
+    });
+
+    it('works with equal input: 01.01.2025', () => {
+      const group = fb.group({
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 1, 1))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 1, 1))),
+        },
+        {validators: [AppValidators.datumBisIsAtleastDatumVonOrAfter('datumVon', 'datumBis')]});
+
+      group.updateValueAndValidity();
+
+      expect(group.valid).toBe(true);
+      expect(group.errors).toBeNull();
+    });
+
+    it('fails with invalid input: 31.05.2025, 01.01.2025', () => {
+      const group = fb.group({
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 5, 31))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 1, 1))),
+        },
+        {validators: [AppValidators.datumBisIsAtleastDatumVonOrAfter('datumVon', 'datumBis')]});
+
+      group.updateValueAndValidity();
+
+      expect(group.valid).toBe(false);
+      expect(group.errors).toEqual({[AppValidatorKeys.datumBisAtleastDatumVonOrAfter]: true});
     });
 
     it('works if only datumVon is provided', () => {
       const group = fb.group({
-          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 5, 31))),
           datumBis: fb.control<ISODateString | undefined>(undefined),
         },
         {validators: [AppValidators.datumBisIsAfterDatumVon('datumVon', 'datumBis')]});
@@ -505,7 +544,7 @@ describe('AppValidators', () => {
     it('works if only datumBis is provided', () => {
       const group = fb.group({
           datumVon: fb.control<ISODateString | undefined>(undefined),
-          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 5, 31))),
         },
         {validators: [AppValidators.datumBisIsAfterDatumVon('datumVon', 'datumBis')]});
 
@@ -517,8 +556,8 @@ describe('AppValidators', () => {
 
     it('works with Invalid Inputs 31.02.2025', () => {
       const group = fb.group({
-          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,2,31))),
-          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 2, 31))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 5, 31))),
         },
         {validators: [AppValidators.datumBisIsAfterDatumVon('datumVon', 'datumBis')]});
 
@@ -533,7 +572,7 @@ describe('AppValidators', () => {
     it('works with undefined', () => {
       const group = fb.group({
           datumVon: fb.control<ISODateString | undefined>(undefined),
-          datumBis: fb.control<ISODateString | undefined>(undefined)
+          datumBis: fb.control<ISODateString | undefined>(undefined),
         },
         {validators: [AppValidators.dateRangeIsMaximumNumberOfYears('datumVon', 'datumBis', 5)]});
 
@@ -545,8 +584,8 @@ describe('AppValidators', () => {
 
     it('works with valid input: 01.01.2025, 31.05.2025', () => {
       const group = fb.group({
-          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,1,1))),
-          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31)))
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 1, 1))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 5, 31))),
         },
         {validators: [AppValidators.dateRangeIsMaximumNumberOfYears('datumVon', 'datumBis', 5)]});
 
@@ -558,8 +597,8 @@ describe('AppValidators', () => {
 
     it('fails with invalid input: 01.01.2025, 31.05.2030', () => {
       const group = fb.group({
-          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,1,1))),
-          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2030,5,31)))
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 1, 1))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2030, 5, 31))),
         },
         {validators: [AppValidators.dateRangeIsMaximumNumberOfYears('datumVon', 'datumBis', 5)]});
 
@@ -568,13 +607,13 @@ describe('AppValidators', () => {
       group.updateValueAndValidity();
 
       expect(group.valid).toBe(false);
-      expect(group.errors).toEqual({[AppValidatorKeys.dateRangeIsMaximumNumberOfYears]: {"maximalYears": 5}});
+      expect(group.errors).toEqual({[AppValidatorKeys.dateRangeIsMaximumNumberOfYears]: {'maximalYears': 5}});
     });
 
     it('works with dates wxactly 5 years apart  input: 31.05.2025, 31.05.2030', () => {
       const group = fb.group({
-          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
-          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2030,5,31))),
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 5, 31))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2030, 5, 31))),
         },
         {validators: [AppValidators.dateRangeIsMaximumNumberOfYears('datumVon', 'datumBis', 5)]});
 
@@ -586,7 +625,7 @@ describe('AppValidators', () => {
 
     it('works if only datumVon is provided', () => {
       const group = fb.group({
-          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 5, 31))),
           datumBis: fb.control<ISODateString | undefined>(undefined),
         },
         {validators: [AppValidators.dateRangeIsMaximumNumberOfYears('datumVon', 'datumBis', 5)]});
@@ -600,7 +639,7 @@ describe('AppValidators', () => {
     it('works if only datumBis is provided', () => {
       const group = fb.group({
           datumVon: fb.control<ISODateString | undefined>(undefined),
-          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,5,31))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 5, 31))),
         },
         {validators: [AppValidators.dateRangeIsMaximumNumberOfYears('datumVon', 'datumBis', 5)]});
 
@@ -612,8 +651,8 @@ describe('AppValidators', () => {
 
     it('works with Invalid Inputs 31.02.2025', () => {
       const group = fb.group({
-          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,2,31))),
-          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025,2,31))),
+          datumVon: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 2, 31))),
+          datumBis: fb.control<ISODateString | undefined>(toISODateString(new Date(2025, 2, 31))),
         },
         {validators: [AppValidators.dateRangeIsMaximumNumberOfYears('datumVon', 'datumBis', 5)]});
 
@@ -621,6 +660,62 @@ describe('AppValidators', () => {
 
       expect(group.valid).toBe(true);
       expect(group.errors).toBeNull();
+    });
+  });
+
+  describe('multipleEmailValidator', () => {
+    it.each([undefined, null])('accepts for nullish input', (input) => {
+      const control = fb.control(input, {
+        validators: [AppValidators.multipleEmailValidator()],
+      });
+
+      expect(control.valid).toBe(true);
+      expect(control.errors).toBeNull();
+    });
+
+    it.each(['test@mail.ch', 'blabla@mailbucket.dvbern.ch'])('accepts for single valid input: %s', (input) => {
+      const control = fb.control(input, {
+        validators: [AppValidators.multipleEmailValidator()],
+      });
+
+      expect(control.valid).toBe(true);
+      expect(control.errors).toBeNull();
+    });
+
+    it.each(['falsch@mailbucket', 'invalicMAil.ch'])('rejects single invalid input: %s', (input) => {
+      const control = fb.control(input, {
+        validators: [AppValidators.multipleEmailValidator()],
+      });
+
+      expect(control.valid).toBe(false);
+      expect(control.errors).toEqual({[AppValidatorKeys.multipleEmails]: true});
+    });
+
+    it.each(['test@mail.ch, blabla@mailbucket.dvbern.ch'])('accepts for multiple valid input: %s', (input) => {
+      const control = fb.control(input, {
+        validators: [AppValidators.multipleEmailValidator()],
+      });
+
+      expect(control.valid).toBe(true);
+      expect(control.errors).toBeNull();
+    });
+
+    it.each(['falsch@mailbucket, invalicMAil.ch'])('rejects multiple invalid input: %s', (input) => {
+      const control = fb.control(input, {
+        validators: [AppValidators.multipleEmailValidator()],
+      });
+
+      expect(control.valid).toBe(false);
+      expect(control.errors).toEqual({[AppValidatorKeys.multipleEmails]: true});
+    });
+
+    it.each(['test@mail.ch, blabla@mailbucket.dvbern.ch, falsch@mailbucket'])('rejects for invalid input: %s', (input) => {
+      const control = fb.control(input, {
+        validators: [AppValidators.multipleEmailValidator()],
+      });
+
+      expect(control.valid).toBe(false);
+      expect(control.errors).toEqual({[AppValidatorKeys.multipleEmails]: true});
     });
   });
 });

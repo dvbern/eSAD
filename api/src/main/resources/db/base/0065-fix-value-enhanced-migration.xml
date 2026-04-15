@@ -1,0 +1,28 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="1774849750577-1">
+    <sql>
+      update untersuchungsehenbeurteilung set brillelinsen = concat('$1$', brillelinsen, '$1$$2$$2$') where brillelinsen not like '$1$%';
+      update untersuchungsehenbeurteilung set farbsehen = concat('$1$', farbsehen, '$1$$2$$2$') where farbsehen not like '$1$%';
+      update untersuchungsehenbeurteilung set inspektion = concat('$1$', inspektion, '$1$$2$$2$') where inspektion not like '$1$%';
+      update untersuchungsehenbeurteilung set konvergenz = concat('$1$', konvergenz, '$1$$2$$2$') where konvergenz not like '$1$%';
+      update untersuchungsehenbeurteilung set motilitaet = concat('$1$', motilitaet, '$1$$2$$2$') where motilitaet not like '$1$%';
+      update untersuchungsehenbeurteilung set stereotest = concat('$1$', stereotest, '$1$$2$$2$') where stereotest not like '$1$%';
+      update untersuchungsehenbeurteilung set strabismusauftreten = concat('$1$', strabismusauftreten, '$1$$2$$2$') where strabismusauftreten not like '$1$%';
+      update untersuchungsehenbeurteilung set strabismusauspraegung = concat('$1$', strabismusauspraegung, '$1$$2$$2$') where strabismusauspraegung not like '$1$%';
+      update untersuchungsehenbeurteilung set verwendetetafel = concat('$1$', verwendetetafel, '$1$$2$$2$') where verwendetetafel not like '$1$%';
+      update untersuchunggroessegewicht set bmiperzentile = concat('$1$', bmiperzentile, '$1$$2$$2$') where bmiperzentile not like '$1$%';
+      update untersuchunggroessegewicht set gewichtperzentile = concat('$1$', gewichtperzentile, '$1$$2$$2$') where gewichtperzentile not like '$1$%';
+      update untersuchunggroessegewicht set groesseperzentile = concat('$1$', groesseperzentile, '$1$$2$$2$') where groesseperzentile not like '$1$%';
+      update untersuchunghoerenaudiogramm set audiogrammbeurteilung = concat('$1$', audiogrammbeurteilung, '$1$$2$$2$') where audiogrammbeurteilung not like '$1$%';
+      update untersuchunghoerenaudiogramm set empfehlung = concat('$1$', empfehlung, '$1$$2$$2$') where empfehlung not like '$1$%';
+      update untersuchungsehenbeurteilung set empfehlung = concat('$1$', empfehlung, '$1$$2$$2$') where empfehlung not like '$1$%';
+      update untersuchungsehenbeurteilung set fernvisus = concat('$1$', fernvisus, '$1$$2$$2$') where fernvisus not like '$1$%';
+      update untersuchungsehenbeurteilung set nahvisus = concat('$1$', nahvisus, '$1$$2$$2$') where nahvisus not like '$1$%';
+      update untersuchunghoerenotoskopie set otoskopielinks = concat('$1$', otoskopielinks, '$1$$2$$2$') where otoskopielinks not like '$1$%';
+      update untersuchunghoerenotoskopie set otoskopierechts = concat('$1$', otoskopierechts, '$1$$2$$2$') where otoskopierechts not like '$1$%';
+      update untersuchungsehenbeurteilung set strabismus = concat('$1$', strabismus, '$1$$2$$2$') where strabismus not like '$1$%';
+      update untersuchunghoerenaudiogramm set zusaetzlicheangaben = concat('$1$', zusaetzlicheangaben, '$1$$2$$2$') where zusaetzlicheangaben not like '$1$%';
+    </sql>
+  </changeSet>
+</databaseChangeLog>

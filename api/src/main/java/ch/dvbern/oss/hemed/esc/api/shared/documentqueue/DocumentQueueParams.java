@@ -2,10 +2,14 @@ package ch.dvbern.oss.hemed.esc.api.shared.documentqueue;
 
 import ch.dvbern.oss.hemed.esc.api.features.spss.SpssReportType;
 import lombok.AllArgsConstructor;
-import lombok.Value;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-@Value
+@Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class DocumentQueueParams {
     @Nullable

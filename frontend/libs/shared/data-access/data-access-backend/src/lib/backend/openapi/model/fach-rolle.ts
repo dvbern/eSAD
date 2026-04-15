@@ -9,7 +9,7 @@
  */
 
 
-export type FachRolle = 'EMPFANG' | 'MPA' | 'ORTHOPISTIN' | 'SCHULAERZTIN' | 'LAUSBEAUFTRAGTE' | 'PFP' | 'SUPERUSER' | 'ADMIN' | 'SUPPORT' | 'SYSTEM_ADMIN';
+export type FachRolle = 'EMPFANG' | 'MPA' | 'ORTHOPISTIN' | 'SCHULAERZTIN' | 'LAUSBEAUFTRAGTE' | 'PFP' | 'SCHOOL_NURSE' | 'SUPERUSER' | 'ADMIN' | 'SUPPORT' | 'SYSTEM_ADMIN';
 
 export const FachRolle = {
     EMPFANG: 'EMPFANG' as FachRolle,
@@ -18,6 +18,7 @@ export const FachRolle = {
     SCHULAERZTIN: 'SCHULAERZTIN' as FachRolle,
     LAUSBEAUFTRAGTE: 'LAUSBEAUFTRAGTE' as FachRolle,
     PFP: 'PFP' as FachRolle,
+    SCHOOL_NURSE: 'SCHOOL_NURSE' as FachRolle,
     SUPERUSER: 'SUPERUSER' as FachRolle,
     ADMIN: 'ADMIN' as FachRolle,
     SUPPORT: 'SUPPORT' as FachRolle,

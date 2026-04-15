@@ -9,6 +9,7 @@ import {
   InfomaterialStore,
   LabelsStore,
   Path,
+  requireAcceptedAgb,
   requireRole,
   SchulenOptionsStore,
 } from '@dvb/feat-shared';
@@ -25,7 +26,9 @@ import {
   hasMassnahmenViewBerechtigung,
   hasSehenViewBerechtigung,
   hasTriageViewBerechtigung,
+  hasUntersuchungAbschlussViewBerechtigung,
   hasUntersuchungKindDatenViewBerechtigung,
+  hasUntersuchungVorabklaerungenViewBerechtigung,
   isValidEnumValue,
 } from '@dvb/util-shared';
 import {provideTranslocoScope} from '@jsverse/transloco';
@@ -81,6 +84,35 @@ import {UntersuchungSehenStore} from './anlass/untersuchung/untersuchung-sehen/u
 import {UntersuchungTriageComponent} from './anlass/untersuchung/untersuchung-triage/untersuchung-triage.component';
 import {UntersuchungTriageStore} from './anlass/untersuchung/untersuchung-triage/untersuchung-triage.store';
 import {UntersuchungStore} from './anlass/untersuchung/untersuchung.store';
+import {UntersuchungSpracheComponent} from "./anlass/untersuchung/untersuchung-sprache/untersuchung-sprache.component";
+import {UntersuchungSpracheStore} from "./anlass/untersuchung/untersuchung-sprache/untersuchung-sprache.store";
+import {
+  UntersuchungBewegungsapparatStore
+} from './anlass/untersuchung/untersuchung-bewegungsapparat/untersuchung-bewegungsapparat.store';
+import {
+  UntersuchungBewegungsapparatComponent
+} from './anlass/untersuchung/untersuchung-bewegungsapparat/untersuchung-bewegungsapparat.component';
+import {
+  UntersuchungSchulrelevanteBeeintraechtigungComponent
+} from "./anlass/untersuchung/untersuchung-schulrelevante-beeintraechtigung/untersuchung-schulrelevante-beeintraechtigung.component";
+import {
+  UntersuchungSchulrelevanteBeeintraechtigungStore
+} from "./anlass/untersuchung/untersuchung-schulrelevante-beeintraechtigung/untersuchung-schulrelevante-beeintraechtigung.store";
+import {
+  UntersuchungAbschlussStore
+} from "./anlass/untersuchung/untersuchung-abschluss-page/untersuchung-abschluss/untersuchung-abschluss.store";
+import {
+  UntersuchungVorabklaerungenStore
+} from "./anlass/untersuchung/untersuchung-vorabklaerungen/untersuchung-vorabklaerungen.store";
+import {
+  UntersuchungVorabklaerungenComponent
+} from "./anlass/untersuchung/untersuchung-vorabklaerungen/untersuchung-vorabklaerungen.component";
+import {
+  UntersuchungAbschlussPageComponent
+} from "./anlass/untersuchung/untersuchung-abschluss-page/untersuchung-abschluss-page.component";
+import {
+  UntersuchungSignaturStore
+} from "./anlass/untersuchung/untersuchung-abschluss-page/untersuchung-signatur/untersuchung-signatur.store";
 
 export const anlassRoutes: Route[] = [
   {
@@ -177,7 +209,10 @@ export const anlassRoutes: Route[] = [
           {
             path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG + '/:einladungId/' + Path.NOTIZEN + '/:notizTyp',
             component: EinladungNotizPageComponent,
-            canActivate: [requireRole(hasAllNotizenEditBerechtigung())],
+            canActivate: [
+              requireRole(hasAllNotizenEditBerechtigung()),
+              requireAcceptedAgb(),
+            ],
             canDeactivate: [confirmOnDirty()],
             resolve: {
               _labels: () => inject(LabelsStore).loadLabelsList(),
@@ -186,14 +221,16 @@ export const anlassRoutes: Route[] = [
                 inject(AnlassKinderStore).setSelectedEinladungId(einladungId);
                 const notizTyp = requireValidNotizTyp(route.params['notizTyp']);
                 inject(AnlassKinderStore).setCurrentNotizTyp(notizTyp);
-
               },
             },
           },
           {
             path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG + '/:einladungId/' + Path.NOTIZEN + '/:notizTyp/' + Path.UPLOAD,
             component: EinladungNotizHochladenPageComponent,
-            canActivate: [requireRole(hasAllNotizenEditBerechtigung())],
+            canActivate: [
+              requireRole(hasAllNotizenEditBerechtigung()),
+              requireAcceptedAgb(),
+            ],
             resolve: {
               _labels: () => inject(LabelsStore).loadLabelsList(),
               _store: (route: ActivatedRouteSnapshot) => {
@@ -234,6 +271,7 @@ export const anlassRoutes: Route[] = [
               {
                 path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG + '/:id',
                 providers: [
+                  UntersuchungVorabklaerungenStore,
                   UntersuchungImpfungenStore,
                   UntersuchungSehenStore,
                   UntersuchungHoerenAudiogrammStore,
@@ -241,8 +279,13 @@ export const anlassRoutes: Route[] = [
                   UntersuchungGroesseGewichtStore,
                   UntersuchungTriageStore,
                   UntersuchungArztStore,
+                  UntersuchungSpracheStore,
                   UntersuchungLaeusekontrolleStore,
+                  UntersuchungSchulrelevanteBeeintraechtigungStore,
+                  UntersuchungBewegungsapparatStore,
                   UntersuchungMassnahmenStore,
+                  UntersuchungAbschlussStore,
+                  UntersuchungSignaturStore,
                 ],
                 resolve: {
                   _store: (route: ActivatedRouteSnapshot) => {
@@ -278,7 +321,32 @@ export const anlassRoutes: Route[] = [
                         inject(UntersuchungStore).setCurrentTabId(einladungId);
                       },
                     },
-                    canActivate: [requireRole(hasUntersuchungKindDatenViewBerechtigung())],
+                    canActivate: [
+                      requireRole(hasUntersuchungKindDatenViewBerechtigung()),
+                      requireAcceptedAgb(),
+                    ],
+                    canDeactivate: [confirmOnDirty()],
+                  },
+                  {
+                    path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG_VORABKLAERUNGEN,
+                    component: UntersuchungVorabklaerungenComponent,
+                    resolve: {
+                      kindDate: (route: ActivatedRouteSnapshot) => {
+                        const anlassId = requireValidBackendEntityId(
+                          route.parent?.parent?.parent?.paramMap.get('anlassId'),
+                        );
+                        const einladungId = requireValidBackendEntityId(route.params['id']);
+                        inject(UntersuchungVorabklaerungenStore).loadUntersuchungVorabklaerungen({
+                          anlassId,
+                          einladungId,
+                        });
+                        inject(UntersuchungStore).setCurrentTabId(einladungId);
+                      },
+                    },
+                    canActivate: [
+                      requireRole(hasUntersuchungVorabklaerungenViewBerechtigung()),
+                      requireAcceptedAgb(),
+                    ],
                     canDeactivate: [confirmOnDirty()],
                   },
                   {
@@ -286,21 +354,23 @@ export const anlassRoutes: Route[] = [
                     component: UntersuchungImpfungenComponent,
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
-
                         const currentEinladungId = requireValidBackendEntityId(route.params['id']);
                         const currentAnlassId = requireValidBackendEntityId(
                           route.parent?.parent?.parent?.paramMap.get('anlassId'),
                         );
                         inject(ImpfstoffeChargenStore).loadImpfstoffeAndChargen();
-                        const untersuchungImpfungenStore =  inject(UntersuchungImpfungenStore);
+                        const untersuchungImpfungenStore = inject(UntersuchungImpfungenStore);
                         untersuchungImpfungenStore.loadUntersuchungImpfungenData({
                           anlassId: currentAnlassId,
                           einladungId: currentEinladungId,
                         });
-                        untersuchungImpfungenStore.initializeFolgeTermine({ currentAnlassId });
+                        untersuchungImpfungenStore.initializeFolgeTermine({currentAnlassId});
                       },
                     },
-                    canActivate: [requireRole(hasImpfungenViewBerechtigung())],
+                    canActivate: [
+                      requireRole(hasImpfungenViewBerechtigung()),
+                      requireAcceptedAgb(),
+                    ],
                     canDeactivate: [confirmOnDirty()],
                   },
                   {
@@ -310,15 +380,18 @@ export const anlassRoutes: Route[] = [
                       _store: (route: ActivatedRouteSnapshot) => {
                         const params = {
                           anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId')),
-                          einladungId: requireValidBackendEntityId(route.params['id'])
-                        }
+                          einladungId: requireValidBackendEntityId(route.params['id']),
+                        };
                         inject(UntersuchungSehenStore).loadDefaultSehenBeurteilung(params);
                         inject(UntersuchungSehenStore).loadSehenBeurteilung(params);
                         inject(UntersuchungSehenStore).loadSehenMassnahmen(params);
                         inject(UntersuchungSehenStore).loadSehenBemerkungFragebogen(params);
                       },
                     },
-                    canActivate: [requireRole(hasSehenViewBerechtigung())],
+                    canActivate: [
+                      requireRole(hasSehenViewBerechtigung()),
+                      requireAcceptedAgb(),
+                    ],
                     canDeactivate: [confirmOnDirty()],
                   },
                   {
@@ -328,7 +401,7 @@ export const anlassRoutes: Route[] = [
                       _store: (route: ActivatedRouteSnapshot) => {
                         const params = {
                           einladungId: requireValidBackendEntityId(route.params['id']),
-                          anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId'))
+                          anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId')),
                         };
                         inject(UntersuchungHoerenAudiogrammStore).loadDefaultHoerenAudiogramm(params);
                         inject(UntersuchungHoerenOtoskopieStore).loadDefaultHoerenOtoskopie(params);
@@ -336,7 +409,10 @@ export const anlassRoutes: Route[] = [
                         inject(UntersuchungHoerenOtoskopieStore).loadHoerenOtoskopie(params);
                       },
                     },
-                    canActivate: [requireRole(hasHoerenViewBerechtigung())],
+                    canActivate: [
+                      requireRole(hasHoerenViewBerechtigung()),
+                      requireAcceptedAgb(),
+                    ],
                     canDeactivate: [confirmOnDirty()],
                   },
                   {
@@ -354,7 +430,10 @@ export const anlassRoutes: Route[] = [
                         });
                       },
                     },
-                    canActivate: [requireRole(hasGroesseGewichtViewBerechtigung())],
+                    canActivate: [
+                      requireRole(hasGroesseGewichtViewBerechtigung()),
+                      requireAcceptedAgb(),
+                    ],
                     canDeactivate: [confirmOnDirty()],
                   },
                   {
@@ -372,7 +451,10 @@ export const anlassRoutes: Route[] = [
                         });
                       },
                     },
-                    canActivate: [requireRole(hasTriageViewBerechtigung())],
+                    canActivate: [
+                      requireRole(hasTriageViewBerechtigung()),
+                      requireAcceptedAgb(),
+                    ],
                     canDeactivate: [confirmOnDirty()],
                   },
                   {
@@ -382,14 +464,75 @@ export const anlassRoutes: Route[] = [
                       _store: (route: ActivatedRouteSnapshot) => {
                         const params = {
                           einladungId: requireValidBackendEntityId(route.params['id']),
-                          anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId'),)
-                        }
+                          anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId')),
+                        };
                         inject(UntersuchungArztStore).loadDefaultUntersuchungArzt(params);
                         inject(UntersuchungArztStore).loadUntersuchungArzt(params);
                         inject(UntersuchungArztStore).loadUntersuchungArztBemerkung(params);
                       },
                     },
-                    canActivate: [requireRole(hasAerztlicheUntersuchungViewBerechtigung())],
+                    canActivate: [
+                      requireRole(hasAerztlicheUntersuchungViewBerechtigung()),
+                      requireAcceptedAgb(),
+                    ],
+                    canDeactivate: [confirmOnDirty()],
+                  },
+                  {
+                    path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG_SPRACHE,
+                    component: UntersuchungSpracheComponent,
+                    resolve: {
+                      _store: (route: ActivatedRouteSnapshot) => {
+                        const params = {
+                          einladungId: requireValidBackendEntityId(route.params['id']),
+                          anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId')),
+                        };
+                        inject(UntersuchungSpracheStore).loadUntersuchungSprache(params);
+                      },
+                    },
+                    canActivate: [
+                      requireRole(hasAerztlicheUntersuchungViewBerechtigung()),
+                      requireAcceptedAgb(),
+                    ],
+                    canDeactivate: [confirmOnDirty()],
+                  },
+                  {
+                    path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG_SCHULRELEVANTE_BEEINTRAECHTIGUNG,
+                    component: UntersuchungSchulrelevanteBeeintraechtigungComponent,
+                    resolve: {
+                      _store: (route: ActivatedRouteSnapshot) => {
+                        const params = {
+                          einladungId: requireValidBackendEntityId(route.params['id']),
+                          anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId')),
+                        };
+                        inject(UntersuchungSchulrelevanteBeeintraechtigungStore)
+                          .loadUntersuchungSchulrelevanteBeeintraechtigung(params);
+                      },
+                    },
+                    canActivate: [
+                      requireRole(hasAerztlicheUntersuchungViewBerechtigung()),
+                      requireAcceptedAgb(),
+                    ],
+                    canDeactivate: [confirmOnDirty()],
+                  },
+                  {
+                    path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG_BEWEGUNGSAPPARAT,
+                    component: UntersuchungBewegungsapparatComponent,
+                    resolve: {
+                      _store: (route: ActivatedRouteSnapshot) => {
+                        const currentEinladungId = requireValidBackendEntityId(route.params['id']);
+                        const currentAnlassId = requireValidBackendEntityId(
+                          route.parent?.parent?.parent?.paramMap.get('anlassId'),
+                        );
+                        inject(UntersuchungBewegungsapparatStore).loadBewegungsapparat({
+                          anlassId: currentAnlassId,
+                          einladungId: currentEinladungId,
+                        });
+                      },
+                    },
+                    canActivate: [
+                      requireRole(hasAerztlicheUntersuchungViewBerechtigung()),
+                      requireAcceptedAgb(),
+                    ],
                     canDeactivate: [confirmOnDirty()],
                   },
                   {
@@ -407,7 +550,35 @@ export const anlassRoutes: Route[] = [
                         });
                       },
                     },
-                    canActivate: [requireRole(hasLaeusekontrolleViewBerechtigung())],
+                    canActivate: [
+                      requireRole(hasLaeusekontrolleViewBerechtigung()),
+                      requireAcceptedAgb(),
+                    ],
+                    canDeactivate: [confirmOnDirty()],
+                  },
+                  {
+                    path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG_ABSCHLUSS,
+                    component: UntersuchungAbschlussPageComponent,
+                    resolve: {
+                      _store: (route: ActivatedRouteSnapshot) => {
+                        const currentEinladungId = requireValidBackendEntityId(route.params['id']);
+                        const currentAnlassId = requireValidBackendEntityId(
+                          route.parent?.parent?.parent?.paramMap.get('anlassId'),
+                        );
+                        inject(UntersuchungAbschlussStore).loadUntersuchungAbschluss({
+                          anlassId: currentAnlassId,
+                          einladungId: currentEinladungId,
+                        });
+                        inject(UntersuchungSignaturStore).loadUntersuchungSignatur({
+                          anlassId: currentAnlassId,
+                          einladungId: currentEinladungId,
+                        });
+                      },
+                    },
+                    canActivate: [
+                      requireRole(hasUntersuchungAbschlussViewBerechtigung()),
+                      requireAcceptedAgb(),
+                    ],
                     canDeactivate: [confirmOnDirty()],
                   },
                   {
@@ -420,6 +591,10 @@ export const anlassRoutes: Route[] = [
                           route.parent?.parent?.parent?.paramMap.get('anlassId'),
                         );
                         inject(UntersuchungMassnahmenStore).loadMassnahmen({
+                          anlassId: currentAnlassId,
+                          einladungId: currentEinladungId,
+                        });
+                        inject(UntersuchungVorabklaerungenStore).loadUntersuchungVorabklaerungen({
                           anlassId: currentAnlassId,
                           einladungId: currentEinladungId,
                         });
@@ -459,9 +634,25 @@ export const anlassRoutes: Route[] = [
                           anlassId: currentAnlassId,
                           einladungId: currentEinladungId,
                         });
+                        inject(UntersuchungSpracheStore).loadUntersuchungSprache({
+                          anlassId: currentAnlassId,
+                          einladungId: currentEinladungId,
+                        });
+                        inject(UntersuchungBewegungsapparatStore).loadBewegungsapparat({
+                          anlassId: currentAnlassId,
+                          einladungId: currentEinladungId,
+                        });
+                        inject(UntersuchungSchulrelevanteBeeintraechtigungStore)
+                          .loadUntersuchungSchulrelevanteBeeintraechtigung({
+                            anlassId: currentAnlassId,
+                            einladungId: currentEinladungId,
+                          });
                       },
                     },
-                    canActivate: [requireRole(hasMassnahmenViewBerechtigung())],
+                    canActivate: [
+                      requireRole(hasMassnahmenViewBerechtigung()),
+                      requireAcceptedAgb(),
+                    ],
                     canDeactivate: [confirmOnDirty()],
                   },
                 ],
@@ -480,7 +671,6 @@ export function requireValidNotizTyp(value: unknown): NotizTyp {
   }
   return value;
 }
-
 
 export function isValidNotizTyp(value: unknown): value is NotizTyp {
   if (typeof value !== 'string') {

@@ -11,6 +11,7 @@ import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfoJson;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
@@ -49,7 +50,8 @@ public class KontaktPersonKindExternalSyncHelperService {
     public static KontaktPersonKind toEntityForCreate(
         @NonNull Set<Kind> kinder,
         @NonNull KontaktPersonKindExternal kontaktPersonKindExternal,
-        @NonNull OffsetDateTime now
+        @NonNull OffsetDateTime now,
+        @NonNull ImportTyp importTyp
     ) {
         Geschlecht geschlecht = getGeschlecht(kontaktPersonKindExternal.getAdressierungAnrede());
         return new KontaktPersonKind(
@@ -57,19 +59,22 @@ public class KontaktPersonKindExternalSyncHelperService {
                 null,
                 kontaktPersonKindExternal.getExternalId(),
                 now,
-                ImportTyp.ESCADA
+                importTyp
             ),
             kinder,
             Objects.toString(kontaktPersonKindExternal.getAdressierungName(), "N/A"),
             Objects.toString(kontaktPersonKindExternal.adressierungVorname, "N/A"),
             geschlecht,
-            getBeziehung(geschlecht),
+            importTyp == ImportTyp.PUPIL ?
+                mapBeziehungPupil(kontaktPersonKindExternal.getAdressierungBeziehung()) :
+                mapBeziehungEscada(geschlecht),
             extractAdresse(kontaktPersonKindExternal),
-            mapValidEmailAdressOrNull(kontaktPersonKindExternal.getAdressierungEmail()),
+            mapValidEmailAdressOrNull(kontaktPersonKindExternal.getAdressierungEmail(), importTyp),
             mapFirstValidPhoneNumberOrNull(
                 kontaktPersonKindExternal.getAdressierungNatel(),
                 kontaktPersonKindExternal.getAdressierungTelefonPrivat(),
-                kontaktPersonKindExternal.getAdressierungTelefonGeschaeft()),
+                kontaktPersonKindExternal.getAdressierungTelefonGeschaeft(),
+                importTyp),
             false
         );
     }
@@ -105,28 +110,38 @@ public class KontaktPersonKindExternalSyncHelperService {
         return existingKontaktPersonKindExternal;
     }
 
+    private boolean isPupil(@Nullable ExternalImportInfo externalImportInfo) {
+        return externalImportInfo != null && externalImportInfo.getImportTyp() == ImportTyp.PUPIL;
+    }
+
     @NonNull
     private KontaktPersonKind updateKontaktPersonKindBasedOnExternal(
         @NonNull KontaktPersonKind kontaktPersonKind,
         @NonNull KontaktPersonKindExternal updatedExternal,
-        @NonNull OffsetDateTime now
+        @NonNull OffsetDateTime now,
+        @NonNull ImportTyp importTyp
     ) {
+        boolean isPupil = isPupil(kontaktPersonKind.getExternalImportInfo());
+
         kontaktPersonKind.setName(Objects.toString(updatedExternal.getAdressierungName(), "N/A"));
         kontaktPersonKind.setVorname(Objects.toString(updatedExternal.getAdressierungVorname(), "N/A"));
         kontaktPersonKind.setGeschlecht(getGeschlecht(updatedExternal.getAdressierungAnrede()));
-        kontaktPersonKind.setBeziehung(getBeziehung(kontaktPersonKind.getGeschlecht()));
+        kontaktPersonKind.setBeziehung(isPupil ?
+            mapBeziehungPupil(updatedExternal.getAdressierungBeziehung()) :
+            mapBeziehungEscada(kontaktPersonKind.getGeschlecht()));
         kontaktPersonKind.setAdresse(extractAdresse(updatedExternal));
-        kontaktPersonKind.setEmail(mapValidEmailAdressOrNull(updatedExternal.getAdressierungEmail()));
+        kontaktPersonKind.setEmail(mapValidEmailAdressOrNull(updatedExternal.getAdressierungEmail(), importTyp));
         kontaktPersonKind.setTelefon(mapFirstValidPhoneNumberOrNull(
             updatedExternal.getAdressierungNatel(),
             updatedExternal.getAdressierungTelefonPrivat(),
-            updatedExternal.getAdressierungTelefonGeschaeft()));
+            updatedExternal.getAdressierungTelefonGeschaeft(),
+            importTyp));
 
         kontaktPersonKind.setExternalImportInfo(ExternalImportInfoJson.toEntityOrCreate(
             kontaktPersonKind.getExternalImportInfo(),
             updatedExternal.getExternalId(),
             now,
-            ImportTyp.ESCADA
+            importTyp
         ));
 
         return kontaktPersonKind;
@@ -135,9 +150,10 @@ public class KontaktPersonKindExternalSyncHelperService {
     @NonNull
     @Transactional(TxType.REQUIRES_NEW)
     public ItemSyncResultJson<KontaktPersonKind> addNewKontaktPerson(
-        @NonNull KontaktPersonKindExternal kontaktPersonKindExternalToAdd
+        @NonNull KontaktPersonKindExternal kontaktPersonKindExternalToAdd,
+        @NonNull ImportTyp importTyp
     ) {
-        // All parents must have at least one kind if ocming from escada
+        // All parents must have at least one kind if ocming from external system
         Set<Kind> kinder = loadLinkedKinder(kontaktPersonKindExternalToAdd);
         Optional<KontaktPersonKind> preexistingKontaktpersonKindOpt =
             findPreexistingLehrperson(kontaktPersonKindExternalToAdd);
@@ -147,12 +163,14 @@ public class KontaktPersonKindExternalSyncHelperService {
             .map(existingKPKind -> updateKontaktPersonKindBasedOnExternal(
                 existingKPKind,
                 kontaktPersonKindExternalToAdd,
-                appClock.offsetDateTime().now()
+                appClock.offsetDateTime().now(),
+                importTyp
             ))
             .orElseGet(() -> toEntityForCreate(
                 kinder,
                 kontaktPersonKindExternalToAdd,
-                appClock.offsetDateTime().now()
+                appClock.offsetDateTime().now(),
+                importTyp
             ));
         internalKpKindToStore = kontaktPersonKindService.persist(internalKpKindToStore);
 
@@ -163,10 +181,11 @@ public class KontaktPersonKindExternalSyncHelperService {
         var result = ItemSyncResultJson.createAddOkItem(
             kontaktPersonKindExternalToAdd,
             internalKpKindToStore.getId(),
-            internalKpKindToStore.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo())
+            internalKpKindToStore.getFullNameIfAllowed(configService.isExternalImportRedactPersonalInfo())
         );
         LOG.info(
-            "ESCADA: KontaktPersonKind {} added{}, internalId: '{}', externalId: '{}'",
+            "{}: KontaktPersonKind {} added{}, internalId: '{}', externalId: '{}'",
+            importTyp,
             result.getFriendlyName(),
             preexistingKontaktpersonKindOpt.isEmpty() ? "" : " (preexisting)",
             result.getInternalId(),
@@ -184,15 +203,15 @@ public class KontaktPersonKindExternalSyncHelperService {
 
     @NonNull
     private Set<Kind> loadLinkedKinder(@NonNull KontaktPersonKindExternal kontaktPersonKindExternalToAdd) {
-        String[] escadaKindIds = StringUtils.split(kontaktPersonKindExternalToAdd.getSchuelerIds(), ",");
+        String[] externalKindIds = StringUtils.split(kontaktPersonKindExternalToAdd.getSchuelerIds(), ",");
         Validate.isTrue(
-            escadaKindIds != null && escadaKindIds.length > 0,
-            "escada Schueler ID is required to assign KP to Kind");
+            externalKindIds != null && externalKindIds.length > 0,
+            "ExternalSystem Schueler ID is required to assign KP to Kind");
 
         // read kinder from database
         Set<Kind> kinder = new HashSet<>();
-        for (String escadaKindId : escadaKindIds) {
-            kinder.add(kindService.getByExternalId(escadaKindId));
+        for (String kindIdFromExternalSystem : externalKindIds) {
+            kinder.add(kindService.getByExternalId(kindIdFromExternalSystem));
         }
         return kinder;
     }
@@ -201,7 +220,8 @@ public class KontaktPersonKindExternalSyncHelperService {
     @Transactional(TxType.REQUIRES_NEW)
     public ItemSyncResultJson<KontaktPersonKind> updateExistingKontaktPerson(
         @NonNull ExternalSystemIdDTO idDTO,
-        @NonNull KontaktPersonKindExternal kontaktPersonKindExternal
+        @NonNull KontaktPersonKindExternal kontaktPersonKindExternal,
+        @NonNull ImportTyp importTyp
     ) {
         KontaktPersonKind existingKontaktPerson =
             kontaktPersonKindService.getById(ID.of(idDTO.getInternalId(), KontaktPersonKind.class));
@@ -224,7 +244,8 @@ public class KontaktPersonKindExternalSyncHelperService {
         KontaktPersonKind updatedKontaktPerson = updateKontaktPersonKindBasedOnExternal(
             existingKontaktPerson,
             updatedExternal,
-            appClock.offsetDateTime().now()
+            appClock.offsetDateTime().now(),
+            importTyp
         );
 
         updatedKontaktPerson.disableOptimisticLockingCheck();
@@ -239,14 +260,15 @@ public class KontaktPersonKindExternalSyncHelperService {
         return ItemSyncResultJson.createUpdateOkItem(
             idDTO,
             KontaktPersonKind.class,
-            updatedKontaktPerson.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo())
+            updatedKontaktPerson.getFullNameIfAllowed(configService.isExternalImportRedactPersonalInfo())
         );
     }
 
     @NonNull
     @Transactional(TxType.REQUIRES_NEW)
     public ItemSyncResultJson<KontaktPersonKind> deactivateRemovedKonkaktPersonen(
-        @NonNull ExternalSystemIdDTO externalSystemIdDTO
+        @NonNull ExternalSystemIdDTO externalSystemIdDTO,
+        @NonNull ImportTyp importTyp
     ) {
         KontaktPersonKind kontaktPerson = kontaktPersonKindService.getById(
             ID.of(externalSystemIdDTO.getInternalId(), KontaktPersonKind.class));
@@ -271,10 +293,11 @@ public class KontaktPersonKindExternalSyncHelperService {
         var result = ItemSyncResultJson.createDeactivateOkItem(
             externalSystemIdDTO,
             KontaktPersonKind.class,
-            kontaktPerson.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo()));
+            kontaktPerson.getFullNameIfAllowed(configService.isExternalImportRedactPersonalInfo()));
 
         LOG.info(
-            "ESCADA: KontaktPersonKind {} deactivated, internalId: '{}', externalId: '{}'",
+            "{}: KontaktPersonKind {} deactivated, internalId: '{}', externalId: '{}'",
+            importTyp,
             result.getFriendlyName(),
             result.getInternalId(),
             result.getExternalId()
@@ -284,19 +307,32 @@ public class KontaktPersonKindExternalSyncHelperService {
     }
 
     private static Geschlecht getGeschlecht(@Nullable String anrede) {
-        if (StringUtils.isEmpty(anrede)
-            || (!anrede.equalsIgnoreCase("Herr")
-            && !anrede.equalsIgnoreCase("Frau"))
-        ) {
+        if (StringUtils.isEmpty(anrede)) {
             return Geschlecht.UNBEKANNT;
         }
         if (anrede.equalsIgnoreCase("Herr")) {
             return Geschlecht.MAENNLICH;
         }
-        return Geschlecht.WEIBLICH;
+        if (anrede.equalsIgnoreCase("Frau")) {
+            return Geschlecht.WEIBLICH;
+        }
+        return Geschlecht.UNBEKANNT;
     }
 
-    private static KontaktPersonKindBeziehung getBeziehung(Geschlecht geschlecht) {
+    private static KontaktPersonKindBeziehung mapBeziehungPupil(@Nullable String beziehung) {
+        if ("Vater".equals(beziehung)) {
+            return KontaktPersonKindBeziehung.VATER;
+        }
+        if ("Mutter".equals(beziehung)) {
+            return KontaktPersonKindBeziehung.MUTTER;
+        }
+        if ("Vormundschaft".equals(beziehung)) {
+            return KontaktPersonKindBeziehung.VORMUNDSCHAFT;
+        }
+        return KontaktPersonKindBeziehung.ANDERE;
+    }
+
+    private static KontaktPersonKindBeziehung mapBeziehungEscada(Geschlecht geschlecht) {
         if (geschlecht == Geschlecht.MAENNLICH) {
             return KontaktPersonKindBeziehung.VATER;
         }
@@ -307,7 +343,10 @@ public class KontaktPersonKindExternalSyncHelperService {
     }
 
     @Nullable
-    private static EmailAddress mapValidEmailAdressOrNull(@Nullable String email) {
+    private static EmailAddress mapValidEmailAdressOrNull(
+        @Nullable String email,
+        @NonNull ImportTyp importTyp
+    ) {
         if (StringUtils.isEmpty(email)) {
             return null;
         }
@@ -315,7 +354,8 @@ public class KontaktPersonKindExternalSyncHelperService {
             return EmailAddress.fromString(email);
         } catch (Exception e) {
             LOG.debug(
-                "ESCADA: Invalid email address '{}' when importing eltern",
+                "{}: Invalid email address '{}' when importing eltern",
+                importTyp,
                 email
             );
             return null;
@@ -326,18 +366,22 @@ public class KontaktPersonKindExternalSyncHelperService {
     private static NormalizedPhoneNumber mapFirstValidPhoneNumberOrNull(
         @Nullable String natel,
         @Nullable String privat,
-        @Nullable String geschaeft
+        @Nullable String geschaeft,
+        @NonNull ImportTyp importTyp
     ) {
         return ObjectUtils.firstNonNull(
-            mapValidPhoneNumberOrNull(natel),
-            mapValidPhoneNumberOrNull(privat),
-            mapValidPhoneNumberOrNull(geschaeft)
+            mapValidPhoneNumberOrNull(natel, importTyp),
+            mapValidPhoneNumberOrNull(privat, importTyp),
+            mapValidPhoneNumberOrNull(geschaeft, importTyp)
         );
 
     }
 
     @Nullable
-    private static NormalizedPhoneNumber mapValidPhoneNumberOrNull(@Nullable String phone) {
+    private static NormalizedPhoneNumber mapValidPhoneNumberOrNull(
+        @Nullable String phone,
+        @NonNull ImportTyp importTyp
+    ) {
         if (StringUtils.isEmpty(phone)) {
             return null;
         }
@@ -345,7 +389,8 @@ public class KontaktPersonKindExternalSyncHelperService {
             return new NormalizedPhoneNumber(phone);
         } catch (Exception e) {
             LOG.debug(
-                "ESCADA: Invalid phone number '{}' for kontakt person",
+                "{}: Invalid phone number '{}' for kontakt person",
+                importTyp,
                 phone
             );
             return null;

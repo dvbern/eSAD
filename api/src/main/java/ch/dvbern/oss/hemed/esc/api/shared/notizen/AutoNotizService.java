@@ -9,7 +9,6 @@ import java.util.Set;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
-import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
@@ -21,20 +20,15 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizService;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizStatus;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
-import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
-import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -46,9 +40,8 @@ public class AutoNotizService {
     private final NotizService notizService;
     private final LabelService labelService;
     private final CurrentUserService currentUserService;
-    private final FileStoreService fileStoreService;
-    private final ConfigService configService;
     private final TL tl;
+    private final FileDataService fileDataService;
 
     @NonNull
     public Notiz createDuplikatMergeNotiz(
@@ -69,10 +62,11 @@ public class AutoNotizService {
             NotizTyp.DEFAULT,
             dossier,
             currentUserService.currentUser(),
+            null,
             Collections.emptySet(),
             List.of(
-                createFileData(exportBasisKind, tl.translate("notiz.duplikat.merge.file.kind1")),
-                createFileData(exportOtherKind, tl.translate("notiz.duplikat.merge.file.kind2"))
+                fileDataService.createFileData(exportBasisKind, FileTyp.KINDERDOSSIER, tl.translate("notiz.duplikat.merge.file.kind1")),
+                fileDataService.createFileData(exportOtherKind, FileTyp.KINDERDOSSIER, tl.translate("notiz.duplikat.merge.file.kind2"))
             )
         );
         return notizService.persist(notiz);
@@ -110,7 +104,7 @@ public class AutoNotizService {
             Notiz copyOfImpfausweis = Notiz.copyFromExisting(impfausweis, newTitle, newBemerkungen);
 
             einladungSource.getNotizen().remove(impfausweis);
-            notizService.remove(impfausweis.getId());
+            notizService.remove(impfausweis.getId(), false);
 
             List<Notiz> notizen = new ArrayList<>(einladungTarget.getNotizen().stream().toList());
             Notiz notiz = notizService.persist(copyOfImpfausweis);
@@ -151,7 +145,7 @@ public class AutoNotizService {
             Notiz copyOfFragebogen = Notiz.copyFromExisting(fragebogen, newTitle, newBemerkung);
 
             einladungSource.getNotizen().remove(fragebogen);
-            notizService.remove(fragebogen.getId());
+            notizService.remove(fragebogen.getId(), false);
 
             List<Notiz> notizen = new ArrayList<>(einladungTarget.getNotizen().stream().toList());
             Notiz notiz = notizService.persist(copyOfFragebogen);
@@ -192,29 +186,13 @@ public class AutoNotizService {
             Notiz copyOfAnmeldungBestaetigung = Notiz.copyFromExisting(anmeldungBestaetigung, newTitle, newBemerkung);
 
             einladungSource.getNotizen().remove(anmeldungBestaetigung);
-            notizService.remove(anmeldungBestaetigung.getId());
+            notizService.remove(anmeldungBestaetigung.getId(), false);
 
             List<Notiz> notizen = new ArrayList<>(einladungTarget.getNotizen().stream().toList());
             Notiz notiz = notizService.persist(copyOfAnmeldungBestaetigung);
             notizen.add(notiz);
             einladungTarget.setNotizen(notizen);
         }
-    }
-
-    @NonNull
-    private FileData createFileData(@NonNull PrintResultDTO exportKind, @NonNull String prefixFilename) {
-        // automatisch generierter Name mit Prfefix ergänzen damit man sieht dass das Dok von Merge ist
-        CleanFileName cleanFileName = new CleanFileName(prefixFilename + '_' + exportKind.getFileInfo().getFileName());
-        FileInfo fileInfo = FileInfo.of(exportKind.getFileInfo());
-        fileInfo.setFileName(cleanFileName);
-        Uni<PutObjectResponse> putObjectResponseUni =
-            fileStoreService.uploadToS3Async(fileInfo.getMediaType().toString(), exportKind.getContent(), fileInfo);
-        PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
-        LOG.info(
-            "Uploaded file to S3, fileIdInBucket: {}, putObjectResponse: {}",
-            fileInfo.getFileIdInBucket(),
-            putObjectResponse);
-        return new FileData(FileTyp.KINDERDOSSIER, fileInfo.getFileName(), fileInfo);
     }
 
     @NonNull

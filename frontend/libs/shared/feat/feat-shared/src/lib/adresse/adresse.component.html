@@ -3,7 +3,7 @@
   @if (form().withLand) {
     <svui-form-control [label]="'adresse.land' | transloco"
                        [viewValue]="form().group.getRawValue().land ? (('Land.' + form().group.getRawValue().land | transloco)) : undefined"
-                       [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                       [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: externalSchnittstelle()}} : undefined">
       <ng-select
         svuiNgSelect
         bindLabel="dummy"
@@ -23,7 +23,7 @@
   <!-- Strasse & Nr -->
   <svui-form-control [label]="'adresse.strasseUndNr' | transloco"
                      [viewValue]="form().group.getRawValue().strasseUndNr"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: externalSchnittstelle()}} : undefined">
     <input svuiTextInput
            [formControl]="form().group.controls.strasseUndNr"
     />
@@ -32,7 +32,7 @@
   <!-- Adresszusatz -->
   <svui-form-control [label]="'adresse.adresseZusatz' | transloco"
                      [viewValue]="form().group.getRawValue().adresseZusatz"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: externalSchnittstelle()}} : undefined">
     <input svuiTextInput
            [formControl]="form().group.controls.adresseZusatz"
     />
@@ -41,7 +41,7 @@
   <!-- Plz -->
   <svui-form-control [label]="'adresse.plz' | transloco" size="half"
                      [viewValue]="form().group.getRawValue().plz"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: externalSchnittstelle()}} : undefined">
     <input svuiTextInput
            [formControl]="form().group.controls.plz"
     />
@@ -50,7 +50,7 @@
   <!-- Ort -->
   <svui-form-control [label]="'adresse.ort' | transloco" size="half"
                      [viewValue]="form().group.getRawValue().ort"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: externalSchnittstelle()}} : undefined">
     <input svuiTextInput
            [formControl]="form().group.controls.ort"
     />

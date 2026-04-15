@@ -19,8 +19,6 @@
 package ch.dvbern.oss.hemed.esc.api.shared.printer.anlass;
 
 import java.io.OutputStream;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +31,12 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
+import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.layout.Document;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -51,7 +52,9 @@ public final class AnlassPrinter {
     public static void print(
         @NonNull AnlassPrintDTO dto,
         @NonNull OutputStream outputStream,
-        @NonNull FileStoreService fileStoreService
+        @NonNull FileStoreService fileStoreService,
+        @NonNull TenantSettingsService tenantSettingsService,
+        @NonNull ConfigService configService
     ) {
         BasePrinter basePrinter = new BasePrinter(dto.getLanguage(), dto.getTenant(), fileStoreService);
 
@@ -60,7 +63,7 @@ public final class AnlassPrinter {
         basePrinter.addHeader(document);
 
         // Anlass-Titel
-        var tl = new TLProducer(dto::getLanguage).forAppLanguage(dto.getLanguage());
+        var tl = new TLProducer(dto::getLanguage, dto::getTenant).forAppLanguage(dto.getLanguage());
         basePrinter.addH1Title(anlass.getFullAnlassTitel(tl), document);
 
         // Footer
@@ -82,7 +85,12 @@ public final class AnlassPrinter {
         addAnlassInformationen(anlass, basePrinter, document);
 
         // Add list of invited kinder
-        addEingeladeneKinder(dto.getEinladungen(), dto.getNachkontrollen(), basePrinter, document);
+        boolean printEsadId = tenantSettingsService.getTenantSetting()
+            .getTenantSettingFeatures()
+            .getEsadIdFeature()
+            .isEnabledForDeploymentEnvironment(configService.getEnvironment());
+
+        addEingeladeneKinder(dto.getEinladungen(), dto.getNachkontrollen(), basePrinter, document, printEsadId);
 
         document.close();
     }
@@ -114,8 +122,8 @@ public final class AnlassPrinter {
         if (anlass.getZeitVonBis() != null) {
             basePrinter.addKeyValue(
                 "printer.anlass.zeit",
-                formatLocalDateTime(anlass.getZeitVonBis().getVon()) + " - " +
-                    formatLocalDateTime(anlass.getZeitVonBis().getBis()),
+                PrintUtil.formatLocalDateTime(anlass.getZeitVonBis().getVon()) + " - " +
+                    PrintUtil.formatLocalDateTime(anlass.getZeitVonBis().getBis()),
                 document);
         } else {
             basePrinter.addKeyValue("printer.anlass.zeit", PrintUtil.PLACEHOLDER, document);
@@ -138,14 +146,6 @@ public final class AnlassPrinter {
             PrintUtil.trimToPlaceholder(dto.getLehrpersonenCommaSeparated(basePrinter)),
             document
         );
-    }
-
-    @NonNull
-    private static String formatLocalDateTime(@Nullable LocalDateTime dateTime) {
-        if (dateTime == null) {
-            return PrintUtil.PLACEHOLDER;
-        }
-        return dateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 
     private static void addAnlassInformationen(
@@ -178,7 +178,8 @@ public final class AnlassPrinter {
         @NonNull List<Einladung> einladungen,
         @Nullable List<Nachkontrolle> nachkontrollen,
         @NonNull BasePrinter basePrinter,
-        @NonNull Document document
+        @NonNull Document document,
+        @IgnoreForIdClassTest boolean printEsadId
     ) {
         basePrinter.addH2Title(I18nMessage.of("printer.anlass.eingeladene.kinder"), document);
 
@@ -188,7 +189,9 @@ public final class AnlassPrinter {
         headers.add(I18nMessage.of("printer.anlass.kind.vorname"));
         headers.add(I18nMessage.of("printer.anlass.kind.geschlecht"));
         headers.add(I18nMessage.of("printer.anlass.kind.geburtsdatum"));
-        headers.add(I18nMessage.of("printer.anlass.kind.esadId"));
+        if (printEsadId) {
+            headers.add(I18nMessage.of("printer.anlass.kind.esadId"));
+        }
         headers.add(I18nMessage.of("printer.anlass.kind.klassenstufe"));
         headers.add(I18nMessage.of("printer.anlass.kind.nachkontrolle"));
         headers.add(I18nMessage.of("printer.anlass.kind.status"));
@@ -211,8 +214,13 @@ public final class AnlassPrinter {
             row.add(PrintUtil.trimToPlaceholder(kind.getVorname()));
             row.add(basePrinter.translateValue(kind.getGeschlecht()));
             row.add(PrintUtil.trimToPlaceholder(kind.getGeburtsdatum()));
-            row.add(PrintUtil.replaceWhitespaceWithNonBreakingSpace(
-                PrintUtil.trimToPlaceholder(kind.getEsadId())));
+
+            if (printEsadId) {
+                row.add(
+                    PrintUtil.replaceWhitespaceWithNonBreakingSpace(PrintUtil.trimToPlaceholder(kind.getEsadId()))
+                );
+            }
+
             Klassenstufe klassenstufe = kind.getKlasse() != null ? kind.getKlasse().getKlassenstufe() : null;
             row.add(PrintUtil.replaceWhitespaceWithNonBreakingSpace(
                 PrintUtil.trimToPlaceholder(basePrinter.translateValue(klassenstufe))));

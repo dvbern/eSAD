@@ -3,7 +3,11 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDaten;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
+import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.DossierBuilder;
+import org.glassfish.jaxb.core.v2.schemagen.episode.Klass;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,11 +20,13 @@ class KlassenstufeCsvColumnTest extends AbstractBaseColumnTest {
         // ARRANGE
         final KlassenstufeCsvColumn column = new KlassenstufeCsvColumn(config, null);
         final Einladung einladung = new Einladung();
+        final Dossier dossier = DossierBuilder.defaultDossier();
+        einladung.setDossier(dossier);
 
-        // without Untersuchung -> empty string
+        // without Untersuchung -> Daten von Kind
         assertThat(column.extract(einladung)).isEmpty();
 
-        // without UntersuchungKindDaten -> empty string
+        // without UntersuchungKindDaten -> Daten von Kind
         Untersuchung untersuchung = new Untersuchung();
         einladung.setUntersuchung(untersuchung);
         assertThat(column.extract(einladung)).isEmpty();

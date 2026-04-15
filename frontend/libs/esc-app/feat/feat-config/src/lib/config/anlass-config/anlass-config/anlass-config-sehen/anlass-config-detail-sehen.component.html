@@ -23,6 +23,28 @@
       }
     </ng-select>
   </svui-form-control>
+
+  <!-- Sehen BrilleLinsen Values -->
+  <svui-form-control [label]="'anlassconfig.label.sehenBrilleLinsenValues' | transloco"
+                     [viewValue]="form.group.getRawValue().sehenBrilleLinsenValues | translatedEnumViewValuePipe:'BrilleLinsenResultat'"
+  >
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenBrilleLinsenValues"
+      [allowBadgesToWrap]="true"
+      [multiple]="true"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+    >
+      @for (value of brilleLinsenResultat; track value) {
+        <ng-option [value]="value">
+          {{ 'BrilleLinsenResultat.' + value | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
   <!-- Sehen Farbsehen-->
   <svui-form-control [label]="'anlassconfig.label.sehenFarbsehen' | transloco"
                      [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenFarbsehen | transloco">
@@ -77,6 +99,24 @@
       }
     </ng-select>
   </svui-form-control>
+  <!-- Sehen Fernvisus Auge einzeln -->
+  <svui-form-control [label]="'anlassconfig.label.sehenFernvisusAugeEinzeln' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenFernvisusAugeEinzeln | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenFernvisusAugeEinzeln"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
   <!-- Sehen StereoTest-->
   <svui-form-control [label]="'anlassconfig.label.sehenStereoTest' | transloco"
                      [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenStereoTest | transloco">
@@ -113,6 +153,66 @@
       }
     </ng-select>
   </svui-form-control>
+
+  <!-- Sehen Strabismus Values -->
+  <svui-form-control [label]="'anlassconfig.label.sehenStrabismusValues' | transloco"
+                     [viewValue]="form.group.getRawValue().sehenStrabismusValues | translatedEnumViewValuePipe:'StrabismusResultat'"
+  >
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenStrabismusValues"
+      [allowBadgesToWrap]="true"
+      [multiple]="true"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+    >
+      @for (value of strabismusResultat; track value) {
+        <ng-option [value]="value">
+          {{ 'StrabismusResultat.' + value | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Sehen Strabismus Auftreten -->
+  <svui-form-control [label]="'anlassconfig.label.sehenStrabismusAuftreten' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenStrabismusAuftreten | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenStrabismusAuftreten"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Sehen Strabismus Auspraegung -->
+  <svui-form-control [label]="'anlassconfig.label.sehenStrabismusAuspraegung' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenStrabismusAuspraegung | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenStrabismusAuspraegung"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
   <!-- Sehen Inspektion-->
   <svui-form-control [label]="'anlassconfig.label.sehenInspektion' | transloco"
                      [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenInspektion | transloco">

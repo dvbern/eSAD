@@ -1,7 +1,7 @@
 <svui-buttons-right-container class="pb-2">
   <h2 svuiHeading="formSection">{{ 'untersuchung.impfungen.impfungenInternList.title' | transloco }}</h2>
   @if (hasImpfungenEditBerechtigung() && this.anlassStore.canUserEditAnlassInCurrentState()) {
-    <svui-page-header-add-button (click)="createImpfung()"/>
+    <svui-page-header-add-button (click)="createImpfung()" data-testid="button-create-impfung"/>
   }
 </svui-buttons-right-container>
 
@@ -43,8 +43,8 @@
     </th>
     <th scope="col"
         svuiSortable
-        [sortState]="itemTable.findColSortDTO('data.charge.data.name')"
-        (sort)="itemTable.onColSort($event, 'data.charge.data.name')"
+        [sortState]="itemTable.findColSortDTO('data.charge')"
+        (sort)="itemTable.onColSort($event, 'data.charge')"
     >
       {{ 'impfungintern.charge' | transloco }}
     </th>
@@ -86,7 +86,7 @@
       <tr>
         <td>{{ item.data.impfstoff.data.name }}</td>
         <td>{{ impfstoffeChargenStore.getKrankheitenTranslatedList(item.data.impfstoff.data.krankheiten) }}</td>
-        <td>{{ item.data.charge?.data?.name }}</td>
+        <td>{{ item.data.charge }}</td>
         <td>{{ item.data.datumImpfung | date }}</td>
         <td>{{ item.userErfasst?.fullName }}</td>
         <td>{{ item.data.userDurchgefuehrt?.fullName }}</td>

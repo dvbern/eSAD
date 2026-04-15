@@ -24,6 +24,7 @@ public class BriefvorlageService {
     private final FileValidationService fileValidationService;
     private final ConfigService configService;
     private final FileStoreService fileStoreService;
+    private final FileDataService fileDataService;
 
     @NonNull
     public Briefvorlage getById(@NonNull ID<Briefvorlage> briefvorlageID) {
@@ -48,7 +49,11 @@ public class BriefvorlageService {
     }
 
     public void remove(@NonNull ID<Briefvorlage> briefvorlageID) {
+        Briefvorlage briefvorlage = getById(briefvorlageID);
+        // Die Vorlage entfernen
         briefvorlageRepo.remove(briefvorlageID);
+        // Das File in S3 entfernen
+        fileDataService.deleteFileData(List.of(briefvorlage.getFile()), true);
     }
 
     @NonNull

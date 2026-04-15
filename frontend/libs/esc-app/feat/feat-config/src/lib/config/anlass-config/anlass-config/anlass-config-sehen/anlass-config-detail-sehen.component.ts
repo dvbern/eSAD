@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RequirementSetting } from '@dvb/data-access-backend';
-import { BenutzerStore, Path } from '@dvb/feat-shared';
+import {BrilleLinsenResultat, RequirementSetting, StrabismusResultat} from '@dvb/data-access-backend';
+import {BenutzerStore, Path, TranslatedEnumViewValuePipe} from '@dvb/feat-shared';
 import {
   FormButtonsComponent,
   FormControlComponent,
@@ -34,6 +34,7 @@ import { ActivatedRoute } from '@angular/router';
     NgSelectComponent,
     NgSelectDirective,
     TranslocoPipe,
+    TranslatedEnumViewValuePipe,
   ],
   templateUrl: './anlass-config-detail-sehen.component.html',
   styleUrl: './anlass-config-detail-sehen.component.scss',
@@ -46,6 +47,8 @@ export class AnlassConfigDetailSehenComponent implements DirtyMarker {
   readonly anlassConfigHelperService = inject(AnlassConfigHelperService);
 
   readonly requirementSettingOptions = Object.values(RequirementSetting);
+  readonly brilleLinsenResultat = Object.values(BrilleLinsenResultat);
+  protected strabismusResultat =  Object.values(StrabismusResultat);
   protected readonly Path = Path;
 
   public form = new AnlassConfigForm({

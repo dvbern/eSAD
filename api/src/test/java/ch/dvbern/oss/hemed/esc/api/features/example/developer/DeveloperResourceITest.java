@@ -13,6 +13,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppValidationErrorJsonS
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ExampleMsgSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FailureTypeSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ViolationJsonSpec;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import lombok.RequiredArgsConstructor;
@@ -31,11 +32,28 @@ class DeveloperResourceITest extends AbstractITest {
         .toOffsetDateTime();
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         this.setTime(OFFSET_DATE_TIME);
     }
 
     DeveloperApiSpec developerApiSpec = DeveloperApiSpec.developer(RequestSpecUtil.quarkusSpec());
+
+    @Test
+    @TestAsSupportBS
+    void getConfig() {
+
+        // ACT
+        var result = developerApiSpec
+            .developerResourceGetConfig()
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .extract().asString();
+        // ASSERT
+        Assertions.assertThat(result).isNotNull()
+            .contains("quarkus.application.name=esc-api", "app.allow-configprint=true");
+    }
 
     @Test
     void getDate() {

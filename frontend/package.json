@@ -1,6 +1,6 @@
 {
   "name": "@dvb/angular-starter",
-  "version": "26.1.0-SNAPSHOT",
+  "version": "26.5.0-SNAPSHOT",
   "license": "FIXME: starter: determine license",
   "scripts": {
     "prepush": "run-s prepush:*",
@@ -34,10 +34,16 @@
     "prelint:affected": "check-engine",
     "lint:affected": "nx affected:lint",
     "start": "nx serve --host 0.0.0.0",
+    "startinfo:bs": "npm run serve:esc-info-app:bs",
+    "startinfo:be": "npm run serve:esc-info-app:be",
+    "startinfo:win": "npm run serve:esc-info-app:win",
     "preserve": "check-engine",
     "serve": "nx serve --host 0.0.0.0",
     "preserve:esc-app": "check-engine",
     "serve:esc-app": "nx serve esc-app",
+    "serve:esc-info-app:bs": "nx run esc-info-app:serve-bs",
+    "serve:esc-info-app:be": "nx run esc-info-app:serve-be",
+    "serve:esc-info-app:win": "nx run esc-info-app:serve-win",
     "pretest": "check-engine",
     "test": "nx run-many --target=test --runInBand",
     "pretest:affected": "check-engine",
@@ -48,8 +54,8 @@
     "openapi:extract-current-templates": "openapi-generator-cli author template -g typescript-angular -o scripts/conf/openapi-templates/default",
     "playwright-report": "npx playwright show-report",
     "playwright-ui": "npx playwright test --ui",
-    "playwright-ui:esc-e2e": "npm run playwright-ui -- --config=apps/esc-app-e2e/playwright.config.ts",
-    "playwright:esc-e2e-full": "npx playwright test --config=apps/esc-app-e2e/playwright.config.ts --project=e2e-full"
+    "playwright-ui:esc-e2e": "npm run playwright-ui -- --config=apps/esc-app-e2e/playwright.ui.config.ts",
+    "playwright:esc-e2e": "RUN_ID=$(date +%Y%m%d%H%M) npx playwright test --config=apps/esc-app-e2e/playwright.config.ts"
   },
   "private": true,
   "dependencies": {
@@ -92,6 +98,7 @@
     "@angular-devkit/build-angular": "20.2.2",
     "@angular-devkit/core": "20.2.2",
     "@angular-devkit/schematics": "20.2.2",
+    "@angular/build": "20.2.2",
     "@angular/cli": "~20.2.0",
     "@angular/compiler-cli": "20.2.4",
     "@angular/language-service": "20.2.4",

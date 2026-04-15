@@ -26,8 +26,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/klasse/{klasseID}/lehrpersonen")
@@ -36,7 +35,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = Tags.TAG_LEHRPERSON)
 @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "LehrpersonResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("LehrpersonResourceMS")
 public class LehrpersonResource {
 
     private final LehrpersonMapper lehrpersonMapper;

@@ -1,6 +1,5 @@
 import {inject, Injectable} from '@angular/core';
 import {
-  UntersuchungHoerenAudiogrammServiceGetUntersuchungHoerenAudiogrammRequestParams,
   UntersuchungHoerenOtoskopieJson,
   UntersuchungHoerenOtoskopieSaveJson,
   UntersuchungHoerenOtoskopieService,
@@ -14,7 +13,6 @@ import {tapResponse} from '@ngrx/operators';
 import {patchState, signalStore, withMethods, withState} from '@ngrx/signals';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, map, pipe, switchMap, tap} from 'rxjs';
-import {AnlassEinladungenId} from '../../anlass-einladungen-id';
 import {UntersuchungStore} from '../../untersuchung.store';
 
 type UntersuchungHoerenOtoskopieState = {

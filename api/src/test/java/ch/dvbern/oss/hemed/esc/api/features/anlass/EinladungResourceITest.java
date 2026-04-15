@@ -37,34 +37,34 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDur
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.UntersuchungTabsSavedJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.ArtAbmeldung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.GrundAbmeldung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.NaechsteStation;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewichtRepo;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogrammRepo;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopieRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitRepo;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternRepo;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenRepo;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.UntersuchungTabsSavedJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDatenRepo;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmenRepo;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilungRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriageRepo;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.ArtAbmeldung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.GrundAbmeldung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.NaechsteStation;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungRepo;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
@@ -78,6 +78,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AufgabeService;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.types.AufgabeStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
@@ -108,6 +109,7 @@ import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -139,6 +141,7 @@ class EinladungResourceITest extends AbstractITest {
     private final AufgabeService aufgabeService;
     private final AnlassService anlassService;
     private final KindAktivitaetHistoryRepo kindAktivitaetHistoryRepo;
+    private final FileStoreService fileStoreService;
 
     private final AppClock appClock;
     private final TL tl;
@@ -301,6 +304,8 @@ class EinladungResourceITest extends AbstractITest {
         assertThat(einladungChanged.getAbmeldungsNotiz().get().getBemerkungen())
             .contains("Grund: Kontrolle bei Kinderarzt/Kinderärztin oder Augenarzt/Augenärztin\n"
                 + "Art der Abmeldung: Mail von Lehrperson");
+        assertThat(einladungChanged.getAbmeldungsNotiz().get().getAnlassLink())
+            .isEqualTo("/anlass/" + einladung.getAnlass().getId().getId());
 
     }
 
@@ -504,6 +509,7 @@ class EinladungResourceITest extends AbstractITest {
             .withTitel("Fragebogen")
             .withNotizTyp(NotizTyp.FRAGEBOGEN)
             .withVerantwortlicher(fixtureService.createBenutzer())
+            .withAnlassLink("/anlass/" + einladung.getAnlass().getId().getId())
             .withDossier(einladung.getDossier())).getData();
         String saveNotizJsonString = objectMapper.writeValueAsString(saveNotizJson);
         NotizJsonSpec result = api.einladungResourceCreateNotiz()
@@ -523,6 +529,7 @@ class EinladungResourceITest extends AbstractITest {
         assertThat(result.getData().getLabels())
             .extracting(LabelJsonSpec::getId)
             .contains(Label.ID_LABEL_FRAGEBOGEN.getId());
+        assertThat(result.getData().getAnlassLink()).isEqualTo("/anlass/" + einladung.getAnlass().getId().getId());
         Einladung einladungChanged = einladungService.getById(einladung.getId());
         assertThat(einladungChanged.getFragebogenNotiz()).isPresent();
     }
@@ -920,6 +927,18 @@ class EinladungResourceITest extends AbstractITest {
         assertThat(einladungNichtTeilgenommen.getFragebogenNotiz()).isPresent();
         assertThat(einladungNichtTeilgenommen.getAnmeldungBestaetigungNotiz()).isPresent();
 
+        // Dateien bei den Notizen hinzufuegen
+        FileUpload fileUpload = TestUtil.fileToFileUpload(TestUtil.loadTestImage(), "test-file.png");
+        Notiz notizImpfausweis = notizService.addUploadedFileAndFlush(einladungNichtTeilgenommen.getImpfausweisNotiz().get().getId(), fileUpload);
+        Notiz notizFragebogen = notizService.addUploadedFileAndFlush(einladungNichtTeilgenommen.getFragebogenNotiz().get().getId(), fileUpload);
+        Notiz notizAnmeldungBestaetigung = notizService.addUploadedFileAndFlush(einladungNichtTeilgenommen.getAnmeldungBestaetigungNotiz().get().getId(), fileUpload);
+        String fileBucketIdImpfausweis = notizImpfausweis.getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
+        String fileBucketIdFragebogen = notizFragebogen.getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
+        String fileBucketIdAnmeldungBestaetigung = notizAnmeldungBestaetigung.getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
+        assertThat(fileStoreService.getFileBytesSync(fileBucketIdImpfausweis)).isNotEmpty();
+        assertThat(fileStoreService.getFileBytesSync(fileBucketIdFragebogen)).isNotEmpty();
+        assertThat(fileStoreService.getFileBytesSync(fileBucketIdAnmeldungBestaetigung)).isNotEmpty();
+
         // ACT
         String titleAnlassAlsNachzuegler = "Mein Anlass Nachzügler";
         final Anlass anlassAlsNachzuegler = anlassService.persist(
@@ -950,7 +969,7 @@ class EinladungResourceITest extends AbstractITest {
         Einladung einladungNichtTeilgenommenReloaded = einladungService.getById(einladungNichtTeilgenommen.getId());
         ID<Einladung> einladungAlsNachzueglerID =
             ID.of(UUID.fromString(result.getEinladungList().getFirst().getId()), Einladung.class);
-        Einladung einladungAlsNachzuegler = einladungService.getById(einladungAlsNachzueglerID);
+        Einladung einladungAlsNachzuegler = fixtureService.readEinladungWithFilesAndLabels(einladungAlsNachzueglerID);
         assertThat(einladungNichtTeilgenommenReloaded.getEinladungStatus()).isEqualTo(EinladungStatus.NACHZUEGLER);
         assertThat(einladungAlsNachzuegler.getEinladungStatus()).isEqualTo(EinladungStatus.TEILNAHME_BESTAETIGT);
         // Die Notizen wurden von der alten Einladung auf die neue Einladung verschoben
@@ -960,6 +979,20 @@ class EinladungResourceITest extends AbstractITest {
         assertThat(einladungAlsNachzuegler.getImpfausweisNotiz()).isPresent();
         assertThat(einladungAlsNachzuegler.getFragebogenNotiz()).isPresent();
         assertThat(einladungAlsNachzuegler.getAnmeldungBestaetigungNotiz()).isPresent();
+
+        // File ist immernoch im bucket und an der neuen Notiz angehaengt
+        String fileBucketIdImpfausweisNeu = einladungAlsNachzuegler.getImpfausweisNotiz().get().getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
+        String fileBucketIdFragebogenNeu = einladungAlsNachzuegler.getFragebogenNotiz().get().getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
+        String fileBucketIdAnmeldungBestaetigungNeu = einladungAlsNachzuegler.getAnmeldungBestaetigungNotiz().get().getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
+        assertThat(fileBucketIdImpfausweisNeu).isEqualTo(fileBucketIdImpfausweis);
+        assertThat(fileBucketIdFragebogenNeu).isEqualTo(fileBucketIdFragebogen);
+        assertThat(fileBucketIdAnmeldungBestaetigungNeu).isEqualTo(fileBucketIdAnmeldungBestaetigung);
+        byte[]  fileDataAfterMoveImpfausweis = fileStoreService.getFileBytesSync(fileBucketIdImpfausweisNeu);
+        byte[]  fileDataAfterMoveFragebogen = fileStoreService.getFileBytesSync(fileBucketIdFragebogenNeu);
+        byte[]  fileDataAfterMoveAnmeldungBestaetigugn = fileStoreService.getFileBytesSync(fileBucketIdAnmeldungBestaetigungNeu);
+        assertThat(fileDataAfterMoveImpfausweis).isNotEmpty();
+        assertThat(fileDataAfterMoveFragebogen).isNotEmpty();
+        assertThat(fileDataAfterMoveAnmeldungBestaetigugn).isNotEmpty();
 
         Notiz nachzueglerEinladungImpfausweis = einladungAlsNachzuegler.getImpfausweisNotiz().get();
         Notiz nichtTeilgenommenEinladungImpfausweis = einladungNichtTeilgenommen.getImpfausweisNotiz().get();
@@ -981,6 +1014,7 @@ class EinladungResourceITest extends AbstractITest {
         assertThat(nachzueglerEinladungAnmeldung.getStatus()).isEqualTo(nichtTeilgenommenEinladungAnmeldung.getStatus());
         assertThat(nachzueglerEinladungAnmeldung.getTitel()).contains(titleAnlassAlsNachzuegler);
         assertThat(nachzueglerEinladungAnmeldung.getBemerkungen()).contains(titleAnlassNichtTeilgenommen);
+
     }
 
     @Test
@@ -1006,7 +1040,7 @@ class EinladungResourceITest extends AbstractITest {
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
-            .statusCode(Status.OK.getStatusCode());
+            .statusCode(Status.NO_CONTENT.getStatusCode());
         // ASSERT
         List<Einladung> einladungList = einladungService.findByAnlass(anlass.getId());
         assertThat(einladungList)
@@ -1136,7 +1170,7 @@ class EinladungResourceITest extends AbstractITest {
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
-            .statusCode(Status.OK.getStatusCode());
+            .statusCode(Status.NO_CONTENT.getStatusCode());
 
         // ASSERT
         List<Einladung> einladungenNachher = einladungService.findByAnlass(anlass.getId());
@@ -1188,7 +1222,7 @@ class EinladungResourceITest extends AbstractITest {
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
-            .statusCode(Status.OK.getStatusCode());
+            .statusCode(Status.NO_CONTENT.getStatusCode());
         // ASSERT
         Untersuchung untersuchungAbgeschlossen = fixtureService.getUntersuchungWithLoadedData(einladung.getId());
         Einladung einladungAbgeschlossen = untersuchungAbgeschlossen.getEinladung();
@@ -1205,18 +1239,22 @@ class EinladungResourceITest extends AbstractITest {
         // Hoeren
         UntersuchungHoerenAudiogramm hoerenAudiogramm = untersuchungAbgeschlossen.getUntersuchungHoerenAudiogramm();
         assertThat(hoerenAudiogramm).isNotNull();
-        assertThat(hoerenAudiogramm.getAudiogrammBeurteilung()).containsExactly(AudiogrammBeurteilung.NICHT_GEPRUEFT);
+        assertThat(hoerenAudiogramm.getAudiogrammBeurteilung()).isNotNull();
+        assertThat(hoerenAudiogramm.getAudiogrammBeurteilung().getEnumValues(AudiogrammBeurteilung.class)).containsExactly(AudiogrammBeurteilung.NICHT_GEPRUEFT);
         UntersuchungHoerenOtoskopie hoerenOtoskopie = untersuchungAbgeschlossen.getUntersuchungHoerenOtoskopie();
         assertThat(hoerenOtoskopie).isNotNull();
-        assertThat(hoerenOtoskopie.getOtoskopieLinks()).containsExactly(OtoskopieResultat.NICHT_GEPRUEFT);
+        assertThat(hoerenOtoskopie.getOtoskopieLinks()).isNotNull();
+        assertThat(hoerenOtoskopie.getOtoskopieLinks().getEnumValues(OtoskopieResultat.class)).containsExactly(OtoskopieResultat.NICHT_GEPRUEFT);
         // Sehen
         UntersuchungSehenBeurteilung sehen = untersuchungAbgeschlossen.getUntersuchungSehenBeurteilung();
         assertThat(sehen).isNotNull();
-        assertThat(sehen.getBrilleLinsen()).isEqualTo(BrilleLinsenResultat.NICHT_GEPRUEFT);
+        assertThat(sehen.getBrilleLinsen()).isNotNull();
+        assertThat(sehen.getBrilleLinsen().getEnumValue(BrilleLinsenResultat.class)).isEqualTo(BrilleLinsenResultat.NICHT_GEPRUEFT);
         // GroesseGewicht
         UntersuchungGroesseGewicht groesseGewicht = untersuchungAbgeschlossen.getUntersuchungGroesseGewicht();
         assertThat(groesseGewicht).isNotNull();
-        assertThat(groesseGewicht.getGroessePerzentile()).isEqualTo(PerzentileGroesse.NICHT_GEPRUEFT);
+        assertThat(groesseGewicht.getGroessePerzentile()).isNotNull();
+        assertThat(groesseGewicht.getGroessePerzentile().getEnumValue(PerzentileGroesse.class)).isEqualTo(PerzentileGroesse.NICHT_GEPRUEFT);
         // Triage
         UntersuchungTriage triage = untersuchungAbgeschlossen.getUntersuchungTriage();
         assertThat(triage).isNotNull();
@@ -1241,7 +1279,7 @@ class EinladungResourceITest extends AbstractITest {
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
-            .statusCode(Status.OK.getStatusCode());
+            .statusCode(Status.NO_CONTENT.getStatusCode());
         // ASSERT
         Untersuchung untersuchungAbgeschlossen =
             fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
@@ -1259,19 +1297,24 @@ class EinladungResourceITest extends AbstractITest {
         // Hoeren
         UntersuchungHoerenAudiogramm hoeren = untersuchungAbgeschlossen.getUntersuchungHoerenAudiogramm();
         assertThat(hoeren).isNotNull();
-        assertThat(hoeren.getAudiogrammBeurteilung()).containsExactly(AudiogrammBeurteilung.NORMAL);
+        assertThat(hoeren.getAudiogrammBeurteilung()).isNotNull();
+        assertThat(hoeren.getAudiogrammBeurteilung().getEnumValues(AudiogrammBeurteilung.class)).containsExactly(AudiogrammBeurteilung.NORMAL);
         UntersuchungHoerenOtoskopie hoerenOtoskopie = untersuchungAbgeschlossen.getUntersuchungHoerenOtoskopie();
         assertThat(hoerenOtoskopie).isNotNull();
-        assertThat(hoerenOtoskopie.getOtoskopieLinks()).containsExactly(OtoskopieResultat.NICHT_EINSEHBAR);
-        assertThat(hoerenOtoskopie.getOtoskopieRechts()).containsExactly(OtoskopieResultat.NORMAL);
+        assertThat(hoerenOtoskopie.getOtoskopieLinks()).isNotNull();
+        assertThat(hoerenOtoskopie.getOtoskopieRechts()).isNotNull();
+        assertThat(hoerenOtoskopie.getOtoskopieLinks().getEnumValues(OtoskopieResultat.class)).containsExactly(OtoskopieResultat.NICHT_EINSEHBAR);
+        assertThat(hoerenOtoskopie.getOtoskopieRechts().getEnumValues(OtoskopieResultat.class)).containsExactly(OtoskopieResultat.NORMAL);
         // Sehen
         UntersuchungSehenBeurteilung sehen = untersuchungAbgeschlossen.getUntersuchungSehenBeurteilung();
         assertThat(sehen).isNotNull();
-        assertThat(sehen.getBrilleLinsen()).isEqualTo(BrilleLinsenResultat.OHNE_KEINE);
+        assertThat(sehen.getBrilleLinsen()).isNotNull();
+        assertThat(sehen.getBrilleLinsen().getEnumValue(BrilleLinsenResultat.class)).isEqualTo(BrilleLinsenResultat.OHNE_KEINE);
         // GroesseGewicht
         UntersuchungGroesseGewicht groesseGewicht = untersuchungAbgeschlossen.getUntersuchungGroesseGewicht();
         assertThat(groesseGewicht).isNotNull();
-        assertThat(groesseGewicht.getGroessePerzentile()).isEqualTo(PerzentileGroesse.NORMAL);
+        assertThat(groesseGewicht.getGroessePerzentile()).isNotNull();
+        assertThat(groesseGewicht.getGroessePerzentile().getEnumValue(PerzentileGroesse.class)).isEqualTo(PerzentileGroesse.NORMAL);
         // Triage
         UntersuchungTriage triage = untersuchungAbgeschlossen.getUntersuchungTriage();
         assertThat(triage).isNotNull();

@@ -11,8 +11,8 @@ import {BackendEntityId} from '@dvb/data-access-types';
 import {BenutzerStore} from '@dvb/feat-shared';
 import {AppErrorHandlerService, handleBlobResponseDownload, Loader, withSelectedEntity} from '@dvb/util-angular';
 import {
+  hasAnlassCreateOrEditForNotAbgeschlossenBerechtigung,
   hasAnlassEditBerechtigungForAbgeschlossen,
-  hasAnlassEditBerechtigungForNotAbgeschlossen,
   requireValue,
 } from '@dvb/util-shared';
 import {TranslocoService} from '@jsverse/transloco';
@@ -22,7 +22,7 @@ import {addEntity, removeEntity, setAllEntities, setEntity, withEntities} from '
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, pipe, switchMap} from 'rxjs';
 import {AnlassJsonEnhanced, enhanceAnlass} from './anlass.util';
-import { withDevtools } from '@angular-architects/ngrx-toolkit';
+import {withDevtools} from '@angular-architects/ngrx-toolkit';
 
 type AnlassState = {
   schulInformationen: SchulInformationenJson[],
@@ -53,7 +53,7 @@ export class AnlassStore extends signalStore(
         const selected = selectedEntity();
         const permissionCheck = selected?.data?.anlassStatus === AnlassStatus.ABGESCHLOSSEN ?
           hasAnlassEditBerechtigungForAbgeschlossen() :
-          hasAnlassEditBerechtigungForNotAbgeschlossen();
+          hasAnlassCreateOrEditForNotAbgeschlossenBerechtigung();
         return benutzerStore.createHasRequiredRoleSig(permissionCheck)();
       }),
       isAbgeschlossen: computed(() => selectedEntity()?.data.anlassStatus === AnlassStatus.ABGESCHLOSSEN),
@@ -67,7 +67,7 @@ export class AnlassStore extends signalStore(
         return selectedEntity()?.data?.weiterePerson;
       }),
       groesseGewichtBmiPerzentileValues: computed(() => {
-        return selectedEntity()?.anlassConfig.data.groesseGewichtBmiPerzentileValues;
+        return selectedEntity()?.anlassConfig.data.groesseGewichtBmiPerzentileValues ?? [];
       }),
       untersuchungEinbeinstandValues: computed(() => {
         return selectedEntity()?.anlassConfig.data.untersuchungEinbeinstandValues;
@@ -89,6 +89,9 @@ export class AnlassStore extends signalStore(
       }),
       showAnmeldungBestaetigung: computed(() => {
         return selectedEntity()?.anlassConfig.data.showAnmeldungBestaetigung;
+      }),
+      sehenBrilleLinsenValues: computed(() => {
+        return selectedEntity()?.anlassConfig.data.sehenBrilleLinsenValues ?? [];
       })
     };
   }),

@@ -10,8 +10,10 @@
 import { EscadaImportResultJsonSchuleImportResultJsonsInner } from './escada-import-result-json-schule-import-result-jsons-inner';
 import { ISODateTimeString } from '@dvb/data-access-types';
 import { EscadaImportResultJsonKlasseImportResultJsonsInner } from './escada-import-result-json-klasse-import-result-jsons-inner';
+import { EscadaImportResultJsonLehrpersonResultJsonsInner } from './escada-import-result-json-lehrperson-result-jsons-inner';
 import { BackendEntityId } from '@dvb/data-access-types';
 import { EscadaImportResultJsonKindImportResultJsonsInner } from './escada-import-result-json-kind-import-result-jsons-inner';
+import { EscadaImportResultJsonKontaktPersonenKindImportResultJsonsInner } from './escada-import-result-json-kontakt-personen-kind-import-result-jsons-inner';
 
 
 export interface PupilImportResultJson { 
@@ -20,7 +22,9 @@ export interface PupilImportResultJson {
     importDuration?: string;
     schuleImportResultJsons?: Array<EscadaImportResultJsonSchuleImportResultJsonsInner>;
     klasseImportResultJsons?: Array<EscadaImportResultJsonKlasseImportResultJsonsInner>;
+    lehrpersonResultJsons?: Array<EscadaImportResultJsonLehrpersonResultJsonsInner>;
     kindImportResultJsons?: Array<EscadaImportResultJsonKindImportResultJsonsInner>;
+    kontaktPersonenKindImportResultJsons?: Array<EscadaImportResultJsonKontaktPersonenKindImportResultJsonsInner>;
 }
 
 

@@ -20,8 +20,8 @@ import {
   TextInputDirective,
 } from '@dvb/ui-components';
 import {DirtyMarker} from '@dvb/util-angular';
-import {fromISODateTimeString, hasKindEditBerechtigung, isNotNullish, isNullish} from '@dvb/util-shared';
-import {TranslocoPipe} from '@jsverse/transloco';
+import {fromISODateTimeString, hasKindEditBerechtigung, isExternalObject, isNotNullish, isNullish} from '@dvb/util-shared';
+import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {DossierStore} from '../../../dossier.store';
 import {KontaktPersonKindStore} from '../kontakt-person-kind.store';
@@ -61,6 +61,7 @@ export class KontaktPersonKindComponent implements DirtyMarker {
   readonly dossierStore = inject(DossierStore);
   readonly #router = inject(Router);
   readonly #activatedRoute = inject(ActivatedRoute);
+  readonly #transloco = inject(TranslocoService);
 
   readonly geschlechtOptions = Object.values(Geschlecht);
   readonly beziehungOptions = Object.values(KontaktPersonKindBeziehung);
@@ -69,15 +70,16 @@ export class KontaktPersonKindComponent implements DirtyMarker {
 
   canEdit = this.#benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung());
 
-  isEscadaObject = computed(() => {
+  getImportSchnittstelle = computed(() => {
     const externalImportInfo = this.store.selectedEntity()?.externalImportInfoJson;
-    return isNotNullish(externalImportInfo)
-      && externalImportInfo?.aktivInExternalSystem
-      && externalImportInfo?.importTyp === ImportTyp.ESCADA;
+    return isNotNullish(externalImportInfo) ? this.#transloco.translate('ImportTyp.' + externalImportInfo.importTyp) : '';
   });
 
+
+  isExternalObject = computed(() => isExternalObject(this.store.selectedEntity()));
+
   getDateLatestImportIfEscadaObject() {
-    if (this.isEscadaObject()) {
+    if (this.isExternalObject()) {
       return fromISODateTimeString(this.store.selectedEntity()?.externalImportInfoJson?.timestampLatestImport);
     }
     return undefined;
@@ -111,7 +113,7 @@ export class KontaktPersonKindComponent implements DirtyMarker {
       }
       untracked(() => {
         this.form.reset(selectedEntity.data, mode);
-        if (this.isEscadaObject()) {
+        if (this.isExternalObject()) {
           this.form.controlAt('geschlecht').disable();
           this.form.controlAt('name').disable();
           this.form.controlAt('vorname').disable();

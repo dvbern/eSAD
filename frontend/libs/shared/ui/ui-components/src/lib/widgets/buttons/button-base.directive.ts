@@ -12,7 +12,7 @@ export abstract class ButtonBase {
 
   #buttonType!: ButtonType;
 
-  @HostBinding('class.btn') private readonly bootstrapClass = true;
+  @HostBinding('class.btn') readonly bootstrapClass = true;
   @HostBinding('class') get buttonType(): string {
     return bootstrapButtonColorStyleClass(this.#buttonType);
   }

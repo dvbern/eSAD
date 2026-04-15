@@ -1,6 +1,6 @@
 import {inject} from '@angular/core';
 import {Route} from '@angular/router';
-import {Path, requireRole} from '@dvb/feat-shared';
+import {Path, requireAcceptedAgb, requireRole} from '@dvb/feat-shared';
 import {hasListViewBerechtigung} from '@dvb/util-shared';
 import {AnlassConfigStore} from './config/anlass-config';
 import {ConfigPageComponent} from './config/config.page.component';
@@ -23,6 +23,7 @@ export const configRoutes: Route[] = [
     },
     canActivate: [
       requireRole(hasListViewBerechtigung()),
+      requireAcceptedAgb(),
     ],
   },
   {

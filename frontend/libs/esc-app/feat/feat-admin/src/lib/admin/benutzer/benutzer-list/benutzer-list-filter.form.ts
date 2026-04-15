@@ -1,33 +1,47 @@
 import {DestroyRef} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {NonNullableFormBuilder} from '@angular/forms';
-import {BenutzerJson, FachRolle} from '@dvb/data-access-backend';
+import {FachRolle} from '@dvb/data-access-backend';
 import {BaseForm, FilterCombinationMethod, FilterMethod, onTextInput, TableModel} from '@dvb/util-angular';
 import {isNullish} from '@dvb/util-shared';
 import {distinctUntilChanged} from 'rxjs';
+import {BenutzerEnhancedJson} from "@dvb/feat-shared";
 
 type Config = {
   fb: NonNullableFormBuilder;
   destroyRef: DestroyRef;
-  paginatedTable: TableModel<BenutzerJson>;
+  paginatedTable: TableModel<BenutzerEnhancedJson>;
 };
 
 function makeForm(config: Config) {
   const fb = config.fb;
   const group = fb.group({
-    fullName: fb.control<string>(''),
+    name: fb.control<string>(''),
+    vorname: fb.control<string>(''),
     email: fb.control<string>(''),
-    aktiv: fb.control<boolean | null>(null),
+    benutzerAktivStatus: fb.control<boolean | null>(null),
     rolle: fb.control<FachRolle | null>(null),
   });
 
-  onTextInput(group.controls.fullName, config.destroyRef).subscribe({
-    next: fullName => {
+  onTextInput(group.controls.name, config.destroyRef).subscribe({
+    next: name => {
       config.paginatedTable.onFilterChanged({
-        filterValue: fullName ?? '',
+        filterValue: name ?? '',
         filterMethod: FilterMethod.SUBSTRING,
         filterCombinationMethod: FilterCombinationMethod.AND,
-        filterName: 'data.fullName',
+        filterName: 'data.name',
+      });
+    },
+    error: console.error,
+  });
+
+  onTextInput(group.controls.vorname, config.destroyRef).subscribe({
+    next: vorname => {
+      config.paginatedTable.onFilterChanged({
+        filterValue: vorname ?? '',
+        filterMethod: FilterMethod.SUBSTRING,
+        filterCombinationMethod: FilterCombinationMethod.AND,
+        filterName: 'data.vorname',
       });
     },
     error: console.error,
@@ -45,18 +59,19 @@ function makeForm(config: Config) {
     error: console.error,
   });
 
-  group.controls.aktiv.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef)).subscribe({
-    next: aktiv => {
-      const filterValue = isNullish(aktiv) ? '' : '' + aktiv;
-      config.paginatedTable.onFilterChanged({
-        filterValue: filterValue,
-        filterMethod: FilterMethod.BOOL,
-        filterCombinationMethod: FilterCombinationMethod.AND,
-        filterName: 'data.aktiv',
-      });
-    },
-    error: console.error,
-  });
+  group.controls.benutzerAktivStatus.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
+    .subscribe({
+      next: benutzerAktivStatus => {
+        const filterValue = isNullish(benutzerAktivStatus) ? '' : '' + benutzerAktivStatus;
+        config.paginatedTable.onFilterChanged({
+          filterValue: filterValue,
+          filterMethod: FilterMethod.BOOL,
+          filterCombinationMethod: FilterCombinationMethod.AND,
+          filterName: 'data.benutzerAktivStatus',
+        });
+      },
+      error: console.error,
+    });
 
   group.controls.rolle.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef)).subscribe({
     next: rolle => {
@@ -64,7 +79,7 @@ function makeForm(config: Config) {
         filterValue: rolle ?? '',
         filterMethod: FilterMethod.ENUM,
         filterCombinationMethod: FilterCombinationMethod.OR,
-        filterName: 'data.fachRollen',
+        filterName: 'fachRollen',
       });
     },
     error: console.error,

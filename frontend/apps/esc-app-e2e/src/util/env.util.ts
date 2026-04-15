@@ -37,3 +37,6 @@ export const testUsers = {
 };
 
 export const baseURL = process.env['BASE_URL'];
+
+export const runId = process.env['RUN_ID'] || 'local';
+

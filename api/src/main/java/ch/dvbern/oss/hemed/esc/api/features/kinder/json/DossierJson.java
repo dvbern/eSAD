@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder.json;
 
+import java.time.LocalDateTime;
+
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -44,4 +46,8 @@ public class DossierJson {
     @Valid
     @Schema(required = true)
     private final KindJson kind;
+
+    @Nullable
+    @Schema(required = false)
+    private final LocalDateTime timestampDefinitivArchiviert;
 }

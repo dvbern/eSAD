@@ -7,12 +7,11 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import io.quarkus.liquibase.LiquibaseFactory;
+import jakarta.enterprise.inject.Instance;
 import liquibase.Liquibase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
@@ -20,10 +19,10 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class DatabaseResourceTest {
 
     private final LiquibaseFactory liquibaseFactory = Mockito.mock(LiquibaseFactory.class);
+    private final Instance<LiquibaseFactory> liquibaseFactoryInstance = Mockito.mock(Instance.class);
     private final ConfigService configService = Mockito.mock(ConfigService.class);
     private final Liquibase liquibase = Mockito.mock(Liquibase.class);
     private final DatabaseInfoRepo databaseInfoRepo = Mockito.mock(DatabaseInfoRepo.class);
@@ -34,9 +33,10 @@ class DatabaseResourceTest {
 
     @BeforeEach
     void setUp() {
-        databaseService.liquibaseFactoryBS = liquibaseFactory;
-        databaseService.liquibaseFactoryWIN = liquibaseFactory;
-        databaseService.liquibaseFactoryBE = liquibaseFactory;
+        Mockito.when(liquibaseFactoryInstance.get()).thenReturn(liquibaseFactory);
+        databaseService.liquibaseFactoryBS = liquibaseFactoryInstance;
+        databaseService.liquibaseFactoryWIN = liquibaseFactoryInstance;
+        databaseService.liquibaseFactoryBE = liquibaseFactoryInstance;
         when(liquibaseFactory.createLiquibase()).thenReturn(liquibase);
     }
 

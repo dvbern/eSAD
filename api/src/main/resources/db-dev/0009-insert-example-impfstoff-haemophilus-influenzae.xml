@@ -1,0 +1,13 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet id="1768912582671-1" author="Franziska Herger">
+    <sql>
+      INSERT INTO impfstoff (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, krankheiten, name, impfstoffaktivstatus) VALUES ('e518fbb8-eb39-4c78-9077-152314df7228', '2026-01-20 10:38:52.774897 +00:00', '2026-01-20 10:38:52.774897 +00:00', 'liquibase', 'liquibase', 0, 'HAEMOPHILUS_INFLUENZAE', 'Hiberix', 'AKTIV');
+    </sql>
+  </changeSet>
+  <changeSet id="1768912582671-2" author="Franziska Herger">
+    <sql>
+      INSERT INTO impfstoffcharge (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, aktiv, name, impfstoff_id) VALUES ('b5df31dd-1216-4d04-8735-1f7456e32d31', '2026-01-20 11:38:52.792744', '2026-01-20 11:38:52.792744', 'liquibase', 'liquibase', 0, true, '123', 'e518fbb8-eb39-4c78-9077-152314df7228');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

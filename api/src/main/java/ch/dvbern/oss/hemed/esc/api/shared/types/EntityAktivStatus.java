@@ -19,7 +19,14 @@
 package ch.dvbern.oss.hemed.esc.api.shared.types;
 
 public enum EntityAktivStatus {
-
     AKTIV,
-    INAKTIV
+    INAKTIV;
+
+    public static boolean isAktiv(EntityAktivStatus entityAktivStatus) {
+        return entityAktivStatus == EntityAktivStatus.AKTIV;
+    }
+
+    public static boolean isInaktiv(EntityAktivStatus entityAktivStatus) {
+        return entityAktivStatus == EntityAktivStatus.INAKTIV;
+    }
 }

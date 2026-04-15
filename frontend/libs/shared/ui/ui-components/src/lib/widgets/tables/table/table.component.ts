@@ -24,7 +24,7 @@ import { TableWrapperComponent } from '../table-wrapper/table-wrapper.component'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TableComponent implements OnInit {
-  @HostBinding('class.table') private readonly bootstrapStyles = true;
+  @HostBinding('class.table') readonly bootstrapStyles = true;
 
   readonly tableConfig = input<TableModelConfig | undefined>();
   readonly downloadPossible = input<boolean>(false);

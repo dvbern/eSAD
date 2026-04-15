@@ -1,0 +1,140 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hefr (generated)" id="1769527320458-1">
+    <createTable tableName="untersuchungsprache">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungsprachePK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+      <column name="nachsprechen" type="VARCHAR(30)"/>
+      <column name="sprachverstaendnis" type="VARCHAR(30)"/>
+      <column name="wortschatz" type="VARCHAR(30)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769527320458-2">
+    <createTable tableName="untersuchungsprache_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="bemerkungen" type="VARCHAR(2000)"/>
+      <column name="nachsprechen" type="VARCHAR(30)"/>
+      <column name="sprachverstaendnis" type="VARCHAR(30)"/>
+      <column name="wortschatz" type="VARCHAR(30)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769527320458-3">
+    <addColumn tableName="untersuchung">
+      <column name="untersuchungsprache_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769527320458-4">
+    <addColumn tableName="untersuchung_aud">
+      <column name="untersuchungsprache_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769527320458-5">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungsprachebemerkungen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1769527320458-5a">
+    <sql>update anlassconfig set untersuchungsprachebemerkungen = 'NOT_VISIBLE' where untersuchungsprachebemerkungen is null</sql>
+  </changeSet>
+  <changeSet author="hefr" id="1769527320458-5b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungsprachebemerkungen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769527320458-6">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungsprachebemerkungen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769527320458-7">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungsprachenachsprechen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1769527320458-7a">
+    <sql>update anlassconfig set untersuchungsprachenachsprechen = 'NOT_VISIBLE' where untersuchungsprachenachsprechen is null</sql>
+  </changeSet>
+  <changeSet author="hefr" id="1769527320458-7b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungsprachenachsprechen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769527320458-8">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungsprachenachsprechen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769527320458-9">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungsprachesprachverstaendnis" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1769527320458-9a">
+    <sql>update anlassconfig set untersuchungsprachesprachverstaendnis = 'NOT_VISIBLE' where untersuchungsprachesprachverstaendnis is null</sql>
+  </changeSet>
+  <changeSet author="hefr" id="1769527320458-9b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungsprachesprachverstaendnis"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769527320458-10">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungsprachesprachverstaendnis" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769527320458-11">
+    <addColumn tableName="anlassconfig">
+      <column name="untersuchungsprachewortschatz" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1769527320458-11a">
+    <sql>update anlassconfig set untersuchungsprachewortschatz = 'NOT_VISIBLE' where untersuchungsprachewortschatz is null</sql>
+  </changeSet>
+  <changeSet author="hefr" id="1769527320458-11b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="untersuchungsprachewortschatz"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769527320458-12">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="untersuchungsprachewortschatz" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769527320458-13">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungsprache_audPK" tableName="untersuchungsprache_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769527320458-14">
+    <addUniqueConstraint columnNames="untersuchungsprache_id" constraintName="UC_UNTERSUCHUNGUNTERSUCHUNGSPRACHE_ID_COL" tableName="untersuchung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769527320458-15">
+    <createIndex indexName="ix_untersuchung_untersuchungsprache" tableName="untersuchung">
+      <column name="untersuchungsprache_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769527320458-16">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungsprache_aud" constraintName="FKje8njxpqnf2eliylxhpynnee0" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1769527320458-17">
+    <addForeignKeyConstraint baseColumnNames="untersuchungsprache_id" baseTableName="untersuchung" constraintName="fk_untersuchung_untersuchungsprache" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungsprache" validate="true"/>
+  </changeSet>
+</databaseChangeLog>

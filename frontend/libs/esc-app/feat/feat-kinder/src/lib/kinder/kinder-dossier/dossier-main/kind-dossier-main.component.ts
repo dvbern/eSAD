@@ -3,7 +3,8 @@ import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/cor
 import {FormsModule} from '@angular/forms';
 import {RouterLink} from '@angular/router';
 import {
-  BenutzerOptionJson, DossierMedizinischSaveJson, DossierNichtMedizinischSaveJson,
+  BenutzerOptionJson,
+  DossierMedizinischSaveJson,
   EntityAktivStatus,
   EsadIdJson,
   Geschlecht,
@@ -18,6 +19,7 @@ import {
   ConfirmService,
   getAdresse,
   Path,
+  TenantSettingsStore,
   TimetravelStore,
 } from '@dvb/feat-shared';
 import {
@@ -37,7 +39,9 @@ import {
   fromISODateString,
   hasAnlassEditBerechtigungForAbgeschlossen,
   hasDownloadDossierBerechtigung,
-  hasKindEditBerechtigung, hasKinderMedizinischeDatenEditBerechtigung, hasKinderMedizinischeDatenViewBerechtigung,
+  hasKindEditBerechtigung,
+  hasKinderMedizinischeDatenEditBerechtigung,
+  hasKinderMedizinischeDatenViewBerechtigung,
   hasKindVorlagenViewBerechtigung,
   isNotNullish,
   isNullish,
@@ -98,6 +102,7 @@ export class KindDossierMainComponent {
   readonly timetravelStore = inject(TimetravelStore);
   readonly #briefvorlagenStore = inject(BriefvorlagenStore);
   readonly kindAnlassStore = inject(KindAnlaesseStore);
+  readonly tenantSettingsStore = inject(TenantSettingsStore);
 
   dossier = computed(() => this.dossierStore.selectedDossier());
   kind = this.dossierStore.selectedKind;
@@ -229,23 +234,21 @@ export class KindDossierMainComponent {
   }
 
   onArztChange(arzt: BenutzerOptionJson): void {
-    const dossier = this.dossier()?.dataNichtMedizinisch;
+    const dossier = this.dossier();
     if (isNotNullish(arzt) && isNotNullish(dossier)) {
-      const payload: DossierNichtMedizinischSaveJson = {...dossier, zustaendigArzt: arzt};
-      this.dossierStore.updateDossierNichtMedizinisch({
-        dossier: payload,
-        onSuccess: () => console.log('Updated Kind, set Zuständig Arzt -> ', arzt.fullName),
+      this.dossierStore.updateDossierVerantwortlichArzt({
+        dossier: dossier,
+        arztOption: arzt
       });
     }
   }
 
   onMPAChange(mpa: BenutzerOptionJson): void {
-    const dossier = this.dossier()?.dataNichtMedizinisch;
+    const dossier = this.dossier();
     if (isNotNullish(mpa) && isNotNullish(dossier)) {
-      const payload: DossierNichtMedizinischSaveJson = {...dossier, zustaendigMPA: mpa};
-      this.dossierStore.updateDossierNichtMedizinisch({
-        dossier: payload,
-        onSuccess: () => console.log('Updated Kind, set Zuständig MPA -> ', mpa.fullName),
+      this.dossierStore.updateDossierVerantwortlichMpa({
+        dossier: dossier,
+        mpaOption: mpa
       });
     }
   }
@@ -347,13 +350,11 @@ export class KindDossierMainComponent {
   }
 
   onPapierakteStatusChanged(papierakteStatus: PapierakteStatus): void {
-    const dossier = this.dossier()?.dataNichtMedizinisch;
+    const dossier = this.dossier();
     if (isNotNullish(dossier)) {
-      const payload: DossierNichtMedizinischSaveJson = {...dossier, papierakteStatus};
-      this.dossierStore.updateDossierNichtMedizinisch({
-        dossier: payload,
-        onSuccess: () => this.appNotificationStore.addSuccessNotification(this.transloco.translate(
-          'global.data.saved')),
+      this.dossierStore.updateDossierPapierakteStatus({
+        dossier: dossier,
+        status: papierakteStatus,
       });
     }
   }

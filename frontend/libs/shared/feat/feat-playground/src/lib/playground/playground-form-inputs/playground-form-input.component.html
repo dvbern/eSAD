@@ -52,7 +52,7 @@
 
     <svui-form-control label="email"
       [viewValue]="form.controlAt('email').value"
-      [iconTopRight]="{icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco}">
+      [iconTopRight]="{icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: 'escada'}}">
       <input svuiTextInput="email" [formControl]="form.controlAt('email')"/>
     </svui-form-control>
 

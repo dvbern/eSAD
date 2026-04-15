@@ -13,10 +13,12 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.Perzenti
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.json.UntersuchungGroesseGewichtJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewichtMapper;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.NichtGeprueftGrund;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungGroesseGewichtJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungGroesseGewichtJsonSpec;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -74,22 +76,31 @@ public class UntersuchungGroesseGewichtBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungGroesseGewichtBuilder withGroessePerzentile(@Nullable PerzentileGroesse perzentile) {
-        this.groesseGewicht.setGroessePerzentile(perzentile);
+    public UntersuchungGroesseGewichtBuilder withGroessePerzentile(
+        @Nullable PerzentileGroesse perzentile,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.groesseGewicht.setGroessePerzentile(SingleValueEnhanced.of(perzentile, nichtGeprueftGrund));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungGroesseGewichtBuilder withGewichtPerzentile(@Nullable PerzentileGewicht perzentile) {
-        this.groesseGewicht.setGewichtPerzentile(perzentile);
+    public UntersuchungGroesseGewichtBuilder withGewichtPerzentile(
+        @Nullable PerzentileGewicht perzentile,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.groesseGewicht.setGewichtPerzentile(SingleValueEnhanced.of(perzentile, nichtGeprueftGrund));
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungGroesseGewichtBuilder withBmiPerzentile(@Nullable PerzentileBmi perzentile) {
-        this.groesseGewicht.setBmiPerzentile(perzentile);
+    public UntersuchungGroesseGewichtBuilder withBmiPerzentile(
+        @Nullable PerzentileBmi perzentile,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.groesseGewicht.setBmiPerzentile(SingleValueEnhanced.of(perzentile, nichtGeprueftGrund));
         return this;
     }
 

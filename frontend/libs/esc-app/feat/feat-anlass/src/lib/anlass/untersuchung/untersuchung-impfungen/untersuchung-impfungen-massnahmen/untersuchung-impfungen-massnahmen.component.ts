@@ -1,4 +1,3 @@
-
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked } from '@angular/core';
 import { FormArray, FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router, UrlTree } from '@angular/router';
@@ -10,25 +9,25 @@ import {
   CheckboxDirective,
   FormControlComponent,
   FormLayoutComponent,
-  HeadingDirective, KachelControlComponent, KachelFormSectionComponent,
+  HeadingDirective,
+  KachelControlComponent,
+  KachelFormSectionComponent,
   NgSelectDirective,
   SaveCancelButtonsComponent,
   StandaloneControlComponent,
-  TextareaDirective, TitleComponent,
+  TextareaDirective,
+  TitleComponent,
 } from '@dvb/ui-components';
 import { DirtyMarker } from '@dvb/util-angular';
-import {hasImpfungenEditBerechtigung, isNotNullish, requireValue} from '@dvb/util-shared';
+import { hasImpfungenEditBerechtigung, isNotNullish, requireValue } from '@dvb/util-shared';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
 import { AnlassStore } from '../../../anlass.store';
 import { UntersuchungStore } from '../../untersuchung.store';
 import { UntersuchungImpfungenStore } from '../untersuchung-impfungen.store';
 import { EmpfehlungSubFormType, UntersuchungImpfungenMassnahmenForm } from './untersuchung-impfungen-massnahmen.form';
-import {DatePipe} from "@angular/common";
-import {requireValidBackendEntityId} from "@dvb/data-access-types";
-import {
-  UntersuchungImpfFolgetermineComponent
-} from "../untersuchung-impf-folgetermine/untersuchung-impf-folgetermine.component";
+import { requireValidBackendEntityId } from '@dvb/data-access-types';
+import { UntersuchungImpfFolgetermineComponent } from '../untersuchung-impf-folgetermine/untersuchung-impf-folgetermine.component';
 
 @Component({
   selector: 'feat-untersuchung-impfungen-massnahmen',
@@ -83,8 +82,8 @@ export class UntersuchungImpfungenMassnahmenComponent implements DirtyMarker {
   constructor() {
     effect(() => {
       const massnahmen = this.impfungenStore.massnahmen();
-      this.form.resetForm(massnahmen?.data);
       const anlassConfig = this.anlassStore.selectedEntity()?.anlassConfig;
+      this.form.resetForm(massnahmen?.data, anlassConfig);
       if (anlassConfig) {
         untracked(() => {
           this.form.setValidatorsForAnlassConfig(anlassConfig);
@@ -100,8 +99,9 @@ export class UntersuchungImpfungenMassnahmenComponent implements DirtyMarker {
 
   abbrechen(): void {
     const massnahmen = this.impfungenStore.massnahmen();
-    if (massnahmen) {
-      this.form.resetForm(massnahmen.data);
+    const anlassConfig = this.anlassStore.selectedEntity()?.anlassConfig;
+    if (massnahmen && anlassConfig) {
+      this.form.resetForm(massnahmen.data, anlassConfig);
     }
     this.form.getAndResetImpfFolgetermin();
   }
@@ -117,9 +117,9 @@ export class UntersuchungImpfungenMassnahmenComponent implements DirtyMarker {
 
       const anlassId = this.form.getAndResetImpfFolgetermin();
 
-      if(isNotNullish(anlassId)){
+      if (isNotNullish(anlassId)) {
         this.impfungenStore.addKindToFolgetermin({
-          folgeTerminAnlassId : requireValidBackendEntityId(anlassId),
+          folgeTerminAnlassId: requireValidBackendEntityId(anlassId),
           kindId: requireValidBackendEntityId(this.untersuchungStore.currentDossier()?.kind.id),
           currentAnlassId: requireValidBackendEntityId(this.anlassStore.selectedEntity()?.id),
         });

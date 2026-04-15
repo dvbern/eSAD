@@ -9,9 +9,10 @@
  */
 
 
-export type CsvReportType = 'SCHULUNTERSUCHUNG';
+export type CsvReportType = 'SCHULUNTERSUCHUNG' | 'IMPFSTOFFE';
 
 export const CsvReportType = {
-    SCHULUNTERSUCHUNG: 'SCHULUNTERSUCHUNG' as CsvReportType
+    SCHULUNTERSUCHUNG: 'SCHULUNTERSUCHUNG' as CsvReportType,
+    IMPFSTOFFE: 'IMPFSTOFFE' as CsvReportType
 } as const;
 

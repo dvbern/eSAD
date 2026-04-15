@@ -1,0 +1,110 @@
+<form svuiFormLayout
+      [formType]="'kacheln'"
+      [mode]="'edit'"
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()">
+
+  <svui-buttons-right-container class="mb-3">
+    <h2 svuiHeading="formSection">{{ 'untersuchung.impfungen.dataminimal.title' | transloco }}</h2>
+  </svui-buttons-right-container>
+
+  <!-- impfausweisGeprueft -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenDataMinimalImpfausweisGeprueft !== RequirementSetting.NOT_VISIBLE) {
+    <feat-value-enhanced
+      [form]="form.impfausweisGeprueftForm"
+      [valueTitleKey]="'untersuchung.impfungen.dataminimal.impfausweisGeprueft'"
+      [valuePrefix]="'ImpfausweisGeprueft'"
+      [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+      >
+    </feat-value-enhanced>
+  }
+
+  <!-- immunsuppression -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenDataMinimalImmunsuppression !== RequirementSetting.NOT_VISIBLE) {
+    <feat-value-enhanced
+      [form]="form.immunsuppressionForm"
+      [valueTitleKey]="'untersuchung.impfungen.dataminimal.immunsuppression'"
+      [valuePrefix]="'Immunsuppression'"
+      [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+      >
+    </feat-value-enhanced>
+  }
+
+  <!-- masernImpfstatus -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenDataMinimalMasernImpfstatus !== RequirementSetting.NOT_VISIBLE) {
+    <feat-value-enhanced
+      [form]="form.masernImpfstatusForm"
+      [valueTitleKey]="'untersuchung.impfungen.dataminimal.masernImpfstatus'"
+      [valuePrefix]="'ImpfStatusMinimal'"
+      [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+      >
+    </feat-value-enhanced>
+  }
+
+  <!-- masernAnzahlImpfungen -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenDataMinimalMasernAnzahlImpfungen !== RequirementSetting.NOT_VISIBLE) {
+    <svui-title [context]="'formSection'" class="mb-3">{{ 'untersuchung.impfungen.dataminimal.masernAnzahlImpfungen' | transloco }}
+    </svui-title>
+    <svui-form-control
+      [label]="'untersuchung.impfungen.dataminimal.masernAnzahlImpfungen' | transloco"
+      [topLabelVisibility]="'hidden'"
+      size="full"
+      [viewValue]="">
+      <input svuiTextInput="number" [formControl]="form.group.controls.masernAnzahlImpfungen"/>
+    </svui-form-control>
+  }
+
+  <!-- hpvImpfstatus -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenDataMinimalHpvImpfstatus !== RequirementSetting.NOT_VISIBLE) {
+    <feat-value-enhanced
+      [form]="form.hpvImpfstatusForm"
+      [valueTitleKey]="'untersuchung.impfungen.dataminimal.hpvImpfstatus'"
+      [valuePrefix]="'ImpfStatusMinimal'"
+      [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+      >
+    </feat-value-enhanced>
+  }
+
+  <!-- hpvAnzahlImpfungen -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenDataMinimalHpvAnzahlImpfungen !== RequirementSetting.NOT_VISIBLE) {
+    <svui-title [context]="'formSection'" class="mb-3">{{ 'untersuchung.impfungen.dataminimal.hpvAnzahlImpfungen' | transloco }}
+    </svui-title>
+    <svui-form-control
+      [label]="'untersuchung.impfungen.dataminimal.hpvAnzahlImpfungen' | transloco"
+      [topLabelVisibility]="'hidden'"
+      size="full"
+      [viewValue]="">
+      <input svuiTextInput="number" [formControl]="form.group.controls.hpvAnzahlImpfungen"/>
+    </svui-form-control>
+  }
+
+  <!-- impfempfehlung -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenDataMinimalImpfempfehlung !== RequirementSetting.NOT_VISIBLE) {
+    <feat-value-enhanced
+      [form]="form.impfempfehlungForm"
+      [valueTitleKey]="'untersuchung.impfungen.dataminimal.impfempfehlung'"
+      [valuePrefix]="'ImpfempfehlungMinimal'"
+      [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+      >
+    </feat-value-enhanced>
+  }
+
+  <!-- impfungDurchgefuehrt -->
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenDataMinimalImpfungDurchgefuehrt !== RequirementSetting.NOT_VISIBLE) {
+    <feat-value-enhanced
+      [form]="form.impfungDurchgefuehrtForm"
+      [valueTitleKey]="'untersuchung.impfungen.dataminimal.impfungDurchgefuehrt'"
+      [valuePrefix]="'ImpfungDurchgefuehrtMinimal'"
+      [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+      >
+    </feat-value-enhanced>
+  }
+
+  <!-- Save / Cancel Buttons -->
+  @if (canEdit()) {
+    <svui-save-cancel-buttons
+      [saving]="impfungenStore.saveDataMinimalLoader.isLoading()"
+      [canEdit]="true"
+      (cancelClicked)="abbrechen()"/>
+  }
+</form>

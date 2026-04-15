@@ -1,0 +1,154 @@
+<form svuiFormLayout
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="store.detailMode()">
+  <h2 svuiHeading="formSection">{{ 'anlassconfig.detail.tab.schulrelevante.beeintraechtigung' | transloco }}</h2>
+
+  <!-- Freies Gehen -->
+  <svui-form-control [label]="'anlassconfig.label.schulrelevante.beeintraechtigung.freiesGehen' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungBeeintraechtigungFreiesGehen | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungBeeintraechtigungFreiesGehen"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Ohne Stützrad Velofahren -->
+  <svui-form-control [label]="'anlassconfig.label.schulrelevante.beeintraechtigung.ohneStuetzradVelofahren' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungBeeintraechtigungOhneStuetzradVelofahren | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungBeeintraechtigungOhneStuetzradVelofahren"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Grafomotorik -->
+  <svui-form-control [label]="'anlassconfig.label.schulrelevante.beeintraechtigung.grafomotorik' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungBeeintraechtigungGrafomotorik | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungBeeintraechtigungGrafomotorik"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Feinmotorik -->
+  <svui-form-control [label]="'anlassconfig.label.schulrelevante.beeintraechtigung.feinmotorik' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungBeeintraechtigungFeinmotorik | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungBeeintraechtigungFeinmotorik"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Grobmotorik Einbeinhüpfen -->
+  <svui-form-control [label]="'anlassconfig.label.schulrelevante.beeintraechtigung.grobmotorik' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungBeeintraechtigungGrobmotorik | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungBeeintraechtigungGrobmotorik"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Gleichgewicht Einbeinstand -->
+  <svui-form-control [label]="'anlassconfig.label.schulrelevante.beeintraechtigung.gleichgewicht' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungBeeintraechtigungGleichgewicht | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungBeeintraechtigungGleichgewicht"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Bemerkungen -->
+  <svui-form-control [label]="'anlassconfig.label.schulrelevante.beeintraechtigung.bemerkungen' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().untersuchungBeeintraechtigungBemerkung | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.untersuchungBeeintraechtigungBemerkung"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!--messages for whole form -->
+  <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
+
+  <!-- BUTTONS -->
+  <svui-form-buttons
+    [mode]="store.detailMode()"
+    [isCreate]="store.selectedIsNew()"
+    [saving]="store.saveLoader.isLoading()"
+    [canEdit]="anlassConfigHelperService.canEdit()"
+    routeToEdit="../edit"
+    [routeOnCancelUpdate]="[Path.RELATIVE_ONE_UP, 'view']"
+    [routeOnCancelCreate]="[Path.RELATIVE_TWO_UP]"
+  />
+
+</form>

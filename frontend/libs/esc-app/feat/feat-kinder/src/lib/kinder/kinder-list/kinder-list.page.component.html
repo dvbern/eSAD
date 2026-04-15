@@ -1,11 +1,71 @@
-<feat-page [heading]="'kinder.list.page.title' | transloco">
-
+<feat-page [heading]="pageTitle()"
+           [backLink]="backLink()"
+           [showFooter]="!kinderSummaryStore.loader.isLoading() && kinderSummaryStore.loadedRowCount() === itemTable.filteredListSize()"
+>
+  @if (canGenerateMassenbrief() && isMassenbriefMode()) {
+    <div style="display: flex; flex-direction: column; align-items: flex-end; width: 100%;">
+      @if (this.massenbriefStore.isLimitReached()) {
+        <span>{{
+            'kinder.list.massenbrief.limit' | transloco: {limit: this.massenbriefStore.getLimit()}
+          }}</span>
+      }
+      <span>{{
+          'kinder.list.massenbrief.selectedKinder' | transloco: {count: this.massenbriefStore.selectedKinderCount()}
+        }}</span>
+    </div>
+  }
   <svui-buttons-right-container
     style="padding-bottom: 15px;">
     <div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; width: 100%;">
 
       <!--LIST SUMMARY-->
       <svui-page-header-list-summary [items]="summaryItems()"/>
+
+      <!--MASSENBRIEF BUTTON-->
+      @if (canGenerateMassenbrief()) {
+        @if (!isMassenbriefMode()) {
+          <button
+            svuiButton="secondary"
+            type="button"
+            [ngbTooltip]="'kinder.list.page.title.massenbriefmode.tooltip' | transloco"
+            [disabled]="!canGenerateMassenbrief()"
+            (click)="this.massenbriefStore.changeMassenbriefmode();"
+          >
+            {{ 'kinder.list.page.title.massenbriefmode' | transloco }}
+          </button>
+        } @else {
+          <button
+            svuiButton="primary"
+            type="button"
+            [disabled]="this.massenbriefStore.selectedKinderCount() < 1"
+            (click)="this.openMassenbriefPopup()"
+          >
+            {{ 'kinder.list.massenbrief.generate' | transloco }}
+          </button>
+          <button
+            svuiButton="secondary"
+            type="button"
+            [disabled]="!canGenerateMassenbrief()"
+            (click)="this.massenbriefStore.changeMassenbriefmode();"
+          >
+            {{ 'kinder.list.massenbrief.back' | transloco }}
+          </button>
+        }
+      }
+
+      <!--MASSENIMPORT BUTTON-->
+      @if (canEditKind() && !isMassenbriefMode()) {
+        @if (tenantSettingsStore.isMassenimportVisible()) {
+          <button
+            svuiButton="secondary"
+            type="button"
+            [ngbTooltip]="'kinder.list.import.tooltip' | transloco"
+            [disabled]="!canEditKind() || !tenantSettingsStore.isMassenimportVisible()"
+            (click)="openImport()">
+            {{ 'kinder.list.import' | transloco }}
+          </button>
+        }
+      }
 
       <!--FILTER-->
       <svui-page-header-buttons
@@ -16,22 +76,11 @@
         (filter)="openFilter()"
       />
 
-      @if (canEditKind()) {
-
+      @if (canEditKind() && !isMassenbriefMode()) {
         <!--ADD BUTTON-->
         <svui-page-header-add-button [addRouterLink]="Path.CREATE"/>
-
-        <!--MASSENIMPORT BUTTON-->
-        @if (tenantSettingsStore.isMassenimportVisible()) {
-          <button
-            svuiButton="primary"
-            type="button"
-            [disabled]="!canEditKind() || !tenantSettingsStore.isMassenimportVisible()"
-            (click)="openImport()">
-            {{ 'kinder.list.import' | transloco }}
-          </button>
-        }
       }
+
     </div>
   </svui-buttons-right-container>
 
@@ -49,19 +98,38 @@
     >
       <!-- col widths -->
       <colgroup>
+        <!-- Checkbox for Massenbriefgenerierung -->
+        @if (this.massenbriefStore.massenbriefMode()) {
+          <col svuiColWidth [colWidth]="'checkbox'">
+        }
+        <!-- Nachname -->
         <col svuiColWidth [colWidth]="'text-small'">
+        <!-- Vorname -->
         <col svuiColWidth [colWidth]="'text-small'">
+        <!-- Geburtsdatum -->
         <col svuiColWidth [colWidth]="'date'">
+        <!-- Geschlecht -->
         <col svuiColWidth [colWidth]="'select-small'">
+        <!-- Schule -->
         <col svuiColWidth [colWidth]="'text-small'">
+        <!-- Klasse -->
         <col svuiColWidth [colWidth]="'text-small'">
+        <!-- Klassenstufe -->
         <col svuiColWidth [colWidth]="'select-small'">
-        <col svuiColWidth [colWidth]="'text-small'">
+        <!-- EsadId -->
+        @if (tenantSettingsStore.idEsadIdVisible()) {
+          <col svuiColWidth [colWidth]="'text-small'">
+        }
+        <!-- Actions -->
         <col svuiColWidth [colWidth]="'options'">
       </colgroup>
       <thead>
       <!-- Headers for sorting -->
       <tr>
+
+        @if (this.massenbriefStore.massenbriefMode()) {
+          <th scope="col">{{ 'global.select' | transloco }}</th>
+        }
         <th
           scope="col"
           svuiSortable
@@ -118,18 +186,23 @@
         >
           {{ 'kind.klassenstufe' | transloco }}
         </th>
-        <th
-          scope="col"
-          svuiSortable
-          [sortState]="itemTable.findColSortDTO('esadId')"
-          (sort)="itemTable.onColSort($event, 'esadId')"
-        >
-          {{ 'kind.esadId' | transloco }}
-        </th>
+        @if (tenantSettingsStore.idEsadIdVisible()) {
+          <th
+            scope="col"
+            svuiSortable
+            [sortState]="itemTable.findColSortDTO('esadId')"
+            (sort)="itemTable.onColSort($event, 'esadId')"
+          >
+            {{ 'kind.esadId' | transloco }}
+          </th>
+        }
         <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
       </tr>
       <!-- Headers for filtering-->
       <tr>
+        @if (this.massenbriefStore.massenbriefMode()) {
+          <th scope="col"></th>
+        }
         <th scope="col">
           <svui-table-filter [columnHeader]="'kind.name' | transloco">
             <svui-input-with-icon
@@ -214,11 +287,13 @@
             </ng-select>
           </svui-table-filter>
         </th>
-        <th scope="col">
-          <svui-table-filter [columnHeader]="'kind.esadId' | transloco">
-            <input svuiTextInput [formControl]="tableFilterForm.group.controls.esadId"/>
-          </svui-table-filter>
-        </th>
+        @if (tenantSettingsStore.idEsadIdVisible()) {
+          <th scope="col">
+            <svui-table-filter [columnHeader]="'kind.esadId' | transloco">
+              <input svuiTextInput [formControl]="tableFilterForm.group.controls.esadId"/>
+            </svui-table-filter>
+          </th>
+        }
         <th scope="col"></th>
       </tr>
       </thead>
@@ -229,10 +304,22 @@
         }
         @for (item of itemTable.displayedList(); track item.id) {
           <tr>
+            @if (this.massenbriefStore.massenbriefMode()) {
+              <td>
+                <input svuiCheckbox
+                       type="checkbox"
+                       name="selectedKind"
+                       (click)="massenbriefStore.toggleSelected(item)"
+                       [checked]="massenbriefStore.isSelected(item)"
+                       [disabled]="massenbriefStore.isDisabled(item)"
+                >
+              </td>
+            }
             <td>
               <svui-table-link
                 type="text"
-                [myRouterLink]="[item.id]">
+                [myRouterLink]="[item.id]"
+              data-testid="link-kinder">
                 {{ item.name }}
               </svui-table-link>
             </td>
@@ -242,7 +329,9 @@
             <td>{{ item.schule?.bezeichnung }}</td>
             <td>{{ item.klasse?.bezeichnung }}</td>
             <td>{{ item.klassenStufe ? ('Klassenstufe.' + item.klassenStufe | transloco) : '' }}</td>
-            <td>{{ item.esadId }}</td>
+            @if (tenantSettingsStore.idEsadIdVisible()) {
+              <td>{{ item.esadId }}</td>
+            }
             <td>
               @if (canEditKind()) {
                 <svui-collapsible-menu

@@ -13,13 +13,16 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpf
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungInternJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungInternSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungenDataJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungenDataMinimalJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungenDataMinimalSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungenJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungenSaveJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.json.UntersuchungImpfungenMassnahmenJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmenMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.json.UntersuchungImpfungenMassnahmenJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.json.UntersuchungImpfungenMassnahmenSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import io.micrometer.core.annotation.Timed;
 import io.smallrye.faulttolerance.api.RateLimit;
 import io.vertx.core.http.HttpServerResponse;
 import jakarta.annotation.security.RolesAllowed;
@@ -32,12 +35,9 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/impfungen")
@@ -46,13 +46,14 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = Tags.TAG_UNTERSUCHUNG_IMPFUNGEN)
 @RolesAllowed(BerechtigungName.SU_IMPFEN_LESEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "UntersuchungImpfungenResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("UntersuchungImpfungenResourceMS")
 public class UntersuchungImpfungenResource {
 
     private final UntersuchungImpfungenMapper untersuchungImpfungenMapper;
     private final UntersuchungImpfstatusKrankheitMapper untersuchungImpfstatusKrankheitMapper;
     private final UntersuchungImpfungInternMapper untersuchungImpfungInternMapper;
     private final UntersuchungImpfungenMassnahmenMapper untersuchungImpfungenMassnahmenMapper;
+    private final UntersuchungImpfungenDataMinimalMapper untersuchungImpfungenDataMinimalMapper;
     private final EinladungMapper einladungMapper;
     private final AuthorizerService authorizerService;
 
@@ -153,16 +154,14 @@ public class UntersuchungImpfungenResource {
 
     @PUT
     @Path("/einzeltermin")
-    @NonNull
     @RolesAllowed(BerechtigungName.SU_IMPFEN_SCHREIBEN)
-    public Response einzelTerminErstellen(
+    public void einzelTerminErstellen(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
     ) {
         einladungMapper.requireConsistentPathParams(einladungId, anlassId);
         authorizerService.requireWriteAuthorizationAnlass(anlassId);
         untersuchungImpfungenMassnahmenMapper.einzelTerminErstellen(einladungId);
-        return Response.ok().build();
     }
 
     @PUT
@@ -221,5 +220,19 @@ public class UntersuchungImpfungenResource {
         einladungMapper.requireConsistentPathParams(einladungId, anlassId);
         authorizerService.requireWriteAuthorizationAnlass(anlassId);
         untersuchungImpfungInternMapper.remove(anlassId, impfungInternId);
+    }
+
+    @PUT
+    @Path("/dataminimal")
+    @NonNull
+    @RolesAllowed(BerechtigungName.SU_IMPFEN_SCHREIBEN)
+    public UntersuchungImpfungenDataMinimalJson saveUntersuchungImpfungenDataMinimal(
+        @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
+        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
+        @NotNull @NonNull @Valid UntersuchungImpfungenDataMinimalSaveJson saveJson
+    ) {
+        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        authorizerService.requireWriteAuthorizationAnlass(anlassId);
+        return untersuchungImpfungenDataMinimalMapper.save(einladungId, saveJson);
     }
 }

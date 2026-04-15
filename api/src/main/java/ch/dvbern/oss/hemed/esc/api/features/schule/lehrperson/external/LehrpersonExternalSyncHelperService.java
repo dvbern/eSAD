@@ -45,12 +45,13 @@ public class LehrpersonExternalSyncHelperService {
     public static Lehrperson toEntityForCreate(
         @NonNull Set<Klasse> klassen,
         @NonNull LehrpersonExternal lehrpersonExternal,
-        @NonNull OffsetDateTime now
+        @NonNull OffsetDateTime now,
+        @NonNull ImportTyp importTyp
     ) {
         return new Lehrperson(
-            ExternalImportInfoJson.toEntityOrCreate(null, lehrpersonExternal.getExternalId(), now, ImportTyp.ESCADA),
+            ExternalImportInfoJson.toEntityOrCreate(null, lehrpersonExternal.getExternalId(), now, importTyp),
             klassen,
-            mapGeschlechtFromEscadaAnrede(lehrpersonExternal.getKlasseLehrpersonAnrede()),
+            mapGeschlechtFromAnrede(lehrpersonExternal.getKlasseLehrpersonAnrede()),
             Objects.toString(lehrpersonExternal.getKlasseLehrpersonName(), "N/A"),
             Objects.toString(lehrpersonExternal.getKlasseLehrpersonVorname(), "N/A"),
             null,
@@ -74,16 +75,17 @@ public class LehrpersonExternalSyncHelperService {
     public static Lehrperson updateLehrpersonBasedOnExternal(
         @NonNull Lehrperson lehrperson,
         @NonNull LehrpersonExternal updatedExternal,
-        @NonNull OffsetDateTime now
+        @NonNull OffsetDateTime now,
+        @NonNull ImportTyp importTyp
     ) {
-        lehrperson.setGeschlecht(mapGeschlechtFromEscadaAnrede(updatedExternal.getKlasseLehrpersonAnrede()));
+        lehrperson.setGeschlecht(mapGeschlechtFromAnrede(updatedExternal.getKlasseLehrpersonAnrede()));
         lehrperson.setName(Objects.toString(updatedExternal.getKlasseLehrpersonName(), "N/A"));
         lehrperson.setVorname(Objects.toString(updatedExternal.getKlasseLehrpersonVorname(), "N/A"));
         lehrperson.setExternalImportInfo(ExternalImportInfoJson.toEntityOrCreate(
             lehrperson.getExternalImportInfo(),
             updatedExternal.getExternalId(),
             now,
-            ImportTyp.ESCADA
+            importTyp
         ));
         return lehrperson;
     }
@@ -91,7 +93,8 @@ public class LehrpersonExternalSyncHelperService {
     @NonNull
     @Transactional(TxType.REQUIRES_NEW)
     public ItemSyncResultJson<Lehrperson> addNewLehrperson(
-        @NonNull LehrpersonExternal lehrpersonExternalToAdd
+        @NonNull LehrpersonExternal lehrpersonExternalToAdd,
+        @NonNull ImportTyp importTyp
     ) {
         // Alle Lehrer muessen mindestens einer Klasse zugeordnet sein
         Set<Klasse> klassen = loadLinkedKlassen(lehrpersonExternalToAdd);
@@ -102,12 +105,14 @@ public class LehrpersonExternalSyncHelperService {
             .map(existingLehrperson -> updateLehrpersonBasedOnExternal(
                 existingLehrperson,
                 lehrpersonExternalToAdd,
-                appClock.offsetDateTime().now()
+                appClock.offsetDateTime().now(),
+                importTyp
             ))
             .orElseGet(() -> toEntityForCreate(
                 klassen,
                 lehrpersonExternalToAdd,
-                appClock.offsetDateTime().now()
+                appClock.offsetDateTime().now(),
+                importTyp
             ));
         internalLehrpersonToStore = lehrpersonService.persist(internalLehrpersonToStore);
 
@@ -120,11 +125,12 @@ public class LehrpersonExternalSyncHelperService {
         var result = ItemSyncResultJson.createAddOkItem(
             lehrpersonExternalToAdd,
             internalLehrpersonToStore.getId(),
-            internalLehrpersonToStore.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo())
+            internalLehrpersonToStore.getFullNameIfAllowed(configService.isExternalImportRedactPersonalInfo())
         );
 
         LOG.info(
-            "ESCADA: Lehrperson {} added{}, internalId: '{}', externalId: '{}'",
+            "{}: Lehrperson {} added{}, internalId: '{}', externalId: '{}'",
+            importTyp,
             result.getFriendlyName(),
             preexistingLehrpersonOpt.isEmpty() ? "" : " (preexisting)",
             result.getInternalId(),
@@ -143,7 +149,8 @@ public class LehrpersonExternalSyncHelperService {
     @Transactional(TxType.REQUIRES_NEW)
     public ItemSyncResultJson<Lehrperson> updateExistingLehrperson(
         @NonNull ExternalSystemIdDTO idDTO,
-        @NonNull LehrpersonExternal remoteLehrpersonExternal
+        @NonNull LehrpersonExternal remoteLehrpersonExternal,
+        @NonNull ImportTyp importTyp
     ) {
         Lehrperson existingLehrperson =
             lehrpersonService.getById(ID.of(idDTO.getInternalId(), Lehrperson.class));
@@ -166,7 +173,8 @@ public class LehrpersonExternalSyncHelperService {
         Lehrperson updatedLehrperson = updateLehrpersonBasedOnExternal(
             existingLehrperson,
             updatedExternal,
-            appClock.offsetDateTime().now()
+            appClock.offsetDateTime().now(),
+            importTyp
         );
         updatedLehrperson.disableOptimisticLockingCheck();
 
@@ -180,7 +188,7 @@ public class LehrpersonExternalSyncHelperService {
         return ItemSyncResultJson.createUpdateOkItem(
             idDTO,
             Lehrperson.class,
-            updatedLehrperson.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo())
+            updatedLehrperson.getFullNameIfAllowed(configService.isExternalImportRedactPersonalInfo())
         );
     }
 
@@ -224,7 +232,8 @@ public class LehrpersonExternalSyncHelperService {
     @NonNull
     @Transactional(TxType.REQUIRES_NEW)
     public ItemSyncResultJson<Lehrperson> deactivateRemovedLehrperson(
-        @NonNull ExternalSystemIdDTO externalSystemIdDTO
+        @NonNull ExternalSystemIdDTO externalSystemIdDTO,
+        @NonNull ImportTyp importTyp
     ) {
         Lehrperson lehrperson = lehrpersonService.getById(
             ID.of(externalSystemIdDTO.getInternalId(), Lehrperson.class));
@@ -249,10 +258,11 @@ public class LehrpersonExternalSyncHelperService {
         var result = ItemSyncResultJson.createDeactivateOkItem(
             externalSystemIdDTO,
             Lehrperson.class,
-            lehrperson.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo())
+            lehrperson.getFullNameIfAllowed(configService.isExternalImportRedactPersonalInfo())
         );
         LOG.info(
-            "ESCADA: Lehrperson {} deactivated, internalId: '{}', externalId: '{}'",
+            "{}: Lehrperson {} deactivated, internalId: '{}', externalId: '{}'",
+            importTyp,
             result.getFriendlyName(),
             result.getInternalId(),
             result.getExternalId()
@@ -261,7 +271,7 @@ public class LehrpersonExternalSyncHelperService {
     }
 
     @NonNull
-    private static Geschlecht mapGeschlechtFromEscadaAnrede(@Nullable String klasseLehrpersonAnrede) {
+    private static Geschlecht mapGeschlechtFromAnrede(@Nullable String klasseLehrpersonAnrede) {
         if ("Herr".equals(klasseLehrpersonAnrede)) {
             return Geschlecht.MAENNLICH;
         }

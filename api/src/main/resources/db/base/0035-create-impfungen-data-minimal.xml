@@ -1,0 +1,351 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hefr (generated)" id="1770283452050-1">
+    <createTable tableName="untersuchungimpfungendataminimal">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungimpfungendataminimalPK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="hpvanzahlimpfungen" type="INTEGER"/>
+      <column name="hpvimpfstatus" type="VARCHAR(255)"/>
+      <column name="immunsuppression" type="VARCHAR(255)"/>
+      <column name="impfausweisgeprueft" type="VARCHAR(255)"/>
+      <column name="impfempfehlung" type="VARCHAR(255)"/>
+      <column name="impfungdurchgefuehrt" type="VARCHAR(255)"/>
+      <column name="masernanzahlimpfungen" type="INTEGER"/>
+      <column name="masernimpfstatus" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-2">
+    <createTable tableName="untersuchungimpfungendataminimal_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="hpvanzahlimpfungen" type="INTEGER"/>
+      <column name="hpvimpfstatus" type="VARCHAR(255)"/>
+      <column name="immunsuppression" type="VARCHAR(255)"/>
+      <column name="impfausweisgeprueft" type="VARCHAR(255)"/>
+      <column name="impfempfehlung" type="VARCHAR(255)"/>
+      <column name="impfungdurchgefuehrt" type="VARCHAR(255)"/>
+      <column name="masernanzahlimpfungen" type="INTEGER"/>
+      <column name="masernimpfstatus" type="VARCHAR(255)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-3">
+    <addColumn tableName="anlassconfig">
+      <column name="impfungendataminimalhpvanzahlimpfungen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1770283452050-3a">
+    <sql>
+      UPDATE anlassconfig SET impfungendataminimalhpvanzahlimpfungen = 'NOT_VISIBLE'
+      WHERE impfungendataminimalhpvanzahlimpfungen IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1770283452050-3b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="impfungendataminimalhpvanzahlimpfungen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-4">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="impfungendataminimalhpvanzahlimpfungen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-5">
+    <addColumn tableName="anlassconfig">
+      <column name="impfungendataminimalhpvimpfstatus" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1770283452050-5a">
+    <sql>
+      UPDATE anlassconfig SET impfungendataminimalhpvimpfstatus = 'NOT_VISIBLE'
+      WHERE impfungendataminimalhpvimpfstatus IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1770283452050-5b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="impfungendataminimalhpvimpfstatus"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-6">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="impfungendataminimalhpvimpfstatus" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-7">
+    <addColumn tableName="anlassconfig">
+      <column name="impfungendataminimalimmunsuppression" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1770283452050-7a">
+    <sql>
+      UPDATE anlassconfig SET impfungendataminimalimmunsuppression = 'NOT_VISIBLE'
+      WHERE impfungendataminimalimmunsuppression IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1770283452050-7b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="impfungendataminimalimmunsuppression"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-8">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="impfungendataminimalimmunsuppression" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-9">
+    <addColumn tableName="anlassconfig">
+      <column name="impfungendataminimalimpfausweisgeprueft" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1770283452050-9a">
+    <sql>
+      UPDATE anlassconfig SET impfungendataminimalimpfausweisgeprueft = 'NOT_VISIBLE'
+      WHERE impfungendataminimalimpfausweisgeprueft IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1770283452050-9b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="impfungendataminimalimpfausweisgeprueft"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-10">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="impfungendataminimalimpfausweisgeprueft" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-11">
+    <addColumn tableName="anlassconfig">
+      <column name="impfungendataminimalimpfempfehlung" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1770283452050-11a">
+    <sql>
+      UPDATE anlassconfig SET impfungendataminimalimpfempfehlung = 'NOT_VISIBLE'
+      WHERE impfungendataminimalimpfempfehlung IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1770283452050-11b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="impfungendataminimalimpfempfehlung"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-12">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="impfungendataminimalimpfempfehlung" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-13">
+    <addColumn tableName="anlassconfig">
+      <column name="impfungendataminimalimpfungdurchgefuehrt" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1770283452050-13a">
+    <sql>
+      UPDATE anlassconfig SET impfungendataminimalimpfungdurchgefuehrt = 'NOT_VISIBLE'
+      WHERE impfungendataminimalimpfungdurchgefuehrt IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1770283452050-13b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="impfungendataminimalimpfungdurchgefuehrt"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-14">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="impfungendataminimalimpfungdurchgefuehrt" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-15">
+    <addColumn tableName="anlassconfig">
+      <column name="impfungendataminimalmasernanzahlimpfungen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1770283452050-15a">
+    <sql>
+      UPDATE anlassconfig SET impfungendataminimalmasernanzahlimpfungen = 'NOT_VISIBLE'
+      WHERE impfungendataminimalmasernanzahlimpfungen IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1770283452050-15b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="impfungendataminimalmasernanzahlimpfungen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-16">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="impfungendataminimalmasernanzahlimpfungen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-17">
+    <addColumn tableName="anlassconfig">
+      <column name="impfungendataminimalmasernimpfstatus" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1770283452050-17a">
+    <sql>
+      UPDATE anlassconfig SET impfungendataminimalmasernimpfstatus = 'NOT_VISIBLE'
+      WHERE impfungendataminimalmasernimpfstatus IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1770283452050-17b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="impfungendataminimalmasernimpfstatus"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-18">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="impfungendataminimalmasernimpfstatus" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-19">
+    <addColumn tableName="untersuchungimpfungen">
+      <column name="untersuchungimpfungendataminimal_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-20">
+    <addColumn tableName="untersuchungimpfungen_aud">
+      <column name="untersuchungimpfungendataminimal_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-21">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungimpfungendataminimal_audPK" tableName="untersuchungimpfungendataminimal_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-22">
+    <addUniqueConstraint columnNames="untersuchungimpfungendataminimal_id" constraintName="UC_UNTERSUCHUNGIMPFUNGENUNTERSUCHUNGIMPFUNGENDATAMINIMAL_ID_COL" tableName="untersuchungimpfungen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-23">
+    <createIndex indexName="ix_untersuchungimpfungen_untersuchungimpfungendataminimal" tableName="untersuchungimpfungen">
+      <column name="untersuchungimpfungendataminimal_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-25">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungimpfungendataminimal_aud" constraintName="FKkk0jxye8y8am809yywv6tkfkv" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770283452050-26">
+    <addForeignKeyConstraint baseColumnNames="untersuchungimpfungendataminimal_id" baseTableName="untersuchungimpfungen" constraintName="fk_untersuchungimpfungen_untersuchungimpfungendataminimal" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungimpfungendataminimal" validate="true"/>
+  </changeSet>
+  <!-- Weitere Felder Impfungen -->
+  <changeSet author="hefr (generated)" id="1770366176458-1">
+    <addColumn tableName="anlassconfig">
+      <column name="impfungenmassnahmebemerkungen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <!-- Feld wurde bisher immer angezeigt, wenn irgendetwas aus den Impfungen angezeigt war:
+  Wir migrieren den Wert der ImpfungUebersicht -->
+  <changeSet author="hefr" id="1770366176458-1a">
+    <sql>
+      UPDATE anlassconfig SET impfungenmassnahmebemerkungen = impfungenuebersicht
+      WHERE impfungenmassnahmebemerkungen IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1770366176458-1b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="impfungenmassnahmebemerkungen"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770366176458-2">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="impfungenmassnahmebemerkungen" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+  <!-- AnlassConfig für ImpfungenHeader -->
+  <changeSet author="hefr (generated)" id="1770378240372-1">
+    <addColumn tableName="anlassconfig">
+      <column name="showimpfungenheaderimpfausweisnichtvorhanden" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1770378240372-1a">
+    <sql>
+      UPDATE anlassconfig SET showimpfungenheaderimpfausweisnichtvorhanden = true
+      WHERE showimpfungenheaderimpfausweisnichtvorhanden IS NULL and impfungenuebersicht != 'NOT_VISIBLE';
+    </sql>
+    <sql>
+      UPDATE anlassconfig SET showimpfungenheaderimpfausweisnichtvorhanden = false
+      WHERE showimpfungenheaderimpfausweisnichtvorhanden IS NULL and impfungenuebersicht = 'NOT_VISIBLE';
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1770378240372-1b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="showimpfungenheaderimpfausweisnichtvorhanden"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770378240372-2">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="showimpfungenheaderimpfausweisnichtvorhanden" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770378240372-3">
+    <addColumn tableName="anlassconfig">
+      <column name="showimpfungenheaderimpfausweisunvollstaendig" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1770378240372-3a">
+    <sql>
+      UPDATE anlassconfig SET showimpfungenheaderimpfausweisunvollstaendig = true
+      WHERE showimpfungenheaderimpfausweisunvollstaendig IS NULL and impfungenuebersicht != 'NOT_VISIBLE';
+    </sql>
+    <sql>
+      UPDATE anlassconfig SET showimpfungenheaderimpfausweisunvollstaendig = false
+      WHERE showimpfungenheaderimpfausweisunvollstaendig IS NULL and impfungenuebersicht = 'NOT_VISIBLE';
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1770378240372-3b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="showimpfungenheaderimpfausweisunvollstaendig"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770378240372-4">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="showimpfungenheaderimpfausweisunvollstaendig" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770378240372-5">
+    <addColumn tableName="anlassconfig">
+      <column name="showimpfungenheaderimpfausweisupload" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1770378240372-5a">
+    <sql>
+      UPDATE anlassconfig SET showimpfungenheaderimpfausweisupload = true
+      WHERE showimpfungenheaderimpfausweisupload IS NULL and impfungenuebersicht != 'NOT_VISIBLE';
+    </sql>
+    <sql>
+      UPDATE anlassconfig SET showimpfungenheaderimpfausweisupload = false
+      WHERE showimpfungenheaderimpfausweisupload IS NULL and impfungenuebersicht = 'NOT_VISIBLE';
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1770378240372-5b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="showimpfungenheaderimpfausweisupload"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770378240372-6">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="showimpfungenheaderimpfausweisupload" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770378240372-7">
+    <addColumn tableName="anlassconfig">
+      <column name="showimpfungenheaderimpfausweiszweipluseinsschema" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr" id="1770378240372-7a">
+    <sql>
+      UPDATE anlassconfig SET showimpfungenheaderimpfausweiszweipluseinsschema = true
+      WHERE showimpfungenheaderimpfausweiszweipluseinsschema IS NULL and impfungenuebersicht != 'NOT_VISIBLE';
+    </sql>
+    <sql>
+      UPDATE anlassconfig SET showimpfungenheaderimpfausweiszweipluseinsschema = false
+      WHERE showimpfungenheaderimpfausweiszweipluseinsschema IS NULL and impfungenuebersicht = 'NOT_VISIBLE';
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1770378240372-7b">
+    <addNotNullConstraint tableName="anlassconfig" columnName="showimpfungenheaderimpfausweiszweipluseinsschema"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1770378240372-8">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="showimpfungenheaderimpfausweiszweipluseinsschema" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+</databaseChangeLog>

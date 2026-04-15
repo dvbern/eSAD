@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject, model} from '@angular/core';
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {BriefvorlageType, KindAnlassSummaryJson, KindJson} from '@dvb/data-access-backend';
-import {AerzteStore, BriefvorlagenStore} from '@dvb/feat-shared';
+import {AerzteStore, BriefvorlagenStore, TenantSettingsStore} from '@dvb/feat-shared';
 import {ModalDialogComponent} from '@dvb/feat-shared';
 import {
   FormControlComponent,
@@ -38,6 +38,7 @@ export class KinderBriefgenerierenModalComponent {
   readonly activeModal = inject(NgbActiveModal);
   readonly briefvorlagenStore = inject(BriefvorlagenStore);
   readonly aerzteStore = inject(AerzteStore);
+  readonly tenantSettingsStore = inject(TenantSettingsStore);
 
   kindData = model<KindJson>();
   anlassList = model<KindAnlassSummaryJson[]>([]);

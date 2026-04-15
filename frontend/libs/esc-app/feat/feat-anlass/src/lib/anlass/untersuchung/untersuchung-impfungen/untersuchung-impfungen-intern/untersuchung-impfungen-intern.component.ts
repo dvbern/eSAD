@@ -1,18 +1,30 @@
-import { DatePipe } from '@angular/common';
-import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, model} from '@angular/core';
+import {DatePipe} from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  model,
+} from '@angular/core';
 import {FormArray, FormControl, FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {
   AnlassConfigJson,
   BenutzerOptionJson,
   EntityAktivStatus,
   ImpfStatus,
-  ImpfstoffChargeJson,
   ImpfstoffJson,
   UntersuchungImpfungInternSaveJson,
 } from '@dvb/data-access-backend';
-import {BenutzerOptionsStore, ImpfstoffeChargenStore} from '@dvb/feat-shared';
-import {TimetravelStore} from '@dvb/feat-shared';
-import {ModalDialogComponent} from '@dvb/feat-shared';
+import {
+  BenutzerOptionsStore,
+  ImpfstoffChargeOption,
+  ImpfstoffeChargenStore,
+  ModalDialogComponent,
+  TenantSettingsStore,
+  TimetravelStore
+} from '@dvb/feat-shared';
 import {
   CheckboxDirective,
   FormControlComponent,
@@ -27,7 +39,7 @@ import {
   TextInputDirective,
 } from '@dvb/ui-components';
 import {DetailMode} from '@dvb/util-angular';
-import {compareFn} from '@dvb/util-shared';
+import {compareFn, isNullish, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
@@ -36,10 +48,10 @@ import {ImmunitaetKrankheitSubFormType, UntersuchungImpfungenInternForm} from '.
 export type ImpfungPopupMode = 'create' | 'edit' | 'verabreicht' | 'nicht-verabreicht';
 
 @Component({
-    selector: 'feat-anlass-planung-einladungen-abmelden-modal',
-    templateUrl: './untersuchung-impfungen-intern.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
+  selector: 'feat-anlass-planung-einladungen-abmelden-modal',
+  templateUrl: './untersuchung-impfungen-intern.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
     FormsModule,
     TranslocoPipe,
     NgOptionComponent,
@@ -58,7 +70,7 @@ export type ImpfungPopupMode = 'create' | 'edit' | 'verabreicht' | 'nicht-verabr
     TextareaDirective,
     CheckboxDirective,
     SingleCheckboxWrapperComponent
-]
+  ]
 })
 export class UntersuchungImpfungenInternComponent {
 
@@ -68,15 +80,17 @@ export class UntersuchungImpfungenInternComponent {
   protected readonly benutzerOptionsStore = inject(BenutzerOptionsStore);
   protected readonly impfstoffeChargenStore = inject(ImpfstoffeChargenStore);
   protected readonly timetravelStore = inject(TimetravelStore);
+  protected readonly tenantSettingStore = inject(TenantSettingsStore);
 
   protected readonly benutzerOptions = this.benutzerOptionsStore.entities();
   protected readonly impfStatusOptions = Object.values(ImpfStatus);
 
   protected readonly compareFnImpfstoff = compareFn<ImpfstoffJson>;
-  protected readonly compareFnCharge = compareFn<ImpfstoffChargeJson>;
   protected readonly compareFnBenutzer = compareFn<BenutzerOptionJson>;
 
   protected readonly DetailMode = DetailMode;
+  protected readonly isNullish = isNullish;
+  protected readonly requireValue = requireValue;
 
   impfung = model<UntersuchungImpfungInternSaveJson>();
   inputMode = model.required<ImpfungPopupMode>();
@@ -85,6 +99,10 @@ export class UntersuchungImpfungenInternComponent {
 
   readonly impfstoffOptions = computed(() => this.impfstoffeChargenStore.entities()
     .filter(impfstoff => impfstoff.data.impfstoffAktivStatus === EntityAktivStatus.AKTIV));
+
+  compareChargeFn(item: ImpfstoffChargeOption, selected: ImpfstoffChargeOption): boolean {
+    return item.label === selected.label;
+  }
 
   form = new UntersuchungImpfungenInternForm({
     fb: inject(NonNullableFormBuilder),

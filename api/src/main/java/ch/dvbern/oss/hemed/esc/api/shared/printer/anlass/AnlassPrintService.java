@@ -40,12 +40,14 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.NachkontrolleService;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
@@ -65,7 +67,10 @@ public class AnlassPrintService {
     private final AppClock appClock;
     private final AppLanguageProvider appLanguageProvider;
     private final FileStoreService fileStoreService;
+    private final TenantProducer tenantProducer;
     private final TL tl;
+    private final TenantSettingsService tenantSettingService;
+    private final ConfigService configService;
 
     @NonNull
     public PrintResultDTO printAnlass(@NonNull ID<Anlass> anlassId) {
@@ -81,13 +86,13 @@ public class AnlassPrintService {
                 anlass,
                 einladungen,
                 appClock.getToday(),
-                TenantEnum.BS, // Use tenant resolver once we found a way around SonarCube's parameter limitation
+                tenantProducer.produceTenant(),
                 (AppLanguages) appLanguageProvider.current(),
                 nachkontrollen
             );
 
             logPrintOfAnlass(dto, currentUserService.currentUserName());
-            AnlassPrinter.print(dto, baos, fileStoreService);
+            AnlassPrinter.print(dto, baos, fileStoreService, tenantSettingService, configService);
 
             byte[] byteArray = baos.toByteArray();
             return new PrintResultDTO(byteArray, createFileInfo(anlass, byteArray.length, "pdf"));

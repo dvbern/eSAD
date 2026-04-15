@@ -22,16 +22,16 @@
 
     <groupId>ch.dvbern.oss.hemed.esc</groupId>
     <artifactId>esc-api</artifactId>
-    <version>26.1.0-SNAPSHOT</version>
+    <version>26.5.0-SNAPSHOT</version>
 
     <!-- <editor-fold desc="properties" defaultstate="collapsed"> -->
     <properties>
         <querydsl.version>6.10.1</querydsl.version>
         <checkerframework.version>3.46.0</checkerframework.version>
-        <lombok.version>1.18.34</lombok.version>
+        <lombok.version>1.18.44</lombok.version>
         <dvb-commons-i18n-l10n.version>1.0.0</dvb-commons-i18n-l10n.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <pdfbox.version>3.0.2</pdfbox.version>
+        <pdfbox.version>3.0.7</pdfbox.version>
         <doctemplate.version>4.0.0</doctemplate.version>
 
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
@@ -43,14 +43,23 @@
 
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.20.2.2</quarkus.platform.version>
+        <quarkus.platform.version>3.33.1</quarkus.platform.version>
         <!-- keep in sync with quarkus! (exception: liquibase is currentyly ahead of quarkus internal version because mvn liquibase:diff will not generate output otherwise)-->
-        <hibernate-jpamodelgen.version>6.6.5.Final</hibernate-jpamodelgen.version>
+        <hibernate-jpamodelgen.version>7.1.14.Final</hibernate-jpamodelgen.version>
         <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
-        <liquibase-diff.liquibase.version>4.31.0</liquibase-diff.liquibase.version>
+        <liquibase-diff.liquibase.version>4.33.0</liquibase-diff.liquibase.version>
         <!--        determined from https://github.com/liquibase/liquibase/blob/v4.31.0/pom.xml-->
         <liquibase-diff.spring.version>5.3.39</liquibase-diff.spring.version>
-
+        
+        <!-- fixes for enforcer dependency convergence issues        -->
+        <commons-collections4.version>4.5.0</commons-collections4.version>
+        <commons-csv.version>1.14.1</commons-csv.version>
+        <poi.version>5.5.1</poi.version>
+        <apache-mime4j.version>0.8.13</apache-mime4j.version>
+        <tukaani-xz.version>1.12</tukaani-xz.version>
+        <zstd-jni.version>1.5.7-6</zstd-jni.version>
+        <jaxb-runtime.version>4.0.7</jaxb-runtime.version>
+        <spotbugs-annotations.version>4.9.8</spotbugs-annotations.version>
         <!-- <editor-fold desc="generated api coordinates" defaultstate="collapsed"> -->
         <package>ch.dvbern.oss.hemed.esc.api</package>
         <package.generated>${package}.generated</package.generated>
@@ -62,8 +71,11 @@
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.coverage.jacoco.xmlReportPaths>target/jacoco-report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.coverage.exclusions>src/test/**</sonar.coverage.exclusions>
-        <sonar.exclusions>src/main/java/ch/dvbern/oss/hemed/esc/api/generated/**,</sonar.exclusions>
-        <sonar.issue.ignore.multicriteria>immediately-return,override-equals,generics-naming,enum-set-allowed</sonar.issue.ignore.multicriteria>
+        <sonar.exclusions>
+            src/main/java/ch/dvbern/oss/hemed/esc/api/generated/**,
+            src/test/java/ch/dvbern/oss/hemed/esc/generated/**,
+        </sonar.exclusions>
+        <sonar.issue.ignore.multicriteria>enum-set-allowed,immediately-return,override-equals,generics-naming</sonar.issue.ignore.multicriteria>
         <sonar.issue.ignore.multicriteria.enum-set-allowed.ruleKey>java:S1319</sonar.issue.ignore.multicriteria.enum-set-allowed.ruleKey>
         <sonar.issue.ignore.multicriteria.enum-set-allowed.resourceKey>**/*</sonar.issue.ignore.multicriteria.enum-set-allowed.resourceKey>
         <sonar.issue.ignore.multicriteria.immediately-return.ruleKey>java:S1488</sonar.issue.ignore.multicriteria.immediately-return.ruleKey>
@@ -102,43 +114,68 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>2.0.16</version>
+                <version>2.0.17</version>
+            </dependency>
+            <dependency>
+                <groupId>org.tukaani</groupId>
+                <artifactId>xz</artifactId>
+                <version>${tukaani-xz.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.luben</groupId>
+                <artifactId>zstd-jni</artifactId>
+                <version>${zstd-jni.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.james</groupId>
+                <artifactId>apache-mime4j-dom</artifactId>
+                <version>${apache-mime4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.james</groupId>
+                <artifactId>apache-mime4j-core</artifactId>
+                <version>${apache-mime4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${jaxb-runtime.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-core</artifactId>
+                <version>${jaxb-runtime.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>txw2</artifactId>
+                <version>${jaxb-runtime.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-xjc</artifactId>
+                <version>${jaxb-runtime.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-jxc</artifactId>
+                <version>${jaxb-runtime.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-annotations</artifactId>
+                <version>${spotbugs-annotations.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-bom</artifactId>
-                <version>3.26.3</version>
+                <version>3.27.7</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             
-            <!-- Quarkiverse TIKA and Quarkiverse POI don't have the same version of poi -->
-            <dependency>
-                <groupId>org.apache.poi</groupId>
-                <artifactId>poi-ooxml</artifactId>
-                <version>5.4.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.poi</groupId>
-                <artifactId>poi</artifactId>
-                <version>5.4.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.poi</groupId>
-                <artifactId>poi-scratchpad</artifactId>
-                <version>5.4.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.xmlbeans</groupId>
-                <artifactId>xmlbeans</artifactId>
-                <version>5.3.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.healthmarketscience.jackcess</groupId>
-                <artifactId>jackcess</artifactId>
-                <version>4.0.0</version>
-            </dependency>
-        
+
+          
     </dependencies>
 </dependencyManagement>
     <!-- </editor-fold> -->
@@ -180,7 +217,7 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-smallrye-metrics</artifactId>
+            <artifactId>quarkus-micrometer</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -197,7 +234,7 @@
         <dependency>
             <groupId>io.quarkiverse.tika</groupId>
             <artifactId>quarkus-tika</artifactId>
-            <version>2.1.0</version>
+            <version>2.3.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.logging.log4j</groupId>
@@ -223,7 +260,6 @@
         <dependency>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-annotations</artifactId>
-            <version>4.8.3</version>
         </dependency>
         <dependency>
             <groupId>org.checkerframework</groupId>
@@ -264,7 +300,7 @@
         <dependency>
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
-            <version>1.9.0</version>
+            <version>1.10.1</version>
             <exclusions>
                 <exclusion>
                     <!-- introduces security bug but seems to not be needed anyway -->
@@ -281,7 +317,7 @@
         <dependency>
             <groupId>com.googlecode.libphonenumber</groupId>
             <artifactId>libphonenumber</artifactId>
-            <version>8.13.47</version>
+            <version>9.0.27</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -307,11 +343,11 @@
         <dependency>
             <groupId>io.quarkiverse.loggingsentry</groupId>
             <artifactId>quarkus-logging-sentry</artifactId>
-            <version>2.1.2</version>
+            <version>2.3.1</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-junit5</artifactId>
+            <artifactId>quarkus-junit</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -347,13 +383,13 @@
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5</artifactId>
-            <version>1.4.0</version>
+            <version>1.4.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.openapitools</groupId>
             <artifactId>jackson-databind-nullable</artifactId>
-            <version>0.2.6</version>
+            <version>0.2.10</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -364,7 +400,7 @@
         <dependency>
             <groupId>net.javacrumbs.json-unit</groupId>
             <artifactId>json-unit-assertj</artifactId>
-            <version>3.4.1</version>
+            <version>5.1.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -376,7 +412,7 @@
         <dependency>
             <groupId>net.javacrumbs.json-unit</groupId>
             <artifactId>json-unit</artifactId>
-            <version>3.4.1</version>
+            <version>5.1.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -400,7 +436,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
-            <version>1.13.0</version>
+            <version>1.14.1</version>
         </dependency>
         <dependency>
             <groupId>io.quarkiverse.amazonservices</groupId>
@@ -545,6 +581,7 @@
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <maven.home>${maven.home}</maven.home>
                     </systemPropertyVariables>
+     <argLine>@{argLine}</argLine>
                 </configuration>
             </plugin>
             <!-- </editor-fold> -->
@@ -569,6 +606,9 @@
                         </configuration>
                     </execution>
                 </executions>
+    <configuration>
+     <argLine>@{argLine}</argLine>
+    </configuration>
             </plugin>
             <!-- </editor-fold> -->
 

@@ -5,8 +5,10 @@ import java.util.List;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.json.OrganisationRollenJson;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -54,12 +56,17 @@ public class BenutzerSaveJson implements SaveJsonWithOptimisticLocking {
 
     @NotNull
     @Schema(required = true)
-    private boolean aktiv;
+    private EntityAktivStatus benutzerAktivStatus;
 
-    @NotNull
     @NonNull
     @Schema(required = true)
-    private List<FachRolle> fachRollen;
+    @Valid
+    private List<OrganisationRollenJson> organisationRollen;
+
+    @Nullable
+    @Schema(required = false)
+    @Valid
+    private SystemRollenJson systemRollen;
 
     @Schema(required = true)
     private long version;

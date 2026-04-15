@@ -17,11 +17,17 @@ export interface AnlassConfigJson {
     data: AnlassConfigSaveJson;
     anlassConfigStatus: AnlassConfigStatus;
     anlassConfigVisible: boolean;
-    usedInAtLeastOneAnlass: boolean;
     latestAnlassConfigForAnlassTyp: boolean;
     showTabDaten: boolean;
+    showTabVorabklaerungen: boolean;
     showTabImpfungen: boolean;
-    showChecklist: boolean;
+    showCardImpfungenHeader: boolean;
+    showCardImpfungenDataMinimal: boolean;
+    showCardImpfungenImpfstatus: boolean;
+    showCardImpfungenListeIntern: boolean;
+    showCardImpfungenChecklist: boolean;
+    showCardImpfungenDoppelkontrolle: boolean;
+    showCardImpfungenMassnahmen: boolean;
     showTabSehen: boolean;
     showTabSehenBeurteilung: boolean;
     showTabSehenBemerkungenFragenbogen: boolean;
@@ -35,6 +41,12 @@ export interface AnlassConfigJson {
     showTabUntersuchung: boolean;
     showTabUntersuchungBeurteilung: boolean;
     showTabUntersuchungBemerkung: boolean;
+    showTabSprache: boolean;
+    showTabBewegungsapparat: boolean;
+    showTabSchulrelevanteBeeintraechtigung: boolean;
+    showTabAbschluss: boolean;
+    showCardAbschlussAbschluss: boolean;
+    showCardAbschlussSignatur: boolean;
     showTabMassnahmen: boolean;
 }
 export namespace AnlassConfigJson {

@@ -18,7 +18,7 @@ export type SupportedInputType = 'text' | 'email' | 'date' | 'time' | 'tel' | 'm
   ],
 })
 export class TextInputDirective extends ValidatedInputWithIdDirective {
-  @HostBinding('class.form-control') private readonly bootstrapClass = true;
+  @HostBinding('class.form-control') readonly bootstrapClass = true;
   private readonly defaultInputType: SupportedInputType = 'text';
   #inputType!: SupportedInputType;
 

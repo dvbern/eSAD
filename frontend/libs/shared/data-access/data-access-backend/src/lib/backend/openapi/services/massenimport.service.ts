@@ -228,10 +228,10 @@ export class MassenimportService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public massenimportKinderForSchuleAndKlasse$(requestParameters?: MassenimportServiceMassenimportKinderForSchuleAndKlasseRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public massenimportKinderForSchuleAndKlasse$(requestParameters?: MassenimportServiceMassenimportKinderForSchuleAndKlasseRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public massenimportKinderForSchuleAndKlasse$(requestParameters?: MassenimportServiceMassenimportKinderForSchuleAndKlasseRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public massenimportKinderForSchuleAndKlasse$(requestParameters?: MassenimportServiceMassenimportKinderForSchuleAndKlasseRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public massenimportKinderForSchuleAndKlasse$(requestParameters?: MassenimportServiceMassenimportKinderForSchuleAndKlasseRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<object>;
+    public massenimportKinderForSchuleAndKlasse$(requestParameters?: MassenimportServiceMassenimportKinderForSchuleAndKlasseRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<object>>;
+    public massenimportKinderForSchuleAndKlasse$(requestParameters?: MassenimportServiceMassenimportKinderForSchuleAndKlasseRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<object>>;
+    public massenimportKinderForSchuleAndKlasse$(requestParameters?: MassenimportServiceMassenimportKinderForSchuleAndKlasseRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         const klasseID = requestParameters?.klasseID;
         if (klasseID === null || klasseID === undefined) {
             throw new Error('Required parameter klasseID was null or undefined when calling massenimportKinderForSchuleAndKlasse.');
@@ -254,6 +254,7 @@ export class MassenimportService {
         if (localVarHttpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
+                'application/json'
             ];
             localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -306,7 +307,7 @@ export class MassenimportService {
         }
 
         let localVarPath = `/api/massenimport/schule/${this.configuration.encodeParam({name: "schuleID", value: schuleID, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/klasse/${this.configuration.encodeParam({name: "klasseID", value: klasseID, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
-        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<object>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: localVarConvertFormParamsToString ? localVarFormParams.toString() : localVarFormParams,
@@ -326,10 +327,10 @@ export class MassenimportService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public massenimportKinderForSchuleExtractKlassen$(requestParameters?: MassenimportServiceMassenimportKinderForSchuleExtractKlassenRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public massenimportKinderForSchuleExtractKlassen$(requestParameters?: MassenimportServiceMassenimportKinderForSchuleExtractKlassenRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public massenimportKinderForSchuleExtractKlassen$(requestParameters?: MassenimportServiceMassenimportKinderForSchuleExtractKlassenRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public massenimportKinderForSchuleExtractKlassen$(requestParameters?: MassenimportServiceMassenimportKinderForSchuleExtractKlassenRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public massenimportKinderForSchuleExtractKlassen$(requestParameters?: MassenimportServiceMassenimportKinderForSchuleExtractKlassenRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<object>;
+    public massenimportKinderForSchuleExtractKlassen$(requestParameters?: MassenimportServiceMassenimportKinderForSchuleExtractKlassenRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<object>>;
+    public massenimportKinderForSchuleExtractKlassen$(requestParameters?: MassenimportServiceMassenimportKinderForSchuleExtractKlassenRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<object>>;
+    public massenimportKinderForSchuleExtractKlassen$(requestParameters?: MassenimportServiceMassenimportKinderForSchuleExtractKlassenRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         const schuleID = requestParameters?.schuleID;
         if (schuleID === null || schuleID === undefined) {
             throw new Error('Required parameter schuleID was null or undefined when calling massenimportKinderForSchuleExtractKlassen.');
@@ -348,6 +349,7 @@ export class MassenimportService {
         if (localVarHttpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
+                'application/json'
             ];
             localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -400,7 +402,7 @@ export class MassenimportService {
         }
 
         let localVarPath = `/api/massenimport/schule/${this.configuration.encodeParam({name: "schuleID", value: schuleID, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
-        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<object>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: localVarConvertFormParamsToString ? localVarFormParams.toString() : localVarFormParams,

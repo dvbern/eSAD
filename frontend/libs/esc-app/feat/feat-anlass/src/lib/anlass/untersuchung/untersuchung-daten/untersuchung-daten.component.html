@@ -12,7 +12,8 @@
       <input svuiTextInput [formControl]="form.group.controls.vorname">
     </svui-form-control>
 
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showDatenPersonendatenEsadId) {
+    @if (tenantSettingsStore.idEsadIdVisible()
+    && anlassStore.selectedEntity()?.anlassConfig?.data?.showDatenPersonendatenEsadId) {
       <svui-form-control [label]="'untersuchung.tab.daten.personen.idNr' | transloco"
                          [viewValue]="form.group.controls.esadId.value">
         <input svuiTextInput [formControl]="form.group.controls.esadId">
@@ -75,7 +76,8 @@
     </svui-form-control>
 
     <svui-form-control [label]="'untersuchung.tab.daten.untersuchung.arzt' | transloco"
-                       [viewValue]="form.group.value.arzt?.fullName">
+                       [viewValue]="form.group.value.arzt?.fullName"
+                       data-testid="schularzt-select">
       <ng-select
         svuiNgSelect
         bindLabel='dummy'
@@ -84,16 +86,17 @@
         [placeholder]="'global.select.bitte-auswaehlen' | transloco"
         [compareWith]="compareFn"
       >
-        @for (each of benutzerOptionsStore.arztOptionsIncluding(form.group.value.arzt); track each) {
-          <ng-option [value]="each" [disabled]="!each.aktiv">
-            {{ each.fullName }}
+        @for (arzt of benutzerOptionsStore.arztOptionsIncluding(form.group.value.arzt); track arzt) {
+          <ng-option [value]="arzt" [disabled]="arzt.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
+            {{ arzt.fullName }}
           </ng-option>
         }
       </ng-select>
     </svui-form-control>
 
     <svui-form-control [label]="'untersuchung.tab.daten.untersuchung.mpa' | transloco"
-                       [viewValue]="form.group.value.mpa?.fullName">
+                       [viewValue]="form.group.value.mpa?.fullName"
+                       data-testid="mpa-select">
       <ng-select
         svuiNgSelect
         bindLabel='dummy'
@@ -102,9 +105,9 @@
         [placeholder]="'global.select.bitte-auswaehlen' | transloco"
         [compareWith]="compareFn"
       >
-        @for (each of benutzerOptionsStore.mpaOrPfpOptionsIncluding(form.group.value.mpa); track each) {
-          <ng-option [value]="each" [disabled]="!each.aktiv">
-            {{ each.fullName }}
+        @for (hilfsperson of benutzerOptionsStore.hilfspersonOptionsIncluding(form.group.value.mpa); track hilfsperson) {
+          <ng-option [value]="hilfsperson" [disabled]="hilfsperson.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
+            {{ hilfsperson.fullName }}
           </ng-option>
         }
       </ng-select>

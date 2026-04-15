@@ -2,6 +2,12 @@
 openapi: 3.1.0
 components:
   schemas:
+    AbschlussResultat:
+      type: string
+      enum:
+      - JA
+      - NEIN
+      - KEINE_ANGABE
     AdresseJson:
       type: object
       properties:
@@ -15,6 +21,11 @@ components:
           type: string
         land:
           $ref: "#/components/schemas/Land"
+    AgbResponsability:
+      type: string
+      enum:
+      - AGB_MANAGED_BY_TENANT
+      - AGB_MANAGED_BY_USER
     AnlassAktivitaetHistoryJson:
       type: object
       required:
@@ -49,11 +60,17 @@ components:
       - data
       - anlassConfigStatus
       - anlassConfigVisible
-      - usedInAtLeastOneAnlass
       - latestAnlassConfigForAnlassTyp
       - showTabDaten
+      - showTabVorabklaerungen
       - showTabImpfungen
-      - showChecklist
+      - showCardImpfungenHeader
+      - showCardImpfungenDataMinimal
+      - showCardImpfungenImpfstatus
+      - showCardImpfungenListeIntern
+      - showCardImpfungenChecklist
+      - showCardImpfungenDoppelkontrolle
+      - showCardImpfungenMassnahmen
       - showTabSehen
       - showTabSehenBeurteilung
       - showTabSehenBemerkungenFragenbogen
@@ -67,6 +84,12 @@ components:
       - showTabUntersuchung
       - showTabUntersuchungBeurteilung
       - showTabUntersuchungBemerkung
+      - showTabSprache
+      - showTabBewegungsapparat
+      - showTabSchulrelevanteBeeintraechtigung
+      - showTabAbschluss
+      - showCardAbschlussAbschluss
+      - showCardAbschlussSignatur
       - showTabMassnahmen
       properties:
         id:
@@ -77,15 +100,27 @@ components:
           $ref: "#/components/schemas/AnlassConfigStatus"
         anlassConfigVisible:
           type: boolean
-        usedInAtLeastOneAnlass:
-          type: boolean
         latestAnlassConfigForAnlassTyp:
           type: boolean
         showTabDaten:
           type: boolean
+        showTabVorabklaerungen:
+          type: boolean
         showTabImpfungen:
           type: boolean
-        showChecklist:
+        showCardImpfungenHeader:
+          type: boolean
+        showCardImpfungenDataMinimal:
+          type: boolean
+        showCardImpfungenImpfstatus:
+          type: boolean
+        showCardImpfungenListeIntern:
+          type: boolean
+        showCardImpfungenChecklist:
+          type: boolean
+        showCardImpfungenDoppelkontrolle:
+          type: boolean
+        showCardImpfungenMassnahmen:
           type: boolean
         showTabSehen:
           type: boolean
@@ -112,6 +147,18 @@ components:
         showTabUntersuchungBeurteilung:
           type: boolean
         showTabUntersuchungBemerkung:
+          type: boolean
+        showTabSprache:
+          type: boolean
+        showTabBewegungsapparat:
+          type: boolean
+        showTabSchulrelevanteBeeintraechtigung:
+          type: boolean
+        showTabAbschluss:
+          type: boolean
+        showCardAbschlussAbschluss:
+          type: boolean
+        showCardAbschlussSignatur:
           type: boolean
         showTabMassnahmen:
           type: boolean
@@ -169,6 +216,13 @@ components:
       - datenUntersuchung
       - showDatenSchule
       - datenBemerkung
+      - vorabklaerungenFragebogenStatus
+      - vorabklaerungenEinverstaendnisImpfungen
+      - vorabklaerungenChronischeKrankheiten
+      - showImpfungenHeaderImpfausweisUnvollstaendig
+      - showImpfungenHeaderImpfausweisNichtVorhanden
+      - showImpfungenHeaderImpfausweisZweiPlusEinsSchema
+      - showImpfungenHeaderImpfausweisUpload
       - impfungenUebersicht
       - impfungenListe
       - showImpfungenDoppelkontrolle
@@ -181,20 +235,35 @@ components:
       - impfungenMassnahmeInfomaterialAbgegeben
       - impfungenMassnahmeInfoEltern
       - impfungenMassnahmeRueckfrageKinderarzt
+      - impfungenMassnahmeBemerkungen
       - checkEinwilligungVorhanden
       - checkKontraindikationenAbgeklaert
       - checkDoppelkontrolleImpfentscheidDurchgefuehrt
       - untersuchungImpfungEmpfehlung
+      - untersuchungImpfungEmpfehlungValues
       - untersuchungImpfungAchtung
       - untersuchungImpfungBemerkungen
       - untersuchungImpfungKrankheitenLinksValues
       - untersuchungImpfungKrankheitenRechtsValues
+      - impfungenDataMinimalImpfausweisGeprueft
+      - impfungenDataMinimalImmunsuppression
+      - impfungenDataMinimalMasernImpfstatus
+      - impfungenDataMinimalMasernAnzahlImpfungen
+      - impfungenDataMinimalHpvImpfstatus
+      - impfungenDataMinimalHpvAnzahlImpfungen
+      - impfungenDataMinimalImpfempfehlung
+      - impfungenDataMinimalImpfungDurchgefuehrt
       - sehenBrilleLinsen
+      - sehenBrilleLinsenValues
       - sehenFarbsehen
       - sehenTafel
       - sehenFernvisus
+      - sehenFernvisusAugeEinzeln
       - sehenStereoTest
       - sehenStrabismus
+      - sehenStrabismusValues
+      - sehenStrabismusAuspraegung
+      - sehenStrabismusAuftreten
       - sehenInspektion
       - sehenKonvergenz
       - sehenMotilitaet
@@ -206,10 +275,12 @@ components:
       - hoerenAudiogramm
       - hoerenAudiogramm250Hz
       - hoerenAudiogramm8000Hz
+      - hoerenAudiogrammSimpel
       - hoerenAudiogrammBeurteilung
       - hoerenAudiogrammZusaetzlicheAngaben
       - hoerenAudiogrammEmpfehlung
       - hoerenAudiogrammBemerkungen
+      - hoerenHoerhilfe
       - hoerenOtoskopie
       - hoerenOtoskopieBemerkungen
       - groesseGewichtGroesse
@@ -268,6 +339,26 @@ components:
       - unterlagenVerhaltensfragebogen
       - untersuchungEmpfehlung
       - untersuchungBemerkungen
+      - untersuchungSpracheNachsprechen
+      - untersuchungSpracheWortschatz
+      - untersuchungSpracheSprachverstaendnis
+      - untersuchungSpracheBemerkungen
+      - bewegungsapparatSkoliose
+      - bewegungsapparatHaltungsschwaeche
+      - bewegungsapparatVerkuerzungHamstringmuskulatur
+      - bewegungsapparatBemerkung
+      - untersuchungBeeintraechtigungFreiesGehen
+      - untersuchungBeeintraechtigungOhneStuetzradVelofahren
+      - untersuchungBeeintraechtigungGrafomotorik
+      - untersuchungBeeintraechtigungFeinmotorik
+      - untersuchungBeeintraechtigungGrobmotorik
+      - untersuchungBeeintraechtigungGleichgewicht
+      - untersuchungBeeintraechtigungBemerkung
+      - abschlussUeberweisungErfolgt
+      - abschlussAerztlicheValidierungErforderlich
+      - abschlussBeratungDurchgefuehrt
+      - abschlussBeurteilungEmpfohleneMassnahmen
+      - showCardAbschlussSignatur
       - showMassnahmenPathologischeBefunde
       - showMassnahmenKeine
       - showMassnahmenBeratungMpa
@@ -306,6 +397,20 @@ components:
           type: boolean
         datenBemerkung:
           $ref: "#/components/schemas/RequirementSetting"
+        vorabklaerungenFragebogenStatus:
+          $ref: "#/components/schemas/RequirementSetting"
+        vorabklaerungenEinverstaendnisImpfungen:
+          $ref: "#/components/schemas/RequirementSetting"
+        vorabklaerungenChronischeKrankheiten:
+          $ref: "#/components/schemas/RequirementSetting"
+        showImpfungenHeaderImpfausweisUnvollstaendig:
+          type: boolean
+        showImpfungenHeaderImpfausweisNichtVorhanden:
+          type: boolean
+        showImpfungenHeaderImpfausweisZweiPlusEinsSchema:
+          type: boolean
+        showImpfungenHeaderImpfausweisUpload:
+          type: boolean
         impfungenUebersicht:
           $ref: "#/components/schemas/RequirementSetting"
         impfungenListe:
@@ -330,6 +435,8 @@ components:
           type: boolean
         impfungenMassnahmeRueckfrageKinderarzt:
           type: boolean
+        impfungenMassnahmeBemerkungen:
+          $ref: "#/components/schemas/RequirementSetting"
         checkEinwilligungVorhanden:
           $ref: "#/components/schemas/RequirementSetting"
         checkKontraindikationenAbgeklaert:
@@ -338,6 +445,10 @@ components:
           $ref: "#/components/schemas/RequirementSetting"
         untersuchungImpfungEmpfehlung:
           $ref: "#/components/schemas/RequirementSetting"
+        untersuchungImpfungEmpfehlungValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/ImpfungenMassnahmenEmpfehlung"
         untersuchungImpfungAchtung:
           $ref: "#/components/schemas/RequirementSetting"
         untersuchungImpfungBemerkungen:
@@ -350,17 +461,47 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Krankheit"
+        impfungenDataMinimalImpfausweisGeprueft:
+          $ref: "#/components/schemas/RequirementSetting"
+        impfungenDataMinimalImmunsuppression:
+          $ref: "#/components/schemas/RequirementSetting"
+        impfungenDataMinimalMasernImpfstatus:
+          $ref: "#/components/schemas/RequirementSetting"
+        impfungenDataMinimalMasernAnzahlImpfungen:
+          $ref: "#/components/schemas/RequirementSetting"
+        impfungenDataMinimalHpvImpfstatus:
+          $ref: "#/components/schemas/RequirementSetting"
+        impfungenDataMinimalHpvAnzahlImpfungen:
+          $ref: "#/components/schemas/RequirementSetting"
+        impfungenDataMinimalImpfempfehlung:
+          $ref: "#/components/schemas/RequirementSetting"
+        impfungenDataMinimalImpfungDurchgefuehrt:
+          $ref: "#/components/schemas/RequirementSetting"
         sehenBrilleLinsen:
           $ref: "#/components/schemas/RequirementSetting"
+        sehenBrilleLinsenValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/BrilleLinsenResultat"
         sehenFarbsehen:
           $ref: "#/components/schemas/RequirementSetting"
         sehenTafel:
           $ref: "#/components/schemas/RequirementSetting"
         sehenFernvisus:
           $ref: "#/components/schemas/RequirementSetting"
+        sehenFernvisusAugeEinzeln:
+          $ref: "#/components/schemas/RequirementSetting"
         sehenStereoTest:
           $ref: "#/components/schemas/RequirementSetting"
         sehenStrabismus:
+          $ref: "#/components/schemas/RequirementSetting"
+        sehenStrabismusValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/StrabismusResultat"
+        sehenStrabismusAuspraegung:
+          $ref: "#/components/schemas/RequirementSetting"
+        sehenStrabismusAuftreten:
           $ref: "#/components/schemas/RequirementSetting"
         sehenInspektion:
           $ref: "#/components/schemas/RequirementSetting"
@@ -384,6 +525,8 @@ components:
           $ref: "#/components/schemas/RequirementSetting"
         hoerenAudiogramm8000Hz:
           $ref: "#/components/schemas/RequirementSetting"
+        hoerenAudiogrammSimpel:
+          $ref: "#/components/schemas/RequirementSetting"
         hoerenAudiogrammBeurteilung:
           $ref: "#/components/schemas/RequirementSetting"
         hoerenAudiogrammZusaetzlicheAngaben:
@@ -391,6 +534,8 @@ components:
         hoerenAudiogrammEmpfehlung:
           $ref: "#/components/schemas/RequirementSetting"
         hoerenAudiogrammBemerkungen:
+          $ref: "#/components/schemas/RequirementSetting"
+        hoerenHoerhilfe:
           $ref: "#/components/schemas/RequirementSetting"
         hoerenOtoskopie:
           $ref: "#/components/schemas/RequirementSetting"
@@ -518,6 +663,46 @@ components:
           $ref: "#/components/schemas/RequirementSetting"
         untersuchungBemerkungen:
           $ref: "#/components/schemas/RequirementSetting"
+        untersuchungSpracheNachsprechen:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungSpracheWortschatz:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungSpracheSprachverstaendnis:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungSpracheBemerkungen:
+          $ref: "#/components/schemas/RequirementSetting"
+        bewegungsapparatSkoliose:
+          $ref: "#/components/schemas/RequirementSetting"
+        bewegungsapparatHaltungsschwaeche:
+          $ref: "#/components/schemas/RequirementSetting"
+        bewegungsapparatVerkuerzungHamstringmuskulatur:
+          $ref: "#/components/schemas/RequirementSetting"
+        bewegungsapparatBemerkung:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungBeeintraechtigungFreiesGehen:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungBeeintraechtigungOhneStuetzradVelofahren:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungBeeintraechtigungGrafomotorik:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungBeeintraechtigungFeinmotorik:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungBeeintraechtigungGrobmotorik:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungBeeintraechtigungGleichgewicht:
+          $ref: "#/components/schemas/RequirementSetting"
+        untersuchungBeeintraechtigungBemerkung:
+          $ref: "#/components/schemas/RequirementSetting"
+        abschlussUeberweisungErfolgt:
+          $ref: "#/components/schemas/RequirementSetting"
+        abschlussAerztlicheValidierungErforderlich:
+          $ref: "#/components/schemas/RequirementSetting"
+        abschlussBeratungDurchgefuehrt:
+          $ref: "#/components/schemas/RequirementSetting"
+        abschlussBeurteilungEmpfohleneMassnahmen:
+          $ref: "#/components/schemas/RequirementSetting"
+        showCardAbschlussSignatur:
+          type: boolean
         showMassnahmenPathologischeBefunde:
           type: boolean
         showMassnahmenKeine:
@@ -787,6 +972,55 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ViolationJson"
+    ArchivdokumentJson:
+      type: object
+      required:
+      - id
+      - archivierungTyp
+      - archivierungStatus
+      - betroffenesKind
+      - owner
+      properties:
+        id:
+          $ref: "#/components/schemas/IDArchivdokument"
+        timestampArchiviert:
+          type: string
+          $ref: "#/components/schemas/OffsetDateTime"
+        archivierungTyp:
+          $ref: "#/components/schemas/ArchivierungTyp"
+        archivierungStatus:
+          $ref: "#/components/schemas/ArchivierungStatus"
+        betroffenesKind:
+          type: string
+        filedata:
+          $ref: "#/components/schemas/FileDataJson"
+        owner:
+          $ref: "#/components/schemas/BenutzerOptionJson"
+        timestampDownloaded:
+          type: string
+          $ref: "#/components/schemas/OffsetDateTime"
+    ArchivdokumentListJson:
+      type: object
+      required:
+      - archivdokumentList
+      properties:
+        archivdokumentList:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArchivdokumentJson"
+    ArchivierungStatus:
+      type: string
+      enum:
+      - OFFEN
+      - DOWNLOADED_READY_FOR_DELETION
+      - DOWNLOADED_DELETED
+      - DOWNLOADED
+    ArchivierungTyp:
+      type: string
+      enum:
+      - KIND_DEAKTIVIERT
+      - ZUSTAENDIGER_ARZT_CHANGED
+      - DUPLIKAT_MERGE
     ArtAbmeldung:
       type: string
       enum:
@@ -835,8 +1069,8 @@ components:
           type: string
         fachrichtung:
           $ref: "#/components/schemas/Fachrichtung"
-        organisation:
-          $ref: "#/components/schemas/Organisation"
+        rechtsform:
+          $ref: "#/components/schemas/Rechtsform"
         vorname:
           type: string
         name:
@@ -856,7 +1090,7 @@ components:
           format: int64
       required:
       - fachrichtung
-      - organisation
+      - rechtsform
       - name
       - hpvTeilnahme
       - version
@@ -889,6 +1123,13 @@ components:
           format: int64
       required:
       - version
+    AudiogrammSimpel:
+      type: string
+      enum:
+      - DB_TIEF
+      - DB_MITTEL
+      - DB_HOCH
+      - NICHT_GEPRUEFT
     AufgabeJson:
       type: object
       required:
@@ -996,6 +1237,12 @@ components:
           $ref: "#/components/schemas/EntityInfoJson"
         data:
           $ref: "#/components/schemas/BenutzerSaveJson"
+        lastUsedSessionTimestamp:
+          type: string
+          $ref: "#/components/schemas/OffsetDateTime"
+        timestampAGBAccepted:
+          type: string
+          $ref: "#/components/schemas/OffsetDateTime"
     BenutzerListJson:
       type: object
       required:
@@ -1012,8 +1259,8 @@ components:
       - name
       - vorname
       - fullName
-      - fachrollen
-      - aktiv
+      - organisationRollen
+      - benutzerAktivStatus
       properties:
         id:
           $ref: "#/components/schemas/IDBenutzer"
@@ -1023,12 +1270,14 @@ components:
           type: string
         fullName:
           type: string
-        fachrollen:
+        organisationRollen:
           type: array
           items:
-            $ref: "#/components/schemas/FachRolle"
-        aktiv:
-          type: boolean
+            $ref: "#/components/schemas/OrganisationRollenJson"
+        systemRollen:
+          $ref: "#/components/schemas/SystemRollenJson"
+        benutzerAktivStatus:
+          $ref: "#/components/schemas/EntityAktivStatus"
     BenutzerOptionListJson:
       type: object
       required:
@@ -1055,12 +1304,14 @@ components:
           $ref: "#/components/schemas/EmailAddress"
         telefon:
           $ref: "#/components/schemas/NormalizedPhoneNumber"
-        aktiv:
-          type: boolean
-        fachRollen:
+        benutzerAktivStatus:
+          $ref: "#/components/schemas/EntityAktivStatus"
+        organisationRollen:
           type: array
           items:
-            $ref: "#/components/schemas/FachRolle"
+            $ref: "#/components/schemas/OrganisationRollenJson"
+        systemRollen:
+          $ref: "#/components/schemas/SystemRollenJson"
         version:
           type: integer
           format: int64
@@ -1070,8 +1321,8 @@ components:
       - fullName
       - username
       - email
-      - aktiv
-      - fachRollen
+      - benutzerAktivStatus
+      - organisationRollen
       - version
     Berechtigung:
       type: string
@@ -1103,6 +1354,10 @@ components:
       - SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN
       - SU_MASSNAHMEN_LESEN
       - SU_MASSNAHMEN_SCHREIBEN
+      - SU_ABSCHLUSS_LESEN
+      - SU_ABSCHLUSS_SCHREIBEN
+      - SU_VORABKLAERUNGEN_LESEN
+      - SU_VORABKLAERUNGEN_SCHREIBEN
       - KINDER_LESEN_MEDIZINISCH
       - KINDER_LESEN_NICHT_MEDIZINISCH
       - KINDER_SCHREIBEN_MEDIZINISCH
@@ -1130,6 +1385,11 @@ components:
       - VORLAGEN_SCHREIBEN
       - AERZTE_LESEN
       - AERZTE_SCHREIBEN
+      - BENUTZER_BERECHTIGUNGEN_LESEN
+      - BENUTZER_BERECHTIGUNGEN_SCHREIBEN
+      - ARCHIVIERUNG
+      - ORGANISATION_VERWALTEN_LESEN
+      - ORGANISATION_VERWALTEN_SCHREIBEN
       - SUPPORT
       - SYSTEM_ADMIN
       - ESCADA_PUSH
@@ -1205,7 +1465,15 @@ components:
       - OHNE_KEINE
       - OHNE_VERGESSEN
       - MIT
+      - BRILLE
+      - KONTAKTLINSEN
       - NICHT_GEPRUEFT
+    ChronischeKrankheiten:
+      type: string
+      enum:
+      - NICHT_VORHANDEN
+      - VORHANDEN
+      - NICHT_ABGEKLAERT
     CleanFileName:
       type: object
       required:
@@ -1282,6 +1550,7 @@ components:
       type: string
       enum:
       - SCHULUNTERSUCHUNG
+      - IMPFSTOFFE
     DBInfoConnectionSSLJson:
       type: object
       required:
@@ -1333,6 +1602,12 @@ components:
       - DB50
       - DB60
       - MORE_THAN_DB60
+    DistanzSehenAugeEinzelnResultat:
+      type: string
+      enum:
+      - NORMAL
+      - REDUZIERT
+      - NICHT_GEPRUEFT
     DistanzSehenResultat:
       type: string
       enum:
@@ -1386,6 +1661,8 @@ components:
           $ref: "#/components/schemas/EntityInfoJson"
         type:
           $ref: "#/components/schemas/FileTyp"
+        displayname:
+          type: string
         status:
           $ref: "#/components/schemas/DocumentQueueStatus"
         timestampResult:
@@ -1395,10 +1672,6 @@ components:
           type: string
         lastError:
           type: string
-        documentQueueParams:
-          $ref: "#/components/schemas/DocumentQueueParams"
-        documentQueueCsvParams:
-          $ref: "#/components/schemas/DocumentQueueCsvParams"
     DocumentQueueIDListJson:
       type: object
       required:
@@ -1426,6 +1699,22 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DocumentQueueSpssSaveJson"
+    DocumentQueueMassenbriefSaveJson:
+      type: object
+      required:
+      - briefvorlageID
+      - kinderIds
+      properties:
+        briefvorlageID:
+          $ref: "#/components/schemas/IDBriefvorlage"
+        arztID:
+          $ref: "#/components/schemas/IDArzt"
+        kinderIds:
+          type: array
+          items:
+            $ref: "#/components/schemas/IDKind"
+          maxItems: 500
+          minItems: 1
     DocumentQueueParams:
       type: object
       properties:
@@ -1466,6 +1755,9 @@ components:
           $ref: "#/components/schemas/DossierNichtMedizinischSaveJson"
         kind:
           $ref: "#/components/schemas/KindJson"
+        timestampDefinitivArchiviert:
+          type: string
+          $ref: "#/components/schemas/LocalDateTime"
     DossierMedizinischSaveJson:
       description: Medical business data for a Dossier
       type: object
@@ -1682,6 +1974,12 @@ components:
       - PRIVATARZT_MUENDL_BESTAETIGT
       - KEINE_ANMELDUNG
       - UNTERSUCHUNG_JA
+    EinverstaendnisImpfungen:
+      type: string
+      enum:
+      - EINVERSTANDEN
+      - NICHT_EINVERSTANDEN
+      - NICHT_ERHALTEN
     Einverstaendniserklaerung:
       type: string
       enum:
@@ -1959,6 +2257,7 @@ components:
       - SCHULAERZTIN
       - LAUSBEAUFTRAGTE
       - PFP
+      - SCHOOL_NURSE
       - SUPERUSER
       - ADMIN
       - SUPPORT
@@ -1990,6 +2289,13 @@ components:
       - ENABLED_FOR_BETA_TESTING
       - ENABLED_FOR_DEVELOPMENT
       - DISABLED
+    Feinmotorik:
+      type: string
+      enum:
+      - DREISSIG_IN_ZEHN_SEK
+      - FUENFUNDZWANZIG_IN_ZEHN_SEK
+      - NICHT_MOEGLICH
+      - NICHT_GEPRUEFT
     FigurNachmalen:
       type: string
       enum:
@@ -2060,6 +2366,7 @@ components:
       - PLAYGROUND_ERROR
       - SPSS_REPORT
       - CSV_REPORT
+      - MASSENBRIEF_ZIP
     FilterCombination:
       type: string
       enum:
@@ -2074,10 +2381,22 @@ components:
       - LINKS_AUFFAELLIG
       - ANDERES
       - NICHT_GEPRUEFT
+    FragebogenStatus:
+      type: string
+      enum:
+      - ERHALTEN_VOLLSTAENDIG
+      - ERHALTEN_UNVOLLSTAENDIG
+      - NICHT_ERHALTEN
     FrankenEiner:
       type: number
     FrankenFuenfer:
       type: number
+    FreiesGehen:
+      type: string
+      enum:
+      - NORMAL
+      - PATHOLOGISCH
+      - NICHT_GEPRUEFT
     GanzZahl:
       type: integer
     Geschlecht:
@@ -2087,6 +2406,24 @@ components:
       - WEIBLICH
       - DIVERS
       - UNBEKANNT
+    GleichgewichtEinbeinstand:
+      type: string
+      enum:
+      - MEHR_ALS_ZEHN_SEKUNDEN
+      - WENIGER_ALS_ZEHN_SEKUNDEN
+      - NICHT_GEPRUEFT
+    Grafomotorik:
+      type: string
+      enum:
+      - GUT
+      - FEHLERHAFT
+      - NICHT_GEPRUEFT
+    GrobmotorikEinbeinhuepfen:
+      type: string
+      enum:
+      - MEHR_ALS_VIER_METER
+      - WENIGER_ALS_VIER_METER
+      - NICHT_GEPRUEFT
     GroesseGewichtDataPointJson:
       type: object
       properties:
@@ -2112,6 +2449,12 @@ components:
       - KEINE_ABMELDUNG
       - ANDERER_GRUND
       - SU_BEREITS_ERFOLGT
+    Haltungsschwaeche:
+      type: string
+      enum:
+      - NORMAL
+      - PATHOLOGISCH
+      - NICHT_GEPRUEFT
     Hampelmann:
       type: string
       enum:
@@ -2135,6 +2478,12 @@ components:
       type: string
       enum:
       - UEBERPRUEFUNG_ARZT
+    HoerenHoerhilfe:
+      type: string
+      enum:
+      - NEIN
+      - JA
+      - NICHT_GEPRUEFT
     HoerenZusaetzlicheAngaben:
       type: string
       enum:
@@ -2166,6 +2515,12 @@ components:
       examples:
       - 11111111-1111-1111-1111-111111111111
     IDAnlassConfig:
+      type: string
+      format: entity-id
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      examples:
+      - 11111111-1111-1111-1111-111111111111
+    IDArchivdokument:
       type: string
       format: entity-id
       pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
@@ -2303,6 +2658,12 @@ components:
       pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
       examples:
       - 11111111-1111-1111-1111-111111111111
+    IDOrganisation:
+      type: string
+      format: entity-id
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      examples:
+      - 11111111-1111-1111-1111-111111111111
     IDPupilSyncEvent:
       type: string
       format: entity-id
@@ -2333,6 +2694,12 @@ components:
       pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
       examples:
       - 11111111-1111-1111-1111-111111111111
+    IDUntersuchungAbschluss:
+      type: string
+      format: entity-id
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      examples:
+      - 11111111-1111-1111-1111-111111111111
     IDUntersuchungArztBemerkung:
       type: string
       format: entity-id
@@ -2340,6 +2707,12 @@ components:
       examples:
       - 11111111-1111-1111-1111-111111111111
     IDUntersuchungArztBeurteilung:
+      type: string
+      format: entity-id
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      examples:
+      - 11111111-1111-1111-1111-111111111111
+    IDUntersuchungBewegungsapparat:
       type: string
       format: entity-id
       pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
@@ -2381,6 +2754,12 @@ components:
       pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
       examples:
       - 11111111-1111-1111-1111-111111111111
+    IDUntersuchungImpfungenDataMinimal:
+      type: string
+      format: entity-id
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      examples:
+      - 11111111-1111-1111-1111-111111111111
     IDUntersuchungImpfungenMassnahmen:
       type: string
       format: entity-id
@@ -2405,6 +2784,12 @@ components:
       pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
       examples:
       - 11111111-1111-1111-1111-111111111111
+    IDUntersuchungSchulrelevanteBeeintraechtigung:
+      type: string
+      format: entity-id
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      examples:
+      - 11111111-1111-1111-1111-111111111111
     IDUntersuchungSehenBemerkungFragebogen:
       type: string
       format: entity-id
@@ -2417,18 +2802,59 @@ components:
       pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
       examples:
       - 11111111-1111-1111-1111-111111111111
+    IDUntersuchungSignatur:
+      type: string
+      format: entity-id
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      examples:
+      - 11111111-1111-1111-1111-111111111111
+    IDUntersuchungSprache:
+      type: string
+      format: entity-id
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      examples:
+      - 11111111-1111-1111-1111-111111111111
     IDUntersuchungTriage:
       type: string
       format: entity-id
       pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
       examples:
       - 11111111-1111-1111-1111-111111111111
+    IDUntersuchungVorabklaerungen:
+      type: string
+      format: entity-id
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      examples:
+      - 11111111-1111-1111-1111-111111111111
+    Immunsuppression:
+      type: string
+      enum:
+      - JA
+      - NEIN
+      - UNBEKANNT
     ImpfStatus:
       type: string
       enum:
       - GEPLANT
       - DURCHGEFUEHRT
       - NICHT_DURCHGEFUEHRT
+    ImpfStatusMinimal:
+      type: string
+      enum:
+      - VOLLSTAENDIG
+      - UNVOLLSTAENDIG
+      - UNBEKANNT
+    ImpfausweisGeprueft:
+      type: string
+      enum:
+      - JA
+      - NEIN
+    ImpfempfehlungMinimal:
+      type: string
+      enum:
+      - JA
+      - NEIN
+      - UNBEKANNT
     ImpfstoffChargeJson:
       type: object
       required:
@@ -2511,10 +2937,17 @@ components:
         version:
           type: integer
           format: int64
+    ImpfungDurchgefuehrtMinimal:
+      type: string
+      enum:
+      - JA
+      - NEIN
+      - UNBEKANNT
     ImpfungenMassnahmenEmpfehlung:
       type: string
       enum:
       - IMPFUNG_BEIM_HAUSARZT
+      - IMPFTERMIN_EMPFOHLEN
     ImportMode:
       type: string
       enum:
@@ -2904,6 +3337,7 @@ components:
       - SEK_II_KLASSE_2
       - SEK_II_KLASSE_3
       - SEK_II_KLASSE_4
+      - ANDERE
     Kognition:
       type: string
       enum:
@@ -3089,6 +3523,7 @@ components:
       - VARIZELLEN
       - MENINGOKOKKEN_A_C_W_Y
       - MENINGOKOKKEN_B
+      - HAEMOPHILUS_INFLUENZAE
     LabelJson:
       type: object
       required:
@@ -3525,6 +3960,12 @@ components:
         version:
           type: integer
           format: int64
+    Nachsprechen:
+      type: string
+      enum:
+      - BESTANDEN
+      - NICHT_BESTANDEN
+      - NICHT_GEPRUEFT
     NaechsteStation:
       type: string
       enum:
@@ -3547,6 +3988,18 @@ components:
       - GESCHAFFT
       - NICHT_GESCHAFFT
       - NICHT_GEPRUEFT
+    NichtGeprueftGrund:
+      type: string
+      enum:
+      - FEHLENDE_INFRASTRUKTUR
+      - FEHLENDE_ZEIT
+      - UNPASSENDER_UNTERSUCHUNGSORT
+      - FEHLENDES_EINVERSTAENDNIS
+      - VERWEIGERTE_UNTERSUCHUNG
+      - KRANK
+      - VERSTAENDIGUNGS_PROBLEME
+      - UNTERSUCHUNG_NICHT_INDIZIERT
+      - ANDERER_GRUND
     NormalizedPhoneNumber:
       type: string
       format: phone-number
@@ -3597,6 +4050,8 @@ components:
           $ref: "#/components/schemas/NotizTyp"
         verantwortlicher:
           $ref: "#/components/schemas/BenutzerOptionJson"
+        anlassLink:
+          type: string
         labels:
           type: array
           items:
@@ -3634,11 +4089,59 @@ components:
       format: date-time
       examples:
       - 2022-03-10T12:15:50-04:00
-    Organisation:
+    OhneStuetzradVelofahren:
       type: string
       enum:
-      - NATUERLICHE_PERSON
-      - JURISTISCHE_PERSON
+      - JA_OHNE_STUETZRAD_VELOFAHREN
+      - NEIN_OHNE_STUETZRAD_VELOFAHREN
+      - NICHT_GEPRUEFT
+    OrganisationJson:
+      type: object
+      required:
+      - id
+      - entityInfo
+      - data
+      - verantwortlicherArztFullname
+      properties:
+        id:
+          $ref: "#/components/schemas/IDOrganisation"
+        entityInfo:
+          $ref: "#/components/schemas/EntityInfoJson"
+        data:
+          $ref: "#/components/schemas/OrganisationSaveJson"
+        verantwortlicherArztFullname:
+          type: string
+    OrganisationListJson:
+      type: object
+      required:
+      - organisationList
+      properties:
+        organisationList:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrganisationJson"
+    OrganisationRollenJson:
+      type: object
+      properties:
+        organisation:
+          $ref: "#/components/schemas/OrganisationJson"
+        fachRollen:
+          type: array
+          items:
+            $ref: "#/components/schemas/FachRolle"
+      required:
+      - fachRollen
+    OrganisationSaveJson:
+      type: object
+      required:
+      - verantwortlicherArztId
+      - version
+      properties:
+        verantwortlicherArztId:
+          $ref: "#/components/schemas/IDBenutzer"
+        version:
+          type: integer
+          format: int64
     OtoskopieResultat:
       type: string
       enum:
@@ -3813,6 +4316,33 @@ components:
                 type:
                 - string
                 - "null"
+        lehrpersonResultJsons:
+          type: array
+          items:
+            type: object
+            required:
+            - determinedImportMode
+            - status
+            - externalId
+            properties:
+              determinedImportMode:
+                $ref: "#/components/schemas/ImportMode"
+              status:
+                $ref: "#/components/schemas/ImportStatus"
+              externalId:
+                type: string
+              internalId:
+                anyOf:
+                - $ref: "#/components/schemas/IDLehrperson"
+                - type: "null"
+              friendlyName:
+                type:
+                - string
+                - "null"
+              msg:
+                type:
+                - string
+                - "null"
         kindImportResultJsons:
           type: array
           items:
@@ -3831,6 +4361,33 @@ components:
               internalId:
                 anyOf:
                 - $ref: "#/components/schemas/IDKind"
+                - type: "null"
+              friendlyName:
+                type:
+                - string
+                - "null"
+              msg:
+                type:
+                - string
+                - "null"
+        kontaktPersonenKindImportResultJsons:
+          type: array
+          items:
+            type: object
+            required:
+            - determinedImportMode
+            - status
+            - externalId
+            properties:
+              determinedImportMode:
+                $ref: "#/components/schemas/ImportMode"
+              status:
+                $ref: "#/components/schemas/ImportStatus"
+              externalId:
+                type: string
+              internalId:
+                anyOf:
+                - $ref: "#/components/schemas/IDKontaktPersonKind"
                 - type: "null"
               friendlyName:
                 type:
@@ -3892,6 +4449,11 @@ components:
         version:
           type: integer
           format: int64
+    Rechtsform:
+      type: string
+      enum:
+      - NATUERLICHE_PERSON
+      - JURISTISCHE_PERSON
     RequirementSetting:
       type: string
       enum:
@@ -4131,6 +4693,12 @@ components:
     SemverSchema:
       format: semantic-version
       type: string
+    Skoliose:
+      type: string
+      enum:
+      - SKOLIOSE_NEIN
+      - SKOLIOSE_JA
+      - NICHT_GEPRUEFT
     SortDirection:
       type: string
       enum:
@@ -4150,6 +4718,12 @@ components:
       - AUFFAELLIG
       - GRENZWERTIG
       - GUT
+      - NICHT_GEPRUEFT
+    Sprachverstaendnis:
+      type: string
+      enum:
+      - BESTANDEN
+      - NICHT_BESTANDEN
       - NICHT_GEPRUEFT
     SpssReportType:
       type: string
@@ -4196,7 +4770,18 @@ components:
       - EXO
       - ESO
       - HYPER
+      - LINKS
+      - RECHTS
       - NICHT_GEPRUEFT
+    SystemRollenJson:
+      type: object
+      required:
+      - fachRollen
+      properties:
+        fachRollen:
+          type: array
+          items:
+            $ref: "#/components/schemas/FachRolle"
     TenantEnum:
       type: string
       enum:
@@ -4221,6 +4806,15 @@ components:
       - laenderCodeFeature
       - mobileScannerFeature
       - massenimportFeature
+      - massenbriefFeature
+      - nichtGeprueftGrundFeature
+      - arztListeFeature
+      - adHocImpfstoffChargenFeature
+      - footerFeature
+      - benutzerverwaltungInternFeature
+      - benutzerverwaltungIgnoreFachRolleFromKeycloakFeature
+      - archivierungFeature
+      - zentraleOrganisationFeature
       properties:
         esadIdFeature:
           $ref: "#/components/schemas/TenantSettingFeatureStateJson"
@@ -4230,12 +4824,33 @@ components:
           $ref: "#/components/schemas/TenantSettingFeatureStateJson"
         massenimportFeature:
           $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        massenbriefFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        nichtGeprueftGrundFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        arztListeFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        adHocImpfstoffChargenFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        footerFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        benutzerverwaltungInternFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        benutzerverwaltungIgnoreFachRolleFromKeycloakFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        archivierungFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        zentraleOrganisationFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
     TenantSettingSaveJson:
       type: object
       required:
       - defaultLanguage
       - supportedLanguages
       - folgeTermineMaxSlots
+      - customerAdminEmails
+      - supportEmail
+      - agbResponsability
       - features
       - einladungStatusValues
       properties:
@@ -4248,6 +4863,12 @@ components:
         folgeTermineMaxSlots:
           type: integer
           format: int32
+        customerAdminEmails:
+          type: string
+        supportEmail:
+          type: string
+        agbResponsability:
+          $ref: "#/components/schemas/AgbResponsability"
         features:
           $ref: "#/components/schemas/TenantSettingFeaturesJson"
         einladungStatusValues:
@@ -4313,6 +4934,35 @@ components:
     URLSchema:
       format: url
       type: string
+    UntersuchungAbschlussJson:
+      type: object
+      required:
+      - id
+      - entityInfo
+      - abschlussData
+      properties:
+        id:
+          $ref: "#/components/schemas/IDUntersuchungAbschluss"
+        entityInfo:
+          $ref: "#/components/schemas/EntityInfoJson"
+        abschlussData:
+          $ref: "#/components/schemas/UntersuchungAbschlussSaveJson"
+    UntersuchungAbschlussSaveJson:
+      type: object
+      properties:
+        ueberweisungErfolgt:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        aerztlicheValidierungErforderlich:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        beratungDurchgefuehrt:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        beurteilungEmpfohleneMassnahmen:
+          type: string
+        version:
+          type: integer
+          format: int64
+      required:
+      - version
     UntersuchungArztBemerkungJson:
       type: object
       required:
@@ -4465,6 +5115,38 @@ components:
           format: int64
       required:
       - version
+    UntersuchungBewegungsapparatJson:
+      type: object
+      required:
+      - id
+      - entityInfo
+      - data
+      properties:
+        id:
+          $ref: "#/components/schemas/IDUntersuchungBewegungsapparat"
+        entityInfo:
+          $ref: "#/components/schemas/EntityInfoJson"
+        data:
+          $ref: "#/components/schemas/UntersuchungBewegungsapparatSaveJson"
+    UntersuchungBewegungsapparatSaveJson:
+      type: object
+      required:
+      - skoliose
+      - haltungsschwaeche
+      - verkuerzungHamstringmuskulatur
+      - version
+      properties:
+        skoliose:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        haltungsschwaeche:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        verkuerzungHamstringmuskulatur:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        bemerkungen:
+          type: string
+        version:
+          type: integer
+          format: int64
     UntersuchungDurchfuehrungDataJson:
       type: object
       required:
@@ -4564,17 +5246,20 @@ components:
         gewicht:
           type: number
         groessePerzentile:
-          $ref: "#/components/schemas/PerzentileGroesse"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         gewichtPerzentile:
-          $ref: "#/components/schemas/PerzentileGewicht"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         bmiPerzentile:
-          $ref: "#/components/schemas/PerzentileBmi"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         bemerkungen:
           type: string
         version:
           type: integer
           format: int64
       required:
+      - groessePerzentile
+      - gewichtPerzentile
+      - bmiPerzentile
       - version
     UntersuchungHoerenAudiogrammJson:
       type: object
@@ -4597,23 +5282,24 @@ components:
         audiogrammLinks:
           $ref: "#/components/schemas/AudiogrammSaveJson"
         audiogrammBeurteilung:
-          type: array
-          items:
-            $ref: "#/components/schemas/AudiogrammBeurteilung"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         zusaetzlicheAngaben:
-          type: array
-          items:
-            $ref: "#/components/schemas/HoerenZusaetzlicheAngaben"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         empfehlung:
-          type: array
-          items:
-            $ref: "#/components/schemas/HoerenEmpfehlung"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         bemerkungen:
           type: string
+        audiogrammSimpel:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        hoerhilfe:
+          $ref: "#/components/schemas/ValueEnhancedJson"
         version:
           type: integer
           format: int64
       required:
+      - audiogrammBeurteilung
+      - zusaetzlicheAngaben
+      - empfehlung
       - version
     UntersuchungHoerenOtoskopieJson:
       type: object
@@ -4630,17 +5316,17 @@ components:
           $ref: "#/components/schemas/UntersuchungHoerenOtoskopieSaveJson"
     UntersuchungHoerenOtoskopieSaveJson:
       type: object
+      required:
+      - otoskopieRechts
+      - otoskopieLinks
+      - version
       properties:
         otoskopieRechts:
-          type: array
-          items:
-            $ref: "#/components/schemas/OtoskopieResultat"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         otoskopieRechtsResultatAndere:
           type: string
         otoskopieLinks:
-          type: array
-          items:
-            $ref: "#/components/schemas/OtoskopieResultat"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         otoskopieLinksResultatAndere:
           type: string
         bemerkungen:
@@ -4648,8 +5334,6 @@ components:
         version:
           type: integer
           format: int64
-      required:
-      - version
     UntersuchungImpfstatusKrankheitSaveJson:
       type: object
       required:
@@ -4719,7 +5403,7 @@ components:
         impfstoff:
           $ref: "#/components/schemas/ImpfstoffJson"
         charge:
-          $ref: "#/components/schemas/ImpfstoffChargeJson"
+          type: string
         datumImpfung:
           type: string
           $ref: "#/components/schemas/LocalDate"
@@ -4777,6 +5461,53 @@ components:
           $ref: "#/components/schemas/UntersuchungImpfstatusListSaveJson"
         impfungInternList:
           $ref: "#/components/schemas/UntersuchungImpfungInternListJson"
+        dataMinimal:
+          $ref: "#/components/schemas/UntersuchungImpfungenDataMinimalJson"
+    UntersuchungImpfungenDataMinimalJson:
+      type: object
+      required:
+      - id
+      - entityInfo
+      - data
+      properties:
+        id:
+          $ref: "#/components/schemas/IDUntersuchungImpfungenDataMinimal"
+        entityInfo:
+          $ref: "#/components/schemas/EntityInfoJson"
+        data:
+          $ref: "#/components/schemas/UntersuchungImpfungenDataMinimalSaveJson"
+    UntersuchungImpfungenDataMinimalSaveJson:
+      type: object
+      required:
+      - impfausweisGeprueft
+      - immunsuppression
+      - masernImpfstatus
+      - hpvImpfstatus
+      - impfempfehlung
+      - impfungDurchgefuehrt
+      - version
+      properties:
+        impfausweisGeprueft:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        immunsuppression:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        masernImpfstatus:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        masernAnzahlImpfungen:
+          type: integer
+          format: int32
+        hpvImpfstatus:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        hpvAnzahlImpfungen:
+          type: integer
+          format: int32
+        impfempfehlung:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        impfungDurchgefuehrt:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        version:
+          type: integer
+          format: int64
     UntersuchungImpfungenDoppelkontrolleSaveJson:
       type: object
       properties:
@@ -5046,6 +5777,47 @@ components:
         version:
           type: integer
           format: int64
+    UntersuchungSchulrelevanteBeeintraechtigungJson:
+      type: object
+      required:
+      - id
+      - entityInfo
+      - data
+      properties:
+        id:
+          $ref: "#/components/schemas/IDUntersuchungSchulrelevanteBeeintraechtigung"
+        entityInfo:
+          $ref: "#/components/schemas/EntityInfoJson"
+        data:
+          $ref: "#/components/schemas/UntersuchungSchulrelevanteBeeintraechtigungSaveJson"
+    UntersuchungSchulrelevanteBeeintraechtigungSaveJson:
+      type: object
+      required:
+      - freiesGehen
+      - ohneStuetzradVelofahren
+      - grafomotorik
+      - feinmotorik
+      - grobmotorikEinbeinhuepfen
+      - gleichgewichtEinbeinstand
+      - version
+      properties:
+        freiesGehen:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        ohneStuetzradVelofahren:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        grafomotorik:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        feinmotorik:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        grobmotorikEinbeinhuepfen:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        gleichgewichtEinbeinstand:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        bemerkungen:
+          type: string
+        version:
+          type: integer
+          format: int64
     UntersuchungSehenBemerkungFragebogenJson:
       type: object
       required:
@@ -5084,56 +5856,65 @@ components:
           $ref: "#/components/schemas/UntersuchungSehenBeurteilungSaveJson"
     UntersuchungSehenBeurteilungSaveJson:
       type: object
+      required:
+      - brilleLinsen
+      - stereotest
+      - farbsehen
+      - verwendeteTafel
+      - fernvisus
+      - nahvisus
+      - motilitaet
+      - strabismus
+      - strabismusAuspraegung
+      - strabismusAuftreten
+      - inspektion
+      - konvergenz
+      - empfehlung
+      - version
       properties:
         brilleLinsen:
-          $ref: "#/components/schemas/BrilleLinsenResultat"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         stereotest:
-          $ref: "#/components/schemas/StereotestResultat"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         farbsehen:
-          $ref: "#/components/schemas/FarbsehenResultat"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         verwendeteTafel:
-          $ref: "#/components/schemas/VerwendetTafelResultat"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         fernvisus:
-          type: array
-          items:
-            $ref: "#/components/schemas/DistanzSehenResultat"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         fernvisusRechts:
           type: number
         fernvisusLinks:
           type: number
+        fernvisusAugeLinks:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        fernvisusAugeRechts:
+          $ref: "#/components/schemas/ValueEnhancedJson"
         nahvisus:
-          type: array
-          items:
-            $ref: "#/components/schemas/DistanzSehenResultat"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         nahvisusRechts:
           type: number
         nahvisusLinks:
           type: number
         motilitaet:
-          $ref: "#/components/schemas/MotilitaetResultat"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         strabismus:
-          type: array
-          items:
-            $ref: "#/components/schemas/StrabismusResultat"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         strabismusAuspraegung:
-          $ref: "#/components/schemas/StrabismusAuspraegungResultat"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         strabismusAuftreten:
-          $ref: "#/components/schemas/StrabismusAuftretenResultat"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         inspektion:
-          $ref: "#/components/schemas/InspektionKonvergenzResultat"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         konvergenz:
-          $ref: "#/components/schemas/InspektionKonvergenzResultat"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         empfehlung:
-          type: array
-          items:
-            $ref: "#/components/schemas/SehenEmpfehlung"
+          $ref: "#/components/schemas/ValueEnhancedJson"
         bemerkungen:
           type: string
         version:
           type: integer
           format: int64
-      required:
-      - version
     UntersuchungSehenMassnahmenJson:
       type: object
       required:
@@ -5171,6 +5952,64 @@ components:
         version:
           type: integer
           format: int64
+    UntersuchungSignaturJson:
+      type: object
+      required:
+      - id
+      - entityInfo
+      - data
+      properties:
+        id:
+          $ref: "#/components/schemas/IDUntersuchungSignatur"
+        entityInfo:
+          $ref: "#/components/schemas/EntityInfoJson"
+        data:
+          $ref: "#/components/schemas/UntersuchungSignaturSaveJson"
+    UntersuchungSignaturSaveJson:
+      type: object
+      properties:
+        person:
+          $ref: "#/components/schemas/BenutzerOptionJson"
+        timestampVisiert:
+          type: string
+          $ref: "#/components/schemas/LocalDateTime"
+        version:
+          type: integer
+          format: int64
+      required:
+      - version
+    UntersuchungSpracheJson:
+      type: object
+      required:
+      - id
+      - entityInfo
+      - data
+      properties:
+        id:
+          $ref: "#/components/schemas/IDUntersuchungSprache"
+        entityInfo:
+          $ref: "#/components/schemas/EntityInfoJson"
+        data:
+          $ref: "#/components/schemas/UntersuchungSpracheSaveJson"
+    UntersuchungSpracheSaveJson:
+      type: object
+      required:
+      - nachsprechen
+      - wortschatz
+      - sprachverstaendnis
+      - version
+      properties:
+        nachsprechen:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        wortschatz:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        sprachverstaendnis:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        bemerkungen:
+          type: string
+        version:
+          type: integer
+          format: int64
     UntersuchungTabInfoJson:
       type: object
       required:
@@ -5198,6 +6037,7 @@ components:
       required:
       - untersuchungID
       - datenTabSaved
+      - vorabklaerungenTabSaved
       - impfungenTabSaved
       - sehenTabSaved
       - hoerenAudiogrammTabSaved
@@ -5205,12 +6045,19 @@ components:
       - groesseGewichtTabSaved
       - triageTabSaved
       - aerzlicheUnteruchungTabSaved
+      - spracheTabSaved
+      - bewegungsapparatTabSaved
+      - schulrelevanteBeeintrachtigungenTabSaved
+      - abschlussTabSaved
+      - signaturTabSaved
       - massnahmenTabSaved
       - laeusekontrolleTabSaved
       properties:
         untersuchungID:
           $ref: "#/components/schemas/IDUntersuchung"
         datenTabSaved:
+          type: boolean
+        vorabklaerungenTabSaved:
           type: boolean
         impfungenTabSaved:
           type: boolean
@@ -5225,6 +6072,16 @@ components:
         triageTabSaved:
           type: boolean
         aerzlicheUnteruchungTabSaved:
+          type: boolean
+        spracheTabSaved:
+          type: boolean
+        bewegungsapparatTabSaved:
+          type: boolean
+        schulrelevanteBeeintrachtigungenTabSaved:
+          type: boolean
+        abschlussTabSaved:
+          type: boolean
+        signaturTabSaved:
           type: boolean
         massnahmenTabSaved:
           type: boolean
@@ -5278,9 +6135,134 @@ components:
         version:
           type: integer
           format: int64
+    UntersuchungVorabklaerungenJson:
+      type: object
+      required:
+      - id
+      - entityInfo
+      - data
+      properties:
+        id:
+          $ref: "#/components/schemas/IDUntersuchungVorabklaerungen"
+        entityInfo:
+          $ref: "#/components/schemas/EntityInfoJson"
+        data:
+          $ref: "#/components/schemas/UntersuchungVorabklaerungenSaveJson"
+    UntersuchungVorabklaerungenSaveJson:
+      type: object
+      properties:
+        fragebogenStatus:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        einverstaendnisImpfungen:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        chronischeKrankheiten:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        version:
+          type: integer
+          format: int64
+      required:
+      - version
+    UnusedEnumsToGenerateJson:
+      type: object
+      properties:
+        nachsprechen:
+          $ref: "#/components/schemas/Nachsprechen"
+        nichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        audiogrammSimpel:
+          $ref: "#/components/schemas/AudiogrammSimpel"
+        hoerenHoerhilfe:
+          $ref: "#/components/schemas/HoerenHoerhilfe"
+        distanzsehenaugeeinzelnresultat:
+          $ref: "#/components/schemas/DistanzSehenAugeEinzelnResultat"
+        impfausweisGeprueft:
+          $ref: "#/components/schemas/ImpfausweisGeprueft"
+        immunsuppression:
+          $ref: "#/components/schemas/Immunsuppression"
+        impfStatusMinimal:
+          $ref: "#/components/schemas/ImpfStatusMinimal"
+        impfempfehlungMinimal:
+          $ref: "#/components/schemas/ImpfempfehlungMinimal"
+        impfungDurchgefuehrtMinimal:
+          $ref: "#/components/schemas/ImpfungDurchgefuehrtMinimal"
+        abschlussResultat:
+          $ref: "#/components/schemas/AbschlussResultat"
+        fragebogenStatus:
+          $ref: "#/components/schemas/FragebogenStatus"
+        einverstaendnisImpfungen:
+          $ref: "#/components/schemas/EinverstaendnisImpfungen"
+        chronischeKrankheiten:
+          $ref: "#/components/schemas/ChronischeKrankheiten"
+        wortschatz:
+          $ref: "#/components/schemas/Wortschatz"
+        sprachverstaendnis:
+          $ref: "#/components/schemas/Sprachverstaendnis"
+        skoliose:
+          $ref: "#/components/schemas/Skoliose"
+        haltungsschwaeche:
+          $ref: "#/components/schemas/Haltungsschwaeche"
+        verkuerzungHamstringmuskulatur:
+          $ref: "#/components/schemas/VerkuerzungHamstringmuskulatur"
+        freiesGehen:
+          $ref: "#/components/schemas/FreiesGehen"
+        ohneStuetzradVelofahren:
+          $ref: "#/components/schemas/OhneStuetzradVelofahren"
+        grafomotorik:
+          $ref: "#/components/schemas/Grafomotorik"
+        feinmotorik:
+          $ref: "#/components/schemas/Feinmotorik"
+        grobmotorikEinbeinhuepfen:
+          $ref: "#/components/schemas/GrobmotorikEinbeinhuepfen"
+        gleichgewichtEinbeinstand:
+          $ref: "#/components/schemas/GleichgewichtEinbeinstand"
+        brilleLinsenResultat:
+          $ref: "#/components/schemas/BrilleLinsenResultat"
+        stereotestResultat:
+          $ref: "#/components/schemas/StereotestResultat"
+        farbsehenResultat:
+          $ref: "#/components/schemas/FarbsehenResultat"
+        verwendetTafelResultat:
+          $ref: "#/components/schemas/VerwendetTafelResultat"
+        motilitaetResultat:
+          $ref: "#/components/schemas/MotilitaetResultat"
+        strabismusAuspraegungResultat:
+          $ref: "#/components/schemas/StrabismusAuspraegungResultat"
+        strabismusAuftretenResultat:
+          $ref: "#/components/schemas/StrabismusAuftretenResultat"
+        inspektionKonvergenzResultat:
+          $ref: "#/components/schemas/InspektionKonvergenzResultat"
+        perzentileGroesse:
+          $ref: "#/components/schemas/PerzentileGroesse"
+        perzentileGewicht:
+          $ref: "#/components/schemas/PerzentileGewicht"
+        perzentileBmi:
+          $ref: "#/components/schemas/PerzentileBmi"
+        otoskopieResultat:
+          $ref: "#/components/schemas/OtoskopieResultat"
+        audiogrammBeurteilung:
+          $ref: "#/components/schemas/AudiogrammBeurteilung"
+        zusaetzlicheAngaben:
+          $ref: "#/components/schemas/HoerenZusaetzlicheAngaben"
+        hoerenEmpfehlung:
+          $ref: "#/components/schemas/HoerenEmpfehlung"
+        distanzSehenResultat:
+          $ref: "#/components/schemas/DistanzSehenResultat"
+        strabismusResultat:
+          $ref: "#/components/schemas/StrabismusResultat"
+        sehenEmpfehlung:
+          $ref: "#/components/schemas/SehenEmpfehlung"
     UploadItemSchema:
       format: binary
       type: string
+    ValueEnhancedJson:
+      type: object
+      properties:
+        value:
+          type: array
+          items:
+            type: string
+        nichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
     Verhalten:
       type: string
       enum:
@@ -5293,6 +6275,12 @@ components:
       - VORHANDEN
       - NICHT_VORHANDEN
       - NICHT_RELEVANT
+    VerkuerzungHamstringmuskulatur:
+      type: string
+      enum:
+      - NORMAL
+      - PATHOLOGISCH
+      - NICHT_GEPRUEFT
     VerwendetTafelResultat:
       type: string
       enum:
@@ -5314,6 +6302,12 @@ components:
           type: string
         message:
           type: string
+    Wortschatz:
+      type: string
+      enum:
+      - BESTANDEN
+      - NICHT_BESTANDEN
+      - NICHT_GEPRUEFT
     Zahl:
       format: number-zahl
       type: number
@@ -5350,6 +6344,7 @@ tags:
 - name: Aktivitaet
 - name: Anlass
 - name: Anlass-Config
+- name: Archivdokument
 - name: Aufgabe
 - name: Benutzer
 - name: Briefvorlage
@@ -5360,7 +6355,6 @@ tags:
 - name: Duplikate
 - name: Einladungen
 - name: Escada
-- name: Example-Logging
 - name: FileIngress
 - name: Impfstoff-Chargen
 - name: Impfstoffe
@@ -5374,6 +6368,7 @@ tags:
 - name: Lehrperson
 - name: Massenimport
 - name: Notizen
+- name: Organisation
 - name: Plz
 - name: Printer
 - name: Pupil
@@ -5383,7 +6378,9 @@ tags:
 - name: Super-Admin-Runner
 - name: Tenant-Settings
 - name: Timetravel
+- name: UntersuchungAbschluss
 - name: UntersuchungArzt
+- name: UntersuchungBewegungsapparat
 - name: UntersuchungDurchfuehrung
 - name: UntersuchungGroesseGewicht
 - name: UntersuchungHoerenAudiogramm
@@ -5391,8 +6388,12 @@ tags:
 - name: UntersuchungImpfungen
 - name: UntersuchungLaeusekontrolle
 - name: UntersuchungMassnahmen
+- name: UntersuchungSchulrelevanteBeeintraechtigung
 - name: UntersuchungSehen
+- name: UntersuchungSignatur
+- name: UntersuchungSprache
 - name: UntersuchungTriage
+- name: UntersuchungVorabklaerungen
 paths:
   /api/aerzte:
     get:
@@ -5850,8 +6851,8 @@ paths:
               $ref: "#/components/schemas/EinladungListJson"
         required: true
       responses:
-        "200":
-          description: OK
+        "204":
+          description: No Content
         "401":
           description: Not Authorized
         "403":
@@ -6164,8 +7165,8 @@ paths:
         schema:
           $ref: "#/components/schemas/IDEinladung"
       responses:
-        "200":
-          description: OK
+        "204":
+          description: No Content
         "401":
           description: Not Authorized
         "403":
@@ -6341,6 +7342,75 @@ paths:
         "403":
           description: Not Allowed
       summary: Get Default Untersuchung Arzt Beurteilung For Anlass Config
+      security:
+      - SecurityScheme:
+        - SU_AERZTLICHE_UNTERSUCHUNG_LESEN
+  /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/bewegungsapparat:
+    put:
+      operationId: UntersuchungBewegungsapparatResource_saveUntersuchungBewegungsapparat
+      tags:
+      - UntersuchungBewegungsapparat
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDEinladung"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UntersuchungBewegungsapparatSaveJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungBewegungsapparatJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Save Untersuchung Bewegungsapparat
+      security:
+      - SecurityScheme:
+        - SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN
+    get:
+      operationId: UntersuchungBewegungsapparatResource_getUntersuchungBewegungsapparat
+      tags:
+      - UntersuchungBewegungsapparat
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDEinladung"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungBewegungsapparatJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get Untersuchung Bewegungsapparat
       security:
       - SecurityScheme:
         - SU_AERZTLICHE_UNTERSUCHUNG_LESEN
@@ -6829,6 +7899,45 @@ paths:
       security:
       - SecurityScheme:
         - SU_IMPFEN_SCHREIBEN
+  /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/impfungen/dataminimal:
+    put:
+      operationId: UntersuchungImpfungenResource_saveUntersuchungImpfungenDataMinimal
+      tags:
+      - UntersuchungImpfungen
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDEinladung"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UntersuchungImpfungenDataMinimalSaveJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungImpfungenDataMinimalJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Save Untersuchung Impfungen Data Minimal
+      security:
+      - SecurityScheme:
+        - SU_IMPFEN_SCHREIBEN
   /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/impfungen/einzeltermin:
     put:
       operationId: UntersuchungImpfungenResource_einzelTerminErstellen
@@ -6846,8 +7955,8 @@ paths:
         schema:
           $ref: "#/components/schemas/IDEinladung"
       responses:
-        "200":
-          description: OK
+        "204":
+          description: No Content
         "401":
           description: Not Authorized
         "403":
@@ -7401,6 +8510,75 @@ paths:
       security:
       - SecurityScheme:
         - SU_MASSNAHMEN_LESEN
+  /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/schulrelevantebeeintraechtigung:
+    put:
+      operationId: UntersuchungSchulrelevanteBeeintraechtigungResource_saveUntersuchungSchulrelevanteBeeintraechtigung
+      tags:
+      - UntersuchungSchulrelevanteBeeintraechtigung
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDEinladung"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UntersuchungSchulrelevanteBeeintraechtigungSaveJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungSchulrelevanteBeeintraechtigungJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Save Untersuchung Schulrelevante Beeintraechtigung
+      security:
+      - SecurityScheme:
+        - SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN
+    get:
+      operationId: UntersuchungSchulrelevanteBeeintraechtigungResource_getUntersuchungSchulrelevanteBeeintraechtigung
+      tags:
+      - UntersuchungSchulrelevanteBeeintraechtigung
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDEinladung"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungSchulrelevanteBeeintraechtigungJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get Untersuchung Schulrelevante Beeintraechtigung
+      security:
+      - SecurityScheme:
+        - SU_AERZTLICHE_UNTERSUCHUNG_LESEN
   /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/bemerkungfragebogen:
     put:
       operationId: UntersuchungSehenResource_saveUntersuchungSehenBemerkungFragebogen
@@ -7570,6 +8748,304 @@ paths:
       security:
       - SecurityScheme:
         - SU_SEHEN_LESEN
+  /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sprache:
+    put:
+      operationId: UntersuchungSpracheResource_saveUntersuchungSprache
+      tags:
+      - UntersuchungSprache
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDEinladung"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UntersuchungSpracheSaveJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungSpracheJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Save Untersuchung Sprache
+      security:
+      - SecurityScheme:
+        - SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN
+    get:
+      operationId: UntersuchungSpracheResource_getUntersuchungSprache
+      tags:
+      - UntersuchungSprache
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDEinladung"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungSpracheJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get Untersuchung Sprache
+      security:
+      - SecurityScheme:
+        - SU_AERZTLICHE_UNTERSUCHUNG_LESEN
+  /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/tab/abschluss:
+    put:
+      operationId: UntersuchungAbschlussResource_saveUntersuchungAbschluss
+      tags:
+      - UntersuchungAbschluss
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDEinladung"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UntersuchungAbschlussSaveJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungAbschlussJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Save Untersuchung Abschluss
+      security:
+      - SecurityScheme:
+        - SU_ABSCHLUSS_SCHREIBEN
+    get:
+      operationId: UntersuchungAbschlussResource_getUntersuchungAbschluss
+      tags:
+      - UntersuchungAbschluss
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDEinladung"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungAbschlussJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get Untersuchung Abschluss
+      security:
+      - SecurityScheme:
+        - SU_ABSCHLUSS_LESEN
+  /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/tab/signatur:
+    put:
+      operationId: UntersuchungSignaturResource_signieren
+      tags:
+      - UntersuchungSignatur
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDEinladung"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungSignaturJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Signieren
+      security:
+      - SecurityScheme:
+        - SU_ABSCHLUSS_SCHREIBEN
+    delete:
+      operationId: UntersuchungSignaturResource_resetSignatur
+      tags:
+      - UntersuchungSignatur
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDEinladung"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungSignaturJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Reset Signatur
+      security:
+      - SecurityScheme:
+        - SU_ABSCHLUSS_SCHREIBEN
+    get:
+      operationId: UntersuchungSignaturResource_getUntersuchungSignatur
+      tags:
+      - UntersuchungSignatur
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDEinladung"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungSignaturJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get Untersuchung Signatur
+      security:
+      - SecurityScheme:
+        - SU_ABSCHLUSS_LESEN
+  /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/tab/vorabklaerungen:
+    put:
+      operationId: UntersuchungVorabklaerungenResource_saveUntersuchungVorabklaerungen
+      tags:
+      - UntersuchungVorabklaerungen
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDEinladung"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UntersuchungVorabklaerungenSaveJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungVorabklaerungenJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Save Untersuchung Vorabklaerungen
+      security:
+      - SecurityScheme:
+        - SU_VORABKLAERUNGEN_SCHREIBEN
+    get:
+      operationId: UntersuchungVorabklaerungenResource_getUntersuchungVorabklaerungen
+      tags:
+      - UntersuchungVorabklaerungen
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDEinladung"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungVorabklaerungenJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get Untersuchung Vorabklaerungen
+      security:
+      - SecurityScheme:
+        - SU_VORABKLAERUNGEN_LESEN
   /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/triage:
     put:
       operationId: UntersuchungTriageResource_saveUntersuchungTriage
@@ -7848,6 +9324,59 @@ paths:
       security:
       - SecurityScheme:
         - SUPPORT
+  /api/archivdokumente:
+    get:
+      operationId: ArchivdokumentResource_findAllArchivdokumente
+      tags:
+      - Archivdokument
+      parameters:
+      - name: onlyOpen
+        in: query
+        schema:
+          type: boolean
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArchivdokumentListJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Find All Archivdokumente
+      security:
+      - SecurityScheme:
+        - ARCHIVIERUNG
+  /api/archivdokumente/{archivdokumentId}/file:
+    get:
+      operationId: ArchivdokumentResource_downloadArchivFile
+      tags:
+      - Archivdokument
+      parameters:
+      - name: archivdokumentId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDArchivdokument"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Download Archiv File
+      security:
+      - SecurityScheme:
+        - ARCHIVIERUNG
   /api/aufgaben:
     get:
       operationId: AufgabeResource_findAllAufgaben
@@ -8212,6 +9741,54 @@ paths:
       security:
       - SecurityScheme:
         - MITARBEITERLISTE_BERECHTIGUNGEN_LESEN
+    post:
+      operationId: BenutzerResource_createBenutzer
+      tags:
+      - Benutzer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BenutzerSaveJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BenutzerJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Create Benutzer
+      security:
+      - SecurityScheme:
+        - BENUTZER_BERECHTIGUNGEN_SCHREIBEN
+        - ORGANISATION_VERWALTEN_SCHREIBEN
+  /api/benutzer/agb:
+    put:
+      operationId: BenutzerResource_acceptAGB
+      tags:
+      - Benutzer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BenutzerJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Accept AGB
+      security:
+      - SecurityScheme:
+        - '**'
   /api/benutzer/error:
     get:
       operationId: BenutzerResource_error
@@ -8306,7 +9883,8 @@ paths:
       summary: Update
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - BENUTZER_BERECHTIGUNGEN_SCHREIBEN
+        - ORGANISATION_VERWALTEN_LESEN
   /api/benutzer/{benutzerID}/benutzeraktivstatus:
     put:
       operationId: BenutzerResource_updateBenutzerAktivStatus
@@ -8341,6 +9919,32 @@ paths:
       security:
       - SecurityScheme:
         - LISTEN_SCHREIBEN
+  /api/benutzer/{organisationID}:
+    get:
+      operationId: BenutzerResource_findAllBenutzerForOrganisation
+      tags:
+      - Benutzer
+      parameters:
+      - name: organisationID
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDOrganisation"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BenutzerListJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Find All Benutzer For Organisation
+      security:
+      - SecurityScheme:
+        - ORGANISATION_VERWALTEN_LESEN
   /api/briefvorlagen:
     get:
       operationId: BriefvorlageResource_findAllBriefvorlagen
@@ -8590,6 +10194,151 @@ paths:
       security:
       - SecurityScheme:
         - SUPPORT
+  /api/dev/config:
+    get:
+      operationId: DeveloperResource_getConfig
+      tags:
+      - Developer
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                format: string
+                type: string
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get Config
+      security:
+      - SecurityScheme:
+        - SUPPORT
+  /api/dev/typetests/date:
+    get:
+      operationId: DeveloperResource_getDate
+      tags:
+      - Developer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExampleDateTimeJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get Date
+      security:
+      - SecurityScheme:
+        - SUPPORT
+  /api/dev/typetests/enums:
+    get:
+      operationId: DeveloperResource_getEnums
+      tags:
+      - Developer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnusedEnumsToGenerateJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get Enums
+      security:
+      - SecurityScheme:
+        - SUPPORT
+  /api/dev/typetests/errors/failure-message:
+    post:
+      operationId: DeveloperResource_triggerFailureMessage
+      tags:
+      - Developer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExampleMsg"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppFailureErrorJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Trigger Failure Message
+      security:
+      - SecurityScheme:
+        - SUPPORT
+  /api/dev/typetests/errors/runtime-exception:
+    post:
+      operationId: DeveloperResource_triggerRuntimeException
+      tags:
+      - Developer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExampleMsg"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppFailureErrorJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Trigger Runtime Exception
+      security:
+      - SecurityScheme:
+        - SUPPORT
+  /api/dev/typetests/errors/validation-message:
+    post:
+      operationId: DeveloperResource_triggerValidationMessage
+      tags:
+      - Developer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExampleMsg"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppValidationErrorJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Trigger Validation Message
+      security:
+      - SecurityScheme:
+        - SUPPORT
   /api/documentqueue:
     delete:
       operationId: DocumentQueueResource_removeDocumentQueueItems
@@ -8652,6 +10401,9 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema: {}
         "401":
           description: Not Authorized
         "403":
@@ -8664,6 +10416,34 @@ paths:
         - SUPPORT
         - SPSS_EXPORT
         - INDIVIDUELLE_REPORTS
+  /api/documentqueue/create-massenbrief:
+    post:
+      operationId: DocumentQueueResource_createMassenbrief
+      tags:
+      - Document-Queue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DocumentQueueMassenbriefSaveJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Create Massenbrief
+      security:
+      - SecurityScheme:
+        - SUPPORT
+        - VORLAGEN_LESEN
   /api/documentqueue/create-multiple-csv:
     post:
       operationId: DocumentQueueResource_createMultipleCsv
@@ -8678,6 +10458,9 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema: {}
         "401":
           description: Not Authorized
         "403":
@@ -8703,6 +10486,9 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema: {}
         "401":
           description: Not Authorized
         "403":
@@ -8736,6 +10522,7 @@ paths:
         - SUPPORT
         - SPSS_EXPORT
         - INDIVIDUELLE_REPORTS
+        - VORLAGEN_ADMIN_LESEN
   /api/documentqueue/{documentQueueId}/sync:
     get:
       operationId: DocumentQueueResource_downloadFile
@@ -8848,9 +10635,41 @@ paths:
       security:
       - SecurityScheme:
         - KINDER_SCHREIBEN_MEDIZINISCH
-  /api/dossiers/{dossierId}/nicht-medizinisch:
+  /api/dossiers/{dossierId}/papieraktestatus/{status}:
     put:
-      operationId: DossierResource_updateDossierNichtMedizinisch
+      operationId: DossierResource_updateDossierPapierakteStatus
+      tags:
+      - Dossier
+      parameters:
+      - name: dossierId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDDossier"
+      - name: status
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/PapierakteStatus"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DossierJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Update Dossier Papierakte Status
+      security:
+      - SecurityScheme:
+        - KINDER_SCHREIBEN_MEDIZINISCH
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
+  /api/dossiers/{dossierId}/verantwortlich-arzt:
+    put:
+      operationId: DossierResource_updateDossierVerantwortlichArzt
       tags:
       - Dossier
       parameters:
@@ -8863,7 +10682,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DossierNichtMedizinischSaveJson"
+              $ref: "#/components/schemas/BenutzerOptionJson"
         required: true
       responses:
         "200":
@@ -8878,7 +10697,42 @@ paths:
           description: Not Allowed
         "400":
           description: Bad Request
-      summary: Update Dossier Nicht Medizinisch
+      summary: Update Dossier Verantwortlich Arzt
+      security:
+      - SecurityScheme:
+        - KINDER_SCHREIBEN_MEDIZINISCH
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
+  /api/dossiers/{dossierId}/verantwortlich-mpa:
+    put:
+      operationId: DossierResource_updateDossierVerantwortlichMpa
+      tags:
+      - Dossier
+      parameters:
+      - name: dossierId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDDossier"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BenutzerOptionJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DossierJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Update Dossier Verantwortlich Mpa
       security:
       - SecurityScheme:
         - KINDER_SCHREIBEN_MEDIZINISCH
@@ -9090,8 +10944,8 @@ paths:
                   $ref: "#/components/schemas/UploadItemSchema"
         required: true
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
         "401":
           description: Not Authorized
         "403":
@@ -9159,20 +11013,6 @@ paths:
       security:
       - SecurityScheme:
         - SUPPORT
-  /api/example/logging:
-    get:
-      operationId: ExampleLoggingResource_log
-      tags:
-      - Example-Logging
-      parameters:
-      - name: message
-        in: query
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-      summary: Log
   /api/file-ingress/dossier/{esadId}/fragebogen:
     post:
       operationId: FileIngressResource_uploadFragebogen
@@ -10774,6 +12614,9 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema: {}
         "401":
           description: Not Authorized
         "403":
@@ -10812,6 +12655,9 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema: {}
         "401":
           description: Not Authorized
         "403":
@@ -11117,6 +12963,52 @@ paths:
       - SecurityScheme:
         - KINDER_ALLE_NOTIZEN_LESEN
         - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN
+  /api/organisation:
+    get:
+      operationId: OrganisationResource_findAllOrganisationen
+      tags:
+      - Organisation
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganisationListJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Find All Organisationen
+      security:
+      - SecurityScheme:
+        - ORGANISATION_VERWALTEN_LESEN
+  /api/organisation/{organisationId}:
+    get:
+      operationId: OrganisationResource_findOrganisation
+      tags:
+      - Organisation
+      parameters:
+      - name: organisationId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDOrganisation"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganisationJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Find Organisation
+      security:
+      - SecurityScheme:
+        - ORGANISATION_VERWALTEN_LESEN
   /api/plz:
     get:
       operationId: PLZResource_findPLZData
@@ -11148,8 +13040,8 @@ paths:
       tags:
       - Plz
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
         "401":
           description: Not Authorized
         "403":
@@ -11280,8 +13172,8 @@ paths:
                   $ref: "#/components/schemas/UploadItemSchema"
         required: true
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
         "401":
           description: Not Authorized
         "403":
@@ -11959,19 +13851,99 @@ paths:
       - SecurityScheme:
         - KINDER_LESEN_MEDIZINISCH
         - KINDER_LESEN_NICHT_MEDIZINISCH
+  /api/super-admin-runner/archive-download-email-reminder:
+    post:
+      operationId: SuperAdminRunnerResource_triggerArchiveDownloadEmailReminderJob
+      tags:
+      - Super-Admin-Runner
+      responses:
+        "201":
+          description: Created
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Trigger Archive Download Email Reminder Job
+      security:
+      - SecurityScheme:
+        - SUPPORT
+  /api/super-admin-runner/dossier-queue-cleanup:
+    post:
+      operationId: SuperAdminRunnerResource_triggerDossierQueueCleanupJob
+      tags:
+      - Super-Admin-Runner
+      responses:
+        "201":
+          description: Created
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Trigger Dossier Queue Cleanup Job
+      security:
+      - SecurityScheme:
+        - SUPPORT
+  /api/super-admin-runner/dossier-queue-processing:
+    post:
+      operationId: SuperAdminRunnerResource_triggerDossierQueueProcessingJob
+      tags:
+      - Super-Admin-Runner
+      responses:
+        "201":
+          description: Created
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Trigger Dossier Queue Processing Job
+      security:
+      - SecurityScheme:
+        - SUPPORT
   /api/super-admin-runner/normalize-kind-namen:
     post:
       operationId: SuperAdminRunnerResource_normalizeKindNamen
       tags:
       - Super-Admin-Runner
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
         "401":
           description: Not Authorized
         "403":
           description: Not Allowed
       summary: Normalize Kind Namen
+      security:
+      - SecurityScheme:
+        - SUPPORT
+  /api/super-admin-runner/trigger-archivierung:
+    post:
+      operationId: SuperAdminRunnerResource_triggerArchivierungJob
+      tags:
+      - Super-Admin-Runner
+      responses:
+        "201":
+          description: Created
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Trigger Archivierung Job
+      security:
+      - SecurityScheme:
+        - SUPPORT
+  /api/super-admin-runner/trigger-archivierung-delete:
+    post:
+      operationId: SuperAdminRunnerResource_triggerArchivierungDeleteJob
+      tags:
+      - Super-Admin-Runner
+      responses:
+        "201":
+          description: Created
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Trigger Archivierung Delete Job
       security:
       - SecurityScheme:
         - SUPPORT
@@ -11981,13 +13953,45 @@ paths:
       tags:
       - Super-Admin-Runner
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
         "401":
           description: Not Authorized
         "403":
           description: Not Allowed
       summary: Trigger Benutzer Inaktivieren Job
+      security:
+      - SecurityScheme:
+        - SUPPORT
+  /api/super-admin-runner/trigger-deactivate-impfstoff-chargen:
+    post:
+      operationId: SuperAdminRunnerResource_triggerDeactivateImpfstoffChargenJob
+      tags:
+      - Super-Admin-Runner
+      responses:
+        "201":
+          description: Created
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Trigger Deactivate Impfstoff Chargen Job
+      security:
+      - SecurityScheme:
+        - SUPPORT
+  /api/super-admin-runner/trigger-delete-impfstoff-chargen:
+    post:
+      operationId: SuperAdminRunnerResource_triggerDeleteImpfstoffChargenJob
+      tags:
+      - Super-Admin-Runner
+      responses:
+        "201":
+          description: Created
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Trigger Delete Impfstoff Chargen Job
       security:
       - SecurityScheme:
         - SUPPORT
@@ -11997,8 +14001,8 @@ paths:
       tags:
       - Super-Admin-Runner
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
         "401":
           description: Not Authorized
         "403":
@@ -12013,8 +14017,8 @@ paths:
       tags:
       - Super-Admin-Runner
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
         "401":
           description: Not Authorized
         "403":
@@ -12029,8 +14033,8 @@ paths:
       tags:
       - Super-Admin-Runner
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
         "401":
           description: Not Authorized
         "403":
@@ -12045,8 +14049,8 @@ paths:
       tags:
       - Super-Admin-Runner
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
         "401":
           description: Not Authorized
         "403":
@@ -12109,6 +14113,10 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeTravelJson"
         "401":
           description: Not Authorized
         "403":
@@ -12126,6 +14134,10 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeTravelJson"
       summary: Get Now
   /api/timetravel/now/reset:
     put:
@@ -12135,6 +14147,10 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeTravelJson"
         "401":
           description: Not Authorized
         "403":
@@ -12143,112 +14159,8 @@ paths:
       security:
       - SecurityScheme:
         - SUPPORT
-  /api/typetests/date:
-    get:
-      operationId: DeveloperResource_getDate
-      tags:
-      - Developer
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ExampleDateTimeJson"
-        "401":
-          description: Not Authorized
-        "403":
-          description: Not Allowed
-      summary: Get Date
-      security:
-      - SecurityScheme:
-        - SUPPORT
-  /api/typetests/errors/failure-message:
-    post:
-      operationId: DeveloperResource_triggerFailureMessage
-      tags:
-      - Developer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ExampleMsg"
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AppFailureErrorJson"
-        "401":
-          description: Not Authorized
-        "403":
-          description: Not Allowed
-        "400":
-          description: Bad Request
-      summary: Trigger Failure Message
-      security:
-      - SecurityScheme:
-        - SUPPORT
-  /api/typetests/errors/runtime-exception:
-    post:
-      operationId: DeveloperResource_triggerRuntimeException
-      tags:
-      - Developer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ExampleMsg"
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AppFailureErrorJson"
-        "401":
-          description: Not Authorized
-        "403":
-          description: Not Allowed
-        "400":
-          description: Bad Request
-      summary: Trigger Runtime Exception
-      security:
-      - SecurityScheme:
-        - SUPPORT
-  /api/typetests/errors/validation-message:
-    post:
-      operationId: DeveloperResource_triggerValidationMessage
-      tags:
-      - Developer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ExampleMsg"
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AppValidationErrorJson"
-        "401":
-          description: Not Authorized
-        "403":
-          description: Not Allowed
-        "400":
-          description: Bad Request
-      summary: Trigger Validation Message
-      security:
-      - SecurityScheme:
-        - SUPPORT
 info:
   title: esc-api API
-  version: 26.1.0-SNAPSHOT
+  version: 26.5.0-SNAPSHOT
 servers:
 - url: https://local-esc-bs.localhost:8443

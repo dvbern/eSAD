@@ -7,7 +7,7 @@
   <!--  Schule Selection-->
   <svui-form-control [label]="'klasse.schule' | transloco"
                      [viewValue]="form.group.getRawValue().schule?.bezeichnung"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
 
     <ng-select
       svuiNgSelect
@@ -34,7 +34,7 @@
   <!--  Klassenbezeichnung-->
   <svui-form-control [label]="'klasse.bezeichnung' | transloco"
                      [viewValue]="form.group.getRawValue().bezeichnung"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <input svuiTextInput
            [formControl]="form.controlAt('bezeichnung')"
     />
@@ -43,7 +43,7 @@
   <!--  Klassenstufe -->
   <svui-form-control [label]="'klasse.klassenstufe' | transloco"
                      [viewValue]="'Klassenstufe.' + form.group.value.klassenstufe | transloco"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <ng-select
       svuiNgSelect
       bindLabel='dummy'
@@ -63,7 +63,7 @@
   <!--  Klassentyp -->
   <svui-form-control [label]="'klasse.klasseSchulart' | transloco"
                      [viewValue]="form.group.getRawValue().klasseSchulart"
-                     [iconTopRight]="isEscadaObject() ? {icon: 'escada_item', iconTooltip: 'global.escada.import' | transloco} : undefined">
+                     [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <input svuiTextInput
            [formControl]="form.controlAt('klasseSchulart')"
     />
@@ -89,9 +89,9 @@
   </svui-form-control>
 
   <!--Letzter Escada Import-->
-  @if (isEscadaObject()) {
+  @if (isExternalObject()) {
     <div>
-      <p>{{ 'global.escada.import.latest' | transloco: {date: getDateLatestImportIfEscadaObject() | date} }}</p>
+      <p>{{ 'global.import.latest' | transloco: {date: getDateLatestImportIfExternalObject() | date} }}</p>
     </div>
   }
 

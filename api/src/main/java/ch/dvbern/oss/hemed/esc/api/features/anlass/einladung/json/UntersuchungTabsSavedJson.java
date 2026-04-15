@@ -25,6 +25,10 @@ public class UntersuchungTabsSavedJson {
 
     @NotNull
     @Schema(required = true)
+    private final boolean vorabklaerungenTabSaved;
+
+    @NotNull
+    @Schema(required = true)
     private final boolean impfungenTabSaved;
 
     @NotNull
@@ -50,6 +54,26 @@ public class UntersuchungTabsSavedJson {
     @NotNull
     @Schema(required = true)
     private final boolean aerzlicheUnteruchungTabSaved;
+
+    @NotNull
+    @Schema(required = true)
+    private final boolean spracheTabSaved;
+
+    @NotNull
+    @Schema(required = true)
+    private final boolean bewegungsapparatTabSaved;
+
+    @NotNull
+    @Schema(required = true)
+    private final boolean schulrelevanteBeeintrachtigungenTabSaved;
+
+    @NotNull
+    @Schema(required = true)
+    private final boolean abschlussTabSaved;
+
+    @NotNull
+    @Schema(required = true)
+    private final boolean signaturTabSaved;
 
     @NotNull
     @Schema(required = true)

@@ -59,6 +59,26 @@
       }
     </ng-select>
   </svui-form-control>
+
+  <!-- Hoeren Audiogramm Simpel -->
+  <svui-form-control [label]="'anlassconfig.label.hoerenAudiogrammSimpel' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().hoerenAudiogrammSimpel | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.hoerenAudiogrammSimpel"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
   <!-- Hoeren Audiogramm Beurteilung-->
   <svui-form-control [label]="'anlassconfig.label.hoerenAudiogrammBeurteilung' | transloco"
                      [viewValue]="'RequirementSetting.' + form.group.getRawValue().hoerenAudiogrammBeurteilung | transloco">
@@ -134,6 +154,24 @@
     </ng-select>
   </svui-form-control>
 
+  <!-- Hoeren Hörhilfe -->
+  <svui-form-control [label]="'anlassconfig.label.hoerenHoerhilfe' | transloco"
+                     [viewValue]="'RequirementSetting.' + form.group.getRawValue().hoerenHoerhilfe | transloco">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.hoerenHoerhilfe"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (requirement of requirementSettingOptions; track requirement) {
+        <ng-option [value]="requirement">
+          {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
 
   <!--messages for whole form -->
   <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>

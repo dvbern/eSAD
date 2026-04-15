@@ -1,10 +1,10 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,13 +30,19 @@ class InspektionCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungSehenBeurteilung.setInspektion(InspektionKonvergenzResultat.UNAUFFAELLIG);
+        untersuchungSehenBeurteilung.setInspektion(SingleValueEnhanced.of(
+            InspektionKonvergenzResultat.UNAUFFAELLIG,
+            null));
         assertThat(column.extract(einladung)).isEqualTo("1");
 
-        untersuchungSehenBeurteilung.setInspektion(InspektionKonvergenzResultat.AUFFAELLIG);
+        untersuchungSehenBeurteilung.setInspektion(SingleValueEnhanced.of(
+            InspektionKonvergenzResultat.AUFFAELLIG,
+            null));
         assertThat(column.extract(einladung)).isEqualTo("2");
 
-        untersuchungSehenBeurteilung.setInspektion(InspektionKonvergenzResultat.NICHT_GEPRUEFT);
+        untersuchungSehenBeurteilung.setInspektion(SingleValueEnhanced.of(
+            InspektionKonvergenzResultat.NICHT_GEPRUEFT,
+            null));
         assertThat(column.extract(einladung)).isEqualTo("3");
     }
 
@@ -59,7 +65,7 @@ class InspektionCsvColumnTest extends AbstractBaseColumnTest {
         assertThat(column.extract(einladung)).isEmpty();
 
         when(tlMock.translateValue(InspektionKonvergenzResultat.UNAUFFAELLIG)).thenReturn("Unauffällig");
-        untersuchungSehenBeurteilung.setInspektion(InspektionKonvergenzResultat.UNAUFFAELLIG);
+        untersuchungSehenBeurteilung.setInspektion(SingleValueEnhanced.of(InspektionKonvergenzResultat.UNAUFFAELLIG, null));
         assertThat(column.extract(einladung)).isEqualTo("Unauffällig");
     }
 }

@@ -31,7 +31,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.mapper.InfomaterialJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.InfomaterialJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.InfomaterialSaveJsonSpec;
 import lombok.RequiredArgsConstructor;
-import org.assertj.core.util.CanIgnoreReturnValue;
+import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @RequiredArgsConstructor

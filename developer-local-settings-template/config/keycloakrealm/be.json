@@ -399,6 +399,15 @@
           "clientRole": true,
           "containerId": "af510311-3a23-47b7-84eb-4f17edd923f9",
           "attributes": {}
+        },
+        {
+          "id": "72cefcbf-5a2d-4fc6-ae1b-127bcaedcbd7",
+          "name": "SCHOOL_NURSE",
+          "description": "School Nurse",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "8895e7bc-0452-4fa6-be6f-20a91f6b8ee6",
+          "attributes": {}
         }
       ],
       "account": [
@@ -2335,6 +2344,28 @@
         "syncMode": "FORCE",
         "claims": "[{\"key\":\"tenant\",\"value\":\"BE\"},{\"key\":\"roles\",\"value\":\"stadt\\\\G5EGZD_eSAD_PFP\"}]",
         "role": "esc-oauth2-proxy-${KC_ENV}.PFP"
+      }
+    },
+    {
+      "id": "aaf7a5bd-c694-4860-95e9-42166499f386",
+      "name": "ESC-SCHOOL-NURSE-ROLE",
+      "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
+      "identityProviderMapper": "oidc-advanced-role-idp-mapper",
+      "config": {
+        "syncMode": "FORCE",
+        "claims": "[{\"key\":\"tenant\",\"value\":\"BE\"},{\"key\":\"roles\",\"value\":\"stadt\\\\G5EGZD_eSAD_School_Nurse\"}]",
+        "role": "esc-oauth2-proxy-${KC_ENV}.SCHOOL_NURSE"
+      }
+    },
+    {
+      "id": "891751d7-800d-477b-965c-cfe16c451e8f",
+      "name": "ESC-MPA-ROLE",
+      "identityProviderAlias": "${REALM_IDP_VACME_ALIAS}",
+      "identityProviderMapper": "oidc-advanced-role-idp-mapper",
+      "config": {
+        "syncMode": "FORCE",
+        "claims": "[{\"key\":\"tenant\",\"value\":\"BE\"},{\"key\":\"roles\",\"value\":\"stadt\\\\G5EGZD_eSAD_MPA\"}]",
+        "role": "esc-oauth2-proxy-${KC_ENV}.MPA"
       }
     }
   ],

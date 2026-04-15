@@ -24,6 +24,7 @@ public class AnlassMergeSource implements MergeSource {
     private final HoerenAudiogrammDocMergerDTO hoerenAudiogrammDocMergerDTO;
     private final HoerenOtoskopieDocMergerDTO hoerenOtoskopieDocMergerDTO;
     private final GroesseGewichtDocMergerDTO groesseGewichtDocMergerDTO;
+    private final UntersuchungArztDocMergerDTO untersuchungArztDocMergerDTO;
 
     @Override
     public Object getData(MergeContext ctx, String key) throws DocTemplateException {
@@ -61,6 +62,10 @@ public class AnlassMergeSource implements MergeSource {
 
         if (key.startsWith("groesseGewicht.")) {
             return new BeanMergeSource(groesseGewichtDocMergerDTO, "groesseGewicht.").getData(ctx, key);
+        }
+
+        if (key.startsWith("untersuchungArzt.")) {
+            return new BeanMergeSource(untersuchungArztDocMergerDTO, "untersuchungArzt.").getData(ctx, key);
         }
         return '[' + key + ']';
     }

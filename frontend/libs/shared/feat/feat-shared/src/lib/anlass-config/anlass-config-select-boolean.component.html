@@ -1,0 +1,18 @@
+<svui-form-control [label]="labelKey() | transloco"
+                   [viewValue]="'RequirementSetting.boolean.' + formControlAttr().value | transloco">
+  <ng-select
+    svuiNgSelect
+    bindLabel='dummy'
+    appendTo="body"
+    [formControl]="formControlAttr()"
+    [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+    [multiple]="false"
+  >
+    <ng-option [value]="true">
+      {{ 'RequirementSetting.boolean.true' | transloco }}
+    </ng-option>
+    <ng-option [value]="false">
+      {{ 'RequirementSetting.boolean.false' | transloco }}
+    </ng-option>
+  </ng-select>
+</svui-form-control>

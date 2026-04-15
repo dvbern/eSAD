@@ -1,0 +1,14 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema (generated)" id="2026-02-13-1">
+    <sql>
+      -- Add SU_ABSCHLUSS_LESEN to ESC-BERN-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, berechtigung, benutzer_id)
+      VALUES ('6d8dcc35-6d70-48e1-af69-68fec4d392e8', '2026-02-13 10:01:50.889111 +00:00', '2026-02-13 10:01:50.889111 +00:00', '11111111-1111-1111-1111-111111111113', '11111111-1111-1111-1111-111111111113', 0, 'SU_ABSCHLUSS_LESEN', '11111111-1111-1111-1111-111111111113');
+
+      -- Add SU_ABSCHLUSS_SCHREIBEN to ESC-BERN-SYSADM
+      INSERT INTO benutzerberechtigung (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, berechtigung, benutzer_id)
+      VALUES ('b44c0c26-20e1-400c-b4de-ca96d472b741', '2026-02-13 10:01:50.889111 +00:00', '2026-02-13 10:01:50.889111 +00:00', '11111111-1111-1111-1111-111111111113', '11111111-1111-1111-1111-111111111113', 0, 'SU_ABSCHLUSS_SCHREIBEN', '11111111-1111-1111-1111-111111111113');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

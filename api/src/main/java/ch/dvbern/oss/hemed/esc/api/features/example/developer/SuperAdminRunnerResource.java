@@ -11,7 +11,6 @@ import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -25,59 +24,115 @@ public class SuperAdminRunnerResource {
 
     private final SuperAdminRunnerService superAdminRunnerService;
 
-    @POST
-    @Path("/trigger-document-queue-job")
-    @RolesAllowed(BerechtigungName.SUPPORT)
-    @Transactional(TxType.NOT_SUPPORTED)
-    public Response triggerDocumentQueueJob() {
-        superAdminRunnerService.runDocumentQueueJob(true);
-        return Response.ok().build();
-    }
-
-    @POST
-    @Path("/trigger-document-queue-clean-up-job")
-    @RolesAllowed(BerechtigungName.SUPPORT)
-    @Transactional(TxType.NOT_SUPPORTED)
-    public Response triggerDocumentQueueCleanUpJob() {
-        superAdminRunnerService.runDocumentQueueCleanupJob(true);
-        return Response.ok().build();
-    }
+    // Divers
 
     @POST
     @Path("/trigger-benutzer-inaktivieren-job")
     @RolesAllowed(BerechtigungName.SUPPORT)
     @Transactional(TxType.NOT_SUPPORTED)
-    public Response triggerBenutzerInaktivierenJob() {
+    public void triggerBenutzerInaktivierenJob() {
         superAdminRunnerService.runBenutzerInaktivierenJob(true);
-        return Response.ok().build();
     }
 
     @POST
     @Path("/trigger-kinder-inaktivieren-job")
     @RolesAllowed(BerechtigungName.SUPPORT)
     @Transactional(TxType.NOT_SUPPORTED)
-    public Response triggerKinderInaktivierenJob() {
+    public void triggerKinderInaktivierenJob() {
         superAdminRunnerService.runKinderInaktivierenJob(true);
-        return Response.ok().build();
     }
-
 
     @POST
     @Path("/trigger-reload-duplikate")
     @RolesAllowed(BerechtigungName.SUPPORT)
     @Transactional(TxType.NOT_SUPPORTED)
-    public Response triggerReloadDuplikate() {
+    public void triggerReloadDuplikate() {
         superAdminRunnerService.runReloadDuplikateJob(true);
-        return Response.ok().build();
     }
-
 
     @POST
     @Path("/normalize-kind-namen")
     @RolesAllowed(BerechtigungName.SUPPORT)
     @Transactional(TxType.NOT_SUPPORTED)
-    public Response normalizeKindNamen() {
+    public void normalizeKindNamen() {
         superAdminRunnerService.normalizeKindNamen();
-        return Response.ok().build();
+    }
+
+    // Impfstoffe
+
+    @POST
+    @Path("/trigger-deactivate-impfstoff-chargen")
+    @RolesAllowed(BerechtigungName.SUPPORT)
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void triggerDeactivateImpfstoffChargenJob() {
+        superAdminRunnerService.runDeactivateImpfstoffChargenJob(true);
+    }
+
+    @POST
+    @Path("/trigger-delete-impfstoff-chargen")
+    @RolesAllowed(BerechtigungName.SUPPORT)
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void triggerDeleteImpfstoffChargenJob() {
+        superAdminRunnerService.runDeleteImpfstoffChargenJob(true);
+    }
+
+    // DocumentQueue
+
+    @POST
+    @Path("/trigger-document-queue-job")
+    @RolesAllowed(BerechtigungName.SUPPORT)
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void triggerDocumentQueueJob() {
+        superAdminRunnerService.runDocumentQueueJob(true);
+    }
+
+    @POST
+    @Path("/trigger-document-queue-clean-up-job")
+    @RolesAllowed(BerechtigungName.SUPPORT)
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void triggerDocumentQueueCleanUpJob() {
+        superAdminRunnerService.runDocumentQueueCleanupJob(true);
+    }
+
+    // DossierQueue/ Archivierung
+
+    @POST
+    @Path("/dossier-queue-processing")
+    @RolesAllowed(BerechtigungName.SUPPORT)
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void triggerDossierQueueProcessingJob() {
+        superAdminRunnerService.runDossierQueueProcessingJob(true);
+    }
+
+    @POST
+    @Path("/dossier-queue-cleanup")
+    @RolesAllowed(BerechtigungName.SUPPORT)
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void triggerDossierQueueCleanupJob() {
+        superAdminRunnerService.runDossierQueueCleanupJob(true);
+    }
+
+    @POST
+    @Path("/trigger-archivierung")
+    @RolesAllowed(BerechtigungName.SUPPORT)
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void triggerArchivierungJob() {
+        superAdminRunnerService.runMarkForArchivierungJob(true);
+    }
+
+    @POST
+    @Path("/trigger-archivierung-delete")
+    @RolesAllowed(BerechtigungName.SUPPORT)
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void triggerArchivierungDeleteJob() {
+        superAdminRunnerService.runArchiveDocumentKindDeleteJob(true);
+    }
+
+    @POST
+    @Path("/archive-download-email-reminder")
+    @RolesAllowed(BerechtigungName.SUPPORT)
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void triggerArchiveDownloadEmailReminderJob() {
+        superAdminRunnerService.runArchiveDocumentDownloadEmailReminderJob(true);
     }
 }

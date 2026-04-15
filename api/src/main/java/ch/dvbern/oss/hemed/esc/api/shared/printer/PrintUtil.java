@@ -82,6 +82,14 @@ public final class PrintUtil {
     }
 
     @NonNull
+    public static String formatLocalDateTime(@Nullable LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return PrintUtil.PLACEHOLDER;
+        }
+        return dateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+    }
+
+    @NonNull
     public static String getNameWithAnrede(@NonNull BasePrinter basePrinter, @NonNull Geschlecht geschlecht, @NonNull String nameVorname) {
         return PRINT_UTIL.getNameWithAnrede(basePrinter,geschlecht, nameVorname);
     }

@@ -17,9 +17,21 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.validator;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenAugeEinzelnResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.SehenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftretenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.commons.collections4.CollectionUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -35,55 +47,109 @@ public class CheckUntersuchungSehenBeurteilungPresentIfReqValidator
     )
     public boolean isEntityValid(@NonNull UntersuchungSehenBeurteilung sehen) {
         AnlassConfig anlassConfig = sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
-        if (anlassConfig.getSehenBrilleLinsen().isRequired() && sehen.getBrilleLinsen() == null) {
+        if (ValueEnhancedUtil.isRequiredAndNull(
+            anlassConfig.getSehenBrilleLinsen(),
+            sehen.getBrilleLinsen(),
+            BrilleLinsenResultat.class)) {
             return false;
         }
-        if (anlassConfig.getSehenStereoTest().isRequired() && sehen.getStereotest() == null) {
+        if (ValueEnhancedUtil.isRequiredAndNull(
+            anlassConfig.getSehenStereoTest(),
+            sehen.getStereotest(),
+            StereotestResultat.class)) {
             return false;
         }
-        if (anlassConfig.getSehenFarbsehen().isRequired() && sehen.getFarbsehen() == null) {
+        if (ValueEnhancedUtil.isRequiredAndNull(
+            anlassConfig.getSehenFarbsehen(),
+            sehen.getFarbsehen(),
+            FarbsehenResultat.class)) {
             return false;
         }
-        if (anlassConfig.getSehenTafel().isRequired() && sehen.getVerwendeteTafel() == null) {
+        if (ValueEnhancedUtil.isRequiredAndNull(
+            anlassConfig.getSehenTafel(),
+            sehen.getVerwendeteTafel(),
+            VerwendetTafelResultat.class)) {
             return false;
         }
         if (anlassConfig.getSehenFernvisus().isRequired()) {
-            if (CollectionUtils.isEmpty(sehen.getFernvisus())) {
+            if (CollectionUtils.isEmpty(ValueEnhancedUtil.getEnumSetOrEmpty(
+                sehen.getFernvisus(),
+                DistanzSehenResultat.class))) {
                 return false;
             }
-            if (!sehen.getFernvisus().contains(DistanzSehenResultat.NICHT_GEPRUEFT)
+            if (!ValueEnhancedUtil.getEnumSetOrEmpty(sehen.getFernvisus(), DistanzSehenResultat.class)
+                .contains(DistanzSehenResultat.NICHT_GEPRUEFT)
                 && (sehen.getFernvisusLinks() == null || sehen.getFernvisusRechts() == null)
             ) {
                 return false;
             }
         }
+        if (ValueEnhancedUtil.isRequiredAndNull(
+            anlassConfig.getSehenFernvisusAugeEinzeln(),
+            sehen.getFernvisusAugeLinks(),
+            DistanzSehenAugeEinzelnResultat.class)) {
+            return false;
+        }
+        if (ValueEnhancedUtil.isRequiredAndNull(
+            anlassConfig.getSehenFernvisusAugeEinzeln(),
+            sehen.getFernvisusAugeRechts(),
+            DistanzSehenAugeEinzelnResultat.class)) {
+            return false;
+        }
         if (anlassConfig.getSehenNahvisus().isRequired()) {
-            if (CollectionUtils.isEmpty(sehen.getNahvisus())) {
+            if (CollectionUtils.isEmpty(ValueEnhancedUtil.getEnumSetOrEmpty(
+                sehen.getNahvisus(),
+                DistanzSehenResultat.class))) {
                 return false;
             }
-            if (!sehen.getNahvisus().contains(DistanzSehenResultat.NICHT_GEPRUEFT)
+            if (!ValueEnhancedUtil.getEnumSetOrEmpty(sehen.getNahvisus(), DistanzSehenResultat.class)
+                .contains(DistanzSehenResultat.NICHT_GEPRUEFT)
                 && (sehen.getNahvisusLinks() == null || sehen.getNahvisusRechts() == null)
             ) {
                 return false;
             }
         }
-        if (anlassConfig.getSehenMotilitaet().isRequired() && sehen.getMotilitaet() == null) {
+        if (ValueEnhancedUtil.isRequiredAndNull(
+            anlassConfig.getSehenMotilitaet(),
+            sehen.getMotilitaet(),
+            MotilitaetResultat.class)) {
             return false;
         }
         if (anlassConfig.getSehenStrabismus().isRequired()
-            && (CollectionUtils.isEmpty(sehen.getStrabismus())
-                || sehen.getStrabismusAuspraegung() == null
-                || sehen.getStrabismusAuftreten() == null)
+            && (CollectionUtils.isEmpty(ValueEnhancedUtil.getEnumSetOrEmpty(
+            sehen.getStrabismus(),
+            StrabismusResultat.class)))
         ) {
             return false;
         }
-        if (anlassConfig.getSehenInspektion().isRequired() && sehen.getInspektion() == null) {
+        if (ValueEnhancedUtil.isRequiredAndNull(
+            anlassConfig.getSehenStrabismusAuspraegung(),
+            sehen.getStrabismusAuspraegung(),
+            StrabismusAuspraegungResultat.class)) {
             return false;
         }
-        if (anlassConfig.getSehenKonvergenz().isRequired() && sehen.getKonvergenz() == null) {
+        if (ValueEnhancedUtil.isRequiredAndNull(
+            anlassConfig.getSehenStrabismusAuftreten(),
+            sehen.getStrabismusAuftreten(),
+            StrabismusAuftretenResultat.class)) {
             return false;
         }
-        if (anlassConfig.getSehenEmpfehlung().isRequired() && CollectionUtils.isEmpty(sehen.getEmpfehlung())) {
+        if (ValueEnhancedUtil.isRequiredAndNull(
+            anlassConfig.getSehenInspektion(),
+            sehen.getInspektion(),
+            InspektionKonvergenzResultat.class)) {
+            return false;
+        }
+        if (ValueEnhancedUtil.isRequiredAndNull(
+            anlassConfig.getSehenKonvergenz(),
+            sehen.getKonvergenz(),
+            InspektionKonvergenzResultat.class)) {
+            return false;
+        }
+        if (anlassConfig.getSehenEmpfehlung().isRequired()
+            && CollectionUtils.isEmpty(ValueEnhancedUtil.getEnumSetOrEmpty(
+            sehen.getEmpfehlung(),
+            SehenEmpfehlung.class))) {
             return false;
         }
         if (anlassConfig.getSehenBemerkungen().isRequired() && sehen.getBemerkungen() == null) {

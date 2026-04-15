@@ -26,8 +26,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/schulen")
@@ -36,7 +35,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = Tags.TAG_SCHULEN)
 @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "SchuleResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("SchuleResourceMS")
 public class SchuleResource {
 
     private final SchuleMapper schuleMapper;

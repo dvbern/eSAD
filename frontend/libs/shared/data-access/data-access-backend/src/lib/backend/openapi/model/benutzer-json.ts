@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ISODateTimeString } from '@dvb/data-access-types';
 import { BenutzerSaveJson } from './benutzer-save-json';
 import { EntityInfoJson } from './entity-info-json';
 import { BackendEntityId } from '@dvb/data-access-types';
@@ -16,6 +17,8 @@ export interface BenutzerJson {
     id: BackendEntityId;
     entityInfo: EntityInfoJson;
     data: BenutzerSaveJson;
+    lastUsedSessionTimestamp?: ISODateTimeString;
+    timestampAGBAccepted?: ISODateTimeString;
 }
 
 

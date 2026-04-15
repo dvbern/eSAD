@@ -1,21 +1,18 @@
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
-import {
-  Geschlecht,
-  PerzentileBmi,
-  PerzentileGewicht,
-  PerzentileGroesse,
-  RequirementSetting,
-} from '@dvb/data-access-backend';
+import {Geschlecht, PerzentileGewicht, PerzentileGroesse, RequirementSetting,} from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
-import {BenutzerStore} from '@dvb/feat-shared';
+import {
+  BenutzerStore,
+  createSingleValueEnhancedForm,
+  TenantSettingsStore,
+  ValueEnhancedComponent
+} from '@dvb/feat-shared';
 import {
   CardInCardComponent,
   FormControlComponent,
   FormLayoutComponent,
-  KachelControlComponent,
   KachelFormSectionComponent,
-  RadioDirective,
   SaveCancelButtonsComponent,
   TextareaDirective,
   TextInputDirective,
@@ -37,9 +34,7 @@ import {UntersuchungGroesseGewichtStore} from './untersuchung-groessegewicht.sto
   imports: [
     FormLayoutComponent,
     ReactiveFormsModule,
-    KachelControlComponent,
     KachelFormSectionComponent,
-    RadioDirective,
     TranslocoPipe,
     FormControlComponent,
     TextInputDirective,
@@ -48,6 +43,7 @@ import {UntersuchungGroesseGewichtStore} from './untersuchung-groessegewicht.sto
     TitleComponent,
     PercentileChartComponent,
     CardInCardComponent,
+    ValueEnhancedComponent,
   ],
   templateUrl: './untersuchung-groessegewicht.component.html',
   styleUrl: './untersuchung-groessegewicht.component.scss',
@@ -64,6 +60,7 @@ export class UntersuchungGroessegewichtComponent implements DirtyMarker {
   readonly groesseGewichtStore = inject(UntersuchungGroesseGewichtStore);
   readonly diagramConfigService = inject(PercentileDiagramConfigService);
   readonly benutzerStore = inject(BenutzerStore);
+  readonly tenantSettingsStore = inject(TenantSettingsStore);
 
   kind = computed(() => {
     const currentEinladungId: BackendEntityId | undefined = this.untersuchungStore.currentTab()?.einladungID;
@@ -91,6 +88,9 @@ export class UntersuchungGroessegewichtComponent implements DirtyMarker {
     fb: inject(NonNullableFormBuilder),
     destroyRef: inject(DestroyRef),
     diagramConfigService: this.diagramConfigService,
+    groessePerzentileValueEnhancedForm: createSingleValueEnhancedForm(this.perzentileGroesse),
+    gewichtPerzentileValueEnhancedForm: createSingleValueEnhancedForm(this.perzentileGewicht),
+    bmiPerzentileValueEnhancedForm: createSingleValueEnhancedForm(this.anlassStore.groesseGewichtBmiPerzentileValues()),
   });
 
   constructor() {

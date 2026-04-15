@@ -1,9 +1,6 @@
-
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
 import {RouterLink} from '@angular/router';
-import {BenutzerStore} from '@dvb/feat-shared';
-import {Path} from '@dvb/feat-shared';
-import {PageComponent} from '@dvb/feat-shared';
+import {BenutzerStore, PageComponent, Path, TenantSettingsStore} from '@dvb/feat-shared';
 import {
   ListComponent,
   ListItemComponent,
@@ -12,13 +9,14 @@ import {
 } from '@dvb/ui-components';
 import {
   hasAerztePageViewBerechtigung,
+  hasArchivierungBerechtigung,
   hasBenutzerViewBerechtigung,
   hasBriefvorlagenViewBerechtigung,
   hasDuplikateBerechtigung,
   hasImpfstoffePageViewBerechtigung,
   hasLabelPageViewBerechtigung,
-  hasListViewBerechtigung,
-  hasSystemAdminViewBerechtigung,
+  hasListViewBerechtigung, hasOrganisationVerwaltungViewBerechtigung,
+  isNotNullish,
 } from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 
@@ -33,7 +31,7 @@ import {TranslocoPipe} from '@jsverse/transloco';
     ListItemSecondaryDirective,
     TranslocoPipe,
     RouterLink
-],
+  ],
   templateUrl: './admin-page.component.html',
   styleUrl: './admin-page.component.scss',
 })
@@ -41,13 +39,22 @@ export class AdminPageComponent {
   protected readonly Path = Path;
 
   benutzerStore = inject(BenutzerStore);
+  tenantSettingsStore = inject(TenantSettingsStore);
 
   canViewLabel = this.benutzerStore.createHasRequiredRoleSig(hasLabelPageViewBerechtigung());
   canViewList = this.benutzerStore.createHasRequiredRoleSig(hasListViewBerechtigung());
   canViewBenutzer = this.benutzerStore.createHasRequiredRoleSig(hasBenutzerViewBerechtigung());
-  canViewSystemAdmin = this.benutzerStore.createHasRequiredRoleSig(hasSystemAdminViewBerechtigung());
   canViewImpfstoffe = this.benutzerStore.createHasRequiredRoleSig(hasImpfstoffePageViewBerechtigung());
   canViewBriefvorlage = this.benutzerStore.createHasRequiredRoleSig(hasBriefvorlagenViewBerechtigung());
   canViewDuplikate = this.benutzerStore.createHasRequiredRoleSig(hasDuplikateBerechtigung());
-  canViewAerzte = this.benutzerStore.createHasRequiredRoleSig(hasAerztePageViewBerechtigung());
+  canViewArchivierung = computed(() => this.benutzerStore.createHasRequiredRoleSig(hasArchivierungBerechtigung())
+    && this.tenantSettingsStore.archivierungEnabled());
+  canViewOrganisation = this.benutzerStore.createHasRequiredRoleSig(hasOrganisationVerwaltungViewBerechtigung());
+
+  canViewAerzte = computed(() => {
+    return this.benutzerStore.createHasRequiredRoleSig(hasAerztePageViewBerechtigung())
+      && this.tenantSettingsStore.arztListeEnabled();
+  });
+
+  hasOrganisation = computed(() => isNotNullish(this.benutzerStore.benutzer()?.organisationRollen));
 }

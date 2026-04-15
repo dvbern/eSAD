@@ -9,6 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
+import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.Lehrperson;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ExternalSystemIdDTO;
@@ -28,7 +29,7 @@ import org.eclipse.microprofile.context.ManagedExecutor;
 public class LehrpersonExternalSyncService {
 
     private final LehrpersonExternalSyncHelperService syncHelperService;
-    private final ManagedExecutor concurrentEscadaExecutor;
+    private final ManagedExecutor concurrentExecutor;
     private final ConfigService configService;
 
     // IMPORANT: for the @ManagedExecutorConfig annotation to work, it must be directly on the @Inject.
@@ -36,24 +37,26 @@ public class LehrpersonExternalSyncService {
     @Inject
     public LehrpersonExternalSyncService(
         LehrpersonExternalSyncHelperService syncHelperService,
-        @ManagedExecutorConfig(maxAsync = 9) ManagedExecutor concurrentEscadaExecutor,
-        ConfigService configService) {
+        @ManagedExecutorConfig(maxAsync = 9) ManagedExecutor concurrentExecutor,
+        ConfigService configService
+    ) {
         this.syncHelperService = syncHelperService;
-        this.concurrentEscadaExecutor = concurrentEscadaExecutor;
+        this.concurrentExecutor = concurrentExecutor;
         this.configService = configService;
     }
 
     @NonNull
     @Transactional(TxType.NOT_SUPPORTED)
     public List<ItemSyncResultJson<Lehrperson>> syncLehrpersonen(
-        @NonNull ImportPlanDTO<LehrpersonExternal> importPlan
+        @NonNull ImportPlanDTO<LehrpersonExternal> importPlan,
+        @NonNull ImportTyp importTyp
     ) {
         List<ItemSyncResultJson<Lehrperson>> addResults =
-            addNewLehrpersonAsync(importPlan.itemsToAdd());
+            addNewLehrpersonAsync(importPlan.itemsToAdd(), importTyp);
         List<ItemSyncResultJson<Lehrperson>> updateResults =
-            updateExistingLehrpersonenAsync(importPlan.getItemsToSyncMap());
+            updateExistingLehrpersonenAsync(importPlan.getItemsToSyncMap(), importTyp);
         List<ItemSyncResultJson<Lehrperson>> deactivateResults =
-            deactivateRemovedLehrpersonenAsync(importPlan.itemsToDelete());
+            deactivateRemovedLehrpersonenAsync(importPlan.itemsToDelete(), importTyp);
 
         List<ItemSyncResultJson<Lehrperson>> importResults = new ArrayList<>(addResults);
         importResults.addAll(updateResults);
@@ -63,28 +66,29 @@ public class LehrpersonExternalSyncService {
 
     @NonNull
     private List<ItemSyncResultJson<Lehrperson>> addNewLehrpersonAsync(
-        @NonNull Set<LehrpersonExternal> itemsToPersist
+        @NonNull Set<LehrpersonExternal> itemsToPersist,
+        @NonNull ImportTyp importTyp
     ) {
         StopWatch stopwatch = StopWatch.createStarted();
-        LOG.info("ESCADA: Starting to add {} KontaktPersonen-Schule", itemsToPersist.size());
+        LOG.info("{}: Starting to add {} KontaktPersonen-Schule", importTyp, itemsToPersist.size());
 
         List<CompletableFuture<ItemSyncResultJson<Lehrperson>>> futures = itemsToPersist.stream()
             .map(lehrpersonExternalToAdd -> CompletableFuture.supplyAsync(
                 () -> {
                     try {
-                        return syncHelperService.addNewLehrperson(lehrpersonExternalToAdd);
+                        return syncHelperService.addNewLehrperson(lehrpersonExternalToAdd, importTyp);
                     } catch (Exception e) {
                         LOG.warn(
-                            "ESCADA: Error adding new Lehrperson with externalId: '{}'",
-                            lehrpersonExternalToAdd.getExternalId(), e);
+                            "{}: Error adding new Lehrperson with externalId: '{}'",
+                            importTyp, lehrpersonExternalToAdd.getExternalId(), e);
                         return ItemSyncResultJson.<Lehrperson>createAddErrorItem(
                             lehrpersonExternalToAdd,
                             Objects.toString(
-                                lehrpersonExternalToAdd.getFullNameIfAllowed(configService.isEscadaRedactPersonalInfo()),
+                                lehrpersonExternalToAdd.getFullNameIfAllowed(configService.isExternalImportRedactPersonalInfo()),
                                 lehrpersonExternalToAdd.getExternalId()),
                             e);
                     }
-                }, concurrentEscadaExecutor))
+                }, concurrentExecutor))
             .toList();
 
         List<ItemSyncResultJson<Lehrperson>> resultDtos = futures.stream()
@@ -92,34 +96,35 @@ public class LehrpersonExternalSyncService {
             .toList();
 
         LOG.info(
-            "ESCADA: Finished persisting new Lehrperson, took {}ms",
-            stopwatch.getTime(TimeUnit.MILLISECONDS));
+            "{}: Finished persisting new Lehrperson, took {}ms",
+            importTyp, stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 
     @NonNull
     private List<ItemSyncResultJson<Lehrperson>> updateExistingLehrpersonenAsync(
-        @NonNull Map<ExternalSystemIdDTO, LehrpersonExternal> itemsToSync
+        @NonNull Map<ExternalSystemIdDTO, LehrpersonExternal> itemsToSync,
+        @NonNull ImportTyp importTyp
     ) {
         StopWatch stopwatch = StopWatch.createStarted();
-        LOG.info("ESCADA: Starting to update {} Lehrpersonen", itemsToSync.size());
+        LOG.info("{}: Starting to update {} Lehrpersonen", importTyp, itemsToSync.size());
         List<CompletableFuture<ItemSyncResultJson<Lehrperson>>> futures = itemsToSync.entrySet().stream()
             .map(entry -> CompletableFuture.supplyAsync(
                 () -> {
                     ExternalSystemIdDTO idDTO = entry.getKey();
                     try {
-                        return syncHelperService.updateExistingLehrperson(idDTO, entry.getValue());
+                        return syncHelperService.updateExistingLehrperson(idDTO, entry.getValue(), importTyp);
                     } catch (Exception e) {
                         LOG.warn(
-                            "ESCADA: Error updating Lehrperson with externalId: '{}', internalId: '{}'",
-                            idDTO.getExternalId(), idDTO.getInternalId(), e);
+                            "{}: Error updating Lehrperson with externalId: '{}', internalId: '{}'",
+                            importTyp, idDTO.getExternalId(), idDTO.getInternalId(), e);
                         return ItemSyncResultJson.createUpdateErrorItem(
                             idDTO,
                             Lehrperson.class,
                             e);
                     }
                 },
-                concurrentEscadaExecutor))
+                concurrentExecutor))
             .toList();
 
         List<ItemSyncResultJson<Lehrperson>> resultDtos = futures.stream()
@@ -127,33 +132,34 @@ public class LehrpersonExternalSyncService {
             .toList();
 
         LOG.info(
-            "ESCADA: Finished updating Lehrpersonen, took {}ms",
-            stopwatch.getTime(TimeUnit.MILLISECONDS));
+            "{}: Finished updating Lehrpersonen, took {}ms",
+            importTyp, stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 
     @NonNull
     private List<ItemSyncResultJson<Lehrperson>> deactivateRemovedLehrpersonenAsync(
-        @NonNull Set<ExternalSystemIdDTO> itemsToDelete
+        @NonNull Set<ExternalSystemIdDTO> itemsToDelete,
+        @NonNull ImportTyp importTyp
     ) {
         StopWatch stopwatch = StopWatch.createStarted();
-        LOG.info("ESCADA: Starting to deactivate {} Lehrpersonen", itemsToDelete.size());
+        LOG.info("{}: Starting to deactivate {} Lehrpersonen", importTyp, itemsToDelete.size());
 
         List<CompletableFuture<ItemSyncResultJson<Lehrperson>>> futures = itemsToDelete.stream()
             .map(externalSystemIdDTO -> CompletableFuture.supplyAsync(
                 () -> {
                     try {
-                        return syncHelperService.deactivateRemovedLehrperson(externalSystemIdDTO);
+                        return syncHelperService.deactivateRemovedLehrperson(externalSystemIdDTO, importTyp);
                     } catch (Exception e) {
                         LOG.warn(
-                            "ESCADA: Error deactivating Lehrperson with externalId: '{}', internalId: '{}'",
-                            externalSystemIdDTO.getExternalId(), externalSystemIdDTO.getInternalId(), e);
+                            "{}: Error deactivating Lehrperson with externalId: '{}', internalId: '{}'",
+                            importTyp, externalSystemIdDTO.getExternalId(), externalSystemIdDTO.getInternalId(), e);
                         return ItemSyncResultJson.createDeactivateErrorItem(
                             externalSystemIdDTO,
                             Lehrperson.class,
                             e);
                     }
-                }, concurrentEscadaExecutor))
+                }, concurrentExecutor))
             .toList();
 
         List<ItemSyncResultJson<Lehrperson>> resultDtos = futures.stream()
@@ -161,8 +167,8 @@ public class LehrpersonExternalSyncService {
             .toList();
 
         LOG.info(
-            "ESCADA: Finished deactivating Lehrpersonen, took {}ms",
-            stopwatch.getTime(TimeUnit.MILLISECONDS));
+            "{}: Finished deactivating Lehrpersonen, took {}ms",
+            importTyp, stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 }

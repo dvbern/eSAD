@@ -16,59 +16,57 @@
  */
 
 import {NonNullableFormBuilder, Validators} from '@angular/forms';
-import {ArztSaveJson, Fachrichtung, HpvTeilnahme, Organisation} from '@dvb/data-access-backend';
+import {ArztSaveJson, Fachrichtung, HpvTeilnahme, Rechtsform} from '@dvb/data-access-backend';
 import {AdresseForm, globalConstants} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
 import {ensurePropsFlat, Nullish, requireFilledIn, requireValue, trimToUndefined} from '@dvb/util-shared';
 
 type Config = {
-    fb: NonNullableFormBuilder;
-    adresseForm: AdresseForm;
+  fb: NonNullableFormBuilder;
+  adresseForm: AdresseForm;
 };
 
 function makeForm(config: Config) {
-    const fb = config.fb;
-    const maxLength = AppValidators.dbMaxLength();
-
-    const group = fb.group({
-        anrede: fb.control<string | Nullish>(undefined, [maxLength]),
-        fachrichtung: fb.control<Fachrichtung | Nullish>(undefined, [Validators.required]),
-        organisation: fb.control<Organisation | Nullish>(undefined, [Validators.required]),
-        vorname: fb.control<string | Nullish>(undefined, [maxLength]),
-        name: fb.control<string | Nullish>(undefined, [Validators.required, maxLength]),
-        adresse: config.adresseForm.group,
-        email: fb.control<string | Nullish>(undefined, [AppValidators.emailValidator(), maxLength]),
-        telefon: fb.control<string | Nullish>(undefined, [AppValidators.phoneValidator(), maxLength]),
-        bemerkungen: fb.control<string | Nullish>(undefined, [maxLength]),
-        hpvTeilnahme: fb.control<HpvTeilnahme | Nullish>(undefined, [Validators.required]),
-        version: fb.control<number | Nullish>({value: undefined, disabled: true}),
-    });
-    return group;
+  const fb = config.fb;
+  const maxLength = AppValidators.dbMaxLength();
+  return fb.group({
+    anrede: fb.control<string | Nullish>(undefined, [maxLength]),
+    fachrichtung: fb.control<Fachrichtung | Nullish>(undefined, [Validators.required]),
+    rechtsform: fb.control<Rechtsform | Nullish>(undefined, [Validators.required]),
+    vorname: fb.control<string | Nullish>(undefined, [maxLength]),
+    name: fb.control<string | Nullish>(undefined, [Validators.required, maxLength]),
+    adresse: config.adresseForm.group,
+    email: fb.control<string | Nullish>(undefined, [AppValidators.emailValidator(), maxLength]),
+    telefon: fb.control<string | Nullish>(undefined, [AppValidators.phoneValidator(), maxLength]),
+    bemerkungen: fb.control<string | Nullish>(undefined, [maxLength]),
+    hpvTeilnahme: fb.control<HpvTeilnahme | Nullish>(undefined, [Validators.required]),
+    version: fb.control<number | Nullish>({value: undefined, disabled: true}),
+  });
 }
 
 export class ArztDetailForm extends BaseForm<ReturnType<typeof makeForm>, ArztSaveJson> {
-    readonly adresseForm: AdresseForm;
+  readonly adresseForm: AdresseForm;
 
-    constructor(config: Config) {
-        super(() => makeForm(config));
-        this.adresseForm = config.adresseForm;
-    }
+  constructor(config: Config) {
+    super(() => makeForm(config));
+    this.adresseForm = config.adresseForm;
+  }
 
-    override valueOnValid(): ArztSaveJson {
-        const value = requireValue(this.group.getRawValue());
+  override valueOnValid(): ArztSaveJson {
+    const value = requireValue(this.group.getRawValue());
 
-        return ensurePropsFlat<ArztSaveJson>({
-            anrede: trimToUndefined(value.anrede),
-            name: requireFilledIn(value.name),
-            vorname: trimToUndefined(value.vorname),
-            email: trimToUndefined(value.email),
-            telefon: trimToUndefined(value.telefon),
-            bemerkungen: trimToUndefined(value.bemerkungen),
-            hpvTeilnahme: requireFilledIn(value.hpvTeilnahme),
-            fachrichtung: requireFilledIn(value.fachrichtung),
-            organisation: requireFilledIn(value.organisation),
-            adresse: this.adresseForm.valueOnValid(),
-            version: value.version ?? globalConstants.entityPrePersistVersion,
-        });
-    }
+    return ensurePropsFlat<ArztSaveJson>({
+      anrede: trimToUndefined(value.anrede),
+      name: requireFilledIn(value.name),
+      vorname: trimToUndefined(value.vorname),
+      email: trimToUndefined(value.email),
+      telefon: trimToUndefined(value.telefon),
+      bemerkungen: trimToUndefined(value.bemerkungen),
+      hpvTeilnahme: requireFilledIn(value.hpvTeilnahme),
+      fachrichtung: requireFilledIn(value.fachrichtung),
+      rechtsform: requireFilledIn(value.rechtsform),
+      adresse: this.adresseForm.valueOnValid(),
+      version: value.version ?? globalConstants.entityPrePersistVersion,
+    });
+  }
 }

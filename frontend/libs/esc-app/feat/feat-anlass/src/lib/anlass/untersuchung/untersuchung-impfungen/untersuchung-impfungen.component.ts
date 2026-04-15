@@ -17,6 +17,9 @@ import { UntersuchungImpfungenHeaderComponent } from './untersuchung-impfungen-h
 import { UntersuchungImpfungenInternListComponent } from './untersuchung-impfungen-intern-list/untersuchung-impfungen-intern-list.component';
 import { UntersuchungImpfungenMassnahmenComponent } from './untersuchung-impfungen-massnahmen/untersuchung-impfungen-massnahmen.component';
 import { UntersuchungImpfungenStore } from './untersuchung-impfungen.store';
+import {
+  UntersuchungImpfungenDataMinimalComponent
+} from "./untersuchung-impfungen-data-minimal/untersuchung-impfungen-data-minimal.component";
 
 @Component({
   selector: 'feat-untersuchung-impfungen',
@@ -34,6 +37,7 @@ import { UntersuchungImpfungenStore } from './untersuchung-impfungen.store';
     UntersuchungImpfungenChecklistComponent,
     UntersuchungImpfungenMassnahmenComponent,
     LayoutTwoColumnsComponent,
+    UntersuchungImpfungenDataMinimalComponent
   ],
 })
 export class UntersuchungImpfungenComponent implements DirtyMarker {
@@ -41,6 +45,7 @@ export class UntersuchungImpfungenComponent implements DirtyMarker {
   impfstatusComponent = viewChild(UntersuchungImpfstatusComponent);
   impfChecklistComponent = viewChild(UntersuchungImpfungenChecklistComponent);
   impfMassnahmenComponent = viewChild(UntersuchungImpfungenMassnahmenComponent);
+  impfungenDataMinimalComponent = viewChild(UntersuchungImpfungenDataMinimalComponent);
 
   readonly anlassStore = inject(AnlassStore);
   readonly untersuchungStore = inject(UntersuchungStore);
@@ -67,6 +72,7 @@ export class UntersuchungImpfungenComponent implements DirtyMarker {
       this.doppelkontrolleComponent()?.form.isDirty() ||
       this.impfChecklistComponent()?.form.isDirty() ||
       this.impfMassnahmenComponent()?.form.isDirty() ||
+      this.impfungenDataMinimalComponent()?.isDirty() ||
       this.untersuchungImpfungenStore.loader.isLoading()
     );
   }

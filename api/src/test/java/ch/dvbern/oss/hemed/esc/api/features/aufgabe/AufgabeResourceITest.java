@@ -1,5 +1,11 @@
 package ch.dvbern.oss.hemed.esc.api.features.aufgabe;
 
+import java.io.File;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.UUID;
+
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -36,11 +42,6 @@ import io.restassured.response.ResponseBody;
 import io.restassured.response.ResponseOptions;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import java.io.File;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -337,11 +338,11 @@ class AufgabeResourceITest extends AbstractITest {
         Assertions.assertThat(result.getId()).isNotNull();
         Assertions.assertThat(result.getData().getTitel()).isEqualTo("Meine Aufgabe");
         Assertions.assertThat(result.getData().getEmpfaenger().getId()).isEqualTo(defaultEmpfaenger.getId().getId());
-        Assertions.assertThat(result.getData().getUserErfasst().getId()).isNotEqualTo(defaultUserErfasst.getId().getId());
+        Assertions.assertThat(result.getData().getUserErfasst().getId())
+            .isNotEqualTo(defaultUserErfasst.getId().getId());
         Assertions.assertThat(result.getData().getUserErfasst().getId()).isEqualTo(actualUserErfasst.getId().getId());
         Assertions.assertThat(result.getData().getFaelligBis()).isEqualTo(faelligBis);
     }
-
 
     @Test
     @TestAsAdminBS
@@ -380,7 +381,7 @@ class AufgabeResourceITest extends AbstractITest {
 
         assertThat(validationError.getViolations()).hasSize(1);
         assertThat(validationError.getViolations().getFirst().getKey())
-            .isEqualTo("CannotCeateEntityForInactiveKind");
+            .isEqualTo("CannotCreateEntityForInactiveKind");
         assertThat(validationError.getViolations().getFirst().getMessage())
             .isEqualTo(expectedValidationErrorMessage);
     }
@@ -505,15 +506,15 @@ class AufgabeResourceITest extends AbstractITest {
             existingAufgabe.getId());
 
         // ACT & ASSERT
-        AppValidationErrorJsonSpec validationError =  api
-                .aufgabeResourceUpdateAufgabe()
-                .aufgabeIdPath(existingAufgabe.getId().getId())
-                .body(updatedAufgabeJson.getData())
-                .execute(ResponseBody::prettyPeek)
-                .then()
-                .assertThat()
-                .statusCode(Status.BAD_REQUEST.getStatusCode())
-                .extract().as(AppValidationErrorJsonSpec.class);
+        AppValidationErrorJsonSpec validationError = api
+            .aufgabeResourceUpdateAufgabe()
+            .aufgabeIdPath(existingAufgabe.getId().getId())
+            .body(updatedAufgabeJson.getData())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract().as(AppValidationErrorJsonSpec.class);
 
         assertThat(validationError.getViolations()).hasSize(1);
         assertThat(validationError.getViolations().getFirst().getKey())

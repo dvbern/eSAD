@@ -23,7 +23,7 @@ import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Fachrichtung;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.HpvTeilnahme;
-import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Organisation;
+import ch.dvbern.oss.hemed.esc.api.features.arzt.types.Rechtsform;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.person.AdresseJson;
 import jakarta.validation.Valid;
@@ -51,7 +51,7 @@ public class ArztSaveJson implements SaveJsonWithOptimisticLocking {
     @NotNull
     @NonNull
     @Schema(required = true)
-    Organisation organisation;
+    Rechtsform rechtsform;
 
     @Nullable
     @Schema(required = false)

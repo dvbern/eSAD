@@ -21,6 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import static ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus.isAktiv;
+import static ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus.isInaktiv;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -119,7 +122,9 @@ public class SchuleExternalSyncHelperService {
 
     @NonNull
     @Transactional(TxType.REQUIRES_NEW)
-    public ItemSyncResultJson<Schule> addNewSchule(@NonNull SchuleExternal schuleExternalToAdd, @NonNull ImportTyp importTyp) {
+    public ItemSyncResultJson<Schule> addNewSchule(
+        @NonNull SchuleExternal schuleExternalToAdd,
+        @NonNull ImportTyp importTyp) {
         Optional<Schule> preexistingSchuleOpt = findPreexistingSchule(schuleExternalToAdd);
         Schule internalSchuleToStore = preexistingSchuleOpt
             .map(existingSchule -> {
@@ -147,7 +152,7 @@ public class SchuleExternalSyncHelperService {
             internalSchuleToStore.getSchulhaus());
         LOG.info(
             "{}: Schule {} added{},  internalId: '{}', externalId: '{}'",
-            importTyp.toString().toUpperCase(),
+            importTyp,
             result.getFriendlyName(),
             preexistingSchuleOpt.isEmpty() ? "" : " (preexisting)",
             result.getInternalId(),
@@ -157,10 +162,10 @@ public class SchuleExternalSyncHelperService {
     }
 
     private static void ensureSchuleAktivStatus(Schule schuleUpdated, ImportTyp importTyp) {
-        if (schuleUpdated.getSchuleAktivStatus() == EntityAktivStatus.INAKTIV) {
+        if (isInaktiv(schuleUpdated.getSchuleAktivStatus())) {
             LOG.info(
                 "{}: Schule with UUID {} and ExternalID {} was INAKTIV, resetting to AKTIV",
-                importTyp.toString().toUpperCase(),
+                importTyp,
                 schuleUpdated.getId().getUUID(),
                 schuleUpdated.getExternalSystemIdOrNull());
             schuleUpdated.setSchuleAktivStatus(EntityAktivStatus.AKTIV);
@@ -188,12 +193,12 @@ public class SchuleExternalSyncHelperService {
             schule.disableOptimisticLockingCheck();
         }
         schuleExternalRepo.remove(schuleExternalToDelete.getId());
-        if (schule.getSchuleAktivStatus() == EntityAktivStatus.AKTIV) {
+        if (isAktiv(schule.getSchuleAktivStatus())) {
             schule.setSchuleAktivStatus(EntityAktivStatus.INAKTIV);
             schuleService.persist(schule);
             LOG.info(
                 "{}: Deactivated Schule id='{}', name='{}', externalId='{}'",
-                importTyp.toString().toUpperCase(),
+                importTyp,
                 schule.getId(),
                 schule.getSchulhaus(),
                 schule.getExternalSystemIdOrNull()
@@ -204,7 +209,7 @@ public class SchuleExternalSyncHelperService {
             ItemSyncResultJson.createDeactivateOkItem(externalSystemIdDTO, Schule.class, schule.getSchulhaus());
         LOG.info(
             "{}: Schule {} deactivated, internalId: '{}', externalId: '{}'",
-            importTyp.toString().toUpperCase(),
+            importTyp,
             result.getFriendlyName(),
             result.getInternalId(),
             result.getExternalId()

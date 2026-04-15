@@ -27,6 +27,9 @@ import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import static ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus.isAktiv;
+import static ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus.isInaktiv;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -69,6 +72,10 @@ public class KlasseExternalSyncHelperService {
         @Nullable String klasseProgrammjahr,
         @NonNull ImportTyp importTyp) {
         if (klasseStufe == null || klasseProgrammjahr == null) {
+            // Pupil import kann auch Klassen ohne Stufe/Programmjahr haben -> ANDERE
+            if (importTyp == ImportTyp.PUPIL) {
+                return Klassenstufe.ANDERE;
+            }
             throw new IllegalArgumentException("klasseStufe and klasseProgrammjahr must not be null");
         }
         int programmjahr = Integer.parseInt(klasseProgrammjahr);
@@ -120,6 +127,8 @@ public class KlasseExternalSyncHelperService {
         @NonNull KlasseExternal remoteKlasseExternal,
         @NonNull ImportTyp importTyp
     ) {
+        // https://intra.dvbern.ch/spaces/HEM/pages/284263663/Zust%C3%A4ndigkeiten+Archivierung
+        // Change Zustaendigkeiten: Fall 10: Update Klasse aus externer Schnittstelle
         Klasse existingKlasse = klasseService.getById(ID.of(idDTO.getInternalId(), Klasse.class));
         KlasseExternal klasseExternalToUpdate = klasseExternalRepo.getExternalKlasseForKlasse(existingKlasse.getId());
 
@@ -153,6 +162,8 @@ public class KlasseExternalSyncHelperService {
         @NonNull KlasseExternal klasseExternalToAdd,
         @NonNull ImportTyp importTyp
     ) {
+        // https://intra.dvbern.ch/spaces/HEM/pages/284263663/Zust%C3%A4ndigkeiten+Archivierung
+        // Change Zustaendigkeiten: Fall 10: Insert Klasse aus externer Schnittstelle
         Schule schuleToConnect = getSchuleByExternalIdOrDummy(klasseExternalToAdd, importTyp);
         Optional<Klasse> preexistingKlasseOpt = findPreexistingKlasse(klasseExternalToAdd);
         Klasse internalKlasseToStore = preexistingKlasseOpt
@@ -183,7 +194,7 @@ public class KlasseExternalSyncHelperService {
         );
         LOG.info(
             "{}: Klasse {} added{}, internalId: '{}', externalId: '{}'",
-            importTyp.toString().toUpperCase(),
+            importTyp,
             result.getFriendlyName(),
             preexistingKlasseOpt.isEmpty() ? "" : " (preexisting)",
             result.getInternalId(),
@@ -196,10 +207,10 @@ public class KlasseExternalSyncHelperService {
         @NonNull Klasse updatedKlasse,
         @NonNull ImportTyp importTyp
     ) {
-        if (updatedKlasse.getKlasseAktivStatus() == EntityAktivStatus.INAKTIV) {
+        if (isInaktiv(updatedKlasse.getKlasseAktivStatus())) {
             LOG.info(
                 "{}: Klasse with UUID {} and ExternalID {} was INAKTIV, resetting to AKTIV",
-                importTyp.toString().toUpperCase(),
+                importTyp,
                 updatedKlasse.getId().getUUID(),
                 updatedKlasse.getExternalSystemIdOrNull());
             updatedKlasse.setKlasseAktivStatus(EntityAktivStatus.AKTIV);
@@ -216,16 +227,16 @@ public class KlasseExternalSyncHelperService {
         Schule schuleToConnect;
         if (StringUtils.isEmpty(escadaSchuleId)) {
             schuleToConnect =
-                schuleService.getDummySchuleForUnassignedEscadaKlassen(klasseExternal.getSchulkreisBezeichnung());
+                schuleService.getDummySchuleForUnassignedKlassenFromImport(klasseExternal.getSchulkreisBezeichnung());
             LOG.warn(
                 "{}: Schule externalId is null for escadaKlasse {}, using dummy Schule {}",
-                importTyp.toString().toUpperCase(),
+                importTyp,
                 klasseExternal.getKlasseBezeichnung(),
                 schuleToConnect.getSchulstandort());
         } else {
             LOG.debug(
                 "{}: Schule externalId id should match an already existing Schule in the system with externalId {}",
-                importTyp.toString().toUpperCase(),
+                importTyp,
                 escadaSchuleId);
             schuleToConnect = schuleService.getByExternalId(escadaSchuleId);
         }
@@ -234,7 +245,9 @@ public class KlasseExternalSyncHelperService {
 
     @NonNull
     @Transactional(TxType.REQUIRES_NEW)
-    public ItemSyncResultJson<Klasse> deactivateRemovedKlasse(@NonNull ExternalSystemIdDTO externalSystemIdDTO, @NonNull ImportTyp importTyp) {
+    public ItemSyncResultJson<Klasse> deactivateRemovedKlasse(
+        @NonNull ExternalSystemIdDTO externalSystemIdDTO,
+        @NonNull ImportTyp importTyp) {
         Klasse klasse = klasseService.getById(ID.of(externalSystemIdDTO.getInternalId(), Klasse.class));
         KlasseExternal klasseExternalToDelete = klasseExternalRepo.getExternalKlasseForKlasse(klasse.getId());
 
@@ -251,12 +264,12 @@ public class KlasseExternalSyncHelperService {
             klasse.disableOptimisticLockingCheck();
         }
         klasseExternalRepo.remove(klasseExternalToDelete.getId());
-        if (klasse.getKlasseAktivStatus() == EntityAktivStatus.AKTIV) {
+        if (isAktiv(klasse.getKlasseAktivStatus())) {
             klasse.setKlasseAktivStatus(EntityAktivStatus.INAKTIV);
             klasseService.persist(klasse);
             LOG.info(
                 "{}: Changed Klasse to klasseAktivStatus=INAKTIV id='{}', name='{}', externalId='{}'",
-                importTyp.toString().toUpperCase(),
+                importTyp,
                 klasse.getId(),
                 klasse.getBezeichnung(),
                 klasse.getExternalSystemIdOrNull()
@@ -270,7 +283,7 @@ public class KlasseExternalSyncHelperService {
         );
         LOG.info(
             "{}: Klasse {} deactivated, internalId: '{}', externalId: '{}'",
-            importTyp.toString().toUpperCase(),
+            importTyp,
             result.getFriendlyName(),
             result.getInternalId(),
             result.getExternalId()

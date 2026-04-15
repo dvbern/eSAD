@@ -46,7 +46,7 @@ import org.eclipse.microprofile.context.ManagedExecutor;
 public class SchuleExternalSyncService {
 
     private final SchuleExternalSyncHelperService schuleExternalSyncHelperService;
-    private final ManagedExecutor concurrentEscadaExecutor;
+    private final ManagedExecutor concurrentExecutor;
 
     // IMPORANT: for the @ManagedExecutorConfig annotation to work, it must be directly on the @Inject.
     // do NOT use private final quarkus magic or you will exhaust all db connections
@@ -54,10 +54,10 @@ public class SchuleExternalSyncService {
     public SchuleExternalSyncService(
         SchuleExternalSyncHelperService schuleExternalSyncHelperService,
         @ManagedExecutorConfig(maxAsync = 9)
-        ManagedExecutor concurrentEscadaExecutor
+        ManagedExecutor concurrentExecutor
     ) {
         this.schuleExternalSyncHelperService = schuleExternalSyncHelperService;
-        this.concurrentEscadaExecutor = concurrentEscadaExecutor;
+        this.concurrentExecutor = concurrentExecutor;
     }
 
     @NonNull
@@ -82,7 +82,7 @@ public class SchuleExternalSyncService {
         @NonNull ImportTyp importTyp
     ) {
         var stopwatch = StopWatch.createStarted();
-        LOG.info("{}: Starting to add {} Schulen", importTyp.toString().toUpperCase(), itemsToPersist.size());
+        LOG.info("{}: Starting to add {} Schulen", importTyp, itemsToPersist.size());
 
         List<CompletableFuture<ItemSyncResultJson<Schule>>> futures = itemsToPersist.stream()
             .map(schuleExternalToAdd -> CompletableFuture.supplyAsync(
@@ -92,7 +92,7 @@ public class SchuleExternalSyncService {
                     } catch (Exception e) {
                         LOG.warn(
                             "{}: Error adding new Schule with externalId: '{}'",
-                            importTyp.toString().toUpperCase(),
+                            importTyp,
                             schuleExternalToAdd.getExternalId(),
                             e);
                         return ItemSyncResultJson.<Schule>createAddErrorItem(
@@ -102,14 +102,14 @@ public class SchuleExternalSyncService {
                                 schuleExternalToAdd.getExternalId()),
                             e);
                     }
-                }, concurrentEscadaExecutor))
+                }, concurrentExecutor))
             .toList();
 
         List<ItemSyncResultJson<Schule>> resultDtos = futures.stream()
             .map(CompletableFuture::join)
             .toList();
 
-        LOG.info("{}: Finished persisting new Schulen, took {}ms", importTyp.toString().toUpperCase(), stopwatch.getTime(TimeUnit.MILLISECONDS));
+        LOG.info("{}: Finished persisting new Schulen, took {}ms", importTyp, stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 
@@ -119,7 +119,7 @@ public class SchuleExternalSyncService {
         @NonNull ImportTyp importTyp
     ) {
         var stopwatch = StopWatch.createStarted();
-        LOG.info("{}: Starting to deactivate {} Schulen", importTyp.toString().toUpperCase(), itemsToDelete.size());
+        LOG.info("{}: Starting to deactivate {} Schulen", importTyp, itemsToDelete.size());
 
         List<CompletableFuture<ItemSyncResultJson<Schule>>> futures = itemsToDelete.stream()
             .map(externalSystemIdDTO -> CompletableFuture.supplyAsync(
@@ -129,18 +129,18 @@ public class SchuleExternalSyncService {
                     } catch (Exception e) {
                         LOG.warn(
                             "{}: Error deactivating Schule with externalId: '{}', internalId: '{}'",
-                            importTyp.toString().toUpperCase(),
+                            importTyp,
                             externalSystemIdDTO.getExternalId(), externalSystemIdDTO.getInternalId(), e);
                         return ItemSyncResultJson.createDeactivateErrorItem(externalSystemIdDTO, Schule.class, e);
                     }
-                }, concurrentEscadaExecutor))
+                }, concurrentExecutor))
             .toList();
 
         List<ItemSyncResultJson<Schule>> resultDtos = futures.stream()
             .map(CompletableFuture::join)
             .toList();
 
-        LOG.info("{}: Finished deactivating Schulen, took {}ms", importTyp.toString().toUpperCase(), stopwatch.getTime(TimeUnit.MILLISECONDS));
+        LOG.info("{}: Finished deactivating Schulen, took {}ms", importTyp, stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 
@@ -150,7 +150,7 @@ public class SchuleExternalSyncService {
         @NonNull ImportTyp importTyp
     ) {
         var stopwatch = StopWatch.createStarted();
-        LOG.info("{}: Starting to update {} Schulen", importTyp.toString().toUpperCase(), itemsToSync.size());
+        LOG.info("{}: Starting to update {} Schulen", importTyp, itemsToSync.size());
 
         List<CompletableFuture<ItemSyncResultJson<Schule>>> futures = itemsToSync.entrySet().stream()
             .map(entry -> CompletableFuture.supplyAsync(
@@ -161,21 +161,21 @@ public class SchuleExternalSyncService {
                     } catch (Exception e) {
                         LOG.warn(
                             "{}: Error updating Schule with externalId: '{}', internalId: '{}'",
-                            importTyp.toString().toUpperCase(),
+                            importTyp,
                             idDTO.getExternalId(),
                             idDTO.getInternalId(),
                             e);
                         return ItemSyncResultJson.createUpdateErrorItem(idDTO, Schule.class, e);
                     }
                 },
-                concurrentEscadaExecutor))
+                concurrentExecutor))
             .toList();
 
         List<ItemSyncResultJson<Schule>> resultDtos = futures.stream()
             .map(CompletableFuture::join)
             .toList();
 
-        LOG.info("{}: Finished updating Schulen, took {}ms", importTyp.toString().toUpperCase(), stopwatch.getTime(TimeUnit.MILLISECONDS));
+        LOG.info("{}: Finished updating Schulen, took {}ms", importTyp, stopwatch.getTime(TimeUnit.MILLISECONDS));
         return resultDtos;
     }
 }

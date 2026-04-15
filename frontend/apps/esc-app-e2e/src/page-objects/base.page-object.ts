@@ -27,12 +27,12 @@ export abstract class BasePageObject {
   }
 
   async goto() {
-    this.page.goto(this.path);
+    await this.page.goto(this.path, { waitUntil: 'domcontentloaded', timeout: 20000 });
     await this.isCurrentPage();
   }
 
   async isCurrentPage() {
-    await this.page.waitForURL((url) => matchUrl(url, this.path));
-    await expect(this.page.locator(this.selector)).toBeVisible();
+    await this.page.waitForURL((url) => matchUrl(url, this.path), { waitUntil: 'domcontentloaded', timeout: 20000});
+    await expect(this.page.locator(this.selector).first()).toBeVisible({ timeout: 20000 });
   }
 }

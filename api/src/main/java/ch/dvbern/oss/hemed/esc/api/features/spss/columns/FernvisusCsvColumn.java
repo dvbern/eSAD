@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -13,7 +14,8 @@ public class FernvisusCsvColumn extends AbstractCsvColumn {
     public FernvisusCsvColumn(
         @NonNull CsvColumnConfig config,
         @Nullable String overrideHeader,
-        @NonNull DistanzSehenResultat resultat) {
+        @NonNull DistanzSehenResultat resultat
+    ) {
         super(config, overrideHeader);
         this.resultat = resultat;
     }
@@ -24,10 +26,12 @@ public class FernvisusCsvColumn extends AbstractCsvColumn {
         return ExtractorForCsvUtil.extractUntersuchungSehen(
             einladung,
             sehen -> {
+                boolean resultatBool = ValueEnhancedUtil.getEnumSetOrEmpty(sehen.getFernvisus(), DistanzSehenResultat.class)
+                    .contains(this.resultat);
                 if (config.forSpssReport()) {
-                    return sehen.getFernvisus().contains(resultat) ? "1" : "";
+                    return resultatBool ? "1" : "";
                 }
-                return PrintUtil.trimToPlaceholder(sehen.getFernvisus().contains(resultat), config.tl());
+                return PrintUtil.trimToPlaceholder(resultatBool, config.tl());
             }
         );
     }

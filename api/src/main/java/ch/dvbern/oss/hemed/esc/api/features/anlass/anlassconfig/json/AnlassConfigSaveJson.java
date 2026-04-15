@@ -26,9 +26,12 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinstand;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Motorik;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.ImpfungenMassnahmenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import jakarta.validation.constraints.NotNull;
@@ -101,7 +104,40 @@ public class AnlassConfigSaveJson {
     @Schema(required = true)
     private RequirementSetting datenBemerkung;
 
+    // Vorabklaerungen
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting vorabklaerungenFragebogenStatus;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting vorabklaerungenEinverstaendnisImpfungen;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting vorabklaerungenChronischeKrankheiten;
+
     // Impfungen
+
+    @NotNull
+    @Schema(required = true)
+    private boolean showImpfungenHeaderImpfausweisUnvollstaendig;
+
+    @NotNull
+    @Schema(required = true)
+    private boolean showImpfungenHeaderImpfausweisNichtVorhanden;
+
+    @NotNull
+    @Schema(required = true)
+    private boolean showImpfungenHeaderImpfausweisZweiPlusEinsSchema;
+
+    @NotNull
+    @Schema(required = true)
+    private boolean showImpfungenHeaderImpfausweisUpload;
 
     @NotNull
     @NonNull
@@ -156,6 +192,11 @@ public class AnlassConfigSaveJson {
     @NotNull
     @NonNull
     @Schema(required = true)
+    private RequirementSetting impfungenMassnahmeBemerkungen;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
     private RequirementSetting checkEinwilligungVorhanden;
 
     @NotNull
@@ -172,6 +213,11 @@ public class AnlassConfigSaveJson {
     @NonNull
     @Schema(required = true)
     private RequirementSetting untersuchungImpfungEmpfehlung;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private List<ImpfungenMassnahmenEmpfehlung> untersuchungImpfungEmpfehlungValues;
 
     @NotNull
     @NonNull
@@ -193,12 +239,59 @@ public class AnlassConfigSaveJson {
     @Schema(required = true)
     private List<Krankheit> untersuchungImpfungKrankheitenRechtsValues;
 
+    // ImpfungenDataMinimal
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting impfungenDataMinimalImpfausweisGeprueft;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting impfungenDataMinimalImmunsuppression;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting impfungenDataMinimalMasernImpfstatus;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting impfungenDataMinimalMasernAnzahlImpfungen;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting impfungenDataMinimalHpvImpfstatus;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting impfungenDataMinimalHpvAnzahlImpfungen;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting impfungenDataMinimalImpfempfehlung;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting impfungenDataMinimalImpfungDurchgefuehrt;
+
     // Sehen
 
     @NotNull
     @NonNull
     @Schema(required = true)
     private RequirementSetting sehenBrilleLinsen;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private List<BrilleLinsenResultat> sehenBrilleLinsenValues;
 
     @NotNull
     @NonNull
@@ -218,12 +311,32 @@ public class AnlassConfigSaveJson {
     @NotNull
     @NonNull
     @Schema(required = true)
+    private RequirementSetting sehenFernvisusAugeEinzeln;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
     private RequirementSetting sehenStereoTest;
 
     @NotNull
     @NonNull
     @Schema(required = true)
     private RequirementSetting sehenStrabismus;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private List<StrabismusResultat> sehenStrabismusValues;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting sehenStrabismusAuspraegung;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting sehenStrabismusAuftreten;
 
     @NotNull
     @NonNull
@@ -285,6 +398,11 @@ public class AnlassConfigSaveJson {
     @NotNull
     @NonNull
     @Schema(required = true)
+    private RequirementSetting hoerenAudiogrammSimpel;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
     private RequirementSetting hoerenAudiogrammBeurteilung;
 
     @NotNull
@@ -301,6 +419,11 @@ public class AnlassConfigSaveJson {
     @NonNull
     @Schema(required = true)
     private RequirementSetting hoerenAudiogrammBemerkungen;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting hoerenHoerhilfe;
 
     // Hoeren - Otoskopie
 
@@ -599,6 +722,113 @@ public class AnlassConfigSaveJson {
     @NonNull
     @Schema(required = true)
     private RequirementSetting untersuchungBemerkungen;
+
+    // Untersuchung Sprache
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting untersuchungSpracheNachsprechen;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting untersuchungSpracheWortschatz;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting untersuchungSpracheSprachverstaendnis;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting untersuchungSpracheBemerkungen;
+
+    // Bewegungsapparat
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting bewegungsapparatSkoliose;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting bewegungsapparatHaltungsschwaeche;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting bewegungsapparatVerkuerzungHamstringmuskulatur;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting bewegungsapparatBemerkung;
+
+    // Schulrelevante Beeinträchtigung
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting untersuchungBeeintraechtigungFreiesGehen;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting untersuchungBeeintraechtigungOhneStuetzradVelofahren;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting untersuchungBeeintraechtigungGrafomotorik;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting untersuchungBeeintraechtigungFeinmotorik;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting untersuchungBeeintraechtigungGrobmotorik;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting untersuchungBeeintraechtigungGleichgewicht;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting untersuchungBeeintraechtigungBemerkung;
+
+    // Abschluss
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting abschlussUeberweisungErfolgt;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting abschlussAerztlicheValidierungErforderlich;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting abschlussBeratungDurchgefuehrt;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting abschlussBeurteilungEmpfohleneMassnahmen;
+
+    @NotNull
+    @Schema(required = true)
+    private boolean showCardAbschlussSignatur;
 
     // Massnahmen
 

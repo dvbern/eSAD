@@ -12,7 +12,8 @@
             [tooltip]="'global.tooltip.anlass.add' | transloco"
             [icon]="'neu'"
             [routerLink]="'/' + Path.ANLASS + '/' + Path.CREATE"
-            [queryParams]="{'anlassPartial': getPrefilledAnlass(), 'kindId': dossierStore.kindId()}">
+            [queryParams]="{'anlassPartial': getPrefilledAnlass(), 'kindId': dossierStore.kindId()}"
+            data-testid="button-add-anlass">
     </button>
   }
 

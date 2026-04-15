@@ -57,6 +57,11 @@ public class DocumentQueue extends AbstractEntity<DocumentQueue> {
 
     @NotNull
     @NonNull
+    @Column(nullable = false, length = DbConst.DB_DEFAULT_MAX_LENGTH)
+    private String displayName;
+
+    @NotNull
+    @NonNull
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
     private DocumentQueueStatus status = DocumentQueueStatus.NEW;

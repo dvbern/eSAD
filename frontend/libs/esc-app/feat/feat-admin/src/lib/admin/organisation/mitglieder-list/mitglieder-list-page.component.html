@@ -1,0 +1,23 @@
+<feat-page [heading]="'organisation.mitglieder-list.page.title' | transloco : {name: organisationStore.selectedEntity()?.verantwortlicherArztFullname}"
+           [backLink]="{label: 'global.back' | transloco, routerLink: getRouterBackLink()}">
+
+  <div class="pb-3">
+    <svui-status-text [icon]="'information'"
+                      class=""
+                      statusColor="info">{{ 'organisation.mitglieder-list.helpText'|transloco }}
+    </svui-status-text>
+  </div>
+
+  @if (canCreateMitglieder()) {
+    <svui-page-header-add-button [addRouterLink]="Path.CREATE"/>
+  }
+
+  <svui-card [innerSpacing]="'topBottom'">
+    <feat-organisation-mitglieder-list
+      [itemTable]="itemTable"
+      [tableFilterForm]="tableFilterForm"
+      [isLoading]="benutzerListStore.loader.isLoading()"
+    ></feat-organisation-mitglieder-list>
+  </svui-card>
+
+</feat-page>

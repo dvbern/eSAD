@@ -25,6 +25,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import io.quarkus.liquibase.LiquibaseDataSource;
 import io.quarkus.liquibase.LiquibaseFactory;
+import jakarta.enterprise.inject.Instance;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import java.util.List;
@@ -32,21 +33,23 @@ import java.util.Optional;
 import liquibase.Liquibase;
 import liquibase.exception.LiquibaseException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.eclipse.microprofile.config.ConfigProvider;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DatabaseService {
 
     @LiquibaseDataSource("bs")
-    public LiquibaseFactory liquibaseFactoryBS;
+    public Instance<LiquibaseFactory>  liquibaseFactoryBS;
 
     @LiquibaseDataSource("win")
-    public LiquibaseFactory liquibaseFactoryWIN;
+    public Instance<LiquibaseFactory>  liquibaseFactoryWIN;
 
     @LiquibaseDataSource("be")
-    public LiquibaseFactory liquibaseFactoryBE;
+    public Instance<LiquibaseFactory> liquibaseFactoryBE;
 
     private final DatabaseInfoRepo databaseInfoRepo;
 
@@ -60,7 +63,7 @@ public class DatabaseService {
      */
     @Transactional(TxType.NOT_SUPPORTED)
     public void resetAndReinitDatabasePreservingHibernateSequenceValue(@NonNull TenantEnum tenant) {
-
+        LOG.info("DB-RESET: Resetting and reinitializing database for tenant: {}", tenant);
         LiquibaseFactory liquibaseFactory = createLiquibaseFactory(tenant);
         try (Liquibase ourSingleLiquibase = liquibaseFactory.createLiquibase()) {
 
@@ -71,6 +74,7 @@ public class DatabaseService {
             // sequence is incremented by 50 so we skip a block of 50 values
             long saveNextValueForHibernateRevInfoSeq = nextHibernateRevInfoSeqValue + 50;
             databaseInfoRepo.setNextHibernateRevInfoSeqValue(saveNextValueForHibernateRevInfoSeq);
+            LOG.info("DB-RESET: FINISHED Resetting and reinitializing database for tenant: {}", tenant);
         } catch (Exception e) {
             throw new AppFailureException(AppFailureMessage.internalError("Could not init database"), e);
         }
@@ -102,13 +106,13 @@ public class DatabaseService {
     private LiquibaseFactory createLiquibaseFactory(@NonNull TenantEnum tenant) {
         tenantProducer.setCurrentTenant(tenant);
         if (TenantEnum.BS == tenant) {
-            return liquibaseFactoryBS;
+            return liquibaseFactoryBS.get();
         }
         if (TenantEnum.WIN == tenant) {
-            return liquibaseFactoryWIN;
+            return liquibaseFactoryWIN.get();
         }
         if (TenantEnum.BE == tenant) {
-            return liquibaseFactoryBE;
+            return liquibaseFactoryBE.get();
         }
         throw new AppFailureException(AppFailureMessage.internalError("Unknown tenant: " + tenant));
 

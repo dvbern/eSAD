@@ -13,6 +13,6 @@ export async function loginAsUser(page: Page, user: { name?: string, password?: 
   await getButtonLogin(page).click();
   // Assert the title
   await expect(page).toHaveTitle('eSchool');
-  await expect(page.getByRole('heading', {name: 'Kinder'})).toBeVisible({timeout: 30000});
+  await expect(page.getByRole('heading', {name: 'Zuletzt geöffnete Kinder'})).toBeVisible({timeout: 30000});
 }
 

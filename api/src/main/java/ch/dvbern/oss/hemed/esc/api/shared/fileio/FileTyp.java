@@ -36,11 +36,12 @@ public enum FileTyp {
     BRIEFVORLAGE("briefvorlage"),
     ANMELDUNG_BESTAETIGUNG("anmeldung-bestaetigung"),
 
-    // Types to test DocumentQueue
+    // Types to test DocumentQueue,
     PLAYGROUND("playground"),
     PLAYGROUND_ERROR("playground_error"),
     SPSS_REPORT("spss"),
-    CSV_REPORT("csv");
+    CSV_REPORT("csv"),
+    MASSENBRIEF_ZIP("massenbrief-zip");
 
     @NonNull
     private final String prefix;

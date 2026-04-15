@@ -2,10 +2,13 @@ import {ChangeDetectionStrategy, Component, DestroyRef, inject} from "@angular/c
 import {
   ButtonComponent,
   CardComponent,
-  CheckboxDirective, FormControlComponent, FormErrorMessageComponent,
+  CheckboxDirective,
+  FormControlComponent,
+  FormErrorMessageComponent,
   FormLayoutComponent,
   HeadingDirective,
-  StandaloneControlComponent, TextInputDirective
+  StandaloneControlComponent,
+  TextInputDirective
 } from "@dvb/ui-components";
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {TranslocoPipe} from "@jsverse/transloco";
@@ -52,7 +55,7 @@ export class IndividuelleReportsFormComponent {
         documentQueueCsvListSaveJson,
         onSuccess: () => {
           this.form.reset();
-          this.documentQueueStore.loadDocumentQueueList();
+          this.documentQueueStore.loadDocumentQueueListForCurrentBenutzer();
         },
       });
     }

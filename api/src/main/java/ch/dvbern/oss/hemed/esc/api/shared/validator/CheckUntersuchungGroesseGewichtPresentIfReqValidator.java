@@ -22,6 +22,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.Perzenti
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -35,37 +36,31 @@ public class CheckUntersuchungGroesseGewichtPresentIfReqValidator
     })
     public boolean isEntityValid(@NonNull UntersuchungGroesseGewicht entity) {
         AnlassConfig anlassConfig = entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
-        if (anlassConfig.getGroesseGewichtGroessePerzentile().isRequired()) {
-            if (entity.getGroessePerzentile() == null) {
-                return false;
-            }
+        if (ValueEnhancedUtil.isRequiredAndNull(anlassConfig.getGroesseGewichtGroessePerzentile(), entity.getGroessePerzentile(), PerzentileGroesse.class)) {
+            return false;
         }
-        if (anlassConfig.getGroesseGewichtGewichtPerzentile().isRequired()) {
-            if (entity.getGewichtPerzentile() == null) {
-                return false;
-            }
+        if (ValueEnhancedUtil.isRequiredAndNull(anlassConfig.getGroesseGewichtGewichtPerzentile(), entity.getGewichtPerzentile(), PerzentileGewicht.class)) {
+            return false;
         }
-        if (anlassConfig.getGroesseGewichtBmiPerzentile().isRequired()) {
-            if (entity.getBmiPerzentile() == null) {
-                return false;
-            }
+        if (ValueEnhancedUtil.isRequiredAndNull(anlassConfig.getGroesseGewichtBmiPerzentile(), entity.getBmiPerzentile(), PerzentileBmi.class)) {
+            return false;
         }
         if (anlassConfig.getGroesseGewichtGroesse().isRequired()) {
-            if (entity.getGroessePerzentile() != PerzentileGroesse.NICHT_GEPRUEFT) {
+            if (ValueEnhancedUtil.getEnumValueOrNull(entity.getGroessePerzentile(), PerzentileGroesse.class) != PerzentileGroesse.NICHT_GEPRUEFT) {
                 if (entity.getGroesse() == null) {
                     return false;
                 }
             }
         }
         if (anlassConfig.getGroesseGewichtGewicht().isRequired()) {
-            if (entity.getGewichtPerzentile() != PerzentileGewicht.NICHT_GEPRUEFT) {
+            if (ValueEnhancedUtil.getEnumValueOrNull(entity.getGewichtPerzentile(), PerzentileGewicht.class) != PerzentileGewicht.NICHT_GEPRUEFT) {
                 if (entity.getGewicht() == null) {
                     return false;
                 }
             }
         }
         if (anlassConfig.getGroesseGewichtBmi().isRequired()) {
-            if (entity.getBmiPerzentile() != PerzentileBmi.NICHT_GEPRUEFT) {
+            if (ValueEnhancedUtil.getEnumValueOrNull(entity.getBmiPerzentile(), PerzentileBmi.class) != PerzentileBmi.NICHT_GEPRUEFT) {
                 if (entity.getBmi() == null) {
                     return false;
                 }

@@ -1,5 +1,7 @@
 <feat-page [heading]="pageTitle | transloco: {nameKind: kind()?.vorname + ' ' + kind()?.name }"
-           [showNav]="false">
+           [showNav]="false"
+           [showFooter]="false"
+  >
 
   <feat-notizen-mobile-upload
     [existingNotiz]="notizenListStore.selectedEntity()"

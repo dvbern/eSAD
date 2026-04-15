@@ -1,0 +1,69 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="gema (generated)" id="1772110454556-1">
+        <modifyDataType columnName="feinmotorik" newDataType="varchar(255)" tableName="untersuchungschulrelevantebeeintraechtigung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-2">
+        <modifyDataType columnName="feinmotorik" newDataType="varchar(255)" tableName="untersuchungschulrelevantebeeintraechtigung_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-3">
+        <modifyDataType columnName="freiesgehen" newDataType="varchar(255)" tableName="untersuchungschulrelevantebeeintraechtigung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-4">
+        <modifyDataType columnName="freiesgehen" newDataType="varchar(255)" tableName="untersuchungschulrelevantebeeintraechtigung_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-5">
+        <modifyDataType columnName="gleichgewichteinbeinstand" newDataType="varchar(255)" tableName="untersuchungschulrelevantebeeintraechtigung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-6">
+        <modifyDataType columnName="gleichgewichteinbeinstand" newDataType="varchar(255)" tableName="untersuchungschulrelevantebeeintraechtigung_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-7">
+        <modifyDataType columnName="grafomotorik" newDataType="varchar(255)" tableName="untersuchungschulrelevantebeeintraechtigung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-8">
+        <modifyDataType columnName="grafomotorik" newDataType="varchar(255)" tableName="untersuchungschulrelevantebeeintraechtigung_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-9">
+        <modifyDataType columnName="grobmotorikeinbeinhuepfen" newDataType="varchar(255)" tableName="untersuchungschulrelevantebeeintraechtigung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-10">
+        <modifyDataType columnName="grobmotorikeinbeinhuepfen" newDataType="varchar(255)" tableName="untersuchungschulrelevantebeeintraechtigung_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-11">
+        <modifyDataType columnName="haltungsschwaeche" newDataType="varchar(255)" tableName="untersuchungbewegungsapparat"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-12">
+        <modifyDataType columnName="haltungsschwaeche" newDataType="varchar(255)" tableName="untersuchungbewegungsapparat_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-13">
+        <modifyDataType columnName="ohnestuetzradvelofahren" newDataType="varchar(255)" tableName="untersuchungschulrelevantebeeintraechtigung"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-14">
+        <modifyDataType columnName="ohnestuetzradvelofahren" newDataType="varchar(255)" tableName="untersuchungschulrelevantebeeintraechtigung_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-15">
+        <modifyDataType columnName="skoliose" newDataType="varchar(255)" tableName="untersuchungbewegungsapparat"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-16">
+        <modifyDataType columnName="skoliose" newDataType="varchar(255)" tableName="untersuchungbewegungsapparat_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-17">
+        <modifyDataType columnName="sprachverstaendnis" newDataType="varchar(255)" tableName="untersuchungsprache"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-18">
+        <modifyDataType columnName="sprachverstaendnis" newDataType="varchar(255)" tableName="untersuchungsprache_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-19">
+        <modifyDataType columnName="verkuerzunghamstringmuskulatur" newDataType="varchar(255)" tableName="untersuchungbewegungsapparat"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-20">
+        <modifyDataType columnName="verkuerzunghamstringmuskulatur" newDataType="varchar(255)" tableName="untersuchungbewegungsapparat_aud"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-21">
+        <modifyDataType columnName="wortschatz" newDataType="varchar(255)" tableName="untersuchungsprache"/>
+    </changeSet>
+    <changeSet author="gema (generated)" id="1772110454556-22">
+        <modifyDataType columnName="wortschatz" newDataType="varchar(255)" tableName="untersuchungsprache_aud"/>
+    </changeSet>
+</databaseChangeLog>

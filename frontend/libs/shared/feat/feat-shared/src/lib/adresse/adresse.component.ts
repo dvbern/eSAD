@@ -29,7 +29,8 @@ export class AdresseComponent implements OnDestroy {
 
   form = input.required<AdresseForm>();
   mode = input.required<DetailMode>();
-  isEscadaObject = input.required<boolean>();
+  isExternalObject = input.required<boolean>();
+  externalSchnittstelle = input<string>('');
 
   nationalitaeten = Object.values(Land);
   adresseStore = inject(AdresseStore);

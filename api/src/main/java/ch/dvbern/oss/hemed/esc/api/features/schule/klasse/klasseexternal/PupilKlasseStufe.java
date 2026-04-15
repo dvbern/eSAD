@@ -9,9 +9,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public enum PupilKlasseStufe {
 
     KINDERGARTEN("Kindergarten"),
-    PRIMARSCHULE("Primar"),
-    SEKUNDARSTUFE("SEK"),
-    SEKUNDARSTUFE_II("SEK II");
+    PRIMARSCHULE("Primarstufe"),
+    SEKUNDARSTUFE("Sekundarstufe I"),
+    SEKUNDARSTUFE_II("Sekundarstufe II"),
+    ANDERE("Andere");
 
     private final String klassenStufeValue;
 

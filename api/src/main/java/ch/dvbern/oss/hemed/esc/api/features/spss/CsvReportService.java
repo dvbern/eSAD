@@ -8,6 +8,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatu
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.AbstractCsvColumn;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.CsvColumnConfig;
+import ch.dvbern.oss.hemed.esc.api.features.spss.reports.CsvImpfstoffeReport;
 import ch.dvbern.oss.hemed.esc.api.features.spss.reports.CsvSchuluntersuchungReport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ public class CsvReportService {
 
         return switch (csvReportType) {
             case SCHULUNTERSUCHUNG -> new CsvSchuluntersuchungReport(config).getReport();
+            case IMPFSTOFFE -> new CsvImpfstoffeReport(config).getReport();
         };
     }
 

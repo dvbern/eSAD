@@ -14,7 +14,8 @@ public enum Krankheit {
     ROETELN(true),
     VARIZELLEN(true),
     MENINGOKOKKEN_A_C_W_Y(false),
-    MENINGOKOKKEN_B(false)
+    MENINGOKOKKEN_B(false),
+    HAEMOPHILUS_INFLUENZAE(false),
     ;
 
     private final boolean benoetigtAuffrischung;

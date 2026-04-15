@@ -19,7 +19,9 @@ public class UntersuchungSehenBeurteilungService {
     }
 
     @NonNull
-    public UntersuchungSehenBeurteilung persistWithOptimisticLocking(@NonNull UntersuchungSehenBeurteilung entity, @NonNull Long versionFromFrontend) {
+    public UntersuchungSehenBeurteilung persistWithOptimisticLocking(
+        @NonNull UntersuchungSehenBeurteilung entity,
+        @NonNull Long versionFromFrontend) {
         return sehenRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
     }
 
@@ -28,8 +30,14 @@ public class UntersuchungSehenBeurteilungService {
         return sehenRepo.getById(sehenID);
     }
 
-    public void untersuchungAbschliessen(@NonNull Untersuchung untersuchung) {
-        UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilung.forUntersuchungAbschliessen(untersuchung);
+    public void untersuchungAbschliessen(
+        @NonNull Untersuchung untersuchung,
+        boolean nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+    ) {
+        UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilung.forUntersuchungAbschliessen(
+            untersuchung,
+            nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+        );
         sehen.disableOptimisticLockingCheck();
         persist(sehen);
     }

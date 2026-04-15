@@ -18,8 +18,13 @@
 package ch.dvbern.oss.hemed.esc.api.shared.validator;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammSimpel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenHoerhilfe;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.commons.collections4.CollectionUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -37,12 +42,12 @@ public class CheckUntersuchungHoerenAudiogrammPresentIfReqValidator
         AnlassConfig anlassConfig = hoerenAudiogramm.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
 
         if (anlassConfig.getHoerenAudiogramm().isRequired()
-            && !hoerenAudiogramm.getAudiogrammBeurteilung().contains(AudiogrammBeurteilung.NICHT_GEPRUEFT)
+            && !ValueEnhancedUtil.getEnumSetOrEmpty(hoerenAudiogramm.getAudiogrammBeurteilung(), AudiogrammBeurteilung.class).contains(AudiogrammBeurteilung.NICHT_GEPRUEFT)
             && (hoerenAudiogramm.getAudiogrammRechts() == null || hoerenAudiogramm.getAudiogrammLinks() == null)) {
             return false;
         }
         if ((anlassConfig.getHoerenAudiogramm250Hz().isRequired()
-            && !hoerenAudiogramm.getAudiogrammBeurteilung().contains(AudiogrammBeurteilung.NICHT_GEPRUEFT))
+            && !ValueEnhancedUtil.getEnumSetOrEmpty(hoerenAudiogramm.getAudiogrammBeurteilung(), AudiogrammBeurteilung.class).contains(AudiogrammBeurteilung.NICHT_GEPRUEFT))
             && ((hoerenAudiogramm.getAudiogrammLinks() == null || hoerenAudiogramm.getAudiogrammRechts() == null)
             || (hoerenAudiogramm.getAudiogrammLinks().getDbHz250() == null
             || hoerenAudiogramm.getAudiogrammRechts().getDbHz250() == null))
@@ -50,23 +55,29 @@ public class CheckUntersuchungHoerenAudiogrammPresentIfReqValidator
             return false;
         }
         if ((anlassConfig.getHoerenAudiogramm8000Hz().isRequired()
-            && !hoerenAudiogramm.getAudiogrammBeurteilung().contains(AudiogrammBeurteilung.NICHT_GEPRUEFT))
+            && !ValueEnhancedUtil.getEnumSetOrEmpty(hoerenAudiogramm.getAudiogrammBeurteilung(), AudiogrammBeurteilung.class).contains(AudiogrammBeurteilung.NICHT_GEPRUEFT))
             && ((hoerenAudiogramm.getAudiogrammLinks() == null || hoerenAudiogramm.getAudiogrammRechts() == null)
             || (hoerenAudiogramm.getAudiogrammLinks().getDbHz8000() == null
             || hoerenAudiogramm.getAudiogrammRechts().getDbHz8000() == null))
         ) {
             return false;
         }
-        if (anlassConfig.getHoerenAudiogrammBeurteilung().isRequired() && hoerenAudiogramm.getAudiogrammBeurteilung()
+        if (ValueEnhancedUtil.isRequiredAndNull(anlassConfig.getHoerenAudiogrammSimpel(), hoerenAudiogramm.getAudiogrammSimpel(), AudiogrammSimpel.class)) {
+            return false;
+        }
+        if (ValueEnhancedUtil.isRequiredAndNull(anlassConfig.getHoerenHoerhilfe(), hoerenAudiogramm.getHoerhilfe(), HoerenHoerhilfe.class)) {
+            return false;
+        }
+        if (anlassConfig.getHoerenAudiogrammBeurteilung().isRequired() && ValueEnhancedUtil.getEnumSetOrEmpty(hoerenAudiogramm.getAudiogrammBeurteilung(), AudiogrammBeurteilung.class)
             .isEmpty()) {
             return false;
         }
         if (anlassConfig.getHoerenAudiogrammZusaetzlicheAngaben().isRequired()
-            && hoerenAudiogramm.getZusaetzlicheAngaben()
+            && ValueEnhancedUtil.getEnumSetOrEmpty(hoerenAudiogramm.getZusaetzlicheAngaben(), HoerenZusaetzlicheAngaben.class)
             .isEmpty()) {
             return false;
         }
-        if (anlassConfig.getHoerenAudiogrammEmpfehlung().isRequired() && CollectionUtils.isEmpty(hoerenAudiogramm.getEmpfehlung())) {
+        if (anlassConfig.getHoerenAudiogrammEmpfehlung().isRequired() && CollectionUtils.isEmpty(ValueEnhancedUtil.getEnumSetOrEmpty(hoerenAudiogramm.getEmpfehlung(), HoerenEmpfehlung.class))) {
             return false;
         }
         if (anlassConfig.getHoerenAudiogrammBemerkungen().isRequired() && hoerenAudiogramm.getBemerkungen() == null) {

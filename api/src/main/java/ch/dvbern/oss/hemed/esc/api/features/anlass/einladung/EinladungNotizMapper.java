@@ -27,6 +27,7 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.commons.i18nl10n.I18nMessage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.EinladungSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.util.AnlassUtil;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
@@ -79,7 +80,7 @@ public class EinladungNotizMapper {
             && abmeldungsNotiz != null
         ) {
             einladung.getNotizen().remove(abmeldungsNotiz);
-            notizService.remove(abmeldungsNotiz.getId());
+            notizService.remove(abmeldungsNotiz.getId(), true);
             return;
         }
 
@@ -106,6 +107,7 @@ public class EinladungNotizMapper {
             NotizStatus.ABGESCHLOSSEN,
             NotizTyp.ABMELDUNG,
             BenutzerMapper.toOptionJson(currentUserService.currentUserRef()),
+            AnlassUtil.createAnlassLink(einladung),
             new ArrayList<>(),
             new ArrayList<>(),
             0L // version

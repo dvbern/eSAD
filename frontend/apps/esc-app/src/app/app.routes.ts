@@ -1,6 +1,15 @@
 import {inject} from '@angular/core';
 import {Route} from '@angular/router';
-import {AufgabenStore, BenutzerStore, NoRolesPageComponent, Path, requireRole} from '@dvb/feat-shared';
+import {
+  AgbPageComponent,
+  AufgabenStore,
+  BenutzerStore,
+  NoRolesPageComponent,
+  Path,
+  requireAcceptedAgb,
+  requireNotAcceptedAgb,
+  requireRole,
+} from '@dvb/feat-shared';
 import {
   hasAdminPageViewBerechtiung,
   hasAllNotizenEditBerechtigung,
@@ -9,7 +18,7 @@ import {
   hasConfigViewBerechtigung,
   hasKindPageViewBerechtigung,
   hasPlaygroundViewBerechtigung,
-  hasReportsViewBerechtigung,
+  hasReportViewBerechtigung,
   hasSystemPageViewBerechtiung,
 } from '@dvb/util-shared';
 
@@ -36,9 +45,18 @@ export const appRoutes: Route[] = [
         component: NoRolesPageComponent,
       },
       {
+        path: Path.AGB,
+        pathMatch: 'full',
+        canActivate: [
+          requireNotAcceptedAgb()
+        ],
+        component: AgbPageComponent,
+      },
+      {
         path: Path.DASHBOARD,
         canActivate: [
           requireRole(hasAnlassViewBerechtigung()),
+          requireAcceptedAgb(),
         ],
         loadChildren: () => import('@dvb/feat-dashboard').then(c => c.dashboardRoutes),
       },
@@ -46,6 +64,7 @@ export const appRoutes: Route[] = [
         path: Path.ANLASS,
         canActivate: [
           requireRole(hasAnlassViewBerechtigung()),
+          requireAcceptedAgb(),
         ],
         loadChildren: () => import('@dvb/feat-anlass').then(c => c.anlassRoutes),
       },
@@ -53,13 +72,15 @@ export const appRoutes: Route[] = [
         path: Path.KINDER,
         canActivate: [
           requireRole(hasKindPageViewBerechtigung()),
+          requireAcceptedAgb(),
         ],
         loadChildren: () => import('@dvb/feat-kinder').then(c => c.kinderRoutes),
       },
       {
         path: Path.REPORT,
         canActivate: [
-          requireRole(hasReportsViewBerechtigung()),
+          requireRole(hasReportViewBerechtigung()),
+          requireAcceptedAgb(),
         ],
         loadChildren: () => import('@dvb/feat-reports').then(c => c.reportsRoutes),
       },
@@ -67,6 +88,7 @@ export const appRoutes: Route[] = [
         path: Path.ADMIN,
         canActivate: [
           requireRole(hasAdminPageViewBerechtiung()),
+          requireAcceptedAgb(),
         ],
         loadChildren: () => import('@dvb/feat-admin').then(c => c.adminRoutes),
       },
@@ -74,6 +96,7 @@ export const appRoutes: Route[] = [
         path: Path.SYSTEM,
         canActivate: [
           requireRole(hasSystemPageViewBerechtiung()),
+          requireAcceptedAgb(),
         ],
         loadChildren: () => import('@dvb/feat-system').then(c => c.systemRoutes),
       },
@@ -81,6 +104,7 @@ export const appRoutes: Route[] = [
         path: Path.NOTIZEN,
         canActivate: [
           requireRole(hasAllNotizenEditBerechtigung()),
+          requireAcceptedAgb(),
         ],
         loadChildren: () => import('@dvb/feat-notizen').then(c => c.notizenListRoutes),
       },
@@ -88,6 +112,7 @@ export const appRoutes: Route[] = [
         path: Path.AUFGABEN,
         canActivate: [
           requireRole(hasAufgabenViewBerechtigungen()),
+          requireAcceptedAgb(),
         ],
         loadChildren: () => import('@dvb/feat-aufgaben').then(c => c.aufgabenRoutes),
       },
@@ -95,6 +120,7 @@ export const appRoutes: Route[] = [
         path: Path.CONFIG,
         canActivate: [
           requireRole(hasConfigViewBerechtigung()),
+          requireAcceptedAgb(),
         ],
         loadChildren: () => import('@dvb/feat-config').then(c => c.configRoutes),
       },
@@ -102,6 +128,7 @@ export const appRoutes: Route[] = [
         path: Path.PLAYGROUND,
         canActivate: [
           requireRole(hasPlaygroundViewBerechtigung()),
+          requireAcceptedAgb(),
         ],
         loadChildren: () => import('@dvb/feat-playground').then(c => c.playgroundRoutes),
       },

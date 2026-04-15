@@ -47,10 +47,12 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseMapper;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.ZustaendigePersonService;
 import ch.dvbern.oss.hemed.esc.api.shared.person.AdresseMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.person.LandCode;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatusSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.VerantwortlicherSchuleChangedDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Validate;
@@ -67,6 +69,7 @@ public final class KindMapper {
     private final EdokidIdGeneratorService edokidIdGeneratorService;
     private final SchuleService schuleService;
     private final DossierService dossierService;
+    private final ZustaendigePersonService zustaendigePersonService;
     private final AppClock appClock;
 
     @NonNull
@@ -265,8 +268,17 @@ public final class KindMapper {
         return saveKind(KindSaveModeDuplikat.NO_CHECK, entity, null);
     }
 
+    @NonNull
     public KindJson changeKindAktivStatus(@NonNull ID<Kind> kindId, @NonNull EntityAktivStatusSaveJson saveJson) {
         Kind kind = kindService.getById(kindId);
+        // Archivierte Dossiers können nicht wieder aktiviert werden
+        dossierService.findByKind(kindId).ifPresent(dossier -> {
+            if (dossier.getTimestampDefinitivArchiviert() != null) {
+                throw new IllegalStateException("Kind mit ID "
+                    + kindId
+                    + " ist bereits archiviert und kann nicht aktiviert werden");
+            }
+        });
         kind.disableOptimisticLockingCheck();
         kind.setKindAktivStatus(saveJson.getEntityAktivStatus());
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
@@ -331,8 +343,10 @@ public final class KindMapper {
         }
         Optional<Dossier> dossierOptional = dossierService.findByKind(kindID);
         if ((!newSchule.equals(oldSchule)) && dossierOptional.isPresent()) {
-            dossierOptional.get().setZustaendigMPA(null);
-            dossierOptional.get().setZustaendigArzt(null);
+            // https://intra.dvbern.ch/spaces/HEM/pages/284263663/Zust%C3%A4ndigkeiten+Archivierung
+            // Change Zustaendigkeiten: Fall 5, 7: Neue Klasse/Schule auf Kind (manuell)
+            VerantwortlicherSchuleChangedDTO args = VerantwortlicherSchuleChangedDTO.of(oldSchule, newSchule);
+            zustaendigePersonService.schuleChangedOnDossier(dossierOptional.get(), args);
         }
     }
 }

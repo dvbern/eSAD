@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKind;
+import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.Lehrperson;
 import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ImportStatus;
 import ch.dvbern.oss.hemed.esc.api.features.importoptions.pupil.PupilSyncEvent;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
@@ -40,7 +42,13 @@ public class PupilImportResultJson {
     private final List<ItemSyncResultJson<Klasse>> klasseImportResultJsons;
 
     @Schema(nullable = false)
+    private final List<ItemSyncResultJson<Lehrperson>> lehrpersonResultJsons;
+
+    @Schema(nullable = false)
     private final List<ItemSyncResultJson<Kind>> kindImportResultJsons;
+
+    @Schema(nullable = false)
+    private final List<ItemSyncResultJson<KontaktPersonKind>> kontaktPersonenKindImportResultJsons;
 
     /**
      * This copies the import result but only keeps the items that have an error.
@@ -53,7 +61,9 @@ public class PupilImportResultJson {
             importDuration,
             schuleImportResultJsons.stream().filter(ItemSyncResultJson::isError).toList(),
             klasseImportResultJsons.stream().filter(ItemSyncResultJson::isError).toList(),
-            kindImportResultJsons.stream().filter(ItemSyncResultJson::isError).toList()
+            lehrpersonResultJsons.stream().filter(ItemSyncResultJson::isError).toList(),
+            kindImportResultJsons.stream().filter(ItemSyncResultJson::isError).toList(),
+            kontaktPersonenKindImportResultJsons.stream().filter(ItemSyncResultJson::isError).toList()
         );
     }
 
@@ -64,7 +74,9 @@ public class PupilImportResultJson {
     public boolean hasErrors() {
         return schuleImportResultJsons.stream().anyMatch(ItemSyncResultJson::isError)
             || klasseImportResultJsons.stream().anyMatch(ItemSyncResultJson::isError)
-            || kindImportResultJsons.stream().anyMatch(ItemSyncResultJson::isError);
+            || lehrpersonResultJsons.stream().anyMatch(ItemSyncResultJson::isError)
+            || kindImportResultJsons.stream().anyMatch(ItemSyncResultJson::isError)
+            || kontaktPersonenKindImportResultJsons.stream().anyMatch(ItemSyncResultJson::isError);
     }
 
     @JsonIgnore
@@ -78,7 +90,9 @@ public class PupilImportResultJson {
         sb.append("ImportEventID: ").append(pupilSyncEventID.getUUID().toString()).append('\n');
         constructSummaryForItemList(Schule.class, schuleImportResultJsons, sb);
         constructSummaryForItemList(Klasse.class, klasseImportResultJsons, sb);
+        constructSummaryForItemList(Lehrperson.class, lehrpersonResultJsons, sb);
         constructSummaryForItemList(Kind.class, kindImportResultJsons, sb);
+        constructSummaryForItemList(KontaktPersonKind.class, kontaktPersonenKindImportResultJsons, sb);
         return sb.toString();
     }
 
@@ -94,5 +108,4 @@ public class PupilImportResultJson {
         sb.append("OK: ").append(statusCount.getOrDefault(ImportStatus.OK, 0L)).append(", ");
         sb.append("ERROR: ").append(statusCount.getOrDefault(ImportStatus.ERROR, 0L)).append('\n');
     }
-
 }

@@ -47,8 +47,7 @@ public class KindService {
     @NonNull
     public Kind persistWithoutDuplicateCheck(@NonNull Kind kind, @Nullable Long versionFromFrontend) {
         if (versionFromFrontend == null) {
-            persistAndFlushWithoutDuplicateCheck(kind);
-            return kind;
+            return persistAndFlushWithoutDuplicateCheck(kind);
         }
         return kindRepo.persistWithOptimisticLocking(kind, versionFromFrontend);
     }

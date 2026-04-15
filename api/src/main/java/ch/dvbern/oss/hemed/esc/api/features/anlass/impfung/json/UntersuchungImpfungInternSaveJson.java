@@ -7,7 +7,6 @@ import java.util.List;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
-import ch.dvbern.oss.hemed.esc.api.features.impfstoff.json.ImpfstoffChargeJson;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.json.ImpfstoffJson;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import jakarta.validation.Valid;
@@ -31,10 +30,9 @@ public class UntersuchungImpfungInternSaveJson implements SaveJsonWithOptimistic
     @Schema(required = true)
     private ImpfstoffJson impfstoff;
 
-    @Valid
     @Nullable
     @Schema(required = false)
-    private ImpfstoffChargeJson charge;
+    private String charge;
 
     @Nullable
     @Schema(required = false)

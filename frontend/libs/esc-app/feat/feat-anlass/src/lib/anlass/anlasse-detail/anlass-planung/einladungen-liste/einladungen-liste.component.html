@@ -9,6 +9,7 @@
     [totalRows]="itemTable.filteredListSize()"
     (pageChanged)="itemTable.onPageChanged($event)"
     [pagination]="itemTable.pagination()"
+    data-testid="invited-kinder-table"
   >
     <!-- col widths -->
     <colgroup>
@@ -26,7 +27,9 @@
         <!-- sprache-->
         <col svuiColWidth [colWidth]="'text-small'">
         <!-- idnummer-->
-        <col svuiColWidth [colWidth]="'text-medium'">
+        @if (tenantSettingsStore.idEsadIdVisible()) {
+          <col svuiColWidth [colWidth]="'text-medium'">
+        }
       }
       <!-- klassenstufe-->
       <col svuiColWidth [colWidth]="'select-medium'">
@@ -93,12 +96,14 @@
             (sort)="itemTable.onColSort($event, 'kind.data.erstsprache')"
         >{{ 'anlass.kinder.sprache' | transloco }}
         </th>
-        <th scope="col"
-            svuiSortable
-            [sortState]="itemTable.findColSortDTO('kind.esadId')"
-            (sort)="itemTable.onColSort($event, 'kind.esadId')"
-        >{{ 'anlass.kinder.idNr' | transloco }}
-        </th>
+        @if (tenantSettingsStore.idEsadIdVisible()) {
+          <th scope="col"
+              svuiSortable
+              [sortState]="itemTable.findColSortDTO('kind.esadId')"
+              (sort)="itemTable.onColSort($event, 'kind.esadId')"
+          >{{ 'anlass.kinder.idNr' | transloco }}
+          </th>
+        }
       }
       <th scope="col"
           svuiSortable
@@ -209,12 +214,13 @@
             <input svuiTextInput [formControl]="tableFilterForm.group.controls.sprache"/>
           </svui-table-filter>
         </th>
-
-        <th scope="col">
-          <svui-table-filter [columnHeader]="'anlass.kinder.idNr' | transloco">
-            <input svuiTextInput [formControl]="tableFilterForm.group.controls.idNr"/>
-          </svui-table-filter>
-        </th>
+        @if (tenantSettingsStore.idEsadIdVisible()) {
+          <th scope="col">
+            <svui-table-filter [columnHeader]="'anlass.kinder.idNr' | transloco">
+              <input svuiTextInput [formControl]="tableFilterForm.group.controls.idNr"/>
+            </svui-table-filter>
+          </th>
+        }
       }
       <th scope="col">
         <svui-table-filter [columnHeader]="'anlass.kinder.klassenstufe' | transloco">
@@ -324,13 +330,15 @@
             <svui-table-control [columnHeader]="'Auswählen'" [rowHeader]="item.id">
               <input type="checkbox" svuiCheckbox
                      (click)="toggleMarkedForUntersuchung(item.id)"
-                     [checked]="isMarkedForUntersuchung(item.id)"/>
+                     [checked]="isMarkedForUntersuchung(item.id)"
+                      data-testid="invited-kinder-checkbox"/>
             </svui-table-control>
           </td>
           <td>
             <svui-table-link
               type="text"
-              [myRouterLink]="[ '/' , Path.KINDER ,  item.kind.id]">
+              [myRouterLink]="[ '/' , Path.KINDER ,  item.kind.id]"
+            data-testid="redirect-kinder-dossier">
               {{ item.kind.data.name }}
             </svui-table-link>
           </td>
@@ -341,7 +349,9 @@
           <td>{{ item.kind.data.geburtsdatum | date: 'dd.MM.yyyy' }}</td>
           @if (!isAnlassStatusBereit()) {
             <td>{{ item.kind.data.erstsprache }}</td>
-            <td>{{ item.kind.esadId }}</td>
+            @if (tenantSettingsStore.idEsadIdVisible()) {
+              <td>{{ item.kind.esadId }}</td>
+            }
           }
           @if (!anlassStore.isAbgeschlossen()) {
             <td>{{
@@ -381,7 +391,7 @@
             </td>
           }
           <td>
-            <svui-table-control [columnHeader]="'Schulstufe'" [rowHeader]="item.data.einladungStatus">
+            <svui-table-control [columnHeader]="'Schulstufe'" [rowHeader]="item.data.einladungStatus" data-testid="teilnahme-status-select">
               <ng-select
                 svuiNgSelect
                 bindLabel='dummy'
@@ -418,7 +428,8 @@
                         [tooltip]="'global.tooltip.impfausweis' | transloco"
                         [icon]="'check'"
                         [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
-                        (click)="gotoEinladungNotiz(item, NotizTyp.IMPFAUSWEIS)">
+                        (click)="gotoEinladungNotiz(item, NotizTyp.IMPFAUSWEIS)"
+                        data-testid="button-add-impfausweis-success">
                 </button>
               } @else {
                 <button svuiIconOnlyButton="primary"
@@ -426,7 +437,8 @@
                         [tooltip]="'global.tooltip.impfausweis.upload' | transloco"
                         [icon]="'upload'"
                         [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
-                        (click)="gotoEinladungNotiz(item, NotizTyp.IMPFAUSWEIS)">
+                        (click)="gotoEinladungNotiz(item, NotizTyp.IMPFAUSWEIS)"
+                        data-testid="button-add-impfausweis">
                 </button>
               }
             </td>
@@ -439,7 +451,8 @@
                         [tooltip]="'global.tooltip.fragebogen' | transloco"
                         [icon]="'check'"
                         [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
-                        (click)="gotoEinladungNotiz(item, NotizTyp.FRAGEBOGEN)">
+                        (click)="gotoEinladungNotiz(item, NotizTyp.FRAGEBOGEN)"
+                        data-testid="button-add-fragebogen-success">
                 </button>
               } @else {
                 <button svuiIconOnlyButton="primary"
@@ -447,7 +460,8 @@
                         [tooltip]="'global.tooltip.fragebogen.upload' | transloco"
                         [icon]="'upload'"
                         [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
-                        (click)="gotoEinladungNotiz(item, NotizTyp.FRAGEBOGEN)">
+                        (click)="gotoEinladungNotiz(item, NotizTyp.FRAGEBOGEN)"
+                        data-testid="button-add-fragebogen">
                 </button>
               }
             </td>

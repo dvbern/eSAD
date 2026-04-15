@@ -32,8 +32,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -47,7 +46,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 @Tag(name = OpenApiConst.Tags.TAG_AUFGABE)
 @RolesAllowed(BerechtigungName.AUFGABEN_LESEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-@Timed(name = "AufgabeResourceMS", unit = MetricUnits.MILLISECONDS)
+@Timed("AufgabeResourceMS")
 public class AufgabeResource {
 
     private final AufgabeMapper aufgabeMapper;

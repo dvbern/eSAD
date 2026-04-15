@@ -55,4 +55,57 @@ public class TenantSettingFeaturesJson {
     @Schema(required = true)
     private final TenantSettingFeatureStateJson massenimportFeature;
 
+    @NotNull
+    @NonNull
+    @Valid
+    @Schema(required = true)
+    private final TenantSettingFeatureStateJson massenbriefFeature;
+
+    @NotNull
+    @NonNull
+    @Valid
+    @Schema(required = true)
+    private final TenantSettingFeatureStateJson nichtGeprueftGrundFeature;
+
+    @NotNull
+    @NonNull
+    @Valid
+    @Schema(required = true)
+    private final TenantSettingFeatureStateJson arztListeFeature;
+
+    @NotNull
+    @NonNull
+    @Valid
+    @Schema(required = true)
+    private final TenantSettingFeatureStateJson adHocImpfstoffChargenFeature;
+
+    @NotNull
+    @NonNull
+    @Valid
+    @Schema(required = true)
+    private final TenantSettingFeatureStateJson footerFeature;
+
+    @NotNull
+    @NonNull
+    @Valid
+    @Schema(required = true)
+    private final TenantSettingFeatureStateJson benutzerverwaltungInternFeature;
+
+    @NotNull
+    @NonNull
+    @Valid
+    @Schema(required = true)
+    private final TenantSettingFeatureStateJson benutzerverwaltungIgnoreFachRolleFromKeycloakFeature;
+
+    @NotNull
+    @NonNull
+    @Valid
+    @Schema(required = true)
+    private final TenantSettingFeatureStateJson archivierungFeature;
+
+    @NotNull
+    @NonNull
+    @Valid
+    @Schema(required = true)
+    private final TenantSettingFeatureStateJson zentraleOrganisationFeature;
 }

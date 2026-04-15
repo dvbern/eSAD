@@ -17,6 +17,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 @RequiredArgsConstructor
 public class DossierRepo extends BaseRepo<Dossier> {
 
+
     @NonNull
     public Optional<Dossier> findByKind(@NonNull ID<Kind> kindID) {
         return db

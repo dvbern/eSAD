@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.UntersuchungBewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
@@ -12,7 +13,9 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIn
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungKrankheitImmunitaet;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDaten;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.UntersuchungSchulrelevanteBeeintraechtigung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.UntersuchungSprache;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
@@ -142,6 +145,36 @@ public final class ExtractorForCsvUtil {
     }
 
     @NonNull
+    public static String extractUntersuchungSprache(
+        @NonNull Einladung einladung,
+        @NonNull Function<UntersuchungSprache, String> stringTransformer
+    ) {
+        return ExtractorUtil.getUntersuchungSpracheOptional(einladung)
+            .map(stringTransformer)
+            .orElse("");
+    }
+
+    @NonNull
+    public static String extractUntersuchungBewegungsapparat(
+        @NonNull Einladung einladung,
+        @NonNull Function<UntersuchungBewegungsapparat, String> stringTransformer
+    ) {
+        return ExtractorUtil.getUntersuchungBewegungsapparatOptional(einladung)
+            .map(stringTransformer)
+            .orElse("");
+    }
+
+    @NonNull
+    public static String extractUntersuchungSchulrelevanteBeeintraechtigung(
+        @NonNull Einladung einladung,
+        @NonNull Function<UntersuchungSchulrelevanteBeeintraechtigung, String> stringTransformer
+    ) {
+        return ExtractorUtil.getUntersuchungSchulrelevanteBeeintraechtigungOptional(einladung)
+            .map(stringTransformer)
+            .orElse("");
+    }
+
+    @NonNull
     public static String extractUntersuchungImpfungenMassnahmen(
         @NonNull Einladung einladung,
         @NonNull Function<UntersuchungImpfungenMassnahmen, String> stringTransformer
@@ -185,7 +218,8 @@ public final class ExtractorForCsvUtil {
     @NonNull
     public static List<UntersuchungImpfungKrankheitImmunitaet> untersuchungImpfungtImmunitaetList(
         @NonNull Einladung einladung,
-        @NonNull CsvColumnConfig config) {
+        @NonNull CsvColumnConfig config
+    ) {
         if (einladung.getUntersuchung() == null) {
             return Collections.emptyList();
         }

@@ -13,7 +13,7 @@
     </button>
   </svui-page-header-buttons>
 
-  @if (canEditList()) {
+  @if (anlassConfigHelperService.canEdit()) {
     <svui-page-header-add-button
       [addRouterLink]="Path.CREATE"/>
   }
