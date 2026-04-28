@@ -6,7 +6,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppAuthException;
@@ -19,17 +18,13 @@ import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.JsonWebTokenDataDTO;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
-import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationRollen;
-import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationRollenService;
-import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.RolesAugmentor;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
-import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerBerechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.FachrollenService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import io.quarkus.security.identity.SecurityIdentity;
@@ -50,13 +45,11 @@ public class BenutzerService {
 
     private final JsonWebToken jsonWebToken;
     private final BenutzerRepo benutzerRepo;
-    private final BenutzerberechtigungRepo benutzerberechtigungRepo;
     private final AppClock appClock;
     private final SecurityIdentity securityIdentity;
     private final TenantProducer tenantProducer;
-    private final OrganisationService organisationService;
-    private final OrganisationRollenService organisationRollenService;
     private final FachrollenService fachrollenService;
+    private final TenantSettingsService tenantSettingsService;
 
     @NonNull
     public Optional<Benutzer> findCurrentBenutzerOptional() {
@@ -83,7 +76,6 @@ public class BenutzerService {
             jsonWebTokenDataDTO.getGivenName(),
             NormalizedPhoneNumber.parse(jsonWebTokenDataDTO.getPhoneNumberClaim()),
             null,
-            Collections.emptySet(),
             EntityAktivStatus.AKTIV,
             // Wenn sich der Benutzer einloggen kann, ist er aktiv,
             null,
@@ -93,43 +85,55 @@ public class BenutzerService {
         );
         benutzerRepo.persist(newBenutzer);
 
-        EnumSet<FachRolle> fachrollen = EnumSetUtil.toEnumSet(jsonWebTokenDataDTO.getFachRollen(), FachRolle.class);
+        boolean ignoreFachrollenFromKeycloak =
+            tenantSettingsService.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled();
+        if (!ignoreFachrollenFromKeycloak) {
+            EnumSet<FachRolle> fachrollen = EnumSetUtil.toEnumSet(jsonWebTokenDataDTO.getFachRollen(), FachRolle.class);
+            fachrollenService.setFachrollenFromJWT(fachrollen, newBenutzer, null);
+        }
 
-        fachrollenService.setFachrollen(fachrollen, newBenutzer, null);
-
+        newBenutzer.disableOptimisticLockingCheck();
         benutzerRepo.persist(newBenutzer);
         return newBenutzer;
     }
 
     @NonNull
-    public ID<Benutzer> createBenutzer(@NonNull CreateBenutzerDTO dto) {
-        var benutzer = new Benutzer(
-            dto.getKeycloakId(),
-            dto.getEmail(),
-            dto.getTitel(),
-            dto.getNachname(),
-            dto.getVorname(),
-            dto.getTelefon(),
-            null,
-            Collections.emptySet(),
-            EntityAktivStatus.AKTIV,  // Neue benutzer sind aktiv
-            null,
-            null,
-            Set.of(),
-            null
-        );
-        benutzerRepo.persist(benutzer);
+    public Benutzer updateBenutzerFromJWt(
+        @NonNull ID<Benutzer> existingUserId,
+        @NonNull JsonWebTokenDataDTO webTokenData) {
+        Benutzer existingUser = this.getById(existingUserId);
 
-        Organisation organisation = organisationService.getZentraleOrganisation();
-        OrganisationRollen rollen = new OrganisationRollen();
-        rollen.setOrganisation(organisation);
-        rollen.setBenutzer(benutzer);
-        rollen.setFachRollen(EnumSet.noneOf(FachRolle.class));
-        organisationRollenService.persist(rollen);
-        organisation.addMitglied(rollen);
-        benutzer.addOrganisation(rollen);
+        // Username ist die Email. Falls die KeycloakId sich geändert hat, loggen, aber nicht abbrechen.
+        if (existingUser.getKeycloakId() == null || !existingUser.getKeycloakId()
+            .equals(webTokenData.getSubjectId().toString())) {
+            LOG.warn(
+                "KeycloakId for Benutzer {} with ID {} has changed from {} to {}. "
+                    + "This should not happen, but we will continue with the update the keycloakid.",
+                existingUser.getEmail(),
+                existingUser.getId(),
+                existingUser.getKeycloakId(),
+                webTokenData.getSubjectId()
+            );
+        }
+        existingUser.setKeycloakId(webTokenData.getSubjectId().toString());
+        existingUser.setVorname(webTokenData.getGivenName());
+        existingUser.setNachname(webTokenData.getFamilyName());
+        existingUser.setEmail(webTokenData.getEmail());
+        existingUser.setTitel(webTokenData.getTitleClaim());
+        existingUser.setTelefon(NormalizedPhoneNumber.parse(webTokenData.getPhoneNumberClaim()));
+        // timestampAGBAccepted wird ueber eigenen Endpoint gesetzt
 
-        return benutzer.getId();
+        existingUser.disableOptimisticLockingCheck();
+
+        boolean ignoreFachrollenFromKeycloak =
+            tenantSettingsService.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled();
+        if (!ignoreFachrollenFromKeycloak) {
+            EnumSet<FachRolle> fachrollen = EnumSetUtil.toEnumSet(
+                webTokenData.getFachRollen().stream().toList(),
+                FachRolle.class);
+            fachrollenService.setFachrollenFromJWT(fachrollen, existingUser, null);
+        }
+        return existingUser;
     }
 
     @NonNull
@@ -159,31 +163,6 @@ public class BenutzerService {
     }
 
     @NonNull
-    public Optional<Set<Berechtigung>> findBerechtigungenByEmail(@NonNull EmailAddress email) {
-        List<Berechtigung> berechtigungenByEmail = benutzerRepo.findBerechtigungenByEmail(email);
-        Set<Berechtigung> rolenSet =
-            berechtigungenByEmail.isEmpty() ? Collections.emptySet() : EnumSet.copyOf(berechtigungenByEmail);
-        return Optional.of(rolenSet);
-    }
-
-    @NonNull
-    public List<BenutzerBerechtigung> syncBerechtigungenToBenutzer(
-        @NonNull ID<Benutzer> benutzerID,
-        @NonNull Set<Berechtigung> desiredBerechtigungn
-    ) {
-        Benutzer benutzer = benutzerRepo.referenceById(benutzerID);
-        benutzer.disableOptimisticLockingCheck();
-        benutzer.getOrganisationRollen().forEach(AbstractEntity::disableOptimisticLockingCheck);
-
-        List<BenutzerBerechtigung> currentBerechtigungen
-            = benutzerberechtigungRepo.findBenutzerBerechtigungenByBenutzerId(benutzerID);
-        removeLostBerechtigungen(desiredBerechtigungn, currentBerechtigungen);
-        addGainedBerechtigungen(benutzer, desiredBerechtigungn, currentBerechtigungen);
-
-        return benutzerberechtigungRepo.findBenutzerBerechtigungenByBenutzerId(benutzerID);
-    }
-
-    @NonNull
     public List<Berechtigung> getDesiredBerechtigungen(
         @NonNull EmailAddress benutzerEmail
     ) {
@@ -192,50 +171,24 @@ public class BenutzerService {
             Benutzer benutzer = benutzerOptional.get();
             benutzer.disableOptimisticLockingCheck();
 
+            // Wir lesen alle Berechtigungen, welche der Benutzer irgendwo hat (unabhängig von
+            // der Organisation), damit wir diese in Quarkus setzen können
             Set<Berechtigung> desiredBerechtigungenFromFachrolle = FachRolle.collectAllBerechtigungen(
                 tenantProducer.produceTenant(),
-                benutzer.getFachRollen().toArray(RolesAugmentor.EMPTY_FACHROLLEN));
+                benutzer.getFachRollenCombined().toArray(RolesAugmentor.EMPTY_FACHROLLEN));
             return desiredBerechtigungenFromFachrolle.stream().toList();
         }
         return Collections.emptyList();
     }
 
-    private void addGainedBerechtigungen(
-        @NonNull Benutzer benutzer,
-        @NonNull Set<Berechtigung> desiredBerechtigungn,
-        @NonNull List<BenutzerBerechtigung> currentBerechtigungen
-    ) {
-        var berechtigungenToAdd = desiredBerechtigungn.stream()
-            .filter(desiredBerechtigung -> currentBerechtigungen.stream()
-                .noneMatch(berechtigung -> berechtigung.getBerechtigung() == desiredBerechtigung))
-            .map(berechtigung -> new BenutzerBerechtigung(benutzer, berechtigung))
-            .toList();
-        LOG.debug(
-            "Adding Berechtigungen: {}",
-            berechtigungenToAdd.stream()
-                .map(b -> b.getBerechtigung().name())
-                .collect(Collectors.joining(", ")));
-        berechtigungenToAdd.forEach(benutzerberechtigungRepo::persist);
-    }
-
-    private void removeLostBerechtigungen(
-        @NonNull Set<Berechtigung> desiredBerechtigungn,
-        @NonNull List<BenutzerBerechtigung> currentBerechtigungen
-    ) {
-        var berechtigungenToRemove = currentBerechtigungen.stream()
-            .filter(benutzerBerechtigung -> !desiredBerechtigungn.contains(benutzerBerechtigung.getBerechtigung()))
-            .toList();
-        LOG.debug(
-            "Removing Berechtigungen: {}",
-            berechtigungenToRemove.stream()
-                .map(b -> b.getBerechtigung().name())
-                .collect(Collectors.joining(", ")));
-        berechtigungenToRemove.stream().map(AbstractEntity::getId).forEach(benutzerberechtigungRepo::remove);
-    }
-
     @NonNull
     public Benutzer getById(@NonNull ID<Benutzer> existingUserId) {
         return benutzerRepo.getById(existingUserId);
+    }
+
+    @NonNull
+    public Benutzer getByIdWithBerechtigungen(@NonNull ID<Benutzer> id) {
+        return benutzerRepo.getByIdWithBerechtigungen(id);
     }
 
     @NonNull
@@ -297,7 +250,7 @@ public class BenutzerService {
             return null;
         }
         Benutzer benutzer = getById(benutzerID);
-        Set<FachRolle> fachRollenBenutzer = EnumSet.copyOf(benutzer.getFachRollen());
+        Set<FachRolle> fachRollenBenutzer = EnumSet.copyOf(benutzer.getFachRollenCombined());
         boolean benutzerHasCorrectRole = fachRollen.stream().anyMatch(fachRollenBenutzer::contains);
 
         Validate.isTrue(benutzerHasCorrectRole);

@@ -37,7 +37,7 @@ class CheckUntersuchungImpfungenMassnahmenPresentIfReqValidatorTest {
                 .forUntersuchungImpfungen(impfungen)
                 .withAchtung(achtung));
         massnahmen.setVersion(1L); // Weil wir erst beim zweiten Speichern validieren
-        massnahmen.getUntersuchungImpfungen().getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungImpfungAchtung(requirementSetting);
+        massnahmen.getUntersuchungImpfungen().getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungImpfungAchtung(requirementSetting);
         // ACT
         CheckUntersuchungImpfungenMassnahmenPresentIfReqValidator
             validatorUnderTest = new CheckUntersuchungImpfungenMassnahmenPresentIfReqValidator();

@@ -17,7 +17,7 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { BackendEntityId } from '@dvb/data-access-types';
+import { BackendEntityId, BackendEntityIdWithClass } from '@dvb/data-access-types';
 import { UntersuchungBewegungsapparatJson } from '../model/untersuchung-bewegungsapparat-json';
 import { UntersuchungBewegungsapparatSaveJson } from '../model/untersuchung-bewegungsapparat-save-json';
 
@@ -27,12 +27,12 @@ import { Configuration }                                     from '../configurat
 
 export interface UntersuchungBewegungsapparatServiceGetUntersuchungBewegungsapparatRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
 }
 
 export interface UntersuchungBewegungsapparatServiceSaveUntersuchungBewegungsapparatRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
     untersuchungBewegungsapparatSaveJson: UntersuchungBewegungsapparatSaveJson;
 }
 
@@ -162,7 +162,7 @@ export class UntersuchungBewegungsapparatService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/bewegungsapparat`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/bewegungsapparat`;
         return this.httpClient.request<UntersuchungBewegungsapparatJson>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -250,7 +250,7 @@ export class UntersuchungBewegungsapparatService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/bewegungsapparat`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/bewegungsapparat`;
         return this.httpClient.request<UntersuchungBewegungsapparatJson>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

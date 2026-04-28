@@ -48,19 +48,19 @@ class ArchivdokumentResourceITest extends AbstractITest {
         tenantProducer.setCurrentTenant(TenantEnum.BE);
 
         Archivdokument archivdokument_offen_I = ArchivdokumentBuilder.create(builder -> builder
-            .withOwner(fixtureService.createBenutzer())
+            .withOwner(fixtureService.createBenutzerWithOrganisation())
             .withStatus(ArchivierungStatus.OFFEN)
             .withFiledata(fixtureService.createFileData()));
         archivdokumentService.persist(archivdokument_offen_I);
 
         Archivdokument archivdokument_offen_II = ArchivdokumentBuilder.create(builder -> builder
-            .withOwner(fixtureService.createBenutzer())
+            .withOwner(fixtureService.createBenutzerWithOrganisation())
             .withStatus(ArchivierungStatus.OFFEN)
             .withFiledata(fixtureService.createFileData()));
         archivdokumentService.persist(archivdokument_offen_II);
 
         Archivdokument archivdokument_abgeschlossen = ArchivdokumentBuilder.create(builder -> builder
-            .withOwner(fixtureService.createBenutzer())
+            .withOwner(fixtureService.createBenutzerWithOrganisation())
             .withStatus(ArchivierungStatus.DOWNLOADED)
             .withFiledata(fixtureService.createFileData()));
         archivdokumentService.persist(archivdokument_abgeschlossen);
@@ -133,13 +133,13 @@ class ArchivdokumentResourceITest extends AbstractITest {
         archivdokumentService.persist(archivdokument_offen_I);
 
         Archivdokument archivdokument_offen_II = ArchivdokumentBuilder.create(builder -> builder
-            .withOwner(fixtureService.createBenutzer())
+            .withOwner(fixtureService.createBenutzerWithOrganisation())
             .withStatus(ArchivierungStatus.OFFEN)
             .withFiledata(fixtureService.createFileData()));
         archivdokumentService.persist(archivdokument_offen_II);
 
         Archivdokument archivdokument_abgeschlossen = ArchivdokumentBuilder.create(builder -> builder
-            .withOwner(fixtureService.createBenutzer())
+            .withOwner(fixtureService.createBenutzerWithOrganisation())
             .withStatus(ArchivierungStatus.DOWNLOADED)
             .withFiledata(fixtureService.createFileData()));
         archivdokumentService.persist(archivdokument_abgeschlossen);
@@ -169,7 +169,7 @@ class ArchivdokumentResourceITest extends AbstractITest {
         tenantProducer.setCurrentTenant(TenantEnum.BE);
 
         Archivdokument archivdokument = ArchivdokumentBuilder.create(builder -> builder
-            .withOwner(fixtureService.createBenutzer())
+            .withOwner(fixtureService.createBenutzerWithOrganisation())
             .withStatus(ArchivierungStatus.OFFEN)
             .withArchivierungTyp(ArchivierungTyp.ZUSTAENDIGER_ARZT_CHANGED)
             .withFiledata(fixtureService.createFileData()));
@@ -203,7 +203,7 @@ class ArchivdokumentResourceITest extends AbstractITest {
         tenantProducer.setCurrentTenant(TenantEnum.BE);
 
         Archivdokument archivdokument = ArchivdokumentBuilder.create(builder -> builder
-            .withOwner(fixtureService.createBenutzer())
+            .withOwner(fixtureService.createBenutzerWithOrganisation())
             .withStatus(ArchivierungStatus.OFFEN)
             .withArchivierungTyp(ArchivierungTyp.KIND_DEAKTIVIERT)
             .withFiledata(fixtureService.createFileData()));
@@ -234,7 +234,7 @@ class ArchivdokumentResourceITest extends AbstractITest {
         tenantProducer.setCurrentTenant(TenantEnum.BE);
 
         Archivdokument archivdokument = ArchivdokumentBuilder.create(builder -> builder
-            .withOwner(fixtureService.createBenutzer())
+            .withOwner(fixtureService.createBenutzerWithOrganisation())
             .withStatus(ArchivierungStatus.OFFEN)
             .withFiledata(fixtureService.createFileData()));
         archivdokumentService.persist(archivdokument);

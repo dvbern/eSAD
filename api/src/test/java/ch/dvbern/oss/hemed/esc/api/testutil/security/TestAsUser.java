@@ -31,5 +31,6 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_LE
         BerechtigungName.VORLAGEN_LESEN
     }
 )
+@TestAsMarker
 public @interface TestAsUser {
 }

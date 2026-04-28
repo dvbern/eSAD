@@ -184,20 +184,30 @@
   <include file="db/base/0061-tenant-setting-rename.xml"/>
   <include file="db/bs/0089-update-anlassconfig-bs-dev-20260327.xml"/>
   <include file="db/base/0062-create-organisation.xml"/>
-  <include file="db/base/0063-insert-uuid-extension.xml" />
+  <include file="db/base/0063-insert-uuid-extension.xml"/>
   <include file="db/bs/0090-create-organisation-bs.xml"/>
   <include file="db/base/0064-change-arzt-organisation-to-rechtsform.xml"/>
   <include file="db/base/0065-fix-value-enhanced-migration.xml"/>
   <include file="db/bs/0091-add-berechtigung-organisation-bs.xml"/>
+  <include file="db/base/0066-organisationrolleberechtigung_systemrolleberechtigung.xml"/>
+  <include file="db/base/0067-remove-unused-berechtigung.xml"/>
+  <include file="db/bs/0092-add-chefarzt-to-zentrale-organisation-bs.xml"/>
+  <include file="db/base/0068-remove-berechtigung-tables-reverse-systemrollen-fk.xml"/>
+  <include file="db/base/0069-insert-impfanmeldung-label.xml"/>
+  <include file="db/bs/0093-update-anlassconfig-showimpfanmeldung-bs.xml"/>
+  <include file="db/base/0070-tenant-setting-default-landing-page.xml"/>
+  <include file="db/base/0067-create-anonymereintrag.xml"/>
+  <include file="db/base/0071-insert-anlassconfig-anonym.xml"/>
+  <include file="db/base/0072-add-anonyme-statistik-feature.xml"/>
 
   <!--  The following scripts only run in the 'test' context-->
   <include file="db-test/0001-insert-test-benutzer-support.xml" context="@test"/>
-  <include file="db-test/0002-insert-test-benutzer-mpa.xml" context="@test"/>
-  <include file="db-test/0003-insert-test-benutzer-empfang.xml" context="@test"/>
-  <include file="db-test/0004-insert-test-benutzer-admin.xml" context="@test"/>
-  <include file="db-test/0006-insert-test-benutzer-schularzt.xml" context="@test"/>
-  <include file="db-test/0007-insert-test-benutzer-orthoptist.xml" context="@test"/>
-  <include file="db-test/0008-insert-test-benutzer-mpa-super.xml" context="@test"/>
+  <include file="db-test/0002-insert-test-benutzer-mpa-zentral.xml" context="@test"/>
+  <include file="db-test/0003-insert-test-benutzer-empfang-zentral.xml" context="@test"/>
+  <include file="db-test/0004-insert-test-benutzer-admin-zentral.xml" context="@test"/>
+  <include file="db-test/0006-insert-test-benutzer-schularzt-zentral.xml" context="@test"/>
+  <include file="db-test/0007-insert-test-benutzer-orthoptist-zentral.xml" context="@test"/>
+  <include file="db-test/0008-insert-test-benutzer-mpa-super-zentral.xml" context="@test"/>
   <include file="db-test/0009-create-tables-for-ordering-tests.xml" context="@test"/>
   <include file="db-test/0010-insert-test-aerzte.xml" context="@test"/>
   <include file="db-test/0012-insert-test-benutzer-lausbeauftragte-win.xml" context="@test"/>
@@ -219,4 +229,5 @@
   <include file="db-dev/0006-insert-example-anlass.xml" context="@dev"/>
   <include file="db-dev/0007-insert-example-aerzte.xml" context="@dev"/>
   <include file="db-dev/0008-update-anlasstypen-bs.xml" context="@dev"/>
+
 </databaseChangeLog>

@@ -3,18 +3,19 @@ package ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileDownloadUtil;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.Arzt;
-import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.Briefvorlage;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.docmerger.MergeSourceCreatorService;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.docmerger.RootMergeSource;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
 import ch.dvbern.oss.hemed.esc.api.shared.docmerger.DocMergerUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
@@ -26,6 +27,7 @@ import org.apache.tika.mime.MediaType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import static ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage.noUserLoggedIn;
 import static ch.dvbern.dvbstarter.infrastructure.fileio.FileNameUtil.DATE_FORMATTER_FOR_FILENAME;
 
 @Service
@@ -34,8 +36,8 @@ public class BriefgenerierungService {
 
     private final MergeSourceCreatorService mergeSourceCreatorService;
     private final FileStoreService fileStoreService;
-    private final BenutzerService benutzerService;
     private final AppClock appClock;
+    private final CurrentUserService currentUserService;
 
     @NonNull
     public PrintResultDTO generateBriefForKind(
@@ -43,7 +45,8 @@ public class BriefgenerierungService {
         @NonNull Kind kind,
         @Nullable Arzt arzt
     ) {
-        Benutzer currentBenutzer = benutzerService.getCurrentBenutzerOrThrowException();
+        // loads current user with berechtigungen
+        Benutzer currentBenutzer = currentUserService.getCurrentUserWithBerechtigungen();
         return generateBriefForKind(briefvorlage, kind, arzt, currentBenutzer);
     }
 

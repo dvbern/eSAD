@@ -57,7 +57,7 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
                 .withBrilleLinsen(brilleLinsen, null));
-        sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenBrilleLinsen(requirementSetting);
+        sehen.getUntersuchung().getAnlass().getAnlassConfig().setSehenBrilleLinsen(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
@@ -84,7 +84,6 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(builder -> {
         });
         sehen.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setSehenFernvisusAugeEinzeln(requirementSetting);
@@ -116,7 +115,6 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(builder -> {
         });
         sehen.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setSehenFernvisusAugeEinzeln(requirementSetting);
@@ -148,7 +146,7 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
                 .withFarbsehen(farbsehen, null));
-        sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenFarbsehen(requirementSetting);
+        sehen.getUntersuchung().getAnlass().getAnlassConfig().setSehenFarbsehen(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
@@ -175,7 +173,7 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
                 .withVerwendeteTafel(verwendeteTafel, null));
-        sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenTafel(requirementSetting);
+        sehen.getUntersuchung().getAnlass().getAnlassConfig().setSehenTafel(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
@@ -236,7 +234,7 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
                 .withFernvisus(distanzSehenResultat, null)
                 .withFernvisusLinks(fernvisusLinks)
                 .withFernvisusRechts(fernvisusRechts));
-        sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenFernvisus(requirementSetting);
+        sehen.getUntersuchung().getAnlass().getAnlassConfig().setSehenFernvisus(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
@@ -297,7 +295,7 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
                 .withNahvisus(distanzSehenResultat, null)
                 .withNahvisusLinks(nahvisusLinks)
                 .withNahvisusRechts(nahvisusRechts));
-        sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenNahvisus(requirementSetting);
+        sehen.getUntersuchung().getAnlass().getAnlassConfig().setSehenNahvisus(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
@@ -324,7 +322,7 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
                 .withStereotest(stereotest, null));
-        sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenStereoTest(requirementSetting);
+        sehen.getUntersuchung().getAnlass().getAnlassConfig().setSehenStereoTest(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
@@ -360,7 +358,7 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
                 .withStrabismus(strabismus, null)
 
         );
-        sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenStrabismus(requirementSetting);
+        sehen.getUntersuchung().getAnlass().getAnlassConfig().setSehenStrabismus(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
@@ -389,7 +387,6 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
                 .withStrabismusAuftreten(strabismusAuftreten, null)
         );
         sehen.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setSehenStrabismusAuftreten(requirementSetting);
@@ -422,7 +419,6 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
 
         );
         sehen.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setSehenStrabismusAuspraegung(requirementSetting);
@@ -452,7 +448,7 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
                 .withInspektion(inspektion, null));
-        sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenInspektion(requirementSetting);
+        sehen.getUntersuchung().getAnlass().getAnlassConfig().setSehenInspektion(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
@@ -479,7 +475,7 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
                 .withKonvergenz(konvergenz, null));
-        sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenKonvergenz(requirementSetting);
+        sehen.getUntersuchung().getAnlass().getAnlassConfig().setSehenKonvergenz(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
@@ -506,7 +502,7 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
                 .withMotilitaet(motilitaet, null));
-        sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenMotilitaet(requirementSetting);
+        sehen.getUntersuchung().getAnlass().getAnlassConfig().setSehenMotilitaet(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
@@ -536,7 +532,7 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
                 .withEmpfehlung(empfehlungList, null));
-        sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenEmpfehlung(requirementSetting);
+        sehen.getUntersuchung().getAnlass().getAnlassConfig().setSehenEmpfehlung(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();
@@ -563,7 +559,7 @@ class CheckUntersuchungSehenBeurteilungPresentIfReqValidatorTest {
         UntersuchungSehenBeurteilung sehen = UntersuchungSehenBeurteilungBuilder.create(
             builder -> builder
                 .withBemerkung(bemerkung));
-        sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setSehenBemerkungen(requirementSetting);
+        sehen.getUntersuchung().getAnlass().getAnlassConfig().setSehenBemerkungen(requirementSetting);
         // ACT
         CheckUntersuchungSehenBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungSehenBeurteilungPresentIfReqValidator();

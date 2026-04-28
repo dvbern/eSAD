@@ -69,6 +69,8 @@ public class Label extends AbstractEntity<Label> implements EntityWithOptimistic
         ID.of(UUID.fromString("9a1c9a97-b7dc-4e3d-bb22-8e8250d51768"), Label.class);
     public static final ID<Label> ID_LABEL_DATENVERLUST_AUFGABE =
         ID.of(UUID.fromString("d27ec9f9-322a-4c8b-966c-6b48289b594a"), Label.class);
+    public static final ID<Label> ID_LABEL_IMPFANMELDUNG =
+        ID.of(UUID.fromString("56986f77-1447-4d41-ba3a-1f792cdeb335"), Label.class);
 
     @NonNull
     @NotNull

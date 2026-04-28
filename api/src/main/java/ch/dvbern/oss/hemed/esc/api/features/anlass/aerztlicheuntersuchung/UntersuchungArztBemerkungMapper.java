@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung;
 
+import java.util.function.Consumer;
+
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -48,14 +50,23 @@ public class UntersuchungArztBemerkungMapper {
     }
 
     @Nullable
-    public UntersuchungArztBemerkungJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+    public UntersuchungArztBemerkungJson getByEinladung(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungArztBemerkung());
     }
 
     @NonNull
-    public UntersuchungArztBemerkungJson save(@NonNull ID<Einladung> einladungID, @NonNull UntersuchungArztBemerkungSaveJson saveJson) {
+    public UntersuchungArztBemerkungJson save(
+        @NonNull ID<Einladung> einladungID,
+        @NonNull UntersuchungArztBemerkungSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungArztBemerkung arztBem = untersuchung.getUntersuchungArztBemerkung();
         UntersuchungArztBemerkung entity = toEntity(untersuchung, arztBem, saveJson);
         return toJson(untersuchungArztBemerkungService.persistWithOptimisticLocking(entity, saveJson.getVersion()));

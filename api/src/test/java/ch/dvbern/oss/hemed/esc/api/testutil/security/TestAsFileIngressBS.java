@@ -31,6 +31,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.FILE_INGR
         @Claim(key = "azp", value = TestAsFileIngressBS.AZP),
     }
 )
+@TestAsMarker
 public @interface TestAsFileIngressBS {
     String BENUTZER_ID = "03a61ae1-41a1-4b2f-bc8c-8b4caf2cc85e";
     String EMAIL = "file-ingress-client@dvbern.ch";

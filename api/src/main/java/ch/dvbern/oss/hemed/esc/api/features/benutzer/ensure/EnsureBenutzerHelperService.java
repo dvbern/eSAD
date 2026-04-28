@@ -1,28 +1,15 @@
 package ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.rest.HttpForwardedForHeaderFilter;
 import ch.dvbern.dvbstarter.shared.runas.RunAs;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.RolesAugmentor;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
-import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerBerechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerLoginInfos;
-import ch.dvbern.oss.hemed.esc.api.shared.benutzer.FachrollenService;
-import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
-import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
-import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,10 +22,6 @@ import org.slf4j.MDC;
 public class EnsureBenutzerHelperService {
 
     private final BenutzerService benutzerService;
-    private final TenantSettingsService tenantSettingsService;
-    private final ConfigService configService;
-    private final TenantProducer tenantProducer;
-    private final FachrollenService fachrollenService;
 
     private final AppClock appClock;
 
@@ -46,68 +29,16 @@ public class EnsureBenutzerHelperService {
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void createNewUserFromToken(JsonWebTokenDataDTO webTokenData) {
         Benutzer benutzerFromJWT = benutzerService.createBenutzerFromJWT(webTokenData);
-        List<BenutzerBerechtigung> storedBerechtigungen = benutzerService.syncBerechtigungenToBenutzer(
-            benutzerFromJWT.getId(),
-            FachRolle.collectAllBerechtigungen(
-                tenantProducer.produceTenant(),
-                benutzerFromJWT.getFachRollen().toArray(RolesAugmentor.EMPTY_FACHROLLEN))
-        );
-
         LOG.info(
-            "Created new Benutzer with ID: {} and Benutzername: {} The new Benutzer has the following Berechtigungen:"
-                + " {}",
+            "Created new Benutzer with ID: {} and Benutzername: {}",
             benutzerFromJWT.getId(),
-            benutzerFromJWT.getEmail(),
-            storedBerechtigungen.stream()
-                .map(BenutzerBerechtigung::getBerechtigung)
-                .map(Berechtigung::name)
-                .collect(Collectors.joining(", ")
-                ));
+            benutzerFromJWT.getEmail());
         this.storeLastLoginInfoForBenutzer(benutzerFromJWT, webTokenData);
     }
 
     @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
     public void updateExistingUser(ID<Benutzer> existingUserId, @NonNull JsonWebTokenDataDTO webTokenData) {
-        Benutzer existingUser = benutzerService.getById(existingUserId);
-
-        // Username ist die Email. Falls die KeycloakId sich geändert hat, loggen, aber nicht abbrechen.
-        if (existingUser.getKeycloakId() == null || !existingUser.getKeycloakId()
-            .equals(webTokenData.getSubjectId().toString())) {
-            LOG.warn(
-                "KeycloakId for Benutzer {} with ID {} has changed from {} to {}. "
-                    + "This should not happen, but we will continue with the update the keycloakid.",
-                existingUser.getEmail(),
-                existingUser.getId(),
-                existingUser.getKeycloakId(),
-                webTokenData.getSubjectId()
-            );
-        }
-        existingUser.setKeycloakId(webTokenData.getSubjectId().toString());
-        existingUser.setVorname(webTokenData.getGivenName());
-        existingUser.setNachname(webTokenData.getFamilyName());
-        existingUser.setEmail(webTokenData.getEmail());
-        existingUser.setTitel(webTokenData.getTitleClaim());
-        existingUser.setTelefon(NormalizedPhoneNumber.parse(webTokenData.getPhoneNumberClaim()));
-        // timestampAGBAccepted wird ueber eigenen Endpoint gesetzt
-
-        existingUser.disableOptimisticLockingCheck();
-
-        boolean ignoreFachrollenFromKeycloak = tenantSettingsService.getTenantSetting()
-            .getTenantSettingFeatures()
-            .getBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature()
-            .isEnabledForDeploymentEnvironment(configService.getEnvironment());
-
-        if (!ignoreFachrollenFromKeycloak) {
-            fachrollenService.setFachrollen(EnumSetUtil.toEnumSet(
-                webTokenData.getFachRollen().stream().toList(),
-                FachRolle.class), existingUser, null);
-        }
-
-        benutzerService.syncBerechtigungenToBenutzer(
-            existingUser.getId(),
-            FachRolle.collectAllBerechtigungen(
-                tenantProducer.produceTenant(),
-                existingUser.getFachRollen().toArray(RolesAugmentor.EMPTY_FACHROLLEN)));
+        Benutzer existingUser = benutzerService.updateBenutzerFromJWt(existingUserId, webTokenData);
         // LastSessionId speichern
         this.storeLastLoginInfoForBenutzer(existingUser, webTokenData);
     }

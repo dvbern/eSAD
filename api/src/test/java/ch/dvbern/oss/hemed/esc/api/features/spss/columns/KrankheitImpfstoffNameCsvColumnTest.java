@@ -52,7 +52,7 @@ class KrankheitImpfstoffNameCsvColumnTest extends AbstractBaseColumnTest {
 		KrankheitImpfstoffNameCsvColumn column = new KrankheitImpfstoffNameCsvColumn(config, null, krankheit);
 
 		Untersuchung untersuchung = UntersuchungBuilder.defaultUntersuchung(LocalDate.now());
-		Einladung einladung = untersuchung.getEinladung();
+		Einladung einladung = untersuchung.getEinladungRequired();
 		einladung.setUntersuchung(untersuchung);
 
 		List<UntersuchungImpfungIntern> impfungen = Stream.of(
@@ -90,7 +90,7 @@ class KrankheitImpfstoffNameCsvColumnTest extends AbstractBaseColumnTest {
 		KrankheitImpfstoffNameCsvColumn column = new KrankheitImpfstoffNameCsvColumn(config, null, krankheit);
 
 		Untersuchung untersuchung = UntersuchungBuilder.defaultUntersuchung(LocalDate.now());
-		Einladung einladung = untersuchung.getEinladung();
+		Einladung einladung = untersuchung.getEinladungRequired();
 		einladung.setUntersuchung(untersuchung);
 
 		when(untersuchungImpfungInternServiceMock.findByUntersuchung(any(ID.class))).thenReturn(List.of());

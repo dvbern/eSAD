@@ -20,17 +20,20 @@ describe('PageComponent', () => {
   // @ts-expect-error we mocked just the required things
   const mockBenutzerStore: BenutzerStore = {
     isLoggedIn: signal(true),
+    fachrollen: signal([]),
     createHasRequiredRoleSig: jest.fn().mockReturnValue(signal(true)),
     requireBenutzer: signal<AppUser>({
-      id: '1',
+      id: '2852a34b-0c16-44dc-90fe-26a4c1d4baee',
       username: 'user123',
       email: 'user123@dvbern.ch',
       firstName: 'Frida',
       lastName: 'Hunger',
       fullName: 'Frida Hunger',
       kuerzel: 'FH',
-      fachRollen: [],
-      berechtigungen: [],
+      currentOrganisationRollen: undefined,
+      allOrganisationRollen: [],
+      systemRollen: undefined,
+      timestampAGBAccepted: undefined
     }),
   };
 

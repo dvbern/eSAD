@@ -144,7 +144,7 @@ public class UntersuchungHoerenAudiogramm extends AbstractEntity<UntersuchungHoe
         if (hoerenAudiogramm == null) {
             hoerenAudiogramm = forUntersuchung(untersuchung);
         }
-        AnlassConfig config = untersuchung.getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig config = untersuchung.getAnlass().getAnlassConfig();
 
         hoerenAudiogramm.setAudiogrammSimpel(
             ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(

@@ -6,6 +6,7 @@ import {
   UntersuchungHoerenAudiogrammServiceGetUntersuchungHoerenAudiogrammRequestParams,
   UntersuchungHoerenAudiogrammServiceSaveUntersuchungHoerenAudiogrammRequestParams,
 } from '@dvb/data-access-backend';
+import { toEinladungBackendEntityIdWithClass } from '@dvb/data-access-types';
 import {globalConstants} from '@dvb/feat-shared';
 import {AppErrorHandlerService, AppNotificationStore, Loader} from '@dvb/util-angular';
 import {isNotNullish} from '@dvb/util-shared';

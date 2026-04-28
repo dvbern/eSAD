@@ -75,7 +75,7 @@ class KindAnlaesseResourceITest extends AbstractITest {
         // ARRANGE
         Untersuchung untersuchung = fixtureService.createUntersuchungWithCompleteData();
         assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
-        ID<Kind> kindId = untersuchung.getEinladung().getDossier().getKind().getId();
+        ID<Kind> kindId = untersuchung.getEinladungRequired().getDossier().getKind().getId();
 
         // ACT
         LastImpfungJsonSpec latestImpfung = api
@@ -106,7 +106,7 @@ class KindAnlaesseResourceITest extends AbstractITest {
             .persist(UntersuchungImpfungInternBuilder.create(builder -> builder
                 .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
                 .withImmunitaetForKrankheit(Krankheit.HEPATITIS_B, true)
-                .withUserErfasst(fixtureService.createBenutzer())
+                .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
                 .withImpfstoff(impfstoff)
                 .withTimestampLastManualChange(getAppClock().offsetDateTime().now().minusYears(2)))
             );
@@ -116,7 +116,7 @@ class KindAnlaesseResourceITest extends AbstractITest {
             .persist(UntersuchungImpfungInternBuilder.create(builder -> builder
                 .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
                 .withImmunitaetForKrankheit(Krankheit.HEPATITIS_B, true)
-                .withUserErfasst(fixtureService.createBenutzer())
+                .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
                 .withImpfstoff(impfstoff)
                 .withTimestampLastManualChange(getAppClock().offsetDateTime().now().minusYears(4)))
             );
@@ -128,7 +128,7 @@ class KindAnlaesseResourceITest extends AbstractITest {
                     .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
                     .withTimestampLastManualChange(getAppClock().offsetDateTime().now().minusYears(1))));
 
-        ID<Kind> kindId = untersuchung.getEinladung().getDossier().getKind().getId();
+        ID<Kind> kindId = untersuchung.getEinladungRequired().getDossier().getKind().getId();
         // ACT
         LastImpfungJsonSpec latestImpfung = api
             .kindAnlaesseResourceGetLatestImpfung()
@@ -140,11 +140,11 @@ class KindAnlaesseResourceITest extends AbstractITest {
             .extract().as(LastImpfungJsonSpec.class);
 
         // ASSERT
-        ID<Anlass> anlassIdExpected = untersuchung.getEinladung().getAnlass().getId();
+        ID<Anlass> anlassIdExpected = untersuchung.getAnlass().getId();
         OffsetDateTime offsetDateTimeExpected = untersuchungImpfstatusKrankheit.getTimestampLastManualChange();
         assertThat(latestImpfung).isNotNull();
         assertThat(latestImpfung.getAnlassId()).isEqualTo(anlassIdExpected.getId());
-        assertThat(latestImpfung.getEinladungId()).isEqualTo(untersuchung.getEinladung().getId().getId());
+        assertThat(latestImpfung.getEinladungId()).isEqualTo(untersuchung.getEinladungRequired().getId().getId());
         assertThat(latestImpfung.getTimestampLastManualChange()).isNotNull();
         assertThat(latestImpfung
             // Gives us "time at wall", so UTC

@@ -40,7 +40,8 @@ public final class TenantSettingsMapper {
                 tenantSettingsFeatureMapper.toJson(
                     settings.getTenantSettingFeatures()
                 ),
-                EnumSetUtil.toList(settings.getEinladungStatusValues())
+                EnumSetUtil.toList(settings.getEinladungStatusValues()),
+                settings.getDefaultLandingPage()
             ),
             FachRolle.getFachrollenWithBerechtigung(tenant)
         );
@@ -55,6 +56,7 @@ public final class TenantSettingsMapper {
         existing.setCustomerAdminEmails(customerAdminEmails != null ? customerAdminEmails : List.of());
         existing.setSupportEmail(saveJson.getSupportEmail());
         existing.setAgbResponsability(saveJson.getAgbResponsability());
+        existing.setDefaultLandingPage(saveJson.getDefaultLandingPage());
         tenantSettingsFeatureMapper.toEntity(existing.getTenantSettingFeatures(), saveJson.getFeatures());
     }
 

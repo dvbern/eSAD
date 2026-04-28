@@ -40,7 +40,7 @@ export interface AnlassServiceCreateAnlassRequestParams {
     anlassSaveJson: AnlassSaveJson;
 }
 
-export interface AnlassServiceFindAllForUserRequestParams {
+export interface AnlassServiceFindAnlaesseForDashboardRequestParams {
     benutzerID: BackendEntityId;
 }
 
@@ -294,14 +294,14 @@ export class AnlassService {
     }
 
     /**
-     * Find All Anlaesse
+     * Find All Anlaesse Berechtigt
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public findAllAnlaesse$(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AnlassListJson>;
-    public findAllAnlaesse$(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AnlassListJson>>;
-    public findAllAnlaesse$(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AnlassListJson>>;
-    public findAllAnlaesse$(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public findAllAnlaesseBerechtigt$(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AnlassListJson>;
+    public findAllAnlaesseBerechtigt$(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AnlassListJson>>;
+    public findAllAnlaesseBerechtigt$(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AnlassListJson>>;
+    public findAllAnlaesseBerechtigt$(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -360,18 +360,18 @@ export class AnlassService {
     }
 
     /**
-     * Find All For User
+     * Find Anlaesse For Dashboard
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public findAllForUser$(requestParameters?: AnlassServiceFindAllForUserRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AnlassListJson>;
-    public findAllForUser$(requestParameters?: AnlassServiceFindAllForUserRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AnlassListJson>>;
-    public findAllForUser$(requestParameters?: AnlassServiceFindAllForUserRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AnlassListJson>>;
-    public findAllForUser$(requestParameters?: AnlassServiceFindAllForUserRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public findAnlaesseForDashboard$(requestParameters?: AnlassServiceFindAnlaesseForDashboardRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AnlassListJson>;
+    public findAnlaesseForDashboard$(requestParameters?: AnlassServiceFindAnlaesseForDashboardRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AnlassListJson>>;
+    public findAnlaesseForDashboard$(requestParameters?: AnlassServiceFindAnlaesseForDashboardRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AnlassListJson>>;
+    public findAnlaesseForDashboard$(requestParameters?: AnlassServiceFindAnlaesseForDashboardRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         const benutzerID = requestParameters?.benutzerID;
         if (benutzerID === null || benutzerID === undefined) {
-            throw new Error('Required parameter benutzerID was null or undefined when calling findAllForUser.');
+            throw new Error('Required parameter benutzerID was null or undefined when calling findAnlaesseForDashboard.');
         }
 
         let localVarHeaders = this.defaultHeaders;

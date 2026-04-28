@@ -15,6 +15,7 @@ package ch.dvbern.oss.hemed.esc.generated.restassured.api;
 
 import java.io.File;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FileIngressResultJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizTypSpec;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,12 +59,12 @@ public class FileIngressApiSpec {
 
     public List<Oper> getAllOperations() {
         return Arrays.asList(
-                fileIngressResourceUploadFragebogen()
+                fileIngressResourceUploadNotiz()
         );
     }
 
-    public FileIngressResourceUploadFragebogenOper fileIngressResourceUploadFragebogen() {
-        return new FileIngressResourceUploadFragebogenOper(createReqSpec());
+    public FileIngressResourceUploadNotizOper fileIngressResourceUploadNotiz() {
+        return new FileIngressResourceUploadNotizOper(createReqSpec());
     }
 
     /**
@@ -77,22 +78,24 @@ public class FileIngressApiSpec {
     }
 
     /**
-     * Upload Fragebogen
+     * Upload Notiz
      * 
      *
+     * @see #anlassIdPath  (required)
      * @see #esadIdPath  (required)
+     * @see #notizTypPath  (required)
      * @see #_fileMultiPart  (optional)
      * return FileIngressResultJsonSpec
      */
-    public static class FileIngressResourceUploadFragebogenOper implements Oper {
+    public static class FileIngressResourceUploadNotizOper implements Oper {
 
         public static final Method REQ_METHOD = POST;
-        public static final String REQ_URI = "/api/file-ingress/dossier/{esadId}/fragebogen";
+        public static final String REQ_URI = "/api/file-ingress/dossier/{esadId}/anlass/{anlassId}/{notizTyp}";
 
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
 
-        public FileIngressResourceUploadFragebogenOper(RequestSpecBuilder reqSpec) {
+        public FileIngressResourceUploadNotizOper(RequestSpecBuilder reqSpec) {
             this.reqSpec = reqSpec;
             reqSpec.setContentType("multipart/form-data");
             reqSpec.setAccept("application/json");
@@ -100,7 +103,7 @@ public class FileIngressApiSpec {
         }
 
         /**
-         * POST /api/file-ingress/dossier/{esadId}/fragebogen
+         * POST /api/file-ingress/dossier/{esadId}/anlass/{anlassId}/{notizTyp}
          * @param handler handler
          * @param <T> type
          * @return type
@@ -111,7 +114,7 @@ public class FileIngressApiSpec {
         }
 
         /**
-         * POST /api/file-ingress/dossier/{esadId}/fragebogen
+         * POST /api/file-ingress/dossier/{esadId}/anlass/{anlassId}/{notizTyp}
          * @param handler handler
          * @return FileIngressResultJsonSpec
          */
@@ -120,14 +123,36 @@ public class FileIngressApiSpec {
             return execute(handler).as(type);
         }
 
+        public static final String ANLASS_ID_PATH = "anlassId";
+
+        /**
+         * @param anlassId (String)  (required)
+         * @return operation
+         */
+        public FileIngressResourceUploadNotizOper anlassIdPath(Object anlassId) {
+            reqSpec.addPathParam(ANLASS_ID_PATH, anlassId);
+            return this;
+        }
+
         public static final String ESAD_ID_PATH = "esadId";
 
         /**
          * @param esadId (String)  (required)
          * @return operation
          */
-        public FileIngressResourceUploadFragebogenOper esadIdPath(Object esadId) {
+        public FileIngressResourceUploadNotizOper esadIdPath(Object esadId) {
             reqSpec.addPathParam(ESAD_ID_PATH, esadId);
+            return this;
+        }
+
+        public static final String NOTIZ_TYP_PATH = "notizTyp";
+
+        /**
+         * @param notizTyp (NotizTypSpec)  (required)
+         * @return operation
+         */
+        public FileIngressResourceUploadNotizOper notizTypPath(Object notizTyp) {
+            reqSpec.addPathParam(NOTIZ_TYP_PATH, notizTyp);
             return this;
         }
 
@@ -137,7 +162,7 @@ public class FileIngressApiSpec {
          * @param _file (File)  (optional)
          * @return operation
          */
-         public FileIngressResourceUploadFragebogenOper _fileMultiPart(File _file) {
+         public FileIngressResourceUploadNotizOper _fileMultiPart(File _file) {
             reqSpec.addMultiPart(_file);
             return this;
          }
@@ -147,7 +172,7 @@ public class FileIngressApiSpec {
          * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
          * @return operation
          */
-        public FileIngressResourceUploadFragebogenOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+        public FileIngressResourceUploadNotizOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
             reqSpecCustomizer.accept(reqSpec);
             return this;
         }
@@ -157,7 +182,7 @@ public class FileIngressApiSpec {
          * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
          * @return operation
          */
-        public FileIngressResourceUploadFragebogenOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+        public FileIngressResourceUploadNotizOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
             respSpecCustomizer.accept(respSpec);
             return this;
         }

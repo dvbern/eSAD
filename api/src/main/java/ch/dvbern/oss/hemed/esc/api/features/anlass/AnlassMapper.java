@@ -20,6 +20,7 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
@@ -46,7 +47,8 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.json.SchulInformationenJson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.LehrpersonMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.ZustaendigePersonService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
@@ -66,12 +68,12 @@ public final class AnlassMapper {
     private final BenutzerService benutzerService;
     private final LehrpersonMapper lehrpersonMapper;
     private final AktivitaetHistoryService aktivitaetHistoryService;
-    private final AuthorizerService authorizerService;
     private final TenantSettingsService tenantSettingsService;
     private final ZustaendigePersonService zustaendigePersonService;
+    private final TenantProducer tenantProducer;
 
     @NonNull
-    public static AnlassJson toJson(@NonNull Anlass anlass) {
+    public static AnlassJson toJson(@NonNull Anlass anlass, @NonNull TenantEnum tenant) {
         Benutzer arzt = anlass.getArzt();
         Benutzer mpa = anlass.getMpa();
         Benutzer weiterePerson = anlass.getWeiterePerson();
@@ -89,11 +91,11 @@ public final class AnlassMapper {
                 zeitVonBis != null ? zeitVonBis.getVon() : null,
                 zeitVonBis != null ? zeitVonBis.getBis() : null,
                 anlass.getAnlassArt(),
-                arzt != null ? BenutzerMapper.toOptionJson(arzt) : null,
+                arzt != null ? BenutzerMapper.toOptionJson(arzt, tenant) : null,
                 anlass.getArztInfo(),
-                mpa != null ? BenutzerMapper.toOptionJson(mpa) : null,
+                mpa != null ? BenutzerMapper.toOptionJson(mpa, tenant) : null,
                 anlass.getMpaInfo(),
-                weiterePerson != null ? BenutzerMapper.toOptionJson(weiterePerson) : null,
+                weiterePerson != null ? BenutzerMapper.toOptionJson(weiterePerson, tenant) : null,
                 anlass.getWeiterePersonInfo(),
                 anlass.getVersion()
             ),
@@ -165,11 +167,13 @@ public final class AnlassMapper {
     }
 
     @NonNull
-    public List<AnlassJson> findAll() {
+    public List<AnlassJson> findAllAnlaesseBerechtigt(@NonNull Predicate<Anlass> hasReadAuthorizationAnlass) {
+        TenantEnum tenant = tenantProducer.produceTenant();
         return anlassService.findAll().stream()
+            .filter(anlass -> !anlass.getAnlassConfig().getAnlassTyp().isAnonym())
             // some Roles can only read Anlässe of a certain AnlassTyp
-            .filter(authorizerService::hasReadAuthorizationAnlassListe)
-            .map(AnlassMapper::toJson)
+            .filter(hasReadAuthorizationAnlass)
+            .map(a -> AnlassMapper.toJson(a, tenant))
             .toList();
     }
 
@@ -177,13 +181,13 @@ public final class AnlassMapper {
     public AnlassJson getById(@NonNull ID<Anlass> anlassID) {
         Anlass anlass = anlassService.getById(anlassID);
         aktivitaetHistoryService.createAktivitaetAnlass(anlass);
-        return toJson(anlass);
+        return toJson(anlass, tenantProducer.produceTenant());
     }
 
     @NonNull
     public AnlassJson create(@NonNull AnlassSaveJson saveJson) {
         Anlass entity = toEntityForCreate(saveJson);
-        return toJson(anlassService.persist(entity));
+        return toJson(anlassService.persist(entity), tenantProducer.produceTenant());
     }
 
     @NonNull
@@ -199,13 +203,13 @@ public final class AnlassMapper {
             saveJson.getArzt() != null ? saveJson.getArzt().getId() : null,
             saveJson.getMpa() != null ? saveJson.getMpa().getId() : null);
 
-        return toJson(updatedAnlass);
+        return toJson(updatedAnlass, tenantProducer.produceTenant());
     }
 
     @NonNull
     public AnlassJson changeAnlassStatus(@NonNull ID<Anlass> anlassID, @NonNull AnlassStatus status) {
         Anlass entity = anlassService.changeAnlassStatus(anlassID, status);
-        return toJson(entity);
+        return toJson(entity, tenantProducer.produceTenant());
     }
 
     public void remove(@NonNull ID<Anlass> anlassID) {
@@ -213,11 +217,14 @@ public final class AnlassMapper {
     }
 
     @NonNull
-    public AnlassListJson findAllForUser(@NonNull ID<Benutzer> benutzerID) {
+    public AnlassListJson findAnlaesseForDashboard(
+        @NonNull ID<Benutzer> benutzerID,
+        @NonNull Predicate<Anlass> hasReadAuthorizationAnlass
+    ) {
         List<AnlassJson> list = anlassService.findAllForUserInFuture(benutzerID).stream()
-            // some Roles can only read Anlässe of a certain AnlassTyp
-            .filter(authorizerService::hasReadAuthorizationAnlassListe)
-            .map(AnlassMapper::toJson)
+            .filter(anlass -> !anlass.getAnlassConfig().getAnlassTyp().isAnonym())
+            .filter(hasReadAuthorizationAnlass)
+            .map(a -> AnlassMapper.toJson(a, tenantProducer.produceTenant()))
             .toList();
         return new AnlassListJson(list, anlassService.getCountAllforUserInFuture(benutzerID));
     }
@@ -251,8 +258,9 @@ public final class AnlassMapper {
     @NonNull
     public AnlassWithOpenSlotsListJson searchAnlassTermineWithAvailableSlots(
         @NonNull List<AnlassTyp> anlassTypen,
-        @NonNull ID<Kind> kindId) {
-
+        @NonNull ID<Kind> kindId,
+        @NonNull Predicate<AnlassWithOpenSlotsOptionJson> hasReadAuthorizationAnlass
+    ) {
         int maxEinladungenPerAnlass = this.tenantSettingsService.getTenantSetting().getFolgeTermineMaxSlots();
 
         List<AnlassWithOpenSlotsOptionJson> options =
@@ -261,7 +269,7 @@ public final class AnlassMapper {
                     kindId,
                     maxEinladungenPerAnlass)
                 .stream()
-                .filter(anlasOption -> authorizerService.hasReadAuthorizationAnlassListe(anlasOption.getAnlassTyp()))
+                .filter(hasReadAuthorizationAnlass)
                 .toList();
 
         return new AnlassWithOpenSlotsListJson(options, maxEinladungenPerAnlass);
@@ -271,12 +279,13 @@ public final class AnlassMapper {
     public AnlassWithDateTimeListJson findScheduledAnlaesseOfTypeForKind(
         @NonNull List<AnlassTyp> anlassTypen,
         @NonNull ID<Kind> kindId,
-        @NonNull List<ID<Anlass>> excludeAnlassIds
+        @NonNull List<ID<Anlass>> excludeAnlassIds,
+        @NonNull Predicate<AnlassWithDateTimeJson> hasReadAuthorizationAnlass
     ) {
         List<AnlassWithDateTimeJson> kindAnlaesse =
             anlassService.findScheduledAnlaesseOfTypeForKind(anlassTypen, kindId, excludeAnlassIds)
                 .stream()
-                .filter(anlass -> authorizerService.hasReadAuthorizationAnlassListe(anlass.getAnlassTyp()))
+                .filter(hasReadAuthorizationAnlass)
                 .toList();
 
         return new AnlassWithDateTimeListJson(kindAnlaesse);

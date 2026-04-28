@@ -1,0 +1,69 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet author="esc" id="1776628872-1">
+    <comment>ESC-1198: Add systemrolle_id column to benutzer table</comment>
+    <sql>
+      alter table benutzer add column systemrollen_id uuid;
+    </sql>
+  </changeSet>
+
+  <changeSet author="esc" id="1776628872-2">
+    <comment>ESC-1198: Migrate systemrollen FK from systemrollen.benutzer_id to benutzer.systemrolle_id</comment>
+    <sql>
+      update benutzer set systemrollen_id = sr.id
+      from systemrollen sr
+      where sr.benutzer_id = benutzer.id;
+    </sql>
+  </changeSet>
+
+  <changeSet author="esc" id="1776628872-3">
+    <comment>ESC-1198: Drop old FK and index on systemrollen.benutzer_id, then drop the column</comment>
+    <sql>
+      alter table if exists systemrollen drop constraint if exists fk_systemrollen_benutzer;
+      drop index if exists ix_systemrollen_benutzer;
+      alter table if exists systemrollen drop column if exists benutzer_id;
+    </sql>
+  </changeSet>
+
+  <changeSet author="esc" id="1776628872-4">
+    <comment>ESC-1198: Add FK constraint and index on benutzer.systemrolle_id</comment>
+    <sql>
+      alter table if exists benutzer add constraint fk_benutzer_systemrollen foreign key (systemrollen_id) references systemrollen (id);
+      create index if not exists ix_benutzer_systemrollen on benutzer (systemrollen_id);
+    </sql>
+  </changeSet>
+
+  <changeSet author="esc" id="1776628872-5">
+    <comment>ESC-1198: Drop organisationrollenberechtigung table and audit table</comment>
+    <sql>
+      drop table if exists organisationrollenberechtigung cascade;
+      drop table if exists organisationrollenberechtigung_aud cascade;
+    </sql>
+  </changeSet>
+
+  <changeSet author="esc" id="1776628872-6">
+    <comment>ESC-1198: Drop systemrollenberechtigung table and audit table</comment>
+    <sql>
+      drop table if exists systemrollenberechtigung cascade;
+      drop table if exists systemrollenberechtigung_aud cascade;
+    </sql>
+  </changeSet>
+
+  <changeSet author="esc" id="1776628872-7">
+    <comment>ESC-1198: Also handle systemrollen_aud - drop benutzer_id column</comment>
+    <sql>
+      alter table if exists systemrollen_aud drop column if exists benutzer_id;
+    </sql>
+  </changeSet>
+
+  <changeSet author="esc" id="1776628872-8">
+    <comment>ESC-1198: Add systemrolle_id to benutzer_aud</comment>
+    <sql>
+      alter table if exists benutzer_aud add column if not exists systemrollen_id uuid;
+    </sql>
+  </changeSet>
+
+</databaseChangeLog>

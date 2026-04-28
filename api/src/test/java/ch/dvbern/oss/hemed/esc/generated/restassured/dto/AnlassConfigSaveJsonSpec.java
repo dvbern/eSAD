@@ -49,6 +49,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   AnlassConfigSaveJsonSpec.JSON_PROPERTY_SHOW_IMPFAUSWEIS,
   AnlassConfigSaveJsonSpec.JSON_PROPERTY_SHOW_FRAGEBOGEN,
   AnlassConfigSaveJsonSpec.JSON_PROPERTY_SHOW_ANMELDUNG_BESTAETIGUNG,
+  AnlassConfigSaveJsonSpec.JSON_PROPERTY_SHOW_IMPFANMELDUNG,
   AnlassConfigSaveJsonSpec.JSON_PROPERTY_SHOW_DATEN_PERSONENDATEN,
   AnlassConfigSaveJsonSpec.JSON_PROPERTY_SHOW_DATEN_PERSONENDATEN_ESAD_ID,
   AnlassConfigSaveJsonSpec.JSON_PROPERTY_DATEN_UNTERSUCHUNG,
@@ -240,6 +241,10 @@ public class AnlassConfigSaveJsonSpec {
   public static final String JSON_PROPERTY_SHOW_ANMELDUNG_BESTAETIGUNG = "showAnmeldungBestaetigung";
   @jakarta.annotation.Nonnull
   private Boolean showAnmeldungBestaetigung;
+
+  public static final String JSON_PROPERTY_SHOW_IMPFANMELDUNG = "showImpfanmeldung";
+  @jakarta.annotation.Nonnull
+  private Boolean showImpfanmeldung;
 
   public static final String JSON_PROPERTY_SHOW_DATEN_PERSONENDATEN = "showDatenPersonendaten";
   @jakarta.annotation.Nonnull
@@ -1053,6 +1058,31 @@ public class AnlassConfigSaveJsonSpec {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setShowAnmeldungBestaetigung(@jakarta.annotation.Nonnull Boolean showAnmeldungBestaetigung) {
     this.showAnmeldungBestaetigung = showAnmeldungBestaetigung;
+  }
+
+  public AnlassConfigSaveJsonSpec showImpfanmeldung(@jakarta.annotation.Nonnull Boolean showImpfanmeldung) {
+    
+    this.showImpfanmeldung = showImpfanmeldung;
+    return this;
+  }
+
+  /**
+   * Get showImpfanmeldung
+   * @return showImpfanmeldung
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_SHOW_IMPFANMELDUNG)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Boolean getShowImpfanmeldung() {
+    return showImpfanmeldung;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SHOW_IMPFANMELDUNG)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setShowImpfanmeldung(@jakarta.annotation.Nonnull Boolean showImpfanmeldung) {
+    this.showImpfanmeldung = showImpfanmeldung;
   }
 
   public AnlassConfigSaveJsonSpec showDatenPersonendaten(@jakarta.annotation.Nonnull Boolean showDatenPersonendaten) {
@@ -5126,6 +5156,7 @@ public class AnlassConfigSaveJsonSpec {
         Objects.equals(this.showImpfausweis, anlassConfigSaveJson.showImpfausweis) &&
         Objects.equals(this.showFragebogen, anlassConfigSaveJson.showFragebogen) &&
         Objects.equals(this.showAnmeldungBestaetigung, anlassConfigSaveJson.showAnmeldungBestaetigung) &&
+        Objects.equals(this.showImpfanmeldung, anlassConfigSaveJson.showImpfanmeldung) &&
         Objects.equals(this.showDatenPersonendaten, anlassConfigSaveJson.showDatenPersonendaten) &&
         Objects.equals(this.showDatenPersonendatenEsadId, anlassConfigSaveJson.showDatenPersonendatenEsadId) &&
         Objects.equals(this.datenUntersuchung, anlassConfigSaveJson.datenUntersuchung) &&
@@ -5289,7 +5320,7 @@ public class AnlassConfigSaveJsonSpec {
 
   @Override
   public int hashCode() {
-    return Objects.hash(anlassTyp, datumVon, datumBis, bezeichnung, showImpfausweis, showFragebogen, showAnmeldungBestaetigung, showDatenPersonendaten, showDatenPersonendatenEsadId, datenUntersuchung, showDatenSchule, datenBemerkung, vorabklaerungenFragebogenStatus, vorabklaerungenEinverstaendnisImpfungen, vorabklaerungenChronischeKrankheiten, showImpfungenHeaderImpfausweisUnvollstaendig, showImpfungenHeaderImpfausweisNichtVorhanden, showImpfungenHeaderImpfausweisZweiPlusEinsSchema, showImpfungenHeaderImpfausweisUpload, impfungenUebersicht, impfungenListe, showImpfungenDoppelkontrolle, impfungenMassnahmeKeineMassnahmen, impfungenMassnahmeGruppenFolgetermin, impfungenMassnahmeImpfenFolgetermin, impfungenMassnahmeEinzelFolgetermin, impfungenMassnahmeInfoKinderarzt, impfungenMassnahmeBeratungMPA, impfungenMassnahmeInfomaterialAbgegeben, impfungenMassnahmeInfoEltern, impfungenMassnahmeRueckfrageKinderarzt, impfungenMassnahmeBemerkungen, checkEinwilligungVorhanden, checkKontraindikationenAbgeklaert, checkDoppelkontrolleImpfentscheidDurchgefuehrt, untersuchungImpfungEmpfehlung, untersuchungImpfungEmpfehlungValues, untersuchungImpfungAchtung, untersuchungImpfungBemerkungen, untersuchungImpfungKrankheitenLinksValues, untersuchungImpfungKrankheitenRechtsValues, impfungenDataMinimalImpfausweisGeprueft, impfungenDataMinimalImmunsuppression, impfungenDataMinimalMasernImpfstatus, impfungenDataMinimalMasernAnzahlImpfungen, impfungenDataMinimalHpvImpfstatus, impfungenDataMinimalHpvAnzahlImpfungen, impfungenDataMinimalImpfempfehlung, impfungenDataMinimalImpfungDurchgefuehrt, sehenBrilleLinsen, sehenBrilleLinsenValues, sehenFarbsehen, sehenTafel, sehenFernvisus, sehenFernvisusAugeEinzeln, sehenStereoTest, sehenStrabismus, sehenStrabismusValues, sehenStrabismusAuspraegung, sehenStrabismusAuftreten, sehenInspektion, sehenKonvergenz, sehenMotilitaet, sehenNahvisus, sehenEmpfehlung, sehenBemerkungen, sehenBemerkungenFragebogen, sehenMassnahmen, hoerenAudiogramm, hoerenAudiogramm250Hz, hoerenAudiogramm8000Hz, hoerenAudiogrammSimpel, hoerenAudiogrammBeurteilung, hoerenAudiogrammZusaetzlicheAngaben, hoerenAudiogrammEmpfehlung, hoerenAudiogrammBemerkungen, hoerenHoerhilfe, hoerenOtoskopie, hoerenOtoskopieBemerkungen, groesseGewichtGroesse, groesseGewichtGewicht, groesseGewichtBmi, groesseGewichtGroessePerzentile, groesseGewichtGewichtPerzentile, groesseGewichtBmiPerzentile, groesseGewichtBmiPerzentileValues, groesseGewichtEmpfehlung, groesseGewichtBemerkungen, showTriageTriage, showTriageKindWeiterleiten, laeusekontrolleBeurteilung, laeusekontrolleEmpfehlung, laeusekontrolleBemerkungen, untersuchungBewegungsapparat, untersuchungEinbeinstand, untersuchungEinbeinstandRechtsLinks, untersuchungEinbeinstandValues, untersuchungEinbeinhuepfen, untersuchungEinbeinhuepfenRechtsLinks, untersuchungEinbeinhuepfenValues, untersuchungFingeropposition, untersuchungHampelmann, untersuchungBallFangen, untersuchungBallWerfen, untersuchungNameSchreiben, untersuchungFigurNachmalen, untersuchungStifthaltung, untersuchungAussprache, untersuchungLesefit, untersuchungLesefitPunkte, untersuchungZahlenNachsprechen4, untersuchungZahlenNachsprechen5, untersuchungZeichnenKreis, untersuchungZeichnenViereck, untersuchungZeichnenDreieck, untersuchungZeichnenMensch, untersuchungZeichnenMenschPunkte, untersuchungMotorik, untersuchungMotorikValues, untersuchungMotorikPunkte, untersuchungKognition, untersuchungKognitionPunkte, untersuchungSprachfaehigkeitSingleValue, untersuchungSprachfaehigkeitMultiValue, untersuchungSprachfaehigkeitValues, untersuchungSprachePunkte, untersuchungMundZaehne, untersuchungHaut, untersuchungHerz, untersuchungBlutdruck, untersuchungVerhalten, unterlagenEinverstaendnis, unterlagenVerhaltensfragebogen, untersuchungEmpfehlung, untersuchungBemerkungen, untersuchungSpracheNachsprechen, untersuchungSpracheWortschatz, untersuchungSpracheSprachverstaendnis, untersuchungSpracheBemerkungen, bewegungsapparatSkoliose, bewegungsapparatHaltungsschwaeche, bewegungsapparatVerkuerzungHamstringmuskulatur, bewegungsapparatBemerkung, untersuchungBeeintraechtigungFreiesGehen, untersuchungBeeintraechtigungOhneStuetzradVelofahren, untersuchungBeeintraechtigungGrafomotorik, untersuchungBeeintraechtigungFeinmotorik, untersuchungBeeintraechtigungGrobmotorik, untersuchungBeeintraechtigungGleichgewicht, untersuchungBeeintraechtigungBemerkung, abschlussUeberweisungErfolgt, abschlussAerztlicheValidierungErforderlich, abschlussBeratungDurchgefuehrt, abschlussBeurteilungEmpfohleneMassnahmen, showCardAbschlussSignatur, showMassnahmenPathologischeBefunde, showMassnahmenKeine, showMassnahmenBeratungMpa, showMassnahmenBeratungSchulAerztin, showMassnahmenBereitsBehandelt, showMassnahmenInfomaterial, showMassnahmenInfoEltern, showMassnahmenUeberweisungHausarzt, showMassnahmenUeberweisungAugenarzt, showMassnahmenNachkontrolleSaed, showMassnahmenAnderes);
+    return Objects.hash(anlassTyp, datumVon, datumBis, bezeichnung, showImpfausweis, showFragebogen, showAnmeldungBestaetigung, showImpfanmeldung, showDatenPersonendaten, showDatenPersonendatenEsadId, datenUntersuchung, showDatenSchule, datenBemerkung, vorabklaerungenFragebogenStatus, vorabklaerungenEinverstaendnisImpfungen, vorabklaerungenChronischeKrankheiten, showImpfungenHeaderImpfausweisUnvollstaendig, showImpfungenHeaderImpfausweisNichtVorhanden, showImpfungenHeaderImpfausweisZweiPlusEinsSchema, showImpfungenHeaderImpfausweisUpload, impfungenUebersicht, impfungenListe, showImpfungenDoppelkontrolle, impfungenMassnahmeKeineMassnahmen, impfungenMassnahmeGruppenFolgetermin, impfungenMassnahmeImpfenFolgetermin, impfungenMassnahmeEinzelFolgetermin, impfungenMassnahmeInfoKinderarzt, impfungenMassnahmeBeratungMPA, impfungenMassnahmeInfomaterialAbgegeben, impfungenMassnahmeInfoEltern, impfungenMassnahmeRueckfrageKinderarzt, impfungenMassnahmeBemerkungen, checkEinwilligungVorhanden, checkKontraindikationenAbgeklaert, checkDoppelkontrolleImpfentscheidDurchgefuehrt, untersuchungImpfungEmpfehlung, untersuchungImpfungEmpfehlungValues, untersuchungImpfungAchtung, untersuchungImpfungBemerkungen, untersuchungImpfungKrankheitenLinksValues, untersuchungImpfungKrankheitenRechtsValues, impfungenDataMinimalImpfausweisGeprueft, impfungenDataMinimalImmunsuppression, impfungenDataMinimalMasernImpfstatus, impfungenDataMinimalMasernAnzahlImpfungen, impfungenDataMinimalHpvImpfstatus, impfungenDataMinimalHpvAnzahlImpfungen, impfungenDataMinimalImpfempfehlung, impfungenDataMinimalImpfungDurchgefuehrt, sehenBrilleLinsen, sehenBrilleLinsenValues, sehenFarbsehen, sehenTafel, sehenFernvisus, sehenFernvisusAugeEinzeln, sehenStereoTest, sehenStrabismus, sehenStrabismusValues, sehenStrabismusAuspraegung, sehenStrabismusAuftreten, sehenInspektion, sehenKonvergenz, sehenMotilitaet, sehenNahvisus, sehenEmpfehlung, sehenBemerkungen, sehenBemerkungenFragebogen, sehenMassnahmen, hoerenAudiogramm, hoerenAudiogramm250Hz, hoerenAudiogramm8000Hz, hoerenAudiogrammSimpel, hoerenAudiogrammBeurteilung, hoerenAudiogrammZusaetzlicheAngaben, hoerenAudiogrammEmpfehlung, hoerenAudiogrammBemerkungen, hoerenHoerhilfe, hoerenOtoskopie, hoerenOtoskopieBemerkungen, groesseGewichtGroesse, groesseGewichtGewicht, groesseGewichtBmi, groesseGewichtGroessePerzentile, groesseGewichtGewichtPerzentile, groesseGewichtBmiPerzentile, groesseGewichtBmiPerzentileValues, groesseGewichtEmpfehlung, groesseGewichtBemerkungen, showTriageTriage, showTriageKindWeiterleiten, laeusekontrolleBeurteilung, laeusekontrolleEmpfehlung, laeusekontrolleBemerkungen, untersuchungBewegungsapparat, untersuchungEinbeinstand, untersuchungEinbeinstandRechtsLinks, untersuchungEinbeinstandValues, untersuchungEinbeinhuepfen, untersuchungEinbeinhuepfenRechtsLinks, untersuchungEinbeinhuepfenValues, untersuchungFingeropposition, untersuchungHampelmann, untersuchungBallFangen, untersuchungBallWerfen, untersuchungNameSchreiben, untersuchungFigurNachmalen, untersuchungStifthaltung, untersuchungAussprache, untersuchungLesefit, untersuchungLesefitPunkte, untersuchungZahlenNachsprechen4, untersuchungZahlenNachsprechen5, untersuchungZeichnenKreis, untersuchungZeichnenViereck, untersuchungZeichnenDreieck, untersuchungZeichnenMensch, untersuchungZeichnenMenschPunkte, untersuchungMotorik, untersuchungMotorikValues, untersuchungMotorikPunkte, untersuchungKognition, untersuchungKognitionPunkte, untersuchungSprachfaehigkeitSingleValue, untersuchungSprachfaehigkeitMultiValue, untersuchungSprachfaehigkeitValues, untersuchungSprachePunkte, untersuchungMundZaehne, untersuchungHaut, untersuchungHerz, untersuchungBlutdruck, untersuchungVerhalten, unterlagenEinverstaendnis, unterlagenVerhaltensfragebogen, untersuchungEmpfehlung, untersuchungBemerkungen, untersuchungSpracheNachsprechen, untersuchungSpracheWortschatz, untersuchungSpracheSprachverstaendnis, untersuchungSpracheBemerkungen, bewegungsapparatSkoliose, bewegungsapparatHaltungsschwaeche, bewegungsapparatVerkuerzungHamstringmuskulatur, bewegungsapparatBemerkung, untersuchungBeeintraechtigungFreiesGehen, untersuchungBeeintraechtigungOhneStuetzradVelofahren, untersuchungBeeintraechtigungGrafomotorik, untersuchungBeeintraechtigungFeinmotorik, untersuchungBeeintraechtigungGrobmotorik, untersuchungBeeintraechtigungGleichgewicht, untersuchungBeeintraechtigungBemerkung, abschlussUeberweisungErfolgt, abschlussAerztlicheValidierungErforderlich, abschlussBeratungDurchgefuehrt, abschlussBeurteilungEmpfohleneMassnahmen, showCardAbschlussSignatur, showMassnahmenPathologischeBefunde, showMassnahmenKeine, showMassnahmenBeratungMpa, showMassnahmenBeratungSchulAerztin, showMassnahmenBereitsBehandelt, showMassnahmenInfomaterial, showMassnahmenInfoEltern, showMassnahmenUeberweisungHausarzt, showMassnahmenUeberweisungAugenarzt, showMassnahmenNachkontrolleSaed, showMassnahmenAnderes);
   }
 
   @Override
@@ -5303,6 +5334,7 @@ public class AnlassConfigSaveJsonSpec {
     sb.append("    showImpfausweis: ").append(toIndentedString(showImpfausweis)).append("\n");
     sb.append("    showFragebogen: ").append(toIndentedString(showFragebogen)).append("\n");
     sb.append("    showAnmeldungBestaetigung: ").append(toIndentedString(showAnmeldungBestaetigung)).append("\n");
+    sb.append("    showImpfanmeldung: ").append(toIndentedString(showImpfanmeldung)).append("\n");
     sb.append("    showDatenPersonendaten: ").append(toIndentedString(showDatenPersonendaten)).append("\n");
     sb.append("    showDatenPersonendatenEsadId: ").append(toIndentedString(showDatenPersonendatenEsadId)).append("\n");
     sb.append("    datenUntersuchung: ").append(toIndentedString(datenUntersuchung)).append("\n");

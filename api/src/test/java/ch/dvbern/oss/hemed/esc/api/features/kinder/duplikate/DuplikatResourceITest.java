@@ -234,8 +234,8 @@ class DuplikatResourceITest extends AbstractITest {
         assertThat(aufgabeService.findAllForKind(duplikatKind1.getId())).containsExactlyInAnyOrderElementsOf(
             expectedAufgaben1AfterMerge); // there are more aufgaben autocreated
         assertThat(kindAnlaesseService.findAllEinladungForKind(duplikatKind1.getId())).containsExactlyInAnyOrder(
-            untersuchung1.getEinladung(),
-            untersuchung2.getEinladung());
+            untersuchung1.getEinladungRequired(),
+            untersuchung2.getEinladungRequired());
 
         // Kind1 hat eine zusätzliche Notiz erhalten, die den Merge beschreibt
         assertThat(notizenKind1).hasSize(3); // 2 gemergte plus 1 Merge-Notiz

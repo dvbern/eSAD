@@ -4,22 +4,25 @@ import {
   AgbPageComponent,
   AufgabenStore,
   BenutzerStore,
-  NoRolesPageComponent,
+  GenericMessagePageComponent,
   Path,
   requireAcceptedAgb,
   requireNotAcceptedAgb,
   requireRole,
+  requireStatistikEnabled,
+  TenantSettingsStore,
 } from '@dvb/feat-shared';
 import {
   hasAdminPageViewBerechtiung,
   hasAllNotizenEditBerechtigung,
   hasAnlassViewBerechtigung,
   hasAufgabenViewBerechtigungen,
-  hasConfigViewBerechtigung,
+  hasConfigViewBerechtigung, hasDashboardBerechtigungen,
   hasKindPageViewBerechtigung,
   hasPlaygroundViewBerechtigung,
   hasReportViewBerechtigung,
   hasSystemPageViewBerechtiung,
+  withAnyBerechtigung,
 } from '@dvb/util-shared';
 
 export const appRoutes: Route[] = [
@@ -37,25 +40,43 @@ export const appRoutes: Route[] = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: Path.DASHBOARD,
+        redirectTo: () => inject(TenantSettingsStore).defaultLandingPage(), // get tenant's default page
       },
       {
-        path: Path.NO_ROLES,
+        path: Path.INFO,
         pathMatch: 'full',
-        component: NoRolesPageComponent,
+        component: GenericMessagePageComponent,
       },
       {
         path: Path.AGB,
         pathMatch: 'full',
         canActivate: [
+          requireRole(withAnyBerechtigung()),
           requireNotAcceptedAgb()
         ],
         component: AgbPageComponent,
       },
       {
+        path: Path.APP_MODE_SELECTION,
+        canActivate: [
+          requireRole(withAnyBerechtigung()),
+          requireAcceptedAgb(),
+        ],
+        loadChildren: () => import('@dvb/feat-app-mode-selection').then(c => c.appModeSelectionRoutes),
+      },
+      {
+        path: Path.STATISTIK,
+        canActivate: [
+          requireRole(withAnyBerechtigung()),
+          requireAcceptedAgb(),
+          requireStatistikEnabled,
+        ],
+        loadChildren: () => import('@dvb/feat-statistik').then(c => c.statistikRoutes),
+      },
+      {
         path: Path.DASHBOARD,
         canActivate: [
-          requireRole(hasAnlassViewBerechtigung()),
+          requireRole(hasDashboardBerechtigungen()),
           requireAcceptedAgb(),
         ],
         loadChildren: () => import('@dvb/feat-dashboard').then(c => c.dashboardRoutes),

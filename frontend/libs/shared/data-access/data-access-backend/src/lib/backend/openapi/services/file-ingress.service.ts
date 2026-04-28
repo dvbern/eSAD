@@ -17,14 +17,18 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
+import { BackendEntityId } from '@dvb/data-access-types';
 import { FileIngressResultJson } from '../model/file-ingress-result-json';
+import { NotizTyp } from '../model/notiz-typ';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 
 
-export interface FileIngressServiceUploadFragebogenRequestParams {
+export interface FileIngressServiceUploadNotizRequestParams {
+    anlassId: BackendEntityId;
     esadId: string;
+    notizTyp: NotizTyp;
     file?: Blob;
 }
 
@@ -107,18 +111,26 @@ export class FileIngressService {
     }
 
     /**
-     * Upload Fragebogen
+     * Upload Notiz
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public uploadFragebogen$(requestParameters?: FileIngressServiceUploadFragebogenRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<FileIngressResultJson>;
-    public uploadFragebogen$(requestParameters?: FileIngressServiceUploadFragebogenRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileIngressResultJson>>;
-    public uploadFragebogen$(requestParameters?: FileIngressServiceUploadFragebogenRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileIngressResultJson>>;
-    public uploadFragebogen$(requestParameters?: FileIngressServiceUploadFragebogenRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public uploadNotiz$(requestParameters?: FileIngressServiceUploadNotizRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<FileIngressResultJson>;
+    public uploadNotiz$(requestParameters?: FileIngressServiceUploadNotizRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileIngressResultJson>>;
+    public uploadNotiz$(requestParameters?: FileIngressServiceUploadNotizRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileIngressResultJson>>;
+    public uploadNotiz$(requestParameters?: FileIngressServiceUploadNotizRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const anlassId = requestParameters?.anlassId;
+        if (anlassId === null || anlassId === undefined) {
+            throw new Error('Required parameter anlassId was null or undefined when calling uploadNotiz.');
+        }
         const esadId = requestParameters?.esadId;
         if (esadId === null || esadId === undefined) {
-            throw new Error('Required parameter esadId was null or undefined when calling uploadFragebogen.');
+            throw new Error('Required parameter esadId was null or undefined when calling uploadNotiz.');
+        }
+        const notizTyp = requestParameters?.notizTyp;
+        if (notizTyp === null || notizTyp === undefined) {
+            throw new Error('Required parameter notizTyp was null or undefined when calling uploadNotiz.');
         }
         const file = requestParameters?.file;
 
@@ -186,7 +198,7 @@ export class FileIngressService {
             }
         }
 
-        let localVarPath = `/api/file-ingress/dossier/${this.configuration.encodeParam({name: "esadId", value: esadId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/fragebogen`;
+        let localVarPath = `/api/file-ingress/dossier/${this.configuration.encodeParam({name: "esadId", value: esadId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/anlass/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/${this.configuration.encodeParam({name: "notizTyp", value: notizTyp, in: "path", style: "simple", explode: false, dataType: "NotizTyp", dataFormat: undefined})}`;
         return this.httpClient.request<FileIngressResultJson>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

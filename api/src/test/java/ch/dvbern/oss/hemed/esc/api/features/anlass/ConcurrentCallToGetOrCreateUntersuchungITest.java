@@ -73,11 +73,13 @@ class ConcurrentCallToGetOrCreateUntersuchungITest extends AbstractITest {
 
         // ARRANGE some problematic calls to run in parallel, they all access untersuchung thorough laz loading
 
+        String einladungIdWithSuffix = einladung.getId().getId() + "-einladung";
+
         Runnable taskMassnahmen = () ->
             massnahmenApi
                 .untersuchungMassnahmenResourceGetUntersuchungMassnahmen()
                 .anlassIdPath(anlass.getId().getId())
-                .einladungIdPath(einladung.getId().getId())
+                .einladungIdPath(einladungIdWithSuffix)
                 .execute(ResponseBody::prettyPeek)
                 .then()
                 .assertThat()
@@ -87,7 +89,7 @@ class ConcurrentCallToGetOrCreateUntersuchungITest extends AbstractITest {
             impfungenApi
                 .untersuchungImpfungenResourceGetUntersuchungImpfungenData()
                 .anlassIdPath(anlass.getId().getId())
-                .einladungIdPath(einladung.getId().getId())
+                .einladungIdPath(einladungIdWithSuffix)
                 .execute(ResponseBody::prettyPeek)
                 .then()
                 .assertThat()
@@ -99,7 +101,7 @@ class ConcurrentCallToGetOrCreateUntersuchungITest extends AbstractITest {
             einladungApi
                 .einladungResourceGetUntersuchungTabsSavedByEinladungId()
                 .anlassIdPath(anlass.getId().getId())
-                .einladungIdPath(einladung.getId().getId())
+                .einladungIdPath(einladungIdWithSuffix)
                 .execute(ResponseBody::prettyPeek)
                 .then()
                 .assertThat()

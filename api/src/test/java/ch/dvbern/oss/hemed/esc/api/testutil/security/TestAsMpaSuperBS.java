@@ -13,14 +13,16 @@ import io.quarkus.test.security.oidc.OidcSecurity;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AERZTE_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AERZTE_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSLISTE_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSLISTE_LESEN_LAEUSE;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLANUNG_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLANUNG_LESEN_LAEUSE;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLANUNG_SCHREIBEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLANUNG_SCHREIBEN_LAEUSE;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AUFGABEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AUFGABEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.EIGENE_BERECHTIGUNGEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.IMPFSTOFFE_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.IMPFSTOFFE_SCHREIBEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.INDIVIDUELLE_REPORTS;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_ALLE_NOTIZEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_ALLE_NOTIZEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_LESEN_MEDIZINISCH;
@@ -45,6 +47,8 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_HOREN_
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_HOREN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_IMPFEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_IMPFEN_SCHREIBEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_LAEUSE_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_LAEUSE_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_MASSNAHMEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_MASSNAHMEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_SEHEN_LESEN;
@@ -65,12 +69,13 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         AUFGABEN_LESEN,
         AUFGABEN_SCHREIBEN,
         ANLASSLISTE_LESEN,
+        ANLASSLISTE_LESEN_LAEUSE,
         ANLASSPLANUNG_LESEN,
         ANLASSPLANUNG_SCHREIBEN,
+        ANLASSPLANUNG_LESEN_LAEUSE,
+        ANLASSPLANUNG_SCHREIBEN_LAEUSE,
         SU_DATEN_LESEN,
         SU_DATEN_SCHREIBEN,
-        SU_VORABKLAERUNGEN_LESEN,
-        SU_VORABKLAERUNGEN_SCHREIBEN,
         SU_IMPFEN_LESEN,
         SU_IMPFEN_SCHREIBEN,
         SU_SEHEN_LESEN,
@@ -79,6 +84,8 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         SU_HOREN_SCHREIBEN,
         SU_GROSSE_GEWICHT_LESEN,
         SU_GROSSE_GEWICHT_SCHREIBEN,
+        SU_LAEUSE_LESEN,
+        SU_LAEUSE_SCHREIBEN,
         SU_TRIAGE_LESEN,
         SU_TRIAGE_SCHREIBEN,
         SU_AERZTLICHE_UNTERSUCHUNG_LESEN,
@@ -87,6 +94,8 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         SU_MASSNAHMEN_SCHREIBEN,
         SU_ABSCHLUSS_LESEN,
         SU_ABSCHLUSS_SCHREIBEN,
+        SU_VORABKLAERUNGEN_LESEN,
+        SU_VORABKLAERUNGEN_SCHREIBEN,
         KINDER_LESEN_MEDIZINISCH,
         KINDER_LESEN_NICHT_MEDIZINISCH,
         KINDER_SCHREIBEN_MEDIZINISCH,
@@ -95,19 +104,18 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         KINDER_ALLE_NOTIZEN_SCHREIBEN,
         KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
         KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
-        INDIVIDUELLE_REPORTS,
-        LISTEN_LESEN,
         LISTEN_ADMIN_LESEN,
-        AERZTE_LESEN,
-        AERZTE_SCHREIBEN,
+        LISTEN_LESEN,
         IMPFSTOFFE_LESEN,
-        IMPFSTOFFE_SCHREIBEN,
         LABELS_LESEN,
         LABELS_ADMIN_LESEN,
         EIGENE_BERECHTIGUNGEN_LESEN,
         VORLAGEN_LESEN,
         VORLAGEN_ADMIN_LESEN,
-        VORLAGEN_SCHREIBEN
+        AERZTE_LESEN,
+        IMPFSTOFFE_SCHREIBEN,
+        VORLAGEN_SCHREIBEN,
+        AERZTE_SCHREIBEN
     }
 )
 @OidcSecurity(
@@ -122,6 +130,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         @Claim(key = JsonWebTokenClaims.TITLE_CLAIM, value = TestAsMpaSuperBS.TITEL),
     }
 )
+@TestAsMarker
 public @interface TestAsMpaSuperBS {
     String BENUTZER_ID = "ec5910c1-dd52-4579-9910-c1dd529579ef";
     String BENUTZER_ID_IN_KC = "c4bca4de-1262-426a-bca4-de1262e26a87";

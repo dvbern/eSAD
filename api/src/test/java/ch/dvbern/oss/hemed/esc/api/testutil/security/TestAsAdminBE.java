@@ -41,7 +41,6 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LABELS_SC
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_ADMIN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_SCHREIBEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.MITARBEITERLISTE_BERECHTIGUNGEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ORGANISATION_VERWALTEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ORGANISATION_VERWALTEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SPSS_EXPORT;
@@ -131,7 +130,6 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         LABELS_ADMIN_LESEN,
         LABELS_SCHREIBEN,
         EIGENE_BERECHTIGUNGEN_LESEN,
-        MITARBEITERLISTE_BERECHTIGUNGEN_LESEN,
         VORLAGEN_LESEN,
         VORLAGEN_ADMIN_LESEN,
         VORLAGEN_SCHREIBEN,
@@ -151,6 +149,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         @Claim(key = JsonWebTokenClaims.PHONE_CLAIM, value = TestAsAdminBE.TELEFON),
     }
 )
+@TestAsMarker
 public @interface TestAsAdminBE {
     String BENUTZER_ID = "a0f624c9-7634-47fe-b49e-0d26e9310872";
     String BENUTZER_ID_IN_KC = "88aac6e0-ad5f-4a5a-8944-219dc12fa3ec";

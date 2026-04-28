@@ -17,7 +17,7 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { BackendEntityId } from '@dvb/data-access-types';
+import { BackendEntityId, BackendEntityIdWithClass } from '@dvb/data-access-types';
 import { EinladungJson } from '../model/einladung-json';
 import { EinladungListJson } from '../model/einladung-list-json';
 import { EinladungSaveJson } from '../model/einladung-save-json';
@@ -39,7 +39,7 @@ export interface EinladungenServiceCreateEinladungenForAnlassRequestParams {
 
 export interface EinladungenServiceCreateNotizRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
     file?: Blob;
     file2?: Blob;
     file3?: Blob;
@@ -53,7 +53,7 @@ export interface EinladungenServiceFindEinladungenByAnlassRequestParams {
 
 export interface EinladungenServiceGetEinladungByIdRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
 }
 
 export interface EinladungenServiceGetHiddenUntersuchungTabInfosRequestParams {
@@ -63,7 +63,7 @@ export interface EinladungenServiceGetHiddenUntersuchungTabInfosRequestParams {
 
 export interface EinladungenServiceGetUntersuchungKindDatenRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
 }
 
 export interface EinladungenServiceGetUntersuchungTabInfosRequestParams {
@@ -73,7 +73,7 @@ export interface EinladungenServiceGetUntersuchungTabInfosRequestParams {
 
 export interface EinladungenServiceGetUntersuchungTabsSavedByEinladungIdRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
 }
 
 export interface EinladungenServiceRemoveEinladungenForAnlassRequestParams {
@@ -83,12 +83,12 @@ export interface EinladungenServiceRemoveEinladungenForAnlassRequestParams {
 
 export interface EinladungenServiceUntersuchungAbschliessenRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
 }
 
 export interface EinladungenServiceUpdateEinladungRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
     einladungSaveJson: EinladungSaveJson;
 }
 
@@ -364,7 +364,7 @@ export class EinladungenService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/notiz`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/notiz`;
         return this.httpClient.request<NotizJson>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -511,7 +511,7 @@ export class EinladungenService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}`;
         return this.httpClient.request<EinladungJson>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -670,7 +670,7 @@ export class EinladungenService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/kinddaten`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/kinddaten`;
         return this.httpClient.request<UntersuchungKindDatenJson>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -829,7 +829,7 @@ export class EinladungenService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/tabssaved`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/tabssaved`;
         return this.httpClient.request<UntersuchungTabsSavedJson>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -987,7 +987,7 @@ export class EinladungenService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/abschluss`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/abschluss`;
         return this.httpClient.request<any>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -1075,7 +1075,7 @@ export class EinladungenService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}`;
         return this.httpClient.request<EinladungJson>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

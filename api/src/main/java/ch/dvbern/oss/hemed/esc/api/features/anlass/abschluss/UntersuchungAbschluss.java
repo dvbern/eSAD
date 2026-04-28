@@ -93,7 +93,7 @@ public class UntersuchungAbschluss extends AbstractEntity<UntersuchungAbschluss>
         if (abschluss == null) {
             abschluss = forUntersuchung(untersuchung);
         }
-        AnlassConfig config = untersuchung.getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig config = untersuchung.getAnlass().getAnlassConfig();
 
         abschluss.setUeberweisungErfolgt(
             ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(

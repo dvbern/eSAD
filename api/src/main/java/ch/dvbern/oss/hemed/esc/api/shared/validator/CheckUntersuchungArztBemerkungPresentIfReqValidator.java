@@ -30,7 +30,7 @@ public class CheckUntersuchungArztBemerkungPresentIfReqValidator
     @SuppressWarnings("java:S1126" /* readability is better with seprate return*/)
     public boolean isEntityValid(@NonNull UntersuchungArztBemerkung aerztlicheUntersuchung) {
         AnlassConfig anlassConfig =
-            aerztlicheUntersuchung.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+            aerztlicheUntersuchung.getUntersuchung().getAnlass().getAnlassConfig();
 
         if (anlassConfig.getUntersuchungBemerkungen().isRequired()
             && aerztlicheUntersuchung.getBemerkungen() == null) {

@@ -18,6 +18,8 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung;
 
+import java.util.function.Consumer;
+
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -25,9 +27,6 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.json.UntersuchungArztBeurteilungJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.json.UntersuchungArztBeurteilungSaveJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinstand;
@@ -39,7 +38,10 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Verhalten;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungArztUtil;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +55,7 @@ public class UntersuchungArztBeurteilungMapper {
     private final UntersuchungService untersuchungService;
     private final UntersuchungArztBeurteilungService untersuchungArztBeurteilungService;
     private final AnlassService anlassService;
+
 
     @Nullable
     public static UntersuchungArztBeurteilungJson toJson(@Nullable UntersuchungArztBeurteilung arzt) {
@@ -209,16 +212,23 @@ public class UntersuchungArztBeurteilungMapper {
     }
 
     @Nullable
-    public UntersuchungArztBeurteilungJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+    public UntersuchungArztBeurteilungJson getByEinladung(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungArztBeurteilung());
     }
 
     @NonNull
     public UntersuchungArztBeurteilungJson save(
-        @NonNull ID<Einladung> einladungID, @NonNull
-        UntersuchungArztBeurteilungSaveJson saveJson) {
+        @NonNull ID<Einladung> einladungID,
+        @NonNull UntersuchungArztBeurteilungSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungArztBeurteilung arzt = untersuchung.getUntersuchungArztBeurteilung();
         UntersuchungArztBeurteilung entity = toEntity(untersuchung, arzt, saveJson);
         return toJson(untersuchungArztBeurteilungService.persistWithOptimisticLocking(entity, saveJson.getVersion()));

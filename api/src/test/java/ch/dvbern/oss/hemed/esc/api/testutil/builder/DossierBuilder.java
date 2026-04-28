@@ -34,6 +34,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierJsonSpec;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 
 public class DossierBuilder {
 
@@ -126,7 +127,7 @@ public class DossierBuilder {
     public static DossierJson createJax(@NonNull Consumer<DossierBuilder> block,
         @NonNull LocalDate now) {
         Dossier entity = create(block);
-        return DossierMapper.toJson(entity, null, now, true);
+        return DossierMapper.toJson(entity, null, now, true, TenantEnum.BS);
     }
 
     @NonNull

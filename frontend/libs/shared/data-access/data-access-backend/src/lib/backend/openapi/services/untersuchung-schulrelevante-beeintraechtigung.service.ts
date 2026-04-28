@@ -17,7 +17,7 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { BackendEntityId } from '@dvb/data-access-types';
+import { BackendEntityId, BackendEntityIdWithClass } from '@dvb/data-access-types';
 import { UntersuchungSchulrelevanteBeeintraechtigungJson } from '../model/untersuchung-schulrelevante-beeintraechtigung-json';
 import { UntersuchungSchulrelevanteBeeintraechtigungSaveJson } from '../model/untersuchung-schulrelevante-beeintraechtigung-save-json';
 
@@ -27,12 +27,12 @@ import { Configuration }                                     from '../configurat
 
 export interface UntersuchungSchulrelevanteBeeintraechtigungServiceGetUntersuchungSchulrelevanteBeeintraechtigungRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
 }
 
 export interface UntersuchungSchulrelevanteBeeintraechtigungServiceSaveUntersuchungSchulrelevanteBeeintraechtigungRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
     untersuchungSchulrelevanteBeeintraechtigungSaveJson: UntersuchungSchulrelevanteBeeintraechtigungSaveJson;
 }
 
@@ -162,7 +162,7 @@ export class UntersuchungSchulrelevanteBeeintraechtigungService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/schulrelevantebeeintraechtigung`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/schulrelevantebeeintraechtigung`;
         return this.httpClient.request<UntersuchungSchulrelevanteBeeintraechtigungJson>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -250,7 +250,7 @@ export class UntersuchungSchulrelevanteBeeintraechtigungService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/schulrelevantebeeintraechtigung`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/schulrelevantebeeintraechtigung`;
         return this.httpClient.request<UntersuchungSchulrelevanteBeeintraechtigungJson>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

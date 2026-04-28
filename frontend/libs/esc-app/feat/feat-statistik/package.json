@@ -1,0 +1,13 @@
+{
+  "name": "@dvb/feat-statistik",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/core": "^20.2.0",
+    "@angular/router": "^20.2.0",
+    "@dvb/feat-shared": "*",
+    "@dvb/ui-components": "*",
+    "@dvb/util-angular": "*",
+    "@jsverse/transloco": "^7.6.1"
+  },
+  "sideEffects": false
+}

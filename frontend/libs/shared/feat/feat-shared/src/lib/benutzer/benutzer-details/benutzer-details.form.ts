@@ -52,7 +52,7 @@ export class BenutzerDetailsForm extends BaseForm<ReturnType<typeof makeForm>, B
       if (values.organisationRollen.length > 0) {
         values.organisationRollen[0].fachRollen = organisationsRollen;
       } else {
-        values.organisationRollen.push({fachRollen: organisationsRollen, organisation: undefined});
+        values.organisationRollen.push({fachRollen: organisationsRollen, organisation: undefined, berechtigungen: []});
       }
     }
 
@@ -61,7 +61,7 @@ export class BenutzerDetailsForm extends BaseForm<ReturnType<typeof makeForm>, B
       if (values.systemRollen) {
         values.systemRollen.fachRollen = systemRollen;
       } else {
-        values.systemRollen = {fachRollen: systemRollen};
+        values.systemRollen = {fachRollen: systemRollen, berechtigungen: []};
       }
     }
 

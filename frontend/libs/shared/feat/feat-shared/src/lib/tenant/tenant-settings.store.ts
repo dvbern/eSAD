@@ -9,6 +9,7 @@ import {
 } from '@dvb/data-access-backend';
 import {AppErrorHandlerService, Loader} from '@dvb/util-angular';
 import {requireValue} from '@dvb/util-shared';
+import {Path} from '../core/path';
 import {tapResponse} from '@ngrx/operators';
 import {patchState, signalStore, withState} from '@ngrx/signals';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
@@ -70,6 +71,13 @@ export class TenantSettingsStore extends signalStore(
 
   supportedLanguages = computed(() => {
     return requireValue(this.settings()).data.supportedLanguages;
+  });
+
+  defaultLandingPage = computed<Path>(() => {
+    const raw = this.settings()?.data.defaultLandingPage;
+    return raw && raw in Path
+      ? Path[raw as keyof typeof Path]
+      : Path.DASHBOARD;
   });
 
   supportsLanguageDe = computed(() => {
@@ -134,6 +142,10 @@ export class TenantSettingsStore extends signalStore(
 
   archivierungEnabled = computed(() => {
     return this.settings()?.data.features.archivierungFeature.enabledForStage;
+  });
+
+  anonymeStatistikEnabled = computed(() => {
+    return this.settings()?.data?.features.anonymeStatistikFeature.enabledForStage
   });
 
   postfixDeKey = computed(() => {

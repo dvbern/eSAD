@@ -66,7 +66,6 @@ public enum Berechtigung {
     LABELS_ADMIN_LESEN(BerechtigungName.LABELS_ADMIN_LESEN), // lesen von labels auf admin-pages hat eigene Berechtigung
     LABELS_SCHREIBEN(BerechtigungName.LABELS_SCHREIBEN),
     EIGENE_BERECHTIGUNGEN_LESEN(BerechtigungName.EIGENE_BERECHTIGUNGEN_LESEN),
-    MITARBEITERLISTE_BERECHTIGUNGEN_LESEN(BerechtigungName.MITARBEITERLISTE_BERECHTIGUNGEN_LESEN),
     VORLAGEN_LESEN(BerechtigungName.VORLAGEN_LESEN),
     VORLAGEN_ADMIN_LESEN(BerechtigungName.VORLAGEN_ADMIN_LESEN), // lesen von bf auf admin-pages hat eigene Berechtigung
     VORLAGEN_SCHREIBEN(BerechtigungName.VORLAGEN_SCHREIBEN),

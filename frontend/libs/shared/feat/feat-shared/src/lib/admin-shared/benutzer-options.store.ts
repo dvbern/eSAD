@@ -14,10 +14,7 @@ export class BenutzerOptionsStore extends signalStore(
   withSelectedEntity<BenutzerOptionJson>(),
   withMethods(() => ({
     organisationsRollen(current: BenutzerOptionJson): FachRolle[] | Nullish {
-      if (current.organisationRollen.length > 0) {
-        return current.organisationRollen[0].fachRollen;
-      }
-      return null;
+      return current.organisationRollen?.fachRollen;
     },
     systemRollen(current: BenutzerOptionJson): FachRolle[] | Nullish {
       return current.systemRollen?.fachRollen;

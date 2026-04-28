@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+
 @QuarkusTest
 @RequiredArgsConstructor
 class UntersuchungGroesseGewichtResourceITest extends AbstractITest {
@@ -41,7 +43,7 @@ class UntersuchungGroesseGewichtResourceITest extends AbstractITest {
         UntersuchungGroesseGewichtDataJsonSpec result = api
             .untersuchungGroesseGewichtResourceGetUntersuchungGroesseGewicht()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -67,8 +69,8 @@ class UntersuchungGroesseGewichtResourceITest extends AbstractITest {
         // ACT
         UntersuchungGroesseGewichtDataJsonSpec result = api
             .untersuchungGroesseGewichtResourceGetUntersuchungGroesseGewicht()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -108,7 +110,7 @@ class UntersuchungGroesseGewichtResourceITest extends AbstractITest {
         UntersuchungGroesseGewichtDataJsonSpec result = api
             .untersuchungGroesseGewichtResourceSaveUntersuchungGroesseGewicht()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()

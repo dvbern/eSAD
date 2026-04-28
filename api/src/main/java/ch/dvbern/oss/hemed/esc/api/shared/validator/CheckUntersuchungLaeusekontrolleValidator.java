@@ -29,7 +29,7 @@ public class CheckUntersuchungLaeusekontrolleValidator
     @Override
     public boolean isEntityValid(@NonNull UntersuchungLaeusekontrolle instance) {
         AnlassConfig anlassConfig =
-            instance.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+            instance.getUntersuchung().getAnlass().getAnlassConfig();
         if (anlassConfig.getLaeusekontrolleBeurteilung().isRequired() && CollectionUtils.isEmpty(instance.getBeurteilung())) {
             return false;
         }

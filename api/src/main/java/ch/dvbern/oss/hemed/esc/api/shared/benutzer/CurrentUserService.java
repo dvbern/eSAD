@@ -10,7 +10,9 @@ public interface CurrentUserService {
 
     EmailAddress currentUserName();
 
-    Optional<Benutzer> findCurrentUser();
+    Optional<Benutzer> findCurrentUserWithBerechtigungen();
+
+    Benutzer getCurrentUserWithBerechtigungen();
 
     Benutzer currentUser();
 

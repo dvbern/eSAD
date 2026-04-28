@@ -54,7 +54,7 @@
       </li>
     }
 
-    @if (canViewBenutzer()) {
+    @if (canViewBenutzer() && !hasOrganisation()) {
       <li svuiListItem>
         <a svuiListItemTitle routerLink="{{ Path.BENUTZER }}"> {{ 'admin.list.item.benutzer' | transloco }} </a>
         <span> </span>
@@ -91,7 +91,7 @@
     @if (canViewOrganisation()) {
       @if (hasOrganisation()) {
         <li svuiListItem>
-          <a svuiListItemTitle routerLink="{{ Path.ORGANISATION}}/{{benutzerStore.benutzer()?.organisationRollen?.organisation?.id}}"> {{ 'admin.list.item.organisation' | transloco }}</a>
+          <a svuiListItemTitle routerLink="{{ Path.ORGANISATION}}/{{benutzerStore.benutzer()?.currentOrganisationRollen?.organisation?.id}}"> {{ 'admin.list.item.organisation' | transloco }}</a>
           <span> </span>
           <span svuiListItemSecondary> </span>
         </li>

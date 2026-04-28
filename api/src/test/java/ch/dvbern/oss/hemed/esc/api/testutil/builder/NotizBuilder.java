@@ -24,6 +24,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.mapper.NotizJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizJsonSpec;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -154,7 +155,7 @@ public class NotizBuilder {
     @NonNull
     public static NotizJson createJax(@NonNull Consumer<NotizBuilder> block) {
         Notiz entity = create(block);
-        return NotizMapper.toJson(entity);
+        return NotizMapper.toJson(entity, TenantEnum.BS);
     }
 
     @NonNull

@@ -58,16 +58,16 @@ export class BenutzerDetailsComponent implements DirtyMarker {
   readonly benutzerStore = inject(BenutzerStore);
   readonly tenantSettingsStore = inject(TenantSettingsStore);
 
-  // TODO ESC-1180: listen trennen zwischen SystemRollen und OrganisationRollen
-  readonly fachrollen = this.tenantSettingsStore.settings()
-    ?.fachrollen
-    .filter(rolle => rolle !== FachRolle.SYSTEM_ADMIN && rolle !== FachRolle.SUPPORT) ?? [];
+  readonly fachrollen = this.tenantSettingsStore.settings()?.fachrollen
+    .filter(rolle => {
+      return rolle !== FachRolle.SYSTEM_ADMIN && (rolle != FachRolle.SUPPORT || this.benutzerStore.hasFachrolleSupport());
+    }) ?? [];
   benutzerAktivStati = Object.values(EntityAktivStatus);
 
   // Der Support kann beim erstellen eines Benutzer über Benutzer & Rechte eine Organisation auswählen
   possibleOrganisationsRollen = computed(() =>
     this.organisationStore.entities()
-      .map(organisation => ({organisation: organisation, fachRollen: []} as OrganisationRollenJson))
+      .map(organisation => ({organisation: organisation, fachRollen: [], berechtigungen: []} as OrganisationRollenJson))
   );
 
   showOrganisation = computed(() => isNullish(this.organisation())
@@ -95,7 +95,8 @@ export class BenutzerDetailsComponent implements DirtyMarker {
         // Organisation kann nur beim erstellen gesetzt werden.
         const organisationRolle: OrganisationRollenJson = {
           organisation: this.organisation() ?? undefined,
-          fachRollen: []
+          fachRollen: [],
+          berechtigungen: []
         };
         this.form.group.controls.organisationRollen.reset([organisationRolle]);
 
@@ -138,11 +139,26 @@ export class BenutzerDetailsComponent implements DirtyMarker {
   }
 
   isFachrolleDisabled(fachrolle: FachRolle): boolean {
-    return fachrolle === FachRolle.SCHULAERZTIN
+    const disableArztRolleForVerantwortlicher = fachrolle === FachRolle.SCHULAERZTIN
       && (
         (this.organisationStore.selectedIsNew() && this.alwaysCreateNewOrganisation())
-        || (isNotNullish(this.organisation()) && this.organisation()?.verantwortlicherArztFullname === this.benutzerListStore.selectedEntity()?.data.fullName)
+        || (isNotNullish(this.organisation())
+          && this.organisation()?.verantwortlicherArztFullname
+          === this.benutzerListStore.selectedEntity()?.data.fullName)
       );
+    // Organisations - und System-Fachrollen nicht mischen
+    let mixedRoles;
+    const selectedFachrollen = this.form.group.controls.fachRollen.value;
+    if (this.isOrganisationsFachrolle(fachrolle)) {
+      mixedRoles = selectedFachrollen.some((rolle) => !this.isOrganisationsFachrolle(rolle));
+    } else {
+      mixedRoles = selectedFachrollen.some((rolle) => this.isOrganisationsFachrolle(rolle));
+    }
+    return disableArztRolleForVerantwortlicher || mixedRoles;
+  }
+
+  isOrganisationsFachrolle(rolle: FachRolle): boolean {
+    return rolle != FachRolle.SUPPORT && rolle != FachRolle.SYSTEM_ADMIN;
   }
 
   private resetAndSave(): void {

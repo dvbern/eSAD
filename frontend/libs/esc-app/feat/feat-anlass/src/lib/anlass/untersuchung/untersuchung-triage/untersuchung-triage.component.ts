@@ -1,4 +1,3 @@
-
 import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {NaechsteStation, UntersuchungTriageSaveJson} from '@dvb/data-access-backend';
@@ -12,6 +11,7 @@ import {
   StandaloneControlComponent,
   TextareaDirective,
 } from '@dvb/ui-components';
+import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import {DirtyMarker} from '@dvb/util-angular';
 import {requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
@@ -94,7 +94,7 @@ export class UntersuchungTriageComponent implements DirtyMarker {
       const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       this.store.saveTriage({
         anlassId: anlassId,
-        einladungId: einladungId,
+        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
         untersuchungTriageSaveJson: payload,
       });
     }

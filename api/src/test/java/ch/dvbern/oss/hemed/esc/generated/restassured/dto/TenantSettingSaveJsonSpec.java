@@ -18,6 +18,7 @@ import java.util.Arrays;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AgbResponsabilitySpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppLanguagesSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EinladungStatusSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LandingPageOptionSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.TenantSettingFeaturesJsonSpec;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -41,7 +42,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   TenantSettingSaveJsonSpec.JSON_PROPERTY_SUPPORT_EMAIL,
   TenantSettingSaveJsonSpec.JSON_PROPERTY_AGB_RESPONSABILITY,
   TenantSettingSaveJsonSpec.JSON_PROPERTY_FEATURES,
-  TenantSettingSaveJsonSpec.JSON_PROPERTY_EINLADUNG_STATUS_VALUES
+  TenantSettingSaveJsonSpec.JSON_PROPERTY_EINLADUNG_STATUS_VALUES,
+  TenantSettingSaveJsonSpec.JSON_PROPERTY_DEFAULT_LANDING_PAGE
 })
 @JsonTypeName("TenantSettingSaveJson")
 @lombok.AllArgsConstructor
@@ -78,6 +80,10 @@ public class TenantSettingSaveJsonSpec {
   public static final String JSON_PROPERTY_EINLADUNG_STATUS_VALUES = "einladungStatusValues";
   @jakarta.annotation.Nonnull
   private List<EinladungStatusSpec> einladungStatusValues;
+
+  public static final String JSON_PROPERTY_DEFAULT_LANDING_PAGE = "defaultLandingPage";
+  @jakarta.annotation.Nonnull
+  private LandingPageOptionSpec defaultLandingPage;
 
   public TenantSettingSaveJsonSpec() {
   }
@@ -298,6 +304,31 @@ public class TenantSettingSaveJsonSpec {
     this.einladungStatusValues = einladungStatusValues;
   }
 
+  public TenantSettingSaveJsonSpec defaultLandingPage(@jakarta.annotation.Nonnull LandingPageOptionSpec defaultLandingPage) {
+    
+    this.defaultLandingPage = defaultLandingPage;
+    return this;
+  }
+
+  /**
+   * Get defaultLandingPage
+   * @return defaultLandingPage
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_DEFAULT_LANDING_PAGE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public LandingPageOptionSpec getDefaultLandingPage() {
+    return defaultLandingPage;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_DEFAULT_LANDING_PAGE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setDefaultLandingPage(@jakarta.annotation.Nonnull LandingPageOptionSpec defaultLandingPage) {
+    this.defaultLandingPage = defaultLandingPage;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -314,12 +345,13 @@ public class TenantSettingSaveJsonSpec {
         Objects.equals(this.supportEmail, tenantSettingSaveJson.supportEmail) &&
         Objects.equals(this.agbResponsability, tenantSettingSaveJson.agbResponsability) &&
         Objects.equals(this.features, tenantSettingSaveJson.features) &&
-        Objects.equals(this.einladungStatusValues, tenantSettingSaveJson.einladungStatusValues);
+        Objects.equals(this.einladungStatusValues, tenantSettingSaveJson.einladungStatusValues) &&
+        Objects.equals(this.defaultLandingPage, tenantSettingSaveJson.defaultLandingPage);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(defaultLanguage, supportedLanguages, folgeTermineMaxSlots, customerAdminEmails, supportEmail, agbResponsability, features, einladungStatusValues);
+    return Objects.hash(defaultLanguage, supportedLanguages, folgeTermineMaxSlots, customerAdminEmails, supportEmail, agbResponsability, features, einladungStatusValues, defaultLandingPage);
   }
 
   @Override
@@ -334,6 +366,7 @@ public class TenantSettingSaveJsonSpec {
     sb.append("    agbResponsability: ").append(toIndentedString(agbResponsability)).append("\n");
     sb.append("    features: ").append(toIndentedString(features)).append("\n");
     sb.append("    einladungStatusValues: ").append(toIndentedString(einladungStatusValues)).append("\n");
+    sb.append("    defaultLandingPage: ").append(toIndentedString(defaultLandingPage)).append("\n");
     sb.append("}");
     return sb.toString();
   }

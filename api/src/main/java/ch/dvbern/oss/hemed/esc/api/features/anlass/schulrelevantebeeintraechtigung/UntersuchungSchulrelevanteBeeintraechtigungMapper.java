@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung;
 
+import java.util.function.Consumer;
+
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -69,8 +71,12 @@ public class UntersuchungSchulrelevanteBeeintraechtigungMapper {
     }
 
     @Nullable
-    public UntersuchungSchulrelevanteBeeintraechtigungJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+    public UntersuchungSchulrelevanteBeeintraechtigungJson getByEinladung(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungSchulrelevanteBeeintraechtigung beeintraechtigung =
             untersuchungSchulrelevanteBeeintraechtigungService.getByUntersuchung(untersuchung.getId());
         return beeintraechtigung != null ?
@@ -81,9 +87,11 @@ public class UntersuchungSchulrelevanteBeeintraechtigungMapper {
     @NonNull
     public UntersuchungSchulrelevanteBeeintraechtigungJson save(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungSchulrelevanteBeeintraechtigungSaveJson saveJson
+        @NonNull UntersuchungSchulrelevanteBeeintraechtigungSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungSchulrelevanteBeeintraechtigung beeintraechtigung =
             untersuchung.getUntersuchungSchulrelevanteBeeintraechtigung();
         UntersuchungSchulrelevanteBeeintraechtigung entity = toEntity(untersuchung, beeintraechtigung, saveJson);

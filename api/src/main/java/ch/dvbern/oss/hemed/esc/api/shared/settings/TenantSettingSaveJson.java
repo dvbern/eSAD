@@ -25,6 +25,7 @@ import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.features.TenantSettingFeaturesJson;
 import ch.dvbern.oss.hemed.esc.api.shared.types.AgbResponsability;
+import ch.dvbern.oss.hemed.esc.api.shared.types.LandingPageOption;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -77,4 +78,9 @@ public class TenantSettingSaveJson {
     @NonNull
     @Schema(required = true)
     private List<EinladungStatus> einladungStatusValues;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private final LandingPageOption defaultLandingPage;
 }

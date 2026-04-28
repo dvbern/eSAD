@@ -15,8 +15,6 @@
 import {inject} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot} from '@angular/router';
 
-import {AppNotificationStore} from '@dvb/util-angular';
-import {TranslocoService} from '@jsverse/transloco';
 import {BenutzerStore} from '../benutzer/benutzer.store';
 import {Path} from '../../core/path';
 
@@ -24,16 +22,6 @@ export function requireAcceptedAgb(): CanActivateFn {
   return async (_route: ActivatedRouteSnapshot, _state: RouterStateSnapshot) => {
     const router = inject(Router);
     const benutzerStore = inject(BenutzerStore);
-    const appNotificationStore = inject(AppNotificationStore);
-    const translationService = inject(TranslocoService);
-
-    const isLoggedIn = benutzerStore.isLoggedIn();
-
-    if (!isLoggedIn) {
-      console.log('redirecting to login');
-      triggerUnauthenticatedNotification(appNotificationStore, translationService);
-      return router.navigateByUrl('/info');
-    }
 
     const isAccepted = benutzerStore.isAgbAccepted();
 
@@ -50,16 +38,6 @@ export function requireNotAcceptedAgb(): CanActivateFn {
   return async (_route: ActivatedRouteSnapshot, _state: RouterStateSnapshot) => {
     const router = inject(Router);
     const benutzerStore = inject(BenutzerStore);
-    const appNotificationStore = inject(AppNotificationStore);
-    const translationService = inject(TranslocoService);
-
-    const isLoggedIn = benutzerStore.isLoggedIn();
-
-    if (!isLoggedIn) {
-      console.log('redirecting to login');
-      triggerUnauthenticatedNotification(appNotificationStore, translationService);
-      return router.navigateByUrl('/info');
-    }
 
     const isAccepted = benutzerStore.isAgbAccepted();
 
@@ -70,17 +48,5 @@ export function requireNotAcceptedAgb(): CanActivateFn {
 
     return true;
   };
-}
-
-function triggerUnauthenticatedNotification(
-  appNotificationStore: AppNotificationStore,
-  translocoService: TranslocoService,
-) {
-  appNotificationStore.addNotification({
-    alertType: 'danger',
-    id: crypto.randomUUID(),
-    summary: translocoService.translate('common.auth.route.unauthenticated.title'),
-    autohide: true,
-  });
 }
 

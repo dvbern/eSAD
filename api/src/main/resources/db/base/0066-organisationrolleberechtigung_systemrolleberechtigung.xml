@@ -1,0 +1,70 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hefr" id="1776157852430-1">
+    <sql>
+      create table organisationrollenberechtigung (
+        id                    uuid                        not null,
+        timestamperstellt     timestamp(6) with time zone not null,
+        timestampmutiert      timestamp(6) with time zone not null,
+        usererstellt          varchar(255)                not null,
+        usermutiert           varchar(255)                not null,
+        version               bigint                      not null,
+        berechtigung          varchar(255)                not null,
+        organisationrollen_id uuid                        not null,
+        primary key (id)
+      );
+      create table organisationrollenberechtigung_aud (
+        id                    uuid    not null,
+        rev                   integer not null,
+        revtype               smallint,
+        timestamperstellt     timestamp(6) with time zone,
+        timestampmutiert      timestamp(6) with time zone,
+        usererstellt          varchar(255),
+        usermutiert           varchar(255),
+        berechtigung          varchar(255),
+        organisationrollen_id uuid,
+        primary key (rev, id)
+      );
+      create table systemrollenberechtigung (
+        id                uuid                        not null,
+        timestamperstellt timestamp(6) with time zone not null,
+        timestampmutiert  timestamp(6) with time zone not null,
+        usererstellt      varchar(255)                not null,
+        usermutiert       varchar(255)                not null,
+        version           bigint                      not null,
+        berechtigung      varchar(255)                not null,
+        systemrollen_id   uuid                        not null,
+        primary key (id)
+      );
+      create table systemrollenberechtigung_aud (
+        id                uuid    not null,
+        rev               integer not null,
+        revtype           smallint,
+        timestamperstellt timestamp(6) with time zone,
+        timestampmutiert  timestamp(6) with time zone,
+        usererstellt      varchar(255),
+        usermutiert       varchar(255),
+        berechtigung      varchar(255),
+        systemrollen_id   uuid,
+        primary key (rev, id)
+      );
+      create index ix_einladung_notiz_notiz on einladung_notiz (notiz_id);
+      create index ix_organisationrollenberechtigung_organisationrollen on organisationrollenberechtigung (organisationrollen_id);
+      alter table if exists organisationrollenberechtigung drop constraint if exists uc_organisationrollenberechtigung_organisationrollen_berechtigung;
+      alter table if exists organisationrollenberechtigung add constraint uc_organisationrollenberechtigung_organisationrollen_berechtigung unique (organisationrollen_id, berechtigung);
+      create index ix_systemrollenberechtigung_systemrollen on systemrollenberechtigung (systemrollen_id);
+      alter table if exists systemrollenberechtigung drop constraint if exists uc_systemrollenberechtigung_systemrollen_berechtigung;
+      alter table if exists systemrollenberechtigung add constraint uc_systemrollenberechtigung_systemrollen_berechtigung unique (systemrollen_id, berechtigung);
+      alter table if exists organisationrollenberechtigung add constraint fk_organisationrollenberechtigung_organisationrollen foreign key (organisationrollen_id) references organisationrollen;
+      alter table if exists organisationrollenberechtigung_aud add constraint fkjp0hjnmcyivu7g9mtcaqq6f3m foreign key (rev) references revinfo;
+      alter table if exists systemrollenberechtigung add constraint fk_systemrollenberechtigung_systemrollen foreign key (systemrollen_id) references systemrollen;
+      alter table if exists systemrollenberechtigung_aud add constraint fkk5jvkowli3suqaigns0kayil1 foreign key (rev) references revinfo;
+    </sql>
+  </changeSet>
+  <changeSet author="hefr" id="1776172209248-1">
+    <sql>
+      drop table benutzerberechtigung_aud;
+      drop table benutzerberechtigung;
+    </sql>
+  </changeSet>
+</databaseChangeLog>

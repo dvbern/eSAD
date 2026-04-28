@@ -100,3 +100,5 @@ hs_err_pid*.log
 /api/docs/escada-service/scripts/
 /api/docs/file-ingress/scripts/
 /api/docs/pupil-service/scripts/
+/api/.vfox
+/frontend/.vfox

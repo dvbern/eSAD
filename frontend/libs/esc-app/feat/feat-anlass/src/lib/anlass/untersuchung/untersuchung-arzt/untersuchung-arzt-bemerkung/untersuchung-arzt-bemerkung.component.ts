@@ -11,6 +11,7 @@ import {
   TextareaDirective,
   TitleComponent,
 } from '@dvb/ui-components';
+import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import {DirtyMarker} from '@dvb/util-angular';
 import {hasAerztlicheUntersuchungEditBerechtigung, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
@@ -84,7 +85,7 @@ export class UntersuchungArztBemerkungComponent implements DirtyMarker {
       const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       this.store.saveUntersuchungArztBemerkung({
         anlassId: anlassId,
-        einladungId: einladungId,
+        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
         untersuchungArztBemerkungSaveJson: payload,
       });
     }

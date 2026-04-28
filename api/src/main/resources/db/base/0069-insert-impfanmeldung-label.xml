@@ -1,0 +1,25 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema" id="2026-04-21-08-22-01">
+    <sql>
+      INSERT INTO label (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, autolabel, disabled, labeltyp, namede, namefr, aktiv) 
+      VALUES ('56986f77-1447-4d41-ba3a-1f792cdeb335', '2026-04-21 08:22:11.967103 +00:00', '2026-04-21 08:22:11.967103 +00:00', 'liquibase', 'liquibase', 0, true, true, 'NOTIZEN', 'Impfanmeldung', 'Impfanmeldung', true);
+    </sql>
+  </changeSet>
+  <changeSet author="gema" id="2026-04-21-08-22-02">
+    <addColumn tableName="anlassconfig">
+      <column name="showimpfanmeldung" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="gema" id="2026-04-21-08-22-03">
+    <sql>update anlassconfig set showimpfanmeldung = false where showimpfanmeldung is null;</sql>
+  </changeSet>
+  <changeSet author="gema" id="2026-04-21-08-22-06">
+    <addNotNullConstraint tableName="anlassconfig" columnName="showimpfanmeldung"/>
+  </changeSet>
+  <changeSet author="gema (generated)" id="2026-04-21-08-22-05">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="showimpfanmeldung" type="BOOLEAN"/>
+    </addColumn>
+  </changeSet>
+</databaseChangeLog>

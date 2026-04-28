@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
@@ -67,7 +68,7 @@ public class EinladungService {
     }
 
     @NonNull
-    public Map<ID<Einladung>, ID<Anlass>> getAnlassEinladungsMap(@NonNull List<ID<Einladung>> einladungIds) {
+    public Map<ID<?>, ID<Anlass>> getAnlassEinladungsMap(@NonNull List<? extends ID<?>> einladungIds) {
         return einladungRepo.getAnlassEinladungsMap(einladungIds);
     }
 
@@ -125,6 +126,7 @@ public class EinladungService {
                     autoNotizService.moveImpfausweisNotiz(einladungNachzuegler, einladung);
                     autoNotizService.moveFragebogenNotiz(einladungNachzuegler, einladung);
                     autoNotizService.moveAnmeldungBestaetigungNotiz(einladungNachzuegler, einladung);
+                    autoNotizService.moveImpfanmeldungNotiz(einladungNachzuegler, einladung);
                 }
                 createdEinladungen.add(einladung);
             }

@@ -40,6 +40,8 @@ import ch.dvbern.oss.hemed.esc.api.testutil.mapper.AnlassJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassJsonSpec;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class AnlassBuilder {
 
@@ -131,14 +133,14 @@ public class AnlassBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public AnlassBuilder withArzt(@NonNull Benutzer arzt) {
+    public AnlassBuilder withArzt(@Nullable Benutzer arzt) {
         this.anlass.setArzt(arzt);
         return this;
     }
 
     @NonNull
     @CanIgnoreReturnValue
-    public AnlassBuilder withMPA(@NonNull Benutzer mpa) {
+    public AnlassBuilder withMPA(@Nullable Benutzer mpa) {
         this.anlass.setMpa(mpa);
         return this;
     }
@@ -181,7 +183,7 @@ public class AnlassBuilder {
     @NonNull
     public static AnlassJson createJax(@NonNull Consumer<AnlassBuilder> block) {
         Anlass entity = create(block);
-        return AnlassMapper.toJson(entity);
+        return AnlassMapper.toJson(entity, TenantEnum.BS);
     }
 
     @NonNull

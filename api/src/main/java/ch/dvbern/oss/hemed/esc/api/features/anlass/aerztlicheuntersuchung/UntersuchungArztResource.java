@@ -1,17 +1,20 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.json.UntersuchungArztBemerkungJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.json.UntersuchungArztBemerkungSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.json.UntersuchungArztBeurteilungJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.json.UntersuchungArztBeurteilungSaveJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.Nullable;
@@ -47,10 +50,14 @@ public class UntersuchungArztResource {
     @Nullable
     public UntersuchungArztBeurteilungJson getUntersuchungArztBeurteilung(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
-        return untersuchungArztBeurteilungMapper.getByEinladung(einladungId);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungArztBeurteilungMapper.getByEinladung(
+            wrappedId.toEinladungId(),
+            untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
+                untersuchung,
+                Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN));
     }
 
     @GET
@@ -59,9 +66,9 @@ public class UntersuchungArztResource {
     @Nullable
     public UntersuchungArztBeurteilungSaveJson getDefaultUntersuchungArztBeurteilungForAnlassConfig(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungArztBeurteilungMapper.getDefaultUntersuchungArztForAnlassConfig(anlassId);
     }
 
@@ -71,12 +78,16 @@ public class UntersuchungArztResource {
     @RolesAllowed(BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN)
     public UntersuchungArztBeurteilungJson saveUntersuchungArztBeurteilung(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId,
         @NonNull @NotNull @Valid UntersuchungArztBeurteilungSaveJson saveJson
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
-        authorizerService.requireWriteAuthorizationAnlass(anlassId);
-        return untersuchungArztBeurteilungMapper.save(einladungId, saveJson);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungArztBeurteilungMapper.save(
+            wrappedId.toEinladungId(),
+            saveJson,
+            untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
+                untersuchung,
+                List.of(Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN)));
     }
 
     @GET
@@ -85,10 +96,14 @@ public class UntersuchungArztResource {
     @Nullable
     public UntersuchungArztBemerkungJson getUntersuchungArztBemerkung(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
-        return untersuchungArztBemerkungMapper.getByEinladung(einladungId);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungArztBemerkungMapper.getByEinladung(
+            wrappedId.toEinladungId(),
+            untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
+                untersuchung,
+                Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN));
     }
 
     @PUT
@@ -97,11 +112,15 @@ public class UntersuchungArztResource {
     @RolesAllowed(BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN)
     public UntersuchungArztBemerkungJson saveUntersuchungArztBemerkung(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId,
         @NonNull @NotNull @Valid UntersuchungArztBemerkungSaveJson saveJson
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
-        authorizerService.requireWriteAuthorizationAnlass(anlassId);
-        return untersuchungArztBemerkungMapper.save(einladungId, saveJson);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungArztBemerkungMapper.save(
+            wrappedId.toEinladungId(),
+            saveJson,
+            untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
+                untersuchung,
+                List.of(Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN)));
     }
 }

@@ -37,7 +37,7 @@ class ArchivierungRuleByAgeServiceTest extends AbstractITest {
             getAppClock().offsetDateTime().now().minusMonths(MONTHS_ARCHIVED_BEFORE_DELETION).minusDays(1);
         OffsetDateTime newerDate =
             getAppClock().offsetDateTime().now().minusMonths(MONTHS_ARCHIVED_BEFORE_DELETION).plusDays(1);
-        Benutzer benutzer = fixtureService.createBenutzer();
+        Benutzer benutzer = fixtureService.createBenutzerFuerZentraleOrganisation();
 
         // Kind_1 -> Aktiv und keine Archivierungsdokumente -> sollte nicht gefunden werden.
         Kind kind_1 = fixtureService.createKind(EntityAktivStatus.AKTIV);

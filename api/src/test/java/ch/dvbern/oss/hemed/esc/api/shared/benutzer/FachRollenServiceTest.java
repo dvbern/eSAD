@@ -24,11 +24,10 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.SystemRollenBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class FachRollenServiceTest {
 
@@ -37,7 +36,6 @@ class FachRollenServiceTest {
     private OrganisationService organisationService;
     private OrganisationRollenService organisationRollenService;
     private SystemRollenService systemRollenService;
-
     private TenantSettingFeatures features;
 
     @BeforeEach
@@ -47,13 +45,15 @@ class FachRollenServiceTest {
         organisationService = mock(OrganisationService.class);
         organisationRollenService = mock(OrganisationRollenService.class);
         systemRollenService = mock(SystemRollenService.class);
+        FachrollenMailService fachrollenMailService = mock(FachrollenMailService.class);
 
         fachrollenService = new FachrollenService(
             organisationService,
             organisationRollenService,
             systemRollenService,
             configService,
-            tenantSettingsService
+            tenantSettingsService,
+            fachrollenMailService
         );
 
         TenantSetting tenantSetting = mock(TenantSetting.class);
@@ -89,7 +89,7 @@ class FachRollenServiceTest {
 
         // ACT
         AppFailureException ex = assertThrows(AppFailureException.class, () -> {
-            fachrollenService.setFachrollen(fachrollen, benutzer, organisation);
+            fachrollenService.setFachrollenFromJWT(fachrollen, benutzer, organisation);
         });
 
         // ASSERT
@@ -109,7 +109,7 @@ class FachRollenServiceTest {
 
         when(systemRollenService.createNewSystemRollen(benutzer, fachrollen)).thenReturn(systemRollen);
 
-        fachrollenService.setFachrollen(fachrollen, benutzer, null);
+        fachrollenService.setFachrollenFromJWT(fachrollen, benutzer, null);
         assertThat(benutzer.getSystemRollen()).isNotNull();
         assertThat(benutzer.getSystemRollen().getFachRollen()).contains(FachRolle.SUPPORT);
     }
@@ -127,7 +127,7 @@ class FachRollenServiceTest {
 
         when(systemRollenService.createNewSystemRollen(benutzer, fachrollen)).thenReturn(systemRollen);
 
-        fachrollenService.setFachrollen(fachrollen, benutzer, null);
+        fachrollenService.setFachrollenFromJWT(fachrollen, benutzer, null);
         assertThat(benutzer.getSystemRollen()).isNotNull();
         assertThat(benutzer.getSystemRollen().getFachRollen()).contains(FachRolle.SUPPORT);
     }
@@ -145,7 +145,7 @@ class FachRollenServiceTest {
 
         when(systemRollenService.createNewSystemRollen(benutzer, fachrollen)).thenReturn(systemRollen);
 
-        fachrollenService.setFachrollen(fachrollen, benutzer, null);
+        fachrollenService.setFachrollenFromJWT(fachrollen, benutzer, null);
         assertThat(benutzer.getSystemRollen()).isNull();
     }
 
@@ -158,7 +158,7 @@ class FachRollenServiceTest {
             .withOrganisationRollen(organisation, List.of(FachRolle.MPA))
         );
 
-        fachrollenService.setFachrollen(EnumSet.of(FachRolle.EMPFANG), benutzer, null);
+        fachrollenService.setFachrollenFromJWT(EnumSet.of(FachRolle.EMPFANG), benutzer, organisation);
         assertThat(benutzer.getOrganisationRollen()).isNotNull();
         assertThat(benutzer.getOrganisationRollen().stream().findFirst().get().getFachRollen()).containsExactly(FachRolle.EMPFANG);
     }
@@ -177,7 +177,7 @@ class FachRollenServiceTest {
 
         when(organisationRollenService.createForOrganisation(organisation, benutzer, fachrollen)).thenReturn(organisationRollen);
 
-        fachrollenService.setFachrollen(fachrollen, benutzer, organisation);
+        fachrollenService.setFachrollenFromJWT(fachrollen, benutzer, organisation);
         assertThat(benutzer.getOrganisationRollen()).isNotNull();
         assertThat(benutzer.getOrganisationRollen().stream().findFirst().get().getFachRollen()).containsExactly(FachRolle.MPA);
     }
@@ -198,7 +198,7 @@ class FachRollenServiceTest {
         when(organisationRollenService.createForOrganisation(organisation, benutzer, fachrollen)).thenReturn(organisationRollen);
         when(organisationService.getZentraleOrganisation()).thenReturn(organisation);
 
-        fachrollenService.setFachrollen(fachrollen, benutzer, null);
+        fachrollenService.setFachrollenFromJWT(fachrollen, benutzer, null);
         assertThat(benutzer.getOrganisationRollen()).isNotNull();
         assertThat(benutzer.getOrganisationRollen().stream().findFirst().get().getFachRollen()).containsExactly(FachRolle.MPA);
         assertThat(benutzer.getOrganisationRollen().stream().findFirst().get().getOrganisation().getId().getId()).isEqualTo(organisation.getId().getId());
@@ -221,7 +221,7 @@ class FachRollenServiceTest {
         when(organisationService.createOrganisationForBenutzer(benutzer)).thenReturn(organisation);
         when(organisationRollenService.createForOrganisation(organisation, benutzer, fachrollen)).thenReturn(organisationRollen);
 
-        fachrollenService.setFachrollen(fachrollen, benutzer, null);
+        fachrollenService.setFachrollenFromJWT(fachrollen, benutzer, null);
         assertThat(benutzer.getOrganisationRollen()).isNotNull();
         assertThat(benutzer.getOrganisationRollen().stream().findFirst().get().getFachRollen()).containsExactly(FachRolle.SCHULAERZTIN);
         assertThat(benutzer.getOrganisationRollen().stream().findFirst().get().getOrganisation().getId().getId()).isEqualTo(organisation.getId().getId());
@@ -236,7 +236,7 @@ class FachRollenServiceTest {
 
         // ACT
         AppFailureException ex = assertThrows(AppFailureException.class, () -> {
-            fachrollenService.setFachrollen(fachrollen, benutzer, null);
+            fachrollenService.setFachrollenFromJWT(fachrollen, benutzer, null);
         });
 
         // ASSERT

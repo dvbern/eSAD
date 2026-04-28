@@ -43,7 +43,6 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LABELS_SC
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_ADMIN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_SCHREIBEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.MITARBEITERLISTE_BERECHTIGUNGEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SPSS_EXPORT;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SUPPORT;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_ABSCHLUSS_LESEN;
@@ -89,8 +88,6 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         VERANDERUNGEN_NACH_ABSCHLUSS,
         SU_DATEN_LESEN,
         SU_DATEN_SCHREIBEN,
-        SU_VORABKLAERUNGEN_LESEN,
-        SU_VORABKLAERUNGEN_SCHREIBEN,
         SU_IMPFEN_LESEN,
         SU_IMPFEN_SCHREIBEN,
         SU_SEHEN_LESEN,
@@ -109,6 +106,8 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         SU_MASSNAHMEN_SCHREIBEN,
         SU_ABSCHLUSS_LESEN,
         SU_ABSCHLUSS_SCHREIBEN,
+        SU_VORABKLAERUNGEN_LESEN,
+        SU_VORABKLAERUNGEN_SCHREIBEN,
         KINDER_LESEN_MEDIZINISCH,
         KINDER_LESEN_NICHT_MEDIZINISCH,
         KINDER_SCHREIBEN_MEDIZINISCH,
@@ -120,11 +119,9 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         INDIVIDUELLE_REPORTS,
         SPSS_EXPORT,
         KOMPLETTER_EXPORT,
-        LISTEN_LESEN,
         LISTEN_ADMIN_LESEN,
+        LISTEN_LESEN,
         LISTEN_SCHREIBEN,
-        AERZTE_LESEN,
-        AERZTE_SCHREIBEN,
         IMPFSTOFFE_LESEN,
         IMPFSTOFFE_SCHREIBEN,
         DUBLETTEN_ZUSAMMENFUHREN,
@@ -132,12 +129,13 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         LABELS_ADMIN_LESEN,
         LABELS_SCHREIBEN,
         EIGENE_BERECHTIGUNGEN_LESEN,
-        MITARBEITERLISTE_BERECHTIGUNGEN_LESEN,
+        BENUTZER_BERECHTIGUNGEN_LESEN,
+        BENUTZER_BERECHTIGUNGEN_SCHREIBEN,
         VORLAGEN_LESEN,
         VORLAGEN_ADMIN_LESEN,
         VORLAGEN_SCHREIBEN,
-        BENUTZER_BERECHTIGUNGEN_LESEN,
-        BENUTZER_BERECHTIGUNGEN_SCHREIBEN,
+        AERZTE_LESEN,
+        AERZTE_SCHREIBEN,
         ARCHIVIERUNG,
         SUPPORT
     }
@@ -154,6 +152,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         @Claim(key = JsonWebTokenClaims.TITLE_CLAIM, value = TestAsSupportBS.TITEL),
     }
 )
+@TestAsMarker
 public @interface TestAsSupportBS {
     String BENUTZER_ID = "2b1d7672-9b0d-4403-80ba-7f3e34208144";
     String BENUTZER_ID_IN_KC = "d3d1e568-ad1f-4cfb-9016-b600c3a59341";

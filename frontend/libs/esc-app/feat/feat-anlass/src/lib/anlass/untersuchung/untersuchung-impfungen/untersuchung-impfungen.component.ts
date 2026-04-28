@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, viewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NotizTyp, RequirementSetting, UntersuchungImpfstatusListSaveJson } from '@dvb/data-access-backend';
-import { BackendEntityId } from '@dvb/data-access-types';
+import { BackendEntityId, toEinladungBackendEntityIdWithClass } from '@dvb/data-access-types';
 import { NavigationService } from '@dvb/feat-shared';
 import { CardInCardComponent, LayoutTwoColumnsComponent } from '@dvb/ui-components';
 import { DetailMode, DirtyMarker } from '@dvb/util-angular';
@@ -80,7 +80,7 @@ export class UntersuchungImpfungenComponent implements DirtyMarker {
   public impfausweisUnvollstaendigChanged(value: boolean): void {
     this.untersuchungImpfungenStore.changeImpfausweisUnvollstaendig({
       anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-      einladungId: requireValue(this.untersuchungStore.currentTab()).einladungID,
+      einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
       impfausweisUnvollstaendig: value,
     });
   }
@@ -88,7 +88,7 @@ export class UntersuchungImpfungenComponent implements DirtyMarker {
   public impfausweisNichtVorhandenChanged(value: boolean): void {
     this.untersuchungImpfungenStore.changeImpfausweisNichtVorhanden({
       anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-      einladungId: requireValue(this.untersuchungStore.currentTab()).einladungID,
+      einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
       impfausweisNichtVorhanden: value,
     });
   }
@@ -96,7 +96,7 @@ export class UntersuchungImpfungenComponent implements DirtyMarker {
   public impfausweisZweiPlusEinsSchemaChanged(value: boolean): void {
     this.untersuchungImpfungenStore.changeImpfausweisZweiPlusEinsSchema({
       anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-      einladungId: requireValue(this.untersuchungStore.currentTab()).einladungID,
+      einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
       impfausweisZweiPlusEinsSchema: value,
     });
   }
@@ -106,7 +106,7 @@ export class UntersuchungImpfungenComponent implements DirtyMarker {
     const einladungId = requireValue(this.untersuchungStore.currentTab()).einladungID;
     this.untersuchungImpfungenStore.saveUntersuchungImpfstatusList({
       anlassId: anlassId,
-      einladungId: einladungId,
+      einladungId: toEinladungBackendEntityIdWithClass(einladungId),
       impfstatusList: payload,
     });
   }

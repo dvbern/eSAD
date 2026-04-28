@@ -6,9 +6,11 @@
 
     <!-- MAIN NAV -->
     <div class="smallscreen-hide">
+      @if (hasAnyBerechtigung()) {
       <ul class="nav">
         <ng-container *ngTemplateOutlet="navcontent"/>
       </ul>
+      }
     </div>
 
     }
@@ -18,41 +20,44 @@
 
 
     <div class="svui-page-header-content-right">
-      @if (showNav()){
     <div class="d-flex justify-content-center align-items-center gap-3">
 
-      <!-- TIMETRAVEL -->
-      <feat-page-timetravel-status/>
+      @if (showNav()) {
+        <!-- TIMETRAVEL -->
+        <feat-page-timetravel-status/>
 
-      <!-- SUCHE -->
-      <feat-page-global-search/>
+        <!-- SUCHE -->
+        @if (canViewKind()) {
+          <feat-page-global-search/>
+        }
 
-      <!-- NOTIZEN -->
-      @if (canViewNotizen()) {
-        <button svuiIconOnlyButton="secondary"
-                type="button"
-                [icon]="'document'"
-                [tooltip]="'global.tooltip.notizen' | transloco"
-                [routerLink]="'/' + Path.NOTIZEN">
-        </button>
-      }
+        <!-- NOTIZEN -->
+        @if (canViewNotizen()) {
+          <button svuiIconOnlyButton="secondary"
+                  type="button"
+                  [icon]="'document'"
+                  [tooltip]="'global.tooltip.notizen' | transloco"
+                  [routerLink]="'/' + Path.NOTIZEN">
+          </button>
+        }
 
-      <!-- AUFGABEN -->
-      @if (canViewAufgaben()) {
-        <button svuiIconOnlyButton="secondary"
-                type="button"
-                [icon]="'aufgaben'"
-                [tooltip]="'global.tooltip.aufgaben' | transloco"
-                [badgeContent]="aufgabenStore.numOfOffeneFaelligeAufgaben()"
-                [routerLink]="'/' + Path.AUFGABEN"
-        data-testid="button-aufgaben-list">
-        </button>
+        <!-- AUFGABEN -->
+        @if (canViewAufgaben()) {
+          <button svuiIconOnlyButton="secondary"
+                  type="button"
+                  [icon]="'aufgaben'"
+                  [tooltip]="'global.tooltip.aufgaben' | transloco"
+                  [badgeContent]="aufgabenStore.numOfOffeneFaelligeAufgaben()"
+                  [routerLink]="'/' + Path.AUFGABEN"
+                  data-testid="button-aufgaben-list">
+          </button>
+        }
       }
 
       <!-- BENUTZER -->
-      @if (benutzerStore.isLoggedIn()) {
+      @if (benutzerStore.isLoggedIn() && (showNav() || showLogout())) {
         <svui-collapsible-menu
-          class="smallscreen-hide"
+          [class.smallscreen-hide]="showNav()"
           [menuStyle]="'LINK'"
           [loading]="false"
           [label]="benutzerStore.requireBenutzer().fullName">
@@ -81,7 +86,7 @@
           <!-- FachRolle(n) Section -->
           <div class="dropdown-divider"></div>
           <div class="dropdown-item-text py-2" style="max-width: 340px">
-            <feat-page-fach-rollen-list [rollen]="benutzerStore.requireBenutzer().fachRollen"/>
+            <feat-page-fach-rollen-list [rollen]="benutzerStore.fachrollen()"/>
           </div>
 
           <!-- Version Section -->
@@ -92,16 +97,17 @@
         </svui-collapsible-menu>
       }
 
-      <!-- BURGER TOGGLE BUTTON -->
-      <button svuiIconOnlyButton="secondary"
-              class="bigscreen-hide flex-shrink-0"
-              type="button"
-              [tooltip]="'global.tooltip.icon.menu' | transloco"
-              [icon]="'menu'"
-              (click)="open(offcanvasNav)">
-      </button>
-    </div>
+      @if (showNav()) {
+        <!-- BURGER TOGGLE BUTTON -->
+        <button svuiIconOnlyButton="secondary"
+                class="bigscreen-hide flex-shrink-0"
+                type="button"
+                [tooltip]="'global.tooltip.icon.menu' | transloco"
+                [icon]="'menu'"
+                (click)="open(offcanvasNav)">
+        </button>
       }
+    </div>
   </div>
 
   <ng-content select="svui-page-header-list-summary" ngProjectAs="svui-page-header-list-summary"/>
@@ -181,7 +187,7 @@
         <!-- FachRolle(n) in mobile menu -->
         <div class="nav-item">
           <div class="nav-link">
-            <feat-page-fach-rollen-list [rollen]="benutzerStore.requireBenutzer().fachRollen"/>
+            <feat-page-fach-rollen-list [rollen]="benutzerStore.fachrollen()"/>
           </div>
         </div>
 

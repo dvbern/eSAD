@@ -14,7 +14,7 @@ import {FachRolle} from "@dvb/data-access-backend";
 import {MitgliederListComponent} from "./mitglieder-list.component";
 import {NonNullableFormBuilder} from "@angular/forms";
 import {OrganisationMitgliederFilter, OrganisationMitgliederListFilterForm} from "./mitglieder-list-filter.form";
-import {ensureProps, hasOrganisationVerwaltungEditBerechtigung, isNotNullish, toValidEnumList} from "@dvb/util-shared";
+import {ensureProps, hasBenutzerverwaltungEditBerechtigungen, isNotNullish, toValidEnumList} from "@dvb/util-shared";
 
 @Component({
   selector: 'feat-organisation-mitglieder-list.page',
@@ -39,7 +39,7 @@ export class MitgliederListPageComponent extends FilterSessionStorage<Organisati
 
   readonly SESSIONSTORAGE_KEY = 'organisationMitgliederFilter';
 
-  canCreateMitglieder = this.benutzerStore.createHasRequiredRoleSig(hasOrganisationVerwaltungEditBerechtigung());
+  canCreateMitglieder = this.benutzerStore.createHasRequiredRoleSig(hasBenutzerverwaltungEditBerechtigungen());
 
   itemTable = new TableModel<BenutzerEnhancedJson>(
     {
@@ -78,7 +78,7 @@ export class MitgliederListPageComponent extends FilterSessionStorage<Organisati
   }
 
   getRouterBackLink(): string {
-    if (isNotNullish(this.benutzerStore.benutzer()?.organisationRollen)) {
+    if (isNotNullish(this.benutzerStore.benutzer()?.currentOrganisationRollen)) {
       return Path.RELATIVE_TWO_UP;
     }
     return Path.RELATIVE_ONE_UP;

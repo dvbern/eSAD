@@ -41,12 +41,12 @@ public final class UntersuchungKindDatenMapper {
             ?
             UntersuchungKindDatenMapper.toJson(
                 untersuchung.getUntersuchungKindDaten(),
-                untersuchung.getEinladung(),
+                untersuchung.getEinladungRequired(),
                 now)
             :
             UntersuchungKindDatenMapper.toJson(
-                untersuchung.getEinladung().getAnlass(),
-                untersuchung.getEinladung().getDossier().getKind(),
+                untersuchung.getAnlass(),
+                untersuchung.getEinladungRequired().getDossier().getKind(),
                 now);
     }
 
@@ -174,13 +174,13 @@ public final class UntersuchungKindDatenMapper {
 
         // Kind Daten müssen zu diesem Zeitpunkt eigentlich immer vorhanden sein.
         if (kindDaten == null) {
-            kindDaten = UntersuchungKindDaten.ofKind(untersuchung.getEinladung().getDossier().getKind());
+            kindDaten = UntersuchungKindDaten.ofKind(untersuchung.getEinladungRequired().getDossier().getKind());
         }
         UntersuchungKindDaten entity = toEntity(kindDaten, saveJson);
 
         return toJson(
             untersuchungKindDatenService.persistWithOptimisticLocking(entity, saveJson.getVersion()),
-            untersuchung.getEinladung(),
+            untersuchung.getEinladungRequired(),
             appClock.offsetDateTime().now().toLocalDate()
         );
     }

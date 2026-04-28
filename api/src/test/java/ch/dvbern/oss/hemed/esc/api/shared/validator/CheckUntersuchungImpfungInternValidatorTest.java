@@ -45,7 +45,7 @@ class CheckUntersuchungImpfungInternValidatorTest {
         impfung.setDatumImpfung(datumImpfung);
         impfung.setCharge(charge);
         impfung.setUserDurchgefuehrt(userDurchgefuehrt);
-        impfung.getUntersuchungImpfungen().getUntersuchung().getEinladung().getAnlass().getAnlassConfig()
+        impfung.getUntersuchungImpfungen().getUntersuchung().getAnlass().getAnlassConfig()
             .setImpfungenListe(RequirementSetting.REQUIRED);
 
         CheckUntersuchungImpfungInternValidator

@@ -5,8 +5,6 @@ import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
-import ch.dvbern.oss.hemed.esc.api.shared.benutzer.QBenutzer;
 import jakarta.persistence.EntityGraph;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -17,9 +15,6 @@ public class UntersuchungRepo extends BaseRepo<Untersuchung> {
 
     @NonNull
     public Untersuchung getByIdWithLoadedSubuntersuchungen(@NonNull ID<Untersuchung> untersuchungId) {
-        EntityGraph<Benutzer> entityGraph = db.getEntityManager().createEntityGraph(Benutzer.class);
-        entityGraph.addAttributeNodes(QBenutzer.benutzer.berechtigungen.getMetadata().getName());
-
         EntityGraph<Untersuchung> untersuchungGraph = db.getEntityManager().createEntityGraph(Untersuchung.class);
         untersuchungGraph.addAttributeNodes(QUntersuchung.untersuchung.untersuchungKindDaten.getMetadata().getName());
         untersuchungGraph.addAttributeNodes(QUntersuchung.untersuchung.untersuchungArztBeurteilung.getMetadata().getName());
@@ -33,13 +28,10 @@ public class UntersuchungRepo extends BaseRepo<Untersuchung> {
         untersuchungGraph.addAttributeNodes(QUntersuchung.untersuchung.untersuchungImpfungen.getMetadata().getName());
         untersuchungGraph.addAttributeNodes(QUntersuchung.untersuchung.untersuchungTriage.getMetadata().getName());
         untersuchungGraph.addAttributeNodes(QUntersuchung.untersuchung.untersuchungMassnahmen.getMetadata().getName());
-
         return db.selectFrom(QUntersuchung.untersuchung)
             .where(QUntersuchung.untersuchung.id.eq(untersuchungId.getUUID()))
             .applyEntityGraph(untersuchungGraph)
             .fetchOne()
             .orElseThrow(() -> new AppFailureException(AppFailureMessage.entityNotFound(untersuchungId)));
-
     }
-
 }

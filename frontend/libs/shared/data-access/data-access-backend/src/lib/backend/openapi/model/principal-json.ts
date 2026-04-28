@@ -8,12 +8,10 @@
  * Do not edit the class manually.
  */
 import { BenutzerJson } from './benutzer-json';
-import { Berechtigung } from './berechtigung';
 
 
 export interface PrincipalJson { 
     benutzerJson: BenutzerJson;
-    berechtigungen: Array<Berechtigung>;
 }
 
 

@@ -13,7 +13,6 @@
 
 package ch.dvbern.oss.hemed.esc.generated.restassured.api;
 
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.OrganisationJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.OrganisationListJsonSpec;
 
 import java.util.ArrayList;
@@ -58,17 +57,12 @@ public class OrganisationApiSpec {
 
     public List<Oper> getAllOperations() {
         return Arrays.asList(
-                organisationResourceFindAllOrganisationen(),
-                organisationResourceFindOrganisation()
+                organisationResourceFindOrganisationenBerechtigt()
         );
     }
 
-    public OrganisationResourceFindAllOrganisationenOper organisationResourceFindAllOrganisationen() {
-        return new OrganisationResourceFindAllOrganisationenOper(createReqSpec());
-    }
-
-    public OrganisationResourceFindOrganisationOper organisationResourceFindOrganisation() {
-        return new OrganisationResourceFindOrganisationOper(createReqSpec());
+    public OrganisationResourceFindOrganisationenBerechtigtOper organisationResourceFindOrganisationenBerechtigt() {
+        return new OrganisationResourceFindOrganisationenBerechtigtOper(createReqSpec());
     }
 
     /**
@@ -82,12 +76,12 @@ public class OrganisationApiSpec {
     }
 
     /**
-     * Find All Organisationen
+     * Find Organisationen Berechtigt
      * 
      *
      * return OrganisationListJsonSpec
      */
-    public static class OrganisationResourceFindAllOrganisationenOper implements Oper {
+    public static class OrganisationResourceFindOrganisationenBerechtigtOper implements Oper {
 
         public static final Method REQ_METHOD = GET;
         public static final String REQ_URI = "/api/organisation";
@@ -95,7 +89,7 @@ public class OrganisationApiSpec {
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
 
-        public OrganisationResourceFindAllOrganisationenOper(RequestSpecBuilder reqSpec) {
+        public OrganisationResourceFindOrganisationenBerechtigtOper(RequestSpecBuilder reqSpec) {
             this.reqSpec = reqSpec;
             reqSpec.setAccept("application/json");
             this.respSpec = new ResponseSpecBuilder();
@@ -127,7 +121,7 @@ public class OrganisationApiSpec {
          * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
          * @return operation
          */
-        public OrganisationResourceFindAllOrganisationenOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+        public OrganisationResourceFindOrganisationenBerechtigtOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
             reqSpecCustomizer.accept(reqSpec);
             return this;
         }
@@ -137,80 +131,7 @@ public class OrganisationApiSpec {
          * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
          * @return operation
          */
-        public OrganisationResourceFindAllOrganisationenOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
-            respSpecCustomizer.accept(respSpec);
-            return this;
-        }
-    }
-    /**
-     * Find Organisation
-     * 
-     *
-     * @see #organisationIdPath  (required)
-     * return OrganisationJsonSpec
-     */
-    public static class OrganisationResourceFindOrganisationOper implements Oper {
-
-        public static final Method REQ_METHOD = GET;
-        public static final String REQ_URI = "/api/organisation/{organisationId}";
-
-        private RequestSpecBuilder reqSpec;
-        private ResponseSpecBuilder respSpec;
-
-        public OrganisationResourceFindOrganisationOper(RequestSpecBuilder reqSpec) {
-            this.reqSpec = reqSpec;
-            reqSpec.setAccept("application/json");
-            this.respSpec = new ResponseSpecBuilder();
-        }
-
-        /**
-         * GET /api/organisation/{organisationId}
-         * @param handler handler
-         * @param <T> type
-         * @return type
-         */
-        @Override
-        public <T> T execute(Function<Response, T> handler) {
-            return handler.apply(RestAssured.given().spec(reqSpec.build()).expect().spec(respSpec.build()).when().request(REQ_METHOD, REQ_URI));
-        }
-
-        /**
-         * GET /api/organisation/{organisationId}
-         * @param handler handler
-         * @return OrganisationJsonSpec
-         */
-        public OrganisationJsonSpec executeAs(Function<Response, Response> handler) {
-            TypeRef<OrganisationJsonSpec> type = new TypeRef<OrganisationJsonSpec>(){};
-            return execute(handler).as(type);
-        }
-
-        public static final String ORGANISATION_ID_PATH = "organisationId";
-
-        /**
-         * @param organisationId (String)  (required)
-         * @return operation
-         */
-        public OrganisationResourceFindOrganisationOper organisationIdPath(Object organisationId) {
-            reqSpec.addPathParam(ORGANISATION_ID_PATH, organisationId);
-            return this;
-        }
-
-        /**
-         * Customize request specification
-         * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
-         * @return operation
-         */
-        public OrganisationResourceFindOrganisationOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
-            reqSpecCustomizer.accept(reqSpec);
-            return this;
-        }
-
-        /**
-         * Customize response specification
-         * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
-         * @return operation
-         */
-        public OrganisationResourceFindOrganisationOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+        public OrganisationResourceFindOrganisationenBerechtigtOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
             respSpecCustomizer.accept(respSpec);
             return this;
         }

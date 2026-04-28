@@ -36,6 +36,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+
 @QuarkusTest
 @RequiredArgsConstructor
 class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
@@ -65,7 +67,7 @@ class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
         UntersuchungDurchfuehrungDataJsonSpec data = api
             .untersuchungDurchfuehrungResourceGetUntersuchungDurchfuehrung()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -89,8 +91,8 @@ class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
         // ACT
         UntersuchungDurchfuehrungDataJsonSpec result = api
             .untersuchungDurchfuehrungResourceGetUntersuchungDurchfuehrung()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -123,7 +125,7 @@ class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
         UntersuchungDurchfuehrungDataJsonSpec data = api
             .untersuchungDurchfuehrungResourceGetUntersuchungDurchfuehrung()
             .anlassIdPath(einladungNeu.getAnlass().getId().getId())
-            .einladungIdPath(einladungNeu.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladungNeu.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -151,7 +153,7 @@ class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
         UntersuchungDurchfuehrungDataJsonSpec data = api
             .untersuchungDurchfuehrungResourceGetUntersuchungDurchfuehrung()
             .anlassIdPath(einladungNeu.getAnlass().getId().getId())
-            .einladungIdPath(einladungNeu.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladungNeu.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -179,7 +181,7 @@ class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
         UntersuchungDurchfuehrungDataJsonSpec data = api
             .untersuchungDurchfuehrungResourceGetUntersuchungDurchfuehrung()
             .anlassIdPath(einladungNeu.getAnlass().getId().getId())
-            .einladungIdPath(einladungNeu.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladungNeu.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -203,7 +205,7 @@ class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
         api
             .untersuchungDurchfuehrungResourceSaveUntersuchungDurchfuehrung()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .body(createJson)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -218,7 +220,7 @@ class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
         Assertions.assertThat(existingDurchfuehrung).isNotNull();
 
         // ACT
-        Benutzer arztNachher = fixtureService.createBenutzer();
+        Benutzer arztNachher = fixtureService.createBenutzerFuerZentraleOrganisation();
         UntersuchungDurchfuehrungSaveJsonSpec saveJsonSpec =
             UntersuchungDurchfuehrungBuilder.createJaxSpec(builder -> builder
                 .forUntersuchungDurchfuehrung(existingDurchfuehrung)
@@ -227,7 +229,7 @@ class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
         UntersuchungDurchfuehrungJsonSpec result = api
             .untersuchungDurchfuehrungResourceSaveUntersuchungDurchfuehrung()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -252,7 +254,7 @@ class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
 
         apiAnlass
             .anlassResourceChangeAnlassStatus()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
             .statusPath(AnlassStatusSpec.ABGESCHLOSSEN)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -262,7 +264,7 @@ class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
 
         Assertions.assertThat(untersuchung).isNotNull();
         Assertions.assertThat(untersuchung.getUntersuchungDurchfuehrung()).isNotNull();
-        Assertions.assertThat(untersuchung.getEinladung().getDossier().getKind().getVorname()).isEqualTo("Emma");
+        Assertions.assertThat(untersuchung.getEinladungRequired().getDossier().getKind().getVorname()).isEqualTo("Emma");
 
         UntersuchungDurchfuehrungSaveJsonSpec saveJsonSpec =
             UntersuchungDurchfuehrungBuilder.createJaxSpec(builder -> builder
@@ -281,8 +283,8 @@ class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
         // ACT
         UntersuchungDurchfuehrungDataJsonSpec result =
             api.untersuchungDurchfuehrungResourceSaveUntersuchungDurchfuehrungAbgeschlossen()
-                .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-                .einladungIdPath(untersuchung.getEinladung().getId().getId())
+                .anlassIdPath(untersuchung.getAnlass().getId().getId())
+                .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
                 .body(apiSpec)
                 .execute(ResponseBody::prettyPeek)
                 .then()
@@ -302,7 +304,7 @@ class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
 
         apiAnlass
             .anlassResourceChangeAnlassStatus()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
             .statusPath(AnlassStatusSpec.ABGESCHLOSSEN)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -328,8 +330,8 @@ class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
 
         // ACT
         api.untersuchungDurchfuehrungResourceSaveUntersuchungDurchfuehrungAbgeschlossen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(apiSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -362,8 +364,8 @@ class UntersuchungDurchfuehrungResourceITest extends AbstractITest {
 
         // ACT
         api.untersuchungDurchfuehrungResourceSaveUntersuchungDurchfuehrungAbgeschlossen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(apiSpec)
             .execute(ResponseBody::prettyPeek)
             .then()

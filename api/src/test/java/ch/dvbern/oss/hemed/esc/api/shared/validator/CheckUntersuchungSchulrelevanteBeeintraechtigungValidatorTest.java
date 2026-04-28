@@ -36,7 +36,7 @@ class CheckUntersuchungSchulrelevanteBeeintraechtigungValidatorTest {
         UntersuchungSchulrelevanteBeeintraechtigung beeintraechtigung = UntersuchungSchulrelevanteBeeintraechtigungBuilder.create(
             builder -> builder
                 .withFreiesGehen(input, null));
-        beeintraechtigung.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungBeeintraechtigungFreiesGehen(requirementSetting);
+        beeintraechtigung.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungBeeintraechtigungFreiesGehen(requirementSetting);
         // ACT
         CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReqValidator
             validator = new CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReqValidator();
@@ -63,7 +63,7 @@ class CheckUntersuchungSchulrelevanteBeeintraechtigungValidatorTest {
         UntersuchungSchulrelevanteBeeintraechtigung beeintraechtigung = UntersuchungSchulrelevanteBeeintraechtigungBuilder.create(
             builder -> builder
                 .withOhneStuetzradVelofahren(input, null));
-        beeintraechtigung.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungBeeintraechtigungOhneStuetzradVelofahren(requirementSetting);
+        beeintraechtigung.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungBeeintraechtigungOhneStuetzradVelofahren(requirementSetting);
         // ACT
         CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReqValidator
             validator = new CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReqValidator();
@@ -90,7 +90,7 @@ class CheckUntersuchungSchulrelevanteBeeintraechtigungValidatorTest {
         UntersuchungSchulrelevanteBeeintraechtigung beeintraechtigung = UntersuchungSchulrelevanteBeeintraechtigungBuilder.create(
             builder -> builder
                 .withGrafomotorik(input, null));
-        beeintraechtigung.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungBeeintraechtigungGrafomotorik(requirementSetting);
+        beeintraechtigung.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungBeeintraechtigungGrafomotorik(requirementSetting);
         // ACT
         CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReqValidator
             validator = new CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReqValidator();
@@ -117,7 +117,7 @@ class CheckUntersuchungSchulrelevanteBeeintraechtigungValidatorTest {
         UntersuchungSchulrelevanteBeeintraechtigung beeintraechtigung = UntersuchungSchulrelevanteBeeintraechtigungBuilder.create(
             builder -> builder
                 .withFeinmotorik(input, null));
-        beeintraechtigung.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungBeeintraechtigungFeinmotorik(requirementSetting);
+        beeintraechtigung.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungBeeintraechtigungFeinmotorik(requirementSetting);
         // ACT
         CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReqValidator
             validator = new CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReqValidator();
@@ -144,7 +144,7 @@ class CheckUntersuchungSchulrelevanteBeeintraechtigungValidatorTest {
         UntersuchungSchulrelevanteBeeintraechtigung beeintraechtigung = UntersuchungSchulrelevanteBeeintraechtigungBuilder.create(
             builder -> builder
                 .withGrobmotorik(input, null));
-        beeintraechtigung.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungBeeintraechtigungGrobmotorik(requirementSetting);
+        beeintraechtigung.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungBeeintraechtigungGrobmotorik(requirementSetting);
         // ACT
         CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReqValidator
             validator = new CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReqValidator();
@@ -171,7 +171,7 @@ class CheckUntersuchungSchulrelevanteBeeintraechtigungValidatorTest {
         UntersuchungSchulrelevanteBeeintraechtigung beeintraechtigung = UntersuchungSchulrelevanteBeeintraechtigungBuilder.create(
             builder -> builder
                 .withGleichgewicht(input, null));
-        beeintraechtigung.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungBeeintraechtigungGleichgewicht(requirementSetting);
+        beeintraechtigung.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungBeeintraechtigungGleichgewicht(requirementSetting);
         // ACT
         CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReqValidator
             validator = new CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReqValidator();
@@ -198,7 +198,7 @@ class CheckUntersuchungSchulrelevanteBeeintraechtigungValidatorTest {
         UntersuchungSchulrelevanteBeeintraechtigung beeintraechtigung = UntersuchungSchulrelevanteBeeintraechtigungBuilder.create(
             builder -> builder
                 .withBemerkungen(input));
-        beeintraechtigung.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungBeeintraechtigungBemerkung(requirementSetting);
+        beeintraechtigung.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungBeeintraechtigungBemerkung(requirementSetting);
         // ACT
         CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReqValidator
             validator = new CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReqValidator();

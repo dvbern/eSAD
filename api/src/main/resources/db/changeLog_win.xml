@@ -126,11 +126,17 @@
   <include file="db/base/0064-change-arzt-organisation-to-rechtsform.xml"/>
   <include file="db/base/0065-fix-value-enhanced-migration.xml"/>
   <include file="db/win/0034-add-berechtigung-organisation-win.xml"/>
+  <include file="db/base/0066-organisationrolleberechtigung_systemrolleberechtigung.xml"/>
+  <include file="db/base/0067-remove-unused-berechtigung.xml"/>
+  <include file="db/win/0035-add-chefarzt-to-zentrale-organisation-win.xml"/>
+  <include file="db/base/0068-remove-berechtigung-tables-reverse-systemrollen-fk.xml"/>
+  <include file="db/base/0069-insert-impfanmeldung-label.xml"/>
+  <include file="db/base/0070-tenant-setting-default-landing-page.xml"/>
+  <include file="db/base/0067-create-anonymereintrag.xml"/>
+  <include file="db/base/0071-insert-anlassconfig-anonym.xml"/>
+  <include file="db/base/0072-add-anonyme-statistik-feature.xml"/>
 
   <!--  The following scripts only run in the 'test' context-->
-  <include file="db-test/0011-insert-test-benutzer-admin-win.xml" context="@test"/>
-  <include file="db-test/0012-insert-test-benutzer-lausbeauftragte-win.xml" context="@test"/>
-  <include file="db-test/0014-insert-test-benutzer-pfp-win.xml" context="@test"/>
 
   <!-- The following scripts only run in the 'dev' context
 	  To use it, insert the following in your .env:

@@ -23,15 +23,15 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import ch.dvbern.dvbstarter.infrastructure.health.tenant.TenantHealthCheck.TenantInfos;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
-import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerRepo;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
-import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
@@ -41,6 +41,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.scheduler.SchedulerConfig;
 import ch.dvbern.oss.hemed.esc.api.shared.scheduler.SchedulerConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.scheduler.SchedulerTyp;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Validate;
@@ -77,7 +78,6 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
     private TenantProducer tenantProducer = null;
     private TenantSettingsService tenantSettingsService = null;
     private BenutzerService benutzerService = null;
-    private BenutzerRepo benutzerRepo = null;
     private AnlassConfigService anlassConfigService = null;
     private SchedulerConfigService schedulerConfigService = null;
     private ConfigService configService = null;
@@ -89,7 +89,6 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
         @NonNull TenantProducer tenantProducer,
         @NonNull TenantSettingsService tenantSettingsService,
         @NonNull BenutzerService benutzerService,
-        @NonNull BenutzerRepo benutzerRepo,
         @NonNull AnlassConfigService anlassConfigService,
         @NonNull SchedulerConfigService schedulerConfigService,
         @NonNull ConfigService configService,
@@ -98,7 +97,6 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
         this.tenantProducer = tenantProducer;
         this.tenantSettingsService = tenantSettingsService;
         this.benutzerService = benutzerService;
-        this.benutzerRepo = benutzerRepo;
         this.anlassConfigService = anlassConfigService;
         this.schedulerConfigService = schedulerConfigService;
         this.configService = configService;
@@ -148,15 +146,10 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
     private boolean isSystemAdminPresent(@NonNull TenantInfos tenantInfos) {
         try {
             Benutzer systemAdmin = benutzerService.getById(tenantInfos.systemAdminId());
-            Optional<Benutzer> systemAdminWithBerechtigungenOptional =
-                benutzerRepo.getByBenutzernameWithBerechtigungen(systemAdmin.getEmail());
-            Validate.isTrue(systemAdminWithBerechtigungenOptional.isPresent());
-            Benutzer systemAdminWithBerechtigungen = systemAdminWithBerechtigungenOptional.get();
-            if (systemAdminWithBerechtigungen.getId().equals(tenantInfos.systemAdminId())) {
-                return systemAdminWithBerechtigungen.getBerechtigungen().stream()
-                    .anyMatch(benutzerBerechtigung -> Objects.equals(
-                        benutzerBerechtigung.getBerechtigung().getBerechtigungName(),
-                        BerechtigungName.SYSTEM_ADMIN));
+            if (systemAdmin.getSystemRollen() != null) {
+                Set<Berechtigung> berechtigungen = systemAdmin.getSystemRollen().getBerechtigungen(tenantInfos.tenantEnum());
+                return berechtigungen.stream()
+                    .anyMatch(b -> Objects.equals(b.getBerechtigungName(), BerechtigungName.SYSTEM_ADMIN));
             }
         } catch (Exception ex) {
             LOG.error(

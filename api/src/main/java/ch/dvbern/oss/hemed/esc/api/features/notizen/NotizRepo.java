@@ -14,10 +14,12 @@ import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.QFileData;
 import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class NotizRepo extends BaseRepo<Notiz> {
 
     @NonNull
@@ -47,4 +49,5 @@ public class NotizRepo extends BaseRepo<Notiz> {
         this.persist(lockedNotiz);
         return lockedNotiz;
     }
+
 }

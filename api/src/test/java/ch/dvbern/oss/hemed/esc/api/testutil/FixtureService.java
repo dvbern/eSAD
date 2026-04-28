@@ -166,6 +166,9 @@ import ch.dvbern.oss.hemed.esc.api.features.labels.LabelService;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizService;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationRollen;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
@@ -181,6 +184,7 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.types.KontaktPersonSchuleFunk
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AufgabeService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
@@ -205,6 +209,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.KontaktPersonSchuleBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.LehrpersonBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.NachkontrolleBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.NotizBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.OrganisationBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.QuartierBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.SchuleBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungAbschlussBuilder;
@@ -293,12 +298,14 @@ public class FixtureService {
     private final TenantProducer tenantProducer;
     private final ArchivdokumentService archivdokumentService;
     private final DuplikatService duplikatService;
+    private final OrganisationService organisationService;
 
     public static final ID<Briefvorlage> BRIEFVORLAGE_ID_1 =
         ID.of(UUID.fromString("c7c95f65-247f-4b81-8cf1-bdc1644c76ff"), Briefvorlage.class);
     public static final ID<Briefvorlage> BRIEFVORLAGE_ID_2 =
         ID.of(UUID.fromString("c75a108d-2434-4025-919f-e3751be62983"), Briefvorlage.class);
     public static final Benutzer DEFAULT_BENUTZER = BenutzerBuilder.defaultBenutzer();
+
 
     @NonNull
     public KontaktPersonSchule createKontaktPersonSchule(@NonNull Schule... schulen) {
@@ -518,9 +525,8 @@ public class FixtureService {
     }
 
     @NonNull
-    public Anlass createAnlass(@NotNull Benutzer mpa) {
+    public Anlass createAnlass(@NonNull Benutzer mpa) {
         AnlassConfig config = createAnlassConfigAllOptional(2023, AnlassTyp.KLASSE_8);
-
         return anlassService.persist(AnlassBuilder.create(builder -> builder
             .withTitle("Test getAnlass")
             .withDatumSetSchuljahr(LocalDate.of(2023, 5, 5))
@@ -872,8 +878,8 @@ public class FixtureService {
     }
 
     @NonNull
-    public Benutzer createBenutzer() {
-        var createDto = BenutzerBuilder.createCreateDTO(
+    public Benutzer createBenutzerWithOrganisation() {
+        Benutzer benutzer = BenutzerBuilder.create(
             builder -> builder
                 .withRandomEmail("benno.benutzer@example.com")
                 .withRandomVorname("Benno")
@@ -881,8 +887,71 @@ public class FixtureService {
                 .withTelefon(NormalizedPhoneNumber.parse("+41 76 765 43 21"))
                 .withKeycloakId(UUID.randomUUID().toString())
         );
-        return benutzerService.getById(benutzerService.createBenutzer(createDto));
+        Benutzer persist = benutzerService.persist(benutzer);
+        Organisation organisation = OrganisationBuilder.create(builder -> builder
+            .withVerantwortlicherArzt(persist));
+        OrganisationRollen or = new OrganisationRollen(organisation, persist, FachRolle.SCHULAERZTIN.name());
+        benutzer.getOrganisationRollen().add(or);
+        organisation.addMitglied(or);
+        organisationService.persist(organisation);
+        return persist;
     }
+
+    @NonNull
+    public Benutzer createBenutzerFuerZentraleOrganisation() {
+        Organisation zentraleOrganisation = organisationService.getZentraleOrganisation();
+        return createBenutzer(zentraleOrganisation, FachRolle.SCHULAERZTIN);
+    }
+
+    @NonNull
+    public Benutzer createBenutzerNoRoles() {
+        Benutzer benutzer = BenutzerBuilder.create(
+            builder -> builder
+                .withRandomEmail("brigitte.benutzer@example.com")
+                .withRandomVorname("Brigitte")
+                .withRandomNachname("Benutzer")
+                .withTelefon(NormalizedPhoneNumber.parse("+41 76 765 43 21"))
+                .withKeycloakId(UUID.randomUUID().toString())
+        );
+        return benutzerService.persist(benutzer);
+    }
+
+    @NonNull
+    public Benutzer createBenutzer(@NonNull Organisation organisation, @NonNull FachRolle fachRolle) {
+        Benutzer benutzer = BenutzerBuilder.create(
+            builder -> builder
+                .withRandomEmail("brigitte.benutzer@example.com")
+                .withRandomVorname("Brigitte")
+                .withRandomNachname("Benutzer")
+                .withTelefon(NormalizedPhoneNumber.parse("+41 76 765 43 21"))
+                .withKeycloakId(UUID.randomUUID().toString())
+        );
+        OrganisationRollen or = new OrganisationRollen(organisation, benutzer, fachRolle.name());
+        benutzer.getOrganisationRollen().add(or);
+        organisation.addMitglied(or);
+        return benutzerService.persist(benutzer);
+    }
+
+    @NonNull
+    public Organisation createOrganisation() {
+        Benutzer benutzer = BenutzerBuilder.create(
+            builder -> builder
+                .withRandomEmail("benno.benutzer@example.com")
+                .withRandomVorname("Dummy")
+                .withRandomNachname("Organisationsverantwortlicher")
+                .withTelefon(NormalizedPhoneNumber.parse("+41 76 765 43 21"))
+                .withKeycloakId(UUID.randomUUID().toString())
+        );
+        Benutzer persist = benutzerService.persist(benutzer);
+        Organisation organisation = OrganisationBuilder.create(builder -> builder
+            .withVerantwortlicherArzt(persist));
+        OrganisationRollen or = new OrganisationRollen(organisation, persist, FachRolle.SCHULAERZTIN.name());
+        benutzer.getOrganisationRollen().add(or);
+        organisation.addMitglied(or);
+        organisationService.persist(organisation);
+        return organisation;
+    }
+
 
     @NonNull
     public Notiz createNotiz() {
@@ -909,16 +978,7 @@ public class FixtureService {
     @NonNull
     public Notiz createNotiz(@NonNull Dossier dossier, @NonNull Set<ID<Label>> labelIDs, @NonNull NotizTyp notizTyp) {
         var dossierId = dossier.getId();
-
-        var createDto = BenutzerBuilder.createCreateDTO(
-            builder -> builder
-                .withRandomEmail("viktor.verantworltich@example.com")
-                .withRandomVorname("Viktor")
-                .withRandomNachname("Verantwortlich")
-                .withKeycloakId(UUID.randomUUID().toString())
-        );
-        var benId = benutzerService.createBenutzer(createDto);
-        var verantwortlicher = benutzerService.getById(benId);
+        Benutzer verantwortlicher = createBenutzerFuerZentraleOrganisation();
 
         Set<Label> labels = labelIDs.stream()
             .map(labelService::getById)
@@ -935,6 +995,29 @@ public class FixtureService {
 
         return notizService.persist(notiz);
     }
+
+    @NonNull
+    public Notiz createNotiz(@NonNull Dossier dossier, @NonNull Set<ID<Label>> labelIDs, @NonNull NotizTyp notizTyp, @NonNull String bemerkung) {
+        var dossierId = dossier.getId();
+        Benutzer verantwortlicher = createBenutzerNoRoles();
+
+        Set<Label> labels = labelIDs.stream()
+            .map(labelService::getById)
+            .collect(Collectors.toSet());
+
+        Notiz notiz = NotizBuilder.create(
+            builder -> builder
+                .withID(ID.random(Notiz.class))
+                .withTitel("Base Notiz")
+                .withLabels(labels)
+                .withBemerkungen(bemerkung)
+                .withNotizTyp(notizTyp)
+                .withVerantwortlicher(verantwortlicher)
+                .withDossier(dossierService.getById(dossierId)));
+
+        return notizService.persist(notiz);
+    }
+
 
     public void addLabelToNotiz(@NonNull ID<Notiz> notizID, @NonNull ID<Label> labelID) {
         Notiz notiz = notizService.getById(notizID);
@@ -968,6 +1051,14 @@ public class FixtureService {
         return notiz;
     }
 
+    public Notiz createFragebogenNotizWithBemerkung(@NonNull ID<Einladung> einladungID, @NonNull String bemerkung) {
+        Einladung einladung = einladungService.getById(einladungID);
+        einladung.disableOptimisticLockingCheck();
+        Notiz notiz = createNotiz(einladung.getDossier(), Set.of(Label.ID_LABEL_FRAGEBOGEN), NotizTyp.FRAGEBOGEN, bemerkung);
+        einladung.getNotizen().add(notiz);
+        return notiz;
+    }
+
     public void createAnmeldungBestaetigungNotiz(@NonNull ID<Einladung> einladungID) {
         Einladung einladung = einladungService.getById(einladungID);
         einladung.disableOptimisticLockingCheck();
@@ -975,6 +1066,16 @@ public class FixtureService {
             einladung.getDossier(),
             Set.of(Label.ID_LABEL_ANMELDUNG_BESTAETIGUNG),
             NotizTyp.ANMELDUNG_BESTAETIGUNG);
+        einladung.getNotizen().add(notiz);
+    }
+
+    public void createImpfanmeldungNotiz(@NonNull ID<Einladung> einladungID) {
+        Einladung einladung = einladungService.getById(einladungID);
+        einladung.disableOptimisticLockingCheck();
+        Notiz notiz = createNotiz(
+            einladung.getDossier(),
+            Set.of(Label.ID_LABEL_IMPFANMELDUNG),
+            NotizTyp.IMPFANMELDUNG);
         einladung.getNotizen().add(notiz);
     }
 
@@ -1060,13 +1161,13 @@ public class FixtureService {
     public Untersuchung createUntersuchungWithEveryTab(@NonNull Untersuchung untersuchung) {
         // KindDaten
         UntersuchungKindDaten untersuchungKindDaten =
-            untersuchungKindDatenService.persist(UntersuchungKindDaten.ofKind(untersuchung.getEinladung()
+            untersuchungKindDatenService.persist(UntersuchungKindDaten.ofKind(untersuchung.getEinladungRequired()
                 .getDossier()
                 .getKind()));
         UntersuchungDurchfuehrung untersuchungDurchfuehrung =
             untersuchungDurchfuehrungService.persist(UntersuchungDurchfuehrung.forUntersuchung(untersuchung));
         // Impfungen
-        Benutzer benutzer = createBenutzer();
+        Benutzer benutzer = createBenutzerFuerZentraleOrganisation();
         UntersuchungImpfungen existingImpfungen = untersuchungImpfungenService.persist(
             UntersuchungImpfungenBuilder.create(builder -> builder
                 .forUntersuchung(untersuchung)
@@ -1150,7 +1251,7 @@ public class FixtureService {
 
         Untersuchung u = untersuchungRepo.getById(untersuchung.getId());
 
-        Benutzer arztMpa = createBenutzer();
+        Benutzer arztMpa = createBenutzerFuerZentraleOrganisation();
         UntersuchungDurchfuehrung existingDurchfuehrung;
         if (buildBlock == null) {
             existingDurchfuehrung =
@@ -1515,7 +1616,7 @@ public class FixtureService {
 
     @NonNull
     public Untersuchung createUntersuchungWithImpfungen(@NonNull Untersuchung untersuchung) {
-        Benutzer benutzer = createBenutzer();
+        Benutzer benutzer = createBenutzerFuerZentraleOrganisation();
         UntersuchungImpfungen existingImpfungen = untersuchungImpfungenService.persist(
             UntersuchungImpfungenBuilder.create(builder -> builder
                 .forUntersuchung(untersuchung)
@@ -1594,7 +1695,7 @@ public class FixtureService {
             .persist(UntersuchungImpfungInternBuilder.create(builder -> builder
                 .forUntersuchungImpfungen(untersuchungImpfungen)
                 .withImmunitaetForKrankheit(Krankheit.HEPATITIS_B, true)
-                .withUserErfasst(createBenutzer())
+                .withUserErfasst(createBenutzerFuerZentraleOrganisation())
                 .withImpfstoff(impfstoff)));
     }
 
@@ -1667,7 +1768,7 @@ public class FixtureService {
     @NonNull
     public Untersuchung createUntersuchungWithKindDaten(@NonNull Untersuchung untersuchung) {
         UntersuchungKindDaten untersuchungKindDaten =
-            untersuchungKindDatenService.persist(UntersuchungKindDaten.ofKind(untersuchung.getEinladung().getDossier()
+            untersuchungKindDatenService.persist(UntersuchungKindDaten.ofKind(untersuchung.getEinladungRequired().getDossier()
                 .getKind()));
         untersuchung.setUntersuchungKindDaten(untersuchungKindDaten);
         untersuchungRepo.persist(untersuchung);
@@ -1681,7 +1782,7 @@ public class FixtureService {
         return untersuchungImpfungInternService
             .persist(UntersuchungImpfungInternBuilder.create(builder -> builder
                 .forUntersuchungImpfungen(untersuchungImpfungen)
-                .withUserErfasst(createBenutzer())
+                .withUserErfasst(createBenutzerFuerZentraleOrganisation())
                 .withImpfstoff(impfstoff)));
     }
 
@@ -1712,7 +1813,7 @@ public class FixtureService {
     public Archivdokument createArchivdokument(@NonNull ID<Dossier> dossierID) {
         Archivdokument archivdokument = ArchivdokumentBuilder.create(builder -> builder
             .withDossierID(dossierID.getUUID())
-            .withOwner(createBenutzer()));
+            .withOwner(createBenutzerFuerZentraleOrganisation()));
         return archivdokumentService.persist(archivdokument);
     }
 
@@ -1785,7 +1886,7 @@ public class FixtureService {
     public Aufgabe createAufgabe(@Nullable Kind kind) {
         // Create a Aufgabe
         Benutzer currentBenutzer = benutzerService.getCurrentBenutzerOrThrowException();
-        Benutzer benutzer = createBenutzer();
+        Benutzer benutzer = createBenutzerFuerZentraleOrganisation();
         Aufgabe aufgabe = AufgabeBuilder.create(
             builder -> builder
                 .withID(ID.random(Aufgabe.class))
@@ -1864,7 +1965,11 @@ public class FixtureService {
     @Transactional(TxType.REQUIRES_NEW)
     public Benutzer readBenutzerWithBerechtigungen(@NonNull ID<Benutzer> benutzerID) {
         Benutzer systemAdmin = benutzerService.getById(benutzerID);
-        systemAdmin.getBerechtigungen().size();
+        // Force lazy-load of organisationRollen and their fachRollen
+        systemAdmin.getOrganisationRollen().forEach(organisationRollen -> organisationRollen.getFachRollen().size());
+        if (systemAdmin.getSystemRollen() != null) {
+            systemAdmin.getSystemRollen().getFachRollen().size();
+        }
         return systemAdmin;
     }
 

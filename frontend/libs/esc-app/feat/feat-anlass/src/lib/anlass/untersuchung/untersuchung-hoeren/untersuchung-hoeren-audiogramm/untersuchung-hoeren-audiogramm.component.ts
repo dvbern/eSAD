@@ -23,6 +23,7 @@ import {
   TextareaDirective,
   TitleComponent,
 } from '@dvb/ui-components';
+import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import {DirtyMarker} from '@dvb/util-angular';
 import {hasHoerenEditBerechtigung, isNotNullish, isNullish, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
@@ -164,7 +165,7 @@ export class UntersuchungHoerenAudiogrammComponent implements DirtyMarker {
       const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       this.hoerenAudiogrammStore.saveHoerenAudiogramm({
         anlassId: anlassId,
-        einladungId: einladungId,
+        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
         untersuchungHoerenAudiogrammSaveJson: payload,
       });
     }

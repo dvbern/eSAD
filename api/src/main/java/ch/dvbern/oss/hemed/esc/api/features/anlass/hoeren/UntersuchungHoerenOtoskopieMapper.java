@@ -19,6 +19,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
@@ -68,8 +69,12 @@ public class UntersuchungHoerenOtoskopieMapper {
     }
 
     @Nullable
-    public UntersuchungHoerenOtoskopieJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+    public UntersuchungHoerenOtoskopieJson getByEinladung(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungHoerenOtoskopie());
     }
 
@@ -109,9 +114,11 @@ public class UntersuchungHoerenOtoskopieMapper {
     @NonNull
     public UntersuchungHoerenOtoskopieJson saveOtoskopie(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungHoerenOtoskopieSaveJson saveJson
+        @NonNull UntersuchungHoerenOtoskopieSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungHoerenOtoskopie hoerenOtoskopie = untersuchung.getUntersuchungHoerenOtoskopie();
         UntersuchungHoerenOtoskopie entity = toEntity(untersuchung, hoerenOtoskopie, saveJson);
         return toJson(untersuchungHoerenService.persistWithOptimisticLocking(entity, saveJson.getVersion()));

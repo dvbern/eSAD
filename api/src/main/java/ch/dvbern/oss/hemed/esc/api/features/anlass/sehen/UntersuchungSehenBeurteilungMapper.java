@@ -20,6 +20,7 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.sehen;
 
 import java.math.BigDecimal;
 import java.util.EnumSet;
+import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
@@ -150,17 +151,23 @@ public class UntersuchungSehenBeurteilungMapper {
     }
 
     @Nullable
-    public UntersuchungSehenBeurteilungJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+    public UntersuchungSehenBeurteilungJson getByEinladung(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungSehenBeurteilung());
     }
 
     @NonNull
     public UntersuchungSehenBeurteilungJson save(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungSehenBeurteilungSaveJson saveJson
+        @NonNull UntersuchungSehenBeurteilungSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungSehenBeurteilung sehen = untersuchung.getUntersuchungSehenBeurteilung();
         UntersuchungSehenBeurteilung entity = toEntity(untersuchung, sehen, saveJson);
         UntersuchungSehenBeurteilung

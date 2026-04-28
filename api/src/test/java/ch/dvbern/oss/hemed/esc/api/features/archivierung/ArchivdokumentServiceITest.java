@@ -109,13 +109,13 @@ class ArchivdokumentServiceITest extends AbstractITest {
     void findAll_shouldReturnOffeneDokumente_forSupportUser_whenOnlyActiveIsTrue() {
         // Arrange
         Archivdokument offenDoc = ArchivdokumentBuilder.create(builder -> builder
-            .withOwner(fixtureService.createBenutzer())
+            .withOwner(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withStatus(ArchivierungStatus.OFFEN)
             .withFiledata(fixtureService.createFileData()));
         archivdokumentService.persist(offenDoc);
 
         Archivdokument downloadedDoc = ArchivdokumentBuilder.create(builder -> builder
-            .withOwner(fixtureService.createBenutzer())
+            .withOwner(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withStatus(ArchivierungStatus.DOWNLOADED)
             .withFiledata(fixtureService.createFileData()));
         archivdokumentService.persist(downloadedDoc);
@@ -134,13 +134,13 @@ class ArchivdokumentServiceITest extends AbstractITest {
     void findAll_shouldReturnAbgeschlosseneDokumente_forSupportUser_whenOnlyActiveIsFalse() {
         // Arrange
         Archivdokument offenDoc = ArchivdokumentBuilder.create(builder -> builder
-            .withOwner(fixtureService.createBenutzer())
+            .withOwner(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withStatus(ArchivierungStatus.OFFEN)
             .withFiledata(fixtureService.createFileData()));
         archivdokumentService.persist(offenDoc);
 
         Archivdokument downloadedDoc = ArchivdokumentBuilder.create(builder -> builder
-            .withOwner(fixtureService.createBenutzer())
+            .withOwner(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withStatus(ArchivierungStatus.DOWNLOADED)
             .withFiledata(fixtureService.createFileData()));
         archivdokumentService.persist(downloadedDoc);
@@ -168,7 +168,7 @@ class ArchivdokumentServiceITest extends AbstractITest {
         archivdokumentService.persist(ownOffenDoc);
 
         Archivdokument otherOffenDoc = ArchivdokumentBuilder.create(builder -> builder
-            .withOwner(fixtureService.createBenutzer())
+            .withOwner(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withStatus(ArchivierungStatus.OFFEN)
             .withFiledata(fixtureService.createFileData()));
         archivdokumentService.persist(otherOffenDoc);
@@ -196,7 +196,7 @@ class ArchivdokumentServiceITest extends AbstractITest {
         archivdokumentService.persist(ownDownloadedDoc);
 
         Archivdokument otherDownloadedDoc = ArchivdokumentBuilder.create(builder -> builder
-            .withOwner(fixtureService.createBenutzer())
+            .withOwner(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withStatus(ArchivierungStatus.DOWNLOADED)
             .withFiledata(fixtureService.createFileData()));
         archivdokumentService.persist(otherDownloadedDoc);
@@ -214,8 +214,8 @@ class ArchivdokumentServiceITest extends AbstractITest {
     @TestAsSupportBS
     void sendArchiveDocumentDownloadReminder_shouldFetchOwnersAndSendReminder() {
         // Arrange
-        Benutzer owner1 = fixtureService.createBenutzer();
-        Benutzer owner2 = fixtureService.createBenutzer();
+        Benutzer owner1 = fixtureService.createBenutzerFuerZentraleOrganisation();
+        Benutzer owner2 = fixtureService.createBenutzerFuerZentraleOrganisation();
 
         Archivdokument doc1 = ArchivdokumentBuilder.create(builder -> builder
             .withOwner(owner1)

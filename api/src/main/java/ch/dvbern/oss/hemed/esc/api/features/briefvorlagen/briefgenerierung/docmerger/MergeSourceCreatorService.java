@@ -134,7 +134,8 @@ public class MergeSourceCreatorService {
             .orElse(null);
 
         return toRootMergeSourceWithAnlass(
-            untersuchung.getEinladung(),
+            dossier,
+            untersuchung.getEinladungRequired(),
             nachkontrolle,
             impfstatusList,
             impfungList,
@@ -203,6 +204,7 @@ public class MergeSourceCreatorService {
         einladung.setDossier(dossier);
 
         return toRootMergeSourceWithAnlass(
+            dossier,
             einladung,
             nachkontrolle,
             impfstatusList,
@@ -234,6 +236,7 @@ public class MergeSourceCreatorService {
 
     @NonNull
     public static RootMergeSource toRootMergeSourceWithAnlass(
+        @NonNull Dossier dossier,
         @NonNull Einladung einladung,
         @NonNull Nachkontrolle nachkontrolle,
         @NonNull List<UntersuchungImpfstatusKrankheit> impfstatusList,
@@ -250,7 +253,7 @@ public class MergeSourceCreatorService {
 
         return new RootMergeSource(
             toAllgemeinDTO(now, currentBenutzer, tl),
-            toKindDTO(einladung.getDossier(), nachkontrolle, tl, kontaktPersonKind),
+            toKindDTO(dossier, nachkontrolle, tl, kontaktPersonKind),
             new AnlassMergeSource(
                 toAnlassMetadata(einladung.getAnlass()),
                 toImpfstatusListDTO(impfstatusList, tl),
@@ -279,7 +282,7 @@ public class MergeSourceCreatorService {
             currentBenutzer.getTelefon() == null ?
                 PRINT_UTIL.placeholder :
                 PRINT_UTIL.trimToPlaceholder(currentBenutzer.getTelefon().getFormattedPhoneNumber()),
-            currentBenutzer.getFachRollen()
+            currentBenutzer.getFachRollenCombined()
                 .stream()
                 .map(tl::translateValue)
                 .collect(Collectors.joining(", "))

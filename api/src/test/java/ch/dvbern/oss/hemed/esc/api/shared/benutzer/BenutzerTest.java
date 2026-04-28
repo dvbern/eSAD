@@ -27,7 +27,7 @@ class BenutzerTest {
         );
         benutzer.addOrganisation(organisationRollen);
 
-        assertTrue(benutzer.getFachRollen().isEmpty());
+        assertTrue(benutzer.getFachRollenCombined().isEmpty());
     }
 
     @Test
@@ -42,8 +42,8 @@ class BenutzerTest {
         );
         benutzer.addOrganisation(organisationRollen);
 
-        assertEquals(1, benutzer.getFachRollen().size());
-        assertEquals(FachRolle.SUPPORT, benutzer.getFachRollen().stream().findFirst().orElseThrow());
+        assertEquals(1, benutzer.getFachRollenCombined().size());
+        assertEquals(FachRolle.SUPPORT, benutzer.getFachRollenCombined().stream().findFirst().orElseThrow());
     }
 
     @Test
@@ -58,8 +58,8 @@ class BenutzerTest {
         );
         benutzer.addOrganisation(organisationRollen);
 
-        assertEquals(1, benutzer.getFachRollen().size());
-        assertEquals(FachRolle.ADMIN, benutzer.getFachRollen().stream().findFirst().orElseThrow());
+        assertEquals(1, benutzer.getFachRollenCombined().size());
+        assertEquals(FachRolle.ADMIN, benutzer.getFachRollenCombined().stream().findFirst().orElseThrow());
     }
 
     @Test
@@ -79,7 +79,7 @@ class BenutzerTest {
         );
         benutzer.addOrganisation(organisationRollen);
 
-        Assertions.assertThat(benutzer.getFachRollen())
+        Assertions.assertThat(benutzer.getFachRollenCombined())
             .containsExactly(
                 FachRolle.EMPFANG,
                 FachRolle.MPA,

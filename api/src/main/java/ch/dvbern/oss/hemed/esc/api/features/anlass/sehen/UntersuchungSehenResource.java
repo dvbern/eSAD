@@ -1,17 +1,20 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.sehen;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.json.UntersuchungSehenBemerkungFragebogenJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.json.UntersuchungSehenBemerkungFragebogenSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.json.UntersuchungSehenBeurteilungJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.json.UntersuchungSehenBeurteilungSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.Nullable;
@@ -47,10 +50,14 @@ public class UntersuchungSehenResource {
     @Nullable
     public UntersuchungSehenBeurteilungJson getUntersuchungSehenBeurteilung(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
-        return untersuchungSehenBeurteilungMapper.getByEinladung(einladungId);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungSehenBeurteilungMapper.getByEinladung(
+            wrappedId.toEinladungId(),
+            untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
+                untersuchung,
+                Berechtigung.SU_SEHEN_LESEN));
     }
 
     @GET
@@ -59,9 +66,9 @@ public class UntersuchungSehenResource {
     @NotNull
     public UntersuchungSehenBeurteilungSaveJson getDefaultUntersuchungSehenBeurteilungForAnlassConfig(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungSehenBeurteilungMapper.getDefaultUntersuchungSehenForAnlassConfig(anlassId);
     }
 
@@ -71,12 +78,16 @@ public class UntersuchungSehenResource {
     @RolesAllowed(BerechtigungName.SU_SEHEN_SCHREIBEN)
     public UntersuchungSehenBeurteilungJson saveUntersuchungSehenBeurteilung(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId,
         @NonNull @NotNull @Valid UntersuchungSehenBeurteilungSaveJson saveJson
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
-        authorizerService.requireWriteAuthorizationAnlass(anlassId);
-        return untersuchungSehenBeurteilungMapper.save(einladungId, saveJson);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungSehenBeurteilungMapper.save(
+            wrappedId.toEinladungId(),
+            saveJson,
+            untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
+                untersuchung,
+                List.of(Berechtigung.SU_SEHEN_SCHREIBEN)));
     }
 
     @GET
@@ -85,10 +96,14 @@ public class UntersuchungSehenResource {
     @Nullable
     public UntersuchungSehenBemerkungFragebogenJson getUntersuchungSehenBemerkungFragebogen(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
-        return untersuchungSehenBemerkungFragebogenMapper.getByEinladung(einladungId);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungSehenBemerkungFragebogenMapper.getByEinladung(
+            wrappedId.toEinladungId(),
+            untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
+                untersuchung,
+                Berechtigung.SU_SEHEN_LESEN));
     }
 
     @PUT
@@ -97,11 +112,15 @@ public class UntersuchungSehenResource {
     @RolesAllowed(BerechtigungName.SU_SEHEN_SCHREIBEN)
     public UntersuchungSehenBemerkungFragebogenJson saveUntersuchungSehenBemerkungFragebogen(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId,
         @NonNull @NotNull @Valid UntersuchungSehenBemerkungFragebogenSaveJson saveJson
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
-        authorizerService.requireWriteAuthorizationAnlass(anlassId);
-        return untersuchungSehenBemerkungFragebogenMapper.save(einladungId, saveJson);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungSehenBemerkungFragebogenMapper.save(
+            wrappedId.toEinladungId(),
+            saveJson,
+            untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
+                untersuchung,
+                List.of(Berechtigung.SU_SEHEN_SCHREIBEN)));
     }
 }

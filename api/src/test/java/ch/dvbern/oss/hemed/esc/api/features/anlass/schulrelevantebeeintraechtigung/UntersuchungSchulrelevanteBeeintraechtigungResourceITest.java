@@ -23,6 +23,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+
 @QuarkusTest
 @RequiredArgsConstructor
 class UntersuchungSchulrelevanteBeeintraechtigungResourceITest extends AbstractITest {
@@ -50,7 +52,7 @@ class UntersuchungSchulrelevanteBeeintraechtigungResourceITest extends AbstractI
         // ACT / ASSERT
         api.untersuchungSchulrelevanteBeeintraechtigungResourceGetUntersuchungSchulrelevanteBeeintraechtigung()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -74,8 +76,8 @@ class UntersuchungSchulrelevanteBeeintraechtigungResourceITest extends AbstractI
         // ACT
         UntersuchungSchulrelevanteBeeintraechtigungJsonSpec result =
             api.untersuchungSchulrelevanteBeeintraechtigungResourceGetUntersuchungSchulrelevanteBeeintraechtigung()
-                .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-                .einladungIdPath(untersuchung.getEinladung().getId().getId())
+                .anlassIdPath(untersuchung.getAnlass().getId().getId())
+                .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
                 .execute(ResponseBody::prettyPeek)
                 .then()
                 .assertThat()
@@ -117,7 +119,7 @@ class UntersuchungSchulrelevanteBeeintraechtigungResourceITest extends AbstractI
 
         UntersuchungSchulrelevanteBeeintraechtigungJsonSpec result = api.untersuchungSchulrelevanteBeeintraechtigungResourceSaveUntersuchungSchulrelevanteBeeintraechtigung()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()

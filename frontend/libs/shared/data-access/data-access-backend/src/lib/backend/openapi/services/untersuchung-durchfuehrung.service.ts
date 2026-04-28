@@ -17,7 +17,7 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { BackendEntityId } from '@dvb/data-access-types';
+import { BackendEntityId, BackendEntityIdWithClass } from '@dvb/data-access-types';
 import { UntersuchungDurchfuehrungDataJson } from '../model/untersuchung-durchfuehrung-data-json';
 import { UntersuchungDurchfuehrungDataSaveJson } from '../model/untersuchung-durchfuehrung-data-save-json';
 import { UntersuchungDurchfuehrungJson } from '../model/untersuchung-durchfuehrung-json';
@@ -29,18 +29,18 @@ import { Configuration }                                     from '../configurat
 
 export interface UntersuchungDurchfuehrungServiceGetUntersuchungDurchfuehrungRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
 }
 
 export interface UntersuchungDurchfuehrungServiceSaveUntersuchungDurchfuehrungRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
     untersuchungDurchfuehrungSaveJson: UntersuchungDurchfuehrungSaveJson;
 }
 
 export interface UntersuchungDurchfuehrungServiceSaveUntersuchungDurchfuehrungAbgeschlossenRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
     untersuchungDurchfuehrungDataSaveJson: UntersuchungDurchfuehrungDataSaveJson;
 }
 
@@ -170,7 +170,7 @@ export class UntersuchungDurchfuehrungService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/durchfuehrung`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/durchfuehrung`;
         return this.httpClient.request<UntersuchungDurchfuehrungDataJson>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -258,7 +258,7 @@ export class UntersuchungDurchfuehrungService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/durchfuehrung`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/durchfuehrung`;
         return this.httpClient.request<UntersuchungDurchfuehrungJson>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -347,7 +347,7 @@ export class UntersuchungDurchfuehrungService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/durchfuehrung/save-abgeschlossen`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/durchfuehrung/save-abgeschlossen`;
         return this.httpClient.request<UntersuchungDurchfuehrungDataJson>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

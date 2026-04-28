@@ -26,7 +26,7 @@ import { AnlassStore } from '../../../anlass.store';
 import { UntersuchungStore } from '../../untersuchung.store';
 import { UntersuchungImpfungenStore } from '../untersuchung-impfungen.store';
 import { EmpfehlungSubFormType, UntersuchungImpfungenMassnahmenForm } from './untersuchung-impfungen-massnahmen.form';
-import { requireValidBackendEntityId } from '@dvb/data-access-types';
+import { requireValidBackendEntityId, toEinladungBackendEntityIdWithClass } from '@dvb/data-access-types';
 import { UntersuchungImpfFolgetermineComponent } from '../untersuchung-impf-folgetermine/untersuchung-impf-folgetermine.component';
 
 @Component({
@@ -111,7 +111,7 @@ export class UntersuchungImpfungenMassnahmenComponent implements DirtyMarker {
       const payload = this.form.valueOnValid();
       this.impfungenStore.saveMassnahmen({
         anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-        einladungId: requireValue(this.untersuchungStore.currentTab()).einladungID,
+        einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
         untersuchungImpfungenMassnahmenSaveJson: payload,
       });
 
@@ -130,7 +130,7 @@ export class UntersuchungImpfungenMassnahmenComponent implements DirtyMarker {
   public einzelFolgeterminErstellen(): void {
     this.impfungenStore.einzelTerminErstellen({
       anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-      einladungId: requireValue(this.untersuchungStore.currentTab()).einladungID,
+      einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
       onSuccess: () => {
         const anlassTitel = this.#translocoService.translate('anlass.impfen.einzeltermin', {
           kind: this.untersuchungStore.currentTab()?.label,

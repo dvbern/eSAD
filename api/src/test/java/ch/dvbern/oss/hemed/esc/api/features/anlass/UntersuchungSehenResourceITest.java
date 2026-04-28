@@ -50,6 +50,8 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatList;
 
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+
 @QuarkusTest
 @RequiredArgsConstructor
 class UntersuchungSehenResourceITest extends AbstractITest {
@@ -79,7 +81,7 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         // ACT / ASSERT
         api.untersuchungSehenResourceGetUntersuchungSehenBeurteilung()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -99,8 +101,8 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         assertThat(existingSehen.getBemerkungen()).isNotNull();
         // ACT
         UntersuchungSehenBeurteilungJsonSpec result = api.untersuchungSehenResourceGetUntersuchungSehenBeurteilung()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -132,8 +134,8 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         assertThat(existingMassnahmen.getBemerkungen()).isNotNull();
         // ACT
         UntersuchungSehenBeurteilungJsonSpec result = api.untersuchungSehenResourceGetUntersuchungSehenBeurteilung()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -165,7 +167,7 @@ class UntersuchungSehenResourceITest extends AbstractITest {
 
         UntersuchungSehenBeurteilungJsonSpec result = api.untersuchungSehenResourceSaveUntersuchungSehenBeurteilung()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -192,7 +194,7 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         // ACT
         UntersuchungSehenBeurteilungSaveJsonSpec result = api.untersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfig()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -240,7 +242,7 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         // ACT
         UntersuchungSehenBeurteilungSaveJsonSpec result = api.untersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfig()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -267,7 +269,7 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         // ACT
         UntersuchungSehenBeurteilungSaveJsonSpec result = api.untersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfig()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -293,7 +295,7 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         // ACT
         UntersuchungSehenBeurteilungSaveJsonSpec result = api.untersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfig()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -341,7 +343,7 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         // ACT
         UntersuchungSehenBeurteilungSaveJsonSpec result = api.untersuchungSehenResourceGetDefaultUntersuchungSehenBeurteilungForAnlassConfig()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -379,7 +381,7 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         // ACT / ASSERT
         api.untersuchungSehenResourceGetUntersuchungSehenBemerkungFragebogen()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -399,8 +401,8 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         assertThat(existingSehen.getBemerkungenFragebogen()).isNotNull();
         // ACT
         UntersuchungSehenBemerkungFragebogenJsonSpec result = api.untersuchungSehenResourceGetUntersuchungSehenBemerkungFragebogen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -432,7 +434,7 @@ class UntersuchungSehenResourceITest extends AbstractITest {
 
         UntersuchungSehenBemerkungFragebogenJsonSpec result = api.untersuchungSehenResourceSaveUntersuchungSehenBemerkungFragebogen()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()

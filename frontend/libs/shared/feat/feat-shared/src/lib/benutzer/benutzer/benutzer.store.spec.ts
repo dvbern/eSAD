@@ -42,15 +42,14 @@ describe('BenutzerStore', () => {
         errorMessage: undefined,
       }));
 
-      store.onUserAuthenticated('id',
+      store.onUserAuthenticated('dfece810-b650-4be3-8ae0-c74cc1eea767',
         'username',
         'email',
         'firstName',
         'lastName',
         [],
+        { fachRollen: [], berechtigungen: ['ANLASSPLANUNG_LESEN']},
         undefined,
-        ['ANLASSPLANUNG_LESEN'],
-        undefined
       );
 
       expect(store.isLoggedIn())
@@ -59,15 +58,20 @@ describe('BenutzerStore', () => {
         .toBe(false);
 
       const expectedUser = ensureProps<AppUser>({
-        id: 'id',
+        id: 'dfece810-b650-4be3-8ae0-c74cc1eea767',
         username: 'username',
         email: 'email',
         firstName: 'firstName',
         lastName: 'lastName',
         fullName: 'firstName lastName',
         kuerzel: 'FL',
-        fachRollen: [],
-        berechtigungen: ['ANLASSPLANUNG_LESEN'],
+        currentOrganisationRollen: undefined,
+        allOrganisationRollen: [],
+        systemRollen: {
+          fachRollen: [],
+          berechtigungen: ['ANLASSPLANUNG_LESEN'],
+        },
+        timestampAGBAccepted: undefined
       });
       expect(store.benutzer())
         .toEqual(expectedUser);

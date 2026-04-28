@@ -64,16 +64,18 @@ class RequireRoleAuthGuard {
         // logged in but missing roles
         console.warn('missing role, redirecting to start');
         return this.router.createUrlTree(
-          [Path.NO_ROLES],
-          // just for screenshot purposes:
-          {queryParams: {missingRole: true}});
+          [Path.INFO],
+          {queryParams: {titleKey: 'no-roles.title', msgKey: 'no-roles.text'}});
 
       }
     } else {
       // logged out
-      console.log('redirecting to login');
+      console.log('redirecting to login from auth guard');
       triggerUnauthenticatedNotification(this.appNotificationStore, this.translationService);
-      return this.router.navigateByUrl('/info');
+      return this.router.createUrlTree(
+        [Path.INFO],
+        {queryParams: {msgKey: 'ui.auth.route.unauthenticated', titleKey: 'ui.auth.login.problem.title'}}
+      );
     }
   }
 }
@@ -86,7 +88,7 @@ function triggerUnauthenticatedNotification(
   appNotificationStore.addNotification({
     alertType: 'danger',
     id: crypto.randomUUID(),
-    summary: translocoService.translate('common.auth.route.unauthenticated.title'),
+    summary: translocoService.translate('ui.auth.route.unauthenticated'),
     autohide: true,
   });
 }

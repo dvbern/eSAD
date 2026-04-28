@@ -141,7 +141,7 @@ public class AnlassService {
                     if (untersuchungMassnahmen.getId().equals(untersuchung.getUntersuchungMassnahmen().getId())) {
                         // Wir sind auf dem neuesten Anlass: Die Flags aufs Dossier kopieren
                         nachkontrolleService.updateNachkontrolle(
-                            untersuchung.getEinladung().getDossier().getId(),
+                            untersuchung.getEinladungRequired().getDossier().getId(),
                             untersuchungMassnahmen.getNachkontrolle());
                     }
                 }

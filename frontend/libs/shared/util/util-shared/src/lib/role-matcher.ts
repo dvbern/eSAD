@@ -23,7 +23,7 @@ export type RoleMatcher = (roles: Berechtigung[]) => boolean;
 export type AtLeastOneBerechtigung = [Berechtigung, ...Berechtigung[]];
 
 export function withAnyBerechtigung(): RoleMatcher {
-  return _recht => true;
+  return userBerechtigungen => userBerechtigungen.length > 0;
 }
 
 export function withAllOfBerechtigungen(...berechtigungen: AtLeastOneBerechtigung): RoleMatcher {
@@ -55,6 +55,18 @@ export function hasLaeuseAnlassBerechtigungen(): RoleMatcher {
   return withOneOfBerechtigungen(Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE, Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE);
 }
 
+export function hasDashboardBerechtigungen(): RoleMatcher {
+  return withOneOfMatchers(
+    withOneOfBerechtigungen(
+      Berechtigung.ANLASSLISTE_LESEN,
+      Berechtigung.ANLASSLISTE_LESEN_LAEUSE,
+      Berechtigung.AUFGABEN_LESEN,
+      Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH
+    ),
+    withOneOfBerechtigungen(Berechtigung.SUPPORT, Berechtigung.SYSTEM_ADMIN),
+  );
+}
+
 export function hasAlleAnlaesseBerechtigungen(): RoleMatcher {
   return withOneOfBerechtigungen(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN);
 }
@@ -69,7 +81,7 @@ export function hasAnlassCreateOrEditForNotAbgeschlossenBerechtigung(): RoleMatc
 
 export function hasAnlassViewBerechtigung(): RoleMatcher {
   return withOneOfMatchers(
-    withOneOfBerechtigungen(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE),
+    withOneOfBerechtigungen(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE, Berechtigung.ANLASSLISTE_LESEN, Berechtigung.ANLASSLISTE_LESEN_LAEUSE),
     withOneOfBerechtigungen(Berechtigung.SUPPORT, Berechtigung.SYSTEM_ADMIN),
   );
 }
@@ -160,6 +172,13 @@ export function hasLabelEditBerechtigung(): RoleMatcher {
   );
 }
 
+export function hasImpfstoffeViewBerechtigung(): RoleMatcher {
+  return withOneOfMatchers(
+    withAllOfBerechtigungen(Berechtigung.IMPFSTOFFE_LESEN),
+    withOneOfBerechtigungen(Berechtigung.SUPPORT),
+  );
+}
+
 export function hasImpfstoffEditBerechtigung(): RoleMatcher {
   return withOneOfMatchers(
     withAllOfBerechtigungen(Berechtigung.IMPFSTOFFE_LESEN, Berechtigung.IMPFSTOFFE_SCHREIBEN),
@@ -168,7 +187,7 @@ export function hasImpfstoffEditBerechtigung(): RoleMatcher {
 }
 
 export function hasBenutzerViewBerechtigung(): RoleMatcher {
-  return withOneOfBerechtigungen(Berechtigung.MITARBEITERLISTE_BERECHTIGUNGEN_LESEN,
+  return withOneOfBerechtigungen(
     Berechtigung.BENUTZER_BERECHTIGUNGEN_LESEN,
     Berechtigung.SUPPORT);
 }
@@ -222,6 +241,7 @@ export function hasAdminPageViewBerechtiung(): RoleMatcher {
     Berechtigung.IMPFSTOFFE_LESEN,
     Berechtigung.LABELS_ADMIN_LESEN,
     Berechtigung.VORLAGEN_ADMIN_LESEN,
+    Berechtigung.AERZTE_LESEN,
     Berechtigung.ARCHIVIERUNG,
     Berechtigung.SUPPORT,
   );

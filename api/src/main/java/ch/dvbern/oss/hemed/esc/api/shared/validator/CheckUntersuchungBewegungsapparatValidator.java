@@ -13,7 +13,7 @@ public class CheckUntersuchungBewegungsapparatValidator
 
     @Override
     public boolean isEntityValid(@NonNull UntersuchungBewegungsapparat entity) {
-        AnlassConfig anlassConfig = entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig anlassConfig = entity.getUntersuchung().getAnlass().getAnlassConfig();
         if (ValueEnhancedUtil.isRequiredAndNull(anlassConfig.getBewegungsapparatSkoliose(), entity.getSkoliose(), Skoliose.class)) {
             return false;
         }

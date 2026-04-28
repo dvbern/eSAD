@@ -29,7 +29,7 @@ public class CheckUntersuchungImpfstatusKrankheitPresentIfReqValidator
     @Override
     public boolean isEntityValid(@NonNull UntersuchungImpfstatusKrankheit impfstatus) {
         AnlassConfig anlassConfig =
-            impfstatus.getUntersuchungImpfungen().getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+            impfstatus.getUntersuchungImpfungen().getUntersuchung().getAnlass().getAnlassConfig();
         boolean impfausweisUnvollstaendig = impfstatus.getUntersuchungImpfungen().isImpfausweisUnvollstaendig();
         boolean impfausweisNichtVorhanden = impfstatus.getUntersuchungImpfungen().isImpfausweisNichtVorhanden();
         if (anlassConfig.getImpfungenUebersicht().isRequired()

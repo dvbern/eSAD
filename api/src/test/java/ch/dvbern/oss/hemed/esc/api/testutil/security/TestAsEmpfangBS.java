@@ -12,17 +12,13 @@ import io.quarkus.test.security.oidc.OidcSecurity;
 
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AERZTE_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSLISTE_LESEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLANUNG_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AUFGABEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AUFGABEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.EIGENE_BERECHTIGUNGEN_LESEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.IMPFSTOFFE_LESEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_LESEN_MEDIZINISCH;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LABELS_LESEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_ADMIN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_LESEN;
 
@@ -34,18 +30,14 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         AUFGABEN_LESEN,
         AUFGABEN_SCHREIBEN,
         ANLASSLISTE_LESEN,
-        ANLASSPLANUNG_LESEN,
-        KINDER_LESEN_MEDIZINISCH,
         KINDER_LESEN_NICHT_MEDIZINISCH,
         KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
         KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
         LISTEN_LESEN,
-        LISTEN_ADMIN_LESEN,
-        AERZTE_LESEN,
-        IMPFSTOFFE_LESEN,
-        EIGENE_BERECHTIGUNGEN_LESEN,
         LABELS_LESEN,
-        VORLAGEN_LESEN
+        EIGENE_BERECHTIGUNGEN_LESEN,
+        VORLAGEN_LESEN,
+        AERZTE_LESEN
     }
 )
 @OidcSecurity(
@@ -59,6 +51,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         @Claim(key = JsonWebTokenClaims.PHONE_CLAIM, value = TestAsEmpfangBS.TELEFON),
     }
 )
+@TestAsMarker
 public @interface TestAsEmpfangBS {
     String BENUTZER_ID = "79a077d6-e62f-4717-a65e-a2a876e7fc5b";
     String BENUTZER_ID_IN_KC = "9c98887a-2c19-4c07-8d50-3ab3f08e4a48";

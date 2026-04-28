@@ -1,7 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.benutzer;
 
 import java.util.EnumSet;
-import java.util.Set;
+import java.util.Optional;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
@@ -31,8 +31,9 @@ public class FachrollenService {
     private final SystemRollenService systemRollenService;
     private final ConfigService configService;
     private final TenantSettingsService tenantSettingsService;
+    private final FachrollenMailService fachrollenMailService;
 
-    public void setFachrollen(
+    public void setFachrollenFromJWT(
         @NonNull EnumSet<FachRolle> fachrollen,
         @NonNull Benutzer benutzer,
         @Nullable Organisation organisation
@@ -57,46 +58,57 @@ public class FachrollenService {
         handleSystemRollen(systemRollen, benutzer);
     }
 
-    private void handleOrganisationsRollen(
+    public void handleOrganisationsRollen(
         @NonNull EnumSet<FachRolle> organisationsRollenToSet,
         @NonNull Benutzer benutzer,
         @Nullable Organisation organisation
     ) {
-        Set<OrganisationRollen> organisationsRollenBisher = benutzer.getOrganisationRollen();
-
-        // Bisher leer, neu gesetzt
-        if (organisationsRollenBisher.isEmpty() && !organisationsRollenToSet.isEmpty()) {
-            if (hasZentraleOrganisation()) {
-                Organisation zentraleOrganisation = organisationService.getZentraleOrganisation();
-                OrganisationRollen organisationRollen = organisationRollenService.createForOrganisation(
-                    zentraleOrganisation,
-                    benutzer,
-                    organisationsRollenToSet);
-                benutzer.addOrganisation(organisationRollen);
-            } else if (organisation != null) {
-                OrganisationRollen organisationRollen =
-                    organisationRollenService.createForOrganisation(organisation, benutzer, organisationsRollenToSet);
-                benutzer.addOrganisation(organisationRollen);
-            } else if (organisationsRollenToSet.contains(FachRolle.SCHULAERZTIN)) {
-                Organisation newOrganisation = organisationService.createOrganisationForBenutzer(benutzer);
-                OrganisationRollen organisationRollen =
-                    organisationRollenService.createForOrganisation(newOrganisation, benutzer, organisationsRollenToSet);
-                benutzer.addOrganisation(organisationRollen);
-            } else {
-                throw new AppFailureException(AppFailureMessage.organisationRolesCannotBeSetWithoutOrganisation());
-            }
-        // Bisher bereits vorhanden
-        } else if (!organisationsRollenBisher.isEmpty()) {
-            // TODO ESC-1180: Sicherstellen, dass es auch mit mehreren Organisationen funktioniert
-            OrganisationRollen existingOrganisationRollen = organisationsRollenBisher.iterator().next();
-            existingOrganisationRollen.setFachRollen(organisationsRollenToSet);
-            existingOrganisationRollen.disableOptimisticLockingCheck();
+        // Nur Systemrollen ODER neuer Benutzer ohne Rollen -> abbrechen
+        if (organisationsRollenToSet.isEmpty() && organisation == null) {
+            return;
+        }
+        // Die zu verwendende Organisation ermitteln
+        Organisation resolvedOrganisation = resolveOrganisation(organisationsRollenToSet, benutzer, organisation);
+        // Eventuell existierende OrganisationRollen fuer diese Organisation suchen
+        Optional<OrganisationRollen> existingRollen = benutzer.getOrganisationRollen().stream()
+            .filter(or -> or.getOrganisation().equals(resolvedOrganisation))
+            .findFirst();
+        // Die zu setzenden Fachrollen dort anhängen bzw. ein neues OrganisationRollen erstellen
+        if (existingRollen.isPresent()) {
+            existingRollen.get().setFachRollen(organisationsRollenToSet);
+            existingRollen.get().disableOptimisticLockingCheck();
+        } else {
+            OrganisationRollen organisationRollen =
+                organisationRollenService.createForOrganisation(resolvedOrganisation, benutzer, organisationsRollenToSet);
+            benutzer.addOrganisation(organisationRollen);
+            // Mail senden
+            fachrollenMailService.sendEinladungOrganisationMail(benutzer, resolvedOrganisation);
         }
     }
 
-    private void handleSystemRollen(@NonNull EnumSet<FachRolle> systemRollenToSet, @NonNull Benutzer benutzer) {
-        @Nullable SystemRollen existingSystemRollen = benutzer.getSystemRollen();
+    @NonNull
+    private Organisation resolveOrganisation(
+        @NonNull EnumSet<FachRolle> organisationsRollenToSet,
+        @NonNull Benutzer benutzer,
+        @Nullable Organisation organisation
+    ) {
+        if (hasZentraleOrganisation()) {
+            return organisationService.getZentraleOrganisation();
+        }
+        if (organisation != null) {
+            return organisation;
+        }
+        if (organisationsRollenToSet.contains(FachRolle.SCHULAERZTIN)) {
+            return organisationService.createOrganisationForBenutzer(benutzer);
+        }
+        throw new AppFailureException(AppFailureMessage.organisationRolesCannotBeSetWithoutOrganisation());
+    }
 
+    public void handleSystemRollen(
+        @NonNull EnumSet<FachRolle> systemRollenToSet,
+        @NonNull Benutzer benutzer
+    ) {
+        SystemRollen existingSystemRollen = benutzer.getSystemRollen();
         if (existingSystemRollen == null) {
             if (systemRollenToSet.isEmpty()) {
                 return;

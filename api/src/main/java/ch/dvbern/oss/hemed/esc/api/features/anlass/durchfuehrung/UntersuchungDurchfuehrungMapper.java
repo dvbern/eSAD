@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung;
 
 import java.time.LocalDate;
+import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
@@ -17,6 +18,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.json.UntersuchungKindDat
 import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDatenMapper;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -32,9 +35,10 @@ public final class UntersuchungDurchfuehrungMapper {
     private final UntersuchungKindDatenMapper untersuchungKindDatenMapper;
 
     private final AppClock appClock;
+    private final TenantProducer tenantProducer;
 
     @Nullable
-    public static UntersuchungDurchfuehrungJson toJson(@Nullable UntersuchungDurchfuehrung durchfuehrung) {
+    public static UntersuchungDurchfuehrungJson toJson(@Nullable UntersuchungDurchfuehrung durchfuehrung, @NonNull TenantEnum tenant) {
         if (durchfuehrung == null) {
             return null;
         }
@@ -44,8 +48,8 @@ public final class UntersuchungDurchfuehrungMapper {
             durchfuehrung.getId(),
             EntityInfoJson.fromEntity(durchfuehrung),
             new UntersuchungDurchfuehrungSaveJson(
-                arzt != null ? BenutzerMapper.toOptionJson(arzt) : null,
-                mpa != null ? BenutzerMapper.toOptionJson(mpa) : null,
+                arzt != null ? BenutzerMapper.toOptionJson(arzt, tenant) : null,
+                mpa != null ? BenutzerMapper.toOptionJson(mpa, tenant) : null,
                 durchfuehrung.isNachkontrolle(),
                 durchfuehrung.isNachzuegler(),
                 durchfuehrung.isNeueintritt(),
@@ -60,7 +64,8 @@ public final class UntersuchungDurchfuehrungMapper {
         @NonNull Untersuchung currentUntersuchung,
         @Nullable UntersuchungDurchfuehrung existingDurchfuehrung,
         @NonNull UntersuchungDurchfuehrung defaultsForNextUntersuchung,
-        @NonNull LocalDate now
+        @NonNull LocalDate now,
+        @NonNull TenantEnum tenant
     ) {
         UntersuchungDurchfuehrung existingDurchfuehrungOrDefaults = existingDurchfuehrung != null
             ? existingDurchfuehrung
@@ -70,15 +75,15 @@ public final class UntersuchungDurchfuehrungMapper {
 
         return new UntersuchungDurchfuehrungDataJson(
             new UntersuchungDurchfuehrungSaveJson(
-                arzt != null ? BenutzerMapper.toOptionJson(arzt) : null,
-                mpa != null ? BenutzerMapper.toOptionJson(mpa) : null,
+                arzt != null ? BenutzerMapper.toOptionJson(arzt, tenant) : null,
+                mpa != null ? BenutzerMapper.toOptionJson(mpa, tenant) : null,
                 existingDurchfuehrungOrDefaults.isNachkontrolle(),
                 existingDurchfuehrungOrDefaults.isNachzuegler(),
                 existingDurchfuehrungOrDefaults.isNeueintritt(),
                 existingDurchfuehrungOrDefaults.getBemerkungen(),
                 existingDurchfuehrungOrDefaults.getVersion()
             ),
-            existingDurchfuehrungOrDefaults.getTimestampErstellt() != null ? toJson(existingDurchfuehrung) : null,
+            existingDurchfuehrungOrDefaults.getTimestampErstellt() != null ? toJson(existingDurchfuehrung, tenant) : null,
             UntersuchungKindDatenMapper.toJson(currentUntersuchung, now)
         );
     }
@@ -104,8 +109,12 @@ public final class UntersuchungDurchfuehrungMapper {
     }
 
     @NonNull
-    public UntersuchungDurchfuehrungDataJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+    public UntersuchungDurchfuehrungDataJson getByEinladung(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungDurchfuehrung untersuchungDurchfuehrung = untersuchung.getUntersuchungDurchfuehrung();
         UntersuchungDurchfuehrung defaultsForNextUntersuchung =
             untersuchungDurchfuehrungService.getDefaultUntersuchungDurchfuehrung(untersuchung);
@@ -113,26 +122,30 @@ public final class UntersuchungDurchfuehrungMapper {
             untersuchung,
             untersuchungDurchfuehrung,
             defaultsForNextUntersuchung,
-            appClock.offsetDateTime().now().toLocalDate());
+            appClock.offsetDateTime().now().toLocalDate(),
+            tenantProducer.produceTenant());
     }
 
     @NonNull
     public UntersuchungDurchfuehrungJson save(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungDurchfuehrungSaveJson saveJson
+        @NonNull UntersuchungDurchfuehrungSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungDurchfuehrung durchfuehrung = untersuchung.getUntersuchungDurchfuehrung();
         UntersuchungDurchfuehrung entity = toEntity(untersuchung, durchfuehrung, saveJson);
-        return toJson(untersuchungDurchfuehrungService.persistWithOptimisticLocking(entity, saveJson.getVersion()));
+        return toJson(untersuchungDurchfuehrungService.persistWithOptimisticLocking(entity, saveJson.getVersion()), tenantProducer.produceTenant());
     }
 
     @NonNull
     public UntersuchungDurchfuehrungDataJson saveUntersuchungDurchfuehrungAbgeschlossen(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungDurchfuehrungDataSaveJson saveJson
+        @NonNull UntersuchungDurchfuehrungDataSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        UntersuchungDurchfuehrungJson durchfuehrungJson = save(einladungID, saveJson.getUntersuchungDurchfuehrung());
+        UntersuchungDurchfuehrungJson durchfuehrungJson = save(einladungID, saveJson.getUntersuchungDurchfuehrung(), hasAuthorizationUntersuchung);
         UntersuchungKindDatenJson kindDatenJson =
             untersuchungKindDatenMapper.update(einladungID, saveJson.getKindDaten());
 

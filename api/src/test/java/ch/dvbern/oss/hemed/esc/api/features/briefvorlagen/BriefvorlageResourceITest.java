@@ -27,6 +27,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
+import io.restassured.response.ResponseOptions;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.io.ByteArrayInputStream;
@@ -319,7 +320,7 @@ class BriefvorlageResourceITest extends AbstractITest {
         // ACT
         String result = api.briefvorlageResourceDownloadBriefvorlageFile()
             .briefvorlageIdPath(briefvorlage.getId())
-            .execute(ResponseBody::prettyPeek)
+            .execute(ResponseOptions::andReturn)
             .then().statusCode(Status.OK.getStatusCode())
             .extract()
             .asString();

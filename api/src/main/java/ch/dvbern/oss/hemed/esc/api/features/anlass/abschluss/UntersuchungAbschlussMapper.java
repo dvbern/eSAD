@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.abschluss;
 
+import java.util.function.Consumer;
+
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -64,17 +66,23 @@ public class UntersuchungAbschlussMapper {
     }
 
     @Nullable
-    public UntersuchungAbschlussJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+    public UntersuchungAbschlussJson getByEinladung(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungAbschluss());
     }
 
     @NonNull
     public UntersuchungAbschlussJson saveAbschluss(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungAbschlussSaveJson saveJson
+        @NonNull UntersuchungAbschlussSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungAbschluss abschluss = untersuchung.getUntersuchungAbschluss();
         UntersuchungAbschluss entity = toEntity(untersuchung, abschluss, saveJson);
         return toJson(untersuchungAbschlussService.persistWithOptimisticLocking(entity, saveJson.getVersion()));

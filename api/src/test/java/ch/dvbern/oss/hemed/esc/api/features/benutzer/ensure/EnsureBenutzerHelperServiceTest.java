@@ -1,5 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.UUID;
@@ -15,6 +18,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSetting;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.features.FeatureEnabledSetting;
+import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.TenantSettingBuilder;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
@@ -26,6 +30,8 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import static org.mockito.Mockito.when;
+
 @QuarkusTest
 @DisplayNameGeneration(ReplaceUnderscores.class)
 @RequiredArgsConstructor
@@ -34,11 +40,12 @@ class EnsureBenutzerHelperServiceTest {
     private final EnsureBenutzerHelperService ensureBenutzerHelperService;
     private final BenutzerRepo benutzerRepo;
     private final TenantProducer tenantProducer;
+    private final FixtureService fixtureService;
 
     private TenantSettingsService tenantSettingsServiceMock;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws MalformedURLException {
         tenantProducer.setCurrentTenant(TenantEnum.BS);
         tenantSettingsServiceMock = Mockito.mock(TenantSettingsService.class);
         ConfigService configServiceMock = Mockito.mock(ConfigService.class);
@@ -49,6 +56,7 @@ class EnsureBenutzerHelperServiceTest {
             builder.withBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature(FeatureEnabledSetting.DISABLED));
         Mockito.when(tenantSettingsServiceMock.getTenantSetting()).thenReturn(tenantSetting);
         Mockito.when(configServiceMock.getEnvironment()).thenReturn(DeploymentEnvironment.UNIT_TEST);
+        Mockito.when(configServiceMock.getPublicUrl()).thenReturn(URL.of(URI.create("https://example.com"), null));
     }
 
     @Test
@@ -121,14 +129,12 @@ class EnsureBenutzerHelperServiceTest {
         ensureBenutzerHelperService.createNewUserFromToken(jwtData);
         var storedUser = benutzerRepo.findByEmail(EmailAddress.fromString(testemail));
         Assertions.assertThat(storedUser).isPresent();
-        var userToUpdate = storedUser.get();
-        EnumSet<FachRolle> originalFachRollen = userToUpdate.getFachRollen();
+        var userToUpdate = fixtureService.readBenutzerWithBerechtigungen(storedUser.get().getId());
+        EnumSet<FachRolle> originalFachRollen = userToUpdate.getFachRollenCombined();
         Assertions.assertThat(originalFachRollen).contains(FachRolle.SYSTEM_ADMIN);
 
         // Now enable ignoreFachrollenFromKeycloak
-        TenantSetting tenantSettingIgnore = TenantSettingBuilder.create(builder ->
-            builder.withBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature(FeatureEnabledSetting.ENABLED));
-        Mockito.when(tenantSettingsServiceMock.getTenantSetting()).thenReturn(tenantSettingIgnore);
+        when(tenantSettingsServiceMock.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled()).thenReturn(true);
 
         // ACT: Update with a different FachRolle (MPA), but ignoreFachrollenFromKeycloak=true
         JsonWebTokenDataDTO jwtDataChanged = new JsonWebTokenDataDTO(
@@ -148,13 +154,12 @@ class EnsureBenutzerHelperServiceTest {
         ensureBenutzerHelperService.updateExistingUser(userToUpdate.getId(), jwtDataChanged);
 
         // ASSERT: User data was updated but FachRollen were NOT changed (still SYSTEM_ADMIN)
-        var updatedUser = benutzerRepo.findByEmail(EmailAddress.fromString(testemail));
-        Assertions.assertThat(updatedUser).isPresent();
-        Assertions.assertThat(updatedUser.get().getVorname()).isEqualTo("changed");
-        Assertions.assertThat(updatedUser.get().getTitel()).isEqualTo("Herr");
+        var updatedUser = fixtureService.readBenutzerWithBerechtigungen(userToUpdate.getId());
+        Assertions.assertThat(updatedUser.getVorname()).isEqualTo("changed");
+        Assertions.assertThat(updatedUser.getTitel()).isEqualTo("Herr");
         // FachRollen should remain SYSTEM_ADMIN (not changed to MPA from token)
-        Assertions.assertThat(updatedUser.get().getFachRollen()).contains(FachRolle.SYSTEM_ADMIN);
-        Assertions.assertThat(updatedUser.get().getFachRollen()).doesNotContain(FachRolle.MPA);
+        Assertions.assertThat(updatedUser.getFachRollenCombined()).contains(FachRolle.SYSTEM_ADMIN);
+        Assertions.assertThat(updatedUser.getFachRollenCombined()).doesNotContain(FachRolle.MPA);
     }
 
     @Test
@@ -183,7 +188,7 @@ class EnsureBenutzerHelperServiceTest {
         // Keep ignoreFachrollenFromKeycloak disabled (default in setUp)
 
         // ACT: Update with a different FachRolle (MPA)
-        var userToUpdate = storedUser.get();
+        var userToUpdate = fixtureService.readBenutzerWithBerechtigungen(storedUser.get().getId());
         JsonWebTokenDataDTO jwtDataChanged = new JsonWebTokenDataDTO(
             null,
             subjectId,
@@ -201,10 +206,9 @@ class EnsureBenutzerHelperServiceTest {
         ensureBenutzerHelperService.updateExistingUser(userToUpdate.getId(), jwtDataChanged);
 
         // ASSERT: FachRollen WERE changed to MPA
-        var updatedUser = benutzerRepo.findByEmail(EmailAddress.fromString(testemail));
-        Assertions.assertThat(updatedUser).isPresent();
-        Assertions.assertThat(updatedUser.get().getFachRollen()).contains(FachRolle.MPA);
-        Assertions.assertThat(updatedUser.get().getFachRollen()).doesNotContain(FachRolle.SYSTEM_ADMIN);
+        var updatedUser = fixtureService.readBenutzerWithBerechtigungen(userToUpdate.getId());
+        Assertions.assertThat(updatedUser.getFachRollenCombined()).contains(FachRolle.MPA);
+        Assertions.assertThat(updatedUser.getFachRollenCombined()).doesNotContain(FachRolle.SYSTEM_ADMIN);
     }
 
     /**

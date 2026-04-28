@@ -108,7 +108,7 @@ public class UntersuchungSprache extends AbstractEntity<UntersuchungSprache>
         if (untersuchungSprache == null) {
             untersuchungSprache = forUntersuchung(untersuchung);
         }
-        AnlassConfig config = untersuchung.getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig config = untersuchung.getAnlass().getAnlassConfig();
 
         untersuchungSprache.setNachsprechen(
             ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(

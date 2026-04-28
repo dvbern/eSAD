@@ -17,7 +17,7 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { BackendEntityId } from '@dvb/data-access-types';
+import { BackendEntityId, BackendEntityIdWithClass } from '@dvb/data-access-types';
 import { UntersuchungArztBemerkungJson } from '../model/untersuchung-arzt-bemerkung-json';
 import { UntersuchungArztBemerkungSaveJson } from '../model/untersuchung-arzt-bemerkung-save-json';
 import { UntersuchungArztBeurteilungJson } from '../model/untersuchung-arzt-beurteilung-json';
@@ -29,28 +29,28 @@ import { Configuration }                                     from '../configurat
 
 export interface UntersuchungArztServiceGetDefaultUntersuchungArztBeurteilungForAnlassConfigRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
 }
 
 export interface UntersuchungArztServiceGetUntersuchungArztBemerkungRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
 }
 
 export interface UntersuchungArztServiceGetUntersuchungArztBeurteilungRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
 }
 
 export interface UntersuchungArztServiceSaveUntersuchungArztBemerkungRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
     untersuchungArztBemerkungSaveJson: UntersuchungArztBemerkungSaveJson;
 }
 
 export interface UntersuchungArztServiceSaveUntersuchungArztBeurteilungRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
     untersuchungArztBeurteilungSaveJson: UntersuchungArztBeurteilungSaveJson;
 }
 
@@ -180,7 +180,7 @@ export class UntersuchungArztService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/arzt/beurteilung/default`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/arzt/beurteilung/default`;
         return this.httpClient.request<UntersuchungArztBeurteilungSaveJson>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -255,7 +255,7 @@ export class UntersuchungArztService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/arzt/bemerkung`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/arzt/bemerkung`;
         return this.httpClient.request<UntersuchungArztBemerkungJson>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -330,7 +330,7 @@ export class UntersuchungArztService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/arzt/beurteilung`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/arzt/beurteilung`;
         return this.httpClient.request<UntersuchungArztBeurteilungJson>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -418,7 +418,7 @@ export class UntersuchungArztService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/arzt/bemerkung`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/arzt/bemerkung`;
         return this.httpClient.request<UntersuchungArztBemerkungJson>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -507,7 +507,7 @@ export class UntersuchungArztService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/arzt/beurteilung`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/arzt/beurteilung`;
         return this.httpClient.request<UntersuchungArztBeurteilungJson>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

@@ -7,6 +7,8 @@ import java.util.UUID;
 
 import ch.dvbern.dvbstarter.infrastructure.db.SmartJPAQuery;
 import ch.dvbern.dvbstarter.infrastructure.db.baserepo.BaseRepo;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
@@ -14,12 +16,10 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.QOrganisation;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.QOrganisationRollen;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.QBenutzer;
-import ch.dvbern.oss.hemed.esc.api.shared.benutzer.QBenutzerBerechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import com.querydsl.core.NonUniqueResultException;
 import com.querydsl.core.types.Predicate;
@@ -53,6 +53,12 @@ public class BenutzerRepo extends BaseRepo<Benutzer> {
         return getByPredicateWithBerechtigungen(QBenutzer.benutzer.email.eq(email));
     }
 
+    @NonNull
+    public Benutzer getByIdWithBerechtigungen(@NonNull ID<Benutzer> benutzerID) {
+        return getByPredicateWithBerechtigungen(QBenutzer.benutzer.id.eq(benutzerID.getUUID()))
+            .orElseThrow(() -> new AppFailureException(AppFailureMessage.entityNotFound(benutzerID)));
+    }
+
     // to read this from the CurrentUserService we make sure to run this in a new transaction, if it uses preexisting
     // transactions it may produce stack overflows
     @Transactional(TxType.REQUIRES_NEW)
@@ -68,9 +74,9 @@ public class BenutzerRepo extends BaseRepo<Benutzer> {
     @NonNull
     private Optional<Benutzer> getByPredicateWithBerechtigungen(@NonNull Predicate where) {
         EntityGraph<Benutzer> entityGraph = db.getEntityManager().createEntityGraph(Benutzer.class);
-        entityGraph.addAttributeNodes(QBenutzer.benutzer.berechtigungen.getMetadata().getName());
-
         SmartJPAQuery<Benutzer> benutzerSmartJPAQuery = db.selectFrom(QBenutzer.benutzer)
+            .leftJoin(QBenutzer.benutzer.systemRollen, QSystemRollen.systemRollen).fetchJoin()
+            .leftJoin(QBenutzer.benutzer.organisationRollen, QOrganisationRollen.organisationRollen).fetchJoin()
             .where(where);
         benutzerSmartJPAQuery = benutzerSmartJPAQuery.setHint("jakarta.persistence.loadgraph", entityGraph);
 
@@ -119,15 +125,6 @@ public class BenutzerRepo extends BaseRepo<Benutzer> {
         return db.selectFrom(QBenutzer.benutzer)
             .where(QBenutzer.benutzer.benutzerAktivStatus.eq(EntityAktivStatus.AKTIV))
             .orderBy(QBenutzer.benutzer.vorname.asc(), QBenutzer.benutzer.nachname.asc())
-            .fetch();
-    }
-
-    @NonNull
-    public List<Berechtigung> findBerechtigungenByEmail(@NonNull EmailAddress email) {
-        return db.select(QBenutzerBerechtigung.benutzerBerechtigung.berechtigung)
-            .from(QBenutzerBerechtigung.benutzerBerechtigung)
-            .innerJoin(QBenutzerBerechtigung.benutzerBerechtigung.benutzer, QBenutzer.benutzer)
-            .where(QBenutzer.benutzer.email.eq(email))
             .fetch();
     }
 

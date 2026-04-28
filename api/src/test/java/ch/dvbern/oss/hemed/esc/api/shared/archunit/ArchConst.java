@@ -19,7 +19,14 @@ public class ArchConst {
         // example for excluding generated code
         //         location -> !location.contains("ch/dvbern/my/project/my/module/generated")
     );
+    private static final Set<ImportOption> IMPORT_OPTIONS_FOR_TESTS = Set.of(
+        new ImportOption.OnlyIncludeTests()
+    );
+
     public static final JavaClasses APP_CLASSES = new ClassFileImporter(IMPORT_OPTIONS)
+        .importPackages(APP_PACKAGE, STARTER_PACKAGE);
+
+    public static final JavaClasses TEST_CLASSES = new ClassFileImporter(IMPORT_OPTIONS_FOR_TESTS)
         .importPackages(APP_PACKAGE, STARTER_PACKAGE);
 
     @UtilityClass

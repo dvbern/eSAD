@@ -852,7 +852,7 @@
                                     </configOptions>
                                     <typeMappings>
                                         <typeMapping>OffsetDateTime=java.time.LocalDateTime</typeMapping>
-                                        FileUpload=org.jboss.resteasy.reactive.multipart.FileUpload,
+                                        FileUpload=org.jboss.resteasy.reactive.multipart.FileUpload
                                     </typeMappings>
                                 </configuration>
                             </execution>

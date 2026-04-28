@@ -14,6 +14,7 @@ import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.PrincipalJson;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.TestingResponseJson;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
@@ -53,6 +54,7 @@ public class BenutzerResource {
 
     private final EnsureBenutzerService ensureBenutzerService;
     private final CurrentUserService currentUserService;
+    private final AuthorizerService authorizerService;
 
     @GET
     @Path("/error")
@@ -74,7 +76,7 @@ public class BenutzerResource {
     @GET
     @NonNull
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.MITARBEITERLISTE_BERECHTIGUNGEN_LESEN)
+    @RolesAllowed(BerechtigungName.BENUTZER_BERECHTIGUNGEN_LESEN)
     public BenutzerListJson findAllBenutzer() {
         return new BenutzerListJson(mapper.findAllBenutzer());
     }
@@ -83,11 +85,11 @@ public class BenutzerResource {
     @NonNull
     @Path("/{organisationID}")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.ORGANISATION_VERWALTEN_LESEN)
+    @RolesAllowed(BerechtigungName.BENUTZER_BERECHTIGUNGEN_LESEN)
     public BenutzerListJson findAllBenutzerForOrganisation(
         @NonNull @NotNull @PathParam("organisationID") ID<Organisation> organisationID
     ) {
-        // TODO ESC-1180 authorizer
+        authorizerService.requireReadAuthorizationOrganisation(organisationID);
         return new BenutzerListJson(mapper.findAllBenutzerForOrganisation(organisationID));
     }
 
@@ -100,8 +102,8 @@ public class BenutzerResource {
     @Transactional(TxType.NEVER)
     public PrincipalJson getMyBenutzerData() {
         ensureBenutzerService.ensureBenutzer();
-        Optional<Benutzer> optionalBenutzer = currentUserService.findCurrentUser();
-        return optionalBenutzer.map(BenutzerMapper::toPrincipalJson).orElseThrow();
+        Optional<Benutzer> optionalBenutzer = currentUserService.findCurrentUserWithBerechtigungen();
+        return optionalBenutzer.map(mapper::toPrincipalJson).orElseThrow();
     }
 
     @POST
@@ -109,7 +111,6 @@ public class BenutzerResource {
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
     @RolesAllowed({ BerechtigungName.BENUTZER_BERECHTIGUNGEN_SCHREIBEN, BerechtigungName.ORGANISATION_VERWALTEN_SCHREIBEN })
     public BenutzerJson createBenutzer(
-        // TODO ESC-1180: Eigene Berechtigung für Organisationsbenutzer
         @NonNull @NotNull @Valid BenutzerSaveJson saveJson
     ) {
         return mapper.create(saveJson);
@@ -119,8 +120,7 @@ public class BenutzerResource {
     @NonNull
     @Path("/{benutzerID}")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    // TODO ESC-1180: Eigene Berechtigung für Organisationsbenutzer
-    @RolesAllowed({ BerechtigungName.BENUTZER_BERECHTIGUNGEN_SCHREIBEN, BerechtigungName.ORGANISATION_VERWALTEN_LESEN })
+    @RolesAllowed({ BerechtigungName.BENUTZER_BERECHTIGUNGEN_SCHREIBEN, BerechtigungName.ORGANISATION_VERWALTEN_SCHREIBEN })
     public BenutzerJson update(
         @NonNull @NotNull @PathParam("benutzerID") ID<Benutzer> benutzerID,
         @NonNull @NotNull @Valid BenutzerSaveJson saveJson

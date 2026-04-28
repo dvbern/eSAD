@@ -22,7 +22,6 @@ import java.net.URI;
 import java.util.Optional;
 
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.JsonWebTokenClaims;
-import io.quarkus.security.identity.CurrentIdentityAssociation;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Response;
@@ -43,7 +42,6 @@ import static org.mockito.Mockito.when;
 
 class TenantClaimMatchesUrlFilterTest {
 
-    private CurrentIdentityAssociation currentIdentityAssociation;
     private ContainerRequestContext requestContext;
     private SecurityIdentity securityIdentity;
     private JsonWebToken jsonWebToken;
@@ -52,16 +50,14 @@ class TenantClaimMatchesUrlFilterTest {
 
     @BeforeEach
     void setUp() {
-        currentIdentityAssociation = mock(CurrentIdentityAssociation.class);
         requestContext = mock(ContainerRequestContext.class);
         securityIdentity = mock(SecurityIdentity.class);
         jsonWebToken = mock(JsonWebToken.class);
         uriInfo = mock(UriInfo.class);
 
-        when(currentIdentityAssociation.getIdentity()).thenReturn(securityIdentity);
         when(requestContext.getUriInfo()).thenReturn(uriInfo);
-        filter = new TenantClaimMatchesUrlFilter(currentIdentityAssociation);
-
+        when(uriInfo.getPath()).thenReturn("/some/path");
+        filter = new TenantClaimMatchesUrlFilter(null);
     }
 
     @Test
@@ -70,7 +66,7 @@ class TenantClaimMatchesUrlFilterTest {
         when(securityIdentity.isAnonymous()).thenReturn(true);
 
         // ACT
-        filter.filter(requestContext);
+        filter.checkIdentityForTenant(requestContext, securityIdentity);
 
         // ASSERT
         verify(requestContext, never()).abortWith(any());
@@ -86,7 +82,7 @@ class TenantClaimMatchesUrlFilterTest {
         when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.empty());
 
         // ACT
-        filter.filter(requestContext);
+        filter.checkIdentityForTenant(requestContext, securityIdentity);
 
         // ASSERT
         verify(requestContext).abortWith(argThat(response ->
@@ -104,7 +100,7 @@ class TenantClaimMatchesUrlFilterTest {
         when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.of("bs"));
 
         // ACT
-        filter.filter(requestContext);
+        filter.checkIdentityForTenant(requestContext, securityIdentity);
 
         // ASSERT
         verify(requestContext).abortWith(argThat(response ->
@@ -122,7 +118,7 @@ class TenantClaimMatchesUrlFilterTest {
         when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.of("invalid-tenant"));
 
         // ACT
-        filter.filter(requestContext);
+        filter.checkIdentityForTenant(requestContext, securityIdentity);
 
         // ASSERT
         verify(requestContext).abortWith(argThat(response ->
@@ -141,7 +137,7 @@ class TenantClaimMatchesUrlFilterTest {
         when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.of("win"));
 
         // ACT
-        filter.filter(requestContext);
+        filter.checkIdentityForTenant(requestContext, securityIdentity);
 
         // ASSERT
         verify(requestContext).abortWith(argThat(response ->
@@ -160,12 +156,11 @@ class TenantClaimMatchesUrlFilterTest {
         when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.of(tenanturlPart.toUpperCase()));
 
         // ACT
-        filter.filter(requestContext);
+        filter.checkIdentityForTenant(requestContext, securityIdentity);
 
         // ASSERT
         verify(requestContext, never()).abortWith(any());
     }
-
 
     @Test
     void should_return_after_abort_when_tenant_mismatch() {
@@ -179,11 +174,23 @@ class TenantClaimMatchesUrlFilterTest {
         when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.of("win"));
 
         // ACT & ASSERT
-        assertThatCode(() -> filter.filter(requestContext))
+        assertThatCode(() -> filter.checkIdentityForTenant(requestContext, securityIdentity))
             .doesNotThrowAnyException();
 
         verify(requestContext).abortWith(argThat(response ->
             response.getStatus() == Response.Status.FORBIDDEN.getStatusCode()));
     }
 
+    @Test
+    void should_skip_validation_for_public_endpoints() {
+        // ARRANGE
+        when(securityIdentity.isAnonymous()).thenReturn(false);
+        when(uriInfo.getPath()).thenReturn("/pub/config");
+
+        // ACT
+        filter.checkIdentityForTenant(requestContext, securityIdentity);
+
+        // ASSERT
+        verify(requestContext, never()).abortWith(any());
+    }
 }

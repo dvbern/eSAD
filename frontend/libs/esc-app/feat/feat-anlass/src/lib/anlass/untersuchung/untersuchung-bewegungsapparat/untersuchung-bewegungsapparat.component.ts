@@ -6,6 +6,7 @@ import {
 } from '@dvb/ui-components';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {TranslocoPipe} from '@jsverse/transloco';
+import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import {DirtyMarker} from '@dvb/util-angular';
 import {UntersuchungStore} from '../untersuchung.store';
 import {requireValue} from '@dvb/util-shared';
@@ -87,7 +88,7 @@ export class UntersuchungBewegungsapparatComponent implements DirtyMarker {
       const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       this.store.saveBewegungsapparat({
         anlassId: anlassId,
-        einladungId: einladungId,
+        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
         untersuchungBewegungsapparatSaveJson: payload,
       });
     }

@@ -14,7 +14,7 @@ import {
   NotizTyp,
   PrinterService,
 } from '@dvb/data-access-backend';
-import { BackendEntityId } from '@dvb/data-access-types';
+import { BackendEntityId, BackendEntityIdWithClass, toEinladungBackendEntityIdWithClass } from '@dvb/data-access-types';
 import {
   AppErrorHandlerService,
   AppNotificationStore,
@@ -275,7 +275,7 @@ export class AnlassKinderStore extends signalStore(
   );
 
   einladungAbmelden = rxMethod<{
-    einladungId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
     einladungSaveJson: EinladungSaveJson;
     onSuccess: () => void;
   }>(
@@ -328,7 +328,7 @@ export class AnlassKinderStore extends signalStore(
     ),
   );
 
-  updateEinladungStatus = rxMethod<{ einladungId: BackendEntityId; status: EinladungStatus }>(
+  updateEinladungStatus = rxMethod<{ einladungId: BackendEntityIdWithClass; status: EinladungStatus }>(
     pipe(
       exhaustMap(params => {
         const einladungById = this.einladungById(params.einladungId);
@@ -372,7 +372,7 @@ export class AnlassKinderStore extends signalStore(
           .tapLoading$(
             this.#einladungenService.createNotiz$({
               anlassId: requireValue(this.anlassStore.selectedEntity()?.id),
-              einladungId: requireValue(this.selectedEinladungId()),
+              einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.selectedEinladungId())),
               notizCreateJson: notiz,
               file: file,
               file2: file2,

@@ -21,6 +21,9 @@ package ch.dvbern.oss.hemed.esc.api.features.fileingress;
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst;
+import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
+import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.UploadItemSchema;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
@@ -55,7 +58,7 @@ public class FileIngressResource {
     private final FileIngressService fileIngressService;
 
     @POST
-    @Path("/dossier/{esadId}/fragebogen")
+    @Path("/dossier/{esadId}/anlass/{anlassId}/{notizTyp}")
     @NonNull
     @RolesAllowed(BerechtigungName.FILE_INGRESS_PUSH)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -76,14 +79,16 @@ public class FileIngressResource {
             schema = @Schema(implementation = FileIngressResultJson.class)
         )
     )
-    public Response uploadFragebogen(
+    public Response uploadNotiz(
         @NotNull @NonNull @PathParam("esadId") @IgnoreForIdClassTest String esadId,
+        @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
+        @NotNull @NonNull @PathParam("notizTyp") NotizTyp notizTyp,
         @FormParam(value = "file")
         @Schema(implementation = UploadItemSchema.class) // schema genaration produces object instead of binary string otherwise
-        FileUpload fragebogenFile
+        FileUpload notizFile
     ) {
         FileIngressResultJson result =
-            fileIngressService.processUploadFragebogen(esadId, fragebogenFile);
+            fileIngressService.processUploadNotiz(esadId, anlassId, notizTyp, notizFile);
         if (result.getStatus() == FileIngressStatus.ERROR) {
             return  Response.status(Status.BAD_REQUEST).entity(result).build();
         }

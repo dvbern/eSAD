@@ -92,7 +92,7 @@ public class UntersuchungBewegungsapparat extends AbstractEntity<UntersuchungBew
         if (bewegungsapparat == null) {
             bewegungsapparat = forUntersuchung(untersuchung);
         }
-        AnlassConfig config = untersuchung.getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig config = untersuchung.getAnlass().getAnlassConfig();
 
         bewegungsapparat.setSkoliose(
             ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(

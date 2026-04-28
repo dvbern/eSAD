@@ -46,7 +46,7 @@ class CheckUntersuchungArztBeurteilungPresentIfReqValidatorTest {
         UntersuchungArztBeurteilung entity = UntersuchungArztBeurteilungBuilder.create(
             builder -> builder
                 .withBewegungsapparat(bewegungsapparatList));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungBewegungsapparat(requirementSetting);
+        entity.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungBewegungsapparat(requirementSetting);
         // ACT
         CheckUntersuchungArztBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungArztBeurteilungPresentIfReqValidator();
@@ -73,7 +73,7 @@ class CheckUntersuchungArztBeurteilungPresentIfReqValidatorTest {
         UntersuchungArztBeurteilung entity = UntersuchungArztBeurteilungBuilder.create(
             builder -> builder
                 .withEinbeinstand(einbeinstand));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungEinbeinstand(requirementSetting);
+        entity.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungEinbeinstand(requirementSetting);
         // ACT
         CheckUntersuchungArztBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungArztBeurteilungPresentIfReqValidator();
@@ -100,7 +100,7 @@ class CheckUntersuchungArztBeurteilungPresentIfReqValidatorTest {
         UntersuchungArztBeurteilung entity = UntersuchungArztBeurteilungBuilder.create(
             builder -> builder
                 .withEinbeinhuepfen(einbeinhuepfen));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungEinbeinhuepfen(requirementSetting);
+        entity.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungEinbeinhuepfen(requirementSetting);
         // ACT
         CheckUntersuchungArztBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungArztBeurteilungPresentIfReqValidator();
@@ -131,7 +131,7 @@ class CheckUntersuchungArztBeurteilungPresentIfReqValidatorTest {
         UntersuchungArztBeurteilung entity = UntersuchungArztBeurteilungBuilder.create(
             builder -> builder
                 .withFingeropposition(fingeroppositionList));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungFingeropposition(requirementSetting);
+        entity.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungFingeropposition(requirementSetting);
         // ACT
         CheckUntersuchungArztBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungArztBeurteilungPresentIfReqValidator();
@@ -158,7 +158,7 @@ class CheckUntersuchungArztBeurteilungPresentIfReqValidatorTest {
         UntersuchungArztBeurteilung entity = UntersuchungArztBeurteilungBuilder.create(
             builder -> builder
                 .withMotorik(motorik));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungMotorik(requirementSetting);
+        entity.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungMotorik(requirementSetting);
         // ACT
         CheckUntersuchungArztBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungArztBeurteilungPresentIfReqValidator();
@@ -189,7 +189,7 @@ class CheckUntersuchungArztBeurteilungPresentIfReqValidatorTest {
         UntersuchungArztBeurteilung entity = UntersuchungArztBeurteilungBuilder.create(
             builder -> builder
                 .withSprachfaehigkeit(sprachfaehigkeitList));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungSprachfaehigkeitMultiValue(requirementSetting);
+        entity.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungSprachfaehigkeitMultiValue(requirementSetting);
         // ACT
         CheckUntersuchungArztBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungArztBeurteilungPresentIfReqValidator();
@@ -220,7 +220,7 @@ class CheckUntersuchungArztBeurteilungPresentIfReqValidatorTest {
         UntersuchungArztBeurteilung entity = UntersuchungArztBeurteilungBuilder.create(
             builder -> builder
                 .withMundAndZaehne(mundAndZaehneList));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungMundZaehne(requirementSetting);
+        entity.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungMundZaehne(requirementSetting);
         // ACT
         CheckUntersuchungArztBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungArztBeurteilungPresentIfReqValidator();
@@ -248,7 +248,7 @@ class CheckUntersuchungArztBeurteilungPresentIfReqValidatorTest {
         UntersuchungArztBeurteilung entity = UntersuchungArztBeurteilungBuilder.create(
             builder -> builder
                 .withHaut(haut));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungHaut(requirementSetting);
+        entity.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungHaut(requirementSetting);
         // ACT
         CheckUntersuchungArztBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungArztBeurteilungPresentIfReqValidator();
@@ -276,7 +276,7 @@ class CheckUntersuchungArztBeurteilungPresentIfReqValidatorTest {
         UntersuchungArztBeurteilung entity = UntersuchungArztBeurteilungBuilder.create(
             builder -> builder
                 .withHerzauskultation(herzauskultation));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungHerz(requirementSetting);
+        entity.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungHerz(requirementSetting);
         // ACT
         CheckUntersuchungArztBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungArztBeurteilungPresentIfReqValidator();
@@ -303,7 +303,7 @@ class CheckUntersuchungArztBeurteilungPresentIfReqValidatorTest {
         UntersuchungArztBeurteilung entity = UntersuchungArztBeurteilungBuilder.create(
             builder -> builder
                 .withBlutdruck(blutdruck));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungBlutdruck(requirementSetting);
+        entity.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungBlutdruck(requirementSetting);
         // ACT
         CheckUntersuchungArztBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungArztBeurteilungPresentIfReqValidator();
@@ -331,7 +331,7 @@ class CheckUntersuchungArztBeurteilungPresentIfReqValidatorTest {
         UntersuchungArztBeurteilung entity = UntersuchungArztBeurteilungBuilder.create(
             builder -> builder
                 .withVerhalten(verhalten));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungVerhalten(requirementSetting);
+        entity.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungVerhalten(requirementSetting);
         // ACT
         CheckUntersuchungArztBeurteilungPresentIfReqValidator
             validator = new CheckUntersuchungArztBeurteilungPresentIfReqValidator();

@@ -17,6 +17,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.UploadItemSchema;
+import ch.dvbern.oss.hemed.esc.api.shared.notizen.RemoveNotizService;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.faulttolerance.api.RateLimit;
 import io.smallrye.mutiny.Multi;
@@ -62,6 +63,7 @@ public class NotizResource {
     private final NotizService notizService;
     private final FileStoreService fileStoreService;
     private final AuthorizerService authorizerService;
+    private final RemoveNotizService removeNotizService;
 
 
     @GET
@@ -169,7 +171,9 @@ public class NotizResource {
         @PathParam("notizId") @NotNull @NonNull ID<Notiz> notizId
     ) {
         authorizerService.requireWriteAuthorizationNotiz(notizId);
-        notizMapper.remove(notizId);
+        Notiz notiz = notizService.getById(notizId);
+        notizMapper.checkRemoveAllowed(notiz);
+        removeNotizService.removeNotizWithUnlink(notizId);
     }
 
     @GET

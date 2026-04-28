@@ -161,7 +161,7 @@ class AufgabeResourceITest extends AbstractITest {
     void getAufgabeForKind() {
         // ARRANGE
         Kind kind = fixtureService.createKind();
-        Benutzer benutzer = fixtureService.createBenutzer();
+        Benutzer benutzer = fixtureService.createBenutzerFuerZentraleOrganisation();
         LocalDate faelligBis = appClock.offsetDateTime().now().toLocalDate().minusDays(1);
 
         Aufgabe aufgabe = AufgabeBuilder.create(builder -> builder
@@ -274,7 +274,7 @@ class AufgabeResourceITest extends AbstractITest {
         // ARRANGE
         Benutzer defaultEmpfaenger = BenutzerBuilder.defaultBenutzer();
         benutzerService.persist(defaultEmpfaenger);
-        Benutzer userErfasst = benutzerService.getCurrentBenutzerOrThrowException();
+        Benutzer userErfasst = fixtureService.readBenutzerWithBerechtigungen(benutzerService.getCurrentBenutzerOrThrowException().getId());
 
         LocalDate faelligBis = LocalDate.of(2025, 5, 30);
 

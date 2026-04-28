@@ -49,7 +49,7 @@ export class DashboardStore extends signalStore(
   loadAnlassListForUser = rxMethod<BackendEntityId>(
     pipe(
       switchMap(benutzerId => this.loader.tapLoading$(
-          this.#anlassService.findAllForUser$({ benutzerID: benutzerId }),
+          this.#anlassService.findAnlaesseForDashboard$({ benutzerID: benutzerId }),
           error => this.#appErrorHandlerService.handleError(error),
         ),
       ),

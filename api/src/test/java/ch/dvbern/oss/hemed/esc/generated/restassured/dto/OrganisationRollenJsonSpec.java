@@ -15,6 +15,7 @@ package ch.dvbern.oss.hemed.esc.generated.restassured.dto;
 
 import java.util.Objects;
 import java.util.Arrays;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BerechtigungSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FachRolleSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.OrganisationJsonSpec;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -33,7 +34,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  */
 @JsonPropertyOrder({
   OrganisationRollenJsonSpec.JSON_PROPERTY_ORGANISATION,
-  OrganisationRollenJsonSpec.JSON_PROPERTY_FACH_ROLLEN
+  OrganisationRollenJsonSpec.JSON_PROPERTY_FACH_ROLLEN,
+  OrganisationRollenJsonSpec.JSON_PROPERTY_BERECHTIGUNGEN
 })
 @JsonTypeName("OrganisationRollenJson")
 @lombok.AllArgsConstructor
@@ -46,6 +48,10 @@ public class OrganisationRollenJsonSpec {
   public static final String JSON_PROPERTY_FACH_ROLLEN = "fachRollen";
   @jakarta.annotation.Nonnull
   private List<FachRolleSpec> fachRollen;
+
+  public static final String JSON_PROPERTY_BERECHTIGUNGEN = "berechtigungen";
+  @jakarta.annotation.Nonnull
+  private List<BerechtigungSpec> berechtigungen;
 
   public OrganisationRollenJsonSpec() {
   }
@@ -108,6 +114,39 @@ public class OrganisationRollenJsonSpec {
     this.fachRollen = fachRollen;
   }
 
+  public OrganisationRollenJsonSpec berechtigungen(@jakarta.annotation.Nonnull List<BerechtigungSpec> berechtigungen) {
+    
+    this.berechtigungen = berechtigungen;
+    return this;
+  }
+
+  public OrganisationRollenJsonSpec addBerechtigungenItem(BerechtigungSpec berechtigungenItem) {
+    if (this.berechtigungen == null) {
+      this.berechtigungen = new ArrayList<>();
+    }
+    this.berechtigungen.add(berechtigungenItem);
+    return this;
+  }
+
+  /**
+   * Get berechtigungen
+   * @return berechtigungen
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_BERECHTIGUNGEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<BerechtigungSpec> getBerechtigungen() {
+    return berechtigungen;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_BERECHTIGUNGEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setBerechtigungen(@jakarta.annotation.Nonnull List<BerechtigungSpec> berechtigungen) {
+    this.berechtigungen = berechtigungen;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -118,12 +157,13 @@ public class OrganisationRollenJsonSpec {
     }
     OrganisationRollenJsonSpec organisationRollenJson = (OrganisationRollenJsonSpec) o;
     return Objects.equals(this.organisation, organisationRollenJson.organisation) &&
-        Objects.equals(this.fachRollen, organisationRollenJson.fachRollen);
+        Objects.equals(this.fachRollen, organisationRollenJson.fachRollen) &&
+        Objects.equals(this.berechtigungen, organisationRollenJson.berechtigungen);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(organisation, fachRollen);
+    return Objects.hash(organisation, fachRollen, berechtigungen);
   }
 
   @Override
@@ -132,6 +172,7 @@ public class OrganisationRollenJsonSpec {
     sb.append("class OrganisationRollenJsonSpec {\n");
     sb.append("    organisation: ").append(toIndentedString(organisation)).append("\n");
     sb.append("    fachRollen: ").append(toIndentedString(fachRollen)).append("\n");
+    sb.append("    berechtigungen: ").append(toIndentedString(berechtigungen)).append("\n");
     sb.append("}");
     return sb.toString();
   }

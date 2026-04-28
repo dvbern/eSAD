@@ -34,7 +34,9 @@ public enum NotizTypSpec {
   
   ANMELDUNG_BESTAETIGUNG("ANMELDUNG_BESTAETIGUNG"),
   
-  ABMELDUNG("ABMELDUNG");
+  ABMELDUNG("ABMELDUNG"),
+  
+  IMPFANMELDUNG("IMPFANMELDUNG");
 
   private String value;
 

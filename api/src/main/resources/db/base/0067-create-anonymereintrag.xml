@@ -1,0 +1,72 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="anst" id="1745239920000-1">
+        <createTable tableName="anonymereintrag">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="anonymereintragPK"/>
+            </column>
+            <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usererstellt" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usermutiert" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="hash" type="VARCHAR(255)">
+              <constraints nullable="false"/>
+            </column>
+            <column name="anlass_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="untersuchung_id" type="UUID">
+              <constraints nullable="true" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anst" id="1745239920000-2">
+        <addForeignKeyConstraint baseColumnNames="anlass_id" baseTableName="anonymereintrag" constraintName="fk_anonymereintrag_anlass" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="anlass" validate="true"/>
+      <addUniqueConstraint tableName="anonymereintrag" columnNames="anlass_id" constraintName="uc_anonymereintraganlass_id_col"/>
+    </changeSet>
+    <changeSet author="anst" id="1745239920000-3">
+        <addForeignKeyConstraint baseColumnNames="untersuchung_id" baseTableName="anonymereintrag" constraintName="fk_anonymereintrag_untersuchung" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchung" validate="true"/>
+      <addUniqueConstraint tableName="anonymereintrag" columnNames="untersuchung_id" constraintName="uc_anonymereintraguntersuchung_id_col"/>
+    </changeSet>
+    <changeSet author="anst" id="1745239920000-4">
+        <createIndex indexName="ix_anonymereintrag_anlass" tableName="anonymereintrag">
+            <column name="anlass_id"/>
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anst" id="1745239920000-5">
+        <createIndex indexName="ix_anonymereintrag_untersuchung" tableName="anonymereintrag">
+            <column name="untersuchung_id"/>
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
+  <changeSet author="homa" id="1745239920000-6">
+    <createTable tableName="anonymereintrag_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="hash" type="VARCHAR(255)"/>
+      <column name="anlass_id" type="UUID"/>
+      <column name="untersuchung_id" type="UUID"/>
+    </createTable>
+  </changeSet>
+</databaseChangeLog>

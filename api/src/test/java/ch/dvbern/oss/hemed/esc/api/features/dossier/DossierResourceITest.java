@@ -21,6 +21,7 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
+import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.DossierBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.KindBuilder;
@@ -43,8 +44,8 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FailureTypeSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindSaveModeDuplikatSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindSaveResultJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SchuleJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.PapierakteStatusSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SchuleJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SchuleSaveJsonSpec;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
@@ -76,6 +77,7 @@ class DossierResourceITest extends AbstractITest {
     private final BenutzerRepo benutzerRepo;
     private final AppClock appClock;
     private final OrganisationService organisationService;
+    private final FixtureService fixtureService;
 
     @Override
     @BeforeEach
@@ -255,14 +257,7 @@ class DossierResourceITest extends AbstractITest {
         Dossier existingDossier = dossierService.persist(
             DossierBuilder.create(builder -> builder.forKind(kind)));
 
-        var createDto = BenutzerBuilder.createCreateDTO(
-            builder -> builder
-                .withRandomEmail("nina.neu@example.com")
-                .withRandomVorname("Nina")
-                .withRandomNachname("Neu")
-                .withKeycloakId(UUID.randomUUID().toString())
-        );
-        Benutzer benutzer = benutzerService.getById(benutzerService.createBenutzer(createDto));
+        Benutzer benutzer = fixtureService.createBenutzerNoRoles();
         BenutzerOptionJsonSpec benutzerOptionJson = BenutzerBuilder.createOptionJaxSpec(
             builder -> builder.forBenutzer(benutzer));
 

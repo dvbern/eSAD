@@ -8,6 +8,7 @@ import {
   TextareaDirective,
   TitleComponent
 } from "@dvb/ui-components";
+import {toEinladungBackendEntityIdWithClass} from "@dvb/data-access-types";
 import {TranslocoPipe} from "@jsverse/transloco";
 import {
   BenutzerStore,
@@ -95,7 +96,7 @@ export class UntersuchungAbschlussComponent implements DirtyMarker {
       const payload = this.form.valueOnValid();
       this.store.saveUntersuchungAbschluss({
         anlassId: anlassId,
-        einladungId: einladungId,
+        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
         untersuchungAbschlussSaveJson: payload,
       });
     }

@@ -29,7 +29,7 @@ public class CheckUntersuchungImpfungInternValidator
     @Override
     public boolean isEntityValid(@NonNull UntersuchungImpfungIntern instance) {
         AnlassConfig anlassConfig =
-            instance.getUntersuchungImpfungen().getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+            instance.getUntersuchungImpfungen().getUntersuchung().getAnlass().getAnlassConfig();
         if (anlassConfig.getImpfungenListe() == RequirementSetting.REQUIRED) {
             if (instance.getImpfStatus() == ImpfStatus.DURCHGEFUEHRT) {
                 return instance.getDatumImpfung() != null

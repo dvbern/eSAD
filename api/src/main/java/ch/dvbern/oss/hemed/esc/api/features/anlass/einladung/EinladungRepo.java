@@ -34,22 +34,27 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.QAnlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.QAnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.QAnonymerEintrag;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.QDossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.QKind;
+import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.QNotiz;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
 import com.querydsl.core.Tuple;
 import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class EinladungRepo extends BaseRepo<Einladung> {
 
     @NonNull
@@ -224,21 +229,36 @@ public class EinladungRepo extends BaseRepo<Einladung> {
     }
 
     @NonNull
-    public Map<ID<Einladung>, ID<Anlass>> getAnlassEinladungsMap(@NonNull List<ID<Einladung>> einladungIdList) {
-        List<Tuple> einladungenAnlass = db.select(QEinladung.einladung.id, QAnlass.anlass.id)
-            .from(QEinladung.einladung)
-            .innerJoin(QEinladung.einladung.anlass, QAnlass.anlass)
-            .where(QEinladung.einladung.id.in(einladungIdList.stream().map(ID::getUUID).toList()))
+    public Map<ID<?>, ID<Anlass>> getAnlassEinladungsMap(@NonNull List<? extends ID<?>> einladungIdList) {
+        List<Tuple> einladungenAnlass = db.select(QEinladung.einladung.id, QAnonymerEintrag.anonymerEintrag.id, QAnlass.anlass.id)
+            .from(QAnlass.anlass)
+            .leftJoin(QEinladung.einladung).on(QEinladung.einladung.anlass.eq(QAnlass.anlass))
+            .leftJoin(QAnonymerEintrag.anonymerEintrag).on(QAnonymerEintrag.anonymerEintrag.anlass.eq(QAnlass.anlass))
+            .where(
+                QEinladung.einladung.id.in(einladungIdList.stream().map(ID::getUUID).toList())
+                .or(QAnonymerEintrag.anonymerEintrag.id.in(einladungIdList.stream().map(ID::getUUID).toList()))
+            )
             .fetch();
 
-        Map<ID<Einladung>, ID<Anlass>> map = new HashMap<>();
+        Map<ID<?>, ID<Anlass>> map = new HashMap<>();
 
         einladungenAnlass.forEach(tuple -> {
                 UUID einladungId = tuple.get(0, UUID.class);
-                UUID anlassId = tuple.get(1, UUID.class);
-                if (einladungId != null && anlassId != null) {
+                UUID anonymerEintragId = tuple.get(1, UUID.class);
+                UUID anlassId = tuple.get(2, UUID.class);
+
+                ID<?> keyID = null;
+
+                if(einladungId != null){
+                    keyID = ID.of(einladungId, Einladung.class);
+                }
+                if(anonymerEintragId != null){
+                    keyID = ID.of(anonymerEintragId, AnonymerEintrag.class);
+                }
+
+                if (keyID != null && anlassId != null) {
                     map.put(
-                        ID.of(einladungId, Einladung.class),
+                        keyID,
                         ID.of(anlassId, Anlass.class)
                     );
                 }
@@ -254,5 +274,20 @@ public class EinladungRepo extends BaseRepo<Einladung> {
             .fetchJoin()
             .where(QEinladung.einladung.id.eq(einladungID.getUUID()))
             .fetchOne().orElseThrow();
+    }
+
+    public void unlinkNotizFromEinladung(@NonNull ID<Notiz> notizId) {
+        db.selectFrom(QEinladung.einladung)
+            .where(QEinladung.einladung.notizen.any().id.eq(notizId.getUUID()))
+            .fetch()
+            .forEach(einladung -> {
+                    //einladung will get updated when notiz is deleted but versionFromFrontend is not set -> disable
+                    einladung.disableOptimisticLockingCheck();
+                    boolean removed = einladung.getNotizen().removeIf(notiz -> notiz.getId().equals(notizId));
+                    if (removed) {
+                        LOG.info("Removing notiz {} from einladung before deletion {}", notizId, einladung.getId());
+                    }
+                }
+            );
     }
 }

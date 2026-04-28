@@ -15,7 +15,7 @@ public class CheckUntersuchungVorabklaerungenPresentIfReqValidator
     /* readability is better with seprate return*/
     @SuppressWarnings("java:S1126")
     public boolean isEntityValid(@NonNull UntersuchungVorabklaerungen entity) {
-        AnlassConfig anlassConfig = entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig anlassConfig = entity.getUntersuchung().getAnlass().getAnlassConfig();
 
         if (ValueEnhancedUtil.isRequiredAndNull(anlassConfig.getVorabklaerungenFragebogenStatus(), entity.getFragebogenStatus(), FragebogenStatus.class)) {
             return false;

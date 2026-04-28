@@ -1894,8 +1894,8 @@ class SearchResourceITest extends AbstractITest {
                 builder -> builder.withOrganisationRollen(organisation, List.of(
                     FachRolle.MPA))));
 
-            Benutzer weiterePerson1 = fixtureService.createBenutzer();
-            Benutzer weiterePerson2 = fixtureService.createBenutzer();
+            Benutzer weiterePerson1 = fixtureService.createBenutzerFuerZentraleOrganisation();
+            Benutzer weiterePerson2 = fixtureService.createBenutzerFuerZentraleOrganisation();
 
             // Create kind with anlass with mpa1, arzt1, weiterePerson1
             Dossier dossier1 = fixtureService.createDossier();
@@ -2141,7 +2141,7 @@ class SearchResourceITest extends AbstractITest {
             // ARRANGE
             // Create kind with Anlass and Untersuchung with vormerkenFuerGruppenFolgetermin = true
             Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
-            Kind kind1 = untersuchung.getEinladung().getDossier().getKind();
+            Kind kind1 = untersuchung.getEinladungRequired().getDossier().getKind();
 
             UntersuchungImpfungenMassnahmen impfMassnahmenWithVormerkung =
                 UntersuchungImpfungenMassnahmenBuilder.create(
@@ -2152,7 +2152,7 @@ class SearchResourceITest extends AbstractITest {
 
             // Create kind with anlass and untersuchung with vormerkenFuerGruppenFolgetermin = false
             Untersuchung untersuchungNoFolgetermin = fixtureService.createUntersuchungWithImpfungen();
-            Kind kind2 = untersuchungNoFolgetermin.getEinladung().getDossier().getKind();
+            Kind kind2 = untersuchungNoFolgetermin.getEinladungRequired().getDossier().getKind();
 
             UntersuchungImpfungenMassnahmen impfMassnahmenNoVormerkung =
                 UntersuchungImpfungenMassnahmenBuilder.create(
@@ -2413,7 +2413,7 @@ class SearchResourceITest extends AbstractITest {
 
             untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
                     previousUntersuchung.getUntersuchungImpfungen())
-                .withUserErfasst(fixtureService.createBenutzer())
+                .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
                 .withImpfStatus(ImpfStatus.DURCHGEFUEHRT)
                 .withImpfstoff(impfstoff)
                 .withDatumImpfung(LocalDate.of(2023, 1, 27))));
@@ -2421,7 +2421,7 @@ class SearchResourceITest extends AbstractITest {
             UntersuchungImpfungIntern interneImpfung =
                 untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
                         previousUntersuchung.getUntersuchungImpfungen())
-                    .withUserErfasst(fixtureService.createBenutzer())
+                    .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
                     .withImpfstoff(impfstoff)
                     .withCharge(fixtureService.createImpfstoffCharge(
                         impfstoff,

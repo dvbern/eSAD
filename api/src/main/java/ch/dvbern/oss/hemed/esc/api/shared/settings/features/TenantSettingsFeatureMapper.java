@@ -46,7 +46,8 @@ public class TenantSettingsFeatureMapper {
             toTenantSettingFeatureState(featureSettings.getBenutzerverwaltungInternFeature()),
             toTenantSettingFeatureState(featureSettings.getBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature()),
             toTenantSettingFeatureState(featureSettings.getArchivierungFeature()),
-            toTenantSettingFeatureState(featureSettings.getZentraleOrganisationFeature())
+            toTenantSettingFeatureState(featureSettings.getZentraleOrganisationFeature()),
+            toTenantSettingFeatureState(featureSettings.getAnonymeStatistikFeature())
         );
     }
 
@@ -76,9 +77,12 @@ public class TenantSettingsFeatureMapper {
         existingFeatures.setAdHocImpfstoffChargenFeature(features.getAdHocImpfstoffChargenFeature()
             .getFeatureEnabled());
         existingFeatures.setFooterFeature(features.getFooterFeature().getFeatureEnabled());
-        existingFeatures.setBenutzerverwaltungInternFeature(features.getBenutzerverwaltungInternFeature().getFeatureEnabled());
-        existingFeatures.setBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature(features.getBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature().getFeatureEnabled());
+        existingFeatures.setBenutzerverwaltungInternFeature(features.getBenutzerverwaltungInternFeature()
+            .getFeatureEnabled());
+        existingFeatures.setBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature(features.getBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature()
+            .getFeatureEnabled());
         existingFeatures.setArchivierungFeature(features.getArchivierungFeature().getFeatureEnabled());
         existingFeatures.setZentraleOrganisationFeature(features.getZentraleOrganisationFeature().getFeatureEnabled());
+        existingFeatures.setAnonymeStatistikFeature(features.getAnonymeStatistikFeature().getFeatureEnabled());
     }
 }

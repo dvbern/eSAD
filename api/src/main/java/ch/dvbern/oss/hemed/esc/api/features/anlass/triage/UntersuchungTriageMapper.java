@@ -1,15 +1,17 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.triage;
 
+import java.util.function.Consumer;
+
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.json.UntersuchungTriageJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.json.UntersuchungTriageSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -42,7 +44,7 @@ public final class UntersuchungTriageMapper {
                 triage.getWunschSchuelerBemerkungen(),
                 triage.isVorinformationLehrperson(),
                 triage.getVorinformationLehrpersonBemerkungen(),
-                triage.getUntersuchung().getEinladung().getNaechsteStation(),
+                triage.getUntersuchung().getEinladungRequired().getNaechsteStation(),
                 triage.getVersion()
             )
         );
@@ -81,8 +83,12 @@ public final class UntersuchungTriageMapper {
     }
 
     @Nullable
-    public UntersuchungTriageJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+    public UntersuchungTriageJson getByEinladung(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungTriage untersuchungTriage =
             untersuchungTriageService.getUntersuchungTriage(untersuchung.getId());
         return untersuchungTriage != null ? toJson(untersuchungTriage) : null;
@@ -91,10 +97,12 @@ public final class UntersuchungTriageMapper {
     @NonNull
     public UntersuchungTriageJson save(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungTriageSaveJson saveJson
+        @NonNull UntersuchungTriageSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
-        Einladung einladungToUpdate = untersuchung.getEinladung();
+        hasAuthorizationUntersuchung.accept(untersuchung);
+        Einladung einladungToUpdate = untersuchung.getEinladungRequired();
         if (einladungToUpdate.getNaechsteStation() != saveJson.getNaechsteStation()) {
             einladungToUpdate.setNaechsteStation(saveJson.getNaechsteStation());
             einladungToUpdate.setNaechsteStationSeit(appClock.localDateTime().now());

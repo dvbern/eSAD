@@ -9,20 +9,19 @@ import java.time.ZoneOffset;
 import java.util.Objects;
 import java.util.Optional;
 
-import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.DossierService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.edokid_id.EdokidId;
-import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
-import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
+import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassConfigBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsFileIngressBS;
@@ -33,7 +32,6 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
-import org.apache.tika.mime.MediaType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,10 +45,10 @@ class FileIngressResourceITest extends AbstractITest {
 
     private final FileIngressApiSpec api = FileIngressApiSpec.fileIngress(RequestSpecUtil.quarkusSpec());
     private static final LocalDate DATE_EARLY = LocalDate.of(2025, 1, 1);
-    private static final LocalDate DATE_LATE = LocalDate.of(2025, 12, 31);
 
     private final FixtureService fixtureService;
     private final DossierService dossierService;
+    private final AnlassConfigService anlassConfigService;
 
     @Override
     @BeforeEach
@@ -63,11 +61,14 @@ class FileIngressResourceITest extends AbstractITest {
     @Test
     void file_ingress_wrong_user() {
         // ARRANGE
-        File fragebogen = loadFragebogen("fragebogen.pdf");
+        File fragebogen = loadFile("fragebogen.pdf");
+        Anlass anlass = fixtureService.createAnlass();
         // ACT / ASSERT
-        api.fileIngressResourceUploadFragebogen()
+        api.fileIngressResourceUploadNotiz()
             ._fileMultiPart(fragebogen)
             .esadIdPath("1234567890")
+            .anlassIdPath(anlass.getId().getId())
+            .notizTypPath(NotizTyp.FRAGEBOGEN)
             .execute(ResponseBody::peek)
             .then()
             .statusCode(Status.FORBIDDEN.getStatusCode());
@@ -77,72 +78,84 @@ class FileIngressResourceITest extends AbstractITest {
     @Test
     void file_ingress_invalid_filename_not_parsable() {
         // ARRANGE
-        File fragebogen = loadFragebogen("fragebogen.pdf");
+        File fragebogen = loadFile("fragebogen.pdf");
+        Anlass anlass = fixtureService.createAnlass();
         // ACT
-        FileIngressResultJsonSpec result = api.fileIngressResourceUploadFragebogen()
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
             ._fileMultiPart(fragebogen)
             .esadIdPath("1234567890")
+            .anlassIdPath(anlass.getId().getId())
+            .notizTypPath(NotizTyp.FRAGEBOGEN)
             .execute(ResponseBody::peek)
             .then()
             .statusCode(Status.BAD_REQUEST.getStatusCode())
             .extract()
             .as(FileIngressResultJsonSpec.class);
         // ASSERT
-        assertFileIngressResultError(result, "InvalidFilenameForFragebogenIngress");
+        assertFileIngressResultError(result, "InvalidFilenameForNotizIngress");
     }
 
     @TestAsFileIngressBS
     @Test
     void file_ingress_invalid_filename_geburtsdatum_invalid() {
         // ARRANGE
-        File fragebogen = loadFragebogen("01.01.2025__A00145625.pdf");
+        File fragebogen = loadFile("01.01.2025__A00145625.pdf");
+        Anlass anlass = fixtureService.createAnlass();
         // ACT
-        FileIngressResultJsonSpec result = api.fileIngressResourceUploadFragebogen()
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
             ._fileMultiPart(fragebogen)
             .esadIdPath("A00145625")
+            .anlassIdPath(anlass.getId().getId())
+            .notizTypPath(NotizTyp.FRAGEBOGEN)
             .execute(ResponseBody::peek)
             .then()
             .statusCode(Status.BAD_REQUEST.getStatusCode())
             .extract()
             .as(FileIngressResultJsonSpec.class);
         // ASSERT
-        assertFileIngressResultError(result, "InvalidFilenameForFragebogenIngress");
+        assertFileIngressResultError(result, "InvalidFilenameForNotizIngress");
     }
 
     @TestAsFileIngressBS
     @Test
     void file_ingress_invalid_filename_esadId_invalid() {
         // ARRANGE
-        File fragebogen = loadFragebogen("2025-01-01__Gugus.pdf");
+        File fragebogen = loadFile("2025-01-01__Gugus.pdf");
+        Anlass anlass = fixtureService.createAnlass();
         // ACT
-        FileIngressResultJsonSpec result = api.fileIngressResourceUploadFragebogen()
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
             ._fileMultiPart(fragebogen)
             .esadIdPath("Gugus")
+            .anlassIdPath(anlass.getId().getId())
+            .notizTypPath(NotizTyp.FRAGEBOGEN)
             .execute(ResponseBody::peek)
             .then()
             .statusCode(Status.BAD_REQUEST.getStatusCode())
             .extract()
             .as(FileIngressResultJsonSpec.class);
         // ASSERT
-        assertFileIngressResultError(result, "InvalidFilenameForFragebogenIngress");
+        assertFileIngressResultError(result, "InvalidFilenameForNotizIngress");
     }
 
     @TestAsFileIngressBS
     @Test
     void file_ingress_invalid_filename_esadId_not_same_as_pathParam() {
         // ARRANGE
-        File fragebogen = loadFragebogen("2025-01-01__A00145625.pdf");
+        File fragebogen = loadFile("2025-01-01__A00145625.pdf");
+        Anlass anlass = fixtureService.createAnlass();
         // ACT
-        FileIngressResultJsonSpec result = api.fileIngressResourceUploadFragebogen()
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
             ._fileMultiPart(fragebogen)
             .esadIdPath("A00145626") // intentionally wrong
+            .anlassIdPath(anlass.getId().getId())
+            .notizTypPath(NotizTyp.FRAGEBOGEN)
             .execute(ResponseBody::peek)
             .then()
             .statusCode(Status.BAD_REQUEST.getStatusCode())
             .extract()
             .as(FileIngressResultJsonSpec.class);
         // ASSERT
-        assertFileIngressResultError(result, "InvalidFilenameForFragebogenIngress");
+        assertFileIngressResultError(result, "InvalidFilenameForNotizIngress");
     }
 
     @TestAsFileIngressBS
@@ -151,11 +164,14 @@ class FileIngressResourceITest extends AbstractITest {
         // ARRANGE
         Optional<Dossier> dossierOptional = findByEsadId("A00145625");
         assertThat(dossierOptional).isEmpty();
-        File fragebogen = loadFragebogen("2025-01-01__A00145625.pdf");
+        File fragebogen = loadFile("2025-01-01__A00145625.pdf");
+        Anlass anlass = fixtureService.createAnlass();
         // ACT
-        FileIngressResultJsonSpec result = api.fileIngressResourceUploadFragebogen()
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
             ._fileMultiPart(fragebogen)
             .esadIdPath("A00145625")
+            .anlassIdPath(anlass.getId().getId())
+            .notizTypPath(NotizTyp.FRAGEBOGEN)
             .execute(ResponseBody::peek)
             .then()
             .statusCode(Status.BAD_REQUEST.getStatusCode())
@@ -173,11 +189,14 @@ class FileIngressResourceITest extends AbstractITest {
         fixtureService.createDossier(LocalDate.now(), esadId);
         Optional<Dossier> dossierOptional = findByEsadId(esadId);
         assertThat(dossierOptional).isPresent();
-        File fragebogen = loadFragebogen("2025-01-01__" + esadId + ".pdf");
+        File fragebogen = loadFile("2025-01-01__" + esadId + ".pdf");
+        Anlass anlass = fixtureService.createAnlass();
         // ACT
-        FileIngressResultJsonSpec result = api.fileIngressResourceUploadFragebogen()
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
             ._fileMultiPart(fragebogen)
             .esadIdPath(esadId)
+            .anlassIdPath(anlass.getId().getId())
+            .notizTypPath(NotizTyp.FRAGEBOGEN)
             .execute(ResponseBody::peek)
             .then()
             .statusCode(Status.BAD_REQUEST.getStatusCode())
@@ -189,6 +208,51 @@ class FileIngressResourceITest extends AbstractITest {
 
     @TestAsFileIngressBS
     @Test
+    void file_ingress_invalid_notiz_typ() {
+        // ARRANGE
+        NotizTyp notizTyp = NotizTyp.ABMELDUNG;
+        File fragebogen = loadFile("2025-01-01__A00145625.pdf");
+        Anlass anlass = fixtureService.createAnlass();
+        // ACT
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
+            ._fileMultiPart(fragebogen)
+            .esadIdPath("A00145625")
+            .anlassIdPath(anlass.getId().getId())
+            .notizTypPath(notizTyp)
+            .execute(ResponseBody::peek)
+            .then()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract()
+            .as(FileIngressResultJsonSpec.class);
+        // ASSERT
+        assertFileIngressResultError(result, "InvalidNotizTypIngress");
+    }
+
+
+    @TestAsFileIngressBS
+    @Test
+    void file_ingress_invalid_geburtsdatum() {
+        // ARRANGE
+        NotizTyp notizTyp = NotizTyp.ABMELDUNG;
+        File fragebogen = loadFile("2025-02-31__A00145625.pdf");
+        Anlass anlass = fixtureService.createAnlass();
+        // ACT
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
+            ._fileMultiPart(fragebogen)
+            .esadIdPath("A00145625")
+            .anlassIdPath(anlass.getId().getId())
+            .notizTypPath(notizTyp)
+            .execute(ResponseBody::peek)
+            .then()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract()
+            .as(FileIngressResultJsonSpec.class);
+        // ASSERT
+        assertFileIngressResultError(result, "InvalidNotizTypIngress");
+    }
+
+    @TestAsFileIngressBS
+    @Test
     void file_ingress_no_einladung() {
         // ARRANGE
         String esadId = "A00145626";
@@ -196,63 +260,14 @@ class FileIngressResourceITest extends AbstractITest {
         fixtureService.createDossier(geburtsdatum, esadId);
         Optional<Dossier> dossierOptional = findByEsadId(esadId);
         assertThat(dossierOptional).isPresent();
-        File fragebogen = loadFragebogen(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
+        File fragebogen = loadFile(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
+        Anlass anlass = fixtureService.createAnlass();
         // ACT
-        FileIngressResultJsonSpec result = api.fileIngressResourceUploadFragebogen()
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
             ._fileMultiPart(fragebogen)
             .esadIdPath(esadId)
-            .execute(ResponseBody::peek)
-            .then()
-            .statusCode(Status.BAD_REQUEST.getStatusCode())
-            .extract()
-            .as(FileIngressResultJsonSpec.class);
-        // ASSERT
-        assertFileIngressResultError(result, "FileIngressNoSuitableAnlass");
-    }
-
-    @TestAsFileIngressBS
-    @Test
-    void file_ingress_only_impfanlass() {
-        // ARRANGE
-        String esadId = "A00145627";
-        LocalDate geburtsdatum = LocalDate.of(2025, 1, 1);
-        Dossier dossier = fixtureService.createDossier(geburtsdatum, esadId);
-        fixtureService.createEinladung(dossier, AnlassTyp.IMPFTERMIN, DATE_EARLY, "theImpfterminAnlass");
-        fixtureService.createEinladung(dossier, AnlassTyp.IMPFAKTION, DATE_EARLY, "theImpfaktionAnlass");
-        fixtureService.createEinladung(dossier, AnlassTyp.IMPFSPRECHSTUNDE, DATE_EARLY, "theImpfsprechstundeAnlass");
-        Optional<Dossier> dossierOptional = findByEsadId(esadId);
-        assertThat(dossierOptional).isPresent();
-        File fragebogen = loadFragebogen(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
-        // ACT
-        FileIngressResultJsonSpec result = api.fileIngressResourceUploadFragebogen()
-            ._fileMultiPart(fragebogen)
-            .esadIdPath(esadId)
-            .execute(ResponseBody::peek)
-            .then()
-            .statusCode(Status.BAD_REQUEST.getStatusCode())
-            .extract()
-            .as(FileIngressResultJsonSpec.class);
-        // ASSERT
-        assertFileIngressResultError(result, "FileIngressNoSuitableAnlass");
-    }
-
-    @TestAsFileIngressBS
-    @Test
-    void file_ingress_multiple_anlasstypen() {
-        // ARRANGE
-        String esadId = "A00145628";
-        LocalDate geburtsdatum = LocalDate.of(2025, 1, 1);
-        Dossier dossier = fixtureService.createDossier(geburtsdatum, esadId);
-        fixtureService.createEinladung(dossier, AnlassTyp.IMPFTERMIN, DATE_EARLY, "theImpfterminAnlass");
-        fixtureService.createEinladung(dossier, AnlassTyp.KLASSE_8, DATE_EARLY, "theKlasse8Anlass");
-        fixtureService.createEinladung(dossier, AnlassTyp.KLASSE_9, DATE_EARLY, "theKlasse9Anlass");
-        Optional<Dossier> dossierOptional = findByEsadId(esadId);
-        assertThat(dossierOptional).isPresent();
-        File fragebogen = loadFragebogen(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
-        // ACT
-        FileIngressResultJsonSpec result = api.fileIngressResourceUploadFragebogen()
-            ._fileMultiPart(fragebogen)
-            .esadIdPath(esadId)
+            .anlassIdPath(anlass.getId().getId())
+            .notizTypPath(NotizTyp.FRAGEBOGEN)
             .execute(ResponseBody::peek)
             .then()
             .statusCode(Status.BAD_REQUEST.getStatusCode())
@@ -273,11 +288,13 @@ class FileIngressResourceITest extends AbstractITest {
         Einladung einladung = fixtureService.createEinladung(dossier, AnlassTyp.KLASSE_8, DATE_EARLY, "theOnlyAnlass");
         Optional<Dossier> dossierOptional = findByEsadId(esadId);
         assertThat(dossierOptional).isPresent();
-        File fragebogen = loadFragebogen(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
+        File fragebogen = loadFile(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
         // ACT
-        FileIngressResultJsonSpec result = api.fileIngressResourceUploadFragebogen()
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
             ._fileMultiPart(fragebogen)
             .esadIdPath(esadId)
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .notizTypPath(NotizTyp.FRAGEBOGEN)
             .execute(ResponseBody::peek)
             .then()
             .statusCode(Status.OK.getStatusCode())
@@ -295,85 +312,341 @@ class FileIngressResourceITest extends AbstractITest {
 
     @TestAsFileIngressBS
     @Test
-    void file_ingress_success_only_multiple_anlass_same_anlasstyp() {
+    void file_ingress_success_anmeldung_bestaetigung_new_notiz() {
         // ARRANGE
         String esadId = "A00145630";
         LocalDate geburtsdatum = LocalDate.of(2025, 1, 1);
         Dossier dossier = fixtureService.createDossier(geburtsdatum, esadId);
-        fixtureService.createEinladung(dossier, AnlassTyp.IMPFTERMIN, DATE_EARLY, "theImpfterminAnlass");
-        fixtureService.createEinladung(dossier, AnlassTyp.KLASSE_8, DATE_EARLY, "theEarlyAnlass");
-        Einladung einladung = fixtureService.createEinladung(dossier, AnlassTyp.KLASSE_8, DATE_LATE, "theLateAnlass");
-        Optional<Dossier> dossierOptional = findByEsadId(esadId);
-        assertThat(dossierOptional).isPresent();
-        File fragebogen = loadFragebogen(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
+
+        AnlassConfig anlassConfig = AnlassConfigBuilder.create(builder -> builder
+            .withAnlassTyp(AnlassTyp.KLASSE_8)
+            .withShowAnmeldungBestaetigung(true));
+        anlassConfigService.createAnlassConfig(anlassConfig);
+        Anlass anlass = fixtureService.createAnlass(anlassConfig);
+
+        Einladung einladung = fixtureService.createEinladung(anlass, dossier);
+        File file = loadFile(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
+
         // ACT
-        FileIngressResultJsonSpec result = api.fileIngressResourceUploadFragebogen()
-            ._fileMultiPart(fragebogen)
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
+            ._fileMultiPart(file)
             .esadIdPath(esadId)
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .notizTypPath(NotizTyp.ANMELDUNG_BESTAETIGUNG)
             .execute(ResponseBody::peek)
             .then()
+            .log().all()
             .statusCode(Status.OK.getStatusCode())
             .extract()
             .as(FileIngressResultJsonSpec.class);
+
         einladung = fixtureService.readEinladungWithFilesAndLabels(einladung.getId());
+
         // ASSERT
         assertFileIngressResultSuccess(
             result,
-            "Die Datei 2025-01-01__A00145630.pdf wurde erfolgreich hochgeladen als 26-11-2025_Gerber-Emma_Fragebogen.pdf und angehängt an Dossier mit Esad-ID A0 01 456 30 im Anlass 2025/26 SU 2.SEK theLateAnlass.");
-        assertThat(einladung.getFragebogenNotiz()).isPresent();
-        assertThat(einladung.getFragebogenNotiz().get().getFiles()).hasSize(1);
-        assertThat(einladung.getFragebogenNotiz().get().getBemerkungen()).isEqualTo("Datei 26-11-2025_Gerber-Emma_Fragebogen.pdf wurde am 26.11.2025 automatisch hochgeladen.");
+            "Die Datei 2025-01-01__A00145630.pdf wurde erfolgreich hochgeladen als 26-11-2025_Gerber-Emma_Anmeldung-bestaetigung.pdf und angehängt an Dossier mit Esad-ID A0 01 456 30 im Anlass 2022/23 SU 2.SEK Test getAnlass.");
+        assertThat(einladung.getAnmeldungBestaetigungNotiz()).isPresent();
+        assertThat(einladung.getAnmeldungBestaetigungNotiz().get().getFiles()).hasSize(1);
     }
 
     @TestAsFileIngressBS
     @Test
-    void file_ingress_success_notiz_already_exists_with_label_and_orphaned_metadata() {
+    void file_ingress_success_impfanmeldung_existing_notiz() {
         // ARRANGE
         String esadId = "A00145631";
         LocalDate geburtsdatum = LocalDate.of(2025, 1, 1);
         Dossier dossier = fixtureService.createDossier(geburtsdatum, esadId);
         Einladung einladung = fixtureService.createEinladung(dossier, AnlassTyp.KLASSE_8, DATE_EARLY, "theOnlyAnlass");
-        Notiz existingNotiz = fixtureService.createFragebogenNotiz(einladung.getId());
-        // Label Datenverlust anhaengen
-        fixtureService.addLabelToNotiz(existingNotiz.getId(), Label.ID_LABEL_DATENVERLUST_NOTIZ);
-        // Orphaned FileData anhaengen
-        CleanFileName cleanFileName = new CleanFileName("MyOrphanedFileInS3.pdf");
-        existingNotiz.getFiles().add(new FileData(
-            FileTyp.FRAGEBOGEN,
-            cleanFileName,
-            FileInfo.of(cleanFileName, MediaType.APPLICATION_XML, 10L)));
-        File fragebogen = loadFragebogen(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
+        fixtureService.createImpfanmeldungNotiz(einladung.getId());
+        File file = loadFile(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
+
         // ACT
-        FileIngressResultJsonSpec result = api.fileIngressResourceUploadFragebogen()
-            ._fileMultiPart(fragebogen)
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
+            ._fileMultiPart(file)
             .esadIdPath(esadId)
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .notizTypPath(NotizTyp.IMPFANMELDUNG)
+            .execute(ResponseBody::peek)
+            .then()
+            .log().all()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(FileIngressResultJsonSpec.class);
+
+        einladung = fixtureService.readEinladungWithFilesAndLabels(einladung.getId());
+
+        // ASSERT
+        assertFileIngressResultSuccess(
+            result,
+            "Die Datei 2025-01-01__A00145631.pdf wurde erfolgreich hochgeladen als 26-11-2025_Gerber-Emma_Impfanmeldung.pdf und angehängt an Dossier mit Esad-ID A0 01 456 31 im Anlass 2024/25 SU 2.SEK theOnlyAnlass.");
+        assertThat(einladung.getImpfanmeldungsNotiz()).isPresent();
+        assertThat(einladung.getImpfanmeldungsNotiz().get().getFiles()).hasSize(1);
+    }
+
+    @TestAsFileIngressBS
+    @Test
+    void file_ingress_success_impfausweis_new_notiz() {
+        // ARRANGE
+        String esadId = "A00145632";
+        LocalDate geburtsdatum = LocalDate.of(2025, 1, 1);
+        Dossier dossier = fixtureService.createDossier(geburtsdatum, esadId);
+        Einladung einladung = fixtureService.createEinladung(dossier, AnlassTyp.KLASSE_8, DATE_EARLY, "theOnlyAnlass");
+        File file = loadFile(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
+
+        // ACT
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
+            ._fileMultiPart(file)
+            .esadIdPath(esadId)
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .notizTypPath(NotizTyp.IMPFAUSWEIS)
+            .execute(ResponseBody::peek)
+            .then()
+            .log().all()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(FileIngressResultJsonSpec.class);
+
+        einladung = fixtureService.readEinladungWithFilesAndLabels(einladung.getId());
+
+        // ASSERT
+        assertFileIngressResultSuccess(
+            result,
+            "Die Datei 2025-01-01__A00145632.pdf wurde erfolgreich hochgeladen als 26-11-2025_Gerber-Emma_Impfausweis.pdf und angehängt an Dossier mit Esad-ID A0 01 456 32 im Anlass 2024/25 SU 2.SEK theOnlyAnlass.");
+        assertThat(einladung.getImpfausweisNotiz()).isPresent();
+        assertThat(einladung.getImpfausweisNotiz().get().getFiles()).hasSize(1);
+    }
+
+    @TestAsFileIngressBS
+    @Test
+    void file_ingress_success_fragebogen_new_notiz() {
+        // ARRANGE
+        String esadId = "A00145633";
+        LocalDate geburtsdatum = LocalDate.of(2025, 1, 1);
+        Dossier dossier = fixtureService.createDossier(geburtsdatum, esadId);
+        Einladung einladung = fixtureService.createEinladung(dossier, AnlassTyp.KLASSE_8, DATE_EARLY, "theOnlyAnlass");
+        File file = loadFile(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
+
+        // ACT
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
+            ._fileMultiPart(file)
+            .esadIdPath(esadId)
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .notizTypPath(NotizTyp.FRAGEBOGEN)
+            .execute(ResponseBody::peek)
+            .then()
+            .log().all()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(FileIngressResultJsonSpec.class);
+
+        einladung = fixtureService.readEinladungWithFilesAndLabels(einladung.getId());
+
+        // ASSERT
+        assertFileIngressResultSuccess(
+            result,
+            "Die Datei 2025-01-01__A00145633.pdf wurde erfolgreich hochgeladen als 26-11-2025_Gerber-Emma_Fragebogen.pdf und angehängt an Dossier mit Esad-ID A0 01 456 33 im Anlass 2024/25 SU 2.SEK theOnlyAnlass.");
+        assertThat(einladung.getFragebogenNotiz()).isPresent();
+        assertThat(einladung.getFragebogenNotiz().get().getFiles()).hasSize(1);
+    }
+
+    @TestAsFileIngressBS
+    @Test
+    void file_ingress_success_impfanmeldung_new_notiz() {
+        // ARRANGE
+        String esadId = "A00145639";
+        LocalDate geburtsdatum = LocalDate.of(2025, 1, 1);
+        Dossier dossier = fixtureService.createDossier(geburtsdatum, esadId);
+        Einladung einladung = fixtureService.createEinladung(dossier, AnlassTyp.KLASSE_8, DATE_EARLY, "theOnlyAnlass");
+        File file = loadFile(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
+
+        // ACT
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
+            ._fileMultiPart(file)
+            .esadIdPath(esadId)
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .notizTypPath(NotizTyp.IMPFANMELDUNG)
+            .execute(ResponseBody::peek)
+            .then()
+            .log().all()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(FileIngressResultJsonSpec.class);
+
+        einladung = fixtureService.readEinladungWithFilesAndLabels(einladung.getId());
+
+        // ASSERT
+        assertFileIngressResultSuccess(
+            result,
+            "Die Datei 2025-01-01__A00145639.pdf wurde erfolgreich hochgeladen als 26-11-2025_Gerber-Emma_Impfanmeldung.pdf und angehängt an Dossier mit Esad-ID A0 01 456 39 im Anlass 2024/25 SU 2.SEK theOnlyAnlass.");
+        assertThat(einladung.getImpfanmeldungsNotiz()).isPresent();
+        assertThat(einladung.getImpfanmeldungsNotiz().get().getFiles()).hasSize(1);
+    }
+
+    @TestAsFileIngressBS
+    @Test
+    void file_ingress_success_notiz_already_exists_with_bemerkungen() {
+        // ARRANGE
+        String esadId = "A00145634";
+        LocalDate geburtsdatum = LocalDate.of(2025, 1, 1);
+        Dossier dossier = fixtureService.createDossier(geburtsdatum, esadId);
+        Einladung einladung = fixtureService.createEinladung(dossier, AnlassTyp.KLASSE_8, DATE_EARLY, "theOnlyAnlass");
+        fixtureService.createFragebogenNotizWithBemerkung(einladung.getId(), "Bestehende Bemerkung");
+
+        File file = loadFile(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
+
+        // ACT
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
+            ._fileMultiPart(file)
+            .esadIdPath(esadId)
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .notizTypPath(NotizTyp.FRAGEBOGEN)
             .execute(ResponseBody::peek)
             .then()
             .statusCode(Status.OK.getStatusCode())
             .extract()
             .as(FileIngressResultJsonSpec.class);
+
         einladung = fixtureService.readEinladungWithFilesAndLabels(einladung.getId());
+
         // ASSERT
         assertFileIngressResultSuccess(
             result,
-            "Die Datei 2025-01-01__A00145631.pdf wurde erfolgreich hochgeladen als 26-11-2025_Gerber-Emma_Fragebogen.pdf und angehängt an Dossier mit Esad-ID A0 01 456 31 im Anlass 2024/25 SU 2.SEK theOnlyAnlass.");
+            "Die Datei 2025-01-01__A00145634.pdf wurde erfolgreich hochgeladen als 26-11-2025_Gerber-Emma_Fragebogen.pdf und angehängt an Dossier mit Esad-ID A0 01 456 34 im Anlass 2024/25 SU 2.SEK theOnlyAnlass.");
         assertThat(einladung.getFragebogenNotiz()).isPresent();
         assertThat(einladung.getFragebogenNotiz().get().getFiles()).hasSize(1);
-        assertThat(einladung.getFragebogenNotiz().get().getBemerkungen()).isEqualTo("My Default Notiz Bemerkungen\n"
-            + "Datei 26-11-2025_Gerber-Emma_Fragebogen.pdf wurde am 26.11.2025 automatisch hochgeladen.");
-        // Label Datenverlust muss weg sein
-        assertThat(einladung.getFragebogenNotiz().get().getLabels())
-            .noneMatch(label -> label.getId().equals(Label.ID_LABEL_DATENVERLUST_NOTIZ));
-        // Orphaned FileData muss weg sein
-        assertThat(einladung.getFragebogenNotiz().get().getFiles())
-            .noneMatch(fileData -> fileData.getFileInfoBucket().getFileName().getFileName().equals("MyOrphanedFileInS3.pdf"));
+        assertThat(einladung.getFragebogenNotiz().get().getBemerkungen()).startsWith("Bestehende Bemerkung\nDatei 26-11-2025_Gerber-Emma_Fragebogen.pdf wurde am 26.11.2025 automatisch hochgeladen.");
+    }
+
+    @TestAsFileIngressBS
+    @Test
+    void file_ingress_fails_fragebogen_if_anlass_config_is_not_enabled() {
+        // ARRANGE
+        String esadId = "A00145635";
+        LocalDate geburtsdatum = LocalDate.of(2025, 1, 1);
+        Dossier dossier = fixtureService.createDossier(geburtsdatum, esadId);
+
+        AnlassConfig anlassConfig = AnlassConfigBuilder.create(builder -> builder.withAnlassTyp(AnlassTyp.IMPFAKTION).withShowFragebogen(false));
+        anlassConfigService.createAnlassConfig(anlassConfig);
+        Anlass anlass = fixtureService.createAnlass(anlassConfig);
+        Einladung einladung = fixtureService.createEinladung(anlass, dossier);
+        File file = loadFile(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
+
+        // ACT
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
+            ._fileMultiPart(file)
+            .esadIdPath(esadId)
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .notizTypPath(NotizTyp.FRAGEBOGEN)
+            .execute(ResponseBody::peek)
+            .then()
+            .log().all()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract()
+            .as(FileIngressResultJsonSpec.class);
+
+        // ASSERT
+        assertFileIngressResultError(result, "InvalidNotizTypForAnlassIngress");
+    }
+
+    @TestAsFileIngressBS
+    @Test
+    void file_ingress_fails_impfausweis_if_anlass_config_is_not_enabled() {
+        // ARRANGE
+        String esadId = "A00145636";
+        LocalDate geburtsdatum = LocalDate.of(2025, 1, 1);
+        Dossier dossier = fixtureService.createDossier(geburtsdatum, esadId);
+
+        AnlassConfig anlassConfig = AnlassConfigBuilder.create(builder -> builder.withAnlassTyp(AnlassTyp.KLASSE_4).withShowImpfausweis(false));
+        anlassConfigService.createAnlassConfig(anlassConfig);
+        Anlass anlass = fixtureService.createAnlass(anlassConfig);
+        Einladung einladung = fixtureService.createEinladung(anlass, dossier);
+        File file = loadFile(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
+
+        // ACT
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
+            ._fileMultiPart(file)
+            .esadIdPath(esadId)
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .notizTypPath(NotizTyp.IMPFAUSWEIS)
+            .execute(ResponseBody::peek)
+            .then()
+            .log().all()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract()
+            .as(FileIngressResultJsonSpec.class);
+
+        // ASSERT
+        assertFileIngressResultError(result, "InvalidNotizTypForAnlassIngress");
+    }
+
+    @TestAsFileIngressBS
+    @Test
+    void file_ingress_fails_impfanmeldung_if_anlass_config_is_not_enabled() {
+        // ARRANGE
+        String esadId = "A00145637";
+        LocalDate geburtsdatum = LocalDate.of(2025, 1, 1);
+        Dossier dossier = fixtureService.createDossier(geburtsdatum, esadId);
+
+        AnlassConfig anlassConfig = AnlassConfigBuilder.create(builder -> builder.withAnlassTyp(AnlassTyp.KLASSE_5).withShowImpfanmeldung(false));
+        anlassConfigService.createAnlassConfig(anlassConfig);
+        Anlass anlass = fixtureService.createAnlass(anlassConfig);
+        Einladung einladung = fixtureService.createEinladung(anlass, dossier);
+        File file = loadFile(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
+
+        // ACT
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
+            ._fileMultiPart(file)
+            .esadIdPath(esadId)
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .notizTypPath(NotizTyp.IMPFANMELDUNG)
+            .execute(ResponseBody::peek)
+            .then()
+            .log().all()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract()
+            .as(FileIngressResultJsonSpec.class);
+
+        // ASSERT
+        assertFileIngressResultError(result, "InvalidNotizTypForAnlassIngress");
+    }
+
+    @TestAsFileIngressBS
+    @Test
+    void file_ingress_fails_anmeldung_bestaetigung_if_anlass_config_is_not_enabled() {
+        // ARRANGE
+        String esadId = "A00145638";
+        LocalDate geburtsdatum = LocalDate.of(2025, 1, 1);
+        Dossier dossier = fixtureService.createDossier(geburtsdatum, esadId);
+
+        AnlassConfig anlassConfig = AnlassConfigBuilder.create(builder -> builder.withAnlassTyp(AnlassTyp.FREMDSPRACHEN).withShowAnmeldungBestaetigung(false));
+        anlassConfigService.createAnlassConfig(anlassConfig);
+        Anlass anlass = fixtureService.createAnlass(anlassConfig);
+        Einladung einladung = fixtureService.createEinladung(anlass, dossier);
+        File file = loadFile(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
+
+        // ACT
+        FileIngressResultJsonSpec result = api.fileIngressResourceUploadNotiz()
+            ._fileMultiPart(file)
+            .esadIdPath(esadId)
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .notizTypPath(NotizTyp.ANMELDUNG_BESTAETIGUNG)
+            .execute(ResponseBody::peek)
+            .then()
+            .log().all()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract()
+            .as(FileIngressResultJsonSpec.class);
+
+        // ASSERT
+        assertFileIngressResultError(result, "InvalidNotizTypForAnlassIngress");
     }
 
     @NonNull
-    private File loadFragebogen(@NonNull String desiredFilename) {
-        File fragebogen = TestUtil.loadTestfileWithFilename("/FileUtilTest/pdfFileExample.pdf", desiredFilename);
-        assertThat(fragebogen).exists();
-        return fragebogen;
+    private File loadFile(@NonNull String desiredFilename) {
+        File file = TestUtil.loadTestfileWithFilename("/FileUtilTest/pdfFileExample.pdf", desiredFilename);
+        assertThat(file).exists();
+        return file;
     }
 
     void assertFileIngressResultSuccess(@NonNull FileIngressResultJsonSpec result, @NonNull String expectedSuccessMessage) {

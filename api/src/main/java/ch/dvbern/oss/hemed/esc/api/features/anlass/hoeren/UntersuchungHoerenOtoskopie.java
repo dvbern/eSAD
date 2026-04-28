@@ -114,7 +114,7 @@ public class UntersuchungHoerenOtoskopie extends AbstractEntity<UntersuchungHoer
         if (hoerenOtoskopie == null) {
             hoerenOtoskopie = forUntersuchung(untersuchung);
         }
-        AnlassConfig config = untersuchung.getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig config = untersuchung.getAnlass().getAnlassConfig();
 
         hoerenOtoskopie.setOtoskopieRechts(
             ValueEnhancedUtil.getMultiValueEnhancedForUntersuchungAbschliessen(

@@ -17,6 +17,8 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.klasseexternal.EscadaKlasseStufe;
 import ch.dvbern.oss.hemed.esc.api.features.schule.quartier.QuartierMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.ZustaendigePersonService;
 import ch.dvbern.oss.hemed.esc.api.shared.person.AdresseMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
@@ -35,9 +37,10 @@ public final class SchuleMapper {
     private final QuartierMapper quartierMapper;
     private final ZustaendigePersonService zustaendigePersonService;
     private final KlasseService klasseService;
+    private final TenantProducer tenantProducer;
 
     @NonNull
-    public static SchuleJson toJson(@NonNull Schule schule, @NonNull List<EscadaKlasseStufe> klassenstufen) {
+    public static SchuleJson toJson(@NonNull Schule schule, @NonNull List<EscadaKlasseStufe> klassenstufen, @NonNull TenantEnum tenant) {
         return new SchuleJson(
             schule.getId(),
             ExternalImportInfoJson.toJson(schule.getExternalImportInfo()),
@@ -52,8 +55,8 @@ public final class SchuleMapper {
                 schule.getEmail(),
                 schule.getTelefon(),
                 schule.getBemerkungen(),
-                BenutzerMapper.toOptionJson(schule.getZustaendigArzt()),
-                BenutzerMapper.toOptionJson(schule.getZustaendigMPA()),
+                BenutzerMapper.toOptionJson(schule.getZustaendigArzt(), tenant),
+                BenutzerMapper.toOptionJson(schule.getZustaendigMPA(), tenant),
                 schule.getSchuleAktivStatus(),
                 schule.getVersion()
             ),
@@ -126,10 +129,12 @@ public final class SchuleMapper {
 
     @NonNull
     public List<SchuleJson> findAll() {
+        TenantEnum tenant = tenantProducer.produceTenant();
         return schuleService.findAll().stream()
             .map((Schule schule) -> toJson(
                 schule,
-                klasseService.extractEscadaKlassenStufen(schule.getId())))
+                klasseService.extractEscadaKlassenStufen(schule.getId()),
+                tenant))
             .toList();
     }
 
@@ -151,13 +156,14 @@ public final class SchuleMapper {
     public SchuleJson getById(@NonNull ID<Schule> schuleId) {
         return toJson(
             schuleService.getById(schuleId),
-            klasseService.extractEscadaKlassenStufen(schuleId));
+            klasseService.extractEscadaKlassenStufen(schuleId),
+            tenantProducer.produceTenant());
     }
 
     @NonNull
     public SchuleJson create(@NonNull SchuleSaveJson saveJson) {
         Schule entity = schuleService.persist(toEntityForCreate(saveJson));
-        return toJson(entity, klasseService.extractEscadaKlassenStufen(entity.getId()));
+        return toJson(entity, klasseService.extractEscadaKlassenStufen(entity.getId()), tenantProducer.produceTenant());
     }
 
     @NonNull
@@ -169,7 +175,7 @@ public final class SchuleMapper {
         zustaendigePersonService.verantwortlicherChangedOnSchuleAsync(existingSchule, args);
         Schule updatedSchule = toEntity(existingSchule, saveJson);
         Schule entity = schuleService.persistWithOptimisticLocking(updatedSchule, saveJson.getVersion());
-        return toJson(entity, klasseService.extractEscadaKlassenStufen(entity.getId()));
+        return toJson(entity, klasseService.extractEscadaKlassenStufen(entity.getId()), tenantProducer.produceTenant());
     }
 
     public SchuleJson changeSchuleAktivStatus(
@@ -183,7 +189,7 @@ public final class SchuleMapper {
         schule.disableOptimisticLockingCheck();
         schule.setSchuleAktivStatus(saveJson.getEntityAktivStatus());
 
-        return toJson(this.schuleService.persist(schule), klasseService.extractEscadaKlassenStufen(schuleId));
+        return toJson(this.schuleService.persist(schule), klasseService.extractEscadaKlassenStufen(schuleId), tenantProducer.produceTenant());
     }
 
     public void remove(@NonNull ID<Schule> schuleId) {

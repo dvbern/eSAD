@@ -39,7 +39,7 @@ public class CheckUntersuchungHoerenAudiogrammPresentIfReqValidator
         "java:S1126" /* readability is better with seprate return*/ }
     )
     public boolean isEntityValid(@NonNull UntersuchungHoerenAudiogramm hoerenAudiogramm) {
-        AnlassConfig anlassConfig = hoerenAudiogramm.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig anlassConfig = hoerenAudiogramm.getUntersuchung().getAnlass().getAnlassConfig();
 
         if (anlassConfig.getHoerenAudiogramm().isRequired()
             && !ValueEnhancedUtil.getEnumSetOrEmpty(hoerenAudiogramm.getAudiogrammBeurteilung(), AudiogrammBeurteilung.class).contains(AudiogrammBeurteilung.NICHT_GEPRUEFT)

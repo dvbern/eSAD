@@ -74,7 +74,7 @@ public class UntersuchungImpfungenService {
         untersuchungImpfung.setVisum2(new Visum(empfaenger, null));
         untersuchungImpfungenRepo.persistWithOptimisticLocking(untersuchungImpfung, versionFromFrontend);
         autoAufgabeService.createAufgabeDoppelkontrolleImpfentscheid(
-            untersuchungImpfung.getUntersuchung().getEinladung(),
+            untersuchungImpfung.getUntersuchung().getEinladungRequired(),
             empfaenger
         );
         return untersuchungImpfung;

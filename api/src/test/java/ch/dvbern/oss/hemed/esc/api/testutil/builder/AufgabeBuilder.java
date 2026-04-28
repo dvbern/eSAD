@@ -23,6 +23,7 @@ import jakarta.validation.constraints.NotNull;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 
 public class AufgabeBuilder {
     private Aufgabe aufgabe;
@@ -134,7 +135,7 @@ public class AufgabeBuilder {
     @NonNull
     public static AufgabeJson createJax(@NonNull Consumer<AufgabeBuilder> block) {
         Aufgabe entity = create(block);
-        return AufgabeMapper.toJson(entity);
+        return AufgabeMapper.toJson(entity, TenantEnum.BS);
     }
 
     @NonNull

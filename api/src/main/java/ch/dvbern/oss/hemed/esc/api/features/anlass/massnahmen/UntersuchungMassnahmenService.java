@@ -35,8 +35,8 @@ public class UntersuchungMassnahmenService {
 
     private void createOrUpdateAufgaben(@NonNull UntersuchungMassnahmen massnahmen) {
         massnahmen.disableOptimisticLockingCheck();
-        Anlass anlass = massnahmen.getUntersuchung().getEinladung().getAnlass();
-        Kind kind = massnahmen.getUntersuchung().getEinladung().getDossier().getKind();
+        Anlass anlass = massnahmen.getUntersuchung().getAnlass();
+        Kind kind = massnahmen.getUntersuchung().getEinladungRequired().getDossier().getKind();
         if (massnahmen.getInformationEltern() != null && massnahmen.getInformationEltern() != InformationEltern.KEINE) {
             autoAufgabeService.createOrUpdateAufgabeMassnahmeInformationEltern(massnahmen, kind, anlass);
         } else {

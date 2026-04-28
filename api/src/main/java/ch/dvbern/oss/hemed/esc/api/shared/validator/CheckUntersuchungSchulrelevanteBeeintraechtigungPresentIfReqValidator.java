@@ -21,7 +21,7 @@ public class CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReqValidat
         "java:S1126" /* readability is better with seprate return*/ }
     )
     public boolean isEntityValid(@NonNull UntersuchungSchulrelevanteBeeintraechtigung beeintraechtigung) {
-        AnlassConfig anlassConfig = beeintraechtigung.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig anlassConfig = beeintraechtigung.getUntersuchung().getAnlass().getAnlassConfig();
 
         if (ValueEnhancedUtil.isRequiredAndNull(anlassConfig.getUntersuchungBeeintraechtigungFreiesGehen(), beeintraechtigung.getFreiesGehen(), FreiesGehen.class)) {
             return false;

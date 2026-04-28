@@ -6,7 +6,6 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +41,7 @@ public class ArchivdokumentService {
         }
 
         Benutzer currentUser = currentUserService.currentUser();
-        if (currentUser.getFachRollen().contains(FachRolle.SUPPORT)) {
+        if (currentUser.hasFachRolleSupport()) {
             return archivdokumentRepo.findAll(archivierungStatusList);
         }
 

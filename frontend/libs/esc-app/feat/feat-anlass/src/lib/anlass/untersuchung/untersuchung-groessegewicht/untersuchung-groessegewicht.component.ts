@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {Geschlecht, PerzentileGewicht, PerzentileGroesse, RequirementSetting,} from '@dvb/data-access-backend';
-import {BackendEntityId} from '@dvb/data-access-types';
+import {BackendEntityId, toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import {
   BenutzerStore,
   createSingleValueEnhancedForm,
@@ -152,7 +152,7 @@ export class UntersuchungGroessegewichtComponent implements DirtyMarker {
       const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       this.groesseGewichtStore.saveGroesseGewicht({
         anlassId: anlassId,
-        einladungId: einladungId,
+        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
         untersuchungGroesseGewichtSaveJson: payload,
       });
     }

@@ -27,6 +27,7 @@ import {
   UntersuchungArztServiceSaveUntersuchungArztBemerkungRequestParams,
   UntersuchungArztServiceSaveUntersuchungArztBeurteilungRequestParams,
 } from '@dvb/data-access-backend';
+import { toEinladungBackendEntityIdWithClass } from '@dvb/data-access-types';
 import {globalConstants} from '@dvb/feat-shared';
 import {AppErrorHandlerService, AppNotificationStore, Loader} from '@dvb/util-angular';
 import {TranslocoService} from '@jsverse/transloco';

@@ -36,7 +36,6 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LABELS_SC
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_ADMIN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_SCHREIBEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.MITARBEITERLISTE_BERECHTIGUNGEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SPSS_EXPORT;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SUPPORT;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_ABSCHLUSS_LESEN;
@@ -119,7 +118,6 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         LABELS_ADMIN_LESEN,
         LABELS_SCHREIBEN,
         EIGENE_BERECHTIGUNGEN_LESEN,
-        MITARBEITERLISTE_BERECHTIGUNGEN_LESEN,
         VORLAGEN_LESEN,
         VORLAGEN_ADMIN_LESEN,
         VORLAGEN_SCHREIBEN,
@@ -136,6 +134,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         @Claim(key = "email", value = TestAsAdminWithInvalidTenant.EMAIL)
     }
 )
+@TestAsMarker
 public @interface TestAsAdminWithInvalidTenant {
     String BENUTZER_ID = "ab3c9680-b783-4df8-8ac9-fa67b19f0920";
     String EMAIL = "invalid.iris@example.com";

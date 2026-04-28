@@ -36,7 +36,7 @@ public enum FachRolle {
     }
 
     @NonNull
-    public Set<Berechtigung> getBerechtigungen(@NonNull TenantEnum tenant) {
+    Set<Berechtigung> getBerechtigungen(@NonNull TenantEnum tenant) {
         if (tenant == TenantEnum.BS) {
             return FachRolleBS.valueOf(this.name()).getBerechtigungen();
         }
@@ -50,7 +50,7 @@ public enum FachRolle {
     }
 
     public boolean hasBerechtigung(@NonNull Berechtigung berechtigung, @NonNull TenantEnum tenant) {
-        return getBerechtigungen(tenant).contains(berechtigung);
+        return FachRolleUtil.getBerechtigungen(tenant, this).contains(berechtigung);
     }
 
     @NonNull
@@ -58,14 +58,14 @@ public enum FachRolle {
         @NonNull TenantEnum tenant,
         @NonNull FachRolle... fachRolle) {
         return Arrays.stream(fachRolle)
-            .flatMap(f -> f.getBerechtigungen(tenant).stream())
+            .flatMap(f -> FachRolleUtil.getBerechtigungen(tenant, f).stream())
             .collect(Collectors.toSet());
     }
 
     @NonNull
     public static List<FachRolle> getFachrollenWithBerechtigung(@NonNull TenantEnum tenant) {
         return Arrays.stream(FachRolle.values())
-            .filter(fachRolle -> !fachRolle.getBerechtigungen(tenant).isEmpty())
+            .filter(fachRolle -> !FachRolleUtil.getBerechtigungen(tenant, fachRolle).isEmpty())
             .toList();
     }
 

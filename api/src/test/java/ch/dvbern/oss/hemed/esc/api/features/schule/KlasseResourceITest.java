@@ -347,7 +347,7 @@ class KlasseResourceITest extends AbstractITest {
         Assertions.assertThat(persistedKind.getKlasse().getId()).isEqualTo(persistedKlasse.getId());
 
         Assertions.assertThat(error.getViolations().getFirst().getMessage())
-            .isEqualTo("Das Objekt konnte nicht gelöscht werden, da es von einem anderen Objekt referenziert wird.");
+            .contains("Das Objekt konnte nicht gelöscht werden, da es von einem anderen Objekt referenziert wird");
     }
 }
 

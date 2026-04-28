@@ -4,12 +4,15 @@ import {
   DossierJson,
   DossierService,
   EinladungenService,
-  EinladungenServiceGetUntersuchungTabsSavedByEinladungIdRequestParams,
   EinladungJson,
   UntersuchungTabInfoJson,
   UntersuchungTabsSavedJson,
 } from '@dvb/data-access-backend';
-import {BackendEntityId} from '@dvb/data-access-types';
+import {
+  BackendEntityId,
+  BackendEntityIdWithClass,
+  toEinladungBackendEntityIdWithClass,
+} from '@dvb/data-access-types';
 import {Path} from '@dvb/feat-shared';
 import {AppErrorHandlerService, Loader} from '@dvb/util-angular';
 import {requireValue} from '@dvb/util-shared';
@@ -168,7 +171,7 @@ export class UntersuchungStore extends signalStore(
       switchMap((params) => this.loadEinladungLoader
         .tapLoading$(this.#einladungenService.getEinladungById$({
             anlassId: params.anlassId,
-            einladungId: params.einladungIds[0],
+            einladungId: toEinladungBackendEntityIdWithClass(params.einladungIds[0]),
           }).pipe(
             map(result => ({result, params})),
           ),
@@ -180,7 +183,7 @@ export class UntersuchungStore extends signalStore(
           patchState(this, {currentEinladung: result});
           this.loadTabsSaved({
             anlassId: params.anlassId,
-            einladungId: params.einladungIds[0],
+            einladungId: toEinladungBackendEntityIdWithClass(params.einladungIds[0]),
           });
           this.loadDossierForCurrentKind(result.kind.id);
         },
@@ -202,7 +205,7 @@ export class UntersuchungStore extends signalStore(
     ),
   );
 
-  loadTabsSaved = rxMethod<EinladungenServiceGetUntersuchungTabsSavedByEinladungIdRequestParams>(
+  loadTabsSaved = rxMethod<{ anlassId: BackendEntityId; einladungId: BackendEntityIdWithClass }>(
     pipe(
       switchMap((params) =>
         this.tabsSavedLoader.tapLoading$(
@@ -222,7 +225,7 @@ export class UntersuchungStore extends signalStore(
 
   untersuchungAbschliessen = rxMethod<{
     anlassId: BackendEntityId,
-    einladungId: BackendEntityId,
+    einladungId: BackendEntityIdWithClass,
     onSuccess: () => void
   }>(
     pipe(

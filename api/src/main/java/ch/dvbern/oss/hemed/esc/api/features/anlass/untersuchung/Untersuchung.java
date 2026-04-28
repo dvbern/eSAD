@@ -1,7 +1,11 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung;
 
 import java.io.Serial;
+import java.util.Optional;
 
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.abschluss.UntersuchungAbschluss;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
@@ -22,7 +26,9 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.signatur.UntersuchungSignatur
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.UntersuchungSprache;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.vorabklaerungen.UntersuchungVorabklaerungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungEinladungOrAnonymerEintrag;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,11 +37,12 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
@@ -69,15 +76,22 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@CheckUntersuchungEinladungOrAnonymerEintrag
+@Slf4j
 public class Untersuchung extends AbstractEntity<Untersuchung> {
 
     @Serial
     private static final long serialVersionUID = 7816034792129549030L;
 
-    @NotNull
-    @NonNull
-    @OneToOne(optional = false, mappedBy = "untersuchung")
+    @Nullable
+    @OneToOne(optional = true, mappedBy = "untersuchung")
+    @Getter(AccessLevel.NONE)
     private Einladung einladung;
+
+
+    @Nullable
+    @OneToOne(optional = true, mappedBy = "untersuchung")
+    private AnonymerEintrag anonymerEintrag;
 
     /**
      * This stores data related to the person that is untersucht
@@ -187,5 +201,37 @@ public class Untersuchung extends AbstractEntity<Untersuchung> {
         untersuchung.setEinladung(einladung);
         einladung.setUntersuchung(untersuchung);
         return untersuchung;
+    }
+
+    @NonNull
+    public static Untersuchung forAnonymerEintrag(@NonNull AnonymerEintrag anonymerEintrag) {
+        Untersuchung untersuchung = new Untersuchung();
+        untersuchung.setAnonymerEintrag(anonymerEintrag);
+        anonymerEintrag.setUntersuchung(untersuchung);
+        return untersuchung;
+    }
+
+    public Optional<Einladung> getEinladungOptional() {
+        return Optional.ofNullable(einladung);
+    }
+
+    public Einladung getEinladungRequired() {
+        return Optional.ofNullable(einladung)
+            .orElseThrow(() -> {
+                LOG.error("Untersuchung was expected to have an Einladung but none was found. untersuchungId={}", this.getId().getId());
+                return new AppValidationException(AppValidationMessage.genericMessage(
+                    "Untersuchung hat keine Einladung."));
+            });
+    }
+
+    public Anlass getAnlass() {
+        if (einladung != null) {
+            return einladung.getAnlass();
+        }
+        if (anonymerEintrag != null) {
+            return anonymerEintrag.getAnlass();
+        }
+        LOG.error("Untersuchung was expected to have an Anlass but none was found. untersuchungId={}", this.getId().getId());
+        throw new AppValidationException(AppValidationMessage.genericMessage("Untersuchung hat keinen Anlass."));
     }
 }

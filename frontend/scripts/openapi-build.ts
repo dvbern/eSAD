@@ -77,6 +77,71 @@ function copyFiles(directoryFrom: string, directoryTo: string) {
   }
 }
 
+const typesPath = '@dvb/data-access-types';
+const typeMap = [
+  // [OpenApi-Name/Format, Typescript-Name, Import-Path]
+  ['AnyType', 'object', undefined],
+  // ['set', 'FakeSet', typesPath],
+  // *alle* Datum/DateTime Datentypen im Backend sind leider als DateTime definiert,
+  // egal ob sie Time haben oder nicht :(
+  ['date', 'ISODateString', typesPath],
+  ['Date', 'ISODateTimeString', typesPath],
+  ['DateTime', 'ISODateTimeString', typesPath],
+  // ['timestamp', 'FIXME:implement', typesPath],
+  ['url', 'BackendURL', typesPath],
+  ['semantic-version', 'BackendSemver', typesPath],
+  // ['local-time', 'BackendLocalTime', typesPath],
+  // ['local-time-hhmm', 'BackendLocalTimeHHMM', typesPath],
+  // ['zoned-date-time', 'BackendZonedDateTime', typesPath],
+  //  ['email', 'BackendEmail', typesPath],
+  // ['rest-includes', 'RestIncludes', typesPath],
+  ['entity-id', 'BackendEntityId', typesPath],
+  ['entity-id-with-class', 'BackendEntityIdWithClass', typesPath],
+] as const;
+
+/**
+ * Post-processes generated service files to fix missing imports.
+ * The OpenAPI generator sometimes omits imports for custom-mapped types
+ * when multiple types share the same import path.
+ */
+function fixMissingImports(directory: string) {
+  if (!fs.existsSync(directory)) {
+    return;
+  }
+
+  const importableTypes = typeMap
+    .filter(e => !!e[2])
+    .map(e => ({ typeName: e[1], importPath: e[2]! }));
+
+  for (const file of fs.readdirSync(directory).filter(f => f.endsWith('.ts'))) {
+    const filePath = path.join(directory, file);
+    let content = fs.readFileSync(filePath, 'utf-8');
+
+    const usedTypes = importableTypes.filter(({ typeName }) => new RegExp(`\\b${typeName}\\b`).test(content));
+    if (usedTypes.length === 0) {
+      continue;
+    }
+
+    const escapedPath = usedTypes[0].importPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const importRegex = new RegExp(`import\\s*\\{([^}]*)\\}\\s*from\\s*'${escapedPath}'\\s*;`);
+    const match = importRegex.exec(content);
+    const existingTypes = match ? match[1].split(',').map(t => t.trim()).filter(t => t.length > 0) : [];
+    const allTypes = [...new Set([...existingTypes, ...usedTypes.map(t => t.typeName)])].sort();
+    const newImport = `import { ${allTypes.join(', ')} } from '${usedTypes[0].importPath}';`;
+
+    if (match) {
+      content = content.replace(match[0], newImport);
+    } else {
+      const basePathIdx = content.indexOf("import { BASE_PATH");
+      if (basePathIdx !== -1) {
+        content = content.slice(0, basePathIdx) + newImport + '\n' + content.slice(basePathIdx);
+      }
+    }
+
+    fs.writeFileSync(filePath, content, 'utf-8');
+  }
+}
+
 async function generateOpenApi(spec: ApiSpec, outputDir: string) {
   const backendKeystoreFile = path.resolve(
     __dirname,
@@ -91,27 +156,6 @@ async function generateOpenApi(spec: ApiSpec, outputDir: string) {
   };
 
   const apisParam = spec.apis === 'all' ? '' : '=' + spec.apis.join(':');
-
-  const typesPath = '@dvb/data-access-types';
-  const typeMap = [
-    // [OpenApi-Name/Format, Typescript-Name, Import-Path]
-    ['AnyType', 'object', undefined],
-    // ['set', 'FakeSet', typesPath],
-    // *alle* Datum/DateTime Datentypen im Backend sind leider als DateTime definiert,
-    // egal ob sie Time haben oder nicht :(
-    ['date', 'ISODateString', typesPath],
-    ['Date', 'ISODateTimeString', typesPath],
-    ['DateTime', 'ISODateTimeString', typesPath],
-    // ['timestamp', 'FIXME:implement', typesPath],
-    ['url', 'BackendURL', typesPath],
-    ['semantic-version', 'BackendSemver', typesPath],
-    // ['local-time', 'BackendLocalTime', typesPath],
-    // ['local-time-hhmm', 'BackendLocalTimeHHMM', typesPath],
-    // ['zoned-date-time', 'BackendZonedDateTime', typesPath],
-    //  ['email', 'BackendEmail', typesPath],
-    // ['rest-includes', 'RestIncludes', typesPath],
-    ['entity-id', 'BackendEntityId', typesPath],
-  ];
   const typeMappingsArg = typeMap.map(e => `${e[0]}=${e[1]}`).join(',');
   const importMappingsArg = typeMap
     .filter(e => !!e[2])
@@ -184,6 +228,9 @@ async function sleep(msec: number) {
     const modelsPath = path.join(generatorPath, 'model');
 
     await generateOpenApi(spec, generatorPath);
+
+    // Fix missing imports in generated service files before copying
+    fixMissingImports(apiPath);
 
     const modelPath = `${spec.generatedRootDir}/openapi/model`;
     const servicePath = `${spec.generatedRootDir}/openapi/services`;

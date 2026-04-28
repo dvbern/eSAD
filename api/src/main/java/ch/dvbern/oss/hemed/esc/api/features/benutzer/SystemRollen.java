@@ -2,18 +2,18 @@ package ch.dvbern.oss.hemed.esc.api.features.benutzer;
 
 import java.io.Serial;
 import java.util.EnumSet;
+import java.util.Set;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
@@ -33,11 +33,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(
-    indexes = {
-        @Index(name = "ix_systemrollen_benutzer", columnList = "benutzer_id, id"),
-    }
-)
+@Table
 public class SystemRollen extends AbstractEntity<SystemRollen>
     implements EntityWithOptimisticLocking {
 
@@ -46,8 +42,7 @@ public class SystemRollen extends AbstractEntity<SystemRollen>
 
     @NotNull
     @NonNull
-    @OneToOne(optional = false)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_systemrollen_benutzer"), nullable = false)
+    @OneToOne(mappedBy = "systemRollen", optional = false)
     private Benutzer benutzer;
 
     @Nullable
@@ -65,5 +60,11 @@ public class SystemRollen extends AbstractEntity<SystemRollen>
     @NonNull
     public EnumSet<FachRolle> getFachRollen() {
         return EnumSetUtil.fromString(FachRolle.class, fachRollen);
+    }
+
+    @NonNull
+    public Set<Berechtigung> getBerechtigungen(@NonNull TenantEnum tenant) {
+        return FachRolle.collectAllBerechtigungen(
+            tenant, getFachRollen().toArray(new FachRolle[0]));
     }
 }

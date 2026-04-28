@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle;
 
+import java.util.function.Consumer;
+
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -58,17 +60,23 @@ public class UntersuchungLaeusekontrolleMapper {
     }
 
     @Nullable
-    public UntersuchungLaeusekontrolleJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+    public UntersuchungLaeusekontrolleJson getByEinladung(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungLaeusekontrolle());
     }
 
     @NonNull
     public UntersuchungLaeusekontrolleJson save(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungLaeusekontrolleSaveJson saveJson
+        @NonNull UntersuchungLaeusekontrolleSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungLaeusekontrolle sehen = untersuchung.getUntersuchungLaeusekontrolle();
         UntersuchungLaeusekontrolle entity = toEntity(untersuchung, sehen, saveJson);
         UntersuchungLaeusekontrolle

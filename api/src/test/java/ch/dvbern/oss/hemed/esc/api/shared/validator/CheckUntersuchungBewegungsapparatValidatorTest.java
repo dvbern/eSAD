@@ -33,7 +33,7 @@ class CheckUntersuchungBewegungsapparatValidatorTest {
         UntersuchungBewegungsapparat bewegungsapparat = UntersuchungBewegungsapparatBuilder.create(
             builder -> builder
                 .withSkoliose(input, null));
-        bewegungsapparat.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setBewegungsapparatSkoliose(requirementSetting);
+        bewegungsapparat.getUntersuchung().getAnlass().getAnlassConfig().setBewegungsapparatSkoliose(requirementSetting);
         // ACT
         CheckUntersuchungBewegungsapparatValidator
             validator = new CheckUntersuchungBewegungsapparatValidator();
@@ -60,7 +60,7 @@ class CheckUntersuchungBewegungsapparatValidatorTest {
         UntersuchungBewegungsapparat bewegungsapparat = UntersuchungBewegungsapparatBuilder.create(
             builder -> builder
                 .withHaltungsschwache(input, null));
-        bewegungsapparat.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setBewegungsapparatHaltungsschwaeche(requirementSetting);
+        bewegungsapparat.getUntersuchung().getAnlass().getAnlassConfig().setBewegungsapparatHaltungsschwaeche(requirementSetting);
         // ACT
         CheckUntersuchungBewegungsapparatValidator
             validator = new CheckUntersuchungBewegungsapparatValidator();
@@ -87,7 +87,7 @@ class CheckUntersuchungBewegungsapparatValidatorTest {
         UntersuchungBewegungsapparat bewegungsapparat = UntersuchungBewegungsapparatBuilder.create(
             builder -> builder
                 .withVerkuerzungHamstringmuskulatur(input, null));
-        bewegungsapparat.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setBewegungsapparatVerkuerzungHamstringmuskulatur(requirementSetting);
+        bewegungsapparat.getUntersuchung().getAnlass().getAnlassConfig().setBewegungsapparatVerkuerzungHamstringmuskulatur(requirementSetting);
         // ACT
         CheckUntersuchungBewegungsapparatValidator
             validator = new CheckUntersuchungBewegungsapparatValidator();
@@ -114,7 +114,7 @@ class CheckUntersuchungBewegungsapparatValidatorTest {
         UntersuchungBewegungsapparat beeintraechtigung = UntersuchungBewegungsapparatBuilder.create(
             builder -> builder
                 .withBemerkung(input));
-        beeintraechtigung.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setBewegungsapparatBemerkung(requirementSetting);
+        beeintraechtigung.getUntersuchung().getAnlass().getAnlassConfig().setBewegungsapparatBemerkung(requirementSetting);
         // ACT
         CheckUntersuchungBewegungsapparatValidator
             validator = new CheckUntersuchungBewegungsapparatValidator();

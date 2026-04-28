@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { Berechtigung } from './berechtigung';
 import { FachRolle } from './fach-rolle';
 import { OrganisationJson } from './organisation-json';
 
@@ -14,6 +15,7 @@ import { OrganisationJson } from './organisation-json';
 export interface OrganisationRollenJson { 
     organisation?: OrganisationJson;
     fachRollen: Array<FachRolle>;
+    berechtigungen: Array<Berechtigung>;
 }
 
 

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, inject, viewChild, ViewChild} from "@angular/core";
+import {ChangeDetectionStrategy, Component, computed, inject, viewChild} from "@angular/core";
 import {CardComponent} from "@dvb/ui-components";
 import {
   BenutzerDetailsComponent,
@@ -12,7 +12,7 @@ import {TranslocoPipe, TranslocoService} from "@jsverse/transloco";
 import {ReactiveFormsModule} from "@angular/forms";
 import {DirtyMarker} from "@dvb/util-angular";
 import {ActivatedRoute, Router} from "@angular/router";
-import {hasOrganisationVerwaltungEditBerechtigung, isNotNullish} from "@dvb/util-shared";
+import {hasBenutzerverwaltungEditBerechtigungen, isNotNullish} from "@dvb/util-shared";
 
 @Component({
   selector: 'feat-organisation-mitglieder-details',
@@ -38,7 +38,7 @@ export class MitgliederDetailsComponent implements DirtyMarker {
   readonly #activatedRoute = inject(ActivatedRoute);
   readonly #transloco = inject(TranslocoService);
 
-  canEditMitglieder = this.benutzerStore.createHasRequiredRoleSig(hasOrganisationVerwaltungEditBerechtigung());
+  canEditMitglieder = this.benutzerStore.createHasRequiredRoleSig(hasBenutzerverwaltungEditBerechtigungen());
   organisation = computed(() => this.organisationStore.selectedIsNew() ?
     undefined :
     this.organisationStore.selectedEntity());
@@ -63,10 +63,9 @@ export class MitgliederDetailsComponent implements DirtyMarker {
   navigateToList(): void {
     const selectedOrganisation = this.organisationStore.selectedEntity();
     if (isNotNullish(selectedOrganisation)) {
-      this.organisationStore.loadOrganisation(selectedOrganisation.id)
-    } else {
-      this.organisationStore.loadOrganisationen();
+      this.organisationStore.setSelectedEntityId(selectedOrganisation.id);
     }
+    this.organisationStore.loadOrganisationen();
     this.#router.navigate([Path.RELATIVE_ONE_UP], {relativeTo: this.#activatedRoute});
   }
 

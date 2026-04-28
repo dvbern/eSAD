@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.archunit;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsMarker;
 import com.tngtech.archunit.core.domain.JavaClass.Predicates;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -71,6 +72,19 @@ class NamingTest {
             .beAnnotatedWith(Service.class);
 
         rule.check(ArchConst.APP_CLASSES);
+    }
+
+    @Test
+    void testAsAnnotations_have_TestAsMarker_stereotype() {
+        var rule = classes()
+            .that()
+            .haveSimpleNameStartingWith("TestAs")
+            .and()
+            .doNotHaveSimpleName(TestAsMarker.class.getSimpleName())
+            .should()
+            .beAnnotatedWith(TestAsMarker.class);
+
+        rule.check(ArchConst.TEST_CLASSES);
     }
 
     @Test

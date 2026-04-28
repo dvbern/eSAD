@@ -18,29 +18,31 @@
 
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
-import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.UntersuchungLaeusekontrolle;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
 import java.time.LocalDate;
 import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.signatur.UntersuchungSignatur;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.UntersuchungLaeusekontrolle;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.signatur.UntersuchungSignatur;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class UntersuchungBuilder {
 
@@ -70,7 +72,7 @@ public class UntersuchungBuilder {
     @NonNull
     @CanIgnoreReturnValue
     public UntersuchungBuilder forEinladung(@NonNull Einladung einladung) {
-        this.untersuchung.setEinladung(einladung);
+        this.withEinladung(einladung);
         return this;
     }
 
@@ -159,6 +161,20 @@ public class UntersuchungBuilder {
     @CanIgnoreReturnValue
     public UntersuchungBuilder withUntersuchungSignatur(@NonNull UntersuchungSignatur untersuchungSignatur) {
         this.untersuchung.setUntersuchungSignatur(untersuchungSignatur);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungBuilder withAnonymerEintrag(@NonNull AnonymerEintrag anonymerEintrag) {
+        this.untersuchung.setAnonymerEintrag(anonymerEintrag);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungBuilder withEinladung(@Nullable Einladung einladung) {
+        this.untersuchung.setEinladung(einladung);
         return this;
     }
 

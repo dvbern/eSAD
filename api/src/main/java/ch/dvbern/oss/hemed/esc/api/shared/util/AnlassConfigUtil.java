@@ -74,6 +74,9 @@ public final class AnlassConfigUtil {
     ) {
         Map<AnlassTyp, List<AnlassConfig>> configsByAnlassTyp = allConfigs.stream()
             .collect(Collectors.groupingBy(AnlassConfig::getAnlassTyp));
+
+        List<AppValidationMessage> violations = new ArrayList<>();
+
         for (Map.Entry<AnlassTyp, List<AnlassConfig>> entry : configsByAnlassTyp.entrySet()) {
             List<AnlassConfig> configForThisAnlassTyp = entry.getValue();
             configForThisAnlassTyp.sort(Comparator.comparing(c -> c.getGueltigkeitsZeitraum().getDatumVon()));
@@ -82,9 +85,14 @@ public final class AnlassConfigUtil {
                 AnlassConfig next = configForThisAnlassTyp.get(i + 1);
                 if (current.getGueltigkeitsZeitraum().intersects(next.getGueltigkeitsZeitraum())
                     || current.getGueltigkeitsZeitraum().hasGap(next.getGueltigkeitsZeitraum())) {
-                    throw new AppValidationException(AppValidationMessage.anlassConfigGapOrOverlapDetected(current, next));
+                    LOG.error("AnlassConfigGapOrOverlapDetected: {} {}", current.toString(), next.toString());
+                    violations.add(AppValidationMessage.anlassConfigGapOrOverlapDetected(current, next));
                 }
             }
+        }
+
+        if (!violations.isEmpty()) {
+            throw new AppValidationException(violations.getFirst());
         }
     }
 

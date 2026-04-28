@@ -216,7 +216,7 @@ public class UntersuchungSehenBeurteilung extends AbstractEntity<UntersuchungSeh
         if (sehen == null) {
             sehen = forUntersuchung(untersuchung);
         }
-        AnlassConfig config = untersuchung.getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig config = untersuchung.getAnlass().getAnlassConfig();
 
         sehen.setBrilleLinsen(
             ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(

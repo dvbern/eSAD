@@ -35,7 +35,7 @@ public class CheckUntersuchungGroesseGewichtPresentIfReqValidator
         "java:S1066", /* Code is more understandable if statements not merged */
     })
     public boolean isEntityValid(@NonNull UntersuchungGroesseGewicht entity) {
-        AnlassConfig anlassConfig = entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig anlassConfig = entity.getUntersuchung().getAnlass().getAnlassConfig();
         if (ValueEnhancedUtil.isRequiredAndNull(anlassConfig.getGroesseGewichtGroessePerzentile(), entity.getGroessePerzentile(), PerzentileGroesse.class)) {
             return false;
         }

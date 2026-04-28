@@ -22,8 +22,8 @@ class UntersuchungKindDatenMapperTest {
     void toJson_should_return_kind_data_if_untersuchungdaten_not_yet_set() {
         // ARRANGE
         Untersuchung untersuchung = UntersuchungBuilder.defaultUntersuchung(appClock.offsetDateTime().now().toLocalDate());
-        untersuchung.getEinladung().getDossier().getKind().setName("Name auf Dossier");
-        TestUtil.setEntityInfo(untersuchung.getEinladung().getDossier().getKind());
+        untersuchung.getEinladungRequired().getDossier().getKind().setName("Name auf Dossier");
+        TestUtil.setEntityInfo(untersuchung.getEinladungRequired().getDossier().getKind());
         // ACT
         UntersuchungKindDatenJson untersuchungKindDatenJson =
             UntersuchungKindDatenMapper.toJson(untersuchung, appClock.offsetDateTime().now().toLocalDate());
@@ -36,8 +36,8 @@ class UntersuchungKindDatenMapperTest {
         // ARRANGE
         Klasse klasse = KlasseBuilder.defaultKlasse();
         Untersuchung untersuchung = UntersuchungBuilder.defaultUntersuchung(appClock.offsetDateTime().now().toLocalDate());
-        untersuchung.getEinladung().getDossier().getKind().setKlasse(klasse);
-        TestUtil.setEntityInfo(untersuchung.getEinladung().getDossier().getKind());
+        untersuchung.getEinladungRequired().getDossier().getKind().setKlasse(klasse);
+        TestUtil.setEntityInfo(untersuchung.getEinladungRequired().getDossier().getKind());
         // ACT
         UntersuchungKindDatenJson untersuchungKindDatenJson =
             UntersuchungKindDatenMapper.toJson(untersuchung, appClock.offsetDateTime().now().toLocalDate());
@@ -52,7 +52,7 @@ class UntersuchungKindDatenMapperTest {
     void toJson_should_return_untersuchungdaten_if_untersuchungdaten_already_set() {
         // ARRANGE
         Untersuchung untersuchung = UntersuchungBuilder.defaultUntersuchung(appClock.offsetDateTime().now().toLocalDate());
-        untersuchung.getEinladung().getDossier().getKind().setName("Name auf Dossier");
+        untersuchung.getEinladungRequired().getDossier().getKind().setName("Name auf Dossier");
         untersuchung.setUntersuchungKindDaten(UntersuchungKindDatenBuilder.defaultUntersuchungDaten());
         Assertions.assertThat(untersuchung.getUntersuchungKindDaten()).isNotNull();
         untersuchung.getUntersuchungKindDaten().setName("Name auf Untersuchung");

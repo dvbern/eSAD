@@ -26,7 +26,9 @@ public abstract class AbstractCsvColumn {
 
     @NonNull
     public String extract(@NonNull UntersuchungImpfungIntern impfung) {
-        return extract(impfung.getUntersuchungImpfungen().getUntersuchung().getEinladung());
+        return impfung.getUntersuchungImpfungen().getUntersuchung().getEinladungOptional()
+            .map(this::extract)
+            .orElse("");
     }
 
     @NonNull

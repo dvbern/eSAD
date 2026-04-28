@@ -58,6 +58,7 @@ public final class AnlassConfigMapper {
         AnlassConfigListJson allConfigs = findAll();
         List<AnlassConfigOptionJson> allVisible = allConfigs.getAnlassConfigList().stream()
             .filter(AnlassConfigJson::isAnlassConfigVisible)
+            .filter(config -> !config.getData().getAnlassTyp().isAnonym())
             .map(AnlassConfigMapper::toOptionJson)
             .toList();
         return new AnlassConfigOptionListJson(allVisible);

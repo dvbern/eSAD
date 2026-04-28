@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat;
 
+import java.util.function.Consumer;
+
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -59,17 +61,23 @@ public class UntersuchungBewegungsapparatMapper {
     }
 
     @Nullable
-    public UntersuchungBewegungsapparatJson getByEinladung(@NonNull ID<Einladung> einladungID) {
+    public UntersuchungBewegungsapparatJson getByEinladung(
+        @NonNull ID<Einladung> einladungID,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungBewegungsapparat());
     }
 
     @NonNull
     public UntersuchungBewegungsapparatJson save(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungBewegungsapparatSaveJson saveJson
+        @NonNull UntersuchungBewegungsapparatSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungBewegungsapparat bewegungsapparat = untersuchung.getUntersuchungBewegungsapparat();
         UntersuchungBewegungsapparat entity = toEntity(untersuchung, bewegungsapparat, saveJson);
         return toJson(untersuchungBewegungsapparatService.persistWithOptimisticLocking(entity, saveJson.getVersion()));

@@ -15,6 +15,8 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierNichtMedizinischS
 import ch.dvbern.oss.hemed.esc.api.features.kinder.types.PapierakteStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.ZustaendigePersonService;
 import lombok.RequiredArgsConstructor;
@@ -31,13 +33,15 @@ public final class DossierMapper {
     private final AktivitaetHistoryService aktivitaetHistoryService;
     private final AppClock appClock;
     private final ZustaendigePersonService zustaendigePersonService;
+    private final TenantProducer tenantProducer;
 
     @NonNull
     public static DossierJson toJson(
         @NonNull Dossier dossier,
         @Nullable Nachkontrolle nachkontrolle,
         @NonNull LocalDate now,
-        boolean canReadMedizinischeDaten
+        boolean canReadMedizinischeDaten,
+        @NonNull TenantEnum tenant
     ) {
         Benutzer zustaendigArzt = dossier.getZustaendigArztFromDossierOrSchule();
         Benutzer zustaendigMPA = dossier.getZustaendigMPAFromDossierOrSchule();
@@ -56,8 +60,8 @@ public final class DossierMapper {
                 dossier.getVersion()
             ) : null,
             new DossierNichtMedizinischSaveJson(
-                BenutzerMapper.toOptionJson(zustaendigArzt),
-                BenutzerMapper.toOptionJson(zustaendigMPA),
+                BenutzerMapper.toOptionJson(zustaendigArzt, tenant),
+                BenutzerMapper.toOptionJson(zustaendigMPA, tenant),
                 dossier.getPapierakteStatus(),
                 dossier.getVersion()
             ),
@@ -95,7 +99,8 @@ public final class DossierMapper {
             dossier,
             nachkontrolle,
             now,
-            benutzerService.hasCallerBerechtigung(Berechtigung.KINDER_LESEN_MEDIZINISCH));
+            benutzerService.hasCallerBerechtigung(Berechtigung.KINDER_LESEN_MEDIZINISCH),
+            tenantProducer.produceTenant());
     }
 
     @NonNull
@@ -117,7 +122,8 @@ public final class DossierMapper {
             persistedDossier,
             persistedNachkontrolle,
             now,
-            benutzerService.hasCallerBerechtigung(Berechtigung.KINDER_LESEN_MEDIZINISCH));
+            benutzerService.hasCallerBerechtigung(Berechtigung.KINDER_LESEN_MEDIZINISCH),
+            tenantProducer.produceTenant());
     }
 
     @NonNull
@@ -166,6 +172,7 @@ public final class DossierMapper {
             existingDossier,
             null,
             now,
-            benutzerService.hasCallerBerechtigung(Berechtigung.KINDER_LESEN_MEDIZINISCH));
+            benutzerService.hasCallerBerechtigung(Berechtigung.KINDER_LESEN_MEDIZINISCH),
+            tenantProducer.produceTenant());
     }
 }

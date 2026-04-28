@@ -23,7 +23,6 @@ enum FachRolleWIN {
     MPA(
         EnumSet.noneOf(Berechtigung.class)
     ),
-
     ORTHOPISTIN(
         EnumSet.noneOf(Berechtigung.class)
     ),
@@ -31,18 +30,14 @@ enum FachRolleWIN {
         EnumSet.of(
             Berechtigung.AUFGABEN_LESEN,
             Berechtigung.AUFGABEN_SCHREIBEN,
-
             Berechtigung.ANLASSLISTE_LESEN,
             Berechtigung.ANLASSLISTE_LESEN_LAEUSE,
             Berechtigung.ANLASSPLANUNG_LESEN,
             Berechtigung.ANLASSPLANUNG_SCHREIBEN,
             Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE,
             Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE,
-
             Berechtigung.SU_DATEN_LESEN,
             Berechtigung.SU_DATEN_SCHREIBEN,
-            Berechtigung.SU_VORABKLAERUNGEN_LESEN,
-            Berechtigung.SU_VORABKLAERUNGEN_SCHREIBEN,
             Berechtigung.SU_IMPFEN_LESEN,
             Berechtigung.SU_IMPFEN_SCHREIBEN,
             Berechtigung.SU_SEHEN_LESEN,
@@ -61,6 +56,8 @@ enum FachRolleWIN {
             Berechtigung.SU_MASSNAHMEN_SCHREIBEN,
             Berechtigung.SU_ABSCHLUSS_LESEN,
             Berechtigung.SU_ABSCHLUSS_SCHREIBEN,
+        	Berechtigung.SU_VORABKLAERUNGEN_LESEN,
+        	Berechtigung.SU_VORABKLAERUNGEN_SCHREIBEN,
             Berechtigung.KINDER_LESEN_MEDIZINISCH,
             Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
             Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH,
@@ -69,54 +66,45 @@ enum FachRolleWIN {
             Berechtigung.KINDER_ALLE_NOTIZEN_SCHREIBEN,
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
-
-            Berechtigung.INDIVIDUELLE_REPORTS,
-
+        	Berechtigung.KOMPLETTER_EXPORT,
+        	Berechtigung.LISTEN_ADMIN_LESEN,
             Berechtigung.LISTEN_LESEN,
-            Berechtigung.LISTEN_ADMIN_LESEN,
-            Berechtigung.AERZTE_LESEN,
             Berechtigung.IMPFSTOFFE_LESEN,
-
             Berechtigung.LABELS_LESEN,
             Berechtigung.LABELS_ADMIN_LESEN,
             Berechtigung.EIGENE_BERECHTIGUNGEN_LESEN,
-
             Berechtigung.VORLAGEN_LESEN,
-            Berechtigung.VORLAGEN_ADMIN_LESEN
+        	Berechtigung.VORLAGEN_ADMIN_LESEN,
+        	Berechtigung.ARCHIVIERUNG
         )
     ),
     LAUSBEAUFTRAGTE(
         EnumSet.of(
-            Berechtigung.SU_DATEN_LESEN,
-            Berechtigung.SU_VORABKLAERUNGEN_LESEN,
-            Berechtigung.EIGENE_BERECHTIGUNGEN_LESEN,
             Berechtigung.ANLASSLISTE_LESEN_LAEUSE,
             Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE,
             Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE,
+        	Berechtigung.SU_DATEN_LESEN,
             Berechtigung.SU_LAEUSE_LESEN,
             Berechtigung.SU_LAEUSE_SCHREIBEN,
             Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
             Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH,
             Berechtigung.LISTEN_LESEN,
-            Berechtigung.LABELS_LESEN
+        	Berechtigung.LABELS_LESEN,
+        	Berechtigung.EIGENE_BERECHTIGUNGEN_LESEN
         )
     ),
     PFP(
         EnumSet.of(
             Berechtigung.AUFGABEN_LESEN,
             Berechtigung.AUFGABEN_SCHREIBEN,
-
             Berechtigung.ANLASSLISTE_LESEN,
             Berechtigung.ANLASSLISTE_LESEN_LAEUSE,
             Berechtigung.ANLASSPLANUNG_LESEN,
             Berechtigung.ANLASSPLANUNG_SCHREIBEN,
             Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE,
             Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE,
-
             Berechtigung.SU_DATEN_LESEN,
             Berechtigung.SU_DATEN_SCHREIBEN,
-            Berechtigung.SU_VORABKLAERUNGEN_LESEN,
-            Berechtigung.SU_VORABKLAERUNGEN_SCHREIBEN,
             Berechtigung.SU_IMPFEN_LESEN,
             Berechtigung.SU_IMPFEN_SCHREIBEN,
             Berechtigung.SU_SEHEN_LESEN,
@@ -135,6 +123,8 @@ enum FachRolleWIN {
             Berechtigung.SU_MASSNAHMEN_SCHREIBEN,
             Berechtigung.SU_ABSCHLUSS_LESEN,
             Berechtigung.SU_ABSCHLUSS_SCHREIBEN,
+        	Berechtigung.SU_VORABKLAERUNGEN_LESEN,
+        	Berechtigung.SU_VORABKLAERUNGEN_SCHREIBEN,
             Berechtigung.KINDER_LESEN_MEDIZINISCH,
             Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
             Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH,
@@ -143,34 +133,23 @@ enum FachRolleWIN {
             Berechtigung.KINDER_ALLE_NOTIZEN_SCHREIBEN,
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
-
-            Berechtigung.INDIVIDUELLE_REPORTS,
-
-            Berechtigung.LISTEN_LESEN,
+        	Berechtigung.KOMPLETTER_EXPORT,
             Berechtigung.LISTEN_ADMIN_LESEN,
+        	Berechtigung.LISTEN_LESEN,
             Berechtigung.IMPFSTOFFE_LESEN,
-            Berechtigung.AERZTE_LESEN,
-
             Berechtigung.LABELS_LESEN,
             Berechtigung.LABELS_ADMIN_LESEN,
             Berechtigung.EIGENE_BERECHTIGUNGEN_LESEN,
-
             Berechtigung.VORLAGEN_LESEN,
-            Berechtigung.VORLAGEN_ADMIN_LESEN
+        	Berechtigung.VORLAGEN_ADMIN_LESEN,
+        	Berechtigung.ARCHIVIERUNG
         )
     ),
     SCHOOL_NURSE(
         EnumSet.noneOf(Berechtigung.class)
     ),
     SUPERUSER(
-        EnumSet.of(
-            Berechtigung.IMPFSTOFFE_LESEN,
-            Berechtigung.IMPFSTOFFE_SCHREIBEN,
-            Berechtigung.VORLAGEN_LESEN,
-            Berechtigung.VORLAGEN_ADMIN_LESEN,
-            Berechtigung.VORLAGEN_SCHREIBEN,
-            Berechtigung.AERZTE_SCHREIBEN
-        )
+    	EnumSet.noneOf(Berechtigung.class)
     ),
     ADMIN(
         EnumSet.of(
@@ -185,8 +164,6 @@ enum FachRolleWIN {
             Berechtigung.VERANDERUNGEN_NACH_ABSCHLUSS,
             Berechtigung.SU_DATEN_LESEN,
             Berechtigung.SU_DATEN_SCHREIBEN,
-            Berechtigung.SU_VORABKLAERUNGEN_LESEN,
-            Berechtigung.SU_VORABKLAERUNGEN_SCHREIBEN,
             Berechtigung.SU_IMPFEN_LESEN,
             Berechtigung.SU_IMPFEN_SCHREIBEN,
             Berechtigung.SU_SEHEN_LESEN,
@@ -205,6 +182,8 @@ enum FachRolleWIN {
             Berechtigung.SU_MASSNAHMEN_SCHREIBEN,
             Berechtigung.SU_ABSCHLUSS_LESEN,
             Berechtigung.SU_ABSCHLUSS_SCHREIBEN,
+            Berechtigung.SU_VORABKLAERUNGEN_LESEN,
+            Berechtigung.SU_VORABKLAERUNGEN_SCHREIBEN,
             Berechtigung.KINDER_LESEN_MEDIZINISCH,
             Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
             Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH,
@@ -214,13 +193,10 @@ enum FachRolleWIN {
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
             Berechtigung.INDIVIDUELLE_REPORTS,
-            Berechtigung.SPSS_EXPORT,
             Berechtigung.KOMPLETTER_EXPORT,
-            Berechtigung.LISTEN_LESEN,
             Berechtigung.LISTEN_ADMIN_LESEN,
+            Berechtigung.LISTEN_LESEN,
             Berechtigung.LISTEN_SCHREIBEN,
-            Berechtigung.AERZTE_LESEN,
-            Berechtigung.AERZTE_SCHREIBEN,
             Berechtigung.IMPFSTOFFE_LESEN,
             Berechtigung.IMPFSTOFFE_SCHREIBEN,
             Berechtigung.DUBLETTEN_ZUSAMMENFUHREN,
@@ -228,11 +204,10 @@ enum FachRolleWIN {
             Berechtigung.LABELS_ADMIN_LESEN,
             Berechtigung.LABELS_SCHREIBEN,
             Berechtigung.EIGENE_BERECHTIGUNGEN_LESEN,
-            Berechtigung.MITARBEITERLISTE_BERECHTIGUNGEN_LESEN,
+            Berechtigung.BENUTZER_BERECHTIGUNGEN_LESEN,
             Berechtigung.VORLAGEN_LESEN,
             Berechtigung.VORLAGEN_ADMIN_LESEN,
             Berechtigung.VORLAGEN_SCHREIBEN
-
         )
     ),
     SUPPORT(
@@ -248,8 +223,6 @@ enum FachRolleWIN {
             Berechtigung.VERANDERUNGEN_NACH_ABSCHLUSS,
             Berechtigung.SU_DATEN_LESEN,
             Berechtigung.SU_DATEN_SCHREIBEN,
-            Berechtigung.SU_VORABKLAERUNGEN_LESEN,
-            Berechtigung.SU_VORABKLAERUNGEN_SCHREIBEN,
             Berechtigung.SU_IMPFEN_LESEN,
             Berechtigung.SU_IMPFEN_SCHREIBEN,
             Berechtigung.SU_SEHEN_LESEN,
@@ -268,6 +241,8 @@ enum FachRolleWIN {
             Berechtigung.SU_MASSNAHMEN_SCHREIBEN,
             Berechtigung.SU_ABSCHLUSS_LESEN,
             Berechtigung.SU_ABSCHLUSS_SCHREIBEN,
+            Berechtigung.SU_VORABKLAERUNGEN_LESEN,
+            Berechtigung.SU_VORABKLAERUNGEN_SCHREIBEN,
             Berechtigung.KINDER_LESEN_MEDIZINISCH,
             Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
             Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH,
@@ -277,13 +252,10 @@ enum FachRolleWIN {
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
             Berechtigung.INDIVIDUELLE_REPORTS,
-            Berechtigung.SPSS_EXPORT,
             Berechtigung.KOMPLETTER_EXPORT,
-            Berechtigung.LISTEN_LESEN,
             Berechtigung.LISTEN_ADMIN_LESEN,
+            Berechtigung.LISTEN_LESEN,
             Berechtigung.LISTEN_SCHREIBEN,
-            Berechtigung.AERZTE_LESEN,
-            Berechtigung.AERZTE_SCHREIBEN,
             Berechtigung.IMPFSTOFFE_LESEN,
             Berechtigung.IMPFSTOFFE_SCHREIBEN,
             Berechtigung.DUBLETTEN_ZUSAMMENFUHREN,
@@ -291,14 +263,13 @@ enum FachRolleWIN {
             Berechtigung.LABELS_ADMIN_LESEN,
             Berechtigung.LABELS_SCHREIBEN,
             Berechtigung.EIGENE_BERECHTIGUNGEN_LESEN,
-            Berechtigung.MITARBEITERLISTE_BERECHTIGUNGEN_LESEN,
+            Berechtigung.BENUTZER_BERECHTIGUNGEN_LESEN,
+            Berechtigung.BENUTZER_BERECHTIGUNGEN_SCHREIBEN,
             Berechtigung.VORLAGEN_LESEN,
             Berechtigung.VORLAGEN_ADMIN_LESEN,
             Berechtigung.VORLAGEN_SCHREIBEN,
-            Berechtigung.BENUTZER_BERECHTIGUNGEN_LESEN,
-            Berechtigung.BENUTZER_BERECHTIGUNGEN_SCHREIBEN,
-            Berechtigung.SUPPORT,
-            Berechtigung.ARCHIVIERUNG
+            Berechtigung.ARCHIVIERUNG,
+            Berechtigung.SUPPORT
         )
     ),
     SYSTEM_ADMIN(
@@ -314,8 +285,6 @@ enum FachRolleWIN {
             Berechtigung.VERANDERUNGEN_NACH_ABSCHLUSS,
             Berechtigung.SU_DATEN_LESEN,
             Berechtigung.SU_DATEN_SCHREIBEN,
-            Berechtigung.SU_VORABKLAERUNGEN_LESEN,
-            Berechtigung.SU_VORABKLAERUNGEN_SCHREIBEN,
             Berechtigung.SU_IMPFEN_LESEN,
             Berechtigung.SU_IMPFEN_SCHREIBEN,
             Berechtigung.SU_SEHEN_LESEN,
@@ -334,6 +303,8 @@ enum FachRolleWIN {
             Berechtigung.SU_MASSNAHMEN_SCHREIBEN,
             Berechtigung.SU_ABSCHLUSS_LESEN,
             Berechtigung.SU_ABSCHLUSS_SCHREIBEN,
+            Berechtigung.SU_VORABKLAERUNGEN_LESEN,
+            Berechtigung.SU_VORABKLAERUNGEN_SCHREIBEN,
             Berechtigung.KINDER_LESEN_MEDIZINISCH,
             Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH,
             Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH,
@@ -343,13 +314,10 @@ enum FachRolleWIN {
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
             Berechtigung.INDIVIDUELLE_REPORTS,
-            Berechtigung.SPSS_EXPORT,
             Berechtigung.KOMPLETTER_EXPORT,
-            Berechtigung.LISTEN_LESEN,
             Berechtigung.LISTEN_ADMIN_LESEN,
+            Berechtigung.LISTEN_LESEN,
             Berechtigung.LISTEN_SCHREIBEN,
-            Berechtigung.AERZTE_SCHREIBEN,
-            Berechtigung.AERZTE_LESEN,
             Berechtigung.IMPFSTOFFE_LESEN,
             Berechtigung.IMPFSTOFFE_SCHREIBEN,
             Berechtigung.DUBLETTEN_ZUSAMMENFUHREN,
@@ -357,13 +325,14 @@ enum FachRolleWIN {
             Berechtigung.LABELS_ADMIN_LESEN,
             Berechtigung.LABELS_SCHREIBEN,
             Berechtigung.EIGENE_BERECHTIGUNGEN_LESEN,
-            Berechtigung.MITARBEITERLISTE_BERECHTIGUNGEN_LESEN,
+            Berechtigung.BENUTZER_BERECHTIGUNGEN_LESEN,
+            Berechtigung.BENUTZER_BERECHTIGUNGEN_SCHREIBEN,
             Berechtigung.VORLAGEN_LESEN,
             Berechtigung.VORLAGEN_ADMIN_LESEN,
             Berechtigung.VORLAGEN_SCHREIBEN,
+            Berechtigung.ARCHIVIERUNG,
             Berechtigung.SUPPORT,
-            Berechtigung.SYSTEM_ADMIN,
-            Berechtigung.ARCHIVIERUNG
+            Berechtigung.SYSTEM_ADMIN
         )
     );
 

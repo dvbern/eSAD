@@ -35,27 +35,37 @@ test.describe('anlass edit', () => {
     const anlassPlanungPage = new AnlassPlanungPageObject(page);
     await anlassPlanungPage.elements.buttonAddImpfausweis().first().click();
 
-    await fileupload(page, 'apps/esc-app-e2e/src/e2e/anlass/pdfFileExample.pdf')
+    await fileupload(page, 'apps/esc-app-e2e/src/e2e/anlass/pdfFileExample.pdf');
 
     await expect(anlassPlanungPage.elements.buttonAddImpfausweisSuccess()).toBeVisible();
-  })
+  });
 
   test('add fragebogen to kinder', async ({ page }) => {
     const anlassPlanungPage = new AnlassPlanungPageObject(page);
 
     await anlassPlanungPage.elements.buttonAddFragebogen().first().click();
 
-    await fileupload(page, 'apps/esc-app-e2e/src/e2e/anlass/pdfFileExample.pdf')
+    await fileupload(page, 'apps/esc-app-e2e/src/e2e/anlass/pdfFileExample.pdf');
 
     await expect(anlassPlanungPage.elements.buttonAddFragebogenSuccess()).toBeVisible();
-  })
+  });
+
+  test('add impfanmeldung to kinder', async ({ page }) => {
+    const anlassPlanungPage = new AnlassPlanungPageObject(page);
+
+    await anlassPlanungPage.elements.buttonAddImpfanmeldung().first().click();
+
+    await fileupload(page, 'apps/esc-app-e2e/src/e2e/anlass/pdfFileExample.pdf');
+
+    await expect(anlassPlanungPage.elements.buttonAddImpfanmeldungSuccess()).toBeVisible();
+  });
 
   test.describe('change teilnahme status', () => {
     test('change teilnahme status to nachzuegler', async ({ page, testData }) => {
       const anlassPlanungPage = new AnlassPlanungPageObject(page);
 
       const row = anlassPlanungPage.elements.einladungenTable().row(page, 0);
-      await anlassPlanungPage.elements.teilnahmeStatusSelect().setOption(page, 'Nachzügler', row)
+      await anlassPlanungPage.elements.teilnahmeStatusSelect().setOption(page, 'Nachzügler', row);
 
       await expect (
         page.getByRole('row').filter({
@@ -75,7 +85,7 @@ test.describe('anlass edit', () => {
           hasText: expectedAufgabenTitel,
         })
       ).toBeVisible();
-    })
+    });
 
     test('change teilnahme status to keine teilnahme', async ({ page, testData }) => {
       const anlassPlanungPage = new AnlassPlanungPageObject(page);
@@ -83,7 +93,7 @@ test.describe('anlass edit', () => {
       await anlassPlanungPage.elements.teilnahmeStatusSelect().setOption(page, 'Keine Teilnahme', row);
 
       await anlassPlanungPage.elements.abmeldungGrundSelect().setOption(page, 'Regelmässige ärztliche Kontrollen');
-      await anlassPlanungPage.elements.abmeldungArtSelect().setOption(page, 'Mail von Lehrperson')
+      await anlassPlanungPage.elements.abmeldungArtSelect().setOption(page, 'Mail von Lehrperson');
 
       await anlassPlanungPage.elements.buttonSaveAbmeldung().click();
       await expect (
@@ -107,7 +117,7 @@ test.describe('anlass edit', () => {
 
   test('change anlass status to ready', async ({ page }) => {
     const anlassList = new AnlassListPageObject(page);
-    await anlassList.elements.anlassStatusSelect().setOption(page, 'Bereit')
+    await anlassList.elements.anlassStatusSelect().setOption(page, 'Bereit');
 
     await expect (
       page.locator('ng-select .ng-value-label', { hasText: 'Bereit' })

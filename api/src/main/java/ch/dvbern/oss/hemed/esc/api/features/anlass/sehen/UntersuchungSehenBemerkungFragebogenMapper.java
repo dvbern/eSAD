@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.sehen;
 
+import java.util.function.Consumer;
+
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -50,17 +52,23 @@ public class UntersuchungSehenBemerkungFragebogenMapper {
     }
 
     @Nullable
-    public UntersuchungSehenBemerkungFragebogenJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+    public UntersuchungSehenBemerkungFragebogenJson getByEinladung(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungSehenBemerkungFragebogen());
     }
 
     @NonNull
     public UntersuchungSehenBemerkungFragebogenJson save(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungSehenBemerkungFragebogenSaveJson saveJson
+        @NonNull UntersuchungSehenBemerkungFragebogenSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungSehenBemerkungFragebogen sehen = untersuchung.getUntersuchungSehenBemerkungFragebogen();
         UntersuchungSehenBemerkungFragebogen entity = toEntity(untersuchung, sehen, saveJson);
         return toJson(untersuchungSehenBemerkungFragebogenService.persistWithOptimisticLocking(entity, saveJson.getVersion()));

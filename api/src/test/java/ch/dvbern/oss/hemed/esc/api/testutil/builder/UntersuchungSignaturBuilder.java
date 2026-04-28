@@ -17,6 +17,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSignaturJso
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 
 public class UntersuchungSignaturBuilder {
 
@@ -66,7 +67,7 @@ public class UntersuchungSignaturBuilder {
     @NonNull
     public static UntersuchungSignaturJson createJax(@NonNull Consumer<UntersuchungSignaturBuilder> block) {
         UntersuchungSignatur entity = create(block);
-        return UntersuchungSignaturMapper.toJson(entity);
+        return UntersuchungSignaturMapper.toJson(entity, TenantEnum.BS);
     }
 
     @NonNull

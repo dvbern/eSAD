@@ -17,6 +17,7 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckAnlassTypNichtAnonym;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckEinladungNotizUniqueness;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -57,6 +58,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@CheckAnlassTypNichtAnonym
 @CheckEinladungNotizUniqueness
 public class Einladung extends AbstractEntity<Einladung> implements EntityWithOptimisticLocking {
 
@@ -168,6 +170,11 @@ public class Einladung extends AbstractEntity<Einladung> implements EntityWithOp
     @NonNull
     public Optional<Notiz> getAbmeldungsNotiz() {
         return getNotizByType(NotizTyp.ABMELDUNG);
+    }
+
+    @NonNull
+    public Optional<Notiz> getImpfanmeldungsNotiz() {
+        return getNotizByType(NotizTyp.IMPFANMELDUNG);
     }
 
     @NonNull

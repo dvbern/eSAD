@@ -52,7 +52,7 @@ class MergeSourceCreatorServiceITest {
     void fromAnlass_should_create_a_merge_source() {
         // Arrange
         Untersuchung untersuchung = fixtureService.createUntersuchungWithCompleteData();
-        var einladung = untersuchung.getEinladung();
+        var einladung = untersuchung.getEinladungRequired();
         // Act
         RootMergeSource mergeSource = mergeSourceCreatorService.fromAnlass(einladung, null);
         // ASSERT
@@ -68,7 +68,7 @@ class MergeSourceCreatorServiceITest {
             .withBemerkungen("Bemerkungen")
             .withName("Arzt")
             .withVorame("Armin"));
-        var einladung = untersuchung.getEinladung();
+        var einladung = untersuchung.getEinladungRequired();
         // Act
         RootMergeSource mergeSource = mergeSourceCreatorService.fromAnlass(einladung, arzt);
         // ASSERT

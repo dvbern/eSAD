@@ -1,9 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
-import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
@@ -17,7 +15,6 @@ public class UntersuchungImpfungenMassnahmenService {
 
     private final UntersuchungImpfungenMassnahmenRepo massnahmenRepo;
     private final AutoAufgabeService autoAufgabeService;
-    private final EinladungService einladungService;
     private final UntersuchungImpfungenService untersuchungImpfungenService;
 
 
@@ -45,7 +42,7 @@ public class UntersuchungImpfungenMassnahmenService {
 
     private void createOrUpdateAufgaben(@NonNull UntersuchungImpfungenMassnahmen massnahmen) {
         massnahmen.disableOptimisticLockingCheck();
-        Einladung einladung = massnahmen.getUntersuchungImpfungen().getUntersuchung().getEinladung();
+        Einladung einladung = massnahmen.getUntersuchungImpfungen().getUntersuchung().getEinladungRequired();
         if (massnahmen.getInformationEltern() != null && massnahmen.getInformationEltern() != InformationEltern.KEINE) {
             autoAufgabeService.createOrUpdateAufgabeMassnahmeImpfenInformationEltern(massnahmen, einladung);
         } else {
@@ -63,8 +60,7 @@ public class UntersuchungImpfungenMassnahmenService {
         }
     }
 
-    public void einzelTerminErstellen(@NonNull ID<Einladung> einladungId) {
-        Einladung einladung = einladungService.getById(einladungId);
+    public void einzelTerminErstellen(@NonNull Einladung einladung) {
         autoAufgabeService.createAufgabeMassnahmeImpfenEinzelTerminErstellen(einladung);
     }
 }

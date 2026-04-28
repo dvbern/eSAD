@@ -41,7 +41,7 @@ class CheckUntersuchungAbschlussPresentIfReqValidatorTest {
         UntersuchungAbschluss abschluss = UntersuchungAbschlussBuilder.create(
             builder -> builder
                 .withUeberweisungErfolgt(input, null));
-        abschluss.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setAbschlussUeberweisungErfolgt(requirementSetting);
+        abschluss.getUntersuchung().getAnlass().getAnlassConfig().setAbschlussUeberweisungErfolgt(requirementSetting);
         // ACT
         CheckUntersuchungAbschlussPresentIfReqValidator
             validator = new CheckUntersuchungAbschlussPresentIfReqValidator();
@@ -68,7 +68,7 @@ class CheckUntersuchungAbschlussPresentIfReqValidatorTest {
         UntersuchungAbschluss abschluss = UntersuchungAbschlussBuilder.create(
             builder -> builder
                 .withAerztlicheValidierungErforderlich(input, null));
-        abschluss.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setAbschlussAerztlicheValidierungErforderlich(requirementSetting);
+        abschluss.getUntersuchung().getAnlass().getAnlassConfig().setAbschlussAerztlicheValidierungErforderlich(requirementSetting);
         // ACT
         CheckUntersuchungAbschlussPresentIfReqValidator
             validator = new CheckUntersuchungAbschlussPresentIfReqValidator();
@@ -95,7 +95,7 @@ class CheckUntersuchungAbschlussPresentIfReqValidatorTest {
         UntersuchungAbschluss abschluss = UntersuchungAbschlussBuilder.create(
             builder -> builder
                 .withBeratungDurchgefuehrt(input, null));
-        abschluss.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setAbschlussBeratungDurchgefuehrt(requirementSetting);
+        abschluss.getUntersuchung().getAnlass().getAnlassConfig().setAbschlussBeratungDurchgefuehrt(requirementSetting);
         // ACT
         CheckUntersuchungAbschlussPresentIfReqValidator
             validator = new CheckUntersuchungAbschlussPresentIfReqValidator();
@@ -122,7 +122,7 @@ class CheckUntersuchungAbschlussPresentIfReqValidatorTest {
         UntersuchungAbschluss abschluss = UntersuchungAbschlussBuilder.create(
             builder -> builder
                 .withBeurteilungEmpfohleneMassnahmen(massnahmen));
-        abschluss.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setAbschlussBeurteilungEmpfohleneMassnahmen(requirementSetting);
+        abschluss.getUntersuchung().getAnlass().getAnlassConfig().setAbschlussBeurteilungEmpfohleneMassnahmen(requirementSetting);
         // ACT
         CheckUntersuchungAbschlussPresentIfReqValidator
             validator = new CheckUntersuchungAbschlussPresentIfReqValidator();

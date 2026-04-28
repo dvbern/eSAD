@@ -13,6 +13,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AgbResponsabilitySpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppLanguagesSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EinladungStatusSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FeatureEnabledSettingSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LandingPageOptionSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.TenantSettingFeatureStateJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.TenantSettingFeaturesJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.TenantSettingSaveJsonSpec;
@@ -118,9 +119,11 @@ class TenantSettingsResourceITest extends AbstractITest {
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant)
             ),
-            List.of(EinladungStatusSpec.TEILNAHME_BESTAETIGT, EinladungStatusSpec.PRIVATARZT_BESTAETIGT));
+            List.of(EinladungStatusSpec.TEILNAHME_BESTAETIGT, EinladungStatusSpec.PRIVATARZT_BESTAETIGT),
+            LandingPageOptionSpec.DASHBOARD);
 
         var result = api.tenantSettingsResourceUpdateTenantSettings()
             .body(saveJson)
@@ -136,6 +139,8 @@ class TenantSettingsResourceITest extends AbstractITest {
         Assertions.assertThat(result.getData().getDefaultLanguage().name()).isEqualTo(AppLanguages.FR.name());
         Assertions.assertThat(result.getData().getSupportedLanguages()).hasSize(2);
         Assertions.assertThat(result.getData().getFolgeTermineMaxSlots()).isEqualTo(42);
+        Assertions.assertThat(result.getData().getDefaultLandingPage())
+            .isSameAs(LandingPageOptionSpec.DASHBOARD);
         Assertions.assertThat(result.getData().getFeatures().getEsadIdFeature().getFeatureEnabled())
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
         Assertions.assertThat(result.getData().getFeatures().getLaenderCodeFeature().getFeatureEnabled())
@@ -159,6 +164,10 @@ class TenantSettingsResourceITest extends AbstractITest {
         Assertions.assertThat(result.getData().getFeatures().getBenutzerverwaltungInternFeature().getFeatureEnabled())
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
         Assertions.assertThat(result.getData().getFeatures().getBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData().getFeatures().getZentraleOrganisationFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData().getFeatures().getAnonymeStatistikFeature().getFeatureEnabled())
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
         Assertions.assertThat(result.getData()
             .getEinladungStatusValues()

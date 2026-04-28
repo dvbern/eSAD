@@ -1,0 +1,12 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hefr" id="1776257393871-1">
+    <sql>
+      INSERT INTO organisationrollen (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, organisation_id, benutzer_id, fachrollen)
+      VALUES
+        (uuid_generate_v4(), current_timestamp, current_timestamp, '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 0,
+         '08831a31-a62b-4c81-adfc-3f3bcb3a1fee', 'b7611438-6764-4e1f-8f51-fc4eda7af54e', 'SCHULAERZTIN')
+      ON CONFLICT (organisation_id, benutzer_id) DO NOTHING
+    </sql>
+  </changeSet>
+</databaseChangeLog>

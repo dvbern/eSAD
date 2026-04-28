@@ -45,6 +45,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -131,7 +132,7 @@ class AnlassServiceITest extends AbstractITest {
     @Transactional
     void changeAnlassStatus_durchgefuehrt_should_create_Pendenz() {
         // ARRANGE - prepare data and expected data
-        Benutzer mpa = fixtureService.createBenutzer();
+        Benutzer mpa = fixtureService.createBenutzerFuerZentraleOrganisation();
         Anlass anlass = fixtureService.createAnlass(mpa);
         String expectedTitel = "Gruppen-Folgetermin erstellen - 2022/23 SU 2.SEK Test getAnlass";
         LocalDate expectedFaelligBis = getAppClock().localDateTime().now().toLocalDate();
@@ -164,8 +165,8 @@ class AnlassServiceITest extends AbstractITest {
     @Transactional
     void changeAnlassStatus_durchgefuehrt_should_update_Pendenz_if_already_exists() {
         // ARRANGE - prepare data and expected data
-        Benutzer mpa = fixtureService.createBenutzer();
-        Benutzer mpa2 = fixtureService.createBenutzer();
+        Benutzer mpa = fixtureService.createBenutzerFuerZentraleOrganisation();
+        Benutzer mpa2 = fixtureService.createBenutzerFuerZentraleOrganisation();
         Anlass anlass = fixtureService.createAnlass(mpa);
         Label demoLabel = labelService.getById(Label.ID_LABEL_DISPENSATIONSGESUCH);
         String originalTitel = "Gruppen-Folgetermin erstellen - 2022/23 SU 2.SEK Test getAnlass";
@@ -251,7 +252,7 @@ class AnlassServiceITest extends AbstractITest {
         assertThat(untersuchung.getUntersuchungMassnahmen()).isNotNull();
 
         Nachkontrolle nachkontrolleVorher =
-            nachkontrolleService.getOrCreateByDossier(untersuchung.getEinladung().getDossier().getId());
+            nachkontrolleService.getOrCreateByDossier(untersuchung.getEinladungRequired().getDossier().getId());
         AnlassFlags anlassFlagsVorher = nachkontrolleVorher.getAnlassFlags();
         assertThat(anlassFlagsVorher).extracting(AnlassFlags::isNachkontrolleSehen).isEqualTo(false);
         assertThat(anlassFlagsVorher).extracting(AnlassFlags::isNachkontrolleHoeren).isEqualTo(false);
@@ -266,8 +267,8 @@ class AnlassServiceITest extends AbstractITest {
                 .withNachkontrolle(true, true, false, false, false, false)).getData();
         apiUntersuchungMassnahmen
             .untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -275,11 +276,11 @@ class AnlassServiceITest extends AbstractITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ACT
-        anlassService.changeAnlassStatus(untersuchung.getEinladung().getAnlass().getId(), AnlassStatus.ABGESCHLOSSEN);
+        anlassService.changeAnlassStatus(untersuchung.getAnlass().getId(), AnlassStatus.ABGESCHLOSSEN);
 
         // ASSERT
         Nachkontrolle nachkontrolle =
-            nachkontrolleService.getOrCreateByDossier(untersuchung.getEinladung().getDossier().getId());
+            nachkontrolleService.getOrCreateByDossier(untersuchung.getEinladungRequired().getDossier().getId());
         AnlassFlags anlassFlags = nachkontrolle.getAnlassFlags();
         assertThat(anlassFlags).extracting(AnlassFlags::isNachkontrolleSehen).isEqualTo(true);
         assertThat(anlassFlags).extracting(AnlassFlags::isNachkontrolleHoeren).isEqualTo(true);
@@ -304,8 +305,8 @@ class AnlassServiceITest extends AbstractITest {
                 .withNachkontrolle(true, true, false, false, false, false)).getData();
         apiUntersuchungMassnahmen
             .untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung2.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung2.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung2.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung2.getEinladungRequired().getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -313,11 +314,11 @@ class AnlassServiceITest extends AbstractITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ACT
-        anlassService.changeAnlassStatus(untersuchung2.getEinladung().getAnlass().getId(), AnlassStatus.ABGESCHLOSSEN);
+        anlassService.changeAnlassStatus(untersuchung2.getAnlass().getId(), AnlassStatus.ABGESCHLOSSEN);
 
         // ASSERT
         Nachkontrolle nachkontrolle =
-            nachkontrolleService.getOrCreateByDossier(untersuchung2.getEinladung().getDossier().getId());
+            nachkontrolleService.getOrCreateByDossier(untersuchung2.getEinladungRequired().getDossier().getId());
         AnlassFlags anlassFlags = nachkontrolle.getAnlassFlags();
         assertThat(anlassFlags).extracting(AnlassFlags::isNachkontrolleSehen).isEqualTo(false);
         assertThat(anlassFlags).extracting(AnlassFlags::isNachkontrolleHoeren).isEqualTo(false);
@@ -342,8 +343,8 @@ class AnlassServiceITest extends AbstractITest {
                 .withNachkontrolle(true, true, false, false, false, false)).getData();
         apiUntersuchungMassnahmen
             .untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung3.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung3.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung3.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung3.getEinladungRequired().getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -351,11 +352,11 @@ class AnlassServiceITest extends AbstractITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ACT
-        anlassService.changeAnlassStatus(untersuchung3.getEinladung().getAnlass().getId(), AnlassStatus.ABGESCHLOSSEN);
+        anlassService.changeAnlassStatus(untersuchung3.getAnlass().getId(), AnlassStatus.ABGESCHLOSSEN);
 
         // ASSERT
         Nachkontrolle nachkontrolle =
-            nachkontrolleService.getOrCreateByDossier(untersuchung3.getEinladung().getDossier().getId());
+            nachkontrolleService.getOrCreateByDossier(untersuchung3.getEinladungRequired().getDossier().getId());
         AnlassFlags anlassFlags = nachkontrolle.getAnlassFlags();
         assertThat(anlassFlags).extracting(AnlassFlags::isNachkontrolleSehen).isEqualTo(true);
         assertThat(anlassFlags).extracting(AnlassFlags::isNachkontrolleHoeren).isEqualTo(true);
@@ -384,8 +385,8 @@ class AnlassServiceITest extends AbstractITest {
                 .withAnlassTyp(AnlassTyp.KLASSE_4)));
         fixtureService.createEinladung(anlassNichtTeilgenommen, dossier, EinladungStatus.NACHZUEGLER);
 
-        Benutzer mpa = benutzerService.getById(TestAsMpaBS.BENUTZER_ID_ID);
-        Benutzer arzt = benutzerService.getById(TestAsSchularztBS.BENUTZER_ID_ID);
+        Benutzer mpa = benutzerService.getByIdWithBerechtigungen(TestAsMpaBS.BENUTZER_ID_ID);
+        Benutzer arzt = benutzerService.getByIdWithBerechtigungen(TestAsSchularztBS.BENUTZER_ID_ID);
         final Anlass anlass = anlassService.persist(
             AnlassBuilder.create(builder -> builder
                 .withDatumSetSchuljahr(LocalDate.of(2025, Month.FEBRUARY, 1))

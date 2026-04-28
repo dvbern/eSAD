@@ -3,7 +3,6 @@ package ch.dvbern.oss.hemed.esc.api.features.benutzer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
-import java.util.UUID;
 
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -14,10 +13,14 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSetting;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.features.FeatureEnabledSetting;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
+import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.TenantSettingBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
@@ -32,6 +35,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EntityAktivStatusSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.PrincipalJsonSpec;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
+import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import io.restassured.response.ResponseBody;
@@ -43,9 +47,11 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mockito;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 @QuarkusTest
 @TestAsAdminBS
@@ -63,6 +69,7 @@ class BenutzerResourceITest {
     private final OrganisationService organisationService;
     private final TenantProducer tenantProducer;
     private final BenutzerResourceHelper benutzerResourceHelper;
+    private final FixtureService fixtureService;
 
 
     @Test
@@ -137,14 +144,7 @@ class BenutzerResourceITest {
     @TestAsAdminBS
     void findAllBenutzer() {
         // ARRANGE
-        var createDto = BenutzerBuilder.createCreateDTO(
-            builder -> builder
-                .withRandomEmail("nina.neu@example.com")
-                .withRandomVorname("Nina")
-                .withRandomNachname("Neu")
-                .withKeycloakId(UUID.randomUUID().toString())
-        );
-        benutzerService.createBenutzer(createDto);
+        Benutzer benutzer = fixtureService.createBenutzerFuerZentraleOrganisation();
 
         // ACT
         var benList = api.benutzerResourceFindAllBenutzer()
@@ -159,12 +159,12 @@ class BenutzerResourceITest {
             .isNotEmpty()
             .extracting(BenutzerJsonSpec::getData)
             .extracting(BenutzerSaveJsonSpec::getVorname)
-            .contains(createDto.getVorname());
+            .contains(benutzer.getVorname());
 
     }
 
     @Test
-    @TestAsAdminBE
+    @TestAsSupportBE
     void findAllBenutzerForOrganisation() {
         // ARRANGE
         Benutzer schularzt1 = benutzerResourceHelper.createSchularztAsOrganisationsChef(TenantEnum.BE);
@@ -351,12 +351,22 @@ class BenutzerResourceITest {
     }
 
     @Test
-    @TestAsSupportBE
+    @TestAsSupportBS
     void createBenutzerAsSupport_works_if_tenantSetting_is_enabled() {
         // ARRANGE
         EmailAddress benutzerEmail = EmailAddress.fromString("new-benutzer@mailbucket.dvbern.ch");
         EntityAktivStatus aktivStatus = EntityAktivStatus.AKTIV;
         Organisation organisation = organisationService.getZentraleOrganisation();
+
+        // Wir wollen eine ZentraleOrganisation mit Benutzerverwaltung simulieren
+        TenantSettingsService tenantSettingsServiceMock = mock(TenantSettingsService.class);
+        TenantSetting tenantSettingOverride = TenantSettingBuilder.create(tenantSettingBuilder -> tenantSettingBuilder
+            .withBenutzerverwaltungInternFeature(FeatureEnabledSetting.ENABLED)
+            .withBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature(FeatureEnabledSetting.ENABLED)
+        );
+        Mockito.when(tenantSettingsServiceMock.getTenantSetting()).thenReturn(tenantSettingOverride);
+        QuarkusMock.installMockForType(tenantSettingsServiceMock, TenantSettingsService.class);
+
 
         BenutzerJsonSpec benutzerJson = BenutzerBuilder.createJaxSpec(
             builder -> builder

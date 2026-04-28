@@ -37,7 +37,7 @@ public class UntersuchungImpfstatusKrankheitService {
 	public void checkImmunitaetenForDossier(@NonNull UntersuchungImpfstatusKrankheit impfstatusKrankheit) {
         Dossier dossier = dossierService.getById(impfstatusKrankheit.getUntersuchungImpfungen()
             .getUntersuchung()
-            .getEinladung()
+            .getEinladungRequired()
             .getDossier()
             .getId());
         dossier.disableOptimisticLockingCheck();

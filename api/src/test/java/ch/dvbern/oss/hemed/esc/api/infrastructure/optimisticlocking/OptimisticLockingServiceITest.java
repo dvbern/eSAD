@@ -30,6 +30,8 @@ import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+
 @QuarkusTest
 @RequiredArgsConstructor
 class OptimisticLockingServiceITest extends AbstractITest {
@@ -103,7 +105,7 @@ class OptimisticLockingServiceITest extends AbstractITest {
 		UntersuchungHoerenAudiogrammJsonSpec result =
 			audiogrammApi.untersuchungHoerenAudiogrammResourceSaveUntersuchungHoerenAudiogramm()
 				.anlassIdPath(einladung.getAnlass().getId().getId())
-				.einladungIdPath(einladung.getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
 				.body(saveJsonSpec)
 				.execute(ResponseBody::prettyPeek)
 				.then()
@@ -125,7 +127,7 @@ class OptimisticLockingServiceITest extends AbstractITest {
 		AppFailureErrorJsonSpec error =
 			audiogrammApi.untersuchungHoerenAudiogrammResourceSaveUntersuchungHoerenAudiogramm()
 				.anlassIdPath(einladung.getAnlass().getId().getId())
-				.einladungIdPath(einladung.getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
 				.body(saveJsonSpec)
 				.execute(ResponseBody::prettyPeek)
 				.then()

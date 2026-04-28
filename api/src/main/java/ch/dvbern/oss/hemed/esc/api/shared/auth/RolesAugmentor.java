@@ -10,6 +10,8 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.auth;
 
+import java.net.URI;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -22,7 +24,9 @@ import io.quarkus.security.identity.AuthenticationRequestContext;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.security.identity.SecurityIdentityAugmentor;
 import io.quarkus.security.runtime.QuarkusSecurityIdentity;
+import io.quarkus.vertx.http.runtime.security.HttpSecurityUtils;
 import io.smallrye.mutiny.Uni;
+import io.vertx.ext.web.RoutingContext;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +53,30 @@ public class RolesAugmentor implements SecurityIdentityAugmentor {
     private final ConfigService configService;
     private final TenantProducer tenantProducer;
 
+
+    @Override
+    @NonNull
+    public Uni<SecurityIdentity> augment(
+        @NonNull SecurityIdentity identity,
+        @NonNull AuthenticationRequestContext context,
+        @NonNull Map<String, Object> attributes
+    ) {
+        if (identity.isAnonymous()) {
+            return Uni.createFrom().item(identity);
+        }
+        // extracting tenant from routing context so we can figure out if we need to read the
+        // rollen from the db or not
+        RoutingContext routingContext = HttpSecurityUtils.getRoutingContextAttribute(attributes);
+        if (routingContext != null) {
+            var absoluteuri = routingContext.request().absoluteURI();
+            URI uri = URI.create(absoluteuri);
+            TenantEnum tenantFromUrl = TenantExtractorFromUrlRequestFilter.getTenantFromUrl(uri);
+            tenantProducer.setCurrentTenant(tenantFromUrl);
+        }
+        return context.runBlocking(() -> augmentWithRoles(identity));
+    }
+
+
     @Override
     @NonNull
     public Uni<SecurityIdentity> augment(@NonNull SecurityIdentity identity, @NonNull AuthenticationRequestContext context) {
@@ -61,13 +89,6 @@ public class RolesAugmentor implements SecurityIdentityAugmentor {
     @NonNull
     @ActivateRequestContext
     SecurityIdentity augmentWithRoles(@NonNull SecurityIdentity identity) {
-        // Tenant ist zu diesem Zeitpunkt noch nicht korrekt gesetzt! Aus dem Token lesen
-        JsonWebToken jsonWebToken = (JsonWebToken) identity.getPrincipal();
-        String tenantClaim = jsonWebToken.getClaim(TENANT_CLAIM);
-        TenantEnum tenantEnum = tenantClaim != null ? TenantEnum.fromString(tenantClaim) : null;
-        if (tenantEnum != null) {
-            tenantProducer.setCurrentTenant(tenantEnum);
-        }
         // Je nach TenantSetting: Die Rollen aus dem Token oder aus der DB lesen
         boolean ignoreFachrollenFromKeycloak = tenantSettingsService.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled();
         if (ignoreFachrollenFromKeycloak) {

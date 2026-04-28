@@ -2,9 +2,9 @@ import {computed, Inject, inject, Injectable, Optional} from '@angular/core';
 import {
   AgbResponsability,
   BenutzerService,
-  Berechtigung,
   FachRolle,
-  OrganisationRollenJson
+  OrganisationRollenJson,
+  SystemRollenJson
 } from '@dvb/data-access-backend';
 
 import {AbstractSignalStore} from '@dvb/util-angular';
@@ -24,10 +24,9 @@ export interface AppUser {
   lastName: string;
   fullName: string;
   kuerzel: string;
-  fachRollen: FachRolle[]; // TODO ESC-1180: Das kommt dann spaeter weg
-  // TODO ESC-1180: Auf mehrere OrganisationRollen vorbereiten: OrganisationRollen[], currentOR, SystemRollen
-  organisationRollen?: OrganisationRollenJson;
-  berechtigungen: Berechtigung[];
+  currentOrganisationRollen?: OrganisationRollenJson;
+  allOrganisationRollen: OrganisationRollenJson[]; // not used at the moment. later add dropdown in user menu
+  systemRollen?: SystemRollenJson;
   timestampAGBAccepted: ISODateTimeString | undefined;
 }
 
@@ -58,7 +57,19 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
   isLoggedIn = computed(() => this.state().user !== undefined);
   isLoggedOut = computed(() => this.state().user === undefined);
   benutzer = computed(() => this.state().user);
-  berechtigungen = computed(() => this.state().user?.berechtigungen ?? []);
+  readonly #organisationBerechtigungen = computed(() => this.state().user?.currentOrganisationRollen?.berechtigungen ?? []);
+  readonly #systemBerechtigungen = computed(() => this.state().user?.systemRollen?.berechtigungen ?? []);
+  berechtigungen = computed(() =>
+    this.#organisationBerechtigungen().length > 0
+    ?  this.#organisationBerechtigungen()
+    : this.#systemBerechtigungen());
+  readonly #organisationFachrollen = computed(() => this.state().user?.currentOrganisationRollen?.fachRollen ?? []);
+  readonly #systemFachrollen = computed(() => this.state().user?.systemRollen?.fachRollen ?? []);
+  fachrollen = computed(() =>
+    this.#organisationFachrollen().length > 0
+      ?  this.#organisationFachrollen()
+      : this.#systemFachrollen());
+  hasFachrolleSupport = computed(() => this.fachrollen().includes(FachRolle.SUPPORT));
   isAgbAccepted = computed(() => {
     if (this.tenantSettingsStore.agbResponsibility() == AgbResponsability.AGB_MANAGED_BY_USER) {
       return isNotNullish(this.state().user?.timestampAGBAccepted);
@@ -73,25 +84,14 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
       .then(principal => {
         console.log('handleAuthSuccess', principal);
 
-        let fachrollen: FachRolle[] = [];
-        if (principal.benutzerJson.data.systemRollen) {
-          fachrollen = [...principal.benutzerJson.data.systemRollen.fachRollen];
-        } else if (principal.benutzerJson.data.organisationRollen.length > 0) {
-          fachrollen = [...principal.benutzerJson.data.organisationRollen[0].fachRollen];
-        }
-
         this.onUserAuthenticated(
           requireValue(principal.benutzerJson.id),
           requireValue(principal.benutzerJson.data.username),
           requireValue(principal.benutzerJson.data.email),
           requireValue(principal.benutzerJson.data.vorname),
           requireValue(principal.benutzerJson.data.name),
-          requireValue(fachrollen),
-          // TODO ESC-1180: Mehrere Organisationsrollen
-          principal.benutzerJson.data.organisationRollen.length > 0 ?
-            principal.benutzerJson.data.organisationRollen[0] :
-            undefined,
-          requireValue(principal.berechtigungen),
+          principal.benutzerJson.data.organisationRollen,
+          principal.benutzerJson.data.systemRollen,
           principal.benutzerJson.timestampAGBAccepted
         );
       })
@@ -109,13 +109,14 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
     email: string,
     firstName: string,
     lastName: string,
-    fachRollen: FachRolle[],
-    organisationRollen: OrganisationRollenJson | undefined,
-    berechtigungen: Berechtigung[],
+    allOrganisationRollen: OrganisationRollenJson[],
+    systemRollen: SystemRollenJson | undefined,
     timestampAGBAccepted: ISODateTimeString | undefined,
   ) {
     const fullName = `${firstName} ${lastName}`;
     const kuerzel = this.buildKuerzel(firstName, lastName);
+
+
 
     this.patchState(_state => {
       const user: AppUser = {
@@ -126,9 +127,9 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
         lastName,
         fullName,
         kuerzel,
-        fachRollen,
-        organisationRollen,
-        berechtigungen,
+        currentOrganisationRollen: allOrganisationRollen.length > 0 ? allOrganisationRollen[0] : undefined,
+        allOrganisationRollen,
+        systemRollen,
         timestampAGBAccepted,
       };
       console.debug('BenutzerStore.onUserAuthenticated: user', user);
@@ -171,8 +172,7 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
   // Factory-Function that returns a computed signal based on the passed argument
   createHasRequiredRoleSig = (matcher: RoleMatcher) =>
     computed(() => {
-      const berechtigungen = this.state().user?.berechtigungen ?? [];
-      return matcher(berechtigungen);
+      return matcher(this.berechtigungen());
     });
 
   acceptAGB = rxMethod<{ onSuccess: () => void; }>(

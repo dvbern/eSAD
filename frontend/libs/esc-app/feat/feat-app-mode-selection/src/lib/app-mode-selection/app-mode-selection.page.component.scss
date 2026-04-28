@@ -1,0 +1,99 @@
+$tile-size: 174px;
+$tile-icon-size: 44px;
+$tile-border-radius: 16px;
+$tile-background: #ffffff;
+$tile-border-color: #e0e0e0;
+
+.app-mode-selection {
+  position: relative;
+  padding: 2rem 0;
+
+  &__watermark {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 400px;
+    height: auto;
+    opacity: 0.08;
+    pointer-events: none;
+    user-select: none;
+    transform: rotate(-300deg);
+  }
+
+  &__intro {
+    margin-bottom: 2.5rem;
+  }
+
+  &__greeting {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  &__date {
+    margin-bottom: 0.25rem;
+  }
+
+  &__welcome-text {
+    margin-bottom: 0;
+    margin-top: 0;
+
+    a {
+      text-decoration: underline;
+    }
+  }
+
+  &__tiles {
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__tile-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__cardlogo {
+    width: $tile-icon-size;
+    height: $tile-icon-size;
+    object-fit: contain;
+  }
+
+  &__tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: $tile-size;
+    height: $tile-size;
+    background-color: $tile-background;
+    border: 1px solid $tile-border-color;
+    border-radius: $tile-border-radius;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    text-decoration: none;
+    transition: box-shadow 0.2s ease;
+
+    svui-icon {
+      --svui-icon-size: #{$tile-icon-size};
+      color: var(--svui-color-primary, #6c4fa0);
+    }
+
+    &:hover {
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--svui-color-primary, #6c4fa0);
+      outline-offset: 2px;
+    }
+  }
+
+  &__tile-label {
+    font-weight: 700;
+    text-align: center;
+    max-width: $tile-size;
+  }
+}

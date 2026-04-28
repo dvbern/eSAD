@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppAuthException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -92,11 +93,16 @@ public class CurrentUserServiceImpl implements CurrentUserService {
     }
 
     @Override
-    public Optional<Benutzer> findCurrentUser() {
+    public Optional<Benutzer> findCurrentUserWithBerechtigungen() {
         if (association.getIdentity().isAnonymous()) {
             return Optional.empty();
         }
         return repo.getByBenutzernameWithBerechtigungen(currentUserName());
+    }
+
+    @Override
+    public Benutzer getCurrentUserWithBerechtigungen() {
+       return findCurrentUserWithBerechtigungen().orElseThrow(() -> new AppValidationException(AppValidationMessage.noUserLoggedIn()));
     }
 
     @Override

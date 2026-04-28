@@ -45,7 +45,7 @@ class ImpfstoffGeplantCsvColumnTest extends AbstractBaseColumnTest {
 		ImpfungGeplantCsvColumn column = new ImpfungGeplantCsvColumn(config, null);
 
 		Untersuchung untersuchung = UntersuchungBuilder.defaultUntersuchung(LocalDate.now());
-		Einladung einladung = untersuchung.getEinladung();
+		Einladung einladung = untersuchung.getEinladungRequired();
 		einladung.setUntersuchung(untersuchung);
 
 		when(untersuchungImpfungInternServiceMock.findByUntersuchung(any(ID.class))).thenReturn(List.of(createImpfung(
@@ -64,7 +64,7 @@ class ImpfstoffGeplantCsvColumnTest extends AbstractBaseColumnTest {
 		ImpfungGeplantCsvColumn column = new ImpfungGeplantCsvColumn(config, null);
 
 		Untersuchung untersuchung = UntersuchungBuilder.defaultUntersuchung(LocalDate.now());
-		Einladung einladung = untersuchung.getEinladung();
+		Einladung einladung = untersuchung.getEinladungRequired();
 		einladung.setUntersuchung(untersuchung);
 
 		when(untersuchungImpfungInternServiceMock.findByUntersuchung(any(ID.class))).thenReturn(List.of());

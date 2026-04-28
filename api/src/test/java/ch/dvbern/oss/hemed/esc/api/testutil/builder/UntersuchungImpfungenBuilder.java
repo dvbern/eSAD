@@ -37,6 +37,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenJs
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 
 public class UntersuchungImpfungenBuilder {
 
@@ -168,7 +169,7 @@ public class UntersuchungImpfungenBuilder {
     @NonNull
     public static UntersuchungImpfungenJson createJax(@NonNull Consumer<UntersuchungImpfungenBuilder> block) {
         UntersuchungImpfungen entity = create(block);
-        return UntersuchungImpfungenMapper.toJson(entity);
+        return UntersuchungImpfungenMapper.toJson(entity, TenantEnum.BS);
     }
 
 

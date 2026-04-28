@@ -1,30 +1,28 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.einladung;
 
-import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintragService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.EinladungJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.EinladungListJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.EinladungSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.NaechsteStationJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.UntersuchungTabInfoJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.UntersuchungTabsSavedJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDatenMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.EinladungJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.EinladungListJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.EinladungSaveJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.UntersuchungTabInfoJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.UntersuchungTabsSavedJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindMapper;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.NachkontrolleMapper;
@@ -36,11 +34,18 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizJson;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.util.PathParamConsistancyUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
+
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 @JaxMapper
 @RequiredArgsConstructor
@@ -48,6 +53,7 @@ public final class EinladungMapper {
 
     private final AnlassService anlassService;
     private final EinladungService einladungService;
+    private final AnonymerEintragService anonymerEintragService;
     private final UntersuchungService untersuchungService;
     private final EinladungNotizMapper einladungNotizMapper;
     private final NachkontrolleService nachkontrolleService;
@@ -55,12 +61,15 @@ public final class EinladungMapper {
     private final AktivitaetHistoryService aktivitaetHistoryService;
     private final UntersuchungImpfstatusKrankheitService untersuchungImpfstatusKrankheitService;
     private final UntersuchungImpfungInternService untersuchungImpfungInternService;
+    private final TenantProducer tenantProducer;
 
     @NonNull
     public static EinladungJson toJson(
         @NonNull Einladung einladung,
         @Nullable Nachkontrolle nachkontrolle,
-        @NonNull LocalDate now) {
+        @NonNull LocalDate now,
+        @NonNull TenantEnum tenant
+    ) {
         return new EinladungJson(
             einladung.getId(),
             EntityInfoJson.fromEntity(einladung),
@@ -71,7 +80,7 @@ public final class EinladungMapper {
                 einladung.getGrundAbmeldung(),
                 einladung.getArtAbmeldung(),
                 einladung.getBemerkungAbmeldung(),
-                einladung.getNotizen().stream().map(NotizMapper::toJson).toList(),
+                einladung.getNotizen().stream().map(n -> NotizMapper.toJson(n, tenant)).toList(),
                 einladung.getVersion(),
                 einladung.getAbmeldungsNotiz().map(AbstractEntity::getVersion).orElse(-1L)
             ),
@@ -162,6 +171,7 @@ public final class EinladungMapper {
         // Impfausweis wird separat gespeichert
         // Fragebogen wird separat gespeichert
         // AnmeldungBestätigung wird separat gespeichert
+        // Impfanmeldung wird separat gespeichert
 
         return existing;
     }
@@ -171,11 +181,13 @@ public final class EinladungMapper {
         @NonNull ID<Anlass> anlassId
     ) {
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
+        TenantEnum tenant = tenantProducer.produceTenant();
         return einladungService.findByAnlass(anlassId).stream()
             .map(einladung -> toJson(
                 einladung,
                 this.nachkontrolleService.getOrCreateByDossier(einladung.getDossier().getId()),
-                now
+                now,
+                tenant
             ))
             .toList();
     }
@@ -186,7 +198,7 @@ public final class EinladungMapper {
         aktivitaetHistoryService.createAktivitaetKind(einladung.getDossier().getKind());
         Nachkontrolle nachkontrolle = this.nachkontrolleService.getOrCreateByDossier(einladung.getDossier().getId());
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
-        return toJson(einladung, nachkontrolle, now);
+        return toJson(einladung, nachkontrolle, now, tenantProducer.produceTenant());
     }
 
     @NonNull
@@ -208,11 +220,13 @@ public final class EinladungMapper {
     ) {
         Anlass anlass = anlassService.getById(anlassID);
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
+        TenantEnum tenant = tenantProducer.produceTenant();
         return einladungService.createEinladungenForAnlass(anlass, kindListJson.getKinderIdList()).stream()
             .map(einladung -> toJson(
                 einladung,
                 this.nachkontrolleService.getOrCreateByDossier(einladung.getDossier().getId()),
-                now
+                now,
+                tenant
             ))
             .toList();
     }
@@ -262,7 +276,7 @@ public final class EinladungMapper {
             einladungService.persistWithOptimisticLocking(updated, einladungSaveJson.getVersion());
         Nachkontrolle nachkontrolle = this.nachkontrolleService.getOrCreateByDossier(updated.getDossier().getId());
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
-        return toJson(persistedEinladung, nachkontrolle, now);
+        return toJson(persistedEinladung, nachkontrolle, now, tenantProducer.produceTenant());
     }
 
     @NonNull
@@ -272,7 +286,7 @@ public final class EinladungMapper {
         @NonNull List<FileUpload> fileUploads
     ) {
         Notiz notiz = einladungNotizMapper.createEinladungNotiz(einladungId, createJson, fileUploads);
-        return NotizMapper.toJson(notiz);
+        return NotizMapper.toJson(notiz, tenantProducer.produceTenant());
     }
 
     private void updateAbmeldungsNotiz(
@@ -286,16 +300,29 @@ public final class EinladungMapper {
         einladungService.untersuchungAbschliessen(einladungId);
     }
 
-    public void requireConsistentPathParams(@NonNull ID<Einladung> einladungId, @NonNull ID<Anlass> expectedAnlassId) {
-        ID<Anlass> actualAnlassId = einladungService.getByIdLockedQuery(einladungId).getAnlass().getId();
-        PathParamConsistancyUtil.requireForeignIdsAreEqual(einladungId, actualAnlassId, expectedAnlassId);
+    public void requireConsistentPathParams(@NonNull HasUntersuchungIDWrapper einladungId, @NonNull ID<Anlass> expectedAnlassId) {
+        requireConsistentPathParams(einladungId.toEinladungId(), expectedAnlassId);
+    }
+
+    public void requireConsistentPathParams(@NonNull ID<?> einladungId, @NonNull ID<Anlass> expectedAnlassId) {
+
+        ID<Anlass> actualAnlass = null;
+        if (einladungId.getEntityClazz() == Einladung.class) {
+            actualAnlass = einladungService.getByIdLockedQuery((ID<Einladung>) einladungId).getAnlass().getId();
+        }
+
+        if (einladungId.getEntityClazz() == AnonymerEintrag.class) {
+            actualAnlass = anonymerEintragService.getById((ID<AnonymerEintrag>) einladungId).getAnlass().getId();
+        }
+
+        PathParamConsistancyUtil.requireForeignIdsAreEqual(einladungId, actualAnlass, expectedAnlassId);
     }
 
     public void requireConsistentPathParams(
-        @NonNull List<ID<Einladung>> einladungenIds,
+        @NonNull List<? extends ID<?>> einladungenIds,
         @NonNull ID<Anlass> expectedAnlassId
     ) {
-        Map<ID<Einladung>, ID<Anlass>> einladungenToAnlassMap = einladungService.getAnlassEinladungsMap(einladungenIds);
+        Map<ID<?>, ID<Anlass>> einladungenToAnlassMap = einladungService.getAnlassEinladungsMap(einladungenIds);
         einladungenIds.forEach(einladungId -> PathParamConsistancyUtil.requireForeignIdsAreEqual(
             einladungId,
             einladungenToAnlassMap.get(einladungId),

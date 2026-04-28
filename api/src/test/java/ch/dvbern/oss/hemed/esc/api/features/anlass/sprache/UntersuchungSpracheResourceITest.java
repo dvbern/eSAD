@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+
 @QuarkusTest
 @RequiredArgsConstructor
 class UntersuchungSpracheResourceITest extends AbstractITest {
@@ -46,7 +48,7 @@ class UntersuchungSpracheResourceITest extends AbstractITest {
         // ACT / ASSERT
         api.untersuchungSpracheResourceGetUntersuchungSprache()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -67,8 +69,8 @@ class UntersuchungSpracheResourceITest extends AbstractITest {
         assertThat(existingSprache.getBemerkungen()).isNotNull();
         // ACT
         UntersuchungSpracheJsonSpec result = api.untersuchungSpracheResourceGetUntersuchungSprache()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -107,7 +109,7 @@ class UntersuchungSpracheResourceITest extends AbstractITest {
 
         UntersuchungSpracheJsonSpec result = api.untersuchungSpracheResourceSaveUntersuchungSprache()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()

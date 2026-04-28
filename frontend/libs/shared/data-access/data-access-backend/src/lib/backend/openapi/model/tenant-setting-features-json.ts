@@ -24,6 +24,7 @@ export interface TenantSettingFeaturesJson {
     benutzerverwaltungIgnoreFachRolleFromKeycloakFeature: TenantSettingFeatureStateJson;
     archivierungFeature: TenantSettingFeatureStateJson;
     zentraleOrganisationFeature: TenantSettingFeatureStateJson;
+    anonymeStatistikFeature: TenantSettingFeatureStateJson;
 }
 
 

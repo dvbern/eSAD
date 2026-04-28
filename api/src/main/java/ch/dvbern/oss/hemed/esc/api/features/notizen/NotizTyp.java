@@ -8,7 +8,8 @@ public enum NotizTyp {
     FRAGEBOGEN(true),
     IMPFAUSWEIS(true),
     ANMELDUNG_BESTAETIGUNG(true),
-    ABMELDUNG(true);
+    ABMELDUNG(true),
+    IMPFANMELDUNG(true);
 
     private final boolean unique;
 

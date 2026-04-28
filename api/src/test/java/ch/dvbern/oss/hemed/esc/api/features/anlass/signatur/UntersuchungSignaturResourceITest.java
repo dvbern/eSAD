@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+
 @QuarkusTest
 @RequiredArgsConstructor
 class UntersuchungSignaturResourceITest extends AbstractITest {
@@ -41,7 +43,7 @@ class UntersuchungSignaturResourceITest extends AbstractITest {
         // ACT / ASSERT
         api.untersuchungSignaturResourceGetUntersuchungSignatur()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -61,8 +63,8 @@ class UntersuchungSignaturResourceITest extends AbstractITest {
         assertThat(existingSignatur.getTimestampVisiert()).isNotNull();
         // ACT
         UntersuchungSignaturJsonSpec result = api.untersuchungSignaturResourceGetUntersuchungSignatur()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -88,8 +90,8 @@ class UntersuchungSignaturResourceITest extends AbstractITest {
         assertThat(untersuchung.getUntersuchungSignatur()).isNull();
         // ACT
         UntersuchungSignaturJsonSpec result = api.untersuchungSignaturResourceSignieren()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -116,8 +118,8 @@ class UntersuchungSignaturResourceITest extends AbstractITest {
         assertThat(existingSignatur.getTimestampVisiert()).isNotNull();
         // ACT
         UntersuchungSignaturJsonSpec result = api.untersuchungSignaturResourceResetSignatur()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()

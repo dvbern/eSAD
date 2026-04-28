@@ -12,6 +12,7 @@ import {
   NgSelectDirective,
   SaveCancelButtonsComponent,
 } from '@dvb/ui-components';
+import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import {DirtyMarker} from '@dvb/util-angular';
 import {compareFn, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
@@ -88,7 +89,7 @@ export class UntersuchungSehenMassnahmenComponent implements DirtyMarker {
       const payload = this.form.valueOnValid();
       this.store.saveSehenMassnahmen({
         anlassId: anlassId,
-        einladungId: einladungId,
+        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
         untersuchungSehenMassnahmenSaveJson: payload,
       });
     }

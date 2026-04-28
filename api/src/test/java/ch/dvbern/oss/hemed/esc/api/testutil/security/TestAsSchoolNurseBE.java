@@ -4,8 +4,12 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.UUID;
 
+import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.JsonWebTokenClaims;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import io.quarkus.test.security.TestSecurity;
 import io.quarkus.test.security.oidc.Claim;
 import io.quarkus.test.security.oidc.OidcSecurity;
@@ -19,6 +23,8 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLA
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ARCHIVIERUNG;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AUFGABEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AUFGABEN_SCHREIBEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.BENUTZER_BERECHTIGUNGEN_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.IMPFSTOFFE_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_ALLE_NOTIZEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_ALLE_NOTIZEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_LESEN_MEDIZINISCH;
@@ -28,7 +34,9 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_NO
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KOMPLETTER_EXPORT;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LABELS_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ORGANISATION_VERWALTEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_ABSCHLUSS_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_ABSCHLUSS_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_LESEN;
@@ -61,15 +69,13 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         AUFGABEN_LESEN,
         AUFGABEN_SCHREIBEN,
         ANLASSLISTE_LESEN,
+        ANLASSLISTE_LESEN_LAEUSE,
         ANLASSPLANUNG_LESEN,
         ANLASSPLANUNG_SCHREIBEN,
-        ANLASSLISTE_LESEN_LAEUSE,
         ANLASSPLANUNG_LESEN_LAEUSE,
         ANLASSPLANUNG_SCHREIBEN_LAEUSE,
         SU_DATEN_LESEN,
         SU_DATEN_SCHREIBEN,
-        SU_VORABKLAERUNGEN_LESEN,
-        SU_VORABKLAERUNGEN_SCHREIBEN,
         SU_IMPFEN_LESEN,
         SU_IMPFEN_SCHREIBEN,
         SU_SEHEN_LESEN,
@@ -78,16 +84,18 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         SU_HOREN_SCHREIBEN,
         SU_GROSSE_GEWICHT_LESEN,
         SU_GROSSE_GEWICHT_SCHREIBEN,
+        SU_LAEUSE_LESEN,
+        SU_LAEUSE_SCHREIBEN,
         SU_TRIAGE_LESEN,
         SU_TRIAGE_SCHREIBEN,
         SU_AERZTLICHE_UNTERSUCHUNG_LESEN,
         SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN,
         SU_MASSNAHMEN_LESEN,
         SU_MASSNAHMEN_SCHREIBEN,
-        SU_LAEUSE_LESEN,
-        SU_LAEUSE_SCHREIBEN,
         SU_ABSCHLUSS_LESEN,
         SU_ABSCHLUSS_SCHREIBEN,
+        SU_VORABKLAERUNGEN_LESEN,
+        SU_VORABKLAERUNGEN_SCHREIBEN,
         KINDER_LESEN_MEDIZINISCH,
         KINDER_LESEN_NICHT_MEDIZINISCH,
         KINDER_SCHREIBEN_MEDIZINISCH,
@@ -98,6 +106,10 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
         KOMPLETTER_EXPORT,
         LISTEN_LESEN,
+        IMPFSTOFFE_LESEN,
+        LABELS_LESEN,
+        BENUTZER_BERECHTIGUNGEN_LESEN,
+        ORGANISATION_VERWALTEN_LESEN,
         VORLAGEN_LESEN,
         ARCHIVIERUNG
     }
@@ -113,8 +125,12 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         @Claim(key = JsonWebTokenClaims.PHONE_CLAIM, value = TestAsSchoolNurseBE.TELEFON),
     }
 )
+@TestAsMarker
 public @interface TestAsSchoolNurseBE {
     String BENUTZER_ID = "1b7b7b30-1075-456b-9e65-1cb47b07cdba";
+    ID<Benutzer> BENUTZER_ID_ID = ID.of(UUID.fromString(BENUTZER_ID), Benutzer.class);
+    String ORGANISATION_ID = "a0dfe3f4-4419-4d9e-96b3-1be3b606596d";
+    ID<Organisation> ORGANISATION_ID_ID = ID.of(UUID.fromString(ORGANISATION_ID), Organisation.class);
     String BENUTZER_ID_IN_KC = "b8c2ae55-8489-45bb-bcef-5eefe19731be";
     String EMAIL = "school-nurse@mailbucket.dvbern.ch";
     String USERNAME = "school-nurse@mailbucket.dvbern.ch";

@@ -1,5 +1,7 @@
 package ch.dvbern.dvbstarter.infrastructure.exceptionmapper;
 
+import java.util.regex.Pattern;
+
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
@@ -16,6 +18,7 @@ import jakarta.ws.rs.ext.Providers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.postgresql.util.PSQLException;
 
 import static ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage.internalError;
@@ -49,7 +52,8 @@ class GenericExceptionMapper implements ExceptionMapper<Exception> {
             ExceptionUtils.throwableOfType(exception, org.hibernate.exception.ConstraintViolationException.class);
         // ForeignKey Constraints
         if (rootCause instanceof PSQLException ex && ex.getMessage().contains("violates foreign key")) {
-            var appValidationException = new AppValidationException(AppValidationMessage.referencedForeignKey());
+            String constraintName = extractFkConstraintName(ex.getMessage());
+            var appValidationException = new AppValidationException(AppValidationMessage.referencedForeignKeyWithName(constraintName));
             return providers.getExceptionMapper(AppValidationException.class).toResponse(appValidationException);
         }
         // UniqueKey Constraint sind im HibernateConstraintViolationExceptionMapper behandelt
@@ -63,5 +67,13 @@ class GenericExceptionMapper implements ExceptionMapper<Exception> {
             .type(MediaType.APPLICATION_JSON_TYPE)
             .entity(new AppFailureErrorJson(exceptionId, msg))
             .build();
+    }
+
+    private String extractFkConstraintName(@NonNull String message) {
+        var matcher = Pattern.compile("violates foreign key constraint \"([^\"]+)\"").matcher(message);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return "";
     }
 }

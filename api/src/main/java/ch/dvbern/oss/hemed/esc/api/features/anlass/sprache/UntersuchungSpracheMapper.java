@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.sprache;
 
+import java.util.function.Consumer;
+
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -58,8 +60,12 @@ public final class UntersuchungSpracheMapper {
     }
 
     @Nullable
-    public UntersuchungSpracheJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+    public UntersuchungSpracheJson getByEinladung(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungSprache untersuchungSprache =
             untersuchungSpracheService.getByUntersuchung(untersuchung.getId());
         return untersuchungSprache != null ? toJson(untersuchungSprache) : null;
@@ -68,9 +74,11 @@ public final class UntersuchungSpracheMapper {
     @NonNull
     public UntersuchungSpracheJson save(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungSpracheSaveJson saveJson
+        @NonNull UntersuchungSpracheSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungSprache sprache = untersuchung.getUntersuchungSprache();
         UntersuchungSprache entity = toEntity(untersuchung, sprache, saveJson);
         return toJson(untersuchungSpracheService.persistWithOptimisticLocking(entity, saveJson.getVersion()));

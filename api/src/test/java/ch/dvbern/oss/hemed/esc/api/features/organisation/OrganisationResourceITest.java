@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.organisation;
 
 import java.util.List;
 
+import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerResourceHelper;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
@@ -9,9 +10,9 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
-import ch.dvbern.oss.hemed.esc.api.testutil.builder.OrganisationBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBE;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.OrganisationApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.OrganisationJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.OrganisationListJsonSpec;
@@ -29,9 +30,9 @@ class OrganisationResourceITest extends AbstractITest {
 
     private final OrganisationApiSpec api = OrganisationApiSpec.organisation(RequestSpecUtil.quarkusSpec());
 
-    private final OrganisationService organisationService;
     private final BenutzerService benutzerService;
     private final TenantProducer tenantProducer;
+    private final BenutzerResourceHelper benutzerResourceHelper;
 
     @Override
     @BeforeEach
@@ -40,20 +41,13 @@ class OrganisationResourceITest extends AbstractITest {
     }
 
     @Test
-    @TestAsAdminBE
-    void findAllOrganisationen() {
+    @TestAsSupportBE
+    void findOrganisationenBerechtigt_as_SUPPORT_returns_all() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
-        Benutzer verantwortlicherArzt1 = BenutzerBuilder.defaultBenutzer();
-        Benutzer verantwortlicherArzt2 = BenutzerBuilder.defaultBenutzer();
-        benutzerService.persist(verantwortlicherArzt1);
-        benutzerService.persist(verantwortlicherArzt2);
-        Organisation organisation1 =
-            OrganisationBuilder.create(builder -> builder.withVerantwortlicherArzt(verantwortlicherArzt1));
-        Organisation organisation2 =
-            OrganisationBuilder.create(builder -> builder.withVerantwortlicherArzt(verantwortlicherArzt2));
-        organisationService.persist(organisation1);
-        organisationService.persist(organisation2);
+        Benutzer verantwortlicherArzt1 = benutzerResourceHelper.createSchularztAsOrganisationsChef(TenantEnum.BE);
+        Benutzer verantwortlicherArzt2 = benutzerResourceHelper.createSchularztAsOrganisationsChef(TenantEnum.BE);
+        Organisation organisation1 = verantwortlicherArzt1.getOrganisationRollen().stream().findFirst().get().getOrganisation();
+        Organisation organisation2 = verantwortlicherArzt2.getOrganisationRollen().stream().findFirst().get().getOrganisation();
 
         Benutzer benutzer1 = BenutzerBuilder.create(builder -> builder.withOrganisationRollen(organisation1, List.of(
             FachRolle.MPA)));
@@ -63,7 +57,7 @@ class OrganisationResourceITest extends AbstractITest {
 
         // ACT
         OrganisationListJsonSpec result = api
-            .organisationResourceFindAllOrganisationen()
+            .organisationResourceFindOrganisationenBerechtigt()
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -74,38 +68,33 @@ class OrganisationResourceITest extends AbstractITest {
         Assertions.assertThat(result.getOrganisationList())
             .isNotEmpty()
             .map(OrganisationJsonSpec::getId)
-            .containsAll(List.of(organisation1.getId().getId(), organisation2.getId().getId()));
+            .containsAll(List.of(TestAsSchularztBE.ORGANISATION_ID, organisation1.getId().getId(), organisation2.getId().getId()));
     }
 
     @Test
-    @TestAsAdminBE
-    void findOrganisation() {
+    @TestAsSchularztBE
+    void findOrganisationenBerechtigt_as_SCHULARZT_returns_only_own() {
         // ARRANGE
         tenantProducer.setCurrentTenant(TenantEnum.BE);
-        Benutzer verantwortlicherArzt1 = BenutzerBuilder.defaultBenutzer();
-        Benutzer verantwortlicherArzt2 = BenutzerBuilder.defaultBenutzer();
-        benutzerService.persist(verantwortlicherArzt1);
-        benutzerService.persist(verantwortlicherArzt2);
-        Organisation organisation1 =
-            OrganisationBuilder.create(builder -> builder.withVerantwortlicherArzt(verantwortlicherArzt1));
-        Organisation organisation2 =
-            OrganisationBuilder.create(builder -> builder.withVerantwortlicherArzt(verantwortlicherArzt2));
-        organisationService.persist(organisation1);
-        organisationService.persist(organisation2);
+        Benutzer verantwortlicherArzt1 = benutzerResourceHelper.createSchularztAsOrganisationsChef(TenantEnum.BE);
+        Benutzer verantwortlicherArzt2 = benutzerResourceHelper.createSchularztAsOrganisationsChef(TenantEnum.BE);
+        Organisation organisation1 = verantwortlicherArzt1.getOrganisationRollen().stream().findFirst().get().getOrganisation();
+        Organisation organisation2 = verantwortlicherArzt2.getOrganisationRollen().stream().findFirst().get().getOrganisation();
 
         // ACT
-        OrganisationJsonSpec result = api
-            .organisationResourceFindOrganisation()
-            .organisationIdPath(organisation1.getId().getId())
+        OrganisationListJsonSpec result = api
+            .organisationResourceFindOrganisationenBerechtigt()
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
             .statusCode(Status.OK.getStatusCode())
-            .extract().as(OrganisationJsonSpec.class);
+            .extract().as(OrganisationListJsonSpec.class);
 
         // ASSERT
-        Assertions.assertThat(result)
-            .isNotNull()
-            .extracting(OrganisationJsonSpec::getVerantwortlicherArztFullname).isEqualTo(verantwortlicherArzt1.getVorname() + ' ' + verantwortlicherArzt1.getNachname());
+        Assertions.assertThat(result.getOrganisationList())
+            .isNotEmpty()
+            .map(OrganisationJsonSpec::getId)
+            .doesNotContain(organisation1.getId().getId(), organisation2.getId().getId())
+            .contains(TestAsSchularztBE.ORGANISATION_ID);
     }
 }

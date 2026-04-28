@@ -1,15 +1,18 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.json.UntersuchungSchulrelevanteBeeintraechtigungJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.json.UntersuchungSchulrelevanteBeeintraechtigungSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.security.RolesAllowed;
@@ -43,10 +46,14 @@ public class UntersuchungSchulrelevanteBeeintraechtigungResource {
     @Nullable
     public UntersuchungSchulrelevanteBeeintraechtigungJson getUntersuchungSchulrelevanteBeeintraechtigung(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
-        return untersuchungSchulrelevanteBeeintraechtigungMapper.getByEinladung(einladungId);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungSchulrelevanteBeeintraechtigungMapper.getByEinladung(
+            wrappedId.toEinladungId(),
+            untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
+                untersuchung,
+                Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN));
     }
 
     @PUT
@@ -54,11 +61,15 @@ public class UntersuchungSchulrelevanteBeeintraechtigungResource {
     @RolesAllowed(BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN)
     public UntersuchungSchulrelevanteBeeintraechtigungJson saveUntersuchungSchulrelevanteBeeintraechtigung(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId,
         @NotNull @NonNull @Valid UntersuchungSchulrelevanteBeeintraechtigungSaveJson saveJson
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
-        authorizerService.requireWriteAuthorizationAnlass(anlassId);
-        return untersuchungSchulrelevanteBeeintraechtigungMapper.save(einladungId, saveJson);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungSchulrelevanteBeeintraechtigungMapper.save(
+            wrappedId.toEinladungId(),
+            saveJson,
+            untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
+                untersuchung,
+                List.of(Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN)));
     }
 }

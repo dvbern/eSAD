@@ -7,14 +7,14 @@ import {BenutzerListStore, BenutzerStore, OrganisationStore, Path} from "@dvb/fe
 import {confirmOnDirty, toDetailModeStrict} from "@dvb/util-angular";
 import {MitgliederDetailsComponent} from "./mitglieder-details/mitglieder-details.component";
 import {EntityId} from "@ngrx/signals/entities";
-import {hasOrganisationVerwaltungViewBerechtigung, isNullish} from "@dvb/util-shared";
+import {hasOrganisationVerwaltungViewBerechtigung} from "@dvb/util-shared";
 
 export const organisationRoutes: Route[] = [
   {
     path: '',
     resolve: {
       _store: () => {
-        if (inject(BenutzerStore).createHasRequiredRoleSig(hasOrganisationVerwaltungViewBerechtigung())() && isNullish(inject(BenutzerStore).benutzer()?.organisationRollen)) {
+        if (inject(BenutzerStore).createHasRequiredRoleSig(hasOrganisationVerwaltungViewBerechtigung())()) {
           inject(OrganisationStore).loadOrganisationen();
         }
       },
@@ -44,7 +44,6 @@ export const organisationRoutes: Route[] = [
           _store: (route: ActivatedRouteSnapshot) => {
             const param = requireValidBackendEntityId(route.params['organisationId']);
             inject(OrganisationStore).setSelectedEntityId(param);
-            inject(OrganisationStore).loadOrganisation(param);
             inject(BenutzerListStore).loadBenutzerListForOrganisation(param);
           },
         },

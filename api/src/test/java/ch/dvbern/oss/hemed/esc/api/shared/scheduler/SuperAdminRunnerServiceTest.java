@@ -346,7 +346,7 @@ class SuperAdminRunnerServiceTest extends AbstractITest {
     @TestAsAdminBS
     void runDocumentQueueCleanUpJob() {
         // ARRANGE
-        Benutzer benutzer = fixtureService.createBenutzer();
+        Benutzer benutzer = fixtureService.createBenutzerFuerZentraleOrganisation();
         FileData fileData = FileDataBuilder.defaultImgFileData();
         fileDataRepo.persist(fileData);
 
@@ -474,14 +474,14 @@ class SuperAdminRunnerServiceTest extends AbstractITest {
 
         untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder
             .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
-            .withUserErfasst(fixtureService.createBenutzer())
+            .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withImpfstoff(impfstoff)
             .withCharge(chargeUsedRecently)
             .withDatumImpfung(LocalDate.now().minusMonths(1))));
 
         untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder
             .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
-            .withUserErfasst(fixtureService.createBenutzer())
+            .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withImpfstoff(impfstoff)
             .withCharge(chargeUsedLongAgo)
             .withDatumImpfung(LocalDate.now().minusMonths(13))));

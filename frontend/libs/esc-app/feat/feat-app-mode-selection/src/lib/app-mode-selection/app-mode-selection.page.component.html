@@ -1,0 +1,41 @@
+<feat-page [heading]="'app-mode-selection.greeting' | transloco: {name: benutzerStore.requireBenutzer().fullName}"
+           [backLink]="undefined"
+           [showNav]="false">
+  <div class="app-mode-selection">
+    <img class="app-mode-selection__watermark" src="img/logo-no-text.svg" alt="" aria-hidden="true">
+
+    <!--    Greeting-->
+    <div class="app-mode-selection__intro">
+      <p class="app-mode-selection__date fw-bold">{{ today | date: 'EEEE, dd.MM.yyyy' }}</p>
+      <p class="app-mode-selection__welcome-text">{{ 'app-mode-selection.welcome-text' | transloco }}</p>
+      <p class="app-mode-selection__welcome-text">
+        <span>{{ 'app-mode-selection.welcome-link-info' | transloco }}</span>
+        <a href="{{ 'app-mode-selection.welcome-link-url' | transloco }}" target="_blank">
+          {{ 'app-mode-selection.welcome-link-description' | transloco }}
+        </a>
+      </p>
+    </div>
+
+    <!--    Basispaket-->
+    <div class="app-mode-selection__tiles">
+      <div class="app-mode-selection__tile-wrapper">
+        <a class="app-mode-selection__tile"
+           [routerLink]="'/' + Path.DASHBOARD">
+
+          <img class="app-mode-selection__cardlogo" src="img/logo-no-text.svg" alt="logo_basepackage">
+        </a>
+        <span class="app-mode-selection__tile-label">{{ 'app-mode-selection.tile.basispaket' | transloco }}</span>
+      </div>
+
+      <!--      Anonymer Eintrag-->
+      <div class="app-mode-selection__tile-wrapper">
+        <a class="app-mode-selection__tile"
+           [routerLink]="'/' + Path.STATISTIK">
+          <svui-icon [useCase]="'document-plus'"></svui-icon>
+        </a>
+        <span class="app-mode-selection__tile-label">{{ 'app-mode-selection.tile.anonymisierte-statistik' | transloco }}</span>
+      </div>
+    </div>
+
+  </div>
+</feat-page>

@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
@@ -76,87 +78,60 @@ public class AutoNotizService {
         @NonNull Einladung einladungSource,
         @NonNull Einladung einladungTarget
     ) {
-        Kind kind = einladungTarget.getDossier().getKind();
-        KindValidationUtil.throwErrorIfKindIsInactive(
-            kind,
-            AppValidationMessage.cannotEditEntityForInactiveKind(
-                kind,
-                new Notiz()
-            ));
-
-        Notiz impfausweis = einladungSource.getImpfausweisNotiz().orElse(null);
-        if (impfausweis != null) {
-            String newTitle = tl.translate(
-                "einladung.impfausweis.notiz.title",
-                PARAM_ANLASSNAME, einladungTarget.getAnlass().getFullAnlassTitel(tl));
-
-            // Add a note to the existing bemerkungen
-            StringBuilder sb = new StringBuilder();
-            String existingBemerkungen = impfausweis.getBemerkungen();
-            if (existingBemerkungen != null) {
-                sb.append(existingBemerkungen).append('\n');
-            }
-            sb.append(tl.translate(
-                "einladung.impfausweis.notiz.bemerkung.nachzuegler",
-                PARAM_ANLASSNAME, einladungSource.getAnlass().getFullAnlassTitel(tl)));
-            String newBemerkungen = sb.toString();
-
-            Notiz copyOfImpfausweis = Notiz.copyFromExisting(impfausweis, newTitle, newBemerkungen);
-
-            einladungSource.getNotizen().remove(impfausweis);
-            notizService.remove(impfausweis.getId(), false);
-
-            List<Notiz> notizen = new ArrayList<>(einladungTarget.getNotizen().stream().toList());
-            Notiz notiz = notizService.persist(copyOfImpfausweis);
-            notizen.add(notiz);
-            einladungTarget.setNotizen(notizen);
-        }
+        moveNotiz(
+            einladungSource,
+            einladungTarget,
+            Einladung::getImpfausweisNotiz,
+            "einladung.impfausweis.notiz.title",
+            "einladung.impfausweis.notiz.bemerkung.nachzuegler"
+        );
     }
 
     public void moveFragebogenNotiz(
         @NonNull Einladung einladungSource,
         @NonNull Einladung einladungTarget
     ) {
-        Kind kind = einladungTarget.getDossier().getKind();
-        KindValidationUtil.throwErrorIfKindIsInactive(
-            kind,
-            AppValidationMessage.cannotEditEntityForInactiveKind(
-                kind,
-                new Notiz()
-            ));
-        Notiz fragebogen = einladungSource.getFragebogenNotiz().orElse(null);
-
-        if (fragebogen != null) {
-            String newTitle = tl.translate(
-                "einladung.fragebogen.notiz.title",
-                PARAM_ANLASSNAME, einladungTarget.getAnlass().getFullAnlassTitel(tl));
-
-            // Add a note to the existing bemerkungen
-            StringBuilder sb = new StringBuilder();
-            String existingBemerkungen = fragebogen.getBemerkungen();
-            if (existingBemerkungen != null) {
-                sb.append(existingBemerkungen).append('\n');
-            }
-            sb.append(tl.translate(
-                "einladung.fragebogen.notiz.bemerkung.nachzuegler",
-                PARAM_ANLASSNAME, einladungSource.getAnlass().getFullAnlassTitel(tl)));
-            String newBemerkung = sb.toString();
-
-            Notiz copyOfFragebogen = Notiz.copyFromExisting(fragebogen, newTitle, newBemerkung);
-
-            einladungSource.getNotizen().remove(fragebogen);
-            notizService.remove(fragebogen.getId(), false);
-
-            List<Notiz> notizen = new ArrayList<>(einladungTarget.getNotizen().stream().toList());
-            Notiz notiz = notizService.persist(copyOfFragebogen);
-            notizen.add(notiz);
-            einladungTarget.setNotizen(notizen);
-        }
+        moveNotiz(
+            einladungSource,
+            einladungTarget,
+            Einladung::getFragebogenNotiz,
+            "einladung.fragebogen.notiz.title",
+            "einladung.fragebogen.notiz.bemerkung.nachzuegler"
+        );
     }
 
     public void moveAnmeldungBestaetigungNotiz(
         @NonNull Einladung einladungSource,
         @NonNull Einladung einladungTarget
+    ) {
+        moveNotiz(
+            einladungSource,
+            einladungTarget,
+            Einladung::getAnmeldungBestaetigungNotiz,
+            "einladung.anmeldungBestaetigung.notiz.title",
+            "einladung.anmeldungBestaetigung.notiz.bemerkung.nachzuegler"
+        );
+    }
+
+    public void moveImpfanmeldungNotiz(
+        @NonNull Einladung einladungSource,
+        @NonNull Einladung einladungTarget
+    ) {
+        moveNotiz(
+            einladungSource,
+            einladungTarget,
+            Einladung::getImpfanmeldungsNotiz,
+            "einladung.impfanmeldung.notiz.title",
+            "einladung.impfanmeldung.notiz.bemerkung.nachzuegler"
+        );
+    }
+
+    private void moveNotiz(
+        @NonNull Einladung einladungSource,
+        @NonNull Einladung einladungTarget,
+        @NonNull Function<Einladung, Optional<Notiz>> notizExtractor,
+        @NonNull String titleTranslationKey,
+        @NonNull String bemerkungTranslationKey
     ) {
         Kind kind = einladungTarget.getDossier().getKind();
         KindValidationUtil.throwErrorIfKindIsInactive(
@@ -165,33 +140,34 @@ public class AutoNotizService {
                 kind,
                 new Notiz()
             ));
-        Notiz anmeldungBestaetigung = einladungSource.getAnmeldungBestaetigungNotiz().orElse(null);
 
-        if (anmeldungBestaetigung != null) {
+        Notiz existingNotiz = notizExtractor.apply(einladungSource).orElse(null);
+        if (existingNotiz != null) {
             String newTitle = tl.translate(
-                "einladung.anmeldungBestaetigung.notiz.title",
+                titleTranslationKey,
                 PARAM_ANLASSNAME, einladungTarget.getAnlass().getFullAnlassTitel(tl));
 
             // Add a note to the existing bemerkungen
             StringBuilder sb = new StringBuilder();
-            String existingBemerkungen = anmeldungBestaetigung.getBemerkungen();
+            String existingBemerkungen = existingNotiz.getBemerkungen();
             if (existingBemerkungen != null) {
                 sb.append(existingBemerkungen).append('\n');
             }
             sb.append(tl.translate(
-                "einladung.anmeldungBestaetigung.notiz.bemerkung.nachzuegler",
+                bemerkungTranslationKey,
                 PARAM_ANLASSNAME, einladungSource.getAnlass().getFullAnlassTitel(tl)));
-            String newBemerkung = sb.toString();
+            String newBemerkungen = sb.toString();
 
-            Notiz copyOfAnmeldungBestaetigung = Notiz.copyFromExisting(anmeldungBestaetigung, newTitle, newBemerkung);
+            Notiz copyOfNotiz = Notiz.copyFromExisting(existingNotiz, newTitle, newBemerkungen);
 
-            einladungSource.getNotizen().remove(anmeldungBestaetigung);
-            notizService.remove(anmeldungBestaetigung.getId(), false);
+            einladungSource.getNotizen().remove(existingNotiz);
+            notizService.remove(existingNotiz.getId(), false);
 
             List<Notiz> notizen = new ArrayList<>(einladungTarget.getNotizen().stream().toList());
-            Notiz notiz = notizService.persist(copyOfAnmeldungBestaetigung);
+            Notiz notiz = notizService.persist(copyOfNotiz);
             notizen.add(notiz);
             einladungTarget.setNotizen(notizen);
+            LOG.info("Moved Notiz from einladung {} to einladung {}", einladungSource.getId(), einladungTarget.getId());
         }
     }
 
@@ -225,6 +201,7 @@ public class AutoNotizService {
         return savedNotiz;
     }
 
+
     @Nullable
     private ID<Label> getAutoLabelId(@NonNull NotizTyp notizTyp) {
         return switch (notizTyp) {
@@ -232,6 +209,7 @@ public class AutoNotizService {
             case NotizTyp.ANMELDUNG_BESTAETIGUNG -> Label.ID_LABEL_ANMELDUNG_BESTAETIGUNG;
             case NotizTyp.IMPFAUSWEIS -> Label.ID_LABEL_IMPFAUSWEIS;
             case NotizTyp.ABMELDUNG -> Label.ID_LABEL_ABMELDUNGSGRUND;
+            case NotizTyp.IMPFANMELDUNG -> Label.ID_LABEL_IMPFANMELDUNG;
             case NotizTyp.DEFAULT -> null;
         };
     }

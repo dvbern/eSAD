@@ -24,9 +24,9 @@ import ch.dvbern.oss.hemed.esc.api.features.arzt.Arzt;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.Briefvorlage;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.BriefvorlageType;
+import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.MassenbriefGeneratorService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
-import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.MassenbriefGeneratorService;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueMassenbriefSaveJson;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
@@ -65,7 +65,8 @@ class MassenbriefgenerierungServiceITest extends AbstractITest {
             null,
             List.of(kind1.getId(), kind2.getId())
         );
-        Benutzer benutzer = benutzerService.getCurrentBenutzerOrThrowException();
+        Benutzer benutzer =
+            fixtureService.readBenutzerWithBerechtigungen(benutzerService.getCurrentBenutzerOrThrowException().getId());
 
         // Act
         Path result =

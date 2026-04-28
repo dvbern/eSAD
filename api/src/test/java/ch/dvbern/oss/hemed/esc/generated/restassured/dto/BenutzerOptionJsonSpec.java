@@ -23,9 +23,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -62,8 +59,8 @@ public class BenutzerOptionJsonSpec {
   private String fullName;
 
   public static final String JSON_PROPERTY_ORGANISATION_ROLLEN = "organisationRollen";
-  @jakarta.annotation.Nonnull
-  private List<OrganisationRollenJsonSpec> organisationRollen;
+  @jakarta.annotation.Nullable
+  private OrganisationRollenJsonSpec organisationRollen;
 
   public static final String JSON_PROPERTY_SYSTEM_ROLLEN = "systemRollen";
   @jakarta.annotation.Nullable
@@ -176,17 +173,9 @@ public class BenutzerOptionJsonSpec {
     this.fullName = fullName;
   }
 
-  public BenutzerOptionJsonSpec organisationRollen(@jakarta.annotation.Nonnull List<OrganisationRollenJsonSpec> organisationRollen) {
+  public BenutzerOptionJsonSpec organisationRollen(@jakarta.annotation.Nullable OrganisationRollenJsonSpec organisationRollen) {
     
     this.organisationRollen = organisationRollen;
-    return this;
-  }
-
-  public BenutzerOptionJsonSpec addOrganisationRollenItem(OrganisationRollenJsonSpec organisationRollenItem) {
-    if (this.organisationRollen == null) {
-      this.organisationRollen = new ArrayList<>();
-    }
-    this.organisationRollen.add(organisationRollenItem);
     return this;
   }
 
@@ -194,18 +183,18 @@ public class BenutzerOptionJsonSpec {
    * Get organisationRollen
    * @return organisationRollen
    */
-  @jakarta.annotation.Nonnull
+  @jakarta.annotation.Nullable
   @JsonProperty(JSON_PROPERTY_ORGANISATION_ROLLEN)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<OrganisationRollenJsonSpec> getOrganisationRollen() {
+  public OrganisationRollenJsonSpec getOrganisationRollen() {
     return organisationRollen;
   }
 
 
   @JsonProperty(JSON_PROPERTY_ORGANISATION_ROLLEN)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setOrganisationRollen(@jakarta.annotation.Nonnull List<OrganisationRollenJsonSpec> organisationRollen) {
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setOrganisationRollen(@jakarta.annotation.Nullable OrganisationRollenJsonSpec organisationRollen) {
     this.organisationRollen = organisationRollen;
   }
 

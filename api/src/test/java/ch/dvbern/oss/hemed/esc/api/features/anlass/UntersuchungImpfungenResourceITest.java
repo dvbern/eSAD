@@ -68,6 +68,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+
 @QuarkusTest
 @RequiredArgsConstructor
 class UntersuchungImpfungenResourceITest extends AbstractITest {
@@ -100,7 +102,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		// ACT / ASSERT
 		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
 				.anlassIdPath(einladung.getAnlass().getId().getId())
-				.einladungIdPath(einladung.getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
 				.execute(ResponseBody::prettyPeek)
 				.then()
 				.assertThat()
@@ -124,8 +126,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 
 		// ACT
 		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
 				.execute(ResponseBody::prettyPeek)
 				.then()
 				.assertThat()
@@ -143,7 +145,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 	void createUntersuchungImpfungen() {
 		// ARRANGE
 		Einladung einladung = fixtureService.createEinladung();
-		Benutzer benutzer = fixtureService.createBenutzer();
+		Benutzer benutzer = fixtureService.createBenutzerFuerZentraleOrganisation();
 
 		UntersuchungImpfungenSaveJsonSpec saveJsonSpec =
             UntersuchungImpfungenBuilder.createJaxSpec(builder -> builder
@@ -155,7 +157,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		// ACT
 		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceSaveUntersuchungImpfungen()
 				.anlassIdPath(einladung.getAnlass().getId().getId())
-				.einladungIdPath(einladung.getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
 				.body(saveJsonSpec)
 				.execute(ResponseBody::prettyPeek)
 				.then()
@@ -180,7 +182,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 	@TestAsAdminBS
 	void updateUntersuchungImpfungen() {
 		// ARRANGE
-		Benutzer anotherBenutzer = fixtureService.createBenutzer();
+		Benutzer anotherBenutzer = fixtureService.createBenutzerFuerZentraleOrganisation();
 		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
 		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
 		UntersuchungImpfungen existingImpfungen =
@@ -193,8 +195,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 						.withBemerkungen("Test updateUntersuchungImpfungen")
 						.withVisum1(anotherBenutzer, appClock.offsetDateTime().now().toLocalDate())).getData();
 		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceSaveUntersuchungImpfungen()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
 				.body(saveJsonSpec)
 				.execute(ResponseBody::prettyPeek)
 				.then()
@@ -229,8 +231,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
             untersuchungImpfungenBuilder -> untersuchungImpfungenBuilder
                 .forUntersuchungImpfungen(existingImpfungen)).getData();
 		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceVisierenDoppelkontrolleVisum1()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
                 .body(payload)
 				.execute(ResponseBody::prettyPeek)
 				.then()
@@ -253,7 +255,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 	@TestAsAdminBS
 	void anfordernDoppelkontrolleVisum2() {
 		// ARRANGE
-		Benutzer anotherBenutzer = fixtureService.createBenutzer();
+		Benutzer anotherBenutzer = fixtureService.createBenutzerFuerZentraleOrganisation();
 		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
 		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
 		UntersuchungImpfungen existingImpfungen =
@@ -265,8 +267,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
                 .forUntersuchungImpfungen(existingImpfungen)
                 .withVisum2(anotherBenutzer, LocalDate.now())).getData();
 		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceAnfordernDoppelkontrolleVisum2()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
 				.body(payload)
 				.execute(ResponseBody::prettyPeek)
 				.then()
@@ -291,14 +293,14 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 			Assertions.assertThat(aufgabe.getLink()).isNotNull();
 			Assertions.assertThat(aufgabe.getLink())
 					.isEqualTo(Util.parseURL("https://local-esc-bs.localhost:4443/anlass/"
-							+ untersuchung.getEinladung()
+							+ untersuchung.getEinladungRequired()
 							.getAnlass()
 							.getId()
 							.getId()
 							+ "/untersuchung/einladung/"
-							+ untersuchung.getEinladung().getId().getId()
+							+ untersuchung.getEinladungRequired().getId().getId()
 							+ "/impfungen?einladungIds="
-							+ untersuchung.getEinladung().getId().getId()));
+							+ untersuchung.getEinladungRequired().getId().getId()));
 		}
 	}
 
@@ -316,8 +318,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
             untersuchungImpfungenBuilder -> untersuchungImpfungenBuilder
                 .forUntersuchungImpfungen(existingImpfungen)).getData();
 		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceVisierenDoppelkontrolleVisum2()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
                 .body(payload)
 				.execute(ResponseBody::prettyPeek)
 				.then()
@@ -350,8 +352,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
             untersuchungImpfungenBuilder -> untersuchungImpfungenBuilder
                 .forUntersuchungImpfungen(existingImpfungen)).getData();
         UntersuchungImpfungenJsonSpec resultVisum = api.untersuchungImpfungenResourceVisierenDoppelkontrolleVisum1()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(payloadSetVisum1)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -370,8 +372,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
             untersuchungImpfungenBuilder -> untersuchungImpfungenBuilder
                 .forUntersuchungImpfungen(existingImpfungen)).getData();
 		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceResetDoppelkontrolle()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
                 .body(payload)
 				.execute(ResponseBody::prettyPeek)
 				.then()
@@ -395,7 +397,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		// ACT
 		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
 				.anlassIdPath(einladung.getAnlass().getId().getId())
-				.einladungIdPath(einladung.getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
 				.execute(ResponseBody::prettyPeek)
 				.then()
 				.assertThat()
@@ -422,8 +424,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 
 		// ACT
 		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
 				.execute(ResponseBody::prettyPeek)
 				.then()
 				.assertThat()
@@ -459,8 +461,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 				new UntersuchungImpfstatusListSaveJsonSpec(List.of(createJsonSpec));
 		UntersuchungImpfstatusListSaveJsonSpec result =
 				api.untersuchungImpfungenResourceSaveUntersuchungImpfungenImpfstatus()
-						.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-						.einladungIdPath(untersuchung.getEinladung().getId().getId())
+						.anlassIdPath(untersuchung.getAnlass().getId().getId())
+						.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
 						.body(listSpec)
 						.execute(ResponseBody::prettyPeek)
 						.then()
@@ -514,8 +516,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 						createVarizellenJsonSpec));
 		UntersuchungImpfstatusListSaveJsonSpec result =
 				api.untersuchungImpfungenResourceSaveUntersuchungImpfungenImpfstatus()
-						.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-						.einladungIdPath(untersuchung.getEinladung().getId().getId())
+						.anlassIdPath(untersuchung.getAnlass().getId().getId())
+						.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
 						.body(listSpec)
 						.execute(ResponseBody::prettyPeek)
 						.then()
@@ -525,7 +527,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 						.as(UntersuchungImpfstatusListSaveJsonSpec.class);
 		// ASSERT
 		// Es gibt fuer jede Krankheit einen Impfstatus
-		Dossier dossier = dossierService.getById(untersuchung.getEinladung().getDossier().getId());
+		Dossier dossier = dossierService.getById(untersuchung.getEinladungRequired().getDossier().getId());
 		Assertions.assertThat(result.getImpfstatusList()).isNotNull().hasSize(Krankheit.values().length);
 		Assertions.assertThat(dossier.isImmunitaetMasern()).isTrue();
 		Assertions.assertThat(dossier.isImmunitaetVarizellen()).isTrue();
@@ -545,8 +547,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         UntersuchungImpfstatusListSaveJsonSpec createListSpec =
             new UntersuchungImpfstatusListSaveJsonSpec(List.of(createSpec));
         api.untersuchungImpfungenResourceSaveUntersuchungImpfungenImpfstatus()
-						.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-						.einladungIdPath(untersuchung.getEinladung().getId().getId())
+						.anlassIdPath(untersuchung.getAnlass().getId().getId())
+						.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(createListSpec)
 						.execute(ResponseBody::prettyPeek)
 						.then()
@@ -563,8 +565,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
             new UntersuchungImpfstatusListSaveJsonSpec(List.of(updateSpec));
         UntersuchungImpfstatusListSaveJsonSpec result =
             api.untersuchungImpfungenResourceSaveUntersuchungImpfungenImpfstatus()
-                .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-                .einladungIdPath(untersuchung.getEinladung().getId().getId())
+                .anlassIdPath(untersuchung.getAnlass().getId().getId())
+                .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
                 .body(updateListSpec)
                 .execute(ResponseBody::prettyPeek)
                 .then()
@@ -617,8 +619,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
             new UntersuchungImpfstatusListSaveJsonSpec(List.of(createJsonSpecMasern, createJsonSpecPolio));
         UntersuchungImpfstatusListSaveJsonSpec resultKrankheiten =
             api.untersuchungImpfungenResourceSaveUntersuchungImpfungenImpfstatus()
-                .anlassIdPath(previousUntersuchung.getEinladung().getAnlass().getId().getId())
-                .einladungIdPath(previousUntersuchung.getEinladung().getId().getId())
+                .anlassIdPath(previousUntersuchung.getAnlass().getId().getId())
+                .einladungIdPath(toHasUntersuchungIdWrapper(previousUntersuchung.getEinladungRequired().getId()))
                 .body(listSpec)
                 .execute(ResponseBody::prettyPeek)
                 .then()
@@ -638,7 +640,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		// ACT
 		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
 				.anlassIdPath(newEinladung.getAnlass().getId().getId())
-				.einladungIdPath(newEinladung.getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(newEinladung.getId()))
 				.execute(ResponseBody::prettyPeek)
 				.then()
 				.assertThat()
@@ -682,8 +684,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
             new UntersuchungImpfstatusListSaveJsonSpec(List.of(createJsonSpecMasern));
         UntersuchungImpfstatusListSaveJsonSpec resultKrankheiten =
             api.untersuchungImpfungenResourceSaveUntersuchungImpfungenImpfstatus()
-                .anlassIdPath(previousUntersuchung.getEinladung().getAnlass().getId().getId())
-                .einladungIdPath(previousUntersuchung.getEinladung().getId().getId())
+                .anlassIdPath(previousUntersuchung.getAnlass().getId().getId())
+                .einladungIdPath(toHasUntersuchungIdWrapper(previousUntersuchung.getEinladungRequired().getId()))
                 .body(listSpec)
                 .execute(ResponseBody::prettyPeek)
                 .then()
@@ -696,14 +698,14 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 
 		untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
 						previousUntersuchung.getUntersuchungImpfungen())
-				.withUserErfasst(fixtureService.createBenutzer())
+				.withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
 				.withImpfstoff(impfstoff)
 				.withImmunitaetForKrankheit(Krankheit.MASERN, true)
 				.withDatumImpfung(LocalDate.of(2023, 1, 27))));
 
 		untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
 						previousUntersuchung.getUntersuchungImpfungen())
-				.withUserErfasst(fixtureService.createBenutzer())
+				.withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
 				.withImpfstoff(impfstoff)
 				.withImmunitaetForKrankheit(Krankheit.ROETELN, false)
 				.withDatumImpfung(LocalDate.of(2023, 6, 21))));
@@ -717,7 +719,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		// ACT
 		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
 				.anlassIdPath(newEinladung.getAnlass().getId().getId())
-				.einladungIdPath(newEinladung.getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(newEinladung.getId()))
 				.execute(ResponseBody::prettyPeek)
 				.then()
 				.assertThat()
@@ -766,8 +768,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
             new UntersuchungImpfstatusListSaveJsonSpec(List.of(createJsonSpecMasern));
         UntersuchungImpfstatusListSaveJsonSpec resultKrankheiten =
             api.untersuchungImpfungenResourceSaveUntersuchungImpfungenImpfstatus()
-                .anlassIdPath(previousUntersuchung.getEinladung().getAnlass().getId().getId())
-                .einladungIdPath(previousUntersuchung.getEinladung().getId().getId())
+                .anlassIdPath(previousUntersuchung.getAnlass().getId().getId())
+                .einladungIdPath(toHasUntersuchungIdWrapper(previousUntersuchung.getEinladungRequired().getId()))
                 .body(listSpec)
                 .execute(ResponseBody::prettyPeek)
                 .then()
@@ -780,7 +782,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 
         untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
                 previousUntersuchung.getUntersuchungImpfungen())
-            .withUserErfasst(fixtureService.createBenutzer())
+            .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withImpfstoff(impfstoff)
             .withImmunitaetForKrankheit(Krankheit.MASERN, true)
             .withDatumImpfung(LocalDate.of(2023, 1, 27))
@@ -795,7 +797,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         // ACT
         UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
             .anlassIdPath(newEinladung.getAnlass().getId().getId())
-            .einladungIdPath(newEinladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(newEinladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -838,8 +840,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
             new UntersuchungImpfstatusListSaveJsonSpec(List.of(createJsonSpecMasern, createJsonSpecPolio));
         UntersuchungImpfstatusListSaveJsonSpec resultKrankheiten =
             api.untersuchungImpfungenResourceSaveUntersuchungImpfungenImpfstatus()
-                .anlassIdPath(previousUntersuchung.getEinladung().getAnlass().getId().getId())
-                .einladungIdPath(previousUntersuchung.getEinladung().getId().getId())
+                .anlassIdPath(previousUntersuchung.getAnlass().getId().getId())
+                .einladungIdPath(toHasUntersuchungIdWrapper(previousUntersuchung.getEinladungRequired().getId()))
                 .body(listSpec)
                 .execute(ResponseBody::prettyPeek)
                 .then()
@@ -852,8 +854,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         Assertions.assertThat(resultKrankheiten.getImpfstatusList().stream().filter(k -> k.getKrankheit() == KrankheitSpec.POLIO).findFirst().get().getImpfschutzGegeben()).isTrue();
 
         AnlassConfig anlassConfig =  AnlassConfigBuilder.create(builder -> builder
-            .withID(ID.random(AnlassConfig.class))
-            .withGueltigkeitsZeitraum(LocalDate.of(2025, 1, 31), LocalDate.of(2025, 12, 31))
+            .withGueltigkeitsZeitraum(LocalDate.of(1999, 1, 1), LocalDate.of(1999, 12, 31))
             .withAnlassTyp(AnlassTyp.KLASSE_4)
             .withKrankheitenLinks(EnumSet.noneOf(Krankheit.class))
             .withKrankheitenRechts(EnumSet.of(Krankheit.MASERN)));
@@ -868,7 +869,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         // ACT
         UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
             .anlassIdPath(newEinladung.getAnlass().getId().getId())
-            .einladungIdPath(newEinladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(newEinladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -900,8 +901,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
 		// ACT
 		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
 				.execute(ResponseBody::prettyPeek)
 				.then()
 				.assertThat()
@@ -924,13 +925,13 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		UntersuchungImpfungIntern existingImpfung =
 				untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
 								untersuchung.getUntersuchungImpfungen())
-						.withUserErfasst(fixtureService.createBenutzer())
+						.withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
 						.withImpfstoff(impfstoff)));
 
 		// ACT
 		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
 				.execute(ResponseBody::prettyPeek)
 				.then()
 				.assertThat()
@@ -961,7 +962,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		UntersuchungImpfungIntern existingImpfung =
 				untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder
                     .forUntersuchungImpfungen(previousUntersuchung.getUntersuchungImpfungen())
-                    .withUserErfasst(fixtureService.createBenutzer())
+                    .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
 					.withImpfstoff(impfstoff)
 					.withImmunitaetForKrankheit(Krankheit.MASERN, true)));
 
@@ -973,8 +974,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 
 		// ACT
 		UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
 				.execute(ResponseBody::prettyPeek)
 				.then()
 				.assertThat()
@@ -1032,8 +1033,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 				UntersuchungImpfungInternBuilder.createJaxSpec(builder -> builder.forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
 						.withImpfstoff(impfstoff)).getData();
 		UntersuchungImpfungInternJsonSpec result = api.untersuchungImpfungenResourceCreateUntersuchungImpfungIntern()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
 				.body(payload)
 				.execute(ResponseBody::prettyPeek)
 				.then()
@@ -1064,8 +1065,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 					.withImmunitaetForKrankheit(Krankheit.VARIZELLEN, true)).getData();
 
 		api.untersuchungImpfungenResourceCreateUntersuchungImpfungIntern()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
 				.body(payload)
 				.execute(ResponseBody::prettyPeek)
 				.then()
@@ -1074,7 +1075,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 				.extract()
 				.as(UntersuchungImpfungInternJsonSpec.class);
 		// ASSERT
-		Dossier dossier = dossierService.getById(untersuchung.getEinladung().getDossier().getId());
+		Dossier dossier = dossierService.getById(untersuchung.getEinladungRequired().getDossier().getId());
 		Assertions.assertThat(dossier.isImmunitaetVarizellen()).isTrue();
 		Assertions.assertThat(dossier.isImmunitaetMasern()).isTrue();
 	}
@@ -1090,7 +1091,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		UntersuchungImpfungIntern existingImpfung =
 				untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
 								untersuchung.getUntersuchungImpfungen())
-						.withUserErfasst(fixtureService.createBenutzer())
+						.withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
 						.withDatumImpfung(null)
 						.withImpfstoff(impfstoff)));
 
@@ -1101,8 +1102,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 						.withImmunitaetForKrankheit(Krankheit.MASERN, true)
 						.withDatumImpfung(appClock.offsetDateTime().now().toLocalDate())).getData();
 		UntersuchungImpfungInternJsonSpec result = api.untersuchungImpfungenResourceUpdateUntersuchungImpfungenIntern()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
 				.impfungInternIdPath(existingImpfung.getId().getId())
 				.body(payload)
 				.execute(ResponseBody::prettyPeek)
@@ -1131,7 +1132,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         UntersuchungImpfungIntern existingImpfung =
             untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
                     untersuchung.getUntersuchungImpfungen())
-                .withUserErfasst(fixtureService.createBenutzer())
+                .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
                 .withDatumImpfung(null)
                 .withImpfstoff(impfstoff)));
         Assertions.assertThat(existingImpfung.getImpfStatus()).isEqualTo(ImpfStatus.GEPLANT);
@@ -1145,8 +1146,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
                 .withDatumImpfung(appClock.offsetDateTime().now().toLocalDate())).getData();
 
         UntersuchungImpfungInternJsonSpec result = api.untersuchungImpfungenResourceUpdateUntersuchungImpfungenIntern()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .impfungInternIdPath(existingImpfung.getId().getId())
             .body(payload)
             .execute(ResponseBody::prettyPeek)
@@ -1161,7 +1162,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         Assertions.assertThat(result.getData().getImpfStatus())
             .isEqualTo(ImpfStatusSpec.DURCHGEFUEHRT);
         Assertions.assertThat(result.getAnlassImpfungDurchgefuehrtId())
-            .isEqualTo(untersuchung.getEinladung().getAnlass().getId().getId());
+            .isEqualTo(untersuchung.getAnlass().getId().getId());
     }
 
     @Test
@@ -1178,7 +1179,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         UntersuchungImpfungIntern existingImpfung =
             untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder
                 .forUntersuchungImpfungen(previousUntersuchung.getUntersuchungImpfungen())
-                .withUserErfasst(fixtureService.createBenutzer())
+                .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
                 .withImpfstoff(impfstoff)
                 .withImmunitaetForKrankheit(Krankheit.MASERN, true)));
 
@@ -1197,8 +1198,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
                 .withDatumImpfung(appClock.offsetDateTime().now().toLocalDate())).getData();
 
         UntersuchungImpfungInternJsonSpec result = api.untersuchungImpfungenResourceUpdateUntersuchungImpfungenIntern()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .impfungInternIdPath(existingImpfung.getId().getId())
             .body(payload)
             .execute(ResponseBody::prettyPeek)
@@ -1213,7 +1214,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         Assertions.assertThat(result.getData().getImpfStatus())
             .isEqualTo(ImpfStatusSpec.DURCHGEFUEHRT);
         Assertions.assertThat(result.getAnlassImpfungDurchgefuehrtId())
-            .isEqualTo(untersuchung.getEinladung().getAnlass().getId().getId());
+            .isEqualTo(untersuchung.getAnlass().getId().getId());
     }
 
     @Test
@@ -1227,7 +1228,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		UntersuchungImpfungIntern existingImpfung =
 				untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
 								untersuchung.getUntersuchungImpfungen())
-						.withUserErfasst(fixtureService.createBenutzer())
+						.withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
 						.withDatumImpfung(null)
 						.withImpfstoff(impfstoff)));
 		List<UntersuchungImpfungIntern> impfungenVorher =
@@ -1235,8 +1236,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		Assertions.assertThat(impfungenVorher).isNotEmpty();
 		// ACT
 		api.untersuchungImpfungenResourceRemoveUntersuchungImpfungenIntern()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
 				.impfungInternIdPath(existingImpfung.getId().getId())
 				.execute(ResponseBody::prettyPeek)
 				.then()
@@ -1261,15 +1262,15 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 				untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
 								untersuchung.getUntersuchungImpfungen())
 						.withAnlassImpfungErfasst(anotherAnlass)
-						.withUserErfasst(fixtureService.createBenutzer())
+						.withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
 						.withImpfstoff(impfstoff)));
 		List<UntersuchungImpfungIntern> impfungenVorher =
 				untersuchungImpfungInternService.findByUntersuchung(untersuchung.getId());
 		Assertions.assertThat(impfungenVorher).isNotEmpty();
 		// ACT
 		AppFailureErrorJsonSpec error = api.untersuchungImpfungenResourceRemoveUntersuchungImpfungenIntern()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
 				.impfungInternIdPath(existingImpfung.getId().getId())
 				.execute(ResponseBody::prettyPeek)
 				.then()
@@ -1309,7 +1310,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         // ACT
         UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
             .anlassIdPath(newEinladung.getAnlass().getId().getId())
-            .einladungIdPath(newEinladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(newEinladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -1338,8 +1339,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 						.withBemerkungen("Meine Impfungs-Massnahmen"));
 		// ACT
 		UntersuchungImpfungenMassnahmenJsonSpec result = api.untersuchungImpfungenResourceSaveUntersuchungMassnahmen()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
 				.body(massnahmen.getData())
 				.execute(ResponseBody::prettyPeek)
 				.then()
@@ -1353,7 +1354,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		Assertions.assertThat(result.getData().getBemerkungen()).isEqualTo("Meine Impfungs-Massnahmen");
 
 		Untersuchung untersuchungWithLoadedData =
-				fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+				fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
 		Assertions.assertThat(untersuchungWithLoadedData.getUntersuchungImpfungen()).isNotNull();
 		UntersuchungImpfungenMassnahmen massnahmenLoaded =
 				untersuchungWithLoadedData.getUntersuchungImpfungen().getUntersuchungImpfungenMassnahmen();
@@ -1370,7 +1371,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungenMassnahmen();
 		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
 		Untersuchung untersuchungBefore =
-				fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+				fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
 		Assertions.assertThat(untersuchungBefore.getUntersuchungImpfungen()).isNotNull();
 		UntersuchungImpfungenMassnahmen massnahmenBefore =
 				untersuchungBefore.getUntersuchungImpfungen().getUntersuchungImpfungenMassnahmen();
@@ -1396,8 +1397,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
                     .withInformationHausarzt(false)
                     .withRueckfrageHausarzt(false));
 		UntersuchungImpfungenMassnahmenJsonSpec result = api.untersuchungImpfungenResourceSaveUntersuchungMassnahmen()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
 				.body(payload.getData())
 				.execute(ResponseBody::prettyPeek)
 				.then()
@@ -1411,7 +1412,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		Assertions.assertThat(result.getData().getInformationEltern()).isEqualTo(InformationElternSpec.KEINE);
 
 		Untersuchung untersuchungAfter =
-				fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+				fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
 		Assertions.assertThat(untersuchungAfter.getUntersuchungImpfungen()).isNotNull();
 		UntersuchungImpfungenMassnahmen massnahmenAfter =
 				untersuchungAfter.getUntersuchungImpfungen().getUntersuchungImpfungenMassnahmen();
@@ -1437,8 +1438,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
 		// ACT
 		api.untersuchungImpfungenResourceEinzelTerminErstellen()
-				.anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-				.einladungIdPath(untersuchung.getEinladung().getId().getId())
+				.anlassIdPath(untersuchung.getAnlass().getId().getId())
+				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
 				.execute(ResponseBody::prettyPeek)
 				.then()
 				.assertThat()
@@ -1446,7 +1447,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 
 		// ASSERT
 		List<Aufgabe> aufgaben =
-				aufgabeService.findAllForKind(untersuchung.getEinladung().getDossier().getKind().getId());
+				aufgabeService.findAllForKind(untersuchung.getEinladungRequired().getDossier().getKind().getId());
 		Assertions.assertThat(aufgaben).isNotEmpty().hasSize(1);
 		Assertions.assertThat(aufgaben.getFirst().getTitel())
 				.isEqualTo("Gerber Emma: Einzeltermin Impfen erstellen - 2022/23 SU 4.PS Test getAnlass");
@@ -1461,8 +1462,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         Assertions.assertThat(untersuchung.getUntersuchungImpfungen().getUntersuchungImpfungenDataMinimal()).isNull();
         // ACT
         UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -1488,8 +1489,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
                 .withMasernAnzahlImpfungen(4));
         // ACT: Save
         UntersuchungImpfungenDataMinimalJsonSpec saveResult = api.untersuchungImpfungenResourceSaveUntersuchungImpfungenDataMinimal()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(saveJson.getData())
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -1504,8 +1505,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         Assertions.assertThat(saveResult.getData().getMasernAnzahlImpfungen()).isEqualTo(4);
         // ACT: Read
         UntersuchungImpfungenDataJsonSpec resultRead = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()

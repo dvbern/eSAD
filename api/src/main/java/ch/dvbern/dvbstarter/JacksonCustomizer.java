@@ -9,6 +9,7 @@ import ch.dvbern.dvbstarter.shared.math.GanzZahlConverter;
 import ch.dvbern.dvbstarter.shared.math.ZahlConverter;
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileNameConverter;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddressConverter;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapperConverter;
 import ch.dvbern.dvbstarter.shared.types.id.IDConverter;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumberConverter;
 import ch.dvbern.dvbstarter.shared.types.semver.SemverConverter;
@@ -40,6 +41,7 @@ public class JacksonCustomizer implements ObjectMapperCustomizer {
         EmailAddressConverter.registerJackson(module);
         CleanFileNameConverter.registerJackson(module);
         IDConverter.registerJackson(module);
+        HasUntersuchungIDWrapperConverter.registerJackson(module);
 
         CalculationConverter.registerJackson(module);
         DbNumberConverter.registerJackson(module);

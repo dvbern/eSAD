@@ -35,6 +35,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungDurchfuehru
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 
 public class UntersuchungDurchfuehrungBuilder {
 
@@ -127,7 +128,7 @@ public class UntersuchungDurchfuehrungBuilder {
     @NonNull
     public static UntersuchungDurchfuehrungJson createJax(@NonNull Consumer<UntersuchungDurchfuehrungBuilder> block) {
         UntersuchungDurchfuehrung entity = create(block);
-        return UntersuchungDurchfuehrungMapper.toJson(entity);
+        return UntersuchungDurchfuehrungMapper.toJson(entity, TenantEnum.BS);
     }
 
     @NonNull

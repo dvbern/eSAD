@@ -38,7 +38,7 @@ public class CheckUntersuchungImpfungenDataMinimalPresentIfReqValidator
         "java:S1126" /* readability is better with seprate return*/ }
     )
     public boolean isEntityValid(@NonNull UntersuchungImpfungenDataMinimal dataMinimal) {
-        AnlassConfig anlassConfig = dataMinimal.getUntersuchungImpfungen().getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig anlassConfig = dataMinimal.getUntersuchungImpfungen().getUntersuchung().getAnlass().getAnlassConfig();
         if (ValueEnhancedUtil.isRequiredAndNull(anlassConfig.getImpfungenDataMinimalImpfausweisGeprueft(), dataMinimal.getImpfausweisGeprueft(), ImpfausweisGeprueft.class)){
             return false;
         }

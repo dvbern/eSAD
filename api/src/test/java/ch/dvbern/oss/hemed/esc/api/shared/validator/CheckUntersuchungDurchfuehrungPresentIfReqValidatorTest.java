@@ -48,7 +48,7 @@ class CheckUntersuchungDurchfuehrungPresentIfReqValidatorTest {
         durchfuehrung.setArzt(arzt);
         durchfuehrung.setMpa(mpa);
 
-        durchfuehrung.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setDatenUntersuchung(requirementSetting);
+        durchfuehrung.getUntersuchung().getAnlass().getAnlassConfig().setDatenUntersuchung(requirementSetting);
 
         CheckUntersuchungDurchfuehrungPresentIfReqValidator
             validatorUnderTest = new CheckUntersuchungDurchfuehrungPresentIfReqValidator();
@@ -73,7 +73,7 @@ class CheckUntersuchungDurchfuehrungPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungDurchfuehrung durchfuehrung =  UntersuchungDurchfuehrungBuilder.create(builder -> builder
             .withBemerkung(bemerkung));
-        durchfuehrung.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setDatenBemerkung(requirementSetting);
+        durchfuehrung.getUntersuchung().getAnlass().getAnlassConfig().setDatenBemerkung(requirementSetting);
         // ACT
         CheckUntersuchungDurchfuehrungPresentIfReqValidator
             validatorUnderTest = new CheckUntersuchungDurchfuehrungPresentIfReqValidator();

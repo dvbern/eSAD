@@ -16,15 +16,11 @@ package ch.dvbern.oss.hemed.esc.generated.restassured.dto;
 import java.util.Objects;
 import java.util.Arrays;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerJsonSpec;
-import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BerechtigungSpec;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -32,8 +28,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * PrincipalJsonSpec
  */
 @JsonPropertyOrder({
-  PrincipalJsonSpec.JSON_PROPERTY_BENUTZER_JSON,
-  PrincipalJsonSpec.JSON_PROPERTY_BERECHTIGUNGEN
+  PrincipalJsonSpec.JSON_PROPERTY_BENUTZER_JSON
 })
 @JsonTypeName("PrincipalJson")
 @lombok.AllArgsConstructor
@@ -42,10 +37,6 @@ public class PrincipalJsonSpec {
   public static final String JSON_PROPERTY_BENUTZER_JSON = "benutzerJson";
   @jakarta.annotation.Nonnull
   private BenutzerJsonSpec benutzerJson;
-
-  public static final String JSON_PROPERTY_BERECHTIGUNGEN = "berechtigungen";
-  @jakarta.annotation.Nonnull
-  private List<BerechtigungSpec> berechtigungen;
 
   public PrincipalJsonSpec() {
   }
@@ -75,39 +66,6 @@ public class PrincipalJsonSpec {
     this.benutzerJson = benutzerJson;
   }
 
-  public PrincipalJsonSpec berechtigungen(@jakarta.annotation.Nonnull List<BerechtigungSpec> berechtigungen) {
-    
-    this.berechtigungen = berechtigungen;
-    return this;
-  }
-
-  public PrincipalJsonSpec addBerechtigungenItem(BerechtigungSpec berechtigungenItem) {
-    if (this.berechtigungen == null) {
-      this.berechtigungen = new ArrayList<>();
-    }
-    this.berechtigungen.add(berechtigungenItem);
-    return this;
-  }
-
-  /**
-   * Get berechtigungen
-   * @return berechtigungen
-   */
-  @jakarta.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_BERECHTIGUNGEN)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public List<BerechtigungSpec> getBerechtigungen() {
-    return berechtigungen;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_BERECHTIGUNGEN)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setBerechtigungen(@jakarta.annotation.Nonnull List<BerechtigungSpec> berechtigungen) {
-    this.berechtigungen = berechtigungen;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -117,13 +75,12 @@ public class PrincipalJsonSpec {
       return false;
     }
     PrincipalJsonSpec principalJson = (PrincipalJsonSpec) o;
-    return Objects.equals(this.benutzerJson, principalJson.benutzerJson) &&
-        Objects.equals(this.berechtigungen, principalJson.berechtigungen);
+    return Objects.equals(this.benutzerJson, principalJson.benutzerJson);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(benutzerJson, berechtigungen);
+    return Objects.hash(benutzerJson);
   }
 
   @Override
@@ -131,7 +88,6 @@ public class PrincipalJsonSpec {
     StringBuilder sb = new StringBuilder();
     sb.append("class PrincipalJsonSpec {\n");
     sb.append("    benutzerJson: ").append(toIndentedString(benutzerJson)).append("\n");
-    sb.append("    berechtigungen: ").append(toIndentedString(berechtigungen)).append("\n");
     sb.append("}");
     return sb.toString();
   }

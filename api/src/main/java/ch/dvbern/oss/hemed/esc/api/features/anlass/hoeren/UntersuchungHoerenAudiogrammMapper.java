@@ -19,6 +19,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren;
 
 import java.util.EnumSet;
+import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
@@ -78,8 +79,12 @@ public class UntersuchungHoerenAudiogrammMapper {
     }
 
     @Nullable
-    public UntersuchungHoerenAudiogrammJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+    public UntersuchungHoerenAudiogrammJson getByEinladung(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungHoerenAudiogramm());
     }
 
@@ -110,9 +115,11 @@ public class UntersuchungHoerenAudiogrammMapper {
     @NonNull
     public UntersuchungHoerenAudiogrammJson saveAudiogramm(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungHoerenAudiogrammSaveJson saveJson
+        @NonNull UntersuchungHoerenAudiogrammSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungHoerenAudiogramm hoerenAudiogramm = untersuchung.getUntersuchungHoerenAudiogramm();
         UntersuchungHoerenAudiogramm entity = toEntity(untersuchung, hoerenAudiogramm, saveJson);
         if (entity.getAudiogrammRechts() != null && saveJson.getAudiogrammRechts() != null) {

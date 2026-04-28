@@ -29,9 +29,11 @@ echo "Token: ${ACCESS_TOKEN}"
 #
 FILE_TO_SEND="./2010-02-02__A01300025.pdf"
 ESAD_ID="A01300025"
+ANLASS_ID="724778e1-77ed-4b0d-95c6-0b0a95e099b6"
+NOTIZ_TYP="FRAGEBOGEN"
 
 curl  -v 'POST' \
-  "${API_SERVER_URL}/api/file-ingress/dossier/${ESAD_ID}/fragebogen" \
+  "${API_SERVER_URL}/api/file-ingress/dossier/${ESAD_ID}/anlass/${ANLASS_ID}/${NOTIZ_TYP}" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H 'accept: */*' \
   -H 'Content-Type: multipart/form-data' \

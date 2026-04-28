@@ -31,7 +31,7 @@ public class CheckUntersuchungSehenBemerkungFragebogenPresentIfReqValidator
     @SuppressWarnings("java:S1126" /* readability is better with seprate return*/)
     public boolean isEntityValid(@NonNull UntersuchungSehenBemerkungFragebogen bemerkungFragebogen) {
         AnlassConfig anlassConfig =
-            bemerkungFragebogen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+            bemerkungFragebogen.getUntersuchung().getAnlass().getAnlassConfig();
 
         if (anlassConfig.getUntersuchungBemerkungen().isRequired()
             && bemerkungFragebogen.getBemerkungenFragebogen() == null) {

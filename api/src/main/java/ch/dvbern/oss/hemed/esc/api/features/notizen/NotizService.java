@@ -65,6 +65,7 @@ public class NotizService {
         notizRepo.remove(notizId);
         // Die Files in S3 entfernen
         fileDataService.deleteFileData(notizToDelete.getFiles(), deleteFilesInS3);
+        LOG.info("Removed notiz {} and deleted files in S3", notizId);
     }
 
     public void removeForKind(@NonNull ID<Kind> kindID) {

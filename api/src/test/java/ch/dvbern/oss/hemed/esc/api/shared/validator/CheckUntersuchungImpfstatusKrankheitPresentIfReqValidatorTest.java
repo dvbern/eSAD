@@ -59,7 +59,7 @@ class CheckUntersuchungImpfstatusKrankheitPresentIfReqValidatorTest {
                 .forUntersuchungImpfungen(impfungen)
                 .withAnzahlImpfungen(anzahlImpfungen)
                 .withDatumLetzteImpfung(datumLetzteImpfung));
-        impfungen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setImpfungenUebersicht(requirementSetting);
+        impfungen.getUntersuchung().getAnlass().getAnlassConfig().setImpfungenUebersicht(requirementSetting);
         // ACT
         CheckUntersuchungImpfstatusKrankheitPresentIfReqValidator validator = new CheckUntersuchungImpfstatusKrankheitPresentIfReqValidator();
         var result = validator.isEntityValid(entity);

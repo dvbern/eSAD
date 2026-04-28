@@ -4,14 +4,15 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.UUID;
 
+import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.JsonWebTokenClaims;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import io.quarkus.test.security.TestSecurity;
 import io.quarkus.test.security.oidc.Claim;
 import io.quarkus.test.security.oidc.OidcSecurity;
 
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AERZTE_LESEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AERZTE_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSLISTE_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSLISTE_LESEN_LAEUSE;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLANUNG_LESEN;
@@ -43,8 +44,8 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LABELS_SC
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_ADMIN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_SCHREIBEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.MITARBEITERLISTE_BERECHTIGUNGEN_LESEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SPSS_EXPORT;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ORGANISATION_VERWALTEN_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ORGANISATION_VERWALTEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SUPPORT;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_ABSCHLUSS_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_ABSCHLUSS_SCHREIBEN;
@@ -89,8 +90,6 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         VERANDERUNGEN_NACH_ABSCHLUSS,
         SU_DATEN_LESEN,
         SU_DATEN_SCHREIBEN,
-        SU_VORABKLAERUNGEN_LESEN,
-        SU_VORABKLAERUNGEN_SCHREIBEN,
         SU_IMPFEN_LESEN,
         SU_IMPFEN_SCHREIBEN,
         SU_SEHEN_LESEN,
@@ -109,6 +108,8 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         SU_MASSNAHMEN_SCHREIBEN,
         SU_ABSCHLUSS_LESEN,
         SU_ABSCHLUSS_SCHREIBEN,
+        SU_VORABKLAERUNGEN_LESEN,
+        SU_VORABKLAERUNGEN_SCHREIBEN,
         KINDER_LESEN_MEDIZINISCH,
         KINDER_LESEN_NICHT_MEDIZINISCH,
         KINDER_SCHREIBEN_MEDIZINISCH,
@@ -118,13 +119,10 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
         KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
         INDIVIDUELLE_REPORTS,
-        SPSS_EXPORT,
         KOMPLETTER_EXPORT,
-        LISTEN_LESEN,
         LISTEN_ADMIN_LESEN,
+        LISTEN_LESEN,
         LISTEN_SCHREIBEN,
-        AERZTE_LESEN,
-        AERZTE_SCHREIBEN,
         IMPFSTOFFE_LESEN,
         IMPFSTOFFE_SCHREIBEN,
         DUBLETTEN_ZUSAMMENFUHREN,
@@ -132,12 +130,13 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         LABELS_ADMIN_LESEN,
         LABELS_SCHREIBEN,
         EIGENE_BERECHTIGUNGEN_LESEN,
-        MITARBEITERLISTE_BERECHTIGUNGEN_LESEN,
+        BENUTZER_BERECHTIGUNGEN_LESEN,
+        BENUTZER_BERECHTIGUNGEN_SCHREIBEN,
+        ORGANISATION_VERWALTEN_LESEN,
+        ORGANISATION_VERWALTEN_SCHREIBEN,
         VORLAGEN_LESEN,
         VORLAGEN_ADMIN_LESEN,
         VORLAGEN_SCHREIBEN,
-        BENUTZER_BERECHTIGUNGEN_LESEN,
-        BENUTZER_BERECHTIGUNGEN_SCHREIBEN,
         ARCHIVIERUNG,
         SUPPORT
     }
@@ -154,8 +153,10 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         @Claim(key = JsonWebTokenClaims.TITLE_CLAIM, value = TestAsSupportBE.TITEL),
     }
 )
+@TestAsMarker
 public @interface TestAsSupportBE {
     String BENUTZER_ID = "2b1d7672-9b0d-4403-80ba-7f3e34208144";
+    ID<Benutzer> BENUTZER_ID_ID = ID.of(UUID.fromString(BENUTZER_ID), Benutzer.class);
     String BENUTZER_ID_IN_KC = "d3d1e568-ad1f-4cfb-9016-b600c3a59341";
     String EMAIL = "support@mailbucket.dvbern.ch";
     String USERNAME = "support@mailbucket.dvbern.ch";

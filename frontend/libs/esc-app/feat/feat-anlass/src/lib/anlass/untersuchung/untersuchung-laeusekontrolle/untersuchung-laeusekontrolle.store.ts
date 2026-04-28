@@ -1,17 +1,17 @@
-import { inject, Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {
   UntersuchungLaeusekontrolleJson,
   UntersuchungLaeusekontrolleService,
   UntersuchungLaeusekontrolleServiceGetUntersuchungLaeusekontrolleRequestParams,
   UntersuchungLaeusekontrolleServiceSaveUntersuchungLaeusekontrolleRequestParams,
 } from '@dvb/data-access-backend';
-import { AppErrorHandlerService, AppNotificationStore, Loader } from '@dvb/util-angular';
-import { TranslocoService } from '@jsverse/transloco';
-import { tapResponse } from '@ngrx/operators';
-import { patchState, signalStore, withState } from '@ngrx/signals';
-import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { exhaustMap, map, pipe, switchMap, tap } from 'rxjs';
-import { UntersuchungStore } from '../untersuchung.store';
+import {AppErrorHandlerService, AppNotificationStore, Loader} from '@dvb/util-angular';
+import {TranslocoService} from '@jsverse/transloco';
+import {tapResponse} from '@ngrx/operators';
+import {patchState, signalStore, withState} from '@ngrx/signals';
+import {rxMethod} from '@ngrx/signals/rxjs-interop';
+import {exhaustMap, map, pipe, switchMap, tap} from 'rxjs';
+import {UntersuchungStore} from '../untersuchung.store';
 
 type UntersuchungLaeusekontrolleState = {
   laeusekontrolle: UntersuchungLaeusekontrolleJson | undefined;

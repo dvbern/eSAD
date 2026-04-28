@@ -114,16 +114,16 @@ public class UntersuchungGroesseGewicht extends AbstractEntity<UntersuchungGroes
     @NonNull
     public BigDecimal getAlter() {
         return DateUtil.calculateAlter(
-            untersuchung.getEinladung().getDossier().getKind().getGeburtsdatum(),
-            untersuchung.getEinladung().getAnlass().getDatum()
+            untersuchung.getEinladungRequired().getDossier().getKind().getGeburtsdatum(),
+            untersuchung.getAnlass().getDatum()
         );
     }
 
     @NonNull
     public String getAlterDuodezimal() {
         return DateUtil.calculateAlterDuodezimal(
-            untersuchung.getEinladung().getDossier().getKind().getGeburtsdatum(),
-            untersuchung.getEinladung().getAnlass().getDatum()
+            untersuchung.getEinladungRequired().getDossier().getKind().getGeburtsdatum(),
+            untersuchung.getAnlass().getDatum()
         );
     }
 
@@ -144,7 +144,7 @@ public class UntersuchungGroesseGewicht extends AbstractEntity<UntersuchungGroes
         if (groesseGewicht == null) {
             groesseGewicht = forUntersuchung(untersuchung);
         }
-        AnlassConfig config = untersuchung.getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig config = untersuchung.getAnlass().getAnlassConfig();
 
         groesseGewicht.setGroessePerzentile(
             ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(

@@ -35,7 +35,6 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
             builder -> builder
                 .withGroesse(groesse));
         entity.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setGroesseGewichtGroesse(requirementSetting);
@@ -66,7 +65,6 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
             builder -> builder
                 .withGewicht(gewicht));
         entity.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setGroesseGewichtGewicht(requirementSetting);
@@ -96,7 +94,7 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
         UntersuchungGroesseGewicht entity = UntersuchungGroesseGewichtBuilder.create(
             builder -> builder
                 .withBmi(bmi));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setGroesseGewichtBmi(requirementSetting);
+        entity.getUntersuchung().getAnlass().getAnlassConfig().setGroesseGewichtBmi(requirementSetting);
         // ACT
         CheckUntersuchungGroesseGewichtPresentIfReqValidator validator =
             new CheckUntersuchungGroesseGewichtPresentIfReqValidator();
@@ -124,7 +122,6 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
             builder -> builder
                 .withGroessePerzentile(perzentile, null));
         entity.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setGroesseGewichtGroessePerzentile(requirementSetting);
@@ -155,7 +152,6 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
             builder -> builder
                 .withGewichtPerzentile(perzentile, null));
         entity.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setGroesseGewichtGewichtPerzentile(requirementSetting);
@@ -186,7 +182,6 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
             builder -> builder
                 .withBmiPerzentile(perzentile, null));
         entity.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setGroesseGewichtBmiPerzentile(requirementSetting);
@@ -217,7 +212,6 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
             builder -> builder
                 .withBemerkung(bemerkung));
         entity.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setGroesseGewichtBemerkungen(requirementSetting);

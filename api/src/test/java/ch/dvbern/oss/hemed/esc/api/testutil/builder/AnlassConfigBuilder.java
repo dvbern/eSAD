@@ -66,6 +66,7 @@ public class AnlassConfigBuilder {
             true,            // showImpfausweis
             true,                           // showFragebogen
             true,                           // showAnmeldungBestaetigung
+            true,                           // showImpfanmeldung
             true,                           // showDatenPersonendaten
             true,                           // showDatenPersonendatenEsadId
             RequirementSetting.OPTIONAL,    // datenUntersuchung
@@ -238,6 +239,7 @@ public class AnlassConfigBuilder {
             showBooleans,                   // showImpfausweis
             showBooleans,                   // showFragebogen
             showBooleans,                   // showAnmeldungBestaetigung
+            showBooleans,                   // showImpfanmeldung
             showBooleans,                   // showDatenPersonendaten
             showBooleans,                   // showDatenPersonendatenEsadId
             requirementSetting,             // datenUntersuchung
@@ -464,6 +466,34 @@ public class AnlassConfigBuilder {
         @NonNull EnumSet<ImpfungenMassnahmenEmpfehlung> values
     ) {
         this.anlassConfig.setUntersuchungImpfungEmpfehlungValues(values);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public AnlassConfigBuilder withShowFragebogen(boolean showFragebogen) {
+        this.anlassConfig.setShowFragebogen(showFragebogen);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public AnlassConfigBuilder withShowImpfausweis(boolean showImpfausweis) {
+        this.anlassConfig.setShowImpfausweis(showImpfausweis);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public AnlassConfigBuilder withShowImpfanmeldung(boolean showImpfanmeldung) {
+        this.anlassConfig.setShowImpfanmeldung(showImpfanmeldung);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public AnlassConfigBuilder withShowAnmeldungBestaetigung(boolean showAnmeldungBestaetigung) {
+        this.anlassConfig.setShowAnmeldungBestaetigung(showAnmeldungBestaetigung);
         return this;
     }
 

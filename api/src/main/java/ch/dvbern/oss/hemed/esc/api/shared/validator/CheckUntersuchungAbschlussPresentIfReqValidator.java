@@ -11,7 +11,7 @@ public class CheckUntersuchungAbschlussPresentIfReqValidator
 
     @Override
     public boolean isEntityValid(@NonNull UntersuchungAbschluss entity) {
-        AnlassConfig anlassConfig = entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig anlassConfig = entity.getUntersuchung().getAnlass().getAnlassConfig();
 
         if (ValueEnhancedUtil.isRequiredAndNull(anlassConfig.getAbschlussUeberweisungErfolgt(), entity.getUeberweisungErfolgt(), AbschlussResultat.class)) {
             return false;

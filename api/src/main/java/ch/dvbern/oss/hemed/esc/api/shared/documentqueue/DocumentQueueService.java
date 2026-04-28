@@ -19,10 +19,12 @@ import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.Arzt;
+import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.Briefvorlage;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.MassenbriefGeneratorService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.spss.CsvGeneratorService;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueMassenbriefSaveJson;
@@ -59,7 +61,10 @@ public class DocumentQueueService {
     private final AppClock appClock;
     private final CsvGeneratorService csvGeneratorService;
     private final FileDataService fileDataService;
+    private final BenutzerService benutzerService;
+
     private static final String ERROR_BASE_MESSAGE = "Could not convert DocumentQueue parameter string to object: ";
+
 
     @NonNull
     @Transactional(TxType.REQUIRED)
@@ -184,7 +189,9 @@ public class DocumentQueueService {
             CleanFileName fileName = documentQueueFileService.getCleanFileNameFromDocumentQueue(documentQueue);
             DocumentQueueMassenbriefSaveJson params = unmarshallDocumentQueueMassenbriefParameter(documentQueue);
 
-            return massenbriefGeneratorService.generateMassenbriefZip(params, documentQueue.getBenutzer(), fileName);
+            // need to load berechtigungen for user
+            Benutzer benutzer = benutzerService.getByIdWithBerechtigungen(documentQueue.getBenutzer().getId());
+            return massenbriefGeneratorService.generateMassenbriefZip(params, benutzer, fileName);
         }
         default -> throw new AppFailureException(AppFailureMessage.internalError(
             "Unhandled FileType in DocumentQueue generator: " + documentQueue.getType()));

@@ -1,13 +1,13 @@
 package ch.dvbern.dvbstarter.infrastructure.db.baserepo;
 
-import java.util.Optional;
-
 import ch.dvbern.dvbstarter.infrastructure.db.Db;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import jakarta.inject.Inject;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.Optional;
 
 public abstract class BaseRepo<T extends AbstractEntity<T>> {
 

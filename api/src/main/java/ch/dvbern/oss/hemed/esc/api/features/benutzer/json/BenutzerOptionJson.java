@@ -1,6 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.features.benutzer.json;
 
-import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -40,11 +39,10 @@ public class BenutzerOptionJson {
     @Schema(required = true)
     private String fullName;
 
-    @NotNull
-    @NonNull
-    @Schema(required = true)
+    @Nullable
+    @Schema(required = false)
     @Valid
-    private List<OrganisationRollenJson> organisationRollen;
+    private OrganisationRollenJson organisationRollen;
 
     @Nullable
     @Schema(required = false)

@@ -24,6 +24,9 @@ class IDParamConverterProvider implements ParamConverterProvider {
         Type genericType,
         Annotation[] annotations
     ) {
+        if (rawType.equals(HasUntersuchungIDWrapper.class)) {
+            return (ParamConverter<T>) new HasUntersuchungIDWrapperParamConverter();
+        }
         if (!rawType.equals(ID.class)) {
             return null;
         }
@@ -47,6 +50,25 @@ class IDParamConverterProvider implements ParamConverterProvider {
         ParamConverter<T> result = (ParamConverter<T>) new IDParamConverter(entityClass);
 
         return result;
+    }
+
+    private static final class HasUntersuchungIDWrapperParamConverter implements ParamConverter<HasUntersuchungIDWrapper> {
+
+        @Override
+        public @Nullable HasUntersuchungIDWrapper fromString(String value) {
+            if (value == null) {
+                return null;
+            }
+            return HasUntersuchungIDWrapper.fromString(value);
+        }
+
+        @Override
+        public @Nullable String toString(HasUntersuchungIDWrapper value) {
+            if (value == null) {
+                return null;
+            }
+            return value.toExternalForm();
+        }
     }
 
     private static final class IDParamConverter implements ParamConverter<ID<?>> {

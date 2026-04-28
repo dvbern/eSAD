@@ -7,6 +7,7 @@ import {
   TenantSettingsStore,
   ValueEnhancedComponent
 } from "@dvb/feat-shared";
+import {toEinladungBackendEntityIdWithClass} from "@dvb/data-access-types";
 import {DirtyMarker} from "@dvb/util-angular";
 import {UntersuchungStore} from "../untersuchung.store";
 import {
@@ -89,7 +90,7 @@ export class UntersuchungVorabklaerungenComponent implements DirtyMarker {
       const payload = this.form.valueOnValid();
       this.store.saveUntersuchungVorabklaerungen({
         anlassId: anlassId,
-        einladungId: einladungId,
+        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
         untersuchungVorabklaerungenSaveJson: payload,
       });
     }

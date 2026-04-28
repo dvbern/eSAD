@@ -33,7 +33,7 @@ class CheckUntersuchungVorabklaerungenPresentIfReqValidatorTest {
         UntersuchungVorabklaerungen vorabklaerungen = UntersuchungVorabklaerungenBuilder.create(
             builder -> builder
                 .withFragebogenStatus(input, null));
-        vorabklaerungen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setVorabklaerungenFragebogenStatus(requirementSetting);
+        vorabklaerungen.getUntersuchung().getAnlass().getAnlassConfig().setVorabklaerungenFragebogenStatus(requirementSetting);
         // ACT
         CheckUntersuchungVorabklaerungenPresentIfReqValidator
             validator = new CheckUntersuchungVorabklaerungenPresentIfReqValidator();
@@ -60,7 +60,7 @@ class CheckUntersuchungVorabklaerungenPresentIfReqValidatorTest {
         UntersuchungVorabklaerungen vorabklaerungen = UntersuchungVorabklaerungenBuilder.create(
             builder -> builder
                 .withEinverstaendnisImpfungen(input, null));
-        vorabklaerungen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setVorabklaerungenEinverstaendnisImpfungen(requirementSetting);
+        vorabklaerungen.getUntersuchung().getAnlass().getAnlassConfig().setVorabklaerungenEinverstaendnisImpfungen(requirementSetting);
         // ACT
         CheckUntersuchungVorabklaerungenPresentIfReqValidator
             validator = new CheckUntersuchungVorabklaerungenPresentIfReqValidator();
@@ -87,7 +87,7 @@ class CheckUntersuchungVorabklaerungenPresentIfReqValidatorTest {
         UntersuchungVorabklaerungen vorabklaerungen = UntersuchungVorabklaerungenBuilder.create(
             builder -> builder
                 .withChronischeKrankheiten(input, null));
-        vorabklaerungen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setVorabklaerungenChronischeKrankheiten(requirementSetting);
+        vorabklaerungen.getUntersuchung().getAnlass().getAnlassConfig().setVorabklaerungenChronischeKrankheiten(requirementSetting);
         // ACT
         CheckUntersuchungVorabklaerungenPresentIfReqValidator
             validator = new CheckUntersuchungVorabklaerungenPresentIfReqValidator();

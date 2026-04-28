@@ -20,8 +20,7 @@ import {ButtonComponent, CheckboxDirective} from "@dvb/ui-components";
 import {FormsModule} from "@angular/forms";
 import {BenutzerStore} from "../../benutzer/benutzer/benutzer.store";
 import {TenantSettingsStore} from "../../tenant/tenant-settings.store";
-import {ActivatedRoute, Router} from "@angular/router";
-import {Path} from "../../core/path";
+import {Router} from "@angular/router";
 import {AgbResponsability} from "@dvb/data-access-backend";
 
 @Component({
@@ -41,7 +40,6 @@ export class AgbPageComponent {
   readonly benutzerStore = inject(BenutzerStore);
   readonly tenantSettingStore = inject(TenantSettingsStore);
   readonly #router = inject(Router);
-  readonly #activatedRoute = inject(ActivatedRoute);
 
   protected accepted = signal(false);
 
@@ -54,9 +52,8 @@ export class AgbPageComponent {
     if (this.accepted() && responsability === AgbResponsability.AGB_MANAGED_BY_USER) {
       this.benutzerStore.acceptAGB({
         onSuccess: () => {
-          this.#router.navigate(
-            [Path.RELATIVE_ONE_UP, Path.DASHBOARD],
-            {relativeTo: this.#activatedRoute});
+          // routes to default page
+          void this.#router.navigate([this.tenantSettingStore.defaultLandingPage()]);
         }
       });
     }

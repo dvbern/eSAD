@@ -44,7 +44,6 @@ public record BenutzerFixtureBuilder(
             "Thomas",
             null,
             null,
-            Set.of(),
             EntityAktivStatus.AKTIV,
             null,
             null,

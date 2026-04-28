@@ -29,6 +29,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 @Getter
 public enum Path {
     ADMIN("admin"),
+    APP_MODE_SELECTION("app-mode-selection"),
     AERZTE("aerzte"),
     AGB("agb"),
     ALL("all"),
@@ -92,6 +93,9 @@ public enum Path {
     SCHULE_KLASSE("schule"),
     SCHULEN("schulen"),
     STAMMDATEN("stammdaten"),
+    STATISTIK("statistik"),
+    STATISTIK_ANONYM_BASISDATEN("basisdaten-anonym"),
+    STATISTIK_ANONYM_UNTERSUCHUNG("untersuchung-anonym"),
     SYSTEM("system"),
     SYSTEM_ADMIN("systemadmin"),
     SYSTEM_GENERAL("general"),

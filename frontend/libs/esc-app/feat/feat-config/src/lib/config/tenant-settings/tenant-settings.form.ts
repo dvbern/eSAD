@@ -22,6 +22,7 @@ import {
   AppLanguages,
   EinladungStatus,
   FeatureEnabledSetting,
+  LandingPageOption,
   TenantSettingSaveJson
 } from '@dvb/data-access-backend';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
@@ -89,6 +90,10 @@ function makeForm(config: Config) {
       featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
       enabledForStage: fb.control<boolean>({value: false, disabled: true}),
     }),
+    anonymeStatistikFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
   });
 
   // ZentraleOrganisation kann nicht verändert werden
@@ -101,6 +106,7 @@ function makeForm(config: Config) {
     customerAdminEmails: fb.control<string>('', [Validators.required, AppValidators.multipleEmailValidator()]),
     supportEmail: fb.control<string>('', [Validators.required, AppValidators.emailValidator()]),
     agbResponsability: fb.control<AgbResponsability>(AgbResponsability.AGB_MANAGED_BY_TENANT, Validators.required),
+    defaultLandingPage: fb.control<LandingPageOption>(LandingPageOption.DASHBOARD, Validators.required),
     einladungStatusValues: fb.control<EinladungStatus[]>([], Validators.required),
     features: featuresGroup,
   });
@@ -119,6 +125,7 @@ export class TenantSettingsForm extends BaseForm<ReturnType<typeof makeForm>, Te
       supportedLanguages: value.supportedLanguages,
       folgeTermineMaxSlots: value.folgeTermineMaxSlots,
       agbResponsability: value.agbResponsability,
+      defaultLandingPage: value.defaultLandingPage,
       features: {
         esadIdFeature: {
           featureEnabled: value.features.esadIdFeature.featureEnabled,
@@ -172,6 +179,10 @@ export class TenantSettingsForm extends BaseForm<ReturnType<typeof makeForm>, Te
           featureEnabled: value.features.zentraleOrganisationFeature.featureEnabled,
           enabledForStage: value.features.zentraleOrganisationFeature.enabledForStage,
         },
+        anonymeStatistikFeature: {
+          featureEnabled: value.features.anonymeStatistikFeature.featureEnabled,
+          enabledForStage: value.features.anonymeStatistikFeature.enabledForStage,
+        }
       },
       einladungStatusValues: value.einladungStatusValues,
       customerAdminEmails: this.cleanCustomerAdminEmails(requireFilledIn(trimToUndefined(value.customerAdminEmails))),
@@ -183,7 +194,7 @@ export class TenantSettingsForm extends BaseForm<ReturnType<typeof makeForm>, Te
   private cleanCustomerAdminEmails(emails: string): string {
     return emails
       // Soll Kommas am Anfang und am Ende entfernen;
-      .replace(new RegExp(`^[${','}\\s]+|[${','}\\s]+$`, 'g'), '')
+      .replace(new RegExp(String.raw`^[${','}\s]+|[${','}\s]+$`, 'g'), '')
       // Ausserdem sollen sämtliche Leerzeichen entfernt werden.
       .replace(/\s/g, '')
       .trim();

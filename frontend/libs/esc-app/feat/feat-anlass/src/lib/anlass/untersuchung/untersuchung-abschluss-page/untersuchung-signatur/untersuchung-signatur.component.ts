@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, inject} from "@angular/core";
 import {ReactiveFormsModule} from "@angular/forms";
 import {ButtonComponent, HeadingDirective} from "@dvb/ui-components";
+import {toEinladungBackendEntityIdWithClass} from "@dvb/data-access-types";
 import {TranslocoPipe, TranslocoService} from "@jsverse/transloco";
 import {BenutzerStore, ConfirmService} from "@dvb/feat-shared";
 import {UntersuchungStore} from "../../untersuchung.store";
@@ -67,13 +68,13 @@ export class UntersuchungSignaturComponent {
       }).subscribe(() => {
         this.store.resetSignatur({
           anlassId: anlassId,
-          einladungId: einladungId,
+          einladungId: toEinladungBackendEntityIdWithClass(einladungId),
         });
       });
     } else {
       this.store.signieren({
         anlassId: anlassId,
-        einladungId: einladungId,
+        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
       });
     }
   }

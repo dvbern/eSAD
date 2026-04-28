@@ -26,7 +26,7 @@ public class UntersuchungImpfungenUtil {
     ) {
         List<UntersuchungImpfstatusKrankheit> completeImpfstatusList = new ArrayList<>();
 
-        AnlassConfig config = impfungen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig config = impfungen.getUntersuchung().getAnlass().getAnlassConfig();
         EnumSet<Krankheit> krankheiten = getKrankheitenFromAnlassConfig(config);
 
         for (Krankheit krankheit : krankheiten) {
@@ -98,7 +98,7 @@ public class UntersuchungImpfungenUtil {
 
     private static boolean isImpfungFromLastAnlass(@NonNull UntersuchungImpfungIntern impfungLastAnlass) {
         return impfungLastAnlass.getAnlassImpfungDurchgefuehrt() != null
-            && impfungLastAnlass.getUntersuchungImpfungen().getUntersuchung().getEinladung().getAnlass().getId()
+            && impfungLastAnlass.getUntersuchungImpfungen().getUntersuchung().getAnlass().getId()
             .equals(impfungLastAnlass.getAnlassImpfungDurchgefuehrt().getId());
     }
 

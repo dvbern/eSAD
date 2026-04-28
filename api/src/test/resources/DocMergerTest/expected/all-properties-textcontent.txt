@@ -308,7 +308,7 @@ FIELD_anlass.groesseGewicht.bmiBeurteilung: >95%ile
 
 UNTERSUCHUNG ARZT
 
-FIELD_anlass.untersuchungArzt.blutdruckBewertung: Normal
+FIELD_anlass.untersuchungArzt.blutdruckBewertung: unauffällig
 FIELD_anlass.untersuchungArzt.blutdruckWertSystolisch: 80
 FIELD_anlass.untersuchungArzt.blutdruckWertDiastolisch: 80
 

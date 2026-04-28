@@ -9,6 +9,7 @@
  */
 export enum Path {
   ADMIN = 'admin',
+  APP_MODE_SELECTION = 'app-mode-selection',
   AERZTE = 'aerzte',
   AGB = 'agb',
   ALL = 'all',
@@ -74,7 +75,6 @@ export enum Path {
   KONTAKTPERSONEN = 'kontaktpersonen',
   LABEL = 'label',
   LEHRPERSONEN = 'lehrpersonen',
-  NO_ROLES = 'no-roles',
   NOTIZEN = 'notizen',
   PERSONENDATEN = 'personendaten',
   PLAYGROUND = 'playground',
@@ -88,6 +88,9 @@ export enum Path {
   SCHULE_KLASSE = 'schule',
   SCHULEN = 'schulen',
   STAMMDATEN = 'stammdaten',
+  STATISTIK = 'statistik',
+  STATISTIK_ANONYM_BASISDATEN = 'basisdaten-anonym',
+  STATISTIK_ANONYM_UNTERSUCHUNG = 'untersuchung-anonym',
   SYSTEM = 'system',
   SYSTEM_ADMIN = 'systemadmin',
   SYSTEM_GENERAL = 'general',
@@ -96,5 +99,6 @@ export enum Path {
   TENANT_CONFIG = 'tenant-config',
   TYPORGRAPHY = 'typography',
   UPLOAD = 'upload',
+  INFO = 'info',
   ORGANISATION = 'organisation',
 }

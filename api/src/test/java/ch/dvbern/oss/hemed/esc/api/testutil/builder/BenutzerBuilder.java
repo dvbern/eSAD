@@ -1,16 +1,24 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
+import java.time.OffsetDateTime;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Consumer;
+
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
-import ch.dvbern.oss.hemed.esc.api.features.benutzer.CreateBenutzerDTO;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.SystemRollen;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerJson;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationRollen;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerLoginInfos;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
@@ -23,14 +31,6 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionJsonSpec;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.time.OffsetDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Consumer;
 
 public class BenutzerBuilder {
 
@@ -51,11 +51,10 @@ public class BenutzerBuilder {
             TestUtil.getRandomString("TesterVorname"),
             null,
             null,
-            Collections.emptySet(),
             EntityAktivStatus.AKTIV,
             null,
             null,
-            Set.of(),
+            new HashSet<>(),
             null
         );
     }
@@ -212,7 +211,7 @@ public class BenutzerBuilder {
     @NonNull
     public static BenutzerJson createJax(@NonNull Consumer<BenutzerBuilder> block) {
         Benutzer entity = create(block);
-        return BenutzerMapper.toJson(entity);
+        return BenutzerMapper.toJson(entity, TenantEnum.BS);
     }
 
     @NonNull
@@ -224,30 +223,17 @@ public class BenutzerBuilder {
     @NonNull
     public static BenutzerOptionJsonSpec createOptionJaxSpec(@NonNull Consumer<BenutzerBuilder> block) {
         BenutzerJson benutzerJson = createJax(block);
-
         BenutzerOptionJson benutzerOptionJson = new BenutzerOptionJson(
             benutzerJson.getId(),
             benutzerJson.getData().getName(),
             benutzerJson.getData().getVorname(),
             benutzerJson.getData().getFullName(),
-            benutzerJson.getData().getOrganisationRollen(),
+            benutzerJson.getData().getOrganisationRollen().isEmpty()
+                ? null
+                : benutzerJson.getData().getOrganisationRollen().getFirst(),
             benutzerJson.getData().getSystemRollen(),
             benutzerJson.getData().getBenutzerAktivStatus()
         );
-
         return BenutzerOptionJsonSpecMapper.INSTANCE.benutzerOptionJsonToBenutzerOptionJsonSpec(benutzerOptionJson);
-    }
-
-    @NonNull
-    public static CreateBenutzerDTO createCreateDTO(@NonNull Consumer<BenutzerBuilder> block) {
-        Benutzer entity = create(block);
-        return new CreateBenutzerDTO(
-            entity.getEmail(),
-            entity.getTitel(),
-            entity.getNachname(),
-            entity.getVorname(),
-            entity.getTelefon(),
-            entity.getKeycloakId()
-        );
     }
 }

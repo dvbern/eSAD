@@ -42,6 +42,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EinladungJsonSpec;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 
 public class EinladungBuilder {
 
@@ -141,7 +142,7 @@ public class EinladungBuilder {
         @NonNull Consumer<EinladungBuilder> block,
         @NonNull LocalDate now) {
         Einladung entity = create(block);
-        return EinladungMapper.toJson(entity, null, now);
+        return EinladungMapper.toJson(entity, null, now, TenantEnum.BS);
     }
 
     @NonNull

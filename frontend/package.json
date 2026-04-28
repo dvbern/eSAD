@@ -155,6 +155,9 @@
     "typescript": "5.9.2",
     "typescript-eslint": "^8.33.1"
   },
+  "overrides": {
+    "@modern-js/utils": "2.69.3"
+  },
   "engines": {
     "node": ">=22.10.0 <23.0.0",
     "npm": ">=10.9.0 <11.0.0"

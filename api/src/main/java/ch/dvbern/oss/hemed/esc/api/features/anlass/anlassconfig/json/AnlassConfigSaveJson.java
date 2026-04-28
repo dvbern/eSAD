@@ -79,6 +79,10 @@ public class AnlassConfigSaveJson {
     @Schema(required = true)
     private boolean showAnmeldungBestaetigung;
 
+    @NotNull
+    @Schema(required = true)
+    private boolean showImpfanmeldung;
+
     // Daten
 
     @NotNull

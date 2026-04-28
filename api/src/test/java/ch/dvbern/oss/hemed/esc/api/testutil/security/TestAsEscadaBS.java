@@ -31,6 +31,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ESCADA_PU
         @Claim(key = "azp", value = TestAsEscadaBS.AZP),
     }
 )
+@TestAsMarker
 public @interface TestAsEscadaBS {
     String BENUTZER_ID = "53483f35-fd62-437f-b366-32f08cc9d868";
     String EMAIL = "escada-client@dvbern.ch";

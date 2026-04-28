@@ -20,10 +20,12 @@ public class OrganisationBuilder {
 
     @NonNull
     public static Organisation defaultOrganisation() {
-        return new Organisation(
+        Organisation defaultOrganisation = new Organisation(
             BenutzerBuilder.defaultBenutzer(),
             Set.of()
         );
+        defaultOrganisation.setVersion(1L);
+        return defaultOrganisation;
     }
 
     @NonNull

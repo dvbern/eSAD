@@ -56,5 +56,5 @@ export class AdminPageComponent {
       && this.tenantSettingsStore.arztListeEnabled();
   });
 
-  hasOrganisation = computed(() => isNotNullish(this.benutzerStore.benutzer()?.organisationRollen));
+  hasOrganisation = computed(() => isNotNullish(this.benutzerStore.benutzer()?.currentOrganisationRollen));
 }

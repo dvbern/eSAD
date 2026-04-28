@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.archunit;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
+import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResourcePlain;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.NoTransactionService;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
@@ -15,6 +16,7 @@ import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.library.Architectures;
 import com.tngtech.archunit.library.dependencies.Slice;
 import jakarta.persistence.Entity;
+import jakarta.ws.rs.Path;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -33,6 +35,7 @@ import static com.tngtech.archunit.core.domain.properties.CanBeAnnotated.Predica
 import static com.tngtech.archunit.lang.conditions.ArchPredicates.are;
 import static com.tngtech.archunit.lang.conditions.ArchPredicates.have;
 import static com.tngtech.archunit.lang.conditions.ArchPredicates.is;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.codeUnits;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.constructors;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
@@ -53,7 +56,8 @@ class LayeringTest {
         is(metaAnnotatedWith(NoTransactionService.class));
     public static final DescribedPredicate<JavaClass> REPOSITORY =
         is(interfaceWithSuffix("Repo")).or(is(metaAnnotatedWith(Repository.class)));
-    public static final DescribedPredicate<JavaClass> RESOURCE = metaAnnotatedWith(JaxResource.class).forSubtype();
+    public static final DescribedPredicate<JavaClass> RESOURCE = metaAnnotatedWith(JaxResource.class)
+        .or(metaAnnotatedWith(JaxResourcePlain.class)).forSubtype();
     public static final DescribedPredicate<JavaClass> RESOURCE_MAPPER = metaAnnotatedWith(JaxMapper.class).forSubtype();
     public static final DescribedPredicate<JavaClass> AUTO_MAPPER =
         is(JavaClass.Predicates.implement(BaseMapper.class));
@@ -219,6 +223,17 @@ class LayeringTest {
         rule.allowEmptyShould(true).check(ArchConst.APP_CLASSES);
     }
 
+    @Test
+    void jax_resource_plain_must_not_have_path_annotation() {
+        var rule = classes().that()
+            .areAnnotatedWith(JaxResourcePlain.class)
+            .should()
+            .notBeAnnotatedWith(Path.class)
+            .because("The JaxResourcePlain is intended for filters etc that belong to the Resource layer but do not want transactional");
+
+        rule.allowEmptyShould(true).check(ArchConst.APP_CLASSES);
+    }
+
     private static @NonNull DescribedPredicate<Slice> areNotInTheCommonPackage() {
         return new DescribedPredicate<>("features") {
             @Override
@@ -227,5 +242,7 @@ class LayeringTest {
             }
         };
     }
+
+
 
 }

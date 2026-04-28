@@ -145,7 +145,7 @@ class NotizenFileuploadDecryptionITest extends AbstractITest {
         var error = api.notizResourceDownloadNotizFileSync()
             .notizIdPath(storedNotiz.getId().getId())
             .fileIdPath(Objects.requireNonNull(notizJsonSpec.getData().getFiles()).getFirst().getId())
-            .execute(ResponseBody::prettyPeek)
+            .execute(ResponseOptions::andReturn)
             .then()
             .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
             .extract().as(AppFailureErrorJsonSpec.class);
@@ -191,7 +191,7 @@ class NotizenFileuploadDecryptionITest extends AbstractITest {
         var error = api.notizResourceDownloadNotizFileSync()
             .notizIdPath(storedNotiz.getId().getId())
             .fileIdPath(Objects.requireNonNull(notizJsonSpec.getData().getFiles()).getFirst().getId())
-            .execute(ResponseBody::prettyPeek)
+            .execute(ResponseOptions::andReturn)
             .then()
             .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
             .extract().as(AppFailureErrorJsonSpec.class);

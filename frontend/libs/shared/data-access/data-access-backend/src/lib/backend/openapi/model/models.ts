@@ -204,6 +204,7 @@ export * from './label-typ';
 export * from './laeusekontrolle-beurteilung';
 export * from './land';
 export * from './land-code';
+export * from './landing-page-option';
 export * from './last-impfung-json';
 export * from './lehrperson-json';
 export * from './lehrperson-list-json';

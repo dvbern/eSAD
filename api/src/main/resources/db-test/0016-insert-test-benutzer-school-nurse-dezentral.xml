@@ -1,0 +1,12 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="dvbern" id="2025-11-04-1156">
+    <sql>
+      INSERT INTO benutzer (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, email, keycloakid, lastusedip, lastusedsessionid, lastusedsessiontimestamp, oidcissuer, nachname, vorname, benutzeraktivstatus, titel, telefon)
+      VALUES ('1b7b7b30-1075-456b-9e65-1cb47b07cdba', '2026-02-19 11:57:42.178875', '2026-02-19 11:57:42.271767', '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1, 'school-nurse@mailbucket.dvbern.ch', 'b8c2ae55-8489-45bb-bcef-5eefe19731be', '172.19.1.193', 'a3eab01d-3f36-48a6-bd9f-a06a76916b3f', '2026-02-19 09:46:42.270799', 'https://local-esc-bs.localhost:8989/realms/be', 'SchoolNurse', 'Sandra', 'AKTIV', null, '+41 61 123 45 82');
+
+      INSERT INTO organisationrollen (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, organisation_id, benutzer_id, fachrollen)
+      VALUES (uuid_generate_v4(), current_timestamp, current_timestamp, '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 0, 'a0dfe3f4-4419-4d9e-96b3-1be3b606596d', '1b7b7b30-1075-456b-9e65-1cb47b07cdba', 'SCHOOL_NURSE');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

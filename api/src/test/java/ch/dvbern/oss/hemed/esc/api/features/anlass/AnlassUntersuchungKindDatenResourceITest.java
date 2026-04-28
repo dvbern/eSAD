@@ -16,6 +16,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+
 @QuarkusTest
 @RequiredArgsConstructor
 class AnlassUntersuchungKindDatenResourceITest extends AbstractITest {
@@ -35,12 +37,12 @@ class AnlassUntersuchungKindDatenResourceITest extends AbstractITest {
     void getUntersuchungKindDaten() {
         // ARRANGE
         Untersuchung untersuchung = fixtureService.createUntersuchungWithDurchfuehrung();
-        Kind kind = untersuchung.getEinladung().getDossier().getKind();
+        Kind kind = untersuchung.getEinladungRequired().getDossier().getKind();
         // ACT
         UntersuchungKindDatenJsonSpec result = api
             .einladungResourceGetUntersuchungKindDaten()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()

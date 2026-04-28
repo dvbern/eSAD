@@ -117,7 +117,7 @@ public class UntersuchungSchulrelevanteBeeintraechtigung
             beeintraechtigung = forUntersuchung(untersuchung);
         }
 
-        AnlassConfig config = untersuchung.getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig config = untersuchung.getAnlass().getAnlassConfig();
 
         beeintraechtigung.setFreiesGehen(
             ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(

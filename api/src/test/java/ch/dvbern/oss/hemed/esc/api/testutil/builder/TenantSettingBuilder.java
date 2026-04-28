@@ -10,6 +10,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSetting;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.features.FeatureEnabledSetting;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.features.TenantSettingFeatures;
 import ch.dvbern.oss.hemed.esc.api.shared.types.AgbResponsability;
+import ch.dvbern.oss.hemed.esc.api.shared.types.LandingPageOption;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
@@ -34,7 +35,9 @@ public class TenantSettingBuilder {
             List.of("test@mailbucket.dvbern.ch"),
             "test@mailbucket.dvbern.ch",
             AgbResponsability.AGB_MANAGED_BY_USER,
+            LandingPageOption.DASHBOARD,
             new TenantSettingFeatures(
+                FeatureEnabledSetting.ENABLED,
                 FeatureEnabledSetting.ENABLED,
                 FeatureEnabledSetting.ENABLED,
                 FeatureEnabledSetting.ENABLED,
@@ -134,6 +137,13 @@ public class TenantSettingBuilder {
     @CanIgnoreReturnValue
     public TenantSettingBuilder withAgbResponsability(@NonNull AgbResponsability agbResponsability) {
         this.tenantSetting.setAgbResponsability(agbResponsability);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public TenantSettingBuilder withDefaultLandingPage(@NonNull LandingPageOption defaultLandingPage) {
+        this.tenantSetting.setDefaultLandingPage(defaultLandingPage);
         return this;
     }
 

@@ -221,19 +221,6 @@ class RolesAugmentorTest {
     }
 
     @Test
-    void augmentWithRoles_shouldSetTenantOnProducer_whenTenantClaimPresent() {
-        // ARRANGE
-        when(tenantSettingsServiceMock.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled()).thenReturn(false);
-        SecurityIdentity identity = buildIdentityWithToken(TEST_EMAIL, TEST_USERNAME, "some-azp", "BS");
-
-        // ACT
-        rolesAugmentor.augmentWithRoles(identity);
-
-        // ASSERT
-        assertThat(tenantProducer.produceTenant()).isEqualTo(TenantEnum.BS);
-    }
-
-    @Test
     void isEscadaClientAndUser_shouldReturnTrue_whenMatchingUserAndAzp() {
         // ACT / ASSERT
         assertThat(rolesAugmentor.isEscadaClientAndUser(ESCADA_AZP, ESCADA_CLIENT_USER)).isTrue();

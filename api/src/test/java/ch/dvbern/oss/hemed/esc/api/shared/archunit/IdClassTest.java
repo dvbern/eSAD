@@ -5,7 +5,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.stream.Stream;
 
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import com.querydsl.core.types.Path;
@@ -72,9 +74,14 @@ class IdClassTest {
                     // caused by the `method.reflect()` above.
                     // Unfortunately this reflect() is needed sind ArchUnit JavaParameter
                     // does not provide the Parameter-Name yet :( (2024-11-04)
-                    boolean isIdClass = Objects.equals(
-                        parameter.getType().getName(),
-                        ID.class.getName()
+                    boolean isIdClass = Stream.of(
+                        ID.class,
+                        HasUntersuchungIDWrapper.class
+                    ).anyMatch(
+                        clazz -> Objects.equals(
+                            parameter.getType().getName(),
+                           clazz.getName()
+                        )
                     );
 
                     if (isIdParam && !isIdClass) {

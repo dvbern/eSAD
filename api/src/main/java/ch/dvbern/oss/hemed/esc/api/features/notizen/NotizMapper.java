@@ -19,6 +19,8 @@ import ch.dvbern.oss.hemed.esc.api.features.labels.LabelMapper;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizJson;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataMapper;
@@ -36,9 +38,10 @@ public final class NotizMapper {
     private final BenutzerService benutzerService;
     private final LabelMapper labelMapper;
     private final AuthorizerService authorizerService;
+    private final TenantProducer tenantProducer;
 
     @NonNull
-    public static NotizJson toJson(@NonNull Notiz notiz) {
+    public static NotizJson toJson(@NonNull Notiz notiz, @NonNull TenantEnum tenant) {
         return new NotizJson(
             notiz.getId(),
             EntityInfoJson.fromEntity(notiz),
@@ -47,7 +50,7 @@ public final class NotizMapper {
                 notiz.getBemerkungen(),
                 notiz.getStatus(),
                 notiz.getTyp(),
-                BenutzerMapper.toOptionJson(notiz.getVerantwortlicher()),
+                BenutzerMapper.toOptionJson(notiz.getVerantwortlicher(), tenant),
                 notiz.getAnlassLink(),
                 notiz.getLabels().stream().map(LabelMapper::toJson).toList(),
                 notiz.getFiles().stream().map(FileDataMapper::toJson).toList(),
@@ -97,7 +100,7 @@ public final class NotizMapper {
 
     @NonNull
     public NotizJson getById(@NonNull ID<Notiz> notizId) {
-        return NotizMapper.toJson(notizService.getById(notizId));
+        return NotizMapper.toJson(notizService.getById(notizId), tenantProducer.produceTenant());
     }
 
     @NonNull
@@ -107,7 +110,7 @@ public final class NotizMapper {
         @NonNull List<FileUpload> fileUploads
     ) {
         Notiz savedNotiz = notizService.persist(toEntityForCreate(notizJson, dossierId));
-        return toJson(notizService.updateWithFiles(savedNotiz, fileUploads, notizJson.getVersion()));
+        return toJson(notizService.updateWithFiles(savedNotiz, fileUploads, notizJson.getVersion()), tenantProducer.produceTenant());
     }
 
     @NonNull
@@ -124,29 +127,28 @@ public final class NotizMapper {
                 kind,
                 existingNotiz));
         Notiz entity = toEntity(existingNotiz, saveJson);
-        return toJson(notizService.updateWithFiles(entity, fileUploads, saveJson.getVersion()));
+        return toJson(notizService.updateWithFiles(entity, fileUploads, saveJson.getVersion()), tenantProducer.produceTenant());
     }
 
-    public void remove(@NonNull ID<Notiz> notizID) {
-        Notiz notiz = notizService.getById(notizID);
+    public void checkRemoveAllowed(@NonNull Notiz notiz) {
         Kind kind = notiz.getDossier().getKind();
         KindValidationUtil.throwErrorIfKindIsInactive(
             kind,
             AppValidationMessage.cannotRemoveEntityFromInactiveKind(
                 kind,
                 notiz));
-        notizService.remove(notizID, true);
     }
 
     @NonNull
     public NotizJson getNotiz(@NonNull ID<Notiz> notizId) {
-        return toJson(notizService.getById(notizId));
+        return toJson(notizService.getById(notizId), tenantProducer.produceTenant());
     }
 
     @NonNull
     public List<NotizJson> findAll() {
         List<Notiz> notizenList = notizService.findAll();
-        return notizenList.stream().map(NotizMapper::toJson).toList();
+        TenantEnum tenant = tenantProducer.produceTenant();
+        return notizenList.stream().map(n -> NotizMapper.toJson(n, tenant)).toList();
     }
 
     @NonNull
@@ -154,7 +156,7 @@ public final class NotizMapper {
         return notizService.findAllForKind(kindID).stream()
             // some Roles can only read Notizen with certain labels
             .filter(authorizerService::hasReadAuthorizationNotiz)
-            .map(NotizMapper::toJson)
+            .map(n -> NotizMapper.toJson(n, tenantProducer.produceTenant()))
             .toList();
     }
 
@@ -168,7 +170,7 @@ public final class NotizMapper {
                 kind,
                 new FileData()));
         Notiz updatedNotiz = notizService.addUploadedFileAndFlush(notizID, file);
-        return toJson(updatedNotiz);
+        return toJson(updatedNotiz, tenantProducer.produceTenant());
     }
 
     @NonNull
@@ -181,6 +183,6 @@ public final class NotizMapper {
                 kind,
                 new FileData()));
         notizService.removeUploadedFile(existingNotiz, fileIdToRemove);
-        return toJson(existingNotiz);
+        return toJson(existingNotiz, tenantProducer.produceTenant());
     }
 }

@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
 import {ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
-import {BackendEntityId} from '@dvb/data-access-types';
+import {BackendEntityId, toEinladungBackendEntityIdWithClass,} from '@dvb/data-access-types';
 import {BenutzerStore, ConfirmService, EventBusStore, PageComponent, Path} from '@dvb/feat-shared';
 import {
   ButtonComponent,
@@ -179,11 +179,11 @@ export class UntersuchungPageComponent {
     }).subscribe(() => {
 
         // Emit event to validate forms in all components
-        this.eventBusStore.emit('UNTERSUCHUNG_ABSCHLIESSEN_REQUESTED', {einladungId: einladungId});
+        this.eventBusStore.emit('UNTERSUCHUNG_ABSCHLIESSEN_REQUESTED', {einladungId: toEinladungBackendEntityIdWithClass(einladungId)});
 
         this.untersuchungStore.untersuchungAbschliessen({
           anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-          einladungId: einladungId,
+          einladungId: toEinladungBackendEntityIdWithClass(einladungId),
           onSuccess: () => {
             void this.closeTabInternal(einladungId);
             this.#appNotificationStore.addSuccessNotification(

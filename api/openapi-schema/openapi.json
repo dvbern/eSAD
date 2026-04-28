@@ -221,7 +221,7 @@
       },
       "AnlassConfigSaveJson" : {
         "type" : "object",
-        "required" : [ "anlassTyp", "datumVon", "datumBis", "bezeichnung", "showImpfausweis", "showFragebogen", "showAnmeldungBestaetigung", "showDatenPersonendaten", "showDatenPersonendatenEsadId", "datenUntersuchung", "showDatenSchule", "datenBemerkung", "vorabklaerungenFragebogenStatus", "vorabklaerungenEinverstaendnisImpfungen", "vorabklaerungenChronischeKrankheiten", "showImpfungenHeaderImpfausweisUnvollstaendig", "showImpfungenHeaderImpfausweisNichtVorhanden", "showImpfungenHeaderImpfausweisZweiPlusEinsSchema", "showImpfungenHeaderImpfausweisUpload", "impfungenUebersicht", "impfungenListe", "showImpfungenDoppelkontrolle", "impfungenMassnahmeKeineMassnahmen", "impfungenMassnahmeGruppenFolgetermin", "impfungenMassnahmeImpfenFolgetermin", "impfungenMassnahmeEinzelFolgetermin", "impfungenMassnahmeInfoKinderarzt", "impfungenMassnahmeBeratungMPA", "impfungenMassnahmeInfomaterialAbgegeben", "impfungenMassnahmeInfoEltern", "impfungenMassnahmeRueckfrageKinderarzt", "impfungenMassnahmeBemerkungen", "checkEinwilligungVorhanden", "checkKontraindikationenAbgeklaert", "checkDoppelkontrolleImpfentscheidDurchgefuehrt", "untersuchungImpfungEmpfehlung", "untersuchungImpfungEmpfehlungValues", "untersuchungImpfungAchtung", "untersuchungImpfungBemerkungen", "untersuchungImpfungKrankheitenLinksValues", "untersuchungImpfungKrankheitenRechtsValues", "impfungenDataMinimalImpfausweisGeprueft", "impfungenDataMinimalImmunsuppression", "impfungenDataMinimalMasernImpfstatus", "impfungenDataMinimalMasernAnzahlImpfungen", "impfungenDataMinimalHpvImpfstatus", "impfungenDataMinimalHpvAnzahlImpfungen", "impfungenDataMinimalImpfempfehlung", "impfungenDataMinimalImpfungDurchgefuehrt", "sehenBrilleLinsen", "sehenBrilleLinsenValues", "sehenFarbsehen", "sehenTafel", "sehenFernvisus", "sehenFernvisusAugeEinzeln", "sehenStereoTest", "sehenStrabismus", "sehenStrabismusValues", "sehenStrabismusAuspraegung", "sehenStrabismusAuftreten", "sehenInspektion", "sehenKonvergenz", "sehenMotilitaet", "sehenNahvisus", "sehenEmpfehlung", "sehenBemerkungen", "sehenBemerkungenFragebogen", "sehenMassnahmen", "hoerenAudiogramm", "hoerenAudiogramm250Hz", "hoerenAudiogramm8000Hz", "hoerenAudiogrammSimpel", "hoerenAudiogrammBeurteilung", "hoerenAudiogrammZusaetzlicheAngaben", "hoerenAudiogrammEmpfehlung", "hoerenAudiogrammBemerkungen", "hoerenHoerhilfe", "hoerenOtoskopie", "hoerenOtoskopieBemerkungen", "groesseGewichtGroesse", "groesseGewichtGewicht", "groesseGewichtBmi", "groesseGewichtGroessePerzentile", "groesseGewichtGewichtPerzentile", "groesseGewichtBmiPerzentile", "groesseGewichtBmiPerzentileValues", "groesseGewichtEmpfehlung", "groesseGewichtBemerkungen", "showTriageTriage", "showTriageKindWeiterleiten", "laeusekontrolleBeurteilung", "laeusekontrolleEmpfehlung", "laeusekontrolleBemerkungen", "untersuchungBewegungsapparat", "untersuchungEinbeinstand", "untersuchungEinbeinstandRechtsLinks", "untersuchungEinbeinstandValues", "untersuchungEinbeinhuepfen", "untersuchungEinbeinhuepfenRechtsLinks", "untersuchungEinbeinhuepfenValues", "untersuchungFingeropposition", "untersuchungHampelmann", "untersuchungBallFangen", "untersuchungBallWerfen", "untersuchungNameSchreiben", "untersuchungFigurNachmalen", "untersuchungStifthaltung", "untersuchungAussprache", "untersuchungLesefit", "untersuchungLesefitPunkte", "untersuchungZahlenNachsprechen4", "untersuchungZahlenNachsprechen5", "untersuchungZeichnenKreis", "untersuchungZeichnenViereck", "untersuchungZeichnenDreieck", "untersuchungZeichnenMensch", "untersuchungZeichnenMenschPunkte", "untersuchungMotorik", "untersuchungMotorikValues", "untersuchungMotorikPunkte", "untersuchungKognition", "untersuchungKognitionPunkte", "untersuchungSprachfaehigkeitSingleValue", "untersuchungSprachfaehigkeitMultiValue", "untersuchungSprachfaehigkeitValues", "untersuchungSprachePunkte", "untersuchungMundZaehne", "untersuchungHaut", "untersuchungHerz", "untersuchungBlutdruck", "untersuchungVerhalten", "unterlagenEinverstaendnis", "unterlagenVerhaltensfragebogen", "untersuchungEmpfehlung", "untersuchungBemerkungen", "untersuchungSpracheNachsprechen", "untersuchungSpracheWortschatz", "untersuchungSpracheSprachverstaendnis", "untersuchungSpracheBemerkungen", "bewegungsapparatSkoliose", "bewegungsapparatHaltungsschwaeche", "bewegungsapparatVerkuerzungHamstringmuskulatur", "bewegungsapparatBemerkung", "untersuchungBeeintraechtigungFreiesGehen", "untersuchungBeeintraechtigungOhneStuetzradVelofahren", "untersuchungBeeintraechtigungGrafomotorik", "untersuchungBeeintraechtigungFeinmotorik", "untersuchungBeeintraechtigungGrobmotorik", "untersuchungBeeintraechtigungGleichgewicht", "untersuchungBeeintraechtigungBemerkung", "abschlussUeberweisungErfolgt", "abschlussAerztlicheValidierungErforderlich", "abschlussBeratungDurchgefuehrt", "abschlussBeurteilungEmpfohleneMassnahmen", "showCardAbschlussSignatur", "showMassnahmenPathologischeBefunde", "showMassnahmenKeine", "showMassnahmenBeratungMpa", "showMassnahmenBeratungSchulAerztin", "showMassnahmenBereitsBehandelt", "showMassnahmenInfomaterial", "showMassnahmenInfoEltern", "showMassnahmenUeberweisungHausarzt", "showMassnahmenUeberweisungAugenarzt", "showMassnahmenNachkontrolleSaed", "showMassnahmenAnderes" ],
+        "required" : [ "anlassTyp", "datumVon", "datumBis", "bezeichnung", "showImpfausweis", "showFragebogen", "showAnmeldungBestaetigung", "showImpfanmeldung", "showDatenPersonendaten", "showDatenPersonendatenEsadId", "datenUntersuchung", "showDatenSchule", "datenBemerkung", "vorabklaerungenFragebogenStatus", "vorabklaerungenEinverstaendnisImpfungen", "vorabklaerungenChronischeKrankheiten", "showImpfungenHeaderImpfausweisUnvollstaendig", "showImpfungenHeaderImpfausweisNichtVorhanden", "showImpfungenHeaderImpfausweisZweiPlusEinsSchema", "showImpfungenHeaderImpfausweisUpload", "impfungenUebersicht", "impfungenListe", "showImpfungenDoppelkontrolle", "impfungenMassnahmeKeineMassnahmen", "impfungenMassnahmeGruppenFolgetermin", "impfungenMassnahmeImpfenFolgetermin", "impfungenMassnahmeEinzelFolgetermin", "impfungenMassnahmeInfoKinderarzt", "impfungenMassnahmeBeratungMPA", "impfungenMassnahmeInfomaterialAbgegeben", "impfungenMassnahmeInfoEltern", "impfungenMassnahmeRueckfrageKinderarzt", "impfungenMassnahmeBemerkungen", "checkEinwilligungVorhanden", "checkKontraindikationenAbgeklaert", "checkDoppelkontrolleImpfentscheidDurchgefuehrt", "untersuchungImpfungEmpfehlung", "untersuchungImpfungEmpfehlungValues", "untersuchungImpfungAchtung", "untersuchungImpfungBemerkungen", "untersuchungImpfungKrankheitenLinksValues", "untersuchungImpfungKrankheitenRechtsValues", "impfungenDataMinimalImpfausweisGeprueft", "impfungenDataMinimalImmunsuppression", "impfungenDataMinimalMasernImpfstatus", "impfungenDataMinimalMasernAnzahlImpfungen", "impfungenDataMinimalHpvImpfstatus", "impfungenDataMinimalHpvAnzahlImpfungen", "impfungenDataMinimalImpfempfehlung", "impfungenDataMinimalImpfungDurchgefuehrt", "sehenBrilleLinsen", "sehenBrilleLinsenValues", "sehenFarbsehen", "sehenTafel", "sehenFernvisus", "sehenFernvisusAugeEinzeln", "sehenStereoTest", "sehenStrabismus", "sehenStrabismusValues", "sehenStrabismusAuspraegung", "sehenStrabismusAuftreten", "sehenInspektion", "sehenKonvergenz", "sehenMotilitaet", "sehenNahvisus", "sehenEmpfehlung", "sehenBemerkungen", "sehenBemerkungenFragebogen", "sehenMassnahmen", "hoerenAudiogramm", "hoerenAudiogramm250Hz", "hoerenAudiogramm8000Hz", "hoerenAudiogrammSimpel", "hoerenAudiogrammBeurteilung", "hoerenAudiogrammZusaetzlicheAngaben", "hoerenAudiogrammEmpfehlung", "hoerenAudiogrammBemerkungen", "hoerenHoerhilfe", "hoerenOtoskopie", "hoerenOtoskopieBemerkungen", "groesseGewichtGroesse", "groesseGewichtGewicht", "groesseGewichtBmi", "groesseGewichtGroessePerzentile", "groesseGewichtGewichtPerzentile", "groesseGewichtBmiPerzentile", "groesseGewichtBmiPerzentileValues", "groesseGewichtEmpfehlung", "groesseGewichtBemerkungen", "showTriageTriage", "showTriageKindWeiterleiten", "laeusekontrolleBeurteilung", "laeusekontrolleEmpfehlung", "laeusekontrolleBemerkungen", "untersuchungBewegungsapparat", "untersuchungEinbeinstand", "untersuchungEinbeinstandRechtsLinks", "untersuchungEinbeinstandValues", "untersuchungEinbeinhuepfen", "untersuchungEinbeinhuepfenRechtsLinks", "untersuchungEinbeinhuepfenValues", "untersuchungFingeropposition", "untersuchungHampelmann", "untersuchungBallFangen", "untersuchungBallWerfen", "untersuchungNameSchreiben", "untersuchungFigurNachmalen", "untersuchungStifthaltung", "untersuchungAussprache", "untersuchungLesefit", "untersuchungLesefitPunkte", "untersuchungZahlenNachsprechen4", "untersuchungZahlenNachsprechen5", "untersuchungZeichnenKreis", "untersuchungZeichnenViereck", "untersuchungZeichnenDreieck", "untersuchungZeichnenMensch", "untersuchungZeichnenMenschPunkte", "untersuchungMotorik", "untersuchungMotorikValues", "untersuchungMotorikPunkte", "untersuchungKognition", "untersuchungKognitionPunkte", "untersuchungSprachfaehigkeitSingleValue", "untersuchungSprachfaehigkeitMultiValue", "untersuchungSprachfaehigkeitValues", "untersuchungSprachePunkte", "untersuchungMundZaehne", "untersuchungHaut", "untersuchungHerz", "untersuchungBlutdruck", "untersuchungVerhalten", "unterlagenEinverstaendnis", "unterlagenVerhaltensfragebogen", "untersuchungEmpfehlung", "untersuchungBemerkungen", "untersuchungSpracheNachsprechen", "untersuchungSpracheWortschatz", "untersuchungSpracheSprachverstaendnis", "untersuchungSpracheBemerkungen", "bewegungsapparatSkoliose", "bewegungsapparatHaltungsschwaeche", "bewegungsapparatVerkuerzungHamstringmuskulatur", "bewegungsapparatBemerkung", "untersuchungBeeintraechtigungFreiesGehen", "untersuchungBeeintraechtigungOhneStuetzradVelofahren", "untersuchungBeeintraechtigungGrafomotorik", "untersuchungBeeintraechtigungFeinmotorik", "untersuchungBeeintraechtigungGrobmotorik", "untersuchungBeeintraechtigungGleichgewicht", "untersuchungBeeintraechtigungBemerkung", "abschlussUeberweisungErfolgt", "abschlussAerztlicheValidierungErforderlich", "abschlussBeratungDurchgefuehrt", "abschlussBeurteilungEmpfohleneMassnahmen", "showCardAbschlussSignatur", "showMassnahmenPathologischeBefunde", "showMassnahmenKeine", "showMassnahmenBeratungMpa", "showMassnahmenBeratungSchulAerztin", "showMassnahmenBereitsBehandelt", "showMassnahmenInfomaterial", "showMassnahmenInfoEltern", "showMassnahmenUeberweisungHausarzt", "showMassnahmenUeberweisungAugenarzt", "showMassnahmenNachkontrolleSaed", "showMassnahmenAnderes" ],
         "properties" : {
           "anlassTyp" : {
             "$ref" : "#/components/schemas/AnlassTyp"
@@ -244,6 +244,9 @@
             "type" : "boolean"
           },
           "showAnmeldungBestaetigung" : {
+            "type" : "boolean"
+          },
+          "showImpfanmeldung" : {
             "type" : "boolean"
           },
           "showDatenPersonendaten" : {
@@ -895,7 +898,7 @@
       },
       "AnlassTyp" : {
         "type" : "string",
-        "enum" : [ "KINDERGARTEN", "KLASSE_4", "KLASSE_8", "KLASSE_9", "FREMDSPRACHEN", "IMPFAKTION", "IMPFSPRECHSTUNDE", "IMPFTERMIN", "VERTRAUENSARZT", "KLASSE_5", "EINSCHULUNG", "SONSTIGES", "LAEUSEKONTROLLE" ]
+        "enum" : [ "KINDERGARTEN", "KLASSE_4", "KLASSE_8", "KLASSE_9", "FREMDSPRACHEN", "IMPFAKTION", "IMPFSPRECHSTUNDE", "IMPFTERMIN", "VERTRAUENSARZT", "KLASSE_5", "EINSCHULUNG", "SONSTIGES", "LAEUSEKONTROLLE", "IMPFTERMIN_ANONYM", "KINDERGARTEN_ANONYM", "KLASSE_4_ANONYM", "KLASSE_8_ANONYM" ]
       },
       "AnlassWithDateTimeJson" : {
         "type" : "object",
@@ -1328,7 +1331,7 @@
       },
       "BenutzerOptionJson" : {
         "type" : "object",
-        "required" : [ "id", "name", "vorname", "fullName", "organisationRollen", "benutzerAktivStatus" ],
+        "required" : [ "id", "name", "vorname", "fullName", "benutzerAktivStatus" ],
         "properties" : {
           "id" : {
             "$ref" : "#/components/schemas/IDBenutzer"
@@ -1343,10 +1346,7 @@
             "type" : "string"
           },
           "organisationRollen" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/OrganisationRollenJson"
-            }
+            "$ref" : "#/components/schemas/OrganisationRollenJson"
           },
           "systemRollen" : {
             "$ref" : "#/components/schemas/SystemRollenJson"
@@ -1413,7 +1413,7 @@
       },
       "Berechtigung" : {
         "type" : "string",
-        "enum" : [ "AUFGABEN_LESEN", "AUFGABEN_SCHREIBEN", "ANLASSLISTE_LESEN", "ANLASSLISTE_LESEN_LAEUSE", "ANLASSPLANUNG_LESEN", "ANLASSPLANUNG_SCHREIBEN", "ANLASSPLANUNG_LESEN_LAEUSE", "ANLASSPLANUNG_SCHREIBEN_LAEUSE", "VERANDERUNGEN_NACH_ABSCHLUSS", "SU_DATEN_LESEN", "SU_DATEN_SCHREIBEN", "SU_IMPFEN_LESEN", "SU_IMPFEN_SCHREIBEN", "SU_SEHEN_LESEN", "SU_SEHEN_SCHREIBEN", "SU_HOREN_LESEN", "SU_HOREN_SCHREIBEN", "SU_GROSSE_GEWICHT_LESEN", "SU_GROSSE_GEWICHT_SCHREIBEN", "SU_LAEUSE_LESEN", "SU_LAEUSE_SCHREIBEN", "SU_TRIAGE_LESEN", "SU_TRIAGE_SCHREIBEN", "SU_AERZTLICHE_UNTERSUCHUNG_LESEN", "SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN", "SU_MASSNAHMEN_LESEN", "SU_MASSNAHMEN_SCHREIBEN", "SU_ABSCHLUSS_LESEN", "SU_ABSCHLUSS_SCHREIBEN", "SU_VORABKLAERUNGEN_LESEN", "SU_VORABKLAERUNGEN_SCHREIBEN", "KINDER_LESEN_MEDIZINISCH", "KINDER_LESEN_NICHT_MEDIZINISCH", "KINDER_SCHREIBEN_MEDIZINISCH", "KINDER_SCHREIBEN_NICHT_MEDIZINISCH", "KINDER_ALLE_NOTIZEN_LESEN", "KINDER_ALLE_NOTIZEN_SCHREIBEN", "KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN", "KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN", "INDIVIDUELLE_REPORTS", "SPSS_EXPORT", "KOMPLETTER_EXPORT", "LISTEN_ADMIN_LESEN", "LISTEN_LESEN", "LISTEN_SCHREIBEN", "IMPFSTOFFE_LESEN", "IMPFSTOFFE_SCHREIBEN", "DUBLETTEN_ZUSAMMENFUHREN", "LABELS_LESEN", "LABELS_ADMIN_LESEN", "LABELS_SCHREIBEN", "EIGENE_BERECHTIGUNGEN_LESEN", "MITARBEITERLISTE_BERECHTIGUNGEN_LESEN", "VORLAGEN_LESEN", "VORLAGEN_ADMIN_LESEN", "VORLAGEN_SCHREIBEN", "AERZTE_LESEN", "AERZTE_SCHREIBEN", "BENUTZER_BERECHTIGUNGEN_LESEN", "BENUTZER_BERECHTIGUNGEN_SCHREIBEN", "ARCHIVIERUNG", "ORGANISATION_VERWALTEN_LESEN", "ORGANISATION_VERWALTEN_SCHREIBEN", "SUPPORT", "SYSTEM_ADMIN", "ESCADA_PUSH", "FILE_INGRESS_PUSH", "PUPIL_PUSH" ]
+        "enum" : [ "AUFGABEN_LESEN", "AUFGABEN_SCHREIBEN", "ANLASSLISTE_LESEN", "ANLASSLISTE_LESEN_LAEUSE", "ANLASSPLANUNG_LESEN", "ANLASSPLANUNG_SCHREIBEN", "ANLASSPLANUNG_LESEN_LAEUSE", "ANLASSPLANUNG_SCHREIBEN_LAEUSE", "VERANDERUNGEN_NACH_ABSCHLUSS", "SU_DATEN_LESEN", "SU_DATEN_SCHREIBEN", "SU_IMPFEN_LESEN", "SU_IMPFEN_SCHREIBEN", "SU_SEHEN_LESEN", "SU_SEHEN_SCHREIBEN", "SU_HOREN_LESEN", "SU_HOREN_SCHREIBEN", "SU_GROSSE_GEWICHT_LESEN", "SU_GROSSE_GEWICHT_SCHREIBEN", "SU_LAEUSE_LESEN", "SU_LAEUSE_SCHREIBEN", "SU_TRIAGE_LESEN", "SU_TRIAGE_SCHREIBEN", "SU_AERZTLICHE_UNTERSUCHUNG_LESEN", "SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN", "SU_MASSNAHMEN_LESEN", "SU_MASSNAHMEN_SCHREIBEN", "SU_ABSCHLUSS_LESEN", "SU_ABSCHLUSS_SCHREIBEN", "SU_VORABKLAERUNGEN_LESEN", "SU_VORABKLAERUNGEN_SCHREIBEN", "KINDER_LESEN_MEDIZINISCH", "KINDER_LESEN_NICHT_MEDIZINISCH", "KINDER_SCHREIBEN_MEDIZINISCH", "KINDER_SCHREIBEN_NICHT_MEDIZINISCH", "KINDER_ALLE_NOTIZEN_LESEN", "KINDER_ALLE_NOTIZEN_SCHREIBEN", "KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN", "KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN", "INDIVIDUELLE_REPORTS", "SPSS_EXPORT", "KOMPLETTER_EXPORT", "LISTEN_ADMIN_LESEN", "LISTEN_LESEN", "LISTEN_SCHREIBEN", "IMPFSTOFFE_LESEN", "IMPFSTOFFE_SCHREIBEN", "DUBLETTEN_ZUSAMMENFUHREN", "LABELS_LESEN", "LABELS_ADMIN_LESEN", "LABELS_SCHREIBEN", "EIGENE_BERECHTIGUNGEN_LESEN", "VORLAGEN_LESEN", "VORLAGEN_ADMIN_LESEN", "VORLAGEN_SCHREIBEN", "AERZTE_LESEN", "AERZTE_SCHREIBEN", "BENUTZER_BERECHTIGUNGEN_LESEN", "BENUTZER_BERECHTIGUNGEN_SCHREIBEN", "ARCHIVIERUNG", "ORGANISATION_VERWALTEN_LESEN", "ORGANISATION_VERWALTEN_SCHREIBEN", "SUPPORT", "SYSTEM_ADMIN", "ESCADA_PUSH", "FILE_INGRESS_PUSH", "PUPIL_PUSH" ]
       },
       "Bewegungsapparat" : {
         "type" : "string",
@@ -2436,7 +2436,7 @@
       },
       "FileTyp" : {
         "type" : "string",
-        "enum" : [ "ESCADA_SYNC", "PUPIL_SYNC", "IMPFAUSWEIS", "NOTIZUPLOAD", "AUFGABEUPLOAD", "FRAGEBOGEN", "KINDERDOSSIER", "BRIEFVORLAGE", "ANMELDUNG_BESTAETIGUNG", "PLAYGROUND", "PLAYGROUND_ERROR", "SPSS_REPORT", "CSV_REPORT", "MASSENBRIEF_ZIP" ]
+        "enum" : [ "ESCADA_SYNC", "PUPIL_SYNC", "IMPFAUSWEIS", "NOTIZUPLOAD", "AUFGABEUPLOAD", "FRAGEBOGEN", "KINDERDOSSIER", "BRIEFVORLAGE", "ANMELDUNG_BESTAETIGUNG", "IMPFANMELDUNG", "PLAYGROUND", "PLAYGROUND_ERROR", "SPSS_REPORT", "CSV_REPORT", "MASSENBRIEF_ZIP" ]
       },
       "FilterCombination" : {
         "type" : "string",
@@ -2511,6 +2511,12 @@
       "Hampelmann" : {
         "type" : "string",
         "enum" : [ "MIND_FUENF_MAL", "WENIGER_ALS_FUENF_MAL", "NICHT_GEPRUEFT" ]
+      },
+      "HasUntersuchungIDWrapper" : {
+        "type" : "string",
+        "pattern" : "^[0-9a-fA-F\\-]{36}-(anonym|einladung)$",
+        "format" : "entity-id-with-class",
+        "examples" : [ "11111111-1111-1111-1111-111111111111-anonym" ]
       },
       "Haut" : {
         "type" : "string",
@@ -3693,6 +3699,10 @@
         "type" : "string",
         "enum" : [ "ALBANIEN", "ANDERER_STAAT_OST_SUEDEUROPA", "ANDERER_STAAT_WEST_NORDEUROPA", "DEUTSCHLAND", "FRANKREICH", "ITALIEN", "OESTERREICH", "POLEN", "PORTUGAL", "CH", "SPANIEN", "TUERKEI", "UNGARN", "EX_JUGOSLAVIEN_BALKANSTAATEN", "GUS", "ANDERER_STAAT_AFRIKA", "NORDAFRIKA", "SOMALIA", "ERITREA", "SUED_UND_MITTELAMERIKA", "AFGHANISTAN", "ANDERER_STAAT_NAHER_MITTLERER_OSTEN", "SRI_LANKA", "INDIEN", "ANDERER_STAAT_ASIEN", "IRAK", "SYRIEN", "AUSTRALIEN_UND_UMGEBUNG" ]
       },
+      "LandingPageOption" : {
+        "type" : "string",
+        "enum" : [ "APP_MODE_SELECTION", "DASHBOARD", "ANLASS", "KINDER", "AUFGABEN" ]
+      },
       "LastImpfungJson" : {
         "type" : "object",
         "properties" : {
@@ -3959,7 +3969,7 @@
       },
       "NotizTyp" : {
         "type" : "string",
-        "enum" : [ "DEFAULT", "FRAGEBOGEN", "IMPFAUSWEIS", "ANMELDUNG_BESTAETIGUNG", "ABMELDUNG" ]
+        "enum" : [ "DEFAULT", "FRAGEBOGEN", "IMPFAUSWEIS", "ANMELDUNG_BESTAETIGUNG", "ABMELDUNG", "IMPFANMELDUNG" ]
       },
       "NumOfOffeneFaelligeAufgabeJson" : {
         "type" : "object",
@@ -4021,9 +4031,15 @@
             "items" : {
               "$ref" : "#/components/schemas/FachRolle"
             }
+          },
+          "berechtigungen" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Berechtigung"
+            }
           }
         },
-        "required" : [ "fachRollen" ]
+        "required" : [ "fachRollen", "berechtigungen" ]
       },
       "OrganisationSaveJson" : {
         "type" : "object",
@@ -4132,16 +4148,10 @@
       },
       "PrincipalJson" : {
         "type" : "object",
-        "required" : [ "benutzerJson", "berechtigungen" ],
+        "required" : [ "benutzerJson" ],
         "properties" : {
           "benutzerJson" : {
             "$ref" : "#/components/schemas/BenutzerJson"
-          },
-          "berechtigungen" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/Berechtigung"
-            }
           }
         }
       },
@@ -4676,12 +4686,18 @@
       },
       "SystemRollenJson" : {
         "type" : "object",
-        "required" : [ "fachRollen" ],
+        "required" : [ "fachRollen", "berechtigungen" ],
         "properties" : {
           "fachRollen" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/FachRolle"
+            }
+          },
+          "berechtigungen" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Berechtigung"
             }
           }
         }
@@ -4704,7 +4720,7 @@
       },
       "TenantSettingFeaturesJson" : {
         "type" : "object",
-        "required" : [ "esadIdFeature", "laenderCodeFeature", "mobileScannerFeature", "massenimportFeature", "massenbriefFeature", "nichtGeprueftGrundFeature", "arztListeFeature", "adHocImpfstoffChargenFeature", "footerFeature", "benutzerverwaltungInternFeature", "benutzerverwaltungIgnoreFachRolleFromKeycloakFeature", "archivierungFeature", "zentraleOrganisationFeature" ],
+        "required" : [ "esadIdFeature", "laenderCodeFeature", "mobileScannerFeature", "massenimportFeature", "massenbriefFeature", "nichtGeprueftGrundFeature", "arztListeFeature", "adHocImpfstoffChargenFeature", "footerFeature", "benutzerverwaltungInternFeature", "benutzerverwaltungIgnoreFachRolleFromKeycloakFeature", "archivierungFeature", "zentraleOrganisationFeature", "anonymeStatistikFeature" ],
         "properties" : {
           "esadIdFeature" : {
             "$ref" : "#/components/schemas/TenantSettingFeatureStateJson"
@@ -4744,12 +4760,15 @@
           },
           "zentraleOrganisationFeature" : {
             "$ref" : "#/components/schemas/TenantSettingFeatureStateJson"
+          },
+          "anonymeStatistikFeature" : {
+            "$ref" : "#/components/schemas/TenantSettingFeatureStateJson"
           }
         }
       },
       "TenantSettingSaveJson" : {
         "type" : "object",
-        "required" : [ "defaultLanguage", "supportedLanguages", "folgeTermineMaxSlots", "customerAdminEmails", "supportEmail", "agbResponsability", "features", "einladungStatusValues" ],
+        "required" : [ "defaultLanguage", "supportedLanguages", "folgeTermineMaxSlots", "customerAdminEmails", "supportEmail", "agbResponsability", "features", "einladungStatusValues", "defaultLandingPage" ],
         "properties" : {
           "defaultLanguage" : {
             "$ref" : "#/components/schemas/AppLanguages"
@@ -4781,6 +4800,9 @@
             "items" : {
               "$ref" : "#/components/schemas/EinladungStatus"
             }
+          },
+          "defaultLandingPage" : {
+            "$ref" : "#/components/schemas/LandingPageOption"
           }
         }
       },
@@ -6968,7 +6990,7 @@
     },
     "/api/anlaesse" : {
       "get" : {
-        "operationId" : "AnlassResource_findAllAnlaesse",
+        "operationId" : "AnlassResource_findAllAnlaesseBerechtigt",
         "tags" : [ "Anlass" ],
         "responses" : {
           "200" : {
@@ -6988,7 +7010,7 @@
             "description" : "Not Allowed"
           }
         },
-        "summary" : "Find All Anlaesse",
+        "summary" : "Find All Anlaesse Berechtigt",
         "security" : [ {
           "SecurityScheme" : [ "ANLASSLISTE_LESEN", "ANLASSLISTE_LESEN_LAEUSE" ]
         } ]
@@ -7035,7 +7057,7 @@
     },
     "/api/anlaesse/benutzer/{benutzerID}" : {
       "get" : {
-        "operationId" : "AnlassResource_findAllForUser",
+        "operationId" : "AnlassResource_findAnlaesseForDashboard",
         "tags" : [ "Anlass" ],
         "parameters" : [ {
           "name" : "benutzerID",
@@ -7063,7 +7085,7 @@
             "description" : "Not Allowed"
           }
         },
-        "summary" : "Find All For User",
+        "summary" : "Find Anlaesse For Dashboard",
         "security" : [ {
           "SecurityScheme" : [ "ANLASSLISTE_LESEN", "ANLASSLISTE_LESEN_LAEUSE" ]
         } ]
@@ -7509,7 +7531,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -7563,7 +7585,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -7606,7 +7628,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -7685,7 +7707,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -7728,7 +7750,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -7764,7 +7786,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -7818,7 +7840,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -7861,7 +7883,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -7915,7 +7937,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -7958,7 +7980,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -8001,7 +8023,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -8055,7 +8077,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -8098,7 +8120,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -8152,7 +8174,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -8195,7 +8217,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -8251,7 +8273,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -8305,7 +8327,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -8348,7 +8370,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -8402,7 +8424,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -8445,7 +8467,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -8488,7 +8510,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -8542,7 +8564,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -8585,7 +8607,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -8628,7 +8650,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -8682,7 +8704,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -8725,7 +8747,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -8781,7 +8803,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -8837,7 +8859,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -8873,7 +8895,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -8929,7 +8951,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -8985,7 +9007,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         }, {
           "name" : "impfungInternId",
@@ -9046,7 +9068,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         }, {
           "name" : "impfungInternId",
@@ -9089,7 +9111,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -9145,7 +9167,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -9201,7 +9223,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -9257,7 +9279,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -9310,7 +9332,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -9353,7 +9375,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -9407,7 +9429,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -9450,7 +9472,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -9504,7 +9526,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -9547,7 +9569,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -9601,7 +9623,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -9644,7 +9666,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -9698,7 +9720,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -9741,7 +9763,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -9795,7 +9817,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -9838,7 +9860,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -9892,7 +9914,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -9935,7 +9957,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -9978,7 +10000,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -10032,7 +10054,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -10075,7 +10097,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -10129,7 +10151,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -10172,7 +10194,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -10213,7 +10235,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -10254,7 +10276,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -10297,7 +10319,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -10351,7 +10373,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -10394,7 +10416,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "requestBody" : {
@@ -10448,7 +10470,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IDEinladung"
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
           }
         } ],
         "responses" : {
@@ -11340,7 +11362,7 @@
         },
         "summary" : "Find All Benutzer",
         "security" : [ {
-          "SecurityScheme" : [ "MITARBEITERLISTE_BERECHTIGUNGEN_LESEN" ]
+          "SecurityScheme" : [ "BENUTZER_BERECHTIGUNGEN_LESEN" ]
         } ]
       },
       "post" : {
@@ -11540,7 +11562,7 @@
         },
         "summary" : "Update",
         "security" : [ {
-          "SecurityScheme" : [ "BENUTZER_BERECHTIGUNGEN_SCHREIBEN", "ORGANISATION_VERWALTEN_LESEN" ]
+          "SecurityScheme" : [ "BENUTZER_BERECHTIGUNGEN_SCHREIBEN", "ORGANISATION_VERWALTEN_SCHREIBEN" ]
         } ]
       }
     },
@@ -11625,7 +11647,7 @@
         },
         "summary" : "Find All Benutzer For Organisation",
         "security" : [ {
-          "SecurityScheme" : [ "ORGANISATION_VERWALTEN_LESEN" ]
+          "SecurityScheme" : [ "BENUTZER_BERECHTIGUNGEN_LESEN" ]
         } ]
       }
     },
@@ -13106,16 +13128,30 @@
         } ]
       }
     },
-    "/api/file-ingress/dossier/{esadId}/fragebogen" : {
+    "/api/file-ingress/dossier/{esadId}/anlass/{anlassId}/{notizTyp}" : {
       "post" : {
-        "operationId" : "FileIngressResource_uploadFragebogen",
+        "operationId" : "FileIngressResource_uploadNotiz",
         "tags" : [ "FileIngress" ],
         "parameters" : [ {
+          "name" : "anlassId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDAnlass"
+          }
+        }, {
           "name" : "esadId",
           "in" : "path",
           "required" : true,
           "schema" : {
             "type" : "string"
+          }
+        }, {
+          "name" : "notizTyp",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/NotizTyp"
           }
         } ],
         "requestBody" : {
@@ -13163,7 +13199,7 @@
             "description" : "Not Allowed"
           }
         },
-        "summary" : "Upload Fragebogen",
+        "summary" : "Upload Notiz",
         "security" : [ {
           "SecurityScheme" : [ "FILE_INGRESS_PUSH" ]
         } ]
@@ -15779,7 +15815,7 @@
     },
     "/api/organisation" : {
       "get" : {
-        "operationId" : "OrganisationResource_findAllOrganisationen",
+        "operationId" : "OrganisationResource_findOrganisationenBerechtigt",
         "tags" : [ "Organisation" ],
         "responses" : {
           "200" : {
@@ -15799,43 +15835,7 @@
             "description" : "Not Allowed"
           }
         },
-        "summary" : "Find All Organisationen",
-        "security" : [ {
-          "SecurityScheme" : [ "ORGANISATION_VERWALTEN_LESEN" ]
-        } ]
-      }
-    },
-    "/api/organisation/{organisationId}" : {
-      "get" : {
-        "operationId" : "OrganisationResource_findOrganisation",
-        "tags" : [ "Organisation" ],
-        "parameters" : [ {
-          "name" : "organisationId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/components/schemas/IDOrganisation"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/OrganisationJson"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "Not Authorized"
-          },
-          "403" : {
-            "description" : "Not Allowed"
-          }
-        },
-        "summary" : "Find Organisation",
+        "summary" : "Find Organisationen Berechtigt",
         "security" : [ {
           "SecurityScheme" : [ "ORGANISATION_VERWALTEN_LESEN" ]
         } ]

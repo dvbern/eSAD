@@ -10,8 +10,6 @@ import io.quarkus.test.security.TestSecurity;
 import io.quarkus.test.security.oidc.Claim;
 import io.quarkus.test.security.oidc.OidcSecurity;
 
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AERZTE_LESEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AERZTE_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSLISTE_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSLISTE_LESEN_LAEUSE;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLANUNG_LESEN;
@@ -20,6 +18,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLA
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLANUNG_SCHREIBEN_LAEUSE;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AUFGABEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AUFGABEN_SCHREIBEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.BENUTZER_BERECHTIGUNGEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.DUBLETTEN_ZUSAMMENFUHREN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.EIGENE_BERECHTIGUNGEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.IMPFSTOFFE_LESEN;
@@ -40,8 +39,6 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LABELS_SC
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_ADMIN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_SCHREIBEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.MITARBEITERLISTE_BERECHTIGUNGEN_LESEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SPSS_EXPORT;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_ABSCHLUSS_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_ABSCHLUSS_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_LESEN;
@@ -86,8 +83,6 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         VERANDERUNGEN_NACH_ABSCHLUSS,
         SU_DATEN_LESEN,
         SU_DATEN_SCHREIBEN,
-        SU_VORABKLAERUNGEN_LESEN,
-        SU_VORABKLAERUNGEN_SCHREIBEN,
         SU_IMPFEN_LESEN,
         SU_IMPFEN_SCHREIBEN,
         SU_SEHEN_LESEN,
@@ -106,6 +101,8 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         SU_MASSNAHMEN_SCHREIBEN,
         SU_ABSCHLUSS_LESEN,
         SU_ABSCHLUSS_SCHREIBEN,
+        SU_VORABKLAERUNGEN_LESEN,
+        SU_VORABKLAERUNGEN_SCHREIBEN,
         KINDER_LESEN_MEDIZINISCH,
         KINDER_LESEN_NICHT_MEDIZINISCH,
         KINDER_SCHREIBEN_MEDIZINISCH,
@@ -115,13 +112,10 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
         KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
         INDIVIDUELLE_REPORTS,
-        SPSS_EXPORT,
         KOMPLETTER_EXPORT,
-        LISTEN_LESEN,
         LISTEN_ADMIN_LESEN,
+        LISTEN_LESEN,
         LISTEN_SCHREIBEN,
-        AERZTE_LESEN,
-        AERZTE_SCHREIBEN,
         IMPFSTOFFE_LESEN,
         IMPFSTOFFE_SCHREIBEN,
         DUBLETTEN_ZUSAMMENFUHREN,
@@ -129,7 +123,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         LABELS_ADMIN_LESEN,
         LABELS_SCHREIBEN,
         EIGENE_BERECHTIGUNGEN_LESEN,
-        MITARBEITERLISTE_BERECHTIGUNGEN_LESEN,
+        BENUTZER_BERECHTIGUNGEN_LESEN,
         VORLAGEN_LESEN,
         VORLAGEN_ADMIN_LESEN,
         VORLAGEN_SCHREIBEN
@@ -138,7 +132,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
 @OidcSecurity(
     claims = {
         @Claim(key = "sub", value = TestAsAdminWIN.BENUTZER_ID),
-        @Claim(key = "tenant", value = "WIN"),
+        @Claim(key = "tenant", value = "BS"),
         @Claim(key = "family_name", value = "Winterthur"),
         @Claim(key = "given_name", value = "Wilma"),
         @Claim(key = "preferred_username", value = TestAsAdminWIN.USERNAME),
@@ -146,6 +140,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         @Claim(key = JsonWebTokenClaims.PHONE_CLAIM, value = TestAsAdminWIN.TELEFON),
     }
 )
+@TestAsMarker
 public @interface TestAsAdminWIN {
     String BENUTZER_ID = "925d8edb-158f-4c18-b3eb-164a194b18dc";
     String EMAIL = "admin.winterthur@example.com";

@@ -11,6 +11,7 @@ import {
   TextareaDirective,
   TitleComponent,
 } from '@dvb/ui-components';
+import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import { DirtyMarker } from '@dvb/util-angular';
 import { requireValue } from '@dvb/util-shared';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -81,7 +82,7 @@ export class UntersuchungLaeusekontrolleComponent implements DirtyMarker {
       const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       this.store.saveLaeusekontrolle({
         anlassId: anlassId,
-        einladungId: einladungId,
+        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
         untersuchungLaeusekontrolleSaveJson: payload,
       });
     }

@@ -35,7 +35,7 @@ public class CheckUntersuchungSprachePresentIfReqValidator
         "java:S1126" /* readability is better with seprate return*/ }
     )
     public boolean isEntityValid(@NonNull UntersuchungSprache untersuchungSprache) {
-        AnlassConfig anlassConfig = untersuchungSprache.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig anlassConfig = untersuchungSprache.getUntersuchung().getAnlass().getAnlassConfig();
         if (ValueEnhancedUtil.isRequiredAndNull(anlassConfig.getUntersuchungSpracheNachsprechen(), untersuchungSprache.getNachsprechen(), Nachsprechen.class)) {
               return false;
         }

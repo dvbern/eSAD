@@ -30,11 +30,13 @@ public class FileDataService {
     }
 
     public void deleteFileData(@NonNull List<FileData> filesToDelete, boolean deleteFileInS3) {
+        fileDataRepo.flush();
         for (FileData fileToDelete : filesToDelete) {
             // Das FileData-Objekt aus der DB entfernen
             if (fileDataRepo.findById(fileToDelete.getId()).isPresent()) {
                 fileDataRepo.remove(fileToDelete.getId());
-                dbFlusher.flush(); // flush to check if file can be deleted (no constraints violated)
+                // flush to check if file can be deleted (no constraints violated), note that this does not run if the file was already removed due to cascades
+                dbFlusher.flush();
             }
 
             if(deleteFileInS3){

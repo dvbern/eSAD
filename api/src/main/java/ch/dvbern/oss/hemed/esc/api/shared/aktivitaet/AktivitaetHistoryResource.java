@@ -1,11 +1,15 @@
 package ch.dvbern.oss.hemed.esc.api.shared.aktivitaet;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.json.AnlassAktivitaetHistoryListJson;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.json.KindAktivitaetHistoryListJson;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
@@ -30,8 +34,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 public class AktivitaetHistoryResource {
 
     private final AktivitaetHistoryMapper aktivitaetHistoryMapper;
-
     private final CurrentUserService currentUserService;
+    private final AuthorizerService authorizerService;
+
 
     @GET
     @Path("self/kinder")
@@ -48,6 +53,10 @@ public class AktivitaetHistoryResource {
     @RolesAllowed({ BerechtigungName.ANLASSLISTE_LESEN, BerechtigungName.ANLASSLISTE_LESEN_LAEUSE })
     public AnlassAktivitaetHistoryListJson findLetzteAnlaesse() {
         ID<Benutzer> benutzerId = currentUserService.currentUserID();
-        return new AnlassAktivitaetHistoryListJson(aktivitaetHistoryMapper.findLetzteAnlaesse(benutzerId));
+        return new AnlassAktivitaetHistoryListJson(aktivitaetHistoryMapper.findLetzteAnlaesse(
+            benutzerId,
+            anlass -> authorizerService.hasReadAuthorizationAnlass(
+                anlass, List.of(Berechtigung.ANLASSLISTE_LESEN, Berechtigung.ANLASSLISTE_LESEN_LAEUSE)
+            )));
     }
 }

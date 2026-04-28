@@ -2,7 +2,9 @@ package ch.dvbern.oss.hemed.esc.api.shared.auth;
 
 import java.io.IOException;
 
+import io.quarkus.security.identity.CurrentIdentityAssociation;
 import io.quarkus.security.identity.SecurityIdentity;
+import io.smallrye.mutiny.Uni;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.ws.rs.Priorities;
@@ -23,21 +25,29 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 @RequiredArgsConstructor
 public class BenutzerSyncFilter implements ContainerRequestFilter {
 
-    private final JsonWebToken jsonWebToken;
-    private final SecurityIdentity securityIdentity;
+    private final CurrentIdentityAssociation association;
 
 
     @Override
     public void filter(@NonNull ContainerRequestContext requestContext) throws IOException {
-        String rawToken = jsonWebToken.getRawToken();
-        if (rawToken == null) {
-            LOG.info("No Token was passed along");
-        }
-        if (securityIdentity.isAnonymous()) {
-            LOG.info("User is anonymous");
+        Uni<SecurityIdentity> securityIdentityUni = association.getDeferredIdentity();
+        securityIdentityUni.subscribe().with(
+            this::processIdentity,
+            t -> LOG.error("Fehler beim Abrufen der SecurityIdentity", t)
+        );
+    }
 
+    private void processIdentity(@NonNull SecurityIdentity identity) {
+        if (identity.isAnonymous()) {
+            LOG.info("User is anonymous");
         }
-        LOG.debug("Current user is: {}", jsonWebToken.getName());
-        LOG.debug("Full token {}", rawToken);
+        if (identity.getPrincipal() instanceof JsonWebToken jsonToken) {
+            String rawToken = jsonToken.getRawToken();
+            if (rawToken == null) {
+                LOG.info("No Token was passed along");
+            }
+            LOG.debug("Current user is: {}", jsonToken.getName());
+            LOG.debug("Full token {}", rawToken);
+        }
     }
 }

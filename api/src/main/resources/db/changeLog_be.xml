@@ -90,11 +90,22 @@
   <include file="db/base/0065-fix-value-enhanced-migration.xml"/>
   <include file="db/be/0028-add-berechtigung-organisation-be.xml"/>
   <include file="db/be/0029-correct-tenantsettings-be.xml"/>
+  <include file="db/base/0066-organisationrolleberechtigung_systemrolleberechtigung.xml"/>
+  <include file="db/base/0067-remove-unused-berechtigung.xml"/>
+  <include file="db/base/0068-remove-berechtigung-tables-reverse-systemrollen-fk.xml"/>
+  <include file="db/base/0069-insert-impfanmeldung-label.xml"/>
+  <include file="db/base/0070-tenant-setting-default-landing-page.xml"/>
+  <include file="db/base/0067-create-anonymereintrag.xml"/>
+  <include file="db/be/0030-insert-anlassconfig-anonym-be.xml"/>
+  <include file="db/base/0072-add-anonyme-statistik-feature.xml"/>
+  <include file="db/be/0031-enable-anonyme-statistik-be.xml"/>
 
   <!-- The following scripts only run in the 'test' context -->
   <include file="db-test/0001-insert-test-benutzer-support.xml" context="@test"/>
-  <include file="db-test/0004-insert-test-benutzer-admin.xml" context="@test"/>
-  <include file="db-test/0016-insert-test-benutzer-school-nurse.xml" context="@test"/>
+  <include file="db-test/0004-insert-test-benutzer-admin-zentral.xml" context="@test"/>
+  <include file="db-test/0006-insert-test-benutzer-schularzt-with-organisation-dezentral.xml" context="@test"/>
+  <include file="db-test/0016-insert-test-benutzer-school-nurse-dezentral.xml" context="@test"/>
+  <include file="db-test/0018-insert-test-benutzer-another-schularzt-with-organisation-dezentral.xml" context="@test"/>
 
   <!-- The following scripts only run in the 'dev' context
     To use it, insert the following in your .env:
@@ -109,5 +120,6 @@
   <include file="db-dev/0006-insert-example-anlass.xml" context="@dev"/>
   <include file="db-dev/0007-insert-example-aerzte.xml" context="@dev"/>
   <include file="db-dev/0009-insert-example-impfstoff-haemophilus-influenzae.xml" context="@dev"/>
+  <include file="db-dev/0010-insert-bootstrap-supporter.xml" context="@dev"/>
 
 </databaseChangeLog>

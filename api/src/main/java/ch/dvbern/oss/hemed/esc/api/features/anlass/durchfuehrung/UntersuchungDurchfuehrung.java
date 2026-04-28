@@ -106,8 +106,8 @@ public class UntersuchungDurchfuehrung extends AbstractEntity<UntersuchungDurchf
         durchfuehrung.setUntersuchung(currentUntersuchung);
         durchfuehrung.setNachzuegler(urspruenglicheEinladungForNachzuegler != null);
         durchfuehrung.setNachkontrolle(nachkontrolle.getAnlassFlags().hasAnyNachkontrolle());
-        durchfuehrung.setArzt(currentUntersuchung.getEinladung().getAnlass().getArzt());
-        durchfuehrung.setMpa(currentUntersuchung.getEinladung().getAnlass().getMpa());
+        durchfuehrung.setArzt(currentUntersuchung.getAnlass().getArzt());
+        durchfuehrung.setMpa(currentUntersuchung.getAnlass().getMpa());
         return durchfuehrung;
     }
 
@@ -129,7 +129,7 @@ public class UntersuchungDurchfuehrung extends AbstractEntity<UntersuchungDurchf
         if (durchfuehrung == null) {
             durchfuehrung = forUntersuchung(untersuchung);
         }
-        AnlassConfig config = untersuchung.getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig config = untersuchung.getAnlass().getAnlassConfig();
         durchfuehrung.setArzt(UntersuchungDurchfuehrungUtil.getArzt(
             config, durchfuehrung, defaultArzt));
         durchfuehrung.setMpa(UntersuchungDurchfuehrungUtil.getMpa(

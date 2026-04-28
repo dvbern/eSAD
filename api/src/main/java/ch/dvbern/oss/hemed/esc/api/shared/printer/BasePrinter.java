@@ -159,7 +159,13 @@ public class BasePrinter {
 
     public void addPaginationFooter(@NonNull I18nMessage key, @NonNull Document document) {
         FooterWithPageCounterHandler footerWithPageCounterHandler =
-            new FooterWithPageCounterHandler(new Paragraph(PDFAPrintUtil.sanitizeForPDFA(tl.translate(key))));
+            new FooterWithPageCounterHandler(new Paragraph(PDFAPrintUtil.sanitizeForPDFA(tl.translate(key))), null);
+        document.getPdfDocument().addEventHandler(PdfDocumentEvent.END_PAGE, footerWithPageCounterHandler);
+    }
+
+    public void addPaginationFooter(@NonNull I18nMessage keyLeft, @NonNull I18nMessage keyRight, @NonNull Document document) {
+        FooterWithPageCounterHandler footerWithPageCounterHandler =
+            new FooterWithPageCounterHandler(new Paragraph(PDFAPrintUtil.sanitizeForPDFA(tl.translate(keyLeft))), new Paragraph(PDFAPrintUtil.sanitizeForPDFA(tl.translate(keyRight))));
         document.getPdfDocument().addEventHandler(PdfDocumentEvent.END_PAGE, footerWithPageCounterHandler);
     }
 

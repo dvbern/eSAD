@@ -60,7 +60,7 @@ class CheckUntersuchungSprachePresentIfReqValidatorTest {
         UntersuchungSprache sprache = UntersuchungSpracheBuilder.create(
             builder -> builder
                 .withNachsprechen(input, null));
-        sprache.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungSpracheNachsprechen(requirementSetting);
+        sprache.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungSpracheNachsprechen(requirementSetting);
         // ACT
         CheckUntersuchungSprachePresentIfReqValidator
 				validator = new CheckUntersuchungSprachePresentIfReqValidator();
@@ -87,7 +87,7 @@ class CheckUntersuchungSprachePresentIfReqValidatorTest {
         UntersuchungSprache sprache = UntersuchungSpracheBuilder.create(
             builder -> builder
                 .withWortschatz(input, null));
-        sprache.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungSpracheWortschatz(requirementSetting);
+        sprache.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungSpracheWortschatz(requirementSetting);
         // ACT
         CheckUntersuchungSprachePresentIfReqValidator
             validator = new CheckUntersuchungSprachePresentIfReqValidator();
@@ -114,7 +114,7 @@ class CheckUntersuchungSprachePresentIfReqValidatorTest {
         UntersuchungSprache sprache = UntersuchungSpracheBuilder.create(
             builder -> builder
                 .withSprachverstaendnis(input, null));
-        sprache.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungSpracheSprachverstaendnis(requirementSetting);
+        sprache.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungSpracheSprachverstaendnis(requirementSetting);
         // ACT
         CheckUntersuchungSprachePresentIfReqValidator
             validator = new CheckUntersuchungSprachePresentIfReqValidator();
@@ -141,7 +141,7 @@ class CheckUntersuchungSprachePresentIfReqValidatorTest {
         UntersuchungSprache sprache = UntersuchungSpracheBuilder.create(
             builder -> builder
                 .withBemerkung(bemerkung));
-        sprache.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungSpracheBemerkungen(requirementSetting);
+        sprache.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungSpracheBemerkungen(requirementSetting);
         // ACT
         CheckUntersuchungSprachePresentIfReqValidator
             validator = new CheckUntersuchungSprachePresentIfReqValidator();

@@ -30,7 +30,6 @@ describe('RequireRoleAuthGuard', () => {
   describe('requireRole', () => {
     describe('withAnyBerechtigung', () => {
       it.each(ensureType<Berechtigung[][]>([
-        [],
         [Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH],
         [Berechtigung.KINDER_LESEN_MEDIZINISCH],
         [Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_MEDIZINISCH],
@@ -38,6 +37,12 @@ describe('RequireRoleAuthGuard', () => {
         const actual = withAnyBerechtigung()(actualRoles);
 
         expect(actual).toBe(true);
+      });
+
+      it('returns false for no berechtigung', () => {
+        const actual = withAnyBerechtigung()([]);
+
+        expect(actual).toBe(false);
       });
     });
 

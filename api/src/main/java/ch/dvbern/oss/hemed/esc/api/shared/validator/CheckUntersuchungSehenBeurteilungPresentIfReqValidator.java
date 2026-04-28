@@ -46,7 +46,7 @@ public class CheckUntersuchungSehenBeurteilungPresentIfReqValidator
         "java:S1126" /* readability is better with seprate return*/ }
     )
     public boolean isEntityValid(@NonNull UntersuchungSehenBeurteilung sehen) {
-        AnlassConfig anlassConfig = sehen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig anlassConfig = sehen.getUntersuchung().getAnlass().getAnlassConfig();
         if (ValueEnhancedUtil.isRequiredAndNull(
             anlassConfig.getSehenBrilleLinsen(),
             sehen.getBrilleLinsen(),

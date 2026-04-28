@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.impfung;
 
+import java.util.function.Consumer;
+
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -75,9 +77,11 @@ public class UntersuchungImpfungenDataMinimalMapper {
     @NonNull
     public UntersuchungImpfungenDataMinimalJson save(
         @NonNull ID<Einladung> einladungId,
-        @NonNull UntersuchungImpfungenDataMinimalSaveJson saveJson
+        @NonNull UntersuchungImpfungenDataMinimalSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungImpfungen impfungen =
             untersuchungImpfungenService.getOrCreateUntersuchungImpfungen(untersuchung.getId());
         impfungen.disableOptimisticLockingCheck();

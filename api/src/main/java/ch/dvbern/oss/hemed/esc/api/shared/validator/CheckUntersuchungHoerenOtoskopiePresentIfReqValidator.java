@@ -35,7 +35,7 @@ public class CheckUntersuchungHoerenOtoskopiePresentIfReqValidator
         "java:S1126" /* readability is better with seprate return*/ }
     )
     public boolean isEntityValid(@NonNull UntersuchungHoerenOtoskopie hoerenOtoskopie) {
-        AnlassConfig anlassConfig = hoerenOtoskopie.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig anlassConfig = hoerenOtoskopie.getUntersuchung().getAnlass().getAnlassConfig();
 
         if (anlassConfig.getHoerenOtoskopie().isRequired()) {
             if (CollectionUtils.isEmpty(ValueEnhancedUtil.getEnumSetOrEmpty(hoerenOtoskopie.getOtoskopieRechts(), OtoskopieResultat.class))) {

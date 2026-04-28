@@ -16,11 +16,11 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLA
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLANUNG_LESEN_LAEUSE;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLANUNG_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLANUNG_SCHREIBEN_LAEUSE;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ARCHIVIERUNG;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AUFGABEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AUFGABEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.EIGENE_BERECHTIGUNGEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.IMPFSTOFFE_LESEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.INDIVIDUELLE_REPORTS;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_ALLE_NOTIZEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_ALLE_NOTIZEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_LESEN_MEDIZINISCH;
@@ -74,8 +74,6 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         ANLASSPLANUNG_SCHREIBEN_LAEUSE,
         SU_DATEN_LESEN,
         SU_DATEN_SCHREIBEN,
-        SU_VORABKLAERUNGEN_LESEN,
-        SU_VORABKLAERUNGEN_SCHREIBEN,
         SU_IMPFEN_LESEN,
         SU_IMPFEN_SCHREIBEN,
         SU_SEHEN_LESEN,
@@ -94,6 +92,8 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         SU_MASSNAHMEN_SCHREIBEN,
         SU_ABSCHLUSS_LESEN,
         SU_ABSCHLUSS_SCHREIBEN,
+        SU_VORABKLAERUNGEN_LESEN,
+        SU_VORABKLAERUNGEN_SCHREIBEN,
         KINDER_LESEN_MEDIZINISCH,
         KINDER_LESEN_NICHT_MEDIZINISCH,
         KINDER_SCHREIBEN_MEDIZINISCH,
@@ -102,22 +102,22 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         KINDER_ALLE_NOTIZEN_SCHREIBEN,
         KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
         KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
-        INDIVIDUELLE_REPORTS,
         KOMPLETTER_EXPORT,
-        LISTEN_LESEN,
         LISTEN_ADMIN_LESEN,
+        LISTEN_LESEN,
         IMPFSTOFFE_LESEN,
         LABELS_LESEN,
         LABELS_ADMIN_LESEN,
         EIGENE_BERECHTIGUNGEN_LESEN,
         VORLAGEN_LESEN,
-        VORLAGEN_ADMIN_LESEN
+        VORLAGEN_ADMIN_LESEN,
+        ARCHIVIERUNG
     }
 )
 @OidcSecurity(
     claims = {
         @Claim(key = "sub", value = TestAsPfpWIN.BENUTZER_ID_IN_KC),
-        @Claim(key = "tenant", value = "WIN"),
+        @Claim(key = "tenant", value = "BS"),
         @Claim(key = "family_name", value = "Pflegefachperson"),
         @Claim(key = "given_name", value = "Paul"),
         @Claim(key = "preferred_username", value = TestAsPfpWIN.USERNAME),
@@ -125,6 +125,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         @Claim(key = JsonWebTokenClaims.PHONE_CLAIM, value = TestAsPfpWIN.TELEFON),
     }
 )
+@TestAsMarker
 public @interface TestAsPfpWIN {
     String BENUTZER_ID = "d772c8a6-5f96-48ae-a93b-de333649099a";
     String BENUTZER_ID_IN_KC = "829e8074-1639-4d74-866b-7588e14c12e5";

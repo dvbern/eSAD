@@ -67,7 +67,7 @@ public class UntersuchungImpfungInternService {
     private void checkImmunitaetenForDossier(@NonNull UntersuchungImpfungIntern impfungIntern) {
         Dossier dossier = dossierService.getById(impfungIntern.getUntersuchungImpfungen()
             .getUntersuchung()
-            .getEinladung()
+            .getEinladungRequired()
             .getDossier()
             .getId());
         dossier.disableOptimisticLockingCheck();
@@ -94,10 +94,9 @@ public class UntersuchungImpfungInternService {
         return untersuchungImpfungInternRepo.getById(id);
     }
 
-    public void remove(@NonNull ID<Anlass> anlassId, @NonNull ID<UntersuchungImpfungIntern> impfungInternID) {
-        UntersuchungImpfungIntern impfung = getById(impfungInternID);
+    public void remove(@NonNull ID<Anlass> anlassId, @NonNull UntersuchungImpfungIntern impfung) {
         if (impfung.getAnlassImpfungErfasst().getId().equals(anlassId)) {
-            untersuchungImpfungInternRepo.remove(impfungInternID);
+            untersuchungImpfungInternRepo.remove(impfung.getId());
         } else {
             throw new AppFailureException(AppFailureMessage.impfungInternCannotBeRemoved());
         }

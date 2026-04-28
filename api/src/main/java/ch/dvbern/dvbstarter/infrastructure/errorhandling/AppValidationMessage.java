@@ -24,6 +24,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 @AllArgsConstructor(staticName = "of", access = AccessLevel.PRIVATE)
 public class AppValidationMessage {
 
+    public static final String ESAD_ID = "esadId";
     // This key is sent to the client in the error response
     private final String clientKey;
     private final I18nMessage i18nMessage;
@@ -200,10 +201,10 @@ public class AppValidationMessage {
     }
 
     @NonNull
-    public static AppValidationMessage referencedForeignKey() {
+    public static AppValidationMessage referencedForeignKeyWithName(@NonNull String constraintName) {
         return of(
             "ReferencedForeignKey",
-            I18nMessage.of("AppValidation.REFERENCED_FOREIGN_KEY")
+            I18nMessage.of("AppValidation.REFERENCED_FOREIGN_KEY", "constraintName", constraintName)
         );
     }
 
@@ -438,17 +439,47 @@ public class AppValidationMessage {
     }
 
     @NonNull
-    public static AppValidationMessage fileIngressInvalidFilenameForFragebogenIngress(
+    public static AppValidationMessage fileIngressInvalidFilenameForNotizIngress(
         @NonNull String filename
     ) {
         return of(
-            "InvalidFilenameForFragebogenIngress",
+            "InvalidFilenameForNotizIngress",
             I18nMessage.of(
-                "AppValidation.INVALID_FILENAME_FOR_FRAGEBOGEN_INGRESS",
+                "AppValidation.INVALID_FILENAME_FOR_NOTIZ_INGRESS",
                 "filename",
                 filename
             ));
     }
+
+    @NonNull
+    public static AppValidationMessage fileIngressInvalidNotizTypIngress(
+        @NonNull String notizTyp
+    ) {
+        return of(
+            "InvalidNotizTypIngress",
+            I18nMessage.of(
+                "AppValidation.INVALID_NOTIZ_TYP_INGRESS",
+                "notizTyp",
+                notizTyp
+            ));
+    }
+
+    @NonNull
+    public static AppValidationMessage fileIngressInvalidNotizTypForAnlassIngress(
+        @NonNull String notizTyp,
+        @NonNull String anlassTyp
+    ) {
+        return of(
+            "InvalidNotizTypForAnlassIngress",
+            I18nMessage.of(
+                "AppValidation.INVALID_NOTIZ_TYP_FOR_ANLASS_INGRESS",
+                "notizTyp",
+                notizTyp,
+                "anlassTyp",
+                anlassTyp
+            ));
+    }
+
 
     @NonNull
     public static AppValidationMessage fileIngressNoDossierForEsadId(
@@ -458,7 +489,7 @@ public class AppValidationMessage {
             "NoDossierForEsadId",
             I18nMessage.of(
                 "AppValidation.NO_DOSSIER_FOR_ESAD_ID",
-                "esadId",
+                ESAD_ID,
                 esadId
             ));
     }
@@ -471,7 +502,7 @@ public class AppValidationMessage {
             "FileIngressGeburtsdatumMissmatch",
             I18nMessage.of(
                 "AppValidation.FILE_INGRESS_GEBURTSDATUM_MISSMATCH",
-                "esadId",
+                ESAD_ID,
                 esadId
             ));
     }
@@ -484,7 +515,7 @@ public class AppValidationMessage {
             "FileIngressNoSuitableAnlass",
             I18nMessage.of(
                 "AppValidation.FILE_INGRESS_NO_SUITABLE_ANLASS",
-                "esadId",
+                ESAD_ID,
                 esadId
             ));
     }

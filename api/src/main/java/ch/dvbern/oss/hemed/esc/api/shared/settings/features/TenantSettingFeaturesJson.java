@@ -108,4 +108,11 @@ public class TenantSettingFeaturesJson {
     @Valid
     @Schema(required = true)
     private final TenantSettingFeatureStateJson zentraleOrganisationFeature;
+
+    @NotNull
+    @NonNull
+    @Valid
+    @Schema(required = true)
+    private final TenantSettingFeatureStateJson anonymeStatistikFeature;
+
 }

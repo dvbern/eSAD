@@ -66,8 +66,8 @@ public class AnlassApiSpec {
         return Arrays.asList(
                 anlassResourceChangeAnlassStatus(),
                 anlassResourceCreateAnlass(),
-                anlassResourceFindAllAnlaesse(),
-                anlassResourceFindAllForUser(),
+                anlassResourceFindAllAnlaesseBerechtigt(),
+                anlassResourceFindAnlaesseForDashboard(),
                 anlassResourceFindScheduledAnlaesseForKind(),
                 anlassResourceGetAnlass(),
                 anlassResourceGetSchulInformationenForAnlass(),
@@ -85,12 +85,12 @@ public class AnlassApiSpec {
         return new AnlassResourceCreateAnlassOper(createReqSpec());
     }
 
-    public AnlassResourceFindAllAnlaesseOper anlassResourceFindAllAnlaesse() {
-        return new AnlassResourceFindAllAnlaesseOper(createReqSpec());
+    public AnlassResourceFindAllAnlaesseBerechtigtOper anlassResourceFindAllAnlaesseBerechtigt() {
+        return new AnlassResourceFindAllAnlaesseBerechtigtOper(createReqSpec());
     }
 
-    public AnlassResourceFindAllForUserOper anlassResourceFindAllForUser() {
-        return new AnlassResourceFindAllForUserOper(createReqSpec());
+    public AnlassResourceFindAnlaesseForDashboardOper anlassResourceFindAnlaesseForDashboard() {
+        return new AnlassResourceFindAnlaesseForDashboardOper(createReqSpec());
     }
 
     public AnlassResourceFindScheduledAnlaesseForKindOper anlassResourceFindScheduledAnlaesseForKind() {
@@ -285,12 +285,12 @@ public class AnlassApiSpec {
         }
     }
     /**
-     * Find All Anlaesse
+     * Find All Anlaesse Berechtigt
      * 
      *
      * return AnlassListJsonSpec
      */
-    public static class AnlassResourceFindAllAnlaesseOper implements Oper {
+    public static class AnlassResourceFindAllAnlaesseBerechtigtOper implements Oper {
 
         public static final Method REQ_METHOD = GET;
         public static final String REQ_URI = "/api/anlaesse";
@@ -298,7 +298,7 @@ public class AnlassApiSpec {
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
 
-        public AnlassResourceFindAllAnlaesseOper(RequestSpecBuilder reqSpec) {
+        public AnlassResourceFindAllAnlaesseBerechtigtOper(RequestSpecBuilder reqSpec) {
             this.reqSpec = reqSpec;
             reqSpec.setAccept("application/json");
             this.respSpec = new ResponseSpecBuilder();
@@ -330,7 +330,7 @@ public class AnlassApiSpec {
          * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
          * @return operation
          */
-        public AnlassResourceFindAllAnlaesseOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+        public AnlassResourceFindAllAnlaesseBerechtigtOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
             reqSpecCustomizer.accept(reqSpec);
             return this;
         }
@@ -340,19 +340,19 @@ public class AnlassApiSpec {
          * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
          * @return operation
          */
-        public AnlassResourceFindAllAnlaesseOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+        public AnlassResourceFindAllAnlaesseBerechtigtOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
             respSpecCustomizer.accept(respSpec);
             return this;
         }
     }
     /**
-     * Find All For User
+     * Find Anlaesse For Dashboard
      * 
      *
      * @see #benutzerIDPath  (required)
      * return AnlassListJsonSpec
      */
-    public static class AnlassResourceFindAllForUserOper implements Oper {
+    public static class AnlassResourceFindAnlaesseForDashboardOper implements Oper {
 
         public static final Method REQ_METHOD = GET;
         public static final String REQ_URI = "/api/anlaesse/benutzer/{benutzerID}";
@@ -360,7 +360,7 @@ public class AnlassApiSpec {
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
 
-        public AnlassResourceFindAllForUserOper(RequestSpecBuilder reqSpec) {
+        public AnlassResourceFindAnlaesseForDashboardOper(RequestSpecBuilder reqSpec) {
             this.reqSpec = reqSpec;
             reqSpec.setAccept("application/json");
             this.respSpec = new ResponseSpecBuilder();
@@ -393,7 +393,7 @@ public class AnlassApiSpec {
          * @param benutzerID (String)  (required)
          * @return operation
          */
-        public AnlassResourceFindAllForUserOper benutzerIDPath(Object benutzerID) {
+        public AnlassResourceFindAnlaesseForDashboardOper benutzerIDPath(Object benutzerID) {
             reqSpec.addPathParam(BENUTZER_I_D_PATH, benutzerID);
             return this;
         }
@@ -403,7 +403,7 @@ public class AnlassApiSpec {
          * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
          * @return operation
          */
-        public AnlassResourceFindAllForUserOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+        public AnlassResourceFindAnlaesseForDashboardOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
             reqSpecCustomizer.accept(reqSpec);
             return this;
         }
@@ -413,7 +413,7 @@ public class AnlassApiSpec {
          * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
          * @return operation
          */
-        public AnlassResourceFindAllForUserOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+        public AnlassResourceFindAnlaesseForDashboardOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
             respSpecCustomizer.accept(respSpec);
             return this;
         }

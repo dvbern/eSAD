@@ -21,6 +21,8 @@ import ch.dvbern.oss.hemed.esc.api.features.search.SearchMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.AufgabeJson;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.AufgabeListJson;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.AufgabeSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataMapper;
@@ -40,9 +42,10 @@ public class AufgabeMapper {
     private final KindService kindService;
     private final AnlassService anlassService;
     private final LabelMapper labelMapper;
+    private final TenantProducer tenantProducer;
 
     @NonNull
-    public static AufgabeJson toJson(@NonNull Aufgabe aufgabe) {
+    public static AufgabeJson toJson(@NonNull Aufgabe aufgabe, @NonNull TenantEnum tenant) {
         Kind kind = aufgabe.getKind();
         Anlass anlass = aufgabe.getAnlass();
         return new AufgabeJson(
@@ -53,8 +56,8 @@ public class AufgabeMapper {
                 aufgabe.getBemerkung(),
                 aufgabe.getAufgabeStatus(),
                 aufgabe.getFaelligBis(),
-                BenutzerMapper.toOptionJson(aufgabe.getEmpfaenger()),
-                BenutzerMapper.toOptionJson(aufgabe.getUserErfasst()),
+                BenutzerMapper.toOptionJson(aufgabe.getEmpfaenger(), tenant),
+                BenutzerMapper.toOptionJson(aufgabe.getUserErfasst(), tenant),
                 aufgabe.getLabels().stream().map(LabelMapper::toJson).toList(),
                 kind != null ? SearchMapper.toSearchJson(kind) : null,
                 anlass != null ? AnlassMapper.toOptionJson(anlass) : null,
@@ -112,7 +115,7 @@ public class AufgabeMapper {
         List<Aufgabe> aufgaben = aufgabeService.findAll();
         // since we have to load all anyway we might es well count here to avoid another query
         List<AufgabeJson> aufgabenJson = aufgaben.stream()
-            .map(AufgabeMapper::toJson)
+            .map(a -> AufgabeMapper.toJson(a, tenantProducer.produceTenant()))
             .toList();
         long anzahlEigeneFaelligeAufgaben = getNumOfFaelligeAufgabenForCurrentUser();
 
@@ -123,7 +126,7 @@ public class AufgabeMapper {
     public AufgabeListJson findAllForKind(@NonNull ID<Kind> kindId) {
         List<AufgabeJson> aufgabenJson = aufgabeService.findAllForKind(kindId)
             .stream()
-            .map(AufgabeMapper::toJson)
+            .map(a -> AufgabeMapper.toJson(a, tenantProducer.produceTenant()))
             .toList();
         long anzahlEigeneFaelligeAufgaben = getNumOfFaelligeAufgabenForCurrentUser();
 
@@ -132,7 +135,7 @@ public class AufgabeMapper {
 
     @NonNull
     public AufgabeJson getById(@NonNull ID<Aufgabe> aufgabeId) {
-        return toJson(aufgabeService.getById(aufgabeId));
+        return toJson(aufgabeService.getById(aufgabeId), tenantProducer.produceTenant());
     }
 
     @NonNull
@@ -146,7 +149,7 @@ public class AufgabeMapper {
                     kind,
                     entity));
         }
-        return toJson(aufgabeService.persist(entity));
+        return toJson(aufgabeService.persist(entity), tenantProducer.produceTenant());
     }
 
     @NonNull
@@ -160,7 +163,7 @@ public class AufgabeMapper {
                     existingAufgabe));
         }
         Aufgabe entity = toEntity(existingAufgabe, aufgabeJson);
-        return toJson(aufgabeService.persistWithOptimisticLocking(entity, aufgabeJson.getVersion()));
+        return toJson(aufgabeService.persistWithOptimisticLocking(entity, aufgabeJson.getVersion()), tenantProducer.produceTenant());
     }
 
     int getNumOfOffeneFaelligeAufgaben() {
@@ -195,7 +198,7 @@ public class AufgabeMapper {
         }
         Aufgabe updatedAufgabe = aufgabeService.addUploadedFile(aufgabeID, file);
         updatedAufgabe.disableOptimisticLockingCheck();
-        return toJson(aufgabeService.persistAndFlush(updatedAufgabe));
+        return toJson(aufgabeService.persistAndFlush(updatedAufgabe), tenantProducer.produceTenant());
     }
 
     @NonNull
@@ -209,7 +212,7 @@ public class AufgabeMapper {
                     new FileData()));
         }
         aufgabeService.removeUploadedFile(existingAufgabe, fileIdToRemove);
-        return toJson(existingAufgabe);
+        return toJson(existingAufgabe, tenantProducer.produceTenant());
     }
 
     @NonNull
@@ -217,7 +220,7 @@ public class AufgabeMapper {
 
         List<AufgabeJson> aufgabenJson = aufgabeService.findAllNichtAbgeschlosseneAufgabenForCurrent()
             .stream()
-            .map(AufgabeMapper::toJson)
+            .map(a -> AufgabeMapper.toJson(a, tenantProducer.produceTenant()))
             .toList();
         long anzahlEigeneFaelligeAufgaben = getNumOfFaelligeAufgabenForCurrentUser();
 

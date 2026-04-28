@@ -25,6 +25,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+
 @QuarkusTest
 @RequiredArgsConstructor
 class UntersuchungHoerenOtoskopieResourceITest {
@@ -46,7 +48,7 @@ class UntersuchungHoerenOtoskopieResourceITest {
         api
             .untersuchungHoerenOtoskopieResourceGetUntersuchungHoerenOtoskopie()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -67,8 +69,8 @@ class UntersuchungHoerenOtoskopieResourceITest {
         // ACT
         UntersuchungHoerenOtoskopieJsonSpec result = api
             .untersuchungHoerenOtoskopieResourceGetUntersuchungHoerenOtoskopie()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -107,7 +109,7 @@ class UntersuchungHoerenOtoskopieResourceITest {
         UntersuchungHoerenOtoskopieJsonSpec result = api
             .untersuchungHoerenOtoskopieResourceSaveUntersuchungHoerenOtoskopie()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -138,7 +140,7 @@ class UntersuchungHoerenOtoskopieResourceITest {
         UntersuchungHoerenOtoskopieSaveJsonSpec result =
             api.untersuchungHoerenOtoskopieResourceGetDefaultUntersuchungHoerenOtoskopieForAnlassConfig()
                 .anlassIdPath(einladung.getAnlass().getId().getId())
-                .einladungIdPath(einladung.getId().getId())
+                .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
                 .execute(ResponseBody::prettyPeek)
                 .then()
                 .assertThat()
@@ -165,7 +167,7 @@ class UntersuchungHoerenOtoskopieResourceITest {
         UntersuchungHoerenOtoskopieSaveJsonSpec result =
             api.untersuchungHoerenOtoskopieResourceGetDefaultUntersuchungHoerenOtoskopieForAnlassConfig()
                 .anlassIdPath(einladung.getAnlass().getId().getId())
-                .einladungIdPath(einladung.getId().getId())
+                .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
                 .execute(ResponseBody::prettyPeek)
                 .then()
                 .assertThat()
@@ -192,7 +194,7 @@ class UntersuchungHoerenOtoskopieResourceITest {
         UntersuchungHoerenOtoskopieSaveJsonSpec result =
             api.untersuchungHoerenOtoskopieResourceGetDefaultUntersuchungHoerenOtoskopieForAnlassConfig()
                 .anlassIdPath(einladung.getAnlass().getId().getId())
-                .einladungIdPath(einladung.getId().getId())
+                .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
                 .execute(ResponseBody::prettyPeek)
                 .then()
                 .assertThat()

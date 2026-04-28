@@ -25,12 +25,12 @@ import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.FailureType;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileNameUtil;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.DossierService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
@@ -44,7 +44,6 @@ import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
-import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.DossierBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.KindBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.LabelBuilder;
@@ -87,10 +86,10 @@ class NotizResourceITest extends AbstractITest {
     private final NotizService notizService;
     private final KindService kindService;
     private final DossierService dossierService;
-    private final BenutzerService benutzerService;
     private final FixtureService fixtureService;
     private final FileStoreService fileStoreService;
     private final LabelService labelService;
+    private final EinladungService einladungService;
     private final ObjectMapper objectMapper;
 
     private Benutzer verantwortlicher;
@@ -107,16 +106,7 @@ class NotizResourceITest extends AbstractITest {
             DossierBuilder.create(builder -> builder.forKind(kind)));
         dossierId = dossier.getId();
         kindId = dossier.getKind().getId();
-
-        var createDto = BenutzerBuilder.createCreateDTO(
-            builder -> builder
-                .withRandomEmail("viktor.verantworltich@example.com")
-                .withRandomVorname("Viktor")
-                .withRandomNachname("Verantwortlich")
-                .withKeycloakId(UUID.randomUUID().toString())
-        );
-        var benId = benutzerService.createBenutzer(createDto);
-        verantwortlicher = benutzerService.getById(benId);
+        verantwortlicher = fixtureService.createBenutzerFuerZentraleOrganisation();
     }
 
     @Test
@@ -320,6 +310,39 @@ class NotizResourceITest extends AbstractITest {
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(notiz.getId().getId());
         assertThat(result.getData().getTitel()).isEqualTo("Einzelne Notiz");
+    }
+
+    @Test
+    @TestAsAdminBS
+    void removeNotiz_shouldUnlinkFromEinladung() {
+        // ARRANGE
+        Einladung einladung = fixtureService.createEinladung();
+        Notiz notizToDelete = fixtureService.createFragebogenNotiz(einladung.getId());
+        fixtureService.createImpfausweisNotiz(einladung.getId());
+        Notiz notizToKeep = einladungService.getById(einladung.getId()).getImpfausweisNotiz().orElseThrow();
+
+        // Verify they are linked
+        Einladung loadedEinladung = einladungService.getById(einladung.getId());
+        assertThat(loadedEinladung.getNotizen())
+            .extracting(Notiz::getId)
+            .containsExactlyInAnyOrder(notizToDelete.getId(), notizToKeep.getId());
+
+        // ACT
+        api.notizResourceDeleteNotiz()
+            .notizIdPath(notizToDelete.getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.NO_CONTENT.getStatusCode());
+
+        // ASSERT
+        assertThat(notizService.findById(notizToDelete.getId())).isEmpty();
+        assertThat(notizService.findById(notizToKeep.getId())).isPresent();
+
+        Einladung einladungAfterDelete = einladungService.getById(einladung.getId());
+        assertThat(einladungAfterDelete.getNotizen())
+            .extracting(Notiz::getId)
+            .containsExactly(notizToKeep.getId());
     }
 
     @Test

@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
@@ -28,7 +30,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -51,6 +55,7 @@ import org.hibernate.envers.Audited;
         @Index(name = "ix_benutzer_id", columnList = "id, version"),
         @Index(name = "ix_benutzer_email", columnList = "email, id"),
         @Index(name = "ix_benutzer_keycloakId", columnList = "keycloakId, id"),
+        @Index(name = "ix_benutzer_systemrollen", columnList = "systemrollen_id"),
     },
     uniqueConstraints = {
         @UniqueConstraint(name = "uc_benutzer_keycloakId", columnNames = "keycloakId"),
@@ -120,12 +125,6 @@ public class Benutzer extends AbstractEntity<Benutzer> implements EntityWithOpti
     @Nullable
     private BenutzerLoginInfos loginInfos;
 
-    @NonNull
-    @Valid
-    @OneToMany(mappedBy = "benutzer", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    private Set<BenutzerBerechtigung> berechtigungen = new HashSet<>();
-
     /**
      * The actual deactivation happens in the login system (i.e. Keycloak or Entra) but this serves as a flag, so we
      * know which users were last thought of by esc as deaktiviert, this will be used to remove them from dropdowns etc
@@ -146,12 +145,13 @@ public class Benutzer extends AbstractEntity<Benutzer> implements EntityWithOpti
 
     @NonNull
     @Valid
-    @OneToMany(mappedBy = "benutzer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "benutzer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     private Set<OrganisationRollen> organisationRollen = new HashSet<>();
 
     @Nullable
-    @OneToOne(mappedBy = "benutzer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_benutzer_systemrollen"), nullable = true)
     private SystemRollen systemRollen;
 
     @NonNull
@@ -175,7 +175,7 @@ public class Benutzer extends AbstractEntity<Benutzer> implements EntityWithOpti
     }
 
     @NonNull
-    public EnumSet<FachRolle> getFachRollen() {
+    public EnumSet<FachRolle> getFachRollenCombined() {
         EnumSet<FachRolle> combinedFachrollen = EnumSet.noneOf(FachRolle.class);
         if (this.getSystemRollen() != null) {
             combinedFachrollen.addAll(this.getSystemRollen().getFachRollen());
@@ -187,13 +187,30 @@ public class Benutzer extends AbstractEntity<Benutzer> implements EntityWithOpti
         return combinedFachrollen;
     }
 
+    @Nullable
+    public OrganisationRollen getSingleOrganisationRollen() {
+        Set<OrganisationRollen> organisationRollenBenutzer = getOrganisationRollen();
+        if (organisationRollenBenutzer.isEmpty()) {
+            // SystemRollen haben keine Organisation
+            return null;
+        }
+        if (organisationRollenBenutzer.size() > 1) {
+            // TODO: ESC-1197: Ein Benutzer darf im Moment nicht in mehr als 1 Organisation Mitglied sein.
+            throw new AppFailureException(AppFailureMessage.internalError(
+                "Ein Benutzer darf im Moment nicht in mehr als 1 Organisation Mitglied sein."));
+        }
+        return organisationRollenBenutzer.iterator().next();
+    }
+
     public void addOrganisation(@NonNull OrganisationRollen newRollen) {
         if (this.getOrganisationRollen().isEmpty()) {
-            this.setOrganisationRollen(Set.of(newRollen));
+            this.setOrganisationRollen(new HashSet<>(Set.of(newRollen)));
         } else {
-            Set<OrganisationRollen> existingOrganisationen = this.getOrganisationRollen();
-            existingOrganisationen.add(newRollen);
-            this.setOrganisationRollen(existingOrganisationen);
+            this.getOrganisationRollen().add(newRollen);
         }
+    }
+
+    public boolean hasFachRolleSupport() {
+        return getSystemRollen() != null && getSystemRollen().getFachRollen().contains(FachRolle.SUPPORT);
     }
 }

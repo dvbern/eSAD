@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.vorabklaerungen;
 
+import java.util.function.Consumer;
+
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -64,17 +66,23 @@ public class UntersuchungVorabklaerungenMapper {
     }
 
     @Nullable
-    public UntersuchungVorabklaerungenJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+    public UntersuchungVorabklaerungenJson getByEinladung(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungVorabklaerungen());
     }
 
     @NonNull
     public UntersuchungVorabklaerungenJson save(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungVorabklaerungenSaveJson saveJson
+        @NonNull UntersuchungVorabklaerungenSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungVorabklaerungen vorabklaerungen = untersuchung.getUntersuchungVorabklaerungen();
         UntersuchungVorabklaerungen entity = toEntity(untersuchung, vorabklaerungen, saveJson);
         return toJson(untersuchungVorabklaerungenService.persistWithOptimisticLocking(entity, saveJson.getVersion()));

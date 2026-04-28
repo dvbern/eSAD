@@ -12,7 +12,11 @@ package ch.dvbern.oss.hemed.esc.api.testutil.restassured;
 
 import java.util.function.Supplier;
 
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
+import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import io.restassured.builder.RequestSpecBuilder;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class RequestSpecUtil {
 
@@ -23,5 +27,10 @@ public final class RequestSpecUtil {
         return () -> new RequestSpecBuilder()
             .setBaseUri("http://localhost:8081")
             .setBasePath("/");
+    }
+
+    public static String toHasUntersuchungIdWrapper(@NonNull ID<Einladung> einladungId) {
+
+        return HasUntersuchungIDWrapper.fromEinladungId(einladungId).toExternalForm();
     }
 }

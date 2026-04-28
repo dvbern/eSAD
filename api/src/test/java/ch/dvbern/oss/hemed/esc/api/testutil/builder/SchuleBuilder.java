@@ -40,6 +40,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SchuleSaveJsonSpec;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 
 @RequiredArgsConstructor
 public class SchuleBuilder {
@@ -156,7 +157,7 @@ public class SchuleBuilder {
     @NonNull
     public static SchuleJson createJax(@NonNull Consumer<SchuleBuilder> block) {
         Schule entity = create(block);
-        return SchuleMapper.toJson(entity, Collections.emptyList());
+        return SchuleMapper.toJson(entity, Collections.emptyList(), TenantEnum.BS);
     }
 
     @NonNull
@@ -175,7 +176,8 @@ public class SchuleBuilder {
     public static SchuleSaveJsonSpec createSaveJaxForExistingSchule(@NonNull Schule schule) {
         return SchuleJsonSpecMapper.INSTANCE.schuleJsonToSchuleJsonSpec(SchuleMapper.toJson(
             schule,
-            Collections.emptyList()
+            Collections.emptyList(),
+            TenantEnum.BS
         )).getData();
     }
 }

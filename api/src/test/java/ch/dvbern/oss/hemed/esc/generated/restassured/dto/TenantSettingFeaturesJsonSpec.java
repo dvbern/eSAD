@@ -40,7 +40,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   TenantSettingFeaturesJsonSpec.JSON_PROPERTY_BENUTZERVERWALTUNG_INTERN_FEATURE,
   TenantSettingFeaturesJsonSpec.JSON_PROPERTY_BENUTZERVERWALTUNG_IGNORE_FACH_ROLLE_FROM_KEYCLOAK_FEATURE,
   TenantSettingFeaturesJsonSpec.JSON_PROPERTY_ARCHIVIERUNG_FEATURE,
-  TenantSettingFeaturesJsonSpec.JSON_PROPERTY_ZENTRALE_ORGANISATION_FEATURE
+  TenantSettingFeaturesJsonSpec.JSON_PROPERTY_ZENTRALE_ORGANISATION_FEATURE,
+  TenantSettingFeaturesJsonSpec.JSON_PROPERTY_ANONYME_STATISTIK_FEATURE
 })
 @JsonTypeName("TenantSettingFeaturesJson")
 @lombok.AllArgsConstructor
@@ -97,6 +98,10 @@ public class TenantSettingFeaturesJsonSpec {
   public static final String JSON_PROPERTY_ZENTRALE_ORGANISATION_FEATURE = "zentraleOrganisationFeature";
   @jakarta.annotation.Nonnull
   private TenantSettingFeatureStateJsonSpec zentraleOrganisationFeature;
+
+  public static final String JSON_PROPERTY_ANONYME_STATISTIK_FEATURE = "anonymeStatistikFeature";
+  @jakarta.annotation.Nonnull
+  private TenantSettingFeatureStateJsonSpec anonymeStatistikFeature;
 
   public TenantSettingFeaturesJsonSpec() {
   }
@@ -426,6 +431,31 @@ public class TenantSettingFeaturesJsonSpec {
     this.zentraleOrganisationFeature = zentraleOrganisationFeature;
   }
 
+  public TenantSettingFeaturesJsonSpec anonymeStatistikFeature(@jakarta.annotation.Nonnull TenantSettingFeatureStateJsonSpec anonymeStatistikFeature) {
+    
+    this.anonymeStatistikFeature = anonymeStatistikFeature;
+    return this;
+  }
+
+  /**
+   * Get anonymeStatistikFeature
+   * @return anonymeStatistikFeature
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_ANONYME_STATISTIK_FEATURE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public TenantSettingFeatureStateJsonSpec getAnonymeStatistikFeature() {
+    return anonymeStatistikFeature;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ANONYME_STATISTIK_FEATURE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setAnonymeStatistikFeature(@jakarta.annotation.Nonnull TenantSettingFeatureStateJsonSpec anonymeStatistikFeature) {
+    this.anonymeStatistikFeature = anonymeStatistikFeature;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -447,12 +477,13 @@ public class TenantSettingFeaturesJsonSpec {
         Objects.equals(this.benutzerverwaltungInternFeature, tenantSettingFeaturesJson.benutzerverwaltungInternFeature) &&
         Objects.equals(this.benutzerverwaltungIgnoreFachRolleFromKeycloakFeature, tenantSettingFeaturesJson.benutzerverwaltungIgnoreFachRolleFromKeycloakFeature) &&
         Objects.equals(this.archivierungFeature, tenantSettingFeaturesJson.archivierungFeature) &&
-        Objects.equals(this.zentraleOrganisationFeature, tenantSettingFeaturesJson.zentraleOrganisationFeature);
+        Objects.equals(this.zentraleOrganisationFeature, tenantSettingFeaturesJson.zentraleOrganisationFeature) &&
+        Objects.equals(this.anonymeStatistikFeature, tenantSettingFeaturesJson.anonymeStatistikFeature);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(esadIdFeature, laenderCodeFeature, mobileScannerFeature, massenimportFeature, massenbriefFeature, nichtGeprueftGrundFeature, arztListeFeature, adHocImpfstoffChargenFeature, footerFeature, benutzerverwaltungInternFeature, benutzerverwaltungIgnoreFachRolleFromKeycloakFeature, archivierungFeature, zentraleOrganisationFeature);
+    return Objects.hash(esadIdFeature, laenderCodeFeature, mobileScannerFeature, massenimportFeature, massenbriefFeature, nichtGeprueftGrundFeature, arztListeFeature, adHocImpfstoffChargenFeature, footerFeature, benutzerverwaltungInternFeature, benutzerverwaltungIgnoreFachRolleFromKeycloakFeature, archivierungFeature, zentraleOrganisationFeature, anonymeStatistikFeature);
   }
 
   @Override
@@ -472,6 +503,7 @@ public class TenantSettingFeaturesJsonSpec {
     sb.append("    benutzerverwaltungIgnoreFachRolleFromKeycloakFeature: ").append(toIndentedString(benutzerverwaltungIgnoreFachRolleFromKeycloakFeature)).append("\n");
     sb.append("    archivierungFeature: ").append(toIndentedString(archivierungFeature)).append("\n");
     sb.append("    zentraleOrganisationFeature: ").append(toIndentedString(zentraleOrganisationFeature)).append("\n");
+    sb.append("    anonymeStatistikFeature: ").append(toIndentedString(anonymeStatistikFeature)).append("\n");
     sb.append("}");
     return sb.toString();
   }

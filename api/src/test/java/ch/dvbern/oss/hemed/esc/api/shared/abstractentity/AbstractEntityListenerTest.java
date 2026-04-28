@@ -50,8 +50,13 @@ class AbstractEntityListenerTest {
         }
 
         @Override
-        public Optional<Benutzer> findCurrentUser() {
+        public Optional<Benutzer> findCurrentUserWithBerechtigungen() {
             return Optional.of(currentUser);
+        }
+
+        @Override
+        public Benutzer getCurrentUserWithBerechtigungen() {
+            return currentUser;
         }
 
         @Override

@@ -53,6 +53,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
@@ -105,6 +106,10 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @NotNull
     @Column(nullable = false)
     private boolean showAnmeldungBestaetigung;
+
+    @NotNull
+    @Column(nullable = false)
+    private boolean showImpfanmeldung;
 
     // Daten
 
@@ -1154,5 +1159,15 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @NonNull
     public EnumSet<ImpfungenMassnahmenEmpfehlung> getUntersuchungImpfungEmpfehlungValues() {
         return EnumSetUtil.fromString(ImpfungenMassnahmenEmpfehlung.class, untersuchungImpfungEmpfehlungValues);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("id", getId().getId())
+            .append("anlassTyp", anlassTyp)
+            .append("gueltigkeitsZeitraum", gueltigkeitsZeitraum)
+            .append("bezeichnung", bezeichnung)
+            .toString();
     }
 }

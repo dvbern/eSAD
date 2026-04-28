@@ -76,6 +76,10 @@ public final class AnlassPrinter {
                 PrintUtil.trimToPlaceholder(anlass.getDatum()),
                 "now",
                 PrintUtil.trimToPlaceholder(dto.getNow())),
+            I18nMessage.of(
+                "printer.anlass.footer.anlassId",
+                "anlassId",
+                anlass.getId().getUUID()),
             document);
 
         // Add Anlass data section

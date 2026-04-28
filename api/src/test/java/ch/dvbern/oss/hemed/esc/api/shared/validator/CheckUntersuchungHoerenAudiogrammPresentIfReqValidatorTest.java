@@ -46,7 +46,7 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
             builder -> builder
                 .withAudiogrammRechts(audiogrammRechts)
                 .withAudiogrammLinks(audiogrammLinks));
-        hoeren.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setHoerenAudiogramm(requirementSetting);
+        hoeren.getUntersuchung().getAnlass().getAnlassConfig().setHoerenAudiogramm(requirementSetting);
         // ACT
         CheckUntersuchungHoerenAudiogrammPresentIfReqValidator
             validator = new CheckUntersuchungHoerenAudiogrammPresentIfReqValidator();
@@ -79,9 +79,8 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
             builder -> builder
                 .withAudiogrammRechtsWithout250Hz(audiogrammRechts)
                 .withAudiogrammLinksWithout250Hz(audiogrammLinks));
-        hoeren.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setHoerenAudiogramm(requirementSetting);
+        hoeren.getUntersuchung().getAnlass().getAnlassConfig().setHoerenAudiogramm(requirementSetting);
         hoeren.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setHoerenAudiogramm250Hz(requirementSetting250Hz);
@@ -120,9 +119,8 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
             builder -> builder
                 .withAudiogrammRechtsWithout8000Hz(audiogrammRechts)
                 .withAudiogrammLinksWithout8000Hz(audiogrammLinks));
-        hoeren.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setHoerenAudiogramm(requirementSetting);
+        hoeren.getUntersuchung().getAnlass().getAnlassConfig().setHoerenAudiogramm(requirementSetting);
         hoeren.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setHoerenAudiogramm250Hz(requirementSetting250Hz);
@@ -158,9 +156,8 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
             builder -> builder
                 .withAudiogrammRechtsWithout8000Hz(audiogrammRechts)
                 .withAudiogrammLinksWithout8000Hz(audiogrammLinks));
-        hoeren.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setHoerenAudiogramm(requirementSetting);
+        hoeren.getUntersuchung().getAnlass().getAnlassConfig().setHoerenAudiogramm(requirementSetting);
         hoeren.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setHoerenAudiogramm8000Hz(requirementSetting8000Hz);
@@ -199,9 +196,8 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
             builder -> builder
                 .withAudiogrammRechtsWithout250Hz(audiogrammRechts)
                 .withAudiogrammLinksWithout250Hz(audiogrammLinks));
-        hoeren.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setHoerenAudiogramm(requirementSetting);
+        hoeren.getUntersuchung().getAnlass().getAnlassConfig().setHoerenAudiogramm(requirementSetting);
         hoeren.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setHoerenAudiogramm8000Hz(requirementSetting8000Hz);
@@ -240,14 +236,12 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
             builder -> builder
                 .withAudiogrammRechtsWithout250HzAnd8000Hz(audiogrammRechts)
                 .withAudiogrammLinksWithout250HzAnd8000Hz(audiogrammLinks));
-        hoeren.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setHoerenAudiogramm(requirementSetting);
+        hoeren.getUntersuchung().getAnlass().getAnlassConfig().setHoerenAudiogramm(requirementSetting);
         hoeren.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setHoerenAudiogramm250Hz(requirementSetting250Hz);
         hoeren.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setHoerenAudiogramm8000Hz(requirementSetting8000Hz);
@@ -288,14 +282,12 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
             builder -> builder
                 .withAudiogrammRechts(audiogrammRechts)
                 .withAudiogrammLinks(audiogrammLinks));
-        hoeren.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setHoerenAudiogramm(requirementSetting);
+        hoeren.getUntersuchung().getAnlass().getAnlassConfig().setHoerenAudiogramm(requirementSetting);
         hoeren.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setHoerenAudiogramm250Hz(requirementSetting250Hz);
         hoeren.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setHoerenAudiogramm8000Hz(requirementSetting8000Hz);
@@ -323,7 +315,7 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
     ) {
         // ARRANGE
         UntersuchungHoerenAudiogramm hoeren = UntersuchungHoerenAudiogrammBuilder.create(builder -> {});
-        hoeren.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setHoerenAudiogrammSimpel(requirementSetting);
+        hoeren.getUntersuchung().getAnlass().getAnlassConfig().setHoerenAudiogrammSimpel(requirementSetting);
         hoeren.setAudiogrammSimpel(SingleValueEnhanced.of(audiogrammSimpel, null));
         // ACT
         CheckUntersuchungHoerenAudiogrammPresentIfReqValidator
@@ -349,7 +341,7 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
     ) {
         // ARRANGE
         UntersuchungHoerenAudiogramm hoeren = UntersuchungHoerenAudiogrammBuilder.create(builder -> {});
-        hoeren.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setHoerenHoerhilfe(requirementSetting);
+        hoeren.getUntersuchung().getAnlass().getAnlassConfig().setHoerenHoerhilfe(requirementSetting);
         hoeren.setHoerhilfe(SingleValueEnhanced.of(hoerhilfe, null));
         // ACT
         CheckUntersuchungHoerenAudiogrammPresentIfReqValidator
@@ -381,7 +373,6 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
             builder -> builder
                 .withAudiogrammBeurteilung(beurteilungList, null));
         hoeren.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setHoerenAudiogrammBeurteilung(requirementSetting);
@@ -422,12 +413,10 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
                 .withAudiogrammLinks(audiogrammLinks)
                 .withAudiogrammBeurteilung(beurteilungList, null));
         hoeren.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setHoerenAudiogramm(requirementAudiogramm);
         hoeren.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setHoerenAudiogrammBeurteilung(requirementAudiogrammBeurteilung);
@@ -462,7 +451,6 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
             builder -> builder
                 .withZusaetzlicheAngaben(beurteilungList, null));
         hoeren.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setHoerenAudiogrammZusaetzlicheAngaben(requirementSetting);
@@ -495,7 +483,7 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
         UntersuchungHoerenAudiogramm hoeren = UntersuchungHoerenAudiogrammBuilder.create(
             builder -> builder
                 .withEmpfehlung(empfehlungList, null));
-        hoeren.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setHoerenAudiogrammEmpfehlung(requirementSetting);
+        hoeren.getUntersuchung().getAnlass().getAnlassConfig().setHoerenAudiogrammEmpfehlung(requirementSetting);
         // ACT
         CheckUntersuchungHoerenAudiogrammPresentIfReqValidator
             validator = new CheckUntersuchungHoerenAudiogrammPresentIfReqValidator();
@@ -523,7 +511,6 @@ class CheckUntersuchungHoerenAudiogrammPresentIfReqValidatorTest {
             builder -> builder
                 .withBemerkung(bemerkungen));
         hoeren.getUntersuchung()
-            .getEinladung()
             .getAnlass()
             .getAnlassConfig()
             .setHoerenAudiogrammBemerkungen(requirementSetting);

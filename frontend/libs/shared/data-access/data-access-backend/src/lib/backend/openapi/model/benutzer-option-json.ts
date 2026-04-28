@@ -18,7 +18,7 @@ export interface BenutzerOptionJson {
     name: string;
     vorname: string;
     fullName: string;
-    organisationRollen: Array<OrganisationRollenJson>;
+    organisationRollen?: OrganisationRollenJson;
     systemRollen?: SystemRollenJson;
     benutzerAktivStatus: EntityAktivStatus;
 }

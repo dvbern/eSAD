@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.signatur;
 
+import java.util.function.Consumer;
+
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -9,6 +11,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.signatur.json.UntersuchungSig
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -19,9 +23,10 @@ public class UntersuchungSignaturMapper {
 
     private final UntersuchungService untersuchungService;
     private final UntersuchungSignaturService untersuchungSignaturService;
+    private final TenantProducer tenantProducer;
 
     @Nullable
-    public static UntersuchungSignaturJson toJson(@Nullable UntersuchungSignatur signatur) {
+    public static UntersuchungSignaturJson toJson(@Nullable UntersuchungSignatur signatur, @NonNull TenantEnum tenant) {
         if (signatur == null) {
             return null;
         }
@@ -29,7 +34,7 @@ public class UntersuchungSignaturMapper {
             signatur.getId(),
             EntityInfoJson.fromEntity(signatur),
             new UntersuchungSignaturSaveJson(
-                BenutzerMapper.toOptionJson(signatur.getPerson()),
+                BenutzerMapper.toOptionJson(signatur.getPerson(), tenant),
                 signatur.getTimestampVisiert(),
                 signatur.getVersion()
             )
@@ -37,20 +42,32 @@ public class UntersuchungSignaturMapper {
     }
 
     @Nullable
-    public UntersuchungSignaturJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+    public UntersuchungSignaturJson getByEinladung(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
-        return toJson(untersuchung.getUntersuchungSignatur());
+        hasAuthorizationUntersuchung.accept(untersuchung);
+        return toJson(untersuchung.getUntersuchungSignatur(), tenantProducer.produceTenant());
     }
 
     @NonNull
-    public UntersuchungSignaturJson signieren(@NonNull ID<Einladung> einladungID) {
+    public UntersuchungSignaturJson signieren(
+        @NonNull ID<Einladung> einladungID,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
-        return toJson(untersuchungSignaturService.signieren(untersuchung));
+        hasAuthorizationUntersuchung.accept(untersuchung);
+        return toJson(untersuchungSignaturService.signieren(untersuchung), tenantProducer.produceTenant());
     }
 
     @NonNull
-    public UntersuchungSignaturJson resetSignatur(@NonNull ID<Einladung> einladungID) {
+    public UntersuchungSignaturJson resetSignatur(
+        @NonNull ID<Einladung> einladungID,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
-        return toJson(untersuchungSignaturService.resetSignatur(untersuchung));
+        hasAuthorizationUntersuchung.accept(untersuchung);
+        return toJson(untersuchungSignaturService.resetSignatur(untersuchung), tenantProducer.produceTenant());
     }
 }

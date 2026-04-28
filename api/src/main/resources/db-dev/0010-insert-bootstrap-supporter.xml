@@ -1,0 +1,24 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet id="1768912582671-1" author="Markus Hofstetter">
+    <sql>
+      INSERT INTO systemrollen (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, fachrollen)
+      SELECT 'd568d06f-0cde-4b52-a8d0-6f0cdedb5222', current_timestamp, current_timestamp,
+             '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 0, 'SUPPORT'
+      WHERE NOT EXISTS (SELECT 1 FROM systemrollen WHERE id = 'd568d06f-0cde-4b52-a8d0-6f0cdedb5222');
+
+      INSERT INTO benutzer (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, email, keycloakid,
+                            lastusedip, lastusedsessionid, lastusedsessiontimestamp, oidcissuer, nachname, vorname,
+                            benutzeraktivstatus, titel, telefon, systemrollen_id)
+      SELECT '6edfb756-9aad-490f-9fb7-569aad490f96', '2025-03-18 09:46:42.178875', '2025-03-18 09:46:42.271767',
+             '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', 1,
+             'escsupport-be@mailbucket.dvbern.ch', 'd3d1a568-ad1f-4cfb-9016-b600c3a59341', '172.19.1.193',
+             'a3eab01d-3f36-48a6-bd9f-a06a76916b3f', '2025-03-18 09:46:42.270799',
+             'https://local-esc-bs.localhost:8989/realms/bs', 'Support', 'Sarah BE', 'AKTIV', 'Dipl. Ing.', '+41 61 123 45 67',
+             'd568d06f-0cde-4b52-a8d0-6f0cdedb5222'
+        WHERE NOT EXISTS (SELECT 1 FROM benutzer WHERE id = '6edfb756-9aad-490f-9fb7-569aad490f96')
+       AND NOT EXISTS (SELECT 1 FROM benutzer WHERE email = 'escsupport-be@mailbucket.dvbern.ch');
+    </sql>
+  </changeSet>
+
+</databaseChangeLog>

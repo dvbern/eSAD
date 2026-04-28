@@ -1,15 +1,18 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen;
 
+import java.util.function.Consumer;
+
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.json.UntersuchungImpfungenMassnahmenJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.json.UntersuchungImpfungenMassnahmenSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.ImpfungenMassnahmenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ public class UntersuchungImpfungenMassnahmenMapper {
     private final UntersuchungService untersuchungService;
     private final UntersuchungImpfungenService untersuchungImpfungenService;
     private final UntersuchungImpfungenMassnahmenService untersuchungImpfungenMassnahmenService;
+    private final EinladungService einladungService;
 
     @Nullable
     public static UntersuchungImpfungenMassnahmenJson toJson(
@@ -81,9 +85,11 @@ public class UntersuchungImpfungenMassnahmenMapper {
     @NonNull
     public UntersuchungImpfungenMassnahmenJson save(
         @NonNull ID<Einladung> einladungId,
-        @NonNull UntersuchungImpfungenMassnahmenSaveJson saveJson
+        @NonNull UntersuchungImpfungenMassnahmenSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungImpfungen impfungen =
             untersuchungImpfungenService.getOrCreateUntersuchungImpfungen(untersuchung.getId());
         impfungen.disableOptimisticLockingCheck();
@@ -94,7 +100,12 @@ public class UntersuchungImpfungenMassnahmenMapper {
             saveJson.getVersion()));
     }
 
-    public void einzelTerminErstellen(@NonNull ID<Einladung> einladungId) {
-        untersuchungImpfungenMassnahmenService.einzelTerminErstellen(einladungId);
+    public void einzelTerminErstellen(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
+        Einladung einladung = einladungService.getById(einladungId);
+        hasAuthorizationUntersuchung.accept(einladung.getUntersuchung());
+        untersuchungImpfungenMassnahmenService.einzelTerminErstellen(einladung);
     }
 }

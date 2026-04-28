@@ -54,7 +54,6 @@ public final class BerechtigungName {
     public static final String LABELS_ADMIN_LESEN = "LABELS_ADMIN_LESEN";
     public static final String LABELS_SCHREIBEN = "LABELS_SCHREIBEN";
     public static final String EIGENE_BERECHTIGUNGEN_LESEN = "EIGENE_BERECHTIGUNGEN_LESEN";
-    public static final String MITARBEITERLISTE_BERECHTIGUNGEN_LESEN = "MITARBEITERLISTE_BERECHTIGUNGEN_LESEN";
     public static final String VORLAGEN_LESEN = "VORLAGEN_LESEN";
     public static final String VORLAGEN_ADMIN_LESEN = "VORLAGEN_ADMIN_LESEN";
     public static final String VORLAGEN_SCHREIBEN = "VORLAGEN_SCHREIBEN";

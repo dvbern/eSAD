@@ -29,7 +29,7 @@ class CheckUntersuchungArztBemerkungPresentIfReqValidatorTest {
         UntersuchungArztBemerkung entity = UntersuchungArztBemerkungBuilder.create(
             builder -> builder
                 .withBemerkungen(bemerkungen));
-        entity.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungBemerkungen(requirementSetting);
+        entity.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungBemerkungen(requirementSetting);
         // ACT
         CheckUntersuchungArztBemerkungPresentIfReqValidator validator = new CheckUntersuchungArztBemerkungPresentIfReqValidator();
         var result = validator.isEntityValid(entity);

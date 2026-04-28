@@ -648,6 +648,6 @@ class SchuleResourceITest extends AbstractITest {
         AppValidationErrorJsonSpecAssert.assertThatAppValidationErrorJsonSpec(error)
             .extractingExactlyOneViolation()
             .hasRawMessageContaining(
-                "Das Objekt konnte nicht gelöscht werden, da es von einem anderen Objekt referenziert wird.");
+                "Das Objekt konnte nicht gelöscht werden, da es von einem anderen Objekt referenziert wird");
     }
 }

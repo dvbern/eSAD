@@ -1,15 +1,18 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.json.UntersuchungBewegungsapparatJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.json.UntersuchungBewegungsapparatSaveJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.Nullable;
@@ -43,10 +46,14 @@ public class UntersuchungBewegungsapparatResource {
     @Nullable
     public UntersuchungBewegungsapparatJson getUntersuchungBewegungsapparat(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
-        return untersuchungBewegungsapparatMapper.getByEinladung(einladungId);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungBewegungsapparatMapper.getByEinladung(
+            wrappedId.toEinladungId(),
+            untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
+                untersuchung,
+                Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN));
     }
 
     @PUT
@@ -54,11 +61,15 @@ public class UntersuchungBewegungsapparatResource {
     @RolesAllowed(BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN)
     public UntersuchungBewegungsapparatJson saveUntersuchungBewegungsapparat(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId,
         @NonNull @NotNull @Valid UntersuchungBewegungsapparatSaveJson saveJson
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
-        authorizerService.requireWriteAuthorizationAnlass(anlassId);
-        return untersuchungBewegungsapparatMapper.save(einladungId, saveJson);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungBewegungsapparatMapper.save(
+            wrappedId.toEinladungId(),
+            saveJson,
+            untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
+                untersuchung,
+                List.of(Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN)));
     }
 }

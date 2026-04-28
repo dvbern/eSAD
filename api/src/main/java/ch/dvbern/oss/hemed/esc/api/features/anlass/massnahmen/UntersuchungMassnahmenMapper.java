@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen;
 
 import java.util.Set;
+import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
@@ -97,17 +98,23 @@ public class UntersuchungMassnahmenMapper {
     }
 
     @Nullable
-    public UntersuchungMassnahmenJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+    public UntersuchungMassnahmenJson getByEinladung(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungMassnahmen());
     }
 
     @NonNull
     public UntersuchungMassnahmenJson save(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungMassnahmenSaveJson saveJson
+        @NonNull UntersuchungMassnahmenSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungMassnahmen massnahmen = untersuchung.getUntersuchungMassnahmen();
         UntersuchungMassnahmen entity = toEntity(untersuchung, massnahmen, saveJson);
         UntersuchungMassnahmen persistedEntity = untersuchungMassnahmenService.persistWithOptimisticLocking(entity, saveJson.getVersion());

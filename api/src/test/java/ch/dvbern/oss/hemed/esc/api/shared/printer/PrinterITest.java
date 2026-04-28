@@ -57,8 +57,8 @@ class PrinterITest extends AbstractITest {
         var impfung =
             fixtureService.createInterneImpfungForUntersuchung(untersuchungWithImpfungen.getUntersuchungImpfungen());
         Assertions.assertThat(impfung).isNotNull();
-        ID<Kind> kindId = untersuchungWithImpfungen.getEinladung().getDossier().getKind().getId();
-        ID<Anlass> anlassId = untersuchungWithImpfungen.getEinladung().getAnlass().getId();
+        ID<Kind> kindId = untersuchungWithImpfungen.getEinladungRequired().getDossier().getKind().getId();
+        ID<Anlass> anlassId = untersuchungWithImpfungen.getAnlass().getId();
         // ACT
         PrintResultDTO printResultDTO = kinderdossierPrintService.printKinderdossier(
             KinderdossierPrintVariant.ANLAESSE,

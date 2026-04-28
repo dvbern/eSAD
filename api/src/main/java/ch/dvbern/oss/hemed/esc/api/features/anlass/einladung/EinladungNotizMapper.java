@@ -36,8 +36,10 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizService;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizStatus;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
 import ch.dvbern.oss.hemed.esc.api.shared.notizen.AutoNotizService;
+import ch.dvbern.oss.hemed.esc.api.shared.notizen.RemoveNotizService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -51,9 +53,11 @@ public class EinladungNotizMapper {
     private final NotizMapper notizMapper;
     private final NotizService notizService;
     private final AutoNotizService autoNotizService;
+    private final RemoveNotizService removeNotizService;
     private final EinladungService einladungService;
     private final CurrentUserService currentUserService;
     private final TL tl;
+    private final TenantProducer tenantProducer;
 
 
     @NonNull
@@ -79,8 +83,8 @@ public class EinladungNotizMapper {
             && einladungSaveJson.getEinladungStatus() != EinladungStatus.TEILNAHME_ABGESAGT
             && abmeldungsNotiz != null
         ) {
-            einladung.getNotizen().remove(abmeldungsNotiz);
-            notizService.remove(abmeldungsNotiz.getId(), true);
+            einladung.disableOptimisticLockingCheck();
+            removeNotizService.removeNotizWithUnlink(abmeldungsNotiz.getId());
             return;
         }
 
@@ -106,7 +110,7 @@ public class EinladungNotizMapper {
             getAbmeldungsnotizBemerkung(einladungSaveJson),
             NotizStatus.ABGESCHLOSSEN,
             NotizTyp.ABMELDUNG,
-            BenutzerMapper.toOptionJson(currentUserService.currentUserRef()),
+            BenutzerMapper.toOptionJson(currentUserService.currentUserRef(), tenantProducer.produceTenant()),
             AnlassUtil.createAnlassLink(einladung),
             new ArrayList<>(),
             new ArrayList<>(),

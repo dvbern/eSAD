@@ -7,6 +7,7 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.BenutzerApiSpec;
@@ -27,8 +28,8 @@ public class BenutzerResourceHelper {
 
     private final BenutzerApiSpec api = BenutzerApiSpec.benutzer(RequestSpecUtil.quarkusSpec());
 
-    private final BenutzerService benutzerService;
     private final TenantProducer tenantProducer;
+    private final FixtureService fixtureService;
 
     @NonNull
     public Benutzer createSchularztAsOrganisationsChef(@NonNull TenantEnum tenant) {
@@ -46,7 +47,8 @@ public class BenutzerResourceHelper {
             EntityAktivStatusSpec.AKTIV,
             List.of(new OrganisationRollenJsonSpec(
                 null,
-                List.of(FachRolleSpec.SCHULAERZTIN)
+                List.of(FachRolleSpec.SCHULAERZTIN),
+                List.of()
             )),
             null,
             0L
@@ -59,6 +61,6 @@ public class BenutzerResourceHelper {
             .assertThat()
             .statusCode(Status.OK.getStatusCode())
             .extract().as(BenutzerJsonSpec.class);
-        return benutzerService.getById(ID.parse(benutzerJsonSpec.getId(), Benutzer.class));
+        return fixtureService.readBenutzerWithBerechtigungen(ID.parse(benutzerJsonSpec.getId(), Benutzer.class));
     }
 }

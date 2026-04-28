@@ -29,7 +29,7 @@ public class CheckUntersuchungDurchfuehrungPresentIfReqValidator
 
     @Override
     public boolean isEntityValid(@NonNull UntersuchungDurchfuehrung durchfuehrung) {
-        AnlassConfig anlassConfig = durchfuehrung.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig anlassConfig = durchfuehrung.getUntersuchung().getAnlass().getAnlassConfig();
         if (anlassConfig.getDatenUntersuchung().isRequired()) {
             return durchfuehrung.getArzt() != null && durchfuehrung.getMpa() != null;
         }

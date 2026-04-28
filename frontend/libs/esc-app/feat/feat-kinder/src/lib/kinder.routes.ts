@@ -17,7 +17,7 @@ import {
 import {confirmOnDirty, toDetailModeStrict} from '@dvb/util-angular';
 import {
   hasAerztePageViewBerechtigung,
-  hasAufgabenViewBerechtigungen,
+  hasAufgabenViewBerechtigungen, hasImpfstoffeViewBerechtigung,
   hasKindEditBerechtigung,
   hasKinderMedizinischeDatenViewBerechtigung,
   hasKindNotizViewBerechtigung,
@@ -70,7 +70,9 @@ export const kinderRoutes: Route[] = [
       _store: () => {
         inject(DossierStore).reset();
         inject(AnlassConfigOptionsStore).loadAnlassConfigOptions();
-        inject(ImpfstoffeChargenStore).loadImpfstoffeAndChargen();
+        if (inject(BenutzerStore).createHasRequiredRoleSig(hasImpfstoffeViewBerechtigung())()) {
+          inject(ImpfstoffeChargenStore).loadImpfstoffeAndChargen();
+        }
         inject(KinderMassenbriefStore).resetState();
         if (inject(BenutzerStore).createHasRequiredRoleSig(hasKindVorlagenViewBerechtigung())()) {
           inject(BriefvorlagenStore).loadBriefvorlagen();

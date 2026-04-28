@@ -4,7 +4,6 @@ import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
-import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.json.OrganisationJson;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.json.OrganisationSaveJson;
 import lombok.RequiredArgsConstructor;
@@ -36,12 +35,9 @@ public final class OrganisationMapper {
     }
 
     @NonNull
-    public List<OrganisationJson> findAll() {
-        return organisationService.findAll().stream().map(OrganisationMapper::toJson).toList();
-    }
-
-    @NonNull
-    public OrganisationJson getById(@NonNull ID<Organisation> id) {
-        return toJson(organisationService.getById(id));
+    public List<OrganisationJson> findOrganisationenBerechtigt() {
+        return organisationService.findOrganisationenBerechtigt().stream()
+            .map(OrganisationMapper::toJson)
+            .toList();
     }
 }

@@ -4,3 +4,4 @@ export * from './EntityId';
 export * from './ISODateString';
 export * from './ISODateTimeString';
 export * from './ISOYearMonthString';
+export * from './BackendEntityIdWithClass';

@@ -5,6 +5,7 @@ import {
   UntersuchungGroesseGewichtServiceGetUntersuchungGroesseGewichtRequestParams,
   UntersuchungGroesseGewichtServiceSaveUntersuchungGroesseGewichtRequestParams,
 } from '@dvb/data-access-backend';
+import { toEinladungBackendEntityIdWithClass } from '@dvb/data-access-types';
 import {AppErrorHandlerService, AppNotificationStore, Loader} from '@dvb/util-angular';
 import {TranslocoService} from '@jsverse/transloco';
 import {tapResponse} from '@ngrx/operators';

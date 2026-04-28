@@ -30,6 +30,8 @@ class HibernateConstraintViolationExceptionMapper implements ExceptionMapper<Con
             var translatedErrorMsg = tl.translate("AppValidation." + constraintName);
             if (!translatedErrorMsg.startsWith("!")) {
                 message = AppValidationMessage.genericMessage("AppValidation." + constraintName);
+            } else if (constraintName.startsWith("fk")) {
+                message = AppValidationMessage.referencedForeignKeyWithName(constraintName);
             } else {
                 message = AppValidationMessage.uniqueKeyViolation(constraintName);
             }

@@ -32,8 +32,7 @@ class KindAnlaesseServiceTest {
     private final KindAnlaesseMapper mapper = new KindAnlaesseMapper(
         service,
         Mockito.mock(UntersuchungImpfstatusKrankheitService.class),
-        Mockito.mock(UntersuchungImpfungInternService.class),
-        authorizerService);
+        Mockito.mock(UntersuchungImpfungInternService.class));
 
     private final FixedClockProvider clockProvider = FixedClockProvider.now();
     private final AppClock appClock = new AppClock(clockProvider);
@@ -53,10 +52,10 @@ class KindAnlaesseServiceTest {
         Mockito.doAnswer(invocation -> List.of(einladung1, einladung2))
             .when(repo).findAllEinladungForKind(ArgumentMatchers.any());
         Mockito.doAnswer(invocation -> true)
-            .when(authorizerService).hasReadAuthorizationAnlassListe(ArgumentMatchers.any(Anlass.class));
+            .when(authorizerService).hasReadAuthorizationAnlass(ArgumentMatchers.any(Anlass.class), ArgumentMatchers.any());
 
         // Act
-        List<KindAnlassSummaryJson> mappedList = mapper.findAllForKind(ID.random(Kind.class));
+        List<KindAnlassSummaryJson> mappedList = mapper.findAllForKind(ID.random(Kind.class), anlass -> true);
 
         // Assert
         assertThat(mappedList).hasSize(2);

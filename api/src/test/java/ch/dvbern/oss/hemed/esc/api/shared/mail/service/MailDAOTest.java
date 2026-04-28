@@ -61,12 +61,12 @@ class MailDAOTest {
             isNotProdHint = "<br><br>Diese Nachricht wurde aus einem Testsystem versendet.";
         }
         if (configService.isMailOverridingRecipientsEnabled()) {
-            isNotProdHint = isNotProdHint + "<br><br>Sie erhalten diese Nachricht anstelle von to = "
-                + TO_ADDRESS + ", cc =  und bcc = , weil ein Empfänger eingetragen ist, an den alle E-Mails geschickt "
-                + "werden müssen.";
+            isNotProdHint = isNotProdHint + "<br><br>Sie erhalten diese Nachricht anstelle von "
+                + TO_ADDRESS + ", weil Sie als Empfänger eingetragen sind, an den alle E-Mails geschickt "
+                + "werden sollen.";
             var optionalOverridingAll = configService.getMailOverridingRecipientsAddress();
             expectedRecipient = String.join(", ", optionalOverridingAll);
-            expectedSize = 3;
+            expectedSize = 1;
         }
         expectedHtmlContent = HTML_CONTENT + isNotProdHint;
         expectedSubject = subjecPrefix + SUBJECT;
@@ -130,7 +130,7 @@ class MailDAOTest {
         mailDAO.sendEmailWithAttachmentSync(TO_ADDRESS, SUBJECT, HTML_CONTENT, List.of(tempAttachment));
 
         assertMail(
-            TO_ADDRESS,
+            expectedRecipient,
             expectedSubject,
             expectedHtmlContent,
             List.of(tempAttachment.getFileName().toString()),

@@ -1,12 +1,14 @@
 package ch.dvbern.oss.hemed.esc.api.features.labels;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.labels.types.LabelTyp;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
+import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.assertj.AppValidationErrorJsonSpecAssert;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.LabelBuilder;
@@ -32,6 +34,7 @@ class LabelResourceITest extends AbstractITest {
     private final LabelsApiSpec api = LabelsApiSpec.labels(RequestSpecUtil.quarkusSpec());
 
     private final LabelService labelService;
+    private final FixtureService fixtureService;
 
     @Override
     @BeforeEach
@@ -247,6 +250,35 @@ class LabelResourceITest extends AbstractITest {
         // ASSERT
         Optional<Label> labelOptAfterDelete = labelService.findById(label.getId());
         Assertions.assertThat(labelOptAfterDelete).isNotPresent();
+    }
+
+    @Test
+    @TestAsAdminBS
+    void removeLabel_fails_if_referenced_by_notiz() {
+        // ARRANGE
+        Label label = LabelBuilder.create(
+            builder -> builder
+                .withRandomName("Label")
+                .withTyp(LabelTyp.NOTIZEN));
+        labelService.persist(label);
+        fixtureService.createNotiz(Set.of(label.getId()));
+
+        // ACT
+        AppValidationErrorJsonSpec violation = api
+            .labelResourceRemoveLabel()
+            .labelIdPath(label.getId().getUUID())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract()
+            .as(AppValidationErrorJsonSpec.class);
+
+        // ASSERT
+        AppValidationErrorJsonSpecAssert.assertThatAppValidationErrorJsonSpec(violation)
+            .extractingExactlyOneViolation()
+            .hasClientKey(AppValidationMessage.referencedForeignKeyWithName("").getClientKey())
+            .hasRawMessageContaining("fk_notiz_label_label");
     }
 
     @Test

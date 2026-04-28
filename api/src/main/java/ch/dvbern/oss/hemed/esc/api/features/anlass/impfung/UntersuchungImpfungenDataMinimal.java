@@ -111,7 +111,7 @@ public class UntersuchungImpfungenDataMinimal
         if (dataMinimal == null) {
             dataMinimal = forUntersuchung(untersuchung);
         }
-        AnlassConfig config = untersuchung.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig config = untersuchung.getUntersuchung().getAnlass().getAnlassConfig();
         if (ValueEnhancedUtil.isVisibleAndNull(config.getImpfungenDataMinimalImpfausweisGeprueft(), dataMinimal.getImpfausweisGeprueft(), ImpfausweisGeprueft.class)) {
             dataMinimal.setImpfausweisGeprueft(SingleValueEnhanced.of(ImpfausweisGeprueft.NEIN, null));
         }

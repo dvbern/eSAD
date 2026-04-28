@@ -42,12 +42,12 @@ public class RemoveKindService {
         // Abhaengige Objekte entfernen
         // Kontaktpersonen entfernen
         kontaktPersonKindService.removeForKind(kindID);
+        // Anlaesse inkl. Untersuchungen entfernen
+        kindAnlaesseService.removeForKind(kindID, true);
         // Notizen entfernen
         notizService.removeForKind(kindID);
         // Aufgaben entfernen
         aufgabeService.removeForKind(kindID);
-        // Anlaesse inkl. Untersuchungen entfernen
-        kindAnlaesseService.removeForKind(kindID, true);
         // Duplikate entfernen
         duplikatService.removeForKind(kindID);
         // KindAktivitaeten entfernen

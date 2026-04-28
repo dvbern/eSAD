@@ -13,7 +13,10 @@ import {
   NotizJson,
   NotizTyp,
 } from '@dvb/data-access-backend';
-import {BackendEntityId} from '@dvb/data-access-types';
+import {
+  BackendEntityId,
+  toEinladungBackendEntityIdWithClass,
+} from '@dvb/data-access-types';
 import {BenutzerStore, NavigationService, Path, TenantSettingsStore} from '@dvb/feat-shared';
 import {
   BadgeComponent,
@@ -170,7 +173,7 @@ export class EinladungenListeComponent {
     if ($event === EinladungStatus.TEILNAHME_ABGESAGT) {
       await this.addAbmeldungsgrund(item);
     } else {
-      this.store.updateEinladungStatus({einladungId: item.id, status: $event});
+      this.store.updateEinladungStatus({einladungId: toEinladungBackendEntityIdWithClass(item.id), status: $event});
     }
   }
 
@@ -188,7 +191,7 @@ export class EinladungenListeComponent {
             grundAbmeldung: form.grundAbmeldung,
           };
           this.store.einladungAbmelden({
-            einladungId: einladung.id,
+            einladungId: toEinladungBackendEntityIdWithClass(einladung.id),
             einladungSaveJson: requestObject,
             onSuccess: () => {
               ngbModalRef.close({result: 'success'});

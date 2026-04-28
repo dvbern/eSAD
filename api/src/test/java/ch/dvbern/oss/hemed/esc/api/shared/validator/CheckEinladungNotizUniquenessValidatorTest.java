@@ -19,7 +19,8 @@ class CheckEinladungNotizUniquenessValidatorTest {
         "FRAGEBOGEN             ,false",
         "IMPFAUSWEIS            ,false",
         "ANMELDUNG_BESTAETIGUNG ,false",
-        "ABMELDUNG              ,false"
+        "ABMELDUNG              ,false",
+        "IMPFANMELDUNG          ,false"
     })
     void validateNotizenUniqueness(
         @NonNull NotizTyp notizTyp,

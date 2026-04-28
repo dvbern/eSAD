@@ -39,8 +39,8 @@ public class UntersuchungDurchfuehrungService {
     }
 
     public void untersuchungAbschliessen(@NonNull Untersuchung untersuchung) {
-        Benutzer arzt = untersuchung.getEinladung().getAnlass().getArzt();
-        Benutzer mpa = untersuchung.getEinladung().getAnlass().getMpa();
+        Benutzer arzt = untersuchung.getAnlass().getArzt();
+        Benutzer mpa = untersuchung.getAnlass().getMpa();
         UntersuchungDurchfuehrung durchfuehrung =  UntersuchungDurchfuehrung.forUntersuchungAbschliessen(
             untersuchung,
             arzt,
@@ -53,9 +53,9 @@ public class UntersuchungDurchfuehrungService {
     @NonNull
     public UntersuchungDurchfuehrung getDefaultUntersuchungDurchfuehrung(@NonNull Untersuchung untersuchung) {
         Optional<Einladung> urspruenglicheEinladungForNachzueglerOptional = einladungService.findUrspruenglicheEinladungForNachzuegler(
-            untersuchung.getEinladung().getAnlass(), untersuchung.getEinladung().getDossier().getKind().getId());
+            untersuchung.getAnlass(), untersuchung.getEinladungRequired().getDossier().getKind().getId());
         Nachkontrolle nachkontrolle =
-            nachkontrolleService.getOrCreateByDossier(untersuchung.getEinladung().getDossier().getId());
+            nachkontrolleService.getOrCreateByDossier(untersuchung.getEinladungRequired().getDossier().getId());
         return UntersuchungDurchfuehrung.defaultsForNextUntersuchung(untersuchung, urspruenglicheEinladungForNachzueglerOptional.orElse(null), nachkontrolle);
     }
 }

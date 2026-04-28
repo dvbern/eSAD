@@ -45,6 +45,10 @@
         <!-- naechstestationSeit-->
         <col svuiColWidth [colWidth]="'options'">
       }
+      <!-- impfanmeldung -->
+      @if (anlassStore.showImpfanmeldung()) {
+        <col svuiColWidth [colWidth]="'options'">
+      }
       <!-- impfausweis-->
       @if (anlassStore.showImpfausweis()) {
         <col svuiColWidth [colWidth]="'options'">
@@ -137,6 +141,10 @@
             [sortState]="itemTable.findColSortDTO('naechsteStation.naechsteStationSeit')"
             (sort)="itemTable.onColSort($event, 'naechsteStation.naechsteStationSeit')"
         >{{ 'anlass.kinder.naechstestationseit' | transloco }}
+        </th>
+      }
+      @if (anlassStore.showImpfanmeldung()) {
+        <th scope="col">{{ 'anlass.kinder.impfanmeldung' | transloco }}
         </th>
       }
       @if (anlassStore.showImpfausweis()) {
@@ -308,6 +316,9 @@
         </th>
         <th scope="col"></th>
       }
+      @if (anlassStore.showImpfanmeldung()) {
+        <th scope="col"></th>
+      }
       @if (anlassStore.showImpfausweis()) {
         <th scope="col"></th>
       }
@@ -418,6 +429,29 @@
             <td>{{
                 formatTimeWithDateIfNotToday(item.naechsteStation?.naechsteStationSeit)
               }}
+            </td>
+          }
+          @if (anlassStore.showImpfanmeldung()) {
+            <td class="text-center">
+              @if (hasNotizFile(item.data.notizen, NotizTyp.IMPFANMELDUNG)) {
+                <button svuiIconOnlyButton="success"
+                        type="button"
+                        [tooltip]="'global.tooltip.impfanmeldung' | transloco"
+                        [icon]="'check'"
+                        [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
+                        (click)="gotoEinladungNotiz(item, NotizTyp.IMPFANMELDUNG)"
+                        data-testid="button-add-impfanmeldung-success">
+                </button>
+              } @else {
+                <button svuiIconOnlyButton="primary"
+                        type="button"
+                        [tooltip]="'global.tooltip.impfanmeldung.upload' | transloco"
+                        [icon]="'upload'"
+                        [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
+                        (click)="gotoEinladungNotiz(item, NotizTyp.IMPFANMELDUNG)"
+                        data-testid="button-add-impfanmeldung">
+                </button>
+              }
             </td>
           }
           @if (anlassStore.showImpfausweis()) {

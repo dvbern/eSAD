@@ -5,6 +5,7 @@ import {
   FormLayoutComponent,
   SaveCancelButtonsComponent, TextareaDirective, TitleComponent
 } from "@dvb/ui-components";
+import {toEinladungBackendEntityIdWithClass} from "@dvb/data-access-types";
 import {TranslocoPipe} from "@jsverse/transloco";
 import {DirtyMarker} from "@dvb/util-angular";
 import {UntersuchungStore} from "../untersuchung.store";
@@ -95,7 +96,7 @@ export class UntersuchungSchulrelevanteBeeintraechtigungComponent implements Dir
       const payload = this.form.valueOnValid();
       this.store.saveUntersuchungSchulrelevanteBeeintraechtigung({
         anlassId: anlassId,
-        einladungId: einladungId,
+        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
         untersuchungSchulrelevanteBeeintraechtigungSaveJson: payload,
       });
     }

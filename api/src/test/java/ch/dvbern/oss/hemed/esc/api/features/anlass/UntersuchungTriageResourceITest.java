@@ -26,6 +26,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.emptyOrNullString;
 
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+
 @QuarkusTest
 @RequiredArgsConstructor
 class UntersuchungTriageResourceITest extends AbstractITest {
@@ -54,7 +56,7 @@ class UntersuchungTriageResourceITest extends AbstractITest {
         api
             .untersuchungTriageResourceGetUntersuchungTriage()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -75,8 +77,8 @@ class UntersuchungTriageResourceITest extends AbstractITest {
         // ACT
         UntersuchungTriageJsonSpec result = api
             .untersuchungTriageResourceGetUntersuchungTriage()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -112,7 +114,7 @@ class UntersuchungTriageResourceITest extends AbstractITest {
         UntersuchungTriageJsonSpec result = api
             .untersuchungTriageResourceSaveUntersuchungTriage()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -154,7 +156,7 @@ class UntersuchungTriageResourceITest extends AbstractITest {
         UntersuchungTriageJsonSpec result = api
             .untersuchungTriageResourceSaveUntersuchungTriage()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()

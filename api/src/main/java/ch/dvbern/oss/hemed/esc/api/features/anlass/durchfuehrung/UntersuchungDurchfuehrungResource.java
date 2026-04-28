@@ -1,18 +1,21 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.json.UntersuchungDurchfuehrungDataJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.json.UntersuchungDurchfuehrungDataSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.json.UntersuchungDurchfuehrungJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.json.UntersuchungDurchfuehrungSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.security.RolesAllowed;
@@ -47,10 +50,14 @@ public class UntersuchungDurchfuehrungResource {
     @Nullable
     public UntersuchungDurchfuehrungDataJson getUntersuchungDurchfuehrung(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
-        return untersuchungDurchfuehrungMapper.getByEinladung(einladungId);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungDurchfuehrungMapper.getByEinladung(
+            wrappedId.toEinladungId(),
+            untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
+                untersuchung,
+                Berechtigung.SU_DATEN_LESEN));
     }
 
     @PUT
@@ -58,12 +65,16 @@ public class UntersuchungDurchfuehrungResource {
     @RolesAllowed(BerechtigungName.SU_DATEN_SCHREIBEN)
     public UntersuchungDurchfuehrungJson saveUntersuchungDurchfuehrung(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId,
         @NotNull @NonNull @Valid UntersuchungDurchfuehrungSaveJson saveJson
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
-        authorizerService.requireWriteAuthorizationAnlass(anlassId);
-        return untersuchungDurchfuehrungMapper.save(einladungId, saveJson);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungDurchfuehrungMapper.save(
+            wrappedId.toEinladungId(),
+            saveJson,
+            untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
+                untersuchung,
+                List.of(Berechtigung.SU_DATEN_SCHREIBEN)));
     }
 
     @PUT
@@ -72,13 +83,17 @@ public class UntersuchungDurchfuehrungResource {
     @RolesAllowed(BerechtigungName.SU_DATEN_SCHREIBEN)
     public UntersuchungDurchfuehrungDataJson saveUntersuchungDurchfuehrungAbgeschlossen(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId,
         @NotNull @NonNull @Valid UntersuchungDurchfuehrungDataSaveJson saveJson
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
-        authorizerService.requireWriteAuthorizationAnlass(anlassId);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         anlassService.requireAnlassAbgeschlossen(anlassId);
 
-        return untersuchungDurchfuehrungMapper.saveUntersuchungDurchfuehrungAbgeschlossen(einladungId, saveJson);
+        return untersuchungDurchfuehrungMapper.saveUntersuchungDurchfuehrungAbgeschlossen(
+            wrappedId.toEinladungId(),
+            saveJson,
+            untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
+                untersuchung,
+                List.of(Berechtigung.SU_DATEN_SCHREIBEN)));
     }
 }

@@ -38,6 +38,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+
 @QuarkusTest
 @RequiredArgsConstructor
 class UntersuchungMassnahmenResourceITest {
@@ -67,7 +69,7 @@ class UntersuchungMassnahmenResourceITest {
         api
             .untersuchungMassnahmenResourceGetUntersuchungMassnahmen()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -88,8 +90,8 @@ class UntersuchungMassnahmenResourceITest {
         // ACT
         UntersuchungMassnahmenJsonSpec result = api
             .untersuchungMassnahmenResourceGetUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -130,7 +132,7 @@ class UntersuchungMassnahmenResourceITest {
         UntersuchungMassnahmenJsonSpec result = api
             .untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -170,7 +172,7 @@ class UntersuchungMassnahmenResourceITest {
         AppValidationErrorJsonSpec violation = api
             .untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -201,8 +203,8 @@ class UntersuchungMassnahmenResourceITest {
                 .withInformationEltern(InformationEltern.BRIEF)).getData();
         api
             .untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -210,7 +212,7 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeInformationEltern())
             .isNotNull()
@@ -234,8 +236,8 @@ class UntersuchungMassnahmenResourceITest {
                 .withInformationEltern(InformationEltern.KEINE)).getData();
         api
             .untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -243,7 +245,7 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeInformationEltern()).isNull();
     }
@@ -263,8 +265,8 @@ class UntersuchungMassnahmenResourceITest {
                 .withInformationEltern(null)).getData();
         api
             .untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -272,7 +274,7 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeInformationEltern()).isNull();
     }
@@ -292,8 +294,8 @@ class UntersuchungMassnahmenResourceITest {
                 .withUeberweisungHausarzt(true)).getData();
         api
             .untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -301,7 +303,7 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeUeberweisungHausarzt())
             .isNotNull()
@@ -324,8 +326,8 @@ class UntersuchungMassnahmenResourceITest {
                 .withUeberweisungHausarzt(false)).getData();
         api
             .untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -333,7 +335,7 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeUeberweisungHausarzt()).isNull();
     }
@@ -353,8 +355,8 @@ class UntersuchungMassnahmenResourceITest {
                 .withUeberweisungAugenarzt(true)).getData();
         api
             .untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -362,7 +364,7 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeUeberweisungAugenarzt())
             .isNotNull()
@@ -385,8 +387,8 @@ class UntersuchungMassnahmenResourceITest {
                 .withUeberweisungAugenarzt(false)).getData();
         api
             .untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -394,7 +396,7 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeUeberweisungAugenarzt()).isNull();
     }
@@ -414,8 +416,8 @@ class UntersuchungMassnahmenResourceITest {
                 .withNachkontrolle(true, false, false, false, false, false)).getData();
         api
             .untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -423,7 +425,7 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeNachkontrolle())
             .isNotNull()
@@ -446,8 +448,8 @@ class UntersuchungMassnahmenResourceITest {
                 .withNachkontrolle(false, false, false, false, false, false)).getData();
         api
             .untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -455,7 +457,7 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeNachkontrolle()).isNull();
     }
@@ -477,15 +479,15 @@ class UntersuchungMassnahmenResourceITest {
                 .withNachkontrolle(true, false, false, false, false, false)).getData();
         api
             .untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
             .statusCode(Status.OK.getStatusCode());
 
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeInformationEltern())
             .isNotNull()
@@ -502,7 +504,7 @@ class UntersuchungMassnahmenResourceITest {
 
         // ACT
         Untersuchung untersuchungWithLoadedData =
-            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungWithLoadedData.getUntersuchungMassnahmen()).isNotNull();
         UntersuchungMassnahmenSaveJsonSpec updateJsonSpec =
             UntersuchungMassnahmenBuilder.createJaxSpec(builder -> builder
@@ -515,8 +517,8 @@ class UntersuchungMassnahmenResourceITest {
 
         api
             .untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(updateJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -524,7 +526,7 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungUpdated = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+        Untersuchung untersuchungUpdated = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungUpdated.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungUpdated.getUntersuchungMassnahmen().getAufgabeInformationEltern())
             .isNotNull()
@@ -557,16 +559,16 @@ class UntersuchungMassnahmenResourceITest {
                 .withNachkontrolle(true, false, false, false, false, false)).getData();
         api
             .untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
             .statusCode(Status.OK.getStatusCode());
 
-        assertThat(aufgabeService.findAllForKind(untersuchung.getEinladung().getDossier().getKind().getId())).hasSize(4);
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+        assertThat(aufgabeService.findAllForKind(untersuchung.getEinladungRequired().getDossier().getKind().getId())).hasSize(4);
+        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         Aufgabe aufgabeInformationEltern = untersuchungSaved.getUntersuchungMassnahmen().getAufgabeInformationEltern();
         Aufgabe aufgabeUeberweisungHausarzt = untersuchungSaved.getUntersuchungMassnahmen().getAufgabeUeberweisungHausarzt();
@@ -579,11 +581,11 @@ class UntersuchungMassnahmenResourceITest {
         assertThat(aufgabeNachkontrolle).isNotNull();
 
         // ACT
-        List<ID<Einladung>> einladungIdList = List.of(untersuchung.getEinladung().getId());
+        List<ID<Einladung>> einladungIdList = List.of(untersuchung.getEinladungRequired().getId());
         einladungService.removeEinladungen(einladungIdList);
 
         // ASSERT
-        assertThat(aufgabeService.findAllForKind(untersuchung.getEinladung().getDossier().getKind().getId())).isEmpty();
+        assertThat(aufgabeService.findAllForKind(untersuchung.getEinladungRequired().getDossier().getKind().getId())).isEmpty();
     }
 
     @Test
@@ -600,8 +602,8 @@ class UntersuchungMassnahmenResourceITest {
                 .withNachkontrolle(true, false, false, false, false, false)).getData();
 
         api.untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -609,17 +611,17 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         Untersuchung untersuchungSaved =
-            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeNachkontrolle()).isNotNull();
 
         Aufgabe aufgabe = untersuchungSaved.getUntersuchungMassnahmen().getAufgabeNachkontrolle();
-        Benutzer existingBenuzter = fixtureService.createBenutzer();
+        Benutzer existingBenuzter = fixtureService.createBenutzerFuerZentraleOrganisation();
 
         fixtureService.changeAufgabeEmpfaenger(aufgabe.getId(), existingBenuzter);
 
         Untersuchung untersuchungSaved2 =
-            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved2.getUntersuchungMassnahmen()).isNotNull();
 
         // ACT
@@ -630,8 +632,8 @@ class UntersuchungMassnahmenResourceITest {
             ).getData();
 
         api.untersuchungMassnahmenResourceSaveUntersuchungMassnahmen()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .body(saveJsonSpecUpdated)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -640,7 +642,7 @@ class UntersuchungMassnahmenResourceITest {
             .extract()
             .as(UntersuchungMassnahmenJsonSpec.class);
 
-        Untersuchung actualUntersuchungen =  fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladung().getId());
+        Untersuchung actualUntersuchungen =  fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
 
         assertThat(actualUntersuchungen.getUntersuchungMassnahmen()).isNotNull();
         Aufgabe aufgabeNachkontrolle = actualUntersuchungen.getUntersuchungMassnahmen().getAufgabeNachkontrolle();

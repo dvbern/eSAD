@@ -35,7 +35,7 @@ class CheckUntersuchungLaeusekontrolleValidatorTest {
         UntersuchungLaeusekontrolle laeusekontrolle = UntersuchungLaeusekontrolleBuilder.create(
             builder -> builder
                 .withBeurteilung(beurteilungList));
-        laeusekontrolle.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setLaeusekontrolleBeurteilung(requirementSetting);
+        laeusekontrolle.getUntersuchung().getAnlass().getAnlassConfig().setLaeusekontrolleBeurteilung(requirementSetting);
         // ACT
         CheckUntersuchungLaeusekontrolleValidator validator = new CheckUntersuchungLaeusekontrolleValidator();
         boolean result = validator.isEntityValid(laeusekontrolle);
@@ -61,7 +61,7 @@ class CheckUntersuchungLaeusekontrolleValidatorTest {
         UntersuchungLaeusekontrolle laeusekontrolle = UntersuchungLaeusekontrolleBuilder.create(
             builder -> builder
                 .withBemerkung(bemerkung));
-        laeusekontrolle.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setLaeusekontrolleBemerkungen(requirementSetting);
+        laeusekontrolle.getUntersuchung().getAnlass().getAnlassConfig().setLaeusekontrolleBemerkungen(requirementSetting);
         // ACT
         CheckUntersuchungLaeusekontrolleValidator validator = new CheckUntersuchungLaeusekontrolleValidator();
         boolean result = validator.isEntityValid(laeusekontrolle);

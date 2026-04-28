@@ -1,15 +1,18 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoerenAudiogrammJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoerenAudiogrammSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.Nullable;
@@ -43,10 +46,14 @@ public class UntersuchungHoerenAudiogrammResource {
     @Nullable
     public UntersuchungHoerenAudiogrammJson getUntersuchungHoerenAudiogramm(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
-        return untersuchungHoerenAudiogrammMapper.getByEinladung(einladungId);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungHoerenAudiogrammMapper.getByEinladung(
+            wrappedId.toEinladungId(),
+            untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
+                untersuchung,
+                Berechtigung.SU_HOREN_LESEN));
     }
 
     @GET
@@ -55,9 +62,9 @@ public class UntersuchungHoerenAudiogrammResource {
     @RolesAllowed(BerechtigungName.SU_HOREN_LESEN)
     public UntersuchungHoerenAudiogrammSaveJson getDefaultUntersuchungHoerenAudiogrammForAnlassConfig(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungHoerenAudiogrammMapper.getDefaultUntersuchungHoerenAudiogrammForAnlassConfig(anlassId);
     }
 
@@ -66,11 +73,13 @@ public class UntersuchungHoerenAudiogrammResource {
     @RolesAllowed(BerechtigungName.SU_HOREN_SCHREIBEN)
     public UntersuchungHoerenAudiogrammJson saveUntersuchungHoerenAudiogramm(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("einladungId") ID<Einladung> einladungId,
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId,
         @NonNull @NotNull @Valid UntersuchungHoerenAudiogrammSaveJson saveJson
     ) {
-        einladungMapper.requireConsistentPathParams(einladungId, anlassId);
-        authorizerService.requireWriteAuthorizationAnlass(anlassId);
-        return untersuchungHoerenAudiogrammMapper.saveAudiogramm(einladungId, saveJson);
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungHoerenAudiogrammMapper.saveAudiogramm(wrappedId.toEinladungId(), saveJson,
+            untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
+                untersuchung,
+                List.of(Berechtigung.SU_HOREN_SCHREIBEN)));
     }
 }

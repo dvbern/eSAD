@@ -32,6 +32,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ViolationJsonSpec;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
+import io.restassured.response.ResponseOptions;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
@@ -76,7 +77,7 @@ class MassenimportResourceITest extends AbstractITest {
     void downloadStandardTemplate_returnsXlsxWithExpectedFilename() {
         // ACT
         Response response = api.massenimportResourceDownloadStandardTemplate()
-            .execute(ResponseBody::prettyPeek)
+            .execute(ResponseOptions::andReturn)
             .then()
             .statusCode(Status.OK.getStatusCode())
             .contentType(CONTENT_TYPE_EXCEL)
@@ -95,7 +96,7 @@ class MassenimportResourceITest extends AbstractITest {
     void downloadKlassenTemplate_returnsXlsxWithExpectedFilename() {
         // ACT
         Response response = api.massenimportResourceDownloadKlassenTemplate()
-            .execute(ResponseBody::prettyPeek)
+            .execute(ResponseOptions::andReturn)
             .then()
             .statusCode(Status.OK.getStatusCode())
             .contentType(CONTENT_TYPE_EXCEL)

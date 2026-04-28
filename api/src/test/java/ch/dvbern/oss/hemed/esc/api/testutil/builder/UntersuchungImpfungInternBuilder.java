@@ -42,6 +42,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungInte
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 
 public class UntersuchungImpfungInternBuilder {
 
@@ -84,8 +85,8 @@ public class UntersuchungImpfungInternBuilder {
         @NonNull UntersuchungImpfungen untersuchungImpfungen
     ) {
         this.impfung.setUntersuchungImpfungen(untersuchungImpfungen);
-        this.impfung.setAnlassImpfungErfasst(untersuchungImpfungen.getUntersuchung().getEinladung().getAnlass());
-        this.impfung.setAnlassImpfungDurchgefuehrt(untersuchungImpfungen.getUntersuchung().getEinladung().getAnlass());
+        this.impfung.setAnlassImpfungErfasst(untersuchungImpfungen.getUntersuchung().getAnlass());
+        this.impfung.setAnlassImpfungDurchgefuehrt(untersuchungImpfungen.getUntersuchung().getAnlass());
         return this;
     }
 
@@ -181,7 +182,7 @@ public class UntersuchungImpfungInternBuilder {
     @NonNull
     public static UntersuchungImpfungInternJson createJax(@NonNull Consumer<UntersuchungImpfungInternBuilder> block) {
         UntersuchungImpfungIntern entity = create(block);
-        return UntersuchungImpfungInternMapper.toJson(entity);
+        return UntersuchungImpfungInternMapper.toJson(entity, TenantEnum.BS);
     }
 
     @NonNull

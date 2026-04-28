@@ -9,6 +9,7 @@ import {
   TextareaDirective,
   TitleComponent,
 } from '@dvb/ui-components';
+import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import {DirtyMarker} from '@dvb/util-angular';
 import {requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
@@ -79,7 +80,7 @@ export class UntersuchungSehenBemerkungfragebogenComponent implements DirtyMarke
       const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       this.store.saveSehenBemerkungFragebogen({
         anlassId: anlassId,
-        einladungId: einladungId,
+        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
         untersuchungSehenBemerkungFragebogenSaveJson: payload,
       });
     }

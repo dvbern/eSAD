@@ -26,6 +26,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.emptyOrNullString;
 
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+
 @QuarkusTest
 @RequiredArgsConstructor
 class UntersuchungLaeusekontrolleResourceITest extends AbstractITest {
@@ -53,7 +55,25 @@ class UntersuchungLaeusekontrolleResourceITest extends AbstractITest {
         api
             .untersuchungLaeusekontrolleResourceGetUntersuchungLaeusekontrolle()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.NO_CONTENT.getStatusCode())
+            .body(emptyOrNullString());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void getUntersuchungLaeusekontrolle_non_existing_with_einladung_suffix_should_return_empty_response() {
+        // ARRANGE
+        Einladung einladung = fixtureService.createEinladung();
+        untersuchungService.getOrCreateUntersuchung(einladung.getId());
+        // ACT
+        api
+            .untersuchungLaeusekontrolleResourceGetUntersuchungLaeusekontrolle()
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -74,8 +94,8 @@ class UntersuchungLaeusekontrolleResourceITest extends AbstractITest {
         // ACT
         UntersuchungLaeusekontrolleJsonSpec result = api
             .untersuchungLaeusekontrolleResourceGetUntersuchungLaeusekontrolle()
-            .anlassIdPath(untersuchung.getEinladung().getAnlass().getId().getId())
-            .einladungIdPath(untersuchung.getEinladung().getId().getId())
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -88,6 +108,7 @@ class UntersuchungLaeusekontrolleResourceITest extends AbstractITest {
             .isNotNull()
             .isEqualTo(existingLaeusekontrolle.getBemerkungen());
     }
+
 
     @Test
     @TestAsAdminBS
@@ -115,7 +136,7 @@ class UntersuchungLaeusekontrolleResourceITest extends AbstractITest {
         UntersuchungLaeusekontrolleJsonSpec result = api
             .untersuchungLaeusekontrolleResourceSaveUntersuchungLaeusekontrolle()
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(einladung.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)
             .then()

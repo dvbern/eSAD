@@ -1,7 +1,11 @@
 import {inject} from '@angular/core';
 import {ActivatedRouteSnapshot, Route} from '@angular/router';
 import {AnlassSaveJson, NotizTyp} from '@dvb/data-access-backend';
-import {requireValidBackendEntityId, requireValidBackendEntityIds} from '@dvb/data-access-types';
+import {
+  requireValidBackendEntityId,
+  requireValidBackendEntityIds,
+  toEinladungBackendEntityIdWithClass
+} from '@dvb/data-access-types';
 import {
   AnlassConfigOptionsStore,
   BenutzerStore,
@@ -313,12 +317,13 @@ export const anlassRoutes: Route[] = [
                         const anlassId = requireValidBackendEntityId(
                           route.parent?.parent?.parent?.paramMap.get('anlassId'),
                         );
-                        const einladungId = requireValidBackendEntityId(route.params['id']);
+                        const plainEinladungId = requireValidBackendEntityId(route.params['id']);
+                        const einladungId = toEinladungBackendEntityIdWithClass(plainEinladungId);
                         inject(UntersuchungDatenStore).loadDurchfuehrungDaten({
                           anlassId,
                           einladungId,
                         });
-                        inject(UntersuchungStore).setCurrentTabId(einladungId);
+                        inject(UntersuchungStore).setCurrentTabId(plainEinladungId);
                       },
                     },
                     canActivate: [
@@ -335,12 +340,13 @@ export const anlassRoutes: Route[] = [
                         const anlassId = requireValidBackendEntityId(
                           route.parent?.parent?.parent?.paramMap.get('anlassId'),
                         );
-                        const einladungId = requireValidBackendEntityId(route.params['id']);
+                        const plainEinladungId = requireValidBackendEntityId(route.params['id']);
+                        const einladungId = toEinladungBackendEntityIdWithClass(plainEinladungId);
                         inject(UntersuchungVorabklaerungenStore).loadUntersuchungVorabklaerungen({
                           anlassId,
                           einladungId,
                         });
-                        inject(UntersuchungStore).setCurrentTabId(einladungId);
+                        inject(UntersuchungStore).setCurrentTabId(plainEinladungId);
                       },
                     },
                     canActivate: [
@@ -354,7 +360,7 @@ export const anlassRoutes: Route[] = [
                     component: UntersuchungImpfungenComponent,
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
-                        const currentEinladungId = requireValidBackendEntityId(route.params['id']);
+                        const currentEinladungId = toEinladungBackendEntityIdWithClass(requireValidBackendEntityId(route.params['id']));
                         const currentAnlassId = requireValidBackendEntityId(
                           route.parent?.parent?.parent?.paramMap.get('anlassId'),
                         );
@@ -380,7 +386,7 @@ export const anlassRoutes: Route[] = [
                       _store: (route: ActivatedRouteSnapshot) => {
                         const params = {
                           anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId')),
-                          einladungId: requireValidBackendEntityId(route.params['id']),
+                          einladungId: toEinladungBackendEntityIdWithClass(requireValidBackendEntityId(route.params['id'])),
                         };
                         inject(UntersuchungSehenStore).loadDefaultSehenBeurteilung(params);
                         inject(UntersuchungSehenStore).loadSehenBeurteilung(params);
@@ -400,7 +406,7 @@ export const anlassRoutes: Route[] = [
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
                         const params = {
-                          einladungId: requireValidBackendEntityId(route.params['id']),
+                          einladungId: toEinladungBackendEntityIdWithClass(requireValidBackendEntityId(route.params['id'])),
                           anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId')),
                         };
                         inject(UntersuchungHoerenAudiogrammStore).loadDefaultHoerenAudiogramm(params);
@@ -420,7 +426,7 @@ export const anlassRoutes: Route[] = [
                     component: UntersuchungGroessegewichtComponent,
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
-                        const currentEinladungId = requireValidBackendEntityId(route.params['id']);
+                        const currentEinladungId = toEinladungBackendEntityIdWithClass(requireValidBackendEntityId(route.params['id']));
                         const currentAnlassId = requireValidBackendEntityId(
                           route.parent?.parent?.parent?.paramMap.get('anlassId'),
                         );
@@ -441,7 +447,7 @@ export const anlassRoutes: Route[] = [
                     component: UntersuchungTriageComponent,
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
-                        const currentEinladungId = requireValidBackendEntityId(route.params['id']);
+                        const currentEinladungId = toEinladungBackendEntityIdWithClass(requireValidBackendEntityId(route.params['id']));
                         const currentAnlassId = requireValidBackendEntityId(
                           route.parent?.parent?.parent?.paramMap.get('anlassId'),
                         );
@@ -463,7 +469,7 @@ export const anlassRoutes: Route[] = [
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
                         const params = {
-                          einladungId: requireValidBackendEntityId(route.params['id']),
+                          einladungId: toEinladungBackendEntityIdWithClass(requireValidBackendEntityId(route.params['id'])),
                           anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId')),
                         };
                         inject(UntersuchungArztStore).loadDefaultUntersuchungArzt(params);
@@ -483,7 +489,7 @@ export const anlassRoutes: Route[] = [
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
                         const params = {
-                          einladungId: requireValidBackendEntityId(route.params['id']),
+                          einladungId: toEinladungBackendEntityIdWithClass(requireValidBackendEntityId(route.params['id'])),
                           anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId')),
                         };
                         inject(UntersuchungSpracheStore).loadUntersuchungSprache(params);
@@ -501,7 +507,7 @@ export const anlassRoutes: Route[] = [
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
                         const params = {
-                          einladungId: requireValidBackendEntityId(route.params['id']),
+                          einladungId: toEinladungBackendEntityIdWithClass(requireValidBackendEntityId(route.params['id'])),
                           anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId')),
                         };
                         inject(UntersuchungSchulrelevanteBeeintraechtigungStore)
@@ -519,7 +525,7 @@ export const anlassRoutes: Route[] = [
                     component: UntersuchungBewegungsapparatComponent,
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
-                        const currentEinladungId = requireValidBackendEntityId(route.params['id']);
+                        const currentEinladungId = toEinladungBackendEntityIdWithClass(requireValidBackendEntityId(route.params['id']));
                         const currentAnlassId = requireValidBackendEntityId(
                           route.parent?.parent?.parent?.paramMap.get('anlassId'),
                         );
@@ -540,7 +546,7 @@ export const anlassRoutes: Route[] = [
                     component: UntersuchungLaeusekontrolleComponent,
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
-                        const currentEinladungId = requireValidBackendEntityId(route.params['id']);
+                        const currentEinladungId = toEinladungBackendEntityIdWithClass(requireValidBackendEntityId(route.params['id']));
                         const currentAnlassId = requireValidBackendEntityId(
                           route.parent?.parent?.parent?.paramMap.get('anlassId'),
                         );
@@ -561,7 +567,7 @@ export const anlassRoutes: Route[] = [
                     component: UntersuchungAbschlussPageComponent,
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
-                        const currentEinladungId = requireValidBackendEntityId(route.params['id']);
+                        const currentEinladungId = toEinladungBackendEntityIdWithClass(requireValidBackendEntityId(route.params['id']));
                         const currentAnlassId = requireValidBackendEntityId(
                           route.parent?.parent?.parent?.paramMap.get('anlassId'),
                         );
@@ -586,7 +592,7 @@ export const anlassRoutes: Route[] = [
                     component: UntersuchungMassnahmenComponent,
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
-                        const currentEinladungId = requireValidBackendEntityId(route.params['id']);
+                        const currentEinladungId = toEinladungBackendEntityIdWithClass(requireValidBackendEntityId(route.params['id']));
                         const currentAnlassId = requireValidBackendEntityId(
                           route.parent?.parent?.parent?.paramMap.get('anlassId'),
                         );

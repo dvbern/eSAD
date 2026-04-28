@@ -44,7 +44,7 @@ class CheckUntersuchungImpfungenDataMinimalPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungImpfungenDataMinimal dataMinimal = UntersuchungImpfungenDataMinimalBuilder.create(
             builder -> builder.withImpfausweisGeprueft(input, null));
-        dataMinimal.getUntersuchungImpfungen().getUntersuchung().getEinladung().getAnlass().getAnlassConfig()
+        dataMinimal.getUntersuchungImpfungen().getUntersuchung().getAnlass().getAnlassConfig()
             .setImpfungenDataMinimalImpfausweisGeprueft(requirementSetting);
 
         // ACT
@@ -72,7 +72,7 @@ class CheckUntersuchungImpfungenDataMinimalPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungImpfungenDataMinimal dataMinimal = UntersuchungImpfungenDataMinimalBuilder.create(
             builder -> builder.withImmunsuppression(input, null));
-        dataMinimal.getUntersuchungImpfungen().getUntersuchung().getEinladung().getAnlass().getAnlassConfig()
+        dataMinimal.getUntersuchungImpfungen().getUntersuchung().getAnlass().getAnlassConfig()
             .setImpfungenDataMinimalImmunsuppression(requirementSetting);
 
         // ACT
@@ -100,7 +100,7 @@ class CheckUntersuchungImpfungenDataMinimalPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungImpfungenDataMinimal dataMinimal = UntersuchungImpfungenDataMinimalBuilder.create(
             builder -> builder.withMasernImpfstatus(input, null));
-        dataMinimal.getUntersuchungImpfungen().getUntersuchung().getEinladung().getAnlass().getAnlassConfig()
+        dataMinimal.getUntersuchungImpfungen().getUntersuchung().getAnlass().getAnlassConfig()
             .setImpfungenDataMinimalMasernImpfstatus(requirementSetting);
 
         // ACT
@@ -128,7 +128,7 @@ class CheckUntersuchungImpfungenDataMinimalPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungImpfungenDataMinimal dataMinimal = UntersuchungImpfungenDataMinimalBuilder.create(
             builder -> builder.withMasernAnzahlImpfungen(input));
-        dataMinimal.getUntersuchungImpfungen().getUntersuchung().getEinladung().getAnlass().getAnlassConfig()
+        dataMinimal.getUntersuchungImpfungen().getUntersuchung().getAnlass().getAnlassConfig()
             .setImpfungenDataMinimalMasernAnzahlImpfungen(requirementSetting);
 
         // ACT
@@ -156,7 +156,7 @@ class CheckUntersuchungImpfungenDataMinimalPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungImpfungenDataMinimal dataMinimal = UntersuchungImpfungenDataMinimalBuilder.create(
             builder -> builder.withHpvImpfstatus(input, null));
-        dataMinimal.getUntersuchungImpfungen().getUntersuchung().getEinladung().getAnlass().getAnlassConfig()
+        dataMinimal.getUntersuchungImpfungen().getUntersuchung().getAnlass().getAnlassConfig()
             .setImpfungenDataMinimalHpvImpfstatus(requirementSetting);
 
         // ACT
@@ -184,7 +184,7 @@ class CheckUntersuchungImpfungenDataMinimalPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungImpfungenDataMinimal dataMinimal = UntersuchungImpfungenDataMinimalBuilder.create(
             builder -> builder.withHpvAnzahlImpfungen(input));
-        dataMinimal.getUntersuchungImpfungen().getUntersuchung().getEinladung().getAnlass().getAnlassConfig()
+        dataMinimal.getUntersuchungImpfungen().getUntersuchung().getAnlass().getAnlassConfig()
             .setImpfungenDataMinimalHpvAnzahlImpfungen(requirementSetting);
 
         // ACT
@@ -212,7 +212,7 @@ class CheckUntersuchungImpfungenDataMinimalPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungImpfungenDataMinimal dataMinimal = UntersuchungImpfungenDataMinimalBuilder.create(
             builder -> builder.withImpfempfehlung(input, null));
-        dataMinimal.getUntersuchungImpfungen().getUntersuchung().getEinladung().getAnlass().getAnlassConfig()
+        dataMinimal.getUntersuchungImpfungen().getUntersuchung().getAnlass().getAnlassConfig()
             .setImpfungenDataMinimalImpfempfehlung(requirementSetting);
 
         // ACT
@@ -240,7 +240,7 @@ class CheckUntersuchungImpfungenDataMinimalPresentIfReqValidatorTest {
         // ARRANGE
         UntersuchungImpfungenDataMinimal dataMinimal = UntersuchungImpfungenDataMinimalBuilder.create(
             builder -> builder.withImpfungDurchgefuehrt(input, null));
-        dataMinimal.getUntersuchungImpfungen().getUntersuchung().getEinladung().getAnlass().getAnlassConfig()
+        dataMinimal.getUntersuchungImpfungen().getUntersuchung().getAnlass().getAnlassConfig()
             .setImpfungenDataMinimalImpfungDurchgefuehrt(requirementSetting);
 
         // ACT

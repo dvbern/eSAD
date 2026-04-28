@@ -26,6 +26,7 @@ import {
 import { DirtyMarker } from '@dvb/util-angular';
 import { hasImpfungenEditBerechtigung, requireValue } from '@dvb/util-shared';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { toEinladungBackendEntityIdWithClass } from '@dvb/data-access-types';
 import { AnlassStore } from '../../../anlass.store';
 import { UntersuchungStore } from '../../untersuchung.store';
 import { UntersuchungImpfungenStore } from '../untersuchung-impfungen.store';
@@ -115,7 +116,7 @@ export class UntersuchungImpfungenDataMinimalComponent implements DirtyMarker {
       const payload = this.form.valueOnValid();
       this.impfungenStore.saveDataMinimal({
         anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-        einladungId: requireValue(this.untersuchungStore.currentTab()).einladungID,
+        einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
         untersuchungImpfungenDataMinimalSaveJson: payload,
       });
     }

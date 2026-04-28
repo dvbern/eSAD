@@ -90,6 +90,9 @@ export class AnlassStore extends signalStore(
       showAnmeldungBestaetigung: computed(() => {
         return selectedEntity()?.anlassConfig.data.showAnmeldungBestaetigung;
       }),
+      showImpfanmeldung: computed(() => {
+        return selectedEntity()?.anlassConfig.data.showImpfanmeldung;
+      }),
       sehenBrilleLinsenValues: computed(() => {
         return selectedEntity()?.anlassConfig.data.sehenBrilleLinsenValues ?? [];
       })
@@ -128,7 +131,7 @@ export class AnlassStore extends signalStore(
 
   loadAnlassList = rxMethod<void>(
     pipe(
-      switchMap(() => this.loader.tapLoading$(this.#anlassService.findAllAnlaesse$(),
+      switchMap(() => this.loader.tapLoading$(this.#anlassService.findAllAnlaesseBerechtigt$(),
         error => this.#appErrorHandlerService.handleError(error))),
       tapResponse({
         next: listJson => patchState(this,

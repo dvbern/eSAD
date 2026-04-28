@@ -24,7 +24,6 @@ import java.util.List;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
-import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerRepo;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
@@ -56,7 +55,6 @@ public class TenantHealthCheck extends AbstractTenantHealthCheck implements Heal
         @NonNull TenantProducer tenantProducer,
         @NonNull TenantSettingsService tenantSettingsService,
         @NonNull BenutzerService benutzerService,
-        @NonNull BenutzerRepo benutzerRepo,
         @NonNull AnlassConfigService anlassConfigService,
         @NonNull SchedulerConfigService schedulerConfigService,
         @NonNull ConfigService configService,
@@ -66,7 +64,6 @@ public class TenantHealthCheck extends AbstractTenantHealthCheck implements Heal
             tenantProducer,
             tenantSettingsService,
             benutzerService,
-            benutzerRepo,
             anlassConfigService,
             schedulerConfigService,
             configService,

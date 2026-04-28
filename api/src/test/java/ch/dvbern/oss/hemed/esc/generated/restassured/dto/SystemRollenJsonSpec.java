@@ -15,6 +15,7 @@ package ch.dvbern.oss.hemed.esc.generated.restassured.dto;
 
 import java.util.Objects;
 import java.util.Arrays;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BerechtigungSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FachRolleSpec;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -31,7 +32,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * SystemRollenJsonSpec
  */
 @JsonPropertyOrder({
-  SystemRollenJsonSpec.JSON_PROPERTY_FACH_ROLLEN
+  SystemRollenJsonSpec.JSON_PROPERTY_FACH_ROLLEN,
+  SystemRollenJsonSpec.JSON_PROPERTY_BERECHTIGUNGEN
 })
 @JsonTypeName("SystemRollenJson")
 @lombok.AllArgsConstructor
@@ -40,6 +42,10 @@ public class SystemRollenJsonSpec {
   public static final String JSON_PROPERTY_FACH_ROLLEN = "fachRollen";
   @jakarta.annotation.Nonnull
   private List<FachRolleSpec> fachRollen;
+
+  public static final String JSON_PROPERTY_BERECHTIGUNGEN = "berechtigungen";
+  @jakarta.annotation.Nonnull
+  private List<BerechtigungSpec> berechtigungen;
 
   public SystemRollenJsonSpec() {
   }
@@ -77,6 +83,39 @@ public class SystemRollenJsonSpec {
     this.fachRollen = fachRollen;
   }
 
+  public SystemRollenJsonSpec berechtigungen(@jakarta.annotation.Nonnull List<BerechtigungSpec> berechtigungen) {
+    
+    this.berechtigungen = berechtigungen;
+    return this;
+  }
+
+  public SystemRollenJsonSpec addBerechtigungenItem(BerechtigungSpec berechtigungenItem) {
+    if (this.berechtigungen == null) {
+      this.berechtigungen = new ArrayList<>();
+    }
+    this.berechtigungen.add(berechtigungenItem);
+    return this;
+  }
+
+  /**
+   * Get berechtigungen
+   * @return berechtigungen
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_BERECHTIGUNGEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<BerechtigungSpec> getBerechtigungen() {
+    return berechtigungen;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_BERECHTIGUNGEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setBerechtigungen(@jakarta.annotation.Nonnull List<BerechtigungSpec> berechtigungen) {
+    this.berechtigungen = berechtigungen;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -86,12 +125,13 @@ public class SystemRollenJsonSpec {
       return false;
     }
     SystemRollenJsonSpec systemRollenJson = (SystemRollenJsonSpec) o;
-    return Objects.equals(this.fachRollen, systemRollenJson.fachRollen);
+    return Objects.equals(this.fachRollen, systemRollenJson.fachRollen) &&
+        Objects.equals(this.berechtigungen, systemRollenJson.berechtigungen);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(fachRollen);
+    return Objects.hash(fachRollen, berechtigungen);
   }
 
   @Override
@@ -99,6 +139,7 @@ public class SystemRollenJsonSpec {
     StringBuilder sb = new StringBuilder();
     sb.append("class SystemRollenJsonSpec {\n");
     sb.append("    fachRollen: ").append(toIndentedString(fachRollen)).append("\n");
+    sb.append("    berechtigungen: ").append(toIndentedString(berechtigungen)).append("\n");
     sb.append("}");
     return sb.toString();
   }

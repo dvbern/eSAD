@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen;
 
 import java.util.Set;
+import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
@@ -13,9 +14,11 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungServ
 import ch.dvbern.oss.hemed.esc.api.features.infomaterial.Infomaterial;
 import ch.dvbern.oss.hemed.esc.api.features.infomaterial.InfomaterialMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+@Slf4j
 @JaxMapper
 @RequiredArgsConstructor
 public class UntersuchungSehenMassnahmenMapper {
@@ -68,17 +71,23 @@ public class UntersuchungSehenMassnahmenMapper {
     }
 
     @Nullable
-    public UntersuchungSehenMassnahmenJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+    public UntersuchungSehenMassnahmenJson getByEinladung(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungMassnahmen());
     }
 
     @NonNull
     public UntersuchungSehenMassnahmenJson save(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungSehenMassnahmenSaveJson saveJson
+        @NonNull UntersuchungSehenMassnahmenSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungMassnahmen massnahmen = untersuchung.getUntersuchungMassnahmen();
         UntersuchungMassnahmen entity = toEntity(untersuchung, massnahmen, saveJson);
         UntersuchungMassnahmen persistedEntity = untersuchungMassnahmenService.persistWithOptimisticLocking(entity, saveJson.getVersion());

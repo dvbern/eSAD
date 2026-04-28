@@ -33,7 +33,7 @@ public class CheckUntersuchungArztBeurteilungPresentIfReqValidator
     )
     public boolean isEntityValid(@NonNull UntersuchungArztBeurteilung aerztlicheUntersuchung) {
         AnlassConfig anlassConfig =
-            aerztlicheUntersuchung.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+            aerztlicheUntersuchung.getUntersuchung().getAnlass().getAnlassConfig();
 
         if (anlassConfig.getUnterlagenEinverstaendnis().isRequired()
             && aerztlicheUntersuchung.getEinverstaendniserklaerung().isEmpty()) {

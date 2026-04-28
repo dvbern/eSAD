@@ -13,6 +13,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStat
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.features.TenantSettingFeatures;
 import ch.dvbern.oss.hemed.esc.api.shared.types.AgbResponsability;
+import ch.dvbern.oss.hemed.esc.api.shared.types.LandingPageOption;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -77,6 +78,12 @@ public class TenantSetting extends AbstractEntity<TenantSetting> {
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
     private AgbResponsability agbResponsability;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private LandingPageOption defaultLandingPage;
 
     @Valid
     @NotNull

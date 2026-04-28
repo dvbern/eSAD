@@ -8,6 +8,8 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckOrganisationVerantwortlichePersonIsMitglied;
+import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckOrganisationVerantwortlichePersonIsSchularzt;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
@@ -36,6 +38,8 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@CheckOrganisationVerantwortlichePersonIsSchularzt
+@CheckOrganisationVerantwortlichePersonIsMitglied
 public class Organisation extends AbstractEntity<Organisation> implements EntityWithOptimisticLocking {
 
     @Serial

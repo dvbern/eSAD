@@ -14,5 +14,4 @@ public class GenericExceptionResource {
     public void foo() {
         throw new IllegalStateException("hello exception");
     }
-
 }

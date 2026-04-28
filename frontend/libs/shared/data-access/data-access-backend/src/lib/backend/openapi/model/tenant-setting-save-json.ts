@@ -10,6 +10,7 @@
 import { AgbResponsability } from './agb-responsability';
 import { EinladungStatus } from './einladung-status';
 import { AppLanguages } from './app-languages';
+import { LandingPageOption } from './landing-page-option';
 import { TenantSettingFeaturesJson } from './tenant-setting-features-json';
 
 
@@ -22,6 +23,7 @@ export interface TenantSettingSaveJson {
     agbResponsability: AgbResponsability;
     features: TenantSettingFeaturesJson;
     einladungStatusValues: Array<EinladungStatus>;
+    defaultLandingPage: LandingPageOption;
 }
 export namespace TenantSettingSaveJson {
 }

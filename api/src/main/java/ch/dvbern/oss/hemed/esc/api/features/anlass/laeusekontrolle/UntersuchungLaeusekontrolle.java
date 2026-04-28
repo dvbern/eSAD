@@ -92,7 +92,7 @@ public class UntersuchungLaeusekontrolle extends AbstractEntity<UntersuchungLaeu
         if (laeusekontrolle == null) {
             laeusekontrolle = forUntersuchung(untersuchung);
         }
-        AnlassConfig config = untersuchung.getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig config = untersuchung.getAnlass().getAnlassConfig();
 
         laeusekontrolle.setBeurteilung(UntersuchungLaeusekontrolleUtil.getLaeusekontrolleBeurteilung(
             config, laeusekontrolle, LaeusekontrolleBeurteilung.NICHT_GEPRUEFT));

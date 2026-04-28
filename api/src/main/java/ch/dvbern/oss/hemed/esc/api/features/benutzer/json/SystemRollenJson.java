@@ -3,7 +3,9 @@ package ch.dvbern.oss.hemed.esc.api.features.benutzer.json;
 import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -19,4 +21,9 @@ public class SystemRollenJson {
     @NonNull
     @Schema(required = true)
     private List<FachRolle> fachRollen;
+
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private List<Berechtigung> berechtigungen;
 }

@@ -32,6 +32,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.PUPIL_PUS
         @Claim(key = "azp", value = TestAsPupilBS.AZP),
     }
 )
+@TestAsMarker
 public @interface TestAsPupilBS {
     String BENUTZER_ID = "774e7a9f-8908-4aab-8fa2-2d21cdc7cda8";
     String EMAIL = "pupil-client@dvbern.ch";

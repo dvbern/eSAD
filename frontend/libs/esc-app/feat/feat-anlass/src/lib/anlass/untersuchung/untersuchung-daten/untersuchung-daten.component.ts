@@ -34,6 +34,7 @@ import {AnlassStore} from '../../anlass.store';
 import {UntersuchungStore} from '../untersuchung.store';
 import {UntersuchungDatenForm} from './untersuchung-daten.form';
 import {UntersuchungDatenStore} from './untersuchung-daten.store';
+import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 
 @Component({
   selector: 'feat-untersuchung-daten',
@@ -110,7 +111,7 @@ export class UntersuchungDatenComponent implements DirtyMarker {
       .on('UNTERSUCHUNG_ABSCHLIESSEN_REQUESTED')
       .pipe(takeUntilDestroyed())
       .subscribe(event => {
-        const currentEinladungId = requireValue(this.untersuchungStore.currentTabId());
+        const currentEinladungId = toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTabId()));
 
         // Only validate if this is the current tab being closed
         if (currentEinladungId === event.einladungId) {
@@ -138,13 +139,13 @@ export class UntersuchungDatenComponent implements DirtyMarker {
       if (this.anlassStore.isAbgeschlossen()) {
         this.datenStore.saveDurchfuehrungAbgeschlossen({
           anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-          einladungId: requireValue(this.untersuchungStore.currentTab()).einladungID,
+          einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
           untersuchungDurchfuehrungDataSaveJson: this.form.valueOnValidDurchfuehrungKind(),
         });
       } else {
         this.datenStore.saveDurchfuehrungDaten({
           anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-          einladungId: requireValue(this.untersuchungStore.currentTab()).einladungID,
+          einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
           untersuchungDurchfuehrungSaveJson: this.form.valueOnValid(),
         });
       }

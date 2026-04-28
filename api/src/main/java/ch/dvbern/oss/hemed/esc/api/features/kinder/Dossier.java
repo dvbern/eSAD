@@ -7,11 +7,13 @@ import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.shared.util.HasZustaendigkeit;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.types.PapierakteStatus;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckArztUndMpaSameOrganisation;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -44,7 +46,8 @@ import org.hibernate.envers.Audited;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Dossier extends AbstractEntity<Dossier> implements EntityWithOptimisticLocking {
+@CheckArztUndMpaSameOrganisation
+public class Dossier extends AbstractEntity<Dossier> implements EntityWithOptimisticLocking, HasZustaendigkeit {
 
     @Serial
     private static final long serialVersionUID = -114539261691711361L;

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, inject, viewChild, ViewChild} from "@angular/core";
+import {ChangeDetectionStrategy, Component, computed, inject, viewChild} from "@angular/core";
 import {DirtyMarker} from "@dvb/util-angular";
 import {BenutzerDetailsComponent, BenutzerListStore, BenutzerStore, PageComponent, Path} from "@dvb/feat-shared";
 import {ReactiveFormsModule} from "@angular/forms";
@@ -33,7 +33,7 @@ export class BenutzerDetailComponent implements DirtyMarker {
 
   canEdit = this.benutzerStore.createHasRequiredRoleSig(hasBenutzerverwaltungEditBerechtigungen());
 
-  // TODO ESC-1180: handle multiple
+  // TODO ESC-1197: Aktuell wird nur 1 Organisation pro Benutzer unterstützt
   organisation = computed(() =>
     this.store.selectedIsNew() || this.store.selectedEntity()?.data.organisationRollen.length === 0
       ? undefined

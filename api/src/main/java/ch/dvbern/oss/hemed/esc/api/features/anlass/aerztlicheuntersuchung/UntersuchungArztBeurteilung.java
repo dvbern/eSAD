@@ -412,7 +412,7 @@ public class UntersuchungArztBeurteilung extends AbstractEntity<UntersuchungArzt
         if (arzt == null) {
             arzt = forUntersuchung(untersuchung);
         }
-        AnlassConfig config = untersuchung.getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig config = untersuchung.getAnlass().getAnlassConfig();
 
         arzt.setBewegungsapparat(UntersuchungArztUtil.getBewegungsapparat(
             config, arzt, Bewegungsapparat.NICHT_GEPRUEFT));

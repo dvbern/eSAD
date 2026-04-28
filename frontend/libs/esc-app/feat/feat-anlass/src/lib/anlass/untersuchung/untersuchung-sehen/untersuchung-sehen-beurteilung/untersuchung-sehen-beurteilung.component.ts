@@ -23,6 +23,7 @@ import {
   TextareaDirective,
   TitleComponent,
 } from '@dvb/ui-components';
+import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import {DirtyMarker} from '@dvb/util-angular';
 import {isNotNullish, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
@@ -150,7 +151,7 @@ export class UntersuchungSehenBeurteilungComponent implements DirtyMarker {
       const payload = this.form.valueOnValid();
       this.store.saveSehenBeurteilung({
         anlassId: anlassId,
-        einladungId: einladungId,
+        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
         untersuchungSehenBeurteilungSaveJson: payload,
       });
     }

@@ -34,7 +34,6 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigServ
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassArt;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
-import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
@@ -47,7 +46,6 @@ import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.assertj.AppValidationErrorJsonSpecAssert;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassBuilder;
-import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsMpaBS;
@@ -89,7 +87,6 @@ class AnlassResourceITest extends AbstractITest {
     private final AnlassMapper anlassMapper;
     private final AktivitaetHistoryService aktivitaetHistoryService;
     private final AnlassConfigService anlassConfigService;
-    private final BenutzerService benutzerService;
     private final FixtureService fixtureService;
     private final AppClock appClock;
 
@@ -212,14 +209,7 @@ class AnlassResourceITest extends AbstractITest {
     @TestAsAdminBS
     void createAnlass_with_benutzer() {
         // ARRANGE
-        var createDto = BenutzerBuilder.createCreateDTO(
-            builder -> builder
-                .withRandomEmail("viktor.verantworltich@example.com")
-                .withRandomVorname("Viktor")
-                .withRandomNachname("Verantwortlich")
-                .withKeycloakId(UUID.randomUUID().toString())
-        );
-        Benutzer benutzer = benutzerService.getById(benutzerService.createBenutzer(createDto));
+        Benutzer benutzer = fixtureService.createBenutzerFuerZentraleOrganisation();
 
         AnlassConfig config =
             anlassConfigService.getByAnlassTypAndStichtag(AnlassTyp.KLASSE_8, appClock.getToday().plusMonths(1));
@@ -327,14 +317,7 @@ class AnlassResourceITest extends AbstractITest {
                 .withAnlassConfig(config))
         );
 
-        var createDto = BenutzerBuilder.createCreateDTO(
-            builder -> builder
-                .withRandomEmail("viktor.verantworltich@example.com")
-                .withRandomVorname("Viktor")
-                .withRandomNachname("Verantwortlich")
-                .withKeycloakId(UUID.randomUUID().toString())
-        );
-        Benutzer benutzer = benutzerService.getById(benutzerService.createBenutzer(createDto));
+        Benutzer benutzer = fixtureService.createBenutzerFuerZentraleOrganisation();
         Benutzer arzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBS.BENUTZER_ID_ID);
         Benutzer mpa = fixtureService.readBenutzerWithBerechtigungen(TestAsMpaBS.BENUTZER_ID_ID);
 
@@ -454,7 +437,7 @@ class AnlassResourceITest extends AbstractITest {
     void removeAnlassWithEinladungAndUntersuchung_should_fail() {
         // ARRANGE
         var untersuchung = fixtureService.createUntersuchungWithDurchfuehrung();
-        Anlass anlassToDelete = untersuchung.getEinladung().getAnlass();
+        Anlass anlassToDelete = untersuchung.getAnlass();
         // ACT
         ID<Anlass> anlassID = anlassToDelete.getId();
         AppValidationErrorJsonSpec validationError = api.anlassResourceRemoveAnlass()
@@ -486,7 +469,7 @@ class AnlassResourceITest extends AbstractITest {
         );
         // ACT
         AnlassListJsonSpec result = api
-            .anlassResourceFindAllAnlaesse()
+            .anlassResourceFindAllAnlaesseBerechtigt()
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -609,14 +592,7 @@ class AnlassResourceITest extends AbstractITest {
     @TestAsAdminBS
     void findAllAnlaesse_for_user() {
         // ARRANGE
-        var createArztDto = BenutzerBuilder.createCreateDTO(
-            builder -> builder
-                .withRandomEmail("jhon.smith@example.com")
-                .withRandomVorname("Jhon")
-                .withRandomNachname("Smith")
-                .withKeycloakId(UUID.randomUUID().toString())
-        );
-        Benutzer benutzer = benutzerService.getById(benutzerService.createBenutzer(createArztDto));
+        Benutzer benutzer = fixtureService.createBenutzerFuerZentraleOrganisation();
 
         LocalDate date = appClock.offsetDateTime().now().toLocalDate().plusMonths(1);
 
@@ -664,7 +640,7 @@ class AnlassResourceITest extends AbstractITest {
 
         // ACT
         AnlassListJsonSpec result = api
-            .anlassResourceFindAllForUser()
+            .anlassResourceFindAnlaesseForDashboard()
             .benutzerIDPath(benutzer.getId().getId())
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -787,19 +763,19 @@ class AnlassResourceITest extends AbstractITest {
         ));
 
         anlassService.persist(AnlassBuilder.create(
-            b -> b.withTitle("Impftermin 2.5").withAnlassConfig(configImpftermin).withDatumSetSchuljahr(LocalDate.now())
+            b -> b.withTitle("Impftermin 2.5").withAnlassConfig(configImpftermin).withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate())
         ));
 
         anlassService.persist(AnlassBuilder.create(
             b -> b.withTitle("Impftermin 2.6")
                 .withAnlassConfig(configImpftermin)
-                .withDatumSetSchuljahr(LocalDate.now().minusDays(1))
+                .withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate().minusDays(1))
         ));
 
         // Anlass today without time von
         anlassService.persist(AnlassBuilder.create(
             b -> b.withTitle("Impftermin 2.7").withAnlassConfig(configImpftermin)
-                .withDatumSetSchuljahr(LocalDate.now())
+                .withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate())
         ));
 
         // Anlass today already started
@@ -816,14 +792,14 @@ class AnlassResourceITest extends AbstractITest {
         anlassService.persist(AnlassBuilder.create(
             b -> b.withTitle("Impftermin 2.9")
                 .withAnlassConfig(configImpftermin)
-                .withDatumSetSchuljahr(LocalDate.now().minusDays(1))
+                .withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate().minusDays(1))
         ));
 
         // Anlass with different type
         anlassService.persist(AnlassBuilder.create(
             b -> b.withTitle("Impftermin 2.10")
                 .withAnlassConfig(configKlasse8)
-                .withDatumSetSchuljahr(LocalDate.now().minusDays(1))
+                .withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate().minusDays(1))
         ));
 
         // kind already added to anlass
@@ -935,15 +911,15 @@ class AnlassResourceITest extends AbstractITest {
         // Anlass today without time von
         Anlass anlass8 = anlassService.persist(AnlassBuilder.create(
             b -> b.withTitle("Impftermin 8").withAnlassConfig(configImpftermin)
-                .withDatumSetSchuljahr(LocalDate.now())
+                .withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate())
         ));
         fixtureService.createEinladung(anlass8, dossierForSearch);
 
         // Anlass today already started
-        LocalDateTime anlassStartedTime = LocalDateTime.now().minusHours(1);
+        LocalDateTime anlassStartedTime = appClock.offsetDateTime().now().toLocalDateTime().minusHours(1);
         Anlass anlass9 = anlassService.persist(AnlassBuilder.create(
             b -> b.withTitle("Impftermin 9").withAnlassConfig(configImpftermin)
-                .withDatumSetSchuljahr(LocalDate.now())
+                .withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate())
                 .withZeitVonBis(
                     new DateTimeRange(anlassStartedTime, anlassStartedTime.plusHours(2))
                 )
@@ -951,10 +927,10 @@ class AnlassResourceITest extends AbstractITest {
         fixtureService.createEinladung(anlass9, dossierForSearch);
 
         // Anlass later today
-        LocalDateTime anlassTimeLater = LocalDateTime.now().plusHours(59);
+        LocalDateTime anlassTimeLater = appClock.offsetDateTime().now().toLocalDateTime().plusHours(59);
         Anlass anlass10 = anlassService.persist(AnlassBuilder.create(
             b -> b.withTitle("Impftermin 10").withAnlassConfig(configImpftermin)
-                .withDatumSetSchuljahr(LocalDate.now())
+                .withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate())
                 .withZeitVonBis(
                     new DateTimeRange(anlassTimeLater, anlassTimeLater.plusHours(2))
                 )
@@ -1004,7 +980,7 @@ class AnlassResourceITest extends AbstractITest {
         Anlass anlass2_6 = anlassService.persist(AnlassBuilder.create(
             b -> b.withTitle("Impftermin 2.5")
                 .withAnlassConfig(configImpftermin)
-                .withDatumSetSchuljahr(LocalDate.now().minusDays(1))
+                .withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate().minusDays(1))
         ));
         fixtureService.createEinladung(anlass2_6, dossierForSearch);
 
@@ -1012,7 +988,7 @@ class AnlassResourceITest extends AbstractITest {
         Anlass anlass2_7 = anlassService.persist(AnlassBuilder.create(
             b -> b.withTitle("Impftermin 2.6")
                 .withAnlassConfig(configImpftermin)
-                .withDatumSetSchuljahr(LocalDate.now().minusDays(1))
+                .withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate().minusDays(1))
         ));
         fixtureService.createEinladung(anlass2_7, dossierForSearch);
 
@@ -1020,7 +996,7 @@ class AnlassResourceITest extends AbstractITest {
         Anlass anlass2_8 = anlassService.persist(AnlassBuilder.create(
             b -> b.withTitle("Impftermin 2.7")
                 .withAnlassConfig(configKlasse8)
-                .withDatumSetSchuljahr(LocalDate.now().minusDays(1))
+                .withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate().minusDays(1))
         ));
         fixtureService.createEinladung(anlass2_8, dossierForSearch);
 
@@ -1028,7 +1004,7 @@ class AnlassResourceITest extends AbstractITest {
         Anlass excludedAnlass = anlassService.persist(AnlassBuilder.create(
             b -> b.withTitle("Impftermin 2.8")
                 .withAnlassConfig(configImpftermin)
-                .withDatumSetSchuljahr(LocalDate.now().minusDays(1))
+                .withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate().minusDays(1))
         ));
         fixtureService.createEinladung(excludedAnlass, dossierForSearch);
 

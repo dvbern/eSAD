@@ -34,7 +34,7 @@ public class CheckUntersuchungImpfungenPresentIfReqValidator
         if (impfungen.getVersion() < 1) {
             return true;
         }
-        AnlassConfig anlassConfig = impfungen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig anlassConfig = impfungen.getUntersuchung().getAnlass().getAnlassConfig();
         if (anlassConfig.getCheckEinwilligungVorhanden().isRequired()
                 && !impfungen.isCheckEinwilligungVorhanden()) {
             return false;

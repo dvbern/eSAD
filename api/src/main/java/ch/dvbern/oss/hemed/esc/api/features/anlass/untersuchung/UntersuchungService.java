@@ -95,8 +95,8 @@ public class UntersuchungService {
     public void createCompleteImpfstatusBasedOnLastAnlass(@NonNull UntersuchungImpfungen impfungen) {
         Optional<Einladung> lastEinladung =
             einladungService.findLastEinladungForKind(
-                impfungen.getUntersuchung().getEinladung().getAnlass(),
-                impfungen.getUntersuchung().getEinladung().getDossier().getKind().getId());
+                impfungen.getUntersuchung().getAnlass(),
+                impfungen.getUntersuchung().getEinladungRequired().getDossier().getKind().getId());
 
         List<UntersuchungImpfstatusKrankheit> impfstatusLastAnlass = Collections.emptyList();
         List<UntersuchungImpfungIntern> impfungenInternListLastAnlass = Collections.emptyList();
@@ -122,8 +122,8 @@ public class UntersuchungService {
         // kopieren wir wenn die Liste (noch) leer ist. Das ist eigentlich zu viel. Insbesondere sollten
         // wir bei abgeschlossenen Anlaessen nicht mehr kopieren.
         Optional<Einladung> lastEinladung = einladungService.findLastEinladungForKind(
-            impfungen.getUntersuchung().getEinladung().getAnlass(),
-            impfungen.getUntersuchung().getEinladung().getDossier().getKind().getId());
+            impfungen.getUntersuchung().getAnlass(),
+            impfungen.getUntersuchung().getEinladungRequired().getDossier().getKind().getId());
 
         if (lastEinladung.isPresent() && lastEinladung.get().getUntersuchung() != null) {
             List<UntersuchungImpfungIntern> oldImpfungen =
@@ -140,8 +140,8 @@ public class UntersuchungService {
 
     public void createImpfungenMassnahmen(@NonNull UntersuchungImpfungen impfungen) {
         Optional<Einladung> lastEinladung = einladungService.findLastEinladungForKind(
-            impfungen.getUntersuchung().getEinladung().getAnlass(),
-            impfungen.getUntersuchung().getEinladung().getDossier().getKind().getId());
+            impfungen.getUntersuchung().getAnlass(),
+            impfungen.getUntersuchung().getEinladungRequired().getDossier().getKind().getId());
 
         Optional<String> achtungLastEinladung = getMassnahmeAchtungFromLastEinladung(lastEinladung);
 

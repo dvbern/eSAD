@@ -12,6 +12,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.schule.json.SchulInformationenListJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import io.smallrye.faulttolerance.api.RateLimit;
@@ -49,7 +50,9 @@ public class AnlassResource {
         @NotNull @NonNull @Valid AnlassSaveJson anlassJson
     ) {
         AnlassJson newAnlassJson = anlassMapper.create(anlassJson);
-        authorizerService.requireWriteAuthorizationAnlass(newAnlassJson.getId());
+        authorizerService.requireWriteAuthorizationAnlass(
+            newAnlassJson.getId(),
+            List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE));
         response.setStatusCode(Status.CREATED.getStatusCode());
         return newAnlassJson;
     }
@@ -62,7 +65,9 @@ public class AnlassResource {
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassID,
         @NotNull @NonNull @Valid AnlassSaveJson anlassJson
     ) {
-        authorizerService.requireWriteAuthorizationAnlass(anlassID);
+        authorizerService.requireWriteAuthorizationAnlass(
+            anlassID,
+            List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE));
         return anlassMapper.update(anlassID, anlassJson);
     }
 
@@ -74,7 +79,9 @@ public class AnlassResource {
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassID,
         @NotNull @NonNull @PathParam("status") AnlassStatus status
     ) {
-        authorizerService.requireWriteAuthorizationAnlass(anlassID);
+        authorizerService.requireWriteAuthorizationAnlass(
+            anlassID,
+            List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE));
         return anlassMapper.changeAnlassStatus(anlassID, status);
     }
 
@@ -82,15 +89,21 @@ public class AnlassResource {
     @Path("/{anlassId}")
     @RolesAllowed({ BerechtigungName.ANLASSPLANUNG_SCHREIBEN, BerechtigungName.ANLASSPLANUNG_SCHREIBEN_LAEUSE })
     public void removeAnlass(@NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassID) {
-        authorizerService.requireWriteAuthorizationAnlass(anlassID);
+        authorizerService.requireWriteAuthorizationAnlass(
+            anlassID,
+            List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE));
         anlassMapper.remove(anlassID);
     }
 
     @GET
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
     @RolesAllowed({ BerechtigungName.ANLASSLISTE_LESEN, BerechtigungName.ANLASSLISTE_LESEN_LAEUSE })
-    public AnlassListJson findAllAnlaesse() {
-        List<AnlassJson> anlassList = anlassMapper.findAll();
+    public AnlassListJson findAllAnlaesseBerechtigt() {
+        List<AnlassJson> anlassList = anlassMapper
+            .findAllAnlaesseBerechtigt(anlass -> authorizerService.hasReadAuthorizationAnlass(
+                anlass, List.of(Berechtigung.ANLASSLISTE_LESEN, Berechtigung.ANLASSLISTE_LESEN_LAEUSE)
+            )).stream()
+            .toList();
         return new AnlassListJson(anlassList, anlassList.size());
     }
 
@@ -101,7 +114,9 @@ public class AnlassResource {
     public AnlassJson getAnlass(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassID
     ) {
-        authorizerService.requireReadAuthorizationAnlass(anlassID);
+        authorizerService.requireReadAuthorizationAnlass(
+            anlassID,
+            List.of(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE));
         return anlassMapper.getById(anlassID);
     }
 
@@ -112,7 +127,9 @@ public class AnlassResource {
     public SchulInformationenListJson getSchulInformationenForAnlass(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassID
     ) {
-        authorizerService.requireReadAuthorizationAnlass(anlassID);
+        authorizerService.requireReadAuthorizationAnlass(
+            anlassID,
+            List.of(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE));
         return new SchulInformationenListJson(anlassMapper.findSchulInformationen(anlassID));
     }
 
@@ -120,8 +137,12 @@ public class AnlassResource {
     @Path("/benutzer/{benutzerID}")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
     @RolesAllowed({ BerechtigungName.ANLASSLISTE_LESEN, BerechtigungName.ANLASSLISTE_LESEN_LAEUSE })
-    public AnlassListJson findAllForUser(@NonNull @NotNull @PathParam("benutzerID") ID<Benutzer> benutzerID) {
-        return anlassMapper.findAllForUser(benutzerID);
+    public AnlassListJson findAnlaesseForDashboard(@NonNull @NotNull @PathParam("benutzerID") ID<Benutzer> benutzerID) {
+        return anlassMapper.findAnlaesseForDashboard(
+            benutzerID,
+            anlass -> authorizerService.hasReadAuthorizationAnlass(
+                anlass, List.of(Berechtigung.ANLASSLISTE_LESEN, Berechtigung.ANLASSLISTE_LESEN_LAEUSE)
+            ));
     }
 
     @GET
@@ -132,7 +153,12 @@ public class AnlassResource {
         @NonNull @NotNull @QueryParam("kindId") ID<Kind> kindId,
         @NonNull @NotNull @QueryParam("anlassTyp") List<AnlassTyp> anlassTypen
     ) {
-        return anlassMapper.searchAnlassTermineWithAvailableSlots(anlassTypen, kindId);
+        return anlassMapper.searchAnlassTermineWithAvailableSlots(
+            anlassTypen,
+            kindId,
+            anlassOption -> authorizerService.hasReadAuthorizationAnlass(
+                anlassOption.getAnlassId(),
+                List.of(Berechtigung.ANLASSLISTE_LESEN, Berechtigung.ANLASSLISTE_LESEN_LAEUSE)));
     }
 
     @GET
@@ -144,6 +170,9 @@ public class AnlassResource {
         @NonNull @NotNull @QueryParam("excludeAnlassIds") List<ID<Anlass>> excludeAnlassIds,
         @NonNull @NotNull @QueryParam("anlassTyp") List<AnlassTyp> anlassTypen
     ) {
-        return anlassMapper.findScheduledAnlaesseOfTypeForKind(anlassTypen, kindId, excludeAnlassIds);
+        return anlassMapper.findScheduledAnlaesseOfTypeForKind(anlassTypen, kindId, excludeAnlassIds,
+            anlass -> authorizerService.hasReadAuthorizationAnlass(
+                anlass.getAnlassId(),
+                List.of(Berechtigung.ANLASSLISTE_LESEN, Berechtigung.ANLASSLISTE_LESEN_LAEUSE)));
     }
 }

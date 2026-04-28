@@ -1,9 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.benutzer;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Objects;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
@@ -16,17 +15,14 @@ import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.PrincipalJson;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.TestingResponseJson;
-import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationRollenMapper;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
-import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationRollenMapper;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.json.OrganisationRollenJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
-import ch.dvbern.oss.hemed.esc.api.shared.benutzer.BenutzerBerechtigung;
-import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
-import ch.dvbern.oss.hemed.esc.api.shared.benutzer.FachrollenService;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
@@ -45,16 +41,22 @@ import static ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus.isInakt
 public class BenutzerMapper {
 
     private final BenutzerService benutzerService;
-    private final TenantProducer tenantProducer;
     private final AppClock appClock;
     private final TenantSettingsService tenantSettingsService;
     private final ConfigService configService;
-    private final CurrentUserService currentUserService;
-    private final OrganisationService organisationService;
-    private final FachrollenService fachrollenService;
+    private final OrganisationRollenMapper organisationRollenMapper;
+    private final TenantProducer tenantProducer;
 
     @Nullable
-    public static BenutzerOptionJson toOptionJson(@Nullable Benutzer benutzer) {
+    public BenutzerOptionJson toOptionJson(@Nullable Benutzer benutzer) {
+        if (benutzer == null) {
+            return null;
+        }
+        return toOptionJson(benutzer, tenantProducer.produceTenant());
+    }
+
+    @Nullable
+    public static BenutzerOptionJson toOptionJson(@Nullable Benutzer benutzer, @NonNull TenantEnum tenant) {
         if (benutzer == null) {
             return null;
         }
@@ -63,8 +65,8 @@ public class BenutzerMapper {
             benutzer.getNachname(),
             benutzer.getVorname(),
             benutzer.getVorname() + ' ' + benutzer.getNachname(),
-            OrganisationRollenMapper.toJsonList(benutzer.getOrganisationRollen()),
-            SystemRollenMapper.toJson(benutzer.getSystemRollen()),
+            OrganisationRollenMapper.toJson(benutzer.getSingleOrganisationRollen(), tenant),
+            SystemRollenMapper.toJson(benutzer.getSystemRollen(), tenant),
             benutzer.getBenutzerAktivStatus()
         );
     }
@@ -103,33 +105,27 @@ public class BenutzerMapper {
         existingBenutzer.setBenutzerAktivStatus(saveJson.getBenutzerAktivStatus());
 
         this.benutzerService.persistWithOptimisticLocking(existingBenutzer, saveJson.getVersion());
-        existingBenutzer.disableOptimisticLockingCheck();
 
-        if (isAllowedToUpdateFachRollen(existingBenutzer, saveJson)) {
+        // TODO ESC-1197: Aktuell wird nur 1 Organisation pro Benutzer unterstützt
+        if (isAllowedToUpdateFachRollen(saveJson)) {
             if (saveJson.getOrganisationRollen().size() > 1) {
                 throw new AppFailureException(AppFailureMessage.internalError(
                     "Ein Benutzer darf im Moment nicht in mehr als 1 Organisation Mitglied sein."));
             }
+            existingBenutzer.disableOptimisticLockingCheck();
 
-            List<FachRolle> combinedFachrollen = getCombinedFachrollen(saveJson);
+            existingBenutzer.setSystemRollen(SystemRollenMapper.toEntity(existingBenutzer, saveJson.getSystemRollen()));
+            existingBenutzer.setOrganisationRollen(organisationRollenMapper.toEntitySet(existingBenutzer, saveJson.getOrganisationRollen()));
 
-            @Nullable Organisation organisation = null;
-            if (!saveJson.getOrganisationRollen().isEmpty()
-                && saveJson.getOrganisationRollen().getFirst().getOrganisation() != null) {
-                organisation = organisationService.getById(saveJson.getOrganisationRollen()
-                    .getFirst()
-                    .getOrganisation()
-                    .getId());
+            // TODO ESC-1197: Aktuell wird nur 1 Organisation pro Benutzer unterstützt
+            if (existingBenutzer.getOrganisationRollen().size() > 1) {
+                throw new AppFailureException(AppFailureMessage.internalError(
+                    "Ein Benutzer darf im Moment nicht in mehr als 1 Organisation Mitglied sein."));
             }
-
-            fachrollenService.setFachrollen(
-                EnumSetUtil.toEnumSet(combinedFachrollen, FachRolle.class),
-                existingBenutzer,
-                organisation);
         } else {
-            // if the fachrollen have changed, throw exception
-            if (!existingBenutzer.getFachRollen()
-                .equals(EnumSetUtil.toEnumSet(getCombinedFachrollen(saveJson), FachRolle.class))) {
+            if (haveSystemRollenChanged(saveJson, existingBenutzer)
+                || haveOrganisationRollenChanged(saveJson, existingBenutzer)
+            ) {
                 throw new AppFailureException(AppFailureMessage.updateFachRollenNotAllowed());
             }
         }
@@ -137,20 +133,45 @@ public class BenutzerMapper {
         return existingBenutzer;
     }
 
-    private List<FachRolle> getCombinedFachrollen(@NonNull BenutzerSaveJson saveJson) {
-        List<FachRolle> combinedFachrollen = new ArrayList<>();
-        if (saveJson.getSystemRollen() != null) {
-            combinedFachrollen.addAll(saveJson.getSystemRollen().getFachRollen());
+    private boolean haveSystemRollenChanged(@NonNull BenutzerSaveJson saveJson, @NonNull Benutzer existingBenutzer) {
+        EnumSet<FachRolle> systemRollenVorher = existingBenutzer.getSystemRollen() != null ? existingBenutzer.getSystemRollen().getFachRollen() : EnumSet.noneOf(FachRolle.class);
+        EnumSet<FachRolle> systemRollenNachher = saveJson.getSystemRollen() != null ? EnumSetUtil.toEnumSet(saveJson.getSystemRollen().getFachRollen(), FachRolle.class) : EnumSet.noneOf(FachRolle.class);
+        return !systemRollenVorher.equals(systemRollenNachher);
+    }
+
+    private boolean haveOrganisationRollenChanged(@NonNull BenutzerSaveJson saveJson, @NonNull Benutzer existingBenutzer) {
+        if (saveJson.getOrganisationRollen().size() != existingBenutzer.getOrganisationRollen().size()) {
+            return true;
         }
-        saveJson.getOrganisationRollen()
-            .stream()
-            .map(OrganisationRollenJson::getFachRollen)
-            .forEach(combinedFachrollen::addAll);
-        return combinedFachrollen;
+        for (OrganisationRollenJson jsonRolle : saveJson.getOrganisationRollen()) {
+            if (jsonRolle.getOrganisation() == null) {
+                return true;
+            }
+            var existingRolle = existingBenutzer.getOrganisationRollen().stream()
+                .filter(r -> r.getOrganisation().getId().equals(jsonRolle.getOrganisation().getId()))
+                .findFirst();
+            if (existingRolle.isEmpty()) {
+                return true;
+            }
+            EnumSet<FachRolle> jsonFachrollen = EnumSetUtil.toEnumSet(jsonRolle.getFachRollen(), FachRolle.class);
+            if (!jsonFachrollen.equals(existingRolle.get().getFachRollen())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Nullable
-    public static BenutzerJson toJson(@Nullable Benutzer benutzer) {
+    public BenutzerJson toJson(@Nullable Benutzer benutzer) {
+        if (benutzer == null) {
+            return null;
+        }
+        TenantEnum tenant = tenantProducer.produceTenant();
+        return toJson(benutzer, tenant);
+    }
+
+    @Nullable
+    public static BenutzerJson toJson(@Nullable Benutzer benutzer, @NonNull TenantEnum tenant) {
         if (benutzer == null) {
             return null;
         }
@@ -166,8 +187,8 @@ public class BenutzerMapper {
                 benutzer.getEmail(),
                 benutzer.getTelefon(),
                 benutzer.getBenutzerAktivStatus(),
-                OrganisationRollenMapper.toJsonList(benutzer.getOrganisationRollen()),
-                benutzer.getSystemRollen() != null ? SystemRollenMapper.toJson(benutzer.getSystemRollen()) : null,
+                OrganisationRollenMapper.toJsonList(benutzer.getOrganisationRollen(), tenant),
+                benutzer.getSystemRollen() != null ? SystemRollenMapper.toJson(benutzer.getSystemRollen(), tenant) : null,
                 benutzer.getVersion()
             ),
             benutzer.getLoginInfos() != null ? benutzer.getLoginInfos().getLastUsedSessionTimestamp() : null,
@@ -176,10 +197,9 @@ public class BenutzerMapper {
     }
 
     @NonNull
-    public static PrincipalJson toPrincipalJson(@NonNull Benutzer benutzer) {
+    public PrincipalJson toPrincipalJson(@NonNull Benutzer benutzer) {
         return new PrincipalJson(
-            toJson(benutzer),
-            benutzer.getBerechtigungen().stream().map(BenutzerBerechtigung::getBerechtigung).toList()
+            Objects.requireNonNull(toJson(benutzer))
         );
     }
 
@@ -192,21 +212,21 @@ public class BenutzerMapper {
     @NonNull
     public List<BenutzerOptionJson> findAllActiveBenutzerOptions() {
         return this.benutzerService.findAllActiveBenutzer().stream()
-            .map(BenutzerMapper::toOptionJson)
+            .map(this::toOptionJson)
             .toList();
     }
 
     @NonNull
     public List<BenutzerJson> findAllBenutzer() {
         return this.benutzerService.findAllBenutzer().stream()
-            .map(BenutzerMapper::toJson)
+            .map(this::toJson)
             .toList();
     }
 
     @NonNull
     public List<BenutzerJson> findAllBenutzerForOrganisation(@NonNull ID<Organisation> organisationId) {
         return this.benutzerService.findAllBenutzerForOrganisation(organisationId).stream()
-            .map(BenutzerMapper::toJson)
+            .map(this::toJson)
             .toList();
     }
 
@@ -215,7 +235,7 @@ public class BenutzerMapper {
         @NonNull BenutzerSaveJson benutzerJson
     ) {
         Benutzer entity = toEntity(null, benutzerJson);
-        return toJson(this.benutzerService.persist(entity));
+        return Objects.requireNonNull(toJson(this.benutzerService.persist(entity)));
     }
 
     @NonNull
@@ -225,7 +245,7 @@ public class BenutzerMapper {
     ) {
         Benutzer existingBenutzer = this.benutzerService.getById(benutzerID);
         Benutzer entity = toEntity(existingBenutzer, benutzerJson);
-        return toJson(this.benutzerService.persist(entity));
+        return Objects.requireNonNull(toJson(this.benutzerService.persist(entity)));
     }
 
     @NonNull
@@ -239,7 +259,7 @@ public class BenutzerMapper {
         }
         existingBenutzer.setBenutzerAktivStatus(updateBenutzerAktivStatus);
         existingBenutzer.disableOptimisticLockingCheck();
-        return toJson(this.benutzerService.persist(existingBenutzer));
+        return Objects.requireNonNull(toJson(this.benutzerService.persist(existingBenutzer)));
     }
 
     @NonNull
@@ -250,7 +270,7 @@ public class BenutzerMapper {
             benutzer.disableOptimisticLockingCheck();
             benutzer = benutzerService.persist(benutzer);
         }
-        return toJson(benutzer);
+        return Objects.requireNonNull(toJson(benutzer));
     }
 
     private boolean isBenutzerverwaltungIntern() {
@@ -265,71 +285,20 @@ public class BenutzerMapper {
         "java:S3516" /*Does not always return the same value*/
     })
     private boolean isAllowedToUpdateFachRollen(
-        @NonNull Benutzer benutzerToUpdate,
         @NonNull BenutzerSaveJson benutzerSaveJson
     ) {
-        Benutzer currentBenutzer = currentUserService.currentUser();
-        benutzerToUpdate.disableOptimisticLockingCheck();
+        // Nur erlaubt, wenn Benutzerverwaltung intern ist
         if (!isBenutzerverwaltungIntern()) {
             return false;
         }
-
-        // Roles of currently logged-in user
-        EnumSet<FachRolle> userFachRollen = currentBenutzer.getFachRollen();
-        // Roles of the user to update
-        EnumSet<FachRolle> existingFachRollen = benutzerToUpdate.getFachRollen();
-
-        // Roles of the user after the update
-        List<FachRolle> updatedFachRollen = getCombinedFachrollen(benutzerSaveJson);
-
-        List<FachRolle> newRollen = updatedFachRollen.stream()
-            .filter(r -> !existingFachRollen.contains(r))
-            .toList();
-
-        // Roles to remove from the user
-        List<FachRolle> removeRollen = existingFachRollen.stream()
-            .filter(r -> !updatedFachRollen.contains(r))
-            .toList();
-        // Added and removed for easier checks
-        List<FachRolle> rollenDiff = Stream.concat(newRollen.stream(), removeRollen.stream()).toList();
-
-        // The User needs the Berechtigung BENUTZER_BERECHTIGUNGEN_SCHREIBEN;
-        // TODO ESC-1180: Eigene Berechtigung für Organisationsbenutzer
-        boolean hasListenSchreibenBerechtigung = userFachRollen.stream()
-            .anyMatch(f -> f.hasBerechtigung(
-                Berechtigung.BENUTZER_BERECHTIGUNGEN_SCHREIBEN,
-                tenantProducer.produceTenant()));
-        boolean hasOrganisationSchreibenBerechtigung = userFachRollen.stream()
-            .anyMatch(f -> f.hasBerechtigung(
-                Berechtigung.ORGANISATION_VERWALTEN_SCHREIBEN,
-                tenantProducer.produceTenant()));
-
-        // System Admins are not Managed through this Endpoint, so we don't allow to update them
-        if (!(hasListenSchreibenBerechtigung || hasOrganisationSchreibenBerechtigung)
-            || rollenDiff.contains(FachRolle.SYSTEM_ADMIN)
-            || rollenDiff.contains(FachRolle.SUPPORT)
-            || rollenDiff.contains(FachRolle.ADMIN)
-        ) {
-            logEditRollenNotAllowed(currentBenutzer, benutzerToUpdate, newRollen, removeRollen);
+        // Benoetigt BENUTZER_BERECHTIGUNGEN_SCHREIBEN
+        if (!benutzerService.hasCallerBerechtigung(Berechtigung.BENUTZER_BERECHTIGUNGEN_SCHREIBEN)) {
+            return false;
+        }
+        // Systemrollen duerfen nicht zugeteilt werden
+        if (benutzerSaveJson.getSystemRollen() != null && !benutzerSaveJson.getSystemRollen().getFachRollen().isEmpty()) {
             return false;
         }
         return true;
-    }
-
-    private void logEditRollenNotAllowed(
-        @NonNull Benutzer currentBenutzer,
-        @NonNull Benutzer benutzerToUpdate,
-        @NonNull List<FachRolle> newRollen,
-        @NonNull List<FachRolle> removeRollen
-    ) {
-        LOG.warn(
-            "The logged in User {} with roles {} tried to assigning roles {} and removing roles {} to user {} with "
-                + "current roles {}. This is not allowed",
-            currentBenutzer.getId(),
-            currentBenutzer.getFachRollen(),
-            newRollen,
-            removeRollen,
-            benutzerToUpdate.getId(),
-            benutzerToUpdate.getFachRollen());
     }
 }

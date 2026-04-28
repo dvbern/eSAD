@@ -66,27 +66,27 @@ class ImpfstoffChargeRepoTest extends AbstractITest {
 
         untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder
             .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
-            .withUserErfasst(fixtureService.createBenutzer())
+            .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withImpfstoff(impfstoff)
             .withCharge(chargeUsedContinuously)
             .withDatumImpfung(LocalDate.now().minusMonths(1))));
         untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder
             .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
-            .withUserErfasst(fixtureService.createBenutzer())
+            .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withImpfstoff(impfstoff)
             .withCharge(chargeUsedContinuously)
             .withDatumImpfung(LocalDate.now().minusMonths(13))));
 
         untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder
             .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
-            .withUserErfasst(fixtureService.createBenutzer())
+            .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withImpfstoff(impfstoff)
             .withCharge(chargeUsedRecently)
             .withDatumImpfung(LocalDate.now().minusMonths(1))));
 
         untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder
             .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
-            .withUserErfasst(fixtureService.createBenutzer())
+            .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withImpfstoff(impfstoff)
             .withCharge(chargeUsedLongAgo)
             .withDatumImpfung(LocalDate.now().minusMonths(13))));
@@ -120,7 +120,7 @@ class ImpfstoffChargeRepoTest extends AbstractITest {
 
         untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder
             .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
-            .withUserErfasst(fixtureService.createBenutzer())
+            .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withImpfstoff(impfstoff)
             .withCharge(chargeUsedRecently)
             .withDatumImpfung(LocalDate.now().minusMonths(1))));
@@ -154,14 +154,14 @@ class ImpfstoffChargeRepoTest extends AbstractITest {
 
         untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder
             .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
-            .withUserErfasst(fixtureService.createBenutzer())
+            .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withImpfstoff(impfstoff)
             .withCharge(charge1)
             .withDatumImpfung(LocalDate.now().minusMonths(13))));
 
         untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder
             .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
-            .withUserErfasst(fixtureService.createBenutzer())
+            .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withImpfstoff(impfstoff)
             .withCharge(charge2)
             .withDatumImpfung(LocalDate.now().minusMonths(14))));
@@ -201,7 +201,7 @@ class ImpfstoffChargeRepoTest extends AbstractITest {
 
         untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder
             .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
-            .withUserErfasst(fixtureService.createBenutzer())
+            .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withImpfstoff(impfstoff)
             .withCharge(chargeUsed)
             .withDatumImpfung(LocalDate.now().minusMonths(1))));

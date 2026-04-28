@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {RequirementSetting, UntersuchungImpfungenChecklisteSaveJson} from '@dvb/data-access-backend';
+import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import {BenutzerStore} from '@dvb/feat-shared';
 import {
   CheckboxDirective,
@@ -102,7 +103,7 @@ export class UntersuchungImpfungenChecklistComponent implements DirtyMarker {
       const checklist = this.form.valueOnValid();
       this.#store.changeUntersuchungImpfungenChecklist({
         anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-        einladungId: requireValue(this.#untersuchungStore.currentTab()).einladungID,
+        einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.#untersuchungStore.currentTab()).einladungID),
         checklist: checklist,
       });
     }

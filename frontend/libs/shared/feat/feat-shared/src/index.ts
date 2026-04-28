@@ -39,8 +39,8 @@ export * from './lib/core/timetravel-store';
 export * from './lib/core/eventbus-store'
 export * from './lib/core/boolean.pipe';
 export * from './lib/page/page/page.component';
-export * from './lib/page/no-roles-page/no-roles-page.component';
 export * from './lib/page/agb-page/agb-page.component';
+export * from './lib/page/generic-message-page/generic-message-page.component';
 export * from './lib/kind-search/kind-search.component';
 export * from './lib/notifications/global-toasts/global-toasts.component';
 export * from './lib/notizen/notizen.store';
@@ -54,6 +54,7 @@ export * from './lib/aufgaben/aufgaben-list';
 export * from './lib/aufgaben/aufgabe-details';
 export * from './lib/aufgaben/aufgaben-sidebar';
 export * from './lib/tenant/tenant-settings.store';
+export * from './lib/tenant/require-statistik-enabled.guard';
 export * from './lib/translated-strings/edit/translated-string-edit.component';
 export * from './lib/translated-strings/view/translated-string.pipe';
 export * from './lib/translated-strings/view/translated-enum-view-value.pipe';

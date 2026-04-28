@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
@@ -24,6 +25,8 @@ import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffCharge;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffChargeService;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffMapper;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -40,9 +43,10 @@ public final class UntersuchungImpfungInternMapper {
     private final ImpfstoffChargeService impfstoffChargeService;
     private final BenutzerService benutzerService;
     private final AppClock appClock;
+    private final TenantProducer tenantProducer;
 
     @Nullable
-    public static UntersuchungImpfungInternJson toJson(@Nullable UntersuchungImpfungIntern impfung) {
+    public static UntersuchungImpfungInternJson toJson(@Nullable UntersuchungImpfungIntern impfung, @NonNull TenantEnum tenant) {
         if (impfung == null) {
             return null;
         }
@@ -54,7 +58,7 @@ public final class UntersuchungImpfungInternMapper {
                 impfung.getCharge() != null ? impfung.getCharge().getName() : null,
                 impfung.getDatumImpfung(),
                 impfung.getUserDurchgefuehrt() != null ?
-                    BenutzerMapper.toOptionJson(impfung.getUserDurchgefuehrt()) :
+                    BenutzerMapper.toOptionJson(impfung.getUserDurchgefuehrt(), tenant) :
                     null,
                 impfung.getImpfStatus(),
                 impfung.getGrundNichtDurchfuehrung(),
@@ -64,7 +68,7 @@ public final class UntersuchungImpfungInternMapper {
                     .toList(),
                 impfung.getVersion()
             ),
-            BenutzerMapper.toOptionJson(impfung.getUserErfasst()),
+            BenutzerMapper.toOptionJson(impfung.getUserErfasst(), tenant),
             impfung.getAnlassImpfungDurchgefuehrt() != null ? impfung.getAnlassImpfungDurchgefuehrt().getId() : null
         );
     }
@@ -96,7 +100,7 @@ public final class UntersuchungImpfungInternMapper {
                 saveJson.getGrundNichtDurchfuehrung(),
                 new HashSet<>(),
                 // Wird separat behandelt
-                untersuchung.getEinladung().getAnlass(),
+                untersuchung.getAnlass(),
                 null,
                 appClock.offsetDateTime().now());
         } else {
@@ -116,7 +120,7 @@ public final class UntersuchungImpfungInternMapper {
             existingImpfungIntern.setUserDurchgefuehrt(userDurchgefuehrt);
             if (existingImpfungIntern.getImpfStatus() == ImpfStatus.GEPLANT
                 && saveJson.getImpfStatus() == ImpfStatus.DURCHGEFUEHRT) {
-                existingImpfungIntern.setAnlassImpfungDurchgefuehrt(untersuchung.getEinladung().getAnlass());
+                existingImpfungIntern.setAnlassImpfungDurchgefuehrt(untersuchung.getAnlass());
             }
             existingImpfungIntern.setImpfStatus(saveJson.getImpfStatus());
             existingImpfungIntern.setGrundNichtDurchfuehrung(saveJson.getGrundNichtDurchfuehrung());
@@ -133,8 +137,9 @@ public final class UntersuchungImpfungInternMapper {
             untersuchungService.createCompleteImpfungenInternBasedOnLastAnlass(impfungen);
             impfungenIntern = untersuchungImpfungInternService.findByUntersuchung(impfungen.getUntersuchung().getId());
         }
+        TenantEnum tenant = tenantProducer.produceTenant();
         return impfungenIntern.stream().
-            map(UntersuchungImpfungInternMapper::toJson).
+            map(i -> UntersuchungImpfungInternMapper.toJson(i, tenant)).
             toList();
     }
 
@@ -150,29 +155,36 @@ public final class UntersuchungImpfungInternMapper {
     @NonNull
     public UntersuchungImpfungInternJson create(
         @NonNull ID<Einladung> einladungId,
-        @NonNull UntersuchungImpfungInternSaveJson saveJson) {
-        return save(einladungId, null, saveJson);
+        @NonNull UntersuchungImpfungInternSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
+        return save(einladungId, null, saveJson, hasAuthorizationUntersuchung);
     }
 
     @NonNull
     public UntersuchungImpfungInternJson update(
         @NonNull ID<Einladung> einladungId,
         @NonNull ID<UntersuchungImpfungIntern> impfungInternId,
-        @NonNull UntersuchungImpfungInternSaveJson saveJson
+        @NonNull UntersuchungImpfungInternSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         UntersuchungImpfungIntern existingImpfung = untersuchungImpfungInternService.getById(impfungInternId);
-        return save(einladungId, existingImpfung, saveJson);
+        return save(einladungId, existingImpfung, saveJson, hasAuthorizationUntersuchung);
     }
 
     @NonNull
     private UntersuchungImpfungInternJson save(
         @NonNull ID<Einladung> einladungId,
         @Nullable UntersuchungImpfungIntern existingImpfung,
-        @NonNull UntersuchungImpfungInternSaveJson saveJson
+        @NonNull UntersuchungImpfungInternSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         UntersuchungImpfungIntern entity = toEntity(einladungId, existingImpfung, saveJson);
         replaceKrankheitImmunitaeten(entity, saveJson);
-        return toJson(untersuchungImpfungInternService.persistWithOptimisticLocking(entity, saveJson.getVersion()));
+        UntersuchungImpfungIntern persisted =
+            untersuchungImpfungInternService.persistWithOptimisticLocking(entity, saveJson.getVersion());
+        hasAuthorizationUntersuchung.accept(persisted.getUntersuchungImpfungen().getUntersuchung());
+        return toJson(persisted, tenantProducer.produceTenant());
     }
 
     private void replaceKrankheitImmunitaeten(
@@ -191,8 +203,11 @@ public final class UntersuchungImpfungInternMapper {
 
     public void remove(
         @NonNull ID<Anlass> anlassId,
-        @NonNull ID<UntersuchungImpfungIntern> impfungInternId
+        @NonNull ID<UntersuchungImpfungIntern> impfungInternId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        untersuchungImpfungInternService.remove(anlassId, impfungInternId);
+        UntersuchungImpfungIntern impfung = untersuchungImpfungInternService.getById(impfungInternId);
+        hasAuthorizationUntersuchung.accept(impfung.getUntersuchungImpfungen().getUntersuchung());
+        untersuchungImpfungInternService.remove(anlassId, impfung);
     }
 }

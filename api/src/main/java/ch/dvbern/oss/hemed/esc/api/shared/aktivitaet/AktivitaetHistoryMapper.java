@@ -20,16 +20,18 @@ package ch.dvbern.oss.hemed.esc.api.shared.aktivitaet;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Predicate;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassMapper;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.json.AnlassAktivitaetHistoryJson;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.json.KindAktivitaetHistoryJson;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -39,12 +41,13 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public class AktivitaetHistoryMapper {
     private final AktivitaetHistoryService aktivitaetHistoryService;
     private final AppClock appClock;
-    private final AuthorizerService authorizerService;
+    private final TenantProducer tenantProducer;
 
     @NonNull
     public static KindAktivitaetHistoryJson toKindAktivitaetJson(
         @NonNull KindAktivitaetHistory kindAktivitaetHistory,
-        @NonNull LocalDate now) {
+        @NonNull LocalDate now
+    ) {
         return new KindAktivitaetHistoryJson(
             kindAktivitaetHistory.getId(),
             EntityInfoJson.fromEntity(kindAktivitaetHistory),
@@ -54,11 +57,12 @@ public class AktivitaetHistoryMapper {
 
     @NonNull
     public AnlassAktivitaetHistoryJson toAnlassAktivitaetJson(
-        @NonNull AnlassAktivitaetHistory anlassAktivitaetHistory) {
+        @NonNull AnlassAktivitaetHistory anlassAktivitaetHistory
+    ) {
         return new AnlassAktivitaetHistoryJson(
             anlassAktivitaetHistory.getId(),
             EntityInfoJson.fromEntity(anlassAktivitaetHistory),
-            AnlassMapper.toJson(anlassAktivitaetHistory.getAnlass())
+            AnlassMapper.toJson(anlassAktivitaetHistory.getAnlass(), tenantProducer.produceTenant())
         );
     }
 
@@ -72,10 +76,13 @@ public class AktivitaetHistoryMapper {
     }
 
     @NonNull
-    public List<AnlassAktivitaetHistoryJson> findLetzteAnlaesse(@NonNull ID<Benutzer> benutzerId) {
+    public List<AnlassAktivitaetHistoryJson> findLetzteAnlaesse(
+        @NonNull ID<Benutzer> benutzerId,
+        @NonNull Predicate<Anlass> hasReadAuthorizationAnlass
+    ) {
         return aktivitaetHistoryService.findAllAnlassAktivitaetenForBenutzer(benutzerId)
             .stream()
-            .filter(aktivitaet -> authorizerService.hasReadAuthorizationAnlassListe(aktivitaet.getAnlass()))
+            .filter(aktivitaet -> hasReadAuthorizationAnlass.test(aktivitaet.getAnlass()))
             .map(this::toAnlassAktivitaetJson)
             .toList();
     }

@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.organisation.json;
 import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -27,4 +28,9 @@ public class OrganisationRollenJson {
     @Schema(required = true)
     @Valid
     private List<FachRolle> fachRollen;
+
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private List<Berechtigung> berechtigungen;
 }

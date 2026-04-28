@@ -10,6 +10,7 @@ import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.properties.TextAlignment;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Should you run into a OutOfMemoryException because the page number is too large, check out
@@ -20,9 +21,11 @@ public class FooterWithPageCounterHandler implements IEventHandler {
     private static final int MARGIN_Y = 18;
 
     private final Paragraph leftSide;
+    private final Paragraph rightSide;
 
-    public FooterWithPageCounterHandler(@NonNull Paragraph paragraph) {
+    public FooterWithPageCounterHandler(@NonNull Paragraph paragraph, @Nullable Paragraph rightSide) {
         this.leftSide = paragraph;
+        this.rightSide = rightSide;
     }
 
     @Override
@@ -43,6 +46,9 @@ public class FooterWithPageCounterHandler implements IEventHandler {
             canvas.showTextAligned(p, pageSize.getWidth() - MARGIN_X, MARGIN_Y, TextAlignment.RIGHT);
 
             canvas.showTextAligned(leftSide, MARGIN_X, MARGIN_Y, TextAlignment.LEFT);
+            if (rightSide != null) {
+                canvas.showTextAligned(rightSide, pageSize.getWidth() - MARGIN_X * 2, MARGIN_Y, TextAlignment.RIGHT);
+            }
         }
     }
 }

@@ -155,6 +155,7 @@ class DocMergerTest {
             .withUntersuchung(MergeSourceDummyDataCreator.getTestUntersuchung()));
 
         RootMergeSource mergeSource = MergeSourceCreatorService.toRootMergeSourceWithAnlass(
+            dossier,
             einladung,
             nachkontrolle,
             untersuchungImpfstatus,
@@ -461,6 +462,7 @@ class DocMergerTest {
                 .withAnlass(anlass));
 
         RootMergeSource mergeSource = MergeSourceCreatorService.toRootMergeSourceWithAnlass(
+            dossier,
             einladung,
             nachkontrolle,
             List.of(),
@@ -798,8 +800,8 @@ class DocMergerTest {
     @NonNull
     private static Stream<Arguments> untersuchungArztBlutdruck() {
         return Map.of(
-            Blutdruck.NORMAL, "Normal",
-            Blutdruck.AUFFAELLIG, "Auffällig",
+            Blutdruck.NORMAL, "unauffällig",
+            Blutdruck.AUFFAELLIG, "auffällig",
             Blutdruck.NICHT_GEPRUEFT, "nicht geprüft"
         ).entrySet().stream().flatMap(
             entry -> Stream.of(

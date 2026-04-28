@@ -3,15 +3,16 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.impfung;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfstatusKrankheitSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfstatusListSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -103,9 +104,11 @@ public final class UntersuchungImpfstatusKrankheitMapper {
 
     public void persistAll(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungImpfstatusListSaveJson saveJsonList
+        @NonNull UntersuchungImpfstatusListSaveJson saveJsonList,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungImpfungen impfungen =
             untersuchungImpfungenService.getOrCreateUntersuchungImpfungen(untersuchung.getId());
         for (UntersuchungImpfstatusKrankheitSaveJson statusJson : saveJsonList.getImpfstatusList()) {

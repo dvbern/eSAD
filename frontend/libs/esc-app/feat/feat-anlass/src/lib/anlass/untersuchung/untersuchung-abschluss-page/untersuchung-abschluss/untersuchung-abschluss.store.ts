@@ -4,6 +4,7 @@ import {
   UntersuchungAbschlussServiceGetUntersuchungAbschlussRequestParams,
   UntersuchungAbschlussServiceSaveUntersuchungAbschlussRequestParams
 } from "@dvb/data-access-backend";
+import { toEinladungBackendEntityIdWithClass } from '@dvb/data-access-types';
 import {inject, Injectable} from "@angular/core";
 import {patchState, signalStore, withState} from "@ngrx/signals";
 import {AppErrorHandlerService, AppNotificationStore, Loader} from "@dvb/util-angular";

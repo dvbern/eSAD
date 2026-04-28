@@ -27,6 +27,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.archunit.LayeringTest.JSON_DTO;
 import static ch.dvbern.oss.hemed.esc.api.shared.archunit.predicates.AnnotationPredicates.annotationThatHas;
 import static ch.dvbern.oss.hemed.esc.api.shared.archunit.predicates.PathAnnotation.pathWithOptionalKebabCaseSegments;
 import static ch.dvbern.oss.hemed.esc.api.shared.archunit.predicates.PathAnnotation.pathWithSafeChars;
+import static ch.dvbern.oss.hemed.esc.api.shared.archunit.predicates.RequireTenantClaimMatcherDecision.handledByTenantClaimMatcher;
 import static com.tngtech.archunit.lang.conditions.ArchConditions.have;
 import static com.tngtech.archunit.lang.conditions.ArchConditions.haveRawReturnType;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
@@ -182,6 +183,21 @@ class JaxResourceTest {
             .because("every resource should define which roles are allowed");
 
         rule.check(ArchConst.APP_CLASSES);
+    }
+    @Test
+    void ensure_permit_all_methods_are_handled_in_tenant_claim_matcher() {
+        var rule = methods()
+            .that()
+            .areDeclaredInClassesThat()
+            .areAnnotatedWith(JaxResource.class)
+            .and()
+            .arePublic()
+            .and()
+            .areAnnotatedWith(PermitAll.class)
+            .should(have(handledByTenantClaimMatcher()))
+            .because("every method that is public should probably be handled in TenantClaimMatcher");
+
+        rule.allowEmptyShould(true).check(ArchConst.APP_CLASSES);
     }
 
     @Test

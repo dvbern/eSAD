@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
@@ -33,17 +34,19 @@ public class UntersuchungGroesseGewichtMapper {
 
     @NonNull
     public UntersuchungGroesseGewichtDataJson getUntersuchungGroesseGewicht(
-        @NonNull ID<Einladung> einladungId
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        return wrapToDataJson(einladungId, getByEinladung(einladungId));
+        return wrapToDataJson(einladungId, getByEinladung(einladungId, hasAuthorizationUntersuchung));
     }
 
     @NonNull
     public UntersuchungGroesseGewichtDataJson saveUntersuchungGroesseGewicht(
         @NonNull ID<Einladung> einladungId,
-        @NonNull UntersuchungGroesseGewichtSaveJson saveJson
+        @NonNull UntersuchungGroesseGewichtSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        return wrapToDataJson(einladungId, save(einladungId, saveJson));
+        return wrapToDataJson(einladungId, save(einladungId, saveJson, hasAuthorizationUntersuchung));
     }
 
     @Nullable
@@ -98,17 +101,23 @@ public class UntersuchungGroesseGewichtMapper {
     }
 
     @Nullable
-    private UntersuchungGroesseGewichtJson getByEinladung(@NonNull ID<Einladung> einladungId) {
+    private UntersuchungGroesseGewichtJson getByEinladung(
+        @NonNull ID<Einladung> einladungId,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungGroesseGewicht());
     }
 
     @NonNull
     private UntersuchungGroesseGewichtJson save(
         @NonNull ID<Einladung> einladungID,
-        @NonNull UntersuchungGroesseGewichtSaveJson saveJson
+        @NonNull UntersuchungGroesseGewichtSaveJson saveJson,
+        @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungGroesseGewicht groesseGewicht = untersuchung.getUntersuchungGroesseGewicht();
         UntersuchungGroesseGewicht entity = toEntity(untersuchung, groesseGewicht, saveJson);
         UntersuchungGroesseGewicht persisted =
@@ -120,8 +129,8 @@ public class UntersuchungGroesseGewichtMapper {
     private List<GroesseGewichtDataPointJson> getPreviousDataPoints(@NonNull ID<Einladung> einladungID) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
         List<UntersuchungGroesseGewicht> previousDataPoints = untersuchungGroesseGewichtService.findPreviousByKind(
-            untersuchung.getEinladung().getDossier().getKind().getId(),
-            untersuchung.getEinladung().getAnlass().getDatum()
+            untersuchung.getEinladungRequired().getDossier().getKind().getId(),
+            untersuchung.getAnlass().getDatum()
         );
         return previousDataPoints.stream()
             .map(GroesseGewichtDataPointMapper::toJson)

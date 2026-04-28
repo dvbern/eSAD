@@ -2,11 +2,14 @@ package ch.dvbern.oss.hemed.esc.api.features.organisation;
 
 import java.io.Serial;
 import java.util.EnumSet;
+import java.util.Set;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import jakarta.persistence.Column;
@@ -80,5 +83,11 @@ public class OrganisationRollen extends AbstractEntity<OrganisationRollen>
     @NonNull
     public EnumSet<FachRolle> getFachRollen() {
         return EnumSetUtil.fromString(FachRolle.class, fachRollen);
+    }
+
+    @NonNull
+    public Set<Berechtigung> getBerechtigungen(@NonNull TenantEnum tenant) {
+        return FachRolle.collectAllBerechtigungen(
+            tenant, getFachRollen().toArray(new FachRolle[0]));
     }
 }

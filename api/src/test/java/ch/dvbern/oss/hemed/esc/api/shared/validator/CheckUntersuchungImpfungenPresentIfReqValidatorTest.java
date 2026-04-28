@@ -30,7 +30,7 @@ class CheckUntersuchungImpfungenPresentIfReqValidatorTest {
         UntersuchungImpfungen impfungen = UntersuchungImpfungenBuilder.create(
             builder -> builder
                 .withCheckEinwilligungVorhanden(check));
-        impfungen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setCheckEinwilligungVorhanden(requirementSetting);
+        impfungen.getUntersuchung().getAnlass().getAnlassConfig().setCheckEinwilligungVorhanden(requirementSetting);
         // ACT
         CheckUntersuchungImpfungenPresentIfReqValidator
             validatorUnderTest = new CheckUntersuchungImpfungenPresentIfReqValidator();
@@ -57,7 +57,7 @@ class CheckUntersuchungImpfungenPresentIfReqValidatorTest {
         UntersuchungImpfungen impfungen = UntersuchungImpfungenBuilder.create(
             builder -> builder
                 .withCheckKontraindikationenAbgeklaert(check));
-        impfungen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setCheckKontraindikationenAbgeklaert(requirementSetting);
+        impfungen.getUntersuchung().getAnlass().getAnlassConfig().setCheckKontraindikationenAbgeklaert(requirementSetting);
         // ACT
         CheckUntersuchungImpfungenPresentIfReqValidator
             validatorUnderTest = new CheckUntersuchungImpfungenPresentIfReqValidator();
@@ -84,7 +84,7 @@ class CheckUntersuchungImpfungenPresentIfReqValidatorTest {
         UntersuchungImpfungen impfungen = UntersuchungImpfungenBuilder.create(
             builder -> builder
                 .withCheckDoppelkontrolleImpfentscheidDurchgefuehrt(check));
-        impfungen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setCheckDoppelkontrolleImpfentscheidDurchgefuehrt(requirementSetting);
+        impfungen.getUntersuchung().getAnlass().getAnlassConfig().setCheckDoppelkontrolleImpfentscheidDurchgefuehrt(requirementSetting);
         // ACT
         CheckUntersuchungImpfungenPresentIfReqValidator
             validatorUnderTest = new CheckUntersuchungImpfungenPresentIfReqValidator();
@@ -111,7 +111,7 @@ class CheckUntersuchungImpfungenPresentIfReqValidatorTest {
         UntersuchungImpfungen impfungen = UntersuchungImpfungenBuilder.create(
             builder -> builder
                 .withBemerkungen(bemerkung));
-        impfungen.getUntersuchung().getEinladung().getAnlass().getAnlassConfig().setUntersuchungImpfungBemerkungen(requirementSetting);
+        impfungen.getUntersuchung().getAnlass().getAnlassConfig().setUntersuchungImpfungBemerkungen(requirementSetting);
         // ACT
         CheckUntersuchungImpfungenPresentIfReqValidator
             validatorUnderTest = new CheckUntersuchungImpfungenPresentIfReqValidator();

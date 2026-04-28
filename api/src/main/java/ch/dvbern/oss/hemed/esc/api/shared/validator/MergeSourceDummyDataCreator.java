@@ -23,7 +23,6 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -142,7 +141,6 @@ public final class MergeSourceDummyDataCreator {
             "Julien",
             NormalizedPhoneNumber.parse("+41 76 123 45 67"),
             null,
-            Collections.emptySet(),
             EntityAktivStatus.AKTIV,
             null,
             now,
@@ -163,7 +161,6 @@ public final class MergeSourceDummyDataCreator {
             "Monika",
             NormalizedPhoneNumber.parse("+41 76 123 45 67"),
             null,
-            Collections.emptySet(),
             EntityAktivStatus.AKTIV,
             null,
             now,
@@ -554,6 +551,7 @@ public final class MergeSourceDummyDataCreator {
             true,            // showImpfausweis
             true,                           // showFragebogen
             true,                           // showAnmeldungBestaetigung
+            true,                           // showImpfanmeldung
             true,                           // showDatenPersonendaten
             true,                           // showDatenPersonendatenEsadId
             RequirementSetting.OPTIONAL,    // datenUntersuchung

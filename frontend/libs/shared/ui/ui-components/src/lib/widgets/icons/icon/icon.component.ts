@@ -31,7 +31,7 @@ import {
   heroClipboardSolid,
   heroClockSolid,
   heroDevicePhoneMobileSolid,
-  heroDocumentArrowDownSolid,
+  heroDocumentArrowDownSolid, heroDocumentPlusSolid,
   heroDocumentTextSolid,
   heroEllipsisVerticalSolid,
   heroEyeSolid,
@@ -67,6 +67,7 @@ export const IconUseCases = [
   'close',
   'divers',
   'document',
+  'document-plus',
   'doctor',
   'edit',
   'escada_item',
@@ -161,6 +162,7 @@ export class IconComponent {
       case 'divers': return bootstrapGenderAmbiguous;
       case 'doctor': return null;
       case 'document': return heroDocumentTextSolid;
+      case 'document-plus': return heroDocumentPlusSolid;
       case 'edit': return heroPencilSolid;
       case 'escada_item' : return heroLinkSolid;
       case 'eye': return heroEyeSolid;

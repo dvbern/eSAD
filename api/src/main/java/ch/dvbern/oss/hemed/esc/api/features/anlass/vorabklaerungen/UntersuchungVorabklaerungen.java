@@ -88,7 +88,7 @@ public class UntersuchungVorabklaerungen extends AbstractEntity<UntersuchungVora
         if (vorabklaerungen == null) {
             vorabklaerungen = forUntersuchung(untersuchung);
         }
-        AnlassConfig config = untersuchung.getEinladung().getAnlass().getAnlassConfig();
+        AnlassConfig config = untersuchung.getAnlass().getAnlassConfig();
         vorabklaerungen.setFragebogenStatus(
             ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
                 config,
