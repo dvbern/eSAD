@@ -302,7 +302,7 @@ public class FileIngressService {
             case FRAGEBOGEN -> "einladung.fragebogen.notiz.title";
             case IMPFAUSWEIS -> "einladung.impfausweis.notiz.title";
             case ANMELDUNG_BESTAETIGUNG -> "einladung.anmeldungBestaetigung.notiz.title";
-            case IMPFANMELDUNG -> "einladung.impfanmeldung.notiz.title";
+            case IMPFEINVERSTAENDNIS -> "einladung.impfeinverstaendnis.notiz.title";
             default -> throw new IllegalArgumentException("Unknown NotizTyp: " + notizTyp);
         };
     }
@@ -312,7 +312,7 @@ public class FileIngressService {
             NotizTyp.IMPFAUSWEIS,
             NotizTyp.FRAGEBOGEN,
             NotizTyp.ANMELDUNG_BESTAETIGUNG,
-            NotizTyp.IMPFANMELDUNG).contains(notizTyp)) {
+            NotizTyp.IMPFEINVERSTAENDNIS).contains(notizTyp)) {
             LOG.warn("FILE_INGRESS: Notiz Typ invalid: {}. ", notizTyp);
             throw new AppValidationException(AppValidationMessage.fileIngressInvalidNotizTypIngress(
                 notizTyp.name()));
@@ -321,7 +321,7 @@ public class FileIngressService {
 
     private void assertNotizTypAllowedForAnlass(@NonNull NotizTyp notizTyp, @NonNull AnlassConfig anlassConfig) {
         boolean resultat = switch(notizTyp) {
-                case IMPFANMELDUNG -> anlassConfig.isShowImpfanmeldung();
+                case IMPFEINVERSTAENDNIS -> anlassConfig.isShowImpfeinverstaendnis();
                 case FRAGEBOGEN -> anlassConfig.isShowFragebogen();
                 case IMPFAUSWEIS -> anlassConfig.isShowImpfausweis();
                 case ANMELDUNG_BESTAETIGUNG -> anlassConfig.isShowAnmeldungBestaetigung();
@@ -339,7 +339,7 @@ public class FileIngressService {
             case NotizTyp.FRAGEBOGEN -> einladung.getFragebogenNotiz();
             case NotizTyp.ANMELDUNG_BESTAETIGUNG -> einladung.getAnmeldungBestaetigungNotiz();
             case NotizTyp.IMPFAUSWEIS -> einladung.getImpfausweisNotiz();
-            case NotizTyp.IMPFANMELDUNG -> einladung.getImpfanmeldungsNotiz();
+            case NotizTyp.IMPFEINVERSTAENDNIS -> einladung.getImpfeinverstaendnisNotiz();
             default -> throw new IllegalArgumentException("Unknown NotizTyp: " + notizTyp);
         };
     }

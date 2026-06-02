@@ -20,7 +20,7 @@ import {
   TableLinkComponent,
 } from '@dvb/ui-components';
 import {TableModel} from '@dvb/util-angular';
-import {hasKindEditBerechtigung, isActiveInExternalSystem, isExternalObject, requireValue} from '@dvb/util-shared';
+import {hasKindEditBerechtigung, isActiveInExternalSystem, joinNotBlank, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbDropdownItem, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {firstValueFrom} from 'rxjs';
@@ -92,7 +92,7 @@ export class KontaktPersonenKindListComponent {
     this.store.setSelectedEntityId(kontaktPerson.id);
     this.confirmService.confirm({
       question: this.#transloco.translate('kind.kontaktperson.list.delete.question',
-        {name: kontaktPerson.data.name + ' ' + kontaktPerson.data.vorname}),
+        {name: joinNotBlank([kontaktPerson.data.name, kontaktPerson.data.vorname])}),
       consequence: this.#transloco.translate('kind.kontaktperson.list.delete.consequence'),
       decision: this.#transloco.translate('kind.kontaktperson.list.delete.decision'),
     }).subscribe(() => {
@@ -107,7 +107,7 @@ export class KontaktPersonenKindListComponent {
     this.store.setSelectedEntityId(kontaktPerson.id);
     this.confirmService.confirm({
       question: this.#transloco.translate('kind.kontaktperson.list.remove-connection.question',
-        {name: kontaktPerson.data.name + ' ' + kontaktPerson.data.vorname}),
+        {name: joinNotBlank([kontaktPerson.data.name, kontaktPerson.data.vorname])}),
       consequence: this.#transloco.translate('kind.kontaktperson.list.remove-connection.consequence'),
       decision: this.#transloco.translate('kind.kontaktperson.list.remove-connection.decision'),
     }).subscribe(() => {

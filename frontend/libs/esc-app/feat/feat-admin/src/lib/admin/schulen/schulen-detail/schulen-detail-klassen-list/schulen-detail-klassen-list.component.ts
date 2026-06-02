@@ -16,7 +16,7 @@ import {
   TableLinkComponent,
 } from '@dvb/ui-components';
 import {TableModel} from '@dvb/util-angular';
-import {hasListEditBerechtigung} from '@dvb/util-shared';
+import {hasSchuleEditBerechtigung} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 
 @Component({
@@ -45,7 +45,7 @@ export class SchulenDetailKlassenListComponent {
   protected readonly Path = Path;
   protected readonly EntityAktivStatus = EntityAktivStatus;
 
-  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
+  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasSchuleEditBerechtigung());
   itemTable = new TableModel<KlasseJsonEnhanced>(
     {rawListSignal: this.klassenStore.entities},
     {frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll'});

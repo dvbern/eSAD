@@ -119,12 +119,17 @@ public class ScheduledTaskService {
         runForActiveTenants(() -> superAdminRunnerService.runArchiveDocumentKindDeleteJob(false));
     }
 
+    @Scheduled(cron = "{app.scheduler.s3-file-consistency.cronexpression}")
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void scheduleFileStoreHealthCheckJob() {
+        runForActiveTenants(() -> superAdminRunnerService.runFileStoreHealthCheckJob(false));
+    }
+
     // Helper Methods
 
     private void runForActiveTenants(@NonNull Runnable task) {
         for (TenantEnum tenant : TenantEnum.values()) {
             if (tenant.isAktiv() && configService.isTenantEnabledForCurrentEnvironment(tenant)) {
-                // Set the current tenant for the super admin runner service
                 tenantProducer.setCurrentTenant(tenant);
                 task.run();
             }

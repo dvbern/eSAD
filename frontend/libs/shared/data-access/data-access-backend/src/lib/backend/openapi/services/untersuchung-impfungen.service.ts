@@ -35,7 +35,7 @@ import { Configuration }                                     from '../configurat
 
 export interface UntersuchungImpfungenServiceAnfordernDoppelkontrolleVisum2RequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityIdWithClass;
+    einladungId: BackendEntityId;
     untersuchungImpfungenSaveJson: UntersuchungImpfungenSaveJson;
 }
 
@@ -47,7 +47,7 @@ export interface UntersuchungImpfungenServiceCreateUntersuchungImpfungInternRequ
 
 export interface UntersuchungImpfungenServiceEinzelTerminErstellenRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityIdWithClass;
+    einladungId: BackendEntityId;
 }
 
 export interface UntersuchungImpfungenServiceGetUntersuchungImpfungenDataRequestParams {
@@ -63,7 +63,7 @@ export interface UntersuchungImpfungenServiceRemoveUntersuchungImpfungenInternRe
 
 export interface UntersuchungImpfungenServiceResetDoppelkontrolleRequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityIdWithClass;
+    einladungId: BackendEntityId;
     untersuchungImpfungenSaveJson: UntersuchungImpfungenSaveJson;
 }
 
@@ -100,13 +100,13 @@ export interface UntersuchungImpfungenServiceUpdateUntersuchungImpfungenInternRe
 
 export interface UntersuchungImpfungenServiceVisierenDoppelkontrolleVisum1RequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityIdWithClass;
+    einladungId: BackendEntityId;
     untersuchungImpfungenSaveJson: UntersuchungImpfungenSaveJson;
 }
 
 export interface UntersuchungImpfungenServiceVisierenDoppelkontrolleVisum2RequestParams {
     anlassId: BackendEntityId;
-    einladungId: BackendEntityIdWithClass;
+    einladungId: BackendEntityId;
     untersuchungImpfungenSaveJson: UntersuchungImpfungenSaveJson;
 }
 
@@ -249,7 +249,7 @@ export class UntersuchungImpfungenService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/impfungen/anfordern/visum2`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/impfungen/anfordern/visum2`;
         return this.httpClient.request<UntersuchungImpfungenJson>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -413,7 +413,7 @@ export class UntersuchungImpfungenService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/impfungen/einzeltermin`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/impfungen/einzeltermin`;
         return this.httpClient.request<any>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -654,7 +654,7 @@ export class UntersuchungImpfungenService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/impfungen/visum`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/impfungen/visum`;
         return this.httpClient.request<UntersuchungImpfungenJson>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -1192,7 +1192,7 @@ export class UntersuchungImpfungenService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/impfungen/visieren/visum1`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/impfungen/visieren/visum1`;
         return this.httpClient.request<UntersuchungImpfungenJson>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -1281,7 +1281,7 @@ export class UntersuchungImpfungenService {
             }
         }
 
-        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/impfungen/visieren/visum2`;
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/untersuchung/impfungen/visieren/visum2`;
         return this.httpClient.request<UntersuchungImpfungenJson>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

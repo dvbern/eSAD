@@ -1,5 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.features.benutzer;
 
+import java.util.List;
 import java.util.Optional;
 
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
@@ -15,9 +16,11 @@ import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.PrincipalJson;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.TestingResponseJson;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
+import io.micrometer.core.annotation.Timed;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
@@ -37,7 +40,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/benutzer")
@@ -68,7 +70,7 @@ public class BenutzerResource {
     @NonNull
     @Path("/options")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
+    @RolesAllowed(BerechtigungName.BENUTZER_OPTIONS_LESEN)
     public BenutzerOptionListJson findAllActiveBenutzerOptions() {
         return new BenutzerOptionListJson(mapper.findAllActiveBenutzerOptions());
     }
@@ -113,7 +115,12 @@ public class BenutzerResource {
     public BenutzerJson createBenutzer(
         @NonNull @NotNull @Valid BenutzerSaveJson saveJson
     ) {
-        return mapper.create(saveJson);
+        BenutzerJson newBenutzerJson = mapper.create(
+            saveJson,
+            benutzer -> authorizerService.requireWriteAuthorizationBenutzer(
+                benutzer,
+                List.of(Berechtigung.BENUTZER_BERECHTIGUNGEN_SCHREIBEN, Berechtigung.ORGANISATION_VERWALTEN_SCHREIBEN)));
+        return newBenutzerJson;
     }
 
     @PUT
@@ -125,19 +132,29 @@ public class BenutzerResource {
         @NonNull @NotNull @PathParam("benutzerID") ID<Benutzer> benutzerID,
         @NonNull @NotNull @Valid BenutzerSaveJson saveJson
     ) {
-        return mapper.update(benutzerID, saveJson);
+        return mapper.update(
+            benutzerID,
+            saveJson,
+            benutzer -> authorizerService.requireWriteAuthorizationBenutzer(
+                benutzer,
+                List.of(Berechtigung.BENUTZER_BERECHTIGUNGEN_SCHREIBEN, Berechtigung.ORGANISATION_VERWALTEN_SCHREIBEN)));
     }
 
     @PUT
     @NonNull
     @Path("/{benutzerID}/benutzeraktivstatus")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed({ BerechtigungName.BENUTZER_BERECHTIGUNGEN_SCHREIBEN, BerechtigungName.ORGANISATION_VERWALTEN_SCHREIBEN })
     public BenutzerJson updateBenutzerAktivStatus(
         @NonNull @NotNull @PathParam("benutzerID") ID<Benutzer> benutzerID,
         @NonNull @NotNull @Valid BenutzerSaveJson saveJson
     ) {
-        return mapper.updateBenutzerAktivStatus(benutzerID, saveJson.getBenutzerAktivStatus());
+        return mapper.updateBenutzerAktivStatus(
+            benutzerID,
+            saveJson.getBenutzerAktivStatus(),
+            benutzer -> authorizerService.requireWriteAuthorizationBenutzer(
+                benutzer,
+                List.of(Berechtigung.BENUTZER_BERECHTIGUNGEN_SCHREIBEN, Berechtigung.ORGANISATION_VERWALTEN_SCHREIBEN)));
     }
 
     @PUT

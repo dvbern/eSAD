@@ -30,9 +30,9 @@ class FeinmotorikCsvColumnTest extends AbstractBaseColumnTest {
         untersuchung.setUntersuchungSchulrelevanteBeeintraechtigung(beeintraechtigung);
 
         assertThat(column.extract(einladung)).isEmpty();
-        when(tlMock.translateValue(Feinmotorik.DREISSIG_IN_ZEHN_SEK)).thenReturn("30 in 10 Sekunden");
+        when(tlMock.translateValue(Feinmotorik.BESTANDEN)).thenReturn("Bestanden");
 
-        beeintraechtigung.setFeinmotorik(SingleValueEnhanced.of(Feinmotorik.DREISSIG_IN_ZEHN_SEK, null));
-        assertThat(column.extract(einladung)).isEqualTo("30 in 10 Sekunden");
+        beeintraechtigung.setFeinmotorik(SingleValueEnhanced.of(Feinmotorik.BESTANDEN, null));
+        assertThat(column.extract(einladung)).isEqualTo("Bestanden");
     }
 }

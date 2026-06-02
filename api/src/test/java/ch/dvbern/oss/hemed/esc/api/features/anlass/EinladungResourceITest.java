@@ -28,6 +28,7 @@ import java.util.UUID;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.abschluss.UntersuchungAbschluss;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilungRepo;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
@@ -674,13 +675,13 @@ class EinladungResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void createImpfanmeldungNotiz() throws JsonProcessingException {
+    void createImpfeinverstaendnisNotiz() throws JsonProcessingException {
         // ARRANGE
         Einladung einladung = fixtureService.createEinladung();
         // ACT
         NotizSaveJsonSpec saveNotizJson = NotizBuilder.createJaxSpec(builder -> builder
-            .withTitel("Impfanmeldung")
-            .withNotizTyp(NotizTyp.IMPFANMELDUNG)
+            .withTitel("Impfeinverstaendnis")
+            .withNotizTyp(NotizTyp.IMPFEINVERSTAENDNIS)
             .withVerantwortlicher(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withDossier(einladung.getDossier())).getData();
         String saveNotizJsonString = objectMapper.writeValueAsString(saveNotizJson);
@@ -697,17 +698,17 @@ class EinladungResourceITest extends AbstractITest {
             .statusCode(Status.CREATED.getStatusCode())
             .extract().as(NotizJsonSpec.class);
         // ASSERT
-        assertThat(result.getData().getTitel()).isEqualTo("Impfanmeldung");
+        assertThat(result.getData().getTitel()).isEqualTo("Impfeinverstaendnis");
         assertThat(result.getData().getLabels())
             .extracting(LabelJsonSpec::getId)
-            .contains(Label.ID_LABEL_IMPFANMELDUNG.getId());
+            .contains(Label.ID_LABEL_IMPFEINVERSTAENDNIS.getId());
         Einladung einladungChanged = einladungService.getById(einladung.getId());
-        assertThat(einladungChanged.getImpfanmeldungsNotiz()).isPresent();
+        assertThat(einladungChanged.getImpfeinverstaendnisNotiz()).isPresent();
     }
 
     @Test
     @TestAsAdminBS
-    void createImpfanmeldungNotizWithFiles() throws IOException {
+    void createImpfeinverstaendnisNotizWithFiles() throws IOException {
         // ARRANGE
         Einladung einladung = fixtureService.createEinladung();
         File testFile = TestUtil.loadTestImage();
@@ -715,8 +716,8 @@ class EinladungResourceITest extends AbstractITest {
 
         // ACT
         NotizSaveJsonSpec saveNotizJson = NotizBuilder.createJaxSpec(builder -> builder
-            .withTitel("Impfanmeldung with File")
-            .withNotizTyp(NotizTyp.IMPFANMELDUNG)
+            .withTitel("Impfeinverstaendnis with File")
+            .withNotizTyp(NotizTyp.IMPFEINVERSTAENDNIS)
             .withVerantwortlicher(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withDossier(einladung.getDossier())).getData();
 
@@ -750,16 +751,16 @@ class EinladungResourceITest extends AbstractITest {
             .extract().as(NotizJsonSpec.class);
 
         // ASSERT
-        assertThat(result.getData().getTitel()).isEqualTo("Impfanmeldung with File");
+        assertThat(result.getData().getTitel()).isEqualTo("Impfeinverstaendnis with File");
         assertThat(result.getData().getLabels())
             .extracting(LabelJsonSpec::getId)
-            .contains(Label.ID_LABEL_IMPFANMELDUNG.getId());
+            .contains(Label.ID_LABEL_IMPFEINVERSTAENDNIS.getId());
         assertThat(result.getData().getFiles())
             .isNotEmpty()
             .hasSize(4);
 
         Einladung einladungChanged = einladungService.getById(einladung.getId());
-        assertThat(einladungChanged.getImpfanmeldungsNotiz()).isPresent();
+        assertThat(einladungChanged.getImpfeinverstaendnisNotiz()).isPresent();
     }
 
     @Test
@@ -1012,28 +1013,28 @@ class EinladungResourceITest extends AbstractITest {
         fixtureService.createImpfausweisNotiz(einladungNichtTeilgenommen.getId());
         fixtureService.createFragebogenNotiz(einladungNichtTeilgenommen.getId());
         fixtureService.createAnmeldungBestaetigungNotiz(einladungNichtTeilgenommen.getId());
-        fixtureService.createImpfanmeldungNotiz(einladungNichtTeilgenommen.getId());
+        fixtureService.createImpfeinverstaendnisNotiz(einladungNichtTeilgenommen.getId());
 
         einladungNichtTeilgenommen = einladungService.getById(einladungNichtTeilgenommen.getId());
         assertThat(einladungNichtTeilgenommen.getImpfausweisNotiz()).isPresent();
         assertThat(einladungNichtTeilgenommen.getFragebogenNotiz()).isPresent();
         assertThat(einladungNichtTeilgenommen.getAnmeldungBestaetigungNotiz()).isPresent();
-        assertThat(einladungNichtTeilgenommen.getImpfanmeldungsNotiz()).isPresent();
+        assertThat(einladungNichtTeilgenommen.getImpfeinverstaendnisNotiz()).isPresent();
 
         // Dateien bei den Notizen hinzufuegen
         FileUpload fileUpload = TestUtil.fileToFileUpload(TestUtil.loadTestImage(), "test-file.png");
         Notiz notizImpfausweis = notizService.addUploadedFileAndFlush(einladungNichtTeilgenommen.getImpfausweisNotiz().get().getId(), fileUpload);
         Notiz notizFragebogen = notizService.addUploadedFileAndFlush(einladungNichtTeilgenommen.getFragebogenNotiz().get().getId(), fileUpload);
         Notiz notizAnmeldungBestaetigung = notizService.addUploadedFileAndFlush(einladungNichtTeilgenommen.getAnmeldungBestaetigungNotiz().get().getId(), fileUpload);
-        Notiz notizImpfanmeldung = notizService.addUploadedFileAndFlush(einladungNichtTeilgenommen.getImpfanmeldungsNotiz().get().getId(), fileUpload);
+        Notiz notizImpfeinverstaendnis = notizService.addUploadedFileAndFlush(einladungNichtTeilgenommen.getImpfeinverstaendnisNotiz().get().getId(), fileUpload);
         String fileBucketIdImpfausweis = notizImpfausweis.getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
         String fileBucketIdFragebogen = notizFragebogen.getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
         String fileBucketIdAnmeldungBestaetigung = notizAnmeldungBestaetigung.getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
-        String fileBucketIdImpfanmeldung = notizImpfanmeldung.getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
+        String fileBucketIdImpfeinverstaendnis = notizImpfeinverstaendnis.getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
         assertThat(fileStoreService.getFileBytesSync(fileBucketIdImpfausweis)).isNotEmpty();
         assertThat(fileStoreService.getFileBytesSync(fileBucketIdFragebogen)).isNotEmpty();
         assertThat(fileStoreService.getFileBytesSync(fileBucketIdAnmeldungBestaetigung)).isNotEmpty();
-        assertThat(fileStoreService.getFileBytesSync(fileBucketIdImpfanmeldung)).isNotEmpty();
+        assertThat(fileStoreService.getFileBytesSync(fileBucketIdImpfeinverstaendnis)).isNotEmpty();
 
         // ACT
         String titleAnlassAlsNachzuegler = "Mein Anlass Nachzügler";
@@ -1072,29 +1073,29 @@ class EinladungResourceITest extends AbstractITest {
         assertThat(einladungNichtTeilgenommenReloaded.getImpfausweisNotiz()).isEmpty();
         assertThat(einladungNichtTeilgenommenReloaded.getFragebogenNotiz()).isEmpty();
         assertThat(einladungNichtTeilgenommenReloaded.getAnmeldungBestaetigungNotiz()).isEmpty();
-        assertThat(einladungNichtTeilgenommenReloaded.getImpfanmeldungsNotiz()).isEmpty();
+        assertThat(einladungNichtTeilgenommenReloaded.getImpfeinverstaendnisNotiz()).isEmpty();
         assertThat(einladungAlsNachzuegler.getImpfausweisNotiz()).isPresent();
         assertThat(einladungAlsNachzuegler.getFragebogenNotiz()).isPresent();
         assertThat(einladungAlsNachzuegler.getAnmeldungBestaetigungNotiz()).isPresent();
-        assertThat(einladungAlsNachzuegler.getImpfanmeldungsNotiz()).isPresent();
+        assertThat(einladungAlsNachzuegler.getImpfeinverstaendnisNotiz()).isPresent();
 
         // File ist immernoch im bucket und an der neuen Notiz angehaengt
         String fileBucketIdImpfausweisNeu = einladungAlsNachzuegler.getImpfausweisNotiz().get().getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
         String fileBucketIdFragebogenNeu = einladungAlsNachzuegler.getFragebogenNotiz().get().getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
         String fileBucketIdAnmeldungBestaetigungNeu = einladungAlsNachzuegler.getAnmeldungBestaetigungNotiz().get().getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
-        String fileBucketIdImpfanmeldungNeu = einladungAlsNachzuegler.getImpfanmeldungsNotiz().get().getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
+        String fileBucketIdImpfeinverstaendnisNeu = einladungAlsNachzuegler.getImpfeinverstaendnisNotiz().get().getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
         assertThat(fileBucketIdImpfausweisNeu).isEqualTo(fileBucketIdImpfausweis);
         assertThat(fileBucketIdFragebogenNeu).isEqualTo(fileBucketIdFragebogen);
         assertThat(fileBucketIdAnmeldungBestaetigungNeu).isEqualTo(fileBucketIdAnmeldungBestaetigung);
-        assertThat(fileBucketIdImpfanmeldungNeu).isEqualTo(fileBucketIdImpfanmeldung);
+        assertThat(fileBucketIdImpfeinverstaendnisNeu).isEqualTo(fileBucketIdImpfeinverstaendnis);
         byte[]  fileDataAfterMoveImpfausweis = fileStoreService.getFileBytesSync(fileBucketIdImpfausweisNeu);
         byte[]  fileDataAfterMoveFragebogen = fileStoreService.getFileBytesSync(fileBucketIdFragebogenNeu);
         byte[]  fileDataAfterMoveAnmeldungBestaetigugn = fileStoreService.getFileBytesSync(fileBucketIdAnmeldungBestaetigungNeu);
-        byte[]  fileDataAfterMoveImpfanmeldung = fileStoreService.getFileBytesSync(fileBucketIdImpfanmeldungNeu);
+        byte[]  fileDataAfterMoveImpfeinverstaendnis = fileStoreService.getFileBytesSync(fileBucketIdImpfeinverstaendnisNeu);
         assertThat(fileDataAfterMoveImpfausweis).isNotEmpty();
         assertThat(fileDataAfterMoveFragebogen).isNotEmpty();
         assertThat(fileDataAfterMoveAnmeldungBestaetigugn).isNotEmpty();
-        assertThat(fileDataAfterMoveImpfanmeldung).isNotEmpty();
+        assertThat(fileDataAfterMoveImpfeinverstaendnis).isNotEmpty();
 
         Notiz nachzueglerEinladungImpfausweis = einladungAlsNachzuegler.getImpfausweisNotiz().get();
         Notiz nichtTeilgenommenEinladungImpfausweis = einladungNichtTeilgenommen.getImpfausweisNotiz().get();
@@ -1117,12 +1118,12 @@ class EinladungResourceITest extends AbstractITest {
         assertThat(nachzueglerEinladungAnmeldung.getTitel()).contains(titleAnlassAlsNachzuegler);
         assertThat(nachzueglerEinladungAnmeldung.getBemerkungen()).contains(titleAnlassNichtTeilgenommen);
 
-        Notiz nachzueglerEinladungImpfanmeldung = einladungAlsNachzuegler.getImpfanmeldungsNotiz().get();
-        Notiz nichtTeilgenommenEinladungImpfanmeldung = einladungNichtTeilgenommen.getImpfanmeldungsNotiz().get();
-        assertThat(nachzueglerEinladungImpfanmeldung.getDossier()).isEqualTo(nichtTeilgenommenEinladungImpfanmeldung.getDossier());
-        assertThat(nachzueglerEinladungImpfanmeldung.getStatus()).isEqualTo(nichtTeilgenommenEinladungImpfanmeldung.getStatus());
-        assertThat(nachzueglerEinladungImpfanmeldung.getTitel()).contains(titleAnlassAlsNachzuegler);
-        assertThat(nachzueglerEinladungImpfanmeldung.getBemerkungen()).contains(titleAnlassNichtTeilgenommen);
+        Notiz nachzueglerEinladungImpfeinverstaendnis = einladungAlsNachzuegler.getImpfeinverstaendnisNotiz().get();
+        Notiz nichtTeilgenommenEinladungImpfeinverstaendnis = einladungNichtTeilgenommen.getImpfeinverstaendnisNotiz().get();
+        assertThat(nachzueglerEinladungImpfeinverstaendnis.getDossier()).isEqualTo(nichtTeilgenommenEinladungImpfeinverstaendnis.getDossier());
+        assertThat(nachzueglerEinladungImpfeinverstaendnis.getStatus()).isEqualTo(nichtTeilgenommenEinladungImpfeinverstaendnis.getStatus());
+        assertThat(nachzueglerEinladungImpfeinverstaendnis.getTitel()).contains(titleAnlassAlsNachzuegler);
+        assertThat(nachzueglerEinladungImpfeinverstaendnis.getBemerkungen()).contains(titleAnlassNichtTeilgenommen);
     }
 
     @Test
@@ -1373,6 +1374,9 @@ class EinladungResourceITest extends AbstractITest {
         // Massnahmen
         UntersuchungMassnahmen massnahmen = untersuchungAbgeschlossen.getUntersuchungMassnahmen();
         assertThat(massnahmen).isNotNull();
+        // Abschluss
+        UntersuchungAbschluss abschluss = untersuchungAbgeschlossen.getUntersuchungAbschluss();
+        assertThat(abschluss).isNotNull();
     }
 
     @Test

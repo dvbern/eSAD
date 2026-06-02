@@ -41,7 +41,11 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   TenantSettingFeaturesJsonSpec.JSON_PROPERTY_BENUTZERVERWALTUNG_IGNORE_FACH_ROLLE_FROM_KEYCLOAK_FEATURE,
   TenantSettingFeaturesJsonSpec.JSON_PROPERTY_ARCHIVIERUNG_FEATURE,
   TenantSettingFeaturesJsonSpec.JSON_PROPERTY_ZENTRALE_ORGANISATION_FEATURE,
-  TenantSettingFeaturesJsonSpec.JSON_PROPERTY_ANONYME_STATISTIK_FEATURE
+  TenantSettingFeaturesJsonSpec.JSON_PROPERTY_ANONYME_STATISTIK_FEATURE,
+  TenantSettingFeaturesJsonSpec.JSON_PROPERTY_NACHKONTROLLE_FEATURE,
+  TenantSettingFeaturesJsonSpec.JSON_PROPERTY_ANLASS_SPRACHE_SPALTE_FEATURE,
+  TenantSettingFeaturesJsonSpec.JSON_PROPERTY_ANLASS_SPRACHE_ZUSAMMENFASSUNG_FEATURE,
+  TenantSettingFeaturesJsonSpec.JSON_PROPERTY_ANLASS_INFORMATIONEN_FEATURE
 })
 @JsonTypeName("TenantSettingFeaturesJson")
 @lombok.AllArgsConstructor
@@ -102,6 +106,22 @@ public class TenantSettingFeaturesJsonSpec {
   public static final String JSON_PROPERTY_ANONYME_STATISTIK_FEATURE = "anonymeStatistikFeature";
   @jakarta.annotation.Nonnull
   private TenantSettingFeatureStateJsonSpec anonymeStatistikFeature;
+
+  public static final String JSON_PROPERTY_NACHKONTROLLE_FEATURE = "nachkontrolleFeature";
+  @jakarta.annotation.Nonnull
+  private TenantSettingFeatureStateJsonSpec nachkontrolleFeature;
+
+  public static final String JSON_PROPERTY_ANLASS_SPRACHE_SPALTE_FEATURE = "anlassSpracheSpalteFeature";
+  @jakarta.annotation.Nonnull
+  private TenantSettingFeatureStateJsonSpec anlassSpracheSpalteFeature;
+
+  public static final String JSON_PROPERTY_ANLASS_SPRACHE_ZUSAMMENFASSUNG_FEATURE = "anlassSpracheZusammenfassungFeature";
+  @jakarta.annotation.Nonnull
+  private TenantSettingFeatureStateJsonSpec anlassSpracheZusammenfassungFeature;
+
+  public static final String JSON_PROPERTY_ANLASS_INFORMATIONEN_FEATURE = "anlassInformationenFeature";
+  @jakarta.annotation.Nonnull
+  private TenantSettingFeatureStateJsonSpec anlassInformationenFeature;
 
   public TenantSettingFeaturesJsonSpec() {
   }
@@ -456,6 +476,106 @@ public class TenantSettingFeaturesJsonSpec {
     this.anonymeStatistikFeature = anonymeStatistikFeature;
   }
 
+  public TenantSettingFeaturesJsonSpec nachkontrolleFeature(@jakarta.annotation.Nonnull TenantSettingFeatureStateJsonSpec nachkontrolleFeature) {
+    
+    this.nachkontrolleFeature = nachkontrolleFeature;
+    return this;
+  }
+
+  /**
+   * Get nachkontrolleFeature
+   * @return nachkontrolleFeature
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_NACHKONTROLLE_FEATURE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public TenantSettingFeatureStateJsonSpec getNachkontrolleFeature() {
+    return nachkontrolleFeature;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_NACHKONTROLLE_FEATURE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setNachkontrolleFeature(@jakarta.annotation.Nonnull TenantSettingFeatureStateJsonSpec nachkontrolleFeature) {
+    this.nachkontrolleFeature = nachkontrolleFeature;
+  }
+
+  public TenantSettingFeaturesJsonSpec anlassSpracheSpalteFeature(@jakarta.annotation.Nonnull TenantSettingFeatureStateJsonSpec anlassSpracheSpalteFeature) {
+    
+    this.anlassSpracheSpalteFeature = anlassSpracheSpalteFeature;
+    return this;
+  }
+
+  /**
+   * Get anlassSpracheSpalteFeature
+   * @return anlassSpracheSpalteFeature
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_ANLASS_SPRACHE_SPALTE_FEATURE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public TenantSettingFeatureStateJsonSpec getAnlassSpracheSpalteFeature() {
+    return anlassSpracheSpalteFeature;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ANLASS_SPRACHE_SPALTE_FEATURE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setAnlassSpracheSpalteFeature(@jakarta.annotation.Nonnull TenantSettingFeatureStateJsonSpec anlassSpracheSpalteFeature) {
+    this.anlassSpracheSpalteFeature = anlassSpracheSpalteFeature;
+  }
+
+  public TenantSettingFeaturesJsonSpec anlassSpracheZusammenfassungFeature(@jakarta.annotation.Nonnull TenantSettingFeatureStateJsonSpec anlassSpracheZusammenfassungFeature) {
+    
+    this.anlassSpracheZusammenfassungFeature = anlassSpracheZusammenfassungFeature;
+    return this;
+  }
+
+  /**
+   * Get anlassSpracheZusammenfassungFeature
+   * @return anlassSpracheZusammenfassungFeature
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_ANLASS_SPRACHE_ZUSAMMENFASSUNG_FEATURE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public TenantSettingFeatureStateJsonSpec getAnlassSpracheZusammenfassungFeature() {
+    return anlassSpracheZusammenfassungFeature;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ANLASS_SPRACHE_ZUSAMMENFASSUNG_FEATURE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setAnlassSpracheZusammenfassungFeature(@jakarta.annotation.Nonnull TenantSettingFeatureStateJsonSpec anlassSpracheZusammenfassungFeature) {
+    this.anlassSpracheZusammenfassungFeature = anlassSpracheZusammenfassungFeature;
+  }
+
+  public TenantSettingFeaturesJsonSpec anlassInformationenFeature(@jakarta.annotation.Nonnull TenantSettingFeatureStateJsonSpec anlassInformationenFeature) {
+    
+    this.anlassInformationenFeature = anlassInformationenFeature;
+    return this;
+  }
+
+  /**
+   * Get anlassInformationenFeature
+   * @return anlassInformationenFeature
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_ANLASS_INFORMATIONEN_FEATURE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public TenantSettingFeatureStateJsonSpec getAnlassInformationenFeature() {
+    return anlassInformationenFeature;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ANLASS_INFORMATIONEN_FEATURE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setAnlassInformationenFeature(@jakarta.annotation.Nonnull TenantSettingFeatureStateJsonSpec anlassInformationenFeature) {
+    this.anlassInformationenFeature = anlassInformationenFeature;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -478,12 +598,16 @@ public class TenantSettingFeaturesJsonSpec {
         Objects.equals(this.benutzerverwaltungIgnoreFachRolleFromKeycloakFeature, tenantSettingFeaturesJson.benutzerverwaltungIgnoreFachRolleFromKeycloakFeature) &&
         Objects.equals(this.archivierungFeature, tenantSettingFeaturesJson.archivierungFeature) &&
         Objects.equals(this.zentraleOrganisationFeature, tenantSettingFeaturesJson.zentraleOrganisationFeature) &&
-        Objects.equals(this.anonymeStatistikFeature, tenantSettingFeaturesJson.anonymeStatistikFeature);
+        Objects.equals(this.anonymeStatistikFeature, tenantSettingFeaturesJson.anonymeStatistikFeature) &&
+        Objects.equals(this.nachkontrolleFeature, tenantSettingFeaturesJson.nachkontrolleFeature) &&
+        Objects.equals(this.anlassSpracheSpalteFeature, tenantSettingFeaturesJson.anlassSpracheSpalteFeature) &&
+        Objects.equals(this.anlassSpracheZusammenfassungFeature, tenantSettingFeaturesJson.anlassSpracheZusammenfassungFeature) &&
+        Objects.equals(this.anlassInformationenFeature, tenantSettingFeaturesJson.anlassInformationenFeature);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(esadIdFeature, laenderCodeFeature, mobileScannerFeature, massenimportFeature, massenbriefFeature, nichtGeprueftGrundFeature, arztListeFeature, adHocImpfstoffChargenFeature, footerFeature, benutzerverwaltungInternFeature, benutzerverwaltungIgnoreFachRolleFromKeycloakFeature, archivierungFeature, zentraleOrganisationFeature, anonymeStatistikFeature);
+    return Objects.hash(esadIdFeature, laenderCodeFeature, mobileScannerFeature, massenimportFeature, massenbriefFeature, nichtGeprueftGrundFeature, arztListeFeature, adHocImpfstoffChargenFeature, footerFeature, benutzerverwaltungInternFeature, benutzerverwaltungIgnoreFachRolleFromKeycloakFeature, archivierungFeature, zentraleOrganisationFeature, anonymeStatistikFeature, nachkontrolleFeature, anlassSpracheSpalteFeature, anlassSpracheZusammenfassungFeature, anlassInformationenFeature);
   }
 
   @Override
@@ -504,6 +628,10 @@ public class TenantSettingFeaturesJsonSpec {
     sb.append("    archivierungFeature: ").append(toIndentedString(archivierungFeature)).append("\n");
     sb.append("    zentraleOrganisationFeature: ").append(toIndentedString(zentraleOrganisationFeature)).append("\n");
     sb.append("    anonymeStatistikFeature: ").append(toIndentedString(anonymeStatistikFeature)).append("\n");
+    sb.append("    nachkontrolleFeature: ").append(toIndentedString(nachkontrolleFeature)).append("\n");
+    sb.append("    anlassSpracheSpalteFeature: ").append(toIndentedString(anlassSpracheSpalteFeature)).append("\n");
+    sb.append("    anlassSpracheZusammenfassungFeature: ").append(toIndentedString(anlassSpracheZusammenfassungFeature)).append("\n");
+    sb.append("    anlassInformationenFeature: ").append(toIndentedString(anlassInformationenFeature)).append("\n");
     sb.append("}");
     return sb.toString();
   }

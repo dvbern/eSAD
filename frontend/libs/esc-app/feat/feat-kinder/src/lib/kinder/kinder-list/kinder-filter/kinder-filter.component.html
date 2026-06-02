@@ -1,5 +1,9 @@
 <feat-dialogs-modal [modalTitle]="'kinder.filter.erweitert.titel' | transloco">
-  <form svuiFormLayout [mode]="DetailMode.EDIT" [formGroup]="form.group" (ngSubmit)="submit()" style="align-items: end;">
+  <form svuiFormLayout
+        [mode]="DetailMode.EDIT"
+        [formGroup]="form.group"
+        (ngSubmit)="submit()"
+        style="align-items: end;">
 
 
     <!-- Switch um auzuwählen ob nach Kindern gesucht wird für die ein Anlass pendent ist -->
@@ -10,7 +14,8 @@
              [formControl]="form.group.controls.anlassPendent"
              [value]="false"/>
     </svui-single-radio-wrapper>
-    <svui-single-radio-wrapper [label]="'kinder.filter.erweitert.anlassPendent.true' | transloco" class="mb-2 svui_form-layout--double" >
+    <svui-single-radio-wrapper [label]="'kinder.filter.erweitert.anlassPendent.true' | transloco"
+                               class="mb-2 svui_form-layout--double">
       <input svuiRadio
              type="radio"
              name="kinder.filter.erweitert.anlassPendent"
@@ -91,8 +96,8 @@
             {{ 'kinder.filter.erweitert.verantwortliche.mpa.unassigned' | transloco }}
           </ng-option>
           <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-          @if (benutzerOptionsStore.hilfspersonOptions()) {
-            @for (each of benutzerOptionsStore.hilfspersonOptions(); track each) {
+          @if (benutzerOptionsStore.benutzerFiltered(undefined, 'HILFSPERSON', false)) {
+            @for (each of benutzerOptionsStore.benutzerFiltered(undefined, 'HILFSPERSON', false); track each) {
               <ng-option [value]="each.id">
                 {{ each.fullName }}
               </ng-option>
@@ -116,8 +121,8 @@
             {{ 'kinder.filter.erweitert.verantwortliche.arzt.unassigned' | transloco }}
           </ng-option>
           <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-          @if (benutzerOptionsStore.arztOptions()) {
-            @for (each of benutzerOptionsStore.arztOptions(); track each) {
+          @if (benutzerOptionsStore.benutzerFiltered(undefined, 'ARZT', false)) {
+            @for (each of benutzerOptionsStore.benutzerFiltered(undefined, 'ARZT', false); track each) {
               <ng-option [value]="each.id">
                 {{ each.fullName }}
               </ng-option>
@@ -146,7 +151,7 @@
         </ng-select>
       </svui-form-control>
 
-    <svui-title [context]="'formSection'">{{ 'kinder.filter.erweitert.notizen.titel' | transloco }}</svui-title>
+      <svui-title [context]="'formSection'">{{ 'kinder.filter.erweitert.notizen.titel' | transloco }}</svui-title>
 
       <!-- Zeitraum von-->
       <svui-form-control [label]="'kinder.filter.erweitert.notizen.zeitraum.von' | transloco" size="half"
@@ -189,7 +194,7 @@
           [clearable]="false"
           [placeholder]="'global.select.bitte-auswaehlen' | transloco"
         >
-          @for (benutzer of benutzerOptionsStore.entities(); track benutzer.id) {
+          @for (benutzer of benutzerOptionsStore.benutzerFiltered(undefined, 'FACHROLLEN', false); track benutzer.id) {
             <ng-option [value]="benutzer.id">
               {{ benutzer.fullName }}
             </ng-option>
@@ -305,7 +310,7 @@
       <input svuiTextInput="date" [formControl]="form.group.controls.anlassZeitraumBis"/>
     </svui-form-control>
 
-    @if(form.isStandardFilterSelected()) {
+    @if (form.isStandardFilterSelected()) {
       <!-- Anlass Schuljahr -->
       <svui-form-control [label]="'kinder.filter.erweitert.anlass.schuljahr' | transloco" size="half"
                          [viewValue]="displaySchuljahr(form.group.value.anlassSchuljahr)">
@@ -363,7 +368,8 @@
     }
 
     <!-- Anlass Typ -->
-    <svui-form-control [label]="(form.isStandardFilterSelected() ? 'kinder.filter.erweitert.anlass.typ' : 'kinder.filter.erweitert.anlass.typ.nichtvorhanden') | transloco" size="half"
+    <svui-form-control [label]="(form.isStandardFilterSelected() ? 'kinder.filter.erweitert.anlass.typ' : 'kinder.filter.erweitert.anlass.typ.nichtvorhanden') | transloco"
+                       size="half"
                        [viewValue]="form.group.value.anlassTyp">
       <ng-select
         svuiNgSelect
@@ -393,8 +399,8 @@
           [placeholder]="'global.select.bitte-auswaehlen' | transloco"
         >
           <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-          @if (benutzerOptionsStore.hilfspersonOptions()) {
-            @for (each of benutzerOptionsStore.hilfspersonOptions(); track each.id) {
+          @if (benutzerOptionsStore.benutzerFiltered(undefined, 'HILFSPERSON', false)) {
+            @for (each of benutzerOptionsStore.benutzerFiltered(undefined, 'HILFSPERSON', false); track each.id) {
               <ng-option [value]="each.id">
                 {{ each.fullName }}
               </ng-option>
@@ -415,8 +421,8 @@
           [placeholder]="'global.select.bitte-auswaehlen' | transloco"
         >
           <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-          @if (benutzerOptionsStore.arztOptions()) {
-            @for (each of benutzerOptionsStore.arztOptions(); track each.id) {
+          @if (benutzerOptionsStore.benutzerFiltered(undefined, 'ARZT', false)) {
+            @for (each of benutzerOptionsStore.benutzerFiltered(undefined, 'ARZT', false); track each.id) {
               <ng-option [value]="each.id">
                 {{ each.fullName }}
               </ng-option>
@@ -486,7 +492,7 @@
     <!-- start a new line-->
     <div class="svui_form-layout--full"></div>
     <svui-form-control [label]="'kinder.filter.erweitert.anlass.notassigned' | transloco"
-                       viewValue="" size="normal" >
+                       viewValue="" size="normal">
       <ng-select
         svuiNgSelect
         bindLabel='dummy'

@@ -148,6 +148,22 @@ export class TenantSettingsStore extends signalStore(
     return this.settings()?.data?.features.anonymeStatistikFeature.enabledForStage
   });
 
+  nachkontrolleEnabled = computed(() => {
+    return this.settings()?.data?.features.nachkontrolleFeature.enabledForStage
+  });
+
+  anlassSpracheSpalteEnabled = computed(() => {
+    return this.settings()?.data?.features.anlassSpracheSpalteFeature.enabledForStage
+  });
+
+  anlassSpracheZusammenfassungEnabled = computed(() => {
+    return this.settings()?.data?.features.anlassSpracheZusammenfassungFeature.enabledForStage
+  });
+
+  anlassInformationenEnabled = computed(() => {
+    return this.settings()?.data?.features.anlassInformationenFeature.enabledForStage
+  });
+
   postfixDeKey = computed(() => {
     const supportedLangs = this.supportedLanguages();
     if (supportedLangs && supportedLangs.length > 1) {

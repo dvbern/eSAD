@@ -1,10 +1,14 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder.duplikate;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.scheduler.SuperAdminRunnerService;
@@ -39,6 +43,7 @@ public class DuplikatResource {
     private final DuplikatMapper duplikatMapper;
     private final TenantProducer tenantProducer;
     private final EventBus eventBus;
+    private final AuthorizerService authorizerService;
 
     @PUT
     @Path("/reload")
@@ -61,7 +66,10 @@ public class DuplikatResource {
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
     @RolesAllowed(BerechtigungName.DUBLETTEN_ZUSAMMENFUHREN)
     public DuplikatListJson findAllDuplikate() {
-        return new DuplikatListJson(duplikatMapper.findAll());
+        return new DuplikatListJson(duplikatMapper.findAllBerechtigt(
+            duplikat -> authorizerService.hasReadAuthorizationDuplikat(
+                duplikat,
+                List.of(Berechtigung.DUBLETTEN_ZUSAMMENFUHREN))));
     }
 
     @PUT
@@ -70,7 +78,11 @@ public class DuplikatResource {
     public DuplikatJson markAsFalsePositive(
         @NonNull @NotNull @PathParam("duplikatId") ID<Duplikat> duplikatId
     ) {
-        return duplikatMapper.markAsFalsePositive(duplikatId);
+        return duplikatMapper.markAsFalsePositive(
+            duplikatId,
+            duplikat -> authorizerService.requireWriteAuthorizationDuplikat(
+                duplikat,
+                List.of(Berechtigung.DUBLETTEN_ZUSAMMENFUHREN)));
     }
 
     @PUT
@@ -80,6 +92,11 @@ public class DuplikatResource {
         @NonNull @NotNull @PathParam("duplikatId") ID<Duplikat> duplikatId,
         @NotNull @QueryParam("basisKindId") ID<Kind> basisKindId
     ) {
-        return duplikatMapper.merge(duplikatId, basisKindId);
+        return duplikatMapper.merge(
+            duplikatId,
+            basisKindId,
+            duplikat -> authorizerService.requireWriteAuthorizationDuplikat(
+                duplikat,
+                List.of(Berechtigung.DUBLETTEN_ZUSAMMENFUHREN)));
     }
 }

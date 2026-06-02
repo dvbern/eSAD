@@ -352,13 +352,13 @@ class FileIngressResourceITest extends AbstractITest {
 
     @TestAsFileIngressBS
     @Test
-    void file_ingress_success_impfanmeldung_existing_notiz() {
+    void file_ingress_success_impfeinverstaendnis_existing_notiz() {
         // ARRANGE
         String esadId = "A00145631";
         LocalDate geburtsdatum = LocalDate.of(2025, 1, 1);
         Dossier dossier = fixtureService.createDossier(geburtsdatum, esadId);
         Einladung einladung = fixtureService.createEinladung(dossier, AnlassTyp.KLASSE_8, DATE_EARLY, "theOnlyAnlass");
-        fixtureService.createImpfanmeldungNotiz(einladung.getId());
+        fixtureService.createImpfeinverstaendnisNotiz(einladung.getId());
         File file = loadFile(geburtsdatum.format(FileIngressService.DATE_TIME_FORMATTER) + "__" + esadId + ".pdf");
 
         // ACT
@@ -366,7 +366,7 @@ class FileIngressResourceITest extends AbstractITest {
             ._fileMultiPart(file)
             .esadIdPath(esadId)
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .notizTypPath(NotizTyp.IMPFANMELDUNG)
+            .notizTypPath(NotizTyp.IMPFEINVERSTAENDNIS)
             .execute(ResponseBody::peek)
             .then()
             .log().all()
@@ -379,9 +379,9 @@ class FileIngressResourceITest extends AbstractITest {
         // ASSERT
         assertFileIngressResultSuccess(
             result,
-            "Die Datei 2025-01-01__A00145631.pdf wurde erfolgreich hochgeladen als 26-11-2025_Gerber-Emma_Impfanmeldung.pdf und angehängt an Dossier mit Esad-ID A0 01 456 31 im Anlass 2024/25 SU 2.SEK theOnlyAnlass.");
-        assertThat(einladung.getImpfanmeldungsNotiz()).isPresent();
-        assertThat(einladung.getImpfanmeldungsNotiz().get().getFiles()).hasSize(1);
+            "Die Datei 2025-01-01__A00145631.pdf wurde erfolgreich hochgeladen als 26-11-2025_Gerber-Emma_Impfeinverstaendnis.pdf und angehängt an Dossier mit Esad-ID A0 01 456 31 im Anlass 2024/25 SU 2.SEK theOnlyAnlass.");
+        assertThat(einladung.getImpfeinverstaendnisNotiz()).isPresent();
+        assertThat(einladung.getImpfeinverstaendnisNotiz().get().getFiles()).hasSize(1);
     }
 
     @TestAsFileIngressBS
@@ -452,7 +452,7 @@ class FileIngressResourceITest extends AbstractITest {
 
     @TestAsFileIngressBS
     @Test
-    void file_ingress_success_impfanmeldung_new_notiz() {
+    void file_ingress_success_impfeinverstaendnis_new_notiz() {
         // ARRANGE
         String esadId = "A00145639";
         LocalDate geburtsdatum = LocalDate.of(2025, 1, 1);
@@ -465,7 +465,7 @@ class FileIngressResourceITest extends AbstractITest {
             ._fileMultiPart(file)
             .esadIdPath(esadId)
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .notizTypPath(NotizTyp.IMPFANMELDUNG)
+            .notizTypPath(NotizTyp.IMPFEINVERSTAENDNIS)
             .execute(ResponseBody::peek)
             .then()
             .log().all()
@@ -478,9 +478,9 @@ class FileIngressResourceITest extends AbstractITest {
         // ASSERT
         assertFileIngressResultSuccess(
             result,
-            "Die Datei 2025-01-01__A00145639.pdf wurde erfolgreich hochgeladen als 26-11-2025_Gerber-Emma_Impfanmeldung.pdf und angehängt an Dossier mit Esad-ID A0 01 456 39 im Anlass 2024/25 SU 2.SEK theOnlyAnlass.");
-        assertThat(einladung.getImpfanmeldungsNotiz()).isPresent();
-        assertThat(einladung.getImpfanmeldungsNotiz().get().getFiles()).hasSize(1);
+            "Die Datei 2025-01-01__A00145639.pdf wurde erfolgreich hochgeladen als 26-11-2025_Gerber-Emma_Impfeinverstaendnis.pdf und angehängt an Dossier mit Esad-ID A0 01 456 39 im Anlass 2024/25 SU 2.SEK theOnlyAnlass.");
+        assertThat(einladung.getImpfeinverstaendnisNotiz()).isPresent();
+        assertThat(einladung.getImpfeinverstaendnisNotiz().get().getFiles()).hasSize(1);
     }
 
     @TestAsFileIngressBS
@@ -582,13 +582,13 @@ class FileIngressResourceITest extends AbstractITest {
 
     @TestAsFileIngressBS
     @Test
-    void file_ingress_fails_impfanmeldung_if_anlass_config_is_not_enabled() {
+    void file_ingress_fails_impfeinverstaendnis_if_anlass_config_is_not_enabled() {
         // ARRANGE
         String esadId = "A00145637";
         LocalDate geburtsdatum = LocalDate.of(2025, 1, 1);
         Dossier dossier = fixtureService.createDossier(geburtsdatum, esadId);
 
-        AnlassConfig anlassConfig = AnlassConfigBuilder.create(builder -> builder.withAnlassTyp(AnlassTyp.KLASSE_5).withShowImpfanmeldung(false));
+        AnlassConfig anlassConfig = AnlassConfigBuilder.create(builder -> builder.withAnlassTyp(AnlassTyp.KLASSE_5).withShowImpfeinverstaendnis(false));
         anlassConfigService.createAnlassConfig(anlassConfig);
         Anlass anlass = fixtureService.createAnlass(anlassConfig);
         Einladung einladung = fixtureService.createEinladung(anlass, dossier);
@@ -599,7 +599,7 @@ class FileIngressResourceITest extends AbstractITest {
             ._fileMultiPart(file)
             .esadIdPath(esadId)
             .anlassIdPath(einladung.getAnlass().getId().getId())
-            .notizTypPath(NotizTyp.IMPFANMELDUNG)
+            .notizTypPath(NotizTyp.IMPFEINVERSTAENDNIS)
             .execute(ResponseBody::peek)
             .then()
             .log().all()

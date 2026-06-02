@@ -40,7 +40,7 @@ class DossierQueueRunnerServiceTest {
 
     @Test
     void testProcessQueueItems_Success() {
-        // Arrange
+        // ARRANGE
         SchedulerConfig config = new SchedulerConfig(SchedulerTyp.DOSSIER_QUEUE_PROCESSING, false, 10);
         DossierQueue item1 = createItem(DossierQueueStatus.NEW, 0);
         DossierQueue item2 = createItem(DossierQueueStatus.FAILED_RETRY, 1);
@@ -49,10 +49,10 @@ class DossierQueueRunnerServiceTest {
         OffsetDateTime now = OffsetDateTime.now();
         when(offsetDateTimeProvider.now()).thenReturn(now);
 
-        // Act
+        // ACT
         SchedulerProcessingResult result = service.processQueueItems(config);
 
-        // Assert
+        // ASSERT
         assertThat(result.getBatchsize()).isEqualTo(2);
         assertThat(result.getSuccessCounter()).isEqualTo(2);
         assertThat(result.getTotalCounter()).isEqualTo(2);
@@ -72,15 +72,15 @@ class DossierQueueRunnerServiceTest {
 
     @Test
     void testProcessQueueItems_SkipNonProcessable() {
-        // Arrange
+        // ARRANGE
         SchedulerConfig config = new SchedulerConfig(SchedulerTyp.DOSSIER_QUEUE_PROCESSING, false, 10);
         DossierQueue item1 = createItem(DossierQueueStatus.IN_PROGRESS, 0);
         when(dossierQueueService.findAllUnfinished(10)).thenReturn(List.of(item1));
 
-        // Act
+        // ACT
         SchedulerProcessingResult result = service.processQueueItems(config);
 
-        // Assert
+        // ASSERT
         assertThat(result.getBatchsize()).isEqualTo(1);
         assertThat(result.getSuccessCounter()).isZero();
         assertThat(result.getTotalCounter()).isEqualTo(1);
@@ -91,7 +91,7 @@ class DossierQueueRunnerServiceTest {
 
     @Test
     void testProcessQueueItems_RetryOnError() {
-        // Arrange
+        // ARRANGE
         SchedulerConfig config = new SchedulerConfig(SchedulerTyp.DOSSIER_QUEUE_PROCESSING, false, 10);
         DossierQueue item1 = createItem(DossierQueueStatus.NEW, 0);
         when(dossierQueueService.findAllUnfinished(10)).thenReturn(List.of(item1));
@@ -101,10 +101,10 @@ class DossierQueueRunnerServiceTest {
         OffsetDateTime now = OffsetDateTime.now();
         when(offsetDateTimeProvider.now()).thenReturn(now);
 
-        // Act
+        // ACT
         SchedulerProcessingResult result = service.processQueueItems(config);
 
-        // Assert
+        // ASSERT
         assertThat(result.getSuccessCounter()).isZero();
         assertThat(result.getTotalCounter()).isEqualTo(1);
 
@@ -117,7 +117,7 @@ class DossierQueueRunnerServiceTest {
 
     @Test
     void testProcessQueueItems_FinalFailure() {
-        // Arrange
+        // ARRANGE
         SchedulerConfig config = new SchedulerConfig(SchedulerTyp.DOSSIER_QUEUE_PROCESSING, false, 10);
         DossierQueue item1 = createItem(DossierQueueStatus.FAILED_RETRY, 3); // MAX_RETRIES = 3
         when(dossierQueueService.findAllUnfinished(10)).thenReturn(List.of(item1));
@@ -127,10 +127,10 @@ class DossierQueueRunnerServiceTest {
         OffsetDateTime now = OffsetDateTime.now();
         when(offsetDateTimeProvider.now()).thenReturn(now);
 
-        // Act
+        // ACT
         SchedulerProcessingResult result = service.processQueueItems(config);
 
-        // Assert
+        // ASSERT
         assertThat(result.getSuccessCounter()).isZero();
         assertThat(result.getTotalCounter()).isEqualTo(1);
 
@@ -143,14 +143,14 @@ class DossierQueueRunnerServiceTest {
 
     @Test
     void testPerformDossierQueueCleanup() {
-        // Arrange
+        // ARRANGE
         SchedulerConfig config = new SchedulerConfig(SchedulerTyp.DOSSIER_QUEUE_CLEAN_UP, false, 100);
         when(dossierQueueService.cleanUpOldDossierQueue()).thenReturn(5L);
 
-        // Act
+        // ACT
         SchedulerProcessingResult result = service.performDossierQueueCleanup(config);
 
-        // Assert
+        // ASSERT
         assertThat(result.getSuccessCounter()).isEqualTo(5);
         assertThat(result.getTotalCounter()).isEqualTo(5);
         verify(dossierQueueService).cleanUpOldDossierQueue();

@@ -718,4 +718,121 @@ describe('AppValidators', () => {
       expect(control.errors).toEqual({[AppValidatorKeys.multipleEmails]: true});
     });
   });
+
+  describe('numberWithinRange', () => {
+    it.each([undefined, null, ''])('accepts for nullish/empty input: %s', (input) => {
+      const control = fb.control(input, {
+        validators: [AppValidators.numberWithinRange(0, 9)],
+      });
+
+      expect(control.valid).toBe(true);
+      expect(control.errors).toBeNull();
+    });
+
+    it.each([0, 1, 5, 9, '0', '5', '9'])('accepts for valid input within range: %s', (input) => {
+      const control = fb.control(input, {
+        validators: [AppValidators.numberWithinRange(0, 9)],
+      });
+
+      expect(control.valid).toBe(true);
+      expect(control.errors).toBeNull();
+    });
+
+    it.each([10, 11, 100, '10', '99'])('rejects for input above max: %s', (input) => {
+      const control = fb.control(input, {
+        validators: [AppValidators.numberWithinRange(0, 9)],
+      });
+
+      expect(control.valid).toBe(false);
+      expect(control.errors).toEqual({
+        [AppValidatorKeys.numberRange]: {
+          min: 0,
+          max: 9,
+        },
+      });
+    });
+
+    it.each([0, 1, 4, '0', '4'])('rejects for input below min: %s', (input) => {
+      const control = fb.control(input, {
+        validators: [AppValidators.numberWithinRange(5, 10)],
+      });
+
+      expect(control.valid).toBe(false);
+      expect(control.errors).toEqual({
+        [AppValidatorKeys.numberRange]: {
+          min: 5,
+          max: 10,
+        },
+      });
+    });
+
+    it.each(['asdf', '-1', '-5', ' ', 'abc123'])('rejects for non-numeric input: %s', (input) => {
+      const control = fb.control(input, {
+        validators: [AppValidators.numberWithinRange(0, 9)],
+      });
+
+      expect(control.valid).toBe(false);
+      expect(control.errors).toEqual({
+        [AppValidatorKeys.numberOrNumericChars]: {
+          actualValue: input,
+        },
+      });
+    });
+
+    // Hinweis: Decimal-Strings wie '1.5' werden bereits von `numberOrNumericChars` abgefangen
+    // (Pattern /^\d+$/), da `numberWithinRange` diesen Validator zuerst ausführt.
+    it.each(['1.5', '2.0', '3.7'])('rejects decimal string as non-numeric-chars: %s', (input) => {
+      const control = fb.control(input, {
+        validators: [AppValidators.numberWithinRange(0, 9)],
+      });
+
+      expect(control.valid).toBe(false);
+      expect(control.errors).toEqual({
+        [AppValidatorKeys.numberOrNumericChars]: {
+          actualValue: input,
+        },
+      });
+    });
+
+    it('accepts when value equals min boundary', () => {
+      const control = fb.control(5, {
+        validators: [AppValidators.numberWithinRange(5, 10)],
+      });
+
+      expect(control.valid).toBe(true);
+      expect(control.errors).toBeNull();
+    });
+
+    it('accepts when value equals max boundary', () => {
+      const control = fb.control(10, {
+        validators: [AppValidators.numberWithinRange(5, 10)],
+      });
+
+      expect(control.valid).toBe(true);
+      expect(control.errors).toBeNull();
+    });
+
+    it('rejects when min equals max and value is different', () => {
+      const control = fb.control(6, {
+        validators: [AppValidators.numberWithinRange(5, 5)],
+      });
+
+      expect(control.valid).toBe(false);
+      expect(control.errors).toEqual({
+        [AppValidatorKeys.numberRange]: {
+          min: 5,
+          max: 5,
+        },
+      });
+    });
+
+    it('accepts when min equals max and value matches', () => {
+      const control = fb.control(5, {
+        validators: [AppValidators.numberWithinRange(5, 5)],
+      });
+
+      expect(control.valid).toBe(true);
+      expect(control.errors).toBeNull();
+    });
+  });
 });

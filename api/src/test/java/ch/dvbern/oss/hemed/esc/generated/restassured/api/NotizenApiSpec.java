@@ -66,7 +66,7 @@ public class NotizenApiSpec {
                 notizResourceDeleteNotiz(),
                 notizResourceDownloadNotizFile(),
                 notizResourceDownloadNotizFileSync(),
-                notizResourceFindAll(),
+                notizResourceFindAllBerechtigt(),
                 notizResourceGetNotiz(),
                 notizResourceRemoveNotizFile(),
                 notizResourceUpdateNotiz()
@@ -97,8 +97,8 @@ public class NotizenApiSpec {
         return new NotizResourceDownloadNotizFileSyncOper(createReqSpec());
     }
 
-    public NotizResourceFindAllOper notizResourceFindAll() {
-        return new NotizResourceFindAllOper(createReqSpec());
+    public NotizResourceFindAllBerechtigtOper notizResourceFindAllBerechtigt() {
+        return new NotizResourceFindAllBerechtigtOper(createReqSpec());
     }
 
     public NotizResourceGetNotizOper notizResourceGetNotiz() {
@@ -649,12 +649,12 @@ public class NotizenApiSpec {
         }
     }
     /**
-     * Find All
+     * Find All Berechtigt
      * 
      *
      * return NotizListJsonSpec
      */
-    public static class NotizResourceFindAllOper implements Oper {
+    public static class NotizResourceFindAllBerechtigtOper implements Oper {
 
         public static final Method REQ_METHOD = GET;
         public static final String REQ_URI = "/api/notizen";
@@ -662,7 +662,7 @@ public class NotizenApiSpec {
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
 
-        public NotizResourceFindAllOper(RequestSpecBuilder reqSpec) {
+        public NotizResourceFindAllBerechtigtOper(RequestSpecBuilder reqSpec) {
             this.reqSpec = reqSpec;
             reqSpec.setAccept("application/json");
             this.respSpec = new ResponseSpecBuilder();
@@ -694,7 +694,7 @@ public class NotizenApiSpec {
          * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
          * @return operation
          */
-        public NotizResourceFindAllOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+        public NotizResourceFindAllBerechtigtOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
             reqSpecCustomizer.accept(reqSpec);
             return this;
         }
@@ -704,7 +704,7 @@ public class NotizenApiSpec {
          * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
          * @return operation
          */
-        public NotizResourceFindAllOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+        public NotizResourceFindAllBerechtigtOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
             respSpecCustomizer.accept(respSpec);
             return this;
         }

@@ -2,6 +2,8 @@ package ch.dvbern.oss.hemed.esc.api.features.schule.kontaktpersonschule;
 
 import java.io.Serial;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
@@ -21,12 +23,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
@@ -98,4 +102,11 @@ public class KontaktPersonSchule
     @Column(nullable = false)
     private boolean aktiv = true;
 
+    @NonNull
+    @Transient
+    public String getNameVorname() {
+        return Stream.of(name, vorname)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.joining(" "));
+    }
 }

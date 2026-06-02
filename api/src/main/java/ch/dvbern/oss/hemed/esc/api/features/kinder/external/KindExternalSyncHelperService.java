@@ -33,6 +33,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Land;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
+import ch.dvbern.oss.hemed.esc.api.shared.util.HashValueGeneratorUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.util.VerantwortlicherSchuleChangedDTO;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
@@ -65,6 +66,10 @@ public class KindExternalSyncHelperService {
         @NonNull OffsetDateTime now,
         @NonNull ImportTyp importTyp
     ) {
+        String name = Objects.toString(kindExternal.getSchuelerName(), "N/A");
+        String vorname = Objects.toString(kindExternal.getSchuelerVorname(), "N/A");
+        Geschlecht geschlecht = mapGeschlechtForSchueler(kindExternal.getSchuelerGeschlecht());
+        LocalDate geburtsdatum = mapGeburtsdatum(kindExternal.getSchuelerGeburtsdatum(), importTyp);
         Adresse schuelerAdresse = extractAdresse(kindExternal);
         return new Kind(
             new ExternalImportInfo(
@@ -75,13 +80,14 @@ public class KindExternalSyncHelperService {
                 importTyp
             ),
             null,
+            "SetInListener", // will be set in AbstractEntityListener
             mapValidSvnrOrNull(kindExternal, importTyp),
-            Objects.toString(kindExternal.getSchuelerName(), "N/A"),
-            Objects.toString(kindExternal.getSchuelerVorname(), "N/A"),
+            name,
+            vorname,
             "TODO", // will be set in AbstractEntityListener
             "TODO", // will be set in AbstractEntityListener
-            mapGeschlechtForSchueler(kindExternal.getSchuelerGeschlecht()),
-            mapGeburtsdatum(kindExternal.getSchuelerGeburtsdatum(), importTyp),
+            geschlecht,
+            geburtsdatum,
             mapNationalitaetNameToCode(kindExternal.getSchuelerStaatcodeISO()),
             kindExternal.getSchuelerErstsprache(),
             kindExternal.getWohntyp(),

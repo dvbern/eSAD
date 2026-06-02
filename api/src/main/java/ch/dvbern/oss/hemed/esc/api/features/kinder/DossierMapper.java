@@ -1,20 +1,19 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder;
 
 import java.time.LocalDate;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
-import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
-import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierMedizinischSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierNichtMedizinischSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.types.PapierakteStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
@@ -28,7 +27,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public final class DossierMapper {
 
     private final DossierService dossierService;
-    private final BenutzerService benutzerService;
     private final NachkontrolleService nachkontrolleService;
     private final AktivitaetHistoryService aktivitaetHistoryService;
     private final AppClock appClock;
@@ -90,7 +88,10 @@ public final class DossierMapper {
     }
 
     @NonNull
-    public DossierJson getOrCreateByKind(@NonNull ID<Kind> kindID) {
+    public DossierJson getOrCreateByKind(
+        @NonNull ID<Kind> kindID,
+        @NonNull Predicate<Dossier> canReadMedizinischeDaten
+    ) {
         Dossier dossier = dossierService.getOrCreateByKind(kindID);
         aktivitaetHistoryService.createAktivitaetKind(dossier.getKind());
         Nachkontrolle nachkontrolle = nachkontrolleService.getOrCreateByDossier(dossier.getId());
@@ -99,16 +100,19 @@ public final class DossierMapper {
             dossier,
             nachkontrolle,
             now,
-            benutzerService.hasCallerBerechtigung(Berechtigung.KINDER_LESEN_MEDIZINISCH),
+            canReadMedizinischeDaten.test(dossier),
             tenantProducer.produceTenant());
     }
 
     @NonNull
     public DossierJson updateMedizinisch(
         @NonNull ID<Dossier> dossierID,
-        @NonNull DossierMedizinischSaveJson dossierJson
+        @NonNull DossierMedizinischSaveJson dossierJson,
+        @NonNull Consumer<Dossier> hasWriteAuthorization,
+        @NonNull Predicate<Dossier> canReadMedizinischeDaten
     ) {
         Dossier existingDossier = dossierService.getByIdEnsureActive(dossierID);
+        hasWriteAuthorization.accept(existingDossier);
         Dossier entity = toEntity(existingDossier, dossierJson);
         Dossier persistedDossier = dossierService.persistWithOptimisticLocking(entity, dossierJson.getVersion());
         persistedDossier.disableOptimisticLockingCheck();
@@ -122,57 +126,99 @@ public final class DossierMapper {
             persistedDossier,
             persistedNachkontrolle,
             now,
-            benutzerService.hasCallerBerechtigung(Berechtigung.KINDER_LESEN_MEDIZINISCH),
+            canReadMedizinischeDaten.test(persistedDossier),
             tenantProducer.produceTenant());
     }
 
     @NonNull
-    public DossierJson updateDossierVerantwortlicherArzt(@NonNull ID<Dossier> dossierID, @NonNull BenutzerOptionJson arztJson) {
+    public DossierJson updateDossierVerantwortlicherArzt(
+        @NonNull ID<Dossier> dossierID,
+        @NonNull ID<Benutzer> arztId,
+        @NonNull Predicate<Dossier> canReadMedizinischeDaten
+    ) {
         Dossier existingDossier = dossierService.getByIdEnsureActive(dossierID);
-        // https://intra.dvbern.ch/spaces/HEM/pages/284263663/Zust%C3%A4ndigkeiten+Archivierung
-        // Change Zustaendigkeiten: Fall 3: Neue Verantwortliche auf Kind (manuell)
-        zustaendigePersonService.verantwortlicherChangedOnDossier(
-            existingDossier,
-            arztJson.getId(),
-            existingDossier.getZustaendigMPA() != null ? existingDossier.getZustaendigMPA().getId() : null);
-
-        return getDossierJson(existingDossier);
+        return updateDossierVerantwortlicherArztUndMpa(
+            dossierID,
+            arztId,
+            existingDossier.getZustaendigMPA() != null ? existingDossier.getZustaendigMPA().getId() : null,
+            canReadMedizinischeDaten);
     }
 
     @NonNull
-    public DossierJson updateDossierVerantwortlicheMpa(@NonNull ID<Dossier> dossierID, @NonNull BenutzerOptionJson mpaJson) {
+    public DossierJson updateDossierVerantwortlicheMpa(
+        @NonNull ID<Dossier> dossierID,
+        @NonNull ID<Benutzer> mpaId,
+        @NonNull Predicate<Dossier> canReadMedizinischeDaten
+    ) {
         Dossier existingDossier = dossierService.getByIdEnsureActive(dossierID);
-        // https://intra.dvbern.ch/spaces/HEM/pages/284263663/Zust%C3%A4ndigkeiten+Archivierung
-        // Change Zustaendigkeiten: Fall 3: Neue Verantwortliche auf Kind (manuell)
-        zustaendigePersonService.verantwortlicherChangedOnDossier(
-            existingDossier,
+        return updateDossierVerantwortlicherArztUndMpa(
+            dossierID,
             existingDossier.getZustaendigArzt() != null ? existingDossier.getZustaendigArzt().getId() : null,
-            mpaJson.getId());
-
-        return getDossierJson(existingDossier);
+            mpaId,
+            canReadMedizinischeDaten);
     }
 
     @NonNull
-    public DossierJson updateDossierPapierakteStatus(@NonNull ID<Dossier> dossierID, @NonNull PapierakteStatus status) {
+    public DossierJson updateDossierVerantwortlicherArztUndMpa(
+        @NonNull ID<Dossier> dossierID,
+        @Nullable ID<Benutzer> arztId,
+        @Nullable ID<Benutzer> mpaId,
+        @NonNull Predicate<Dossier> canReadMedizinischeDaten
+    ) {
+        Dossier existingDossier = dossierService.getByIdEnsureActive(dossierID);
+        boolean zustaendigkeitChanged = zustaendigePersonService.hasZustaendigkeitChanged(existingDossier, arztId);
+        // Die MPA wird wieder dieselbe gesetzt, ausser beim Arzt ist eine neue Organisation zustaendig.
+        ID<Benutzer> mpaToSet = mpaId;
+        if (zustaendigkeitChanged) {
+            // Zustaendigkeit darf nur vom aktuell Zuständigen geändert werden
+            zustaendigePersonService.requireZustaendigkeit(existingDossier);
+            // Falls die Zustaendigkeit geändert hat, muss die MPA null gesetzt werden
+            mpaToSet = null;
+        }
+
+        // https://intra.dvbern.ch/spaces/HEM/pages/284263663/Zust%C3%A4ndigkeiten+Archivierung
+        // Change Zustaendigkeiten: Fall 3: Neue Verantwortliche auf Kind (manuell)
+        Dossier savedDossier = zustaendigePersonService.verantwortlicherChangedOnDossier(
+            existingDossier,
+            arztId,
+            mpaToSet);
+
+        return getDossierJson(savedDossier, canReadMedizinischeDaten);
+    }
+
+    @NonNull
+    public DossierJson updateDossierPapierakteStatus(
+        @NonNull ID<Dossier> dossierID,
+        @NonNull PapierakteStatus status,
+        @NonNull Predicate<Dossier> canReadMedizinischeDaten
+    ) {
         Dossier existingDossier = dossierService.getByIdEnsureActive(dossierID);
         existingDossier.disableOptimisticLockingCheck();
         existingDossier.setPapierakteStatus(status);
         Dossier persistedDossier = dossierService.persist(existingDossier);
-        return getDossierJson(persistedDossier);
+        return getDossierJson(persistedDossier, canReadMedizinischeDaten);
     }
 
-    public void remove(@NonNull ID<Dossier> dossierID) {
+    public void remove(
+        @NonNull ID<Dossier> dossierID,
+        @NonNull Consumer<Dossier> hasDossierAuthorization
+    ) {
+        Dossier existingDossier = dossierService.getById(dossierID);
+        hasDossierAuthorization.accept(existingDossier);
         dossierService.remove(dossierID);
     }
 
     @NonNull
-    private DossierJson getDossierJson(@NonNull Dossier existingDossier) {
+    private DossierJson getDossierJson(
+        @NonNull Dossier existingDossier,
+        @NonNull Predicate<Dossier> canReadMedizinischeDaten
+    ) {
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
         return toJson(
             existingDossier,
             null,
             now,
-            benutzerService.hasCallerBerechtigung(Berechtigung.KINDER_LESEN_MEDIZINISCH),
+            canReadMedizinischeDaten.test(existingDossier),
             tenantProducer.produceTenant());
     }
 }

@@ -33,6 +33,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonPropertyOrder({
   KindJsonSpec.JSON_PROPERTY_ID,
   KindJsonSpec.JSON_PROPERTY_ESAD_ID,
+  KindJsonSpec.JSON_PROPERTY_HASH_VALUE,
   KindJsonSpec.JSON_PROPERTY_EXTERNAL_IMPORT_INFO_JSON,
   KindJsonSpec.JSON_PROPERTY_ENTITY_INFO,
   KindJsonSpec.JSON_PROPERTY_DATA,
@@ -49,6 +50,10 @@ public class KindJsonSpec {
   public static final String JSON_PROPERTY_ESAD_ID = "esadId";
   @jakarta.annotation.Nullable
   private String esadId;
+
+  public static final String JSON_PROPERTY_HASH_VALUE = "hashValue";
+  @jakarta.annotation.Nonnull
+  private String hashValue;
 
   public static final String JSON_PROPERTY_EXTERNAL_IMPORT_INFO_JSON = "externalImportInfoJson";
   @jakarta.annotation.Nullable
@@ -117,6 +122,31 @@ public class KindJsonSpec {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEsadId(@jakarta.annotation.Nullable String esadId) {
     this.esadId = esadId;
+  }
+
+  public KindJsonSpec hashValue(@jakarta.annotation.Nonnull String hashValue) {
+    
+    this.hashValue = hashValue;
+    return this;
+  }
+
+  /**
+   * Get hashValue
+   * @return hashValue
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_HASH_VALUE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public String getHashValue() {
+    return hashValue;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_HASH_VALUE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setHashValue(@jakarta.annotation.Nonnull String hashValue) {
+    this.hashValue = hashValue;
   }
 
   public KindJsonSpec externalImportInfoJson(@jakarta.annotation.Nullable ExternalImportInfoJsonSpec externalImportInfoJson) {
@@ -230,6 +260,7 @@ public class KindJsonSpec {
     KindJsonSpec kindJson = (KindJsonSpec) o;
     return Objects.equals(this.id, kindJson.id) &&
         Objects.equals(this.esadId, kindJson.esadId) &&
+        Objects.equals(this.hashValue, kindJson.hashValue) &&
         Objects.equals(this.externalImportInfoJson, kindJson.externalImportInfoJson) &&
         Objects.equals(this.entityInfo, kindJson.entityInfo) &&
         Objects.equals(this.data, kindJson.data) &&
@@ -238,7 +269,7 @@ public class KindJsonSpec {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, esadId, externalImportInfoJson, entityInfo, data, landCode);
+    return Objects.hash(id, esadId, hashValue, externalImportInfoJson, entityInfo, data, landCode);
   }
 
   @Override
@@ -247,6 +278,7 @@ public class KindJsonSpec {
     sb.append("class KindJsonSpec {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    esadId: ").append(toIndentedString(esadId)).append("\n");
+    sb.append("    hashValue: ").append(toIndentedString(hashValue)).append("\n");
     sb.append("    externalImportInfoJson: ").append(toIndentedString(externalImportInfoJson)).append("\n");
     sb.append("    entityInfo: ").append(toIndentedString(entityInfo)).append("\n");
     sb.append("    data: ").append(toIndentedString(data)).append("\n");

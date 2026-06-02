@@ -1,6 +1,5 @@
 package ch.dvbern.dvbstarter.infrastructure.logging;
 
-import java.io.IOException;
 import java.net.URI;
 import java.security.Principal;
 import java.util.HashMap;
@@ -11,6 +10,7 @@ import javax.annotation.Nullable;
 import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentConfigFixtures;
 import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentConfigFixtures.DeploymentConfigDTO;
 import ch.dvbern.oss.commons.logging.mdc.CommonMDCField;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProvider;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
@@ -37,6 +37,7 @@ import static org.mockito.Mockito.doReturn;
 class LoggingCommonMDCFieldsFilterTest {
 
     private final ConfigService configServiceMock = Mockito.mock(ConfigService.class);
+    private final TenantProvider tenantProviderMock = Mockito.mock(TenantProvider.class);
 
     @Mock
     ContainerRequestContext requestCtx;
@@ -59,6 +60,7 @@ class LoggingCommonMDCFieldsFilterTest {
     @BeforeEach
     void beforeEach() {
         setupDeploymentConfigMock(DeploymentConfigFixtures.defaults());
+        Mockito.when(tenantProviderMock.produceTenant()).thenReturn(null);
 
         mdcBackup = MDC.getCopyOfContextMap();
         MDC.clear();
@@ -91,7 +93,7 @@ class LoggingCommonMDCFieldsFilterTest {
                 .withInstance("The Instance")
             );
 
-            requestFilter = new LoggingCommonMDCFieldsRequestFilter(configServiceMock) {
+            requestFilter = new LoggingCommonMDCFieldsRequestFilter(configServiceMock, tenantProviderMock) {
                 @Override
                 String getTenant() {
                     return "The Tenant";
@@ -129,7 +131,7 @@ class LoggingCommonMDCFieldsFilterTest {
         }
 
         @Test
-        void response_filter_retains_only_initial_MDC_fields() throws IOException {
+        void response_filter_retains_only_initial_MDC_fields() {
             setupRequestContextPropertiesForResponse();
 
             responseFilter.filter(requestCtx, Mockito.mock(ContainerResponseContext.class));
@@ -153,7 +155,7 @@ class LoggingCommonMDCFieldsFilterTest {
 
             setupDeploymentConfigMock(DeploymentConfigFixtures.defaults()
                 .withVersion("0.0.0"));
-            sut = new LoggingCommonMDCFieldsRequestFilter(configServiceMock);
+            sut = new LoggingCommonMDCFieldsRequestFilter(configServiceMock, tenantProviderMock);
 
             sut.filter(requestCtx);
         }
@@ -178,7 +180,7 @@ class LoggingCommonMDCFieldsFilterTest {
             );
 
             setupDeploymentConfigMock(DeploymentConfigFixtures.defaults());
-            sut = new LoggingCommonMDCFieldsRequestFilter(configServiceMock);
+            sut = new LoggingCommonMDCFieldsRequestFilter(configServiceMock, tenantProviderMock);
 
             sut.filter(requestCtx);
         }

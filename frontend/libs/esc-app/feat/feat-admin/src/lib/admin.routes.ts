@@ -2,14 +2,17 @@ import {inject} from '@angular/core';
 import {Route} from '@angular/router';
 import {Path, QuartiereOptionsStore, requireAcceptedAgb, requireRole, SchulenStore} from '@dvb/feat-shared';
 import {
+  hasAerztePageViewBerechtigung,
   hasArchivierungBerechtigung,
   hasBenutzerViewBerechtigung,
   hasBriefvorlagenViewBerechtigung,
   hasDuplikateBerechtigung,
   hasImpfstoffePageViewBerechtigung,
+  hasInfomaterialViewBerechtigung,
+  hasKlassenViewBerechtigung,
   hasLabelPageViewBerechtigung,
-  hasListViewBerechtigung,
   hasOrganisationVerwaltungViewBerechtigung,
+  hasSchuleViewBerechtigung,
 } from '@dvb/util-shared';
 import {AdminPageComponent} from './admin/admin-page.component';
 
@@ -29,7 +32,7 @@ export const adminRoutes: Route[] = [
       },
     },
     canActivate: [
-      requireRole(hasListViewBerechtigung()),
+      requireRole(hasSchuleViewBerechtigung()),
       requireAcceptedAgb(),
     ],
   },
@@ -37,7 +40,7 @@ export const adminRoutes: Route[] = [
     path: Path.KLASSEN,
     loadChildren: () => import('./admin/klassen').then(c => c.klassenRoutes),
     canActivate: [
-      requireRole(hasListViewBerechtigung()),
+      requireRole(hasKlassenViewBerechtigung()),
       requireAcceptedAgb(),
     ],
   },
@@ -61,7 +64,7 @@ export const adminRoutes: Route[] = [
     path: Path.INFOMATERIAL,
     loadChildren: () => import('./admin/infomaterial').then(c => c.infomaterialRoutes),
     canActivate: [
-      requireRole(hasListViewBerechtigung()),
+      requireRole(hasInfomaterialViewBerechtigung()),
       requireAcceptedAgb(),
     ],
   },
@@ -93,7 +96,7 @@ export const adminRoutes: Route[] = [
     path: Path.AERZTE,
     loadChildren: () => import('./admin/aerzte').then(c => c.aerzteRoutes),
     canActivate: [
-      requireRole(hasListViewBerechtigung()),
+      requireRole(hasAerztePageViewBerechtigung()),
       requireAcceptedAgb(),
     ],
   },

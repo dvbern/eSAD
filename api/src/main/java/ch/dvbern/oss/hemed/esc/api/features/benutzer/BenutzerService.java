@@ -19,6 +19,7 @@ import ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.JsonWebTokenDataDTO;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.DVBSupportRoleUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.RolesAugmentor;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
@@ -27,7 +28,6 @@ import ch.dvbern.oss.hemed.esc.api.shared.benutzer.FachrollenService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
-import io.quarkus.security.identity.SecurityIdentity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Validate;
@@ -46,7 +46,6 @@ public class BenutzerService {
     private final JsonWebToken jsonWebToken;
     private final BenutzerRepo benutzerRepo;
     private final AppClock appClock;
-    private final SecurityIdentity securityIdentity;
     private final TenantProducer tenantProducer;
     private final FachrollenService fachrollenService;
     private final TenantSettingsService tenantSettingsService;
@@ -85,12 +84,7 @@ public class BenutzerService {
         );
         benutzerRepo.persist(newBenutzer);
 
-        boolean ignoreFachrollenFromKeycloak =
-            tenantSettingsService.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled();
-        if (!ignoreFachrollenFromKeycloak) {
-            EnumSet<FachRolle> fachrollen = EnumSetUtil.toEnumSet(jsonWebTokenDataDTO.getFachRollen(), FachRolle.class);
-            fachrollenService.setFachrollenFromJWT(fachrollen, newBenutzer, null);
-        }
+        ensureRolesUpdatedInDB(jsonWebTokenDataDTO, newBenutzer);
 
         newBenutzer.disableOptimisticLockingCheck();
         benutzerRepo.persist(newBenutzer);
@@ -125,15 +119,28 @@ public class BenutzerService {
 
         existingUser.disableOptimisticLockingCheck();
 
-        boolean ignoreFachrollenFromKeycloak =
-            tenantSettingsService.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled();
-        if (!ignoreFachrollenFromKeycloak) {
-            EnumSet<FachRolle> fachrollen = EnumSetUtil.toEnumSet(
-                webTokenData.getFachRollen().stream().toList(),
-                FachRolle.class);
-            fachrollenService.setFachrollenFromJWT(fachrollen, existingUser, null);
-        }
+        ensureRolesUpdatedInDB(webTokenData, existingUser);
         return existingUser;
+    }
+
+    private void ensureRolesUpdatedInDB(@NonNull JsonWebTokenDataDTO webTokenData, @NonNull Benutzer existingUser) {
+        // if is Supporter -> give Fachrolle Supporter
+        if (DVBSupportRoleUtil.isDVBSupport(webTokenData.getTenantClaim())) {
+            fachrollenService.setFachrollenFromJWT(EnumSet.of(FachRolle.SUPPORT), existingUser, null);
+        } else {
+            // standard case -> give Fachrollen based on jwt claim (or not if Roles are managed in App itself for
+            // this tenant)
+            boolean syncRollenFromKeycloak =
+                !tenantSettingsService.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled();
+            if (syncRollenFromKeycloak) {
+                EnumSet<FachRolle> fachrollen = EnumSetUtil.toEnumSet(
+                    webTokenData.getFachRollen().stream().toList(),
+                    FachRolle.class);
+                // organisation is null is ok here: for tenants that sync from keycloak zentrale organsation must be
+                // enabled
+                fachrollenService.setFachrollenFromJWT(fachrollen, existingUser, null);
+            }
+        }
     }
 
     @NonNull
@@ -255,17 +262,5 @@ public class BenutzerService {
 
         Validate.isTrue(benutzerHasCorrectRole);
         return benutzer;
-    }
-
-    public boolean hasCallerBerechtigung(@NonNull Berechtigung role) {
-        return securityIdentity.hasRole(role.getBerechtigungName());
-    }
-
-    public boolean hasCallerBerechtigungen(@NonNull List<Berechtigung> roles) {
-        return roles.stream().allMatch(role -> securityIdentity.hasRole(role.getBerechtigungName()));
-    }
-
-    public boolean hasAnyOfCallerBerechtigungen(@NonNull List<Berechtigung> anyOfRoles) {
-        return anyOfRoles.stream().anyMatch(role -> securityIdentity.hasRole(role.getBerechtigungName()));
     }
 }

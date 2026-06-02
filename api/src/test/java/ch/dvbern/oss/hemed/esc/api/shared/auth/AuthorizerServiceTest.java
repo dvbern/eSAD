@@ -10,6 +10,8 @@ import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
+import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsEmpfangBS;
@@ -34,7 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @QuarkusTest
 @RequiredArgsConstructor
 class AuthorizerServiceTest {
-
     private final AuthorizerService authorizerService;
     private final FixtureService fixtureService;
     private final OrganisationService organisationService;
@@ -54,7 +55,9 @@ class AuthorizerServiceTest {
         // wird fuer Tenant
         useWinBerechtigungenForBs = Mockito.mockStatic(FachRolleUtil.class);
         useWinBerechtigungenForBs
-            .when(() -> FachRolleUtil.getBerechtigungen(ArgumentMatchers.any(TenantEnum.class), ArgumentMatchers.any(FachRolle.class)))
+            .when(() -> FachRolleUtil.getBerechtigungen(
+                ArgumentMatchers.any(TenantEnum.class),
+                ArgumentMatchers.any(FachRolle.class)))
             .thenAnswer(invocation -> {
                 FachRolle argument = invocation.getArgument(1);
                 return argument.getBerechtigungen(TenantEnum.WIN);
@@ -92,7 +95,9 @@ class AuthorizerServiceTest {
         // ARRANGE
         Anlass anlass = fixtureService.createAnlass(AnlassStatus.IN_PLANUNG);
         // ACT / ASSERT
-        assertThatCode(() -> authorizerService.requireWriteAuthorizationAnlass(anlass.getId(), List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN)))
+        assertThatCode(() -> authorizerService.requireWriteAuthorizationAnlass(
+            anlass.getId(),
+            List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN)))
             .doesNotThrowAnyException();
     }
 
@@ -102,7 +107,9 @@ class AuthorizerServiceTest {
         // ARRANGE
         Anlass anlass = fixtureService.createAnlass(AnlassStatus.ABGESCHLOSSEN);
         // ACT / ASSERT
-        assertThatCode(() -> authorizerService.requireWriteAuthorizationAnlass(anlass.getId(), List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN)))
+        assertThatCode(() -> authorizerService.requireWriteAuthorizationAnlass(
+            anlass.getId(),
+            List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN)))
             .doesNotThrowAnyException();
     }
 
@@ -112,7 +119,9 @@ class AuthorizerServiceTest {
         // ARRANGE
         Anlass anlass = fixtureService.createAnlass(AnlassStatus.ABGESCHLOSSEN);
         // ACT / ASSERT
-        assertThatCode(() -> authorizerService.requireWriteAuthorizationAnlass(anlass.getId(), List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN)))
+        assertThatCode(() -> authorizerService.requireWriteAuthorizationAnlass(
+            anlass.getId(),
+            List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN)))
             .doesNotThrowAnyException();
     }
 
@@ -122,7 +131,9 @@ class AuthorizerServiceTest {
         // ARRANGE
         Anlass anlass = fixtureService.createAnlass(AnlassStatus.IN_PLANUNG);
         // ACT / ASSERT
-        assertThatCode(() -> authorizerService.requireWriteAuthorizationAnlass(anlass.getId(), List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN)))
+        assertThatCode(() -> authorizerService.requireWriteAuthorizationAnlass(
+            anlass.getId(),
+            List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN)))
             .doesNotThrowAnyException();
     }
 
@@ -132,7 +143,11 @@ class AuthorizerServiceTest {
         // ARRANGE
         Anlass anlass = fixtureService.createAnlass(AnlassStatus.ABGESCHLOSSEN);
         // ACT / ASSERT
-        assertThrows(Exception.class, () -> authorizerService.requireWriteAuthorizationAnlass(anlass.getId(), List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN)));
+        assertThrows(
+            Exception.class,
+            () -> authorizerService.requireWriteAuthorizationAnlass(
+                anlass.getId(),
+                List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN)));
     }
 
     @Test
@@ -141,9 +156,13 @@ class AuthorizerServiceTest {
         // ARRANGE
         Notiz notiz = fixtureService.createNotiz(Set.of(Label.ID_LABEL_FRAGEBOGEN));
         // ACT / ASSERT
-        assertThatCode(() -> authorizerService.requireReadAuthorizationNotiz(notiz.getId()))
+        assertThatCode(() -> authorizerService.requireReadAuthorizationNotiz(
+            notiz,
+            List.of(Berechtigung.KINDER_ALLE_NOTIZEN_LESEN, Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN)))
             .doesNotThrowAnyException();
-        assertThatCode(() -> authorizerService.requireWriteAuthorizationNotiz(notiz.getId()))
+        assertThatCode(() -> authorizerService.requireWriteAuthorizationNotiz(
+            notiz,
+            List.of(Berechtigung.KINDER_ALLE_NOTIZEN_SCHREIBEN, Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN)))
             .doesNotThrowAnyException();
     }
 
@@ -153,9 +172,13 @@ class AuthorizerServiceTest {
         // ARRANGE
         Notiz notiz = fixtureService.createNotiz(Set.of(Label.ID_LABEL_DISPENSATIONSGESUCH));
         // ACT / ASSERT
-        assertThatCode(() -> authorizerService.requireReadAuthorizationNotiz(notiz.getId()))
+        assertThatCode(() -> authorizerService.requireReadAuthorizationNotiz(
+            notiz,
+            List.of(Berechtigung.KINDER_ALLE_NOTIZEN_LESEN, Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN)))
             .doesNotThrowAnyException();
-        assertThatCode(() -> authorizerService.requireWriteAuthorizationNotiz(notiz.getId()))
+        assertThatCode(() -> authorizerService.requireWriteAuthorizationNotiz(
+            notiz,
+            List.of(Berechtigung.KINDER_ALLE_NOTIZEN_SCHREIBEN, Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN)))
             .doesNotThrowAnyException();
     }
 
@@ -165,8 +188,12 @@ class AuthorizerServiceTest {
         // ARRANGE
         Notiz notiz = fixtureService.createNotiz(Set.of(Label.ID_LABEL_FRAGEBOGEN));
         // ACT / ASSERT
-        assertThrows(Exception.class, () -> authorizerService.requireReadAuthorizationNotiz(notiz.getId()));
-        assertThrows(Exception.class, () -> authorizerService.requireWriteAuthorizationNotiz(notiz.getId()));
+        assertThrows(Exception.class, () -> authorizerService.requireReadAuthorizationNotiz(
+            notiz,
+            List.of(Berechtigung.KINDER_ALLE_NOTIZEN_LESEN, Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN)));
+        assertThrows(Exception.class, () -> authorizerService.requireWriteAuthorizationNotiz(
+            notiz,
+            List.of(Berechtigung.KINDER_ALLE_NOTIZEN_SCHREIBEN, Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN)));
     }
 
     @Test
@@ -176,7 +203,11 @@ class AuthorizerServiceTest {
         useBerechtigungenWin();
         Anlass anlass = fixtureService.createAnlass(AnlassTyp.IMPFTERMIN);
         // ACT / ASSERT
-        assertThrows(Exception.class, () -> authorizerService.requireReadAuthorizationAnlass(anlass.getId(), List.of(Berechtigung.ANLASSPLANUNG_LESEN)));
+        assertThrows(
+            Exception.class,
+            () -> authorizerService.requireReadAuthorizationAnlass(
+                anlass.getId(),
+                List.of(Berechtigung.ANLASSPLANUNG_LESEN)));
     }
 
     @Test
@@ -186,7 +217,9 @@ class AuthorizerServiceTest {
         useBerechtigungenWin();
         Anlass anlass = fixtureService.createAnlass(AnlassTyp.LAEUSEKONTROLLE);
         // ACT / ASSERT
-        assertThatCode(() -> authorizerService.requireReadAuthorizationAnlass(anlass.getId(), List.of(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE)))
+        assertThatCode(() -> authorizerService.requireReadAuthorizationAnlass(
+            anlass.getId(),
+            List.of(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE)))
             .doesNotThrowAnyException();
     }
 
@@ -197,6 +230,57 @@ class AuthorizerServiceTest {
         useBerechtigungenWin();
         Anlass anlass = fixtureService.createAnlass(AnlassStatus.ABGESCHLOSSEN);
         // ACT / ASSERT
-        assertThrows(Exception.class, () -> authorizerService.requireWriteAuthorizationAnlass(anlass.getId(), List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN)));
+        assertThrows(
+            Exception.class,
+            () -> authorizerService.requireWriteAuthorizationAnlass(
+                anlass.getId(),
+                List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN)));
+    }
+
+    @Test
+    @TestAsSupportBE
+    void hasReadAuthorizationAufgabe_SUPPORT_success() {
+        // ARRANGE
+        Benutzer empfaenger = fixtureService.createBenutzerWithOrganisation();
+        Aufgabe aufgabe = fixtureService.createAufgabeForBenutzer(empfaenger);
+
+        // ACT
+        boolean result = authorizerService.hasReadAuthorizationAufgabe(aufgabe, List.of(Berechtigung.AUFGABEN_LESEN));
+
+        // ASSERT
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @TestAsSupportBS
+    void hasReadAuthorizationAufgabe_SUPPORT_BS_success() {
+        // ARRANGE
+        Benutzer empfaenger = fixtureService.createBenutzerFuerZentraleOrganisation();
+        Aufgabe aufgabe = fixtureService.createAufgabeForBenutzer(empfaenger);
+
+        // ACT
+        boolean result = authorizerService.hasReadAuthorizationAufgabe(aufgabe, List.of(Berechtigung.AUFGABEN_LESEN));
+
+        // ASSERT
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @TestAsSchularztBE
+    void hasReadAuthorizationAufgabe_SCHULARZT() {
+        // ARRANGE
+        Benutzer currentBenutzer = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        Aufgabe aufgabeInMyOrg = fixtureService.createAufgabeForBenutzer(currentBenutzer);
+
+        Benutzer empfaengerInOtherOrg = fixtureService.createBenutzerWithOrganisation();
+        Aufgabe aufgabeInOtherOrg = fixtureService.createAufgabeForBenutzer(empfaengerInOtherOrg);
+
+        // ACT
+        boolean allowedForMyOrg = authorizerService.hasReadAuthorizationAufgabe(aufgabeInMyOrg, List.of(Berechtigung.AUFGABEN_LESEN));
+        boolean allowedForOtherOrg = authorizerService.hasReadAuthorizationAufgabe(aufgabeInOtherOrg, List.of(Berechtigung.AUFGABEN_LESEN));
+
+        // ASSERT
+        assertThat(allowedForMyOrg).isTrue();
+        assertThat(allowedForOtherOrg).isFalse();
     }
 }

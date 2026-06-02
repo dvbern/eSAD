@@ -1,4 +1,4 @@
-ARG CADDY_VERSION=2.8
+ARG CADDY_VERSION=2.11
 
 FROM docker-registry.dvbern.ch/dockerhub/library/caddy:${CADDY_VERSION}-builder-alpine AS builder
 

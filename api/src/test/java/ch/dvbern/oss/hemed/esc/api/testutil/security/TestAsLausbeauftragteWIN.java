@@ -13,11 +13,11 @@ import io.quarkus.test.security.oidc.OidcSecurity;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSLISTE_LESEN_LAEUSE;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLANUNG_LESEN_LAEUSE;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ANLASSPLANUNG_SCHREIBEN_LAEUSE;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.BENUTZER_OPTIONS_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.EIGENE_BERECHTIGUNGEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LABELS_LESEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_DATEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_LAEUSE_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_LAEUSE_SCHREIBEN;
@@ -27,6 +27,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_LAEUSE
 @TestSecurity(
     user = "testing-lausbeauftragte",
     roles = {
+        BENUTZER_OPTIONS_LESEN,
         ANLASSLISTE_LESEN_LAEUSE,
         ANLASSPLANUNG_LESEN_LAEUSE,
         ANLASSPLANUNG_SCHREIBEN_LAEUSE,
@@ -35,7 +36,6 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_LAEUSE
         SU_LAEUSE_SCHREIBEN,
         KINDER_LESEN_NICHT_MEDIZINISCH,
         KINDER_SCHREIBEN_NICHT_MEDIZINISCH,
-        LISTEN_LESEN,
         LABELS_LESEN,
         EIGENE_BERECHTIGUNGEN_LESEN
     }

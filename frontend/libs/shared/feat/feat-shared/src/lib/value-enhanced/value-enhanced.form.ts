@@ -1,9 +1,9 @@
-import { NonNullableFormBuilder, Validators } from '@angular/forms';
-import { NichtGeprueftGrund, RequirementSetting, ValueEnhancedJson } from '@dvb/data-access-backend';
-import { AppValidators, BaseForm } from '@dvb/util-angular';
+import {NonNullableFormBuilder, Validators} from '@angular/forms';
+import {NichtGeprueftGrund, RequirementSetting, ValueEnhancedJson} from '@dvb/data-access-backend';
+import {AppValidators, BaseForm} from '@dvb/util-angular';
 import {ensurePropsFlat, isNotNullish, Nullish, requireValue, trimToUndefined} from '@dvb/util-shared';
-import { DestroyRef } from '@angular/core';
-import { checkIfArrayContainsCheckedValue, markAllMultiCheckboxesAsTouched, SELECT_TYPE } from './value-enhanced.util';
+import {DestroyRef} from '@angular/core';
+import {checkIfArrayContainsCheckedValue, markAllMultiCheckboxesAsTouched, SELECT_TYPE} from './value-enhanced.util';
 
 type Config = {
   fb: NonNullableFormBuilder;
@@ -27,7 +27,7 @@ function makeForm(config: Config) {
 
 function makeMultiValueSubForm(fb: NonNullableFormBuilder, value: string) {
   return fb.group({
-    resultat: fb.control<string>({ value, disabled: true }),
+    resultat: fb.control<string>({value, disabled: true}),
     isChecked: fb.control<boolean>(false),
   });
 }
@@ -84,13 +84,17 @@ export class ValueEnhancedForm extends BaseForm<ReturnType<typeof makeForm>, Val
         this.group.controls.valueArray.addValidators(AppValidators.atLeastOneCheckedValidator());
       }
       if (nichtGeprueftGrundEnabled) {
-        this.group.controls.nichtGeprueftGrund.addValidators(
-          AppValidators.requiredIfValidator(() => {
-            return this.isNichtGeprueftChecked();
-          }),
-        );
+        this.addNichtGeprueftGrundValidator();
       }
     }
+  }
+
+  public addNichtGeprueftGrundValidator(): void {
+    this.group.controls.nichtGeprueftGrund.addValidators(
+      AppValidators.requiredIfValidator(() => {
+        return this.isNichtGeprueftChecked();
+      }),
+    );
   }
 
   private isNichtGeprueftCheckedSingle(): boolean {

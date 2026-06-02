@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.archunit;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
+import ch.dvbern.dvbstarter.infrastructure.stereotypes.NoTransactionService;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsMarker;
@@ -69,7 +70,8 @@ class NamingTest {
                 .or(Predicates.simpleNameEndingWith("ServiceImpl"))
             )
             .should()
-            .beAnnotatedWith(Service.class);
+            .beAnnotatedWith(Service.class)
+            .orShould().beAnnotatedWith(NoTransactionService.class);
 
         rule.check(ArchConst.APP_CLASSES);
     }

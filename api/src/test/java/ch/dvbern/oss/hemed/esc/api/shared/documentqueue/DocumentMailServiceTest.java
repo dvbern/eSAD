@@ -69,16 +69,16 @@ class DocumentMailServiceTest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void sendDocumentQueueFinishedSuccessMail_should_use_success_key_for_non_massenbrief_type() {
-        // Arrange
+        // ARRANGE
         DocumentQueue documentQueue = createDocumentQueue(FileTyp.PLAYGROUND);
 
         when(tlMock.translate(anyString(), anyString(), any())).thenReturn("translated content");
         when(tlMock.translate("document-queue.mail.success.subject")).thenReturn("translated subject");
 
-        // Act
+        // ACT
         documentMailService.sendDocumentQueueFinishedSuccessMail(documentQueue);
 
-        // Assert
+        // ASSERT
         String expectedEmail = documentQueue.getBenutzer().getEmail().getAddress();
         verify(tlMock).translate(
             "document-queue.mail.success.content",
@@ -90,17 +90,17 @@ class DocumentMailServiceTest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void sendDocumentQueueFinishedSuccessMail_should_use_massenbrief_success_key_for_massenbrief_zip_type() {
-        // Arrange
+        // ARRANGE
         DocumentQueue documentQueue = createDocumentQueue(FileTyp.MASSENBRIEF_ZIP);
 
         when(tlMock.translate(anyString(), anyString(), any())).thenReturn("translated massenbrief content");
         when(tlMock.translate("document-queue.mail.massenbrief.success.subject"))
             .thenReturn("translated massenbrief subject");
 
-        // Act
+        // ACT
         documentMailService.sendDocumentQueueFinishedSuccessMail(documentQueue);
 
-        // Assert
+        // ASSERT
         String expectedEmail = documentQueue.getBenutzer().getEmail().getAddress();
         verify(tlMock).translate(
             "document-queue.mail.massenbrief.success.content",
@@ -112,17 +112,17 @@ class DocumentMailServiceTest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void sendDocumentQueueFinishedFailureMail_should_use_failure_key_for_non_massenbrief_type() {
-        // Arrange
+        // ARRANGE
         DocumentQueue documentQueue = createDocumentQueue(FileTyp.PLAYGROUND);
         String errorMessage = "something went wrong";
 
         when(tlMock.translate(anyString(), anyString(), any())).thenReturn("translated error content");
         when(tlMock.translate("document-queue.mail.failure.subject")).thenReturn("translated error subject");
 
-        // Act
+        // ACT
         documentMailService.sendDocumentQueueFinishedFailureMail(documentQueue, errorMessage);
 
-        // Assert
+        // ASSERT
         String expectedEmail = documentQueue.getBenutzer().getEmail().getAddress();
         verify(tlMock).translate(
             "document-queue.mail.failure.content",
@@ -134,7 +134,7 @@ class DocumentMailServiceTest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void sendDocumentQueueFinishedFailureMail_should_use_massenbrief_failure_key_for_massenbrief_zip_type() {
-        // Arrange
+        // ARRANGE
         DocumentQueue documentQueue = createDocumentQueue(FileTyp.MASSENBRIEF_ZIP);
         String errorMessage = "massenbrief generation failed";
 
@@ -142,10 +142,10 @@ class DocumentMailServiceTest extends AbstractITest {
         when(tlMock.translate("document-queue.mail.massenbrief.failure.subject"))
             .thenReturn("translated massenbrief error subject");
 
-        // Act
+        // ACT
         documentMailService.sendDocumentQueueFinishedFailureMail(documentQueue, errorMessage);
 
-        // Assert
+        // ASSERT
         String expectedEmail = documentQueue.getBenutzer().getEmail().getAddress();
         verify(tlMock).translate(
             "document-queue.mail.massenbrief.failure.content",

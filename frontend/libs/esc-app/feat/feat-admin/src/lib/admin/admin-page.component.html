@@ -8,14 +8,14 @@
       }
     </style>
 
-    @if (canViewList()) {
+    @if (canViewSchulen()) {
       <li svuiListItem>
         <a svuiListItemTitle routerLink="{{ Path.SCHULEN }}"> {{ 'admin.list.item.schulen' | transloco }} </a>
         <span> </span>
         <span svuiListItemSecondary> </span>
       </li>
     }
-    @if (canViewList()) {
+    @if (canViewKlassen()) {
       <li svuiListItem>
         <a svuiListItemTitle routerLink="{{ Path.KLASSEN }}"> {{ 'admin.list.item.klassen' | transloco }} </a>
         <span> </span>
@@ -38,7 +38,7 @@
       </li>
     }
 
-    @if (canViewList()) {
+    @if (canViewInfomaterial()) {
       <li svuiListItem>
         <a svuiListItemTitle routerLink="{{ Path.INFOMATERIAL }}"> {{ 'admin.list.item.infomaterial' | transloco }} </a>
         <span> </span>
@@ -54,7 +54,7 @@
       </li>
     }
 
-    @if (canViewBenutzer() && !hasOrganisation()) {
+    @if (canViewBenutzer()) {
       <li svuiListItem>
         <a svuiListItemTitle routerLink="{{ Path.BENUTZER }}"> {{ 'admin.list.item.benutzer' | transloco }} </a>
         <span> </span>

@@ -5,8 +5,7 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
-import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.json.UntersuchungSehenMassnahmenJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.json.UntersuchungSehenMassnahmenSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
@@ -35,14 +34,19 @@ public class UntersuchungSehenMassnahmenMapper {
         return new UntersuchungSehenMassnahmenJson(
             massnahmen.getId(),
             EntityInfoJson.fromEntity(massnahmen),
-            new UntersuchungSehenMassnahmenSaveJson(
-                massnahmen.isBereitsBehandeltSehen(),
-                massnahmen.getAbgegebenesInfomaterial().stream().map(InfomaterialMapper::toJson).toList(),
-                massnahmen.getInformationEltern(),
-                massnahmen.isUeberweisungAugenarzt(),
-                massnahmen.getNachkontrolle().isNachkontrolleSehen(),
-                massnahmen.getVersion()
-            )
+            toSaveJson(massnahmen)
+        );
+    }
+
+    @NonNull
+    public static UntersuchungSehenMassnahmenSaveJson toSaveJson(@NonNull UntersuchungMassnahmen massnahmen) {
+        return new UntersuchungSehenMassnahmenSaveJson(
+            massnahmen.isBereitsBehandeltSehen(),
+            massnahmen.getAbgegebenesInfomaterial().stream().map(InfomaterialMapper::toJson).toList(),
+            massnahmen.getInformationEltern(),
+            massnahmen.isUeberweisungAugenarzt(),
+            massnahmen.getNachkontrolle().isNachkontrolleSehen(),
+            massnahmen.getVersion()
         );
     }
 
@@ -72,25 +76,29 @@ public class UntersuchungSehenMassnahmenMapper {
 
     @Nullable
     public UntersuchungSehenMassnahmenJson getByEinladung(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungMassnahmen());
     }
 
     @NonNull
     public UntersuchungSehenMassnahmenJson save(
-        @NonNull ID<Einladung> einladungID,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull UntersuchungSehenMassnahmenSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungMassnahmen massnahmen = untersuchung.getUntersuchungMassnahmen();
         UntersuchungMassnahmen entity = toEntity(untersuchung, massnahmen, saveJson);
-        UntersuchungMassnahmen persistedEntity = untersuchungMassnahmenService.persistWithOptimisticLocking(entity, saveJson.getVersion());
+        UntersuchungMassnahmen persistedEntity = untersuchungMassnahmenService.persistWithOptimisticLocking(
+            entity,
+            saveJson.getVersion(),
+            wrappedId.isAnonymerEintrag()
+        );
         return toJson(persistedEntity);
     }
 }

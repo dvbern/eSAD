@@ -4,8 +4,7 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
-import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.signatur.json.UntersuchungSignaturJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.signatur.json.UntersuchungSignaturSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
@@ -43,30 +42,30 @@ public class UntersuchungSignaturMapper {
 
     @Nullable
     public UntersuchungSignaturJson getByEinladung(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungSignatur(), tenantProducer.produceTenant());
     }
 
     @NonNull
     public UntersuchungSignaturJson signieren(
-        @NonNull ID<Einladung> einladungID,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchungSignaturService.signieren(untersuchung), tenantProducer.produceTenant());
     }
 
     @NonNull
     public UntersuchungSignaturJson resetSignatur(
-        @NonNull ID<Einladung> einladungID,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchungSignaturService.resetSignatur(untersuchung), tenantProducer.produceTenant());
     }

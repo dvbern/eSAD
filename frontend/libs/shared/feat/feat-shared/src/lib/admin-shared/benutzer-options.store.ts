@@ -1,11 +1,14 @@
-import {computed, inject, Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {BenutzerOptionJson, BenutzerService, FachRolle} from '@dvb/data-access-backend';
 import {AppErrorHandlerService, Loader, withSelectedEntity} from '@dvb/util-angular';
-import {isNullish, Nullish} from '@dvb/util-shared';
+import {isNotNullish, isNullish, Nullish} from '@dvb/util-shared';
 import {patchState, signalStore, withComputed, withMethods} from '@ngrx/signals';
 import {setAllEntities, withEntities} from '@ngrx/signals/entities';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {pipe, switchMap, tap} from 'rxjs';
+import {BenutzerStore} from "../benutzer/benutzer/benutzer.store";
+
+export type BenutzerOptionType = 'FACHROLLEN' | 'ARZT' | 'HILFSPERSON' | 'VERWALTUNG';
 
 @Injectable({providedIn: 'root'})
 export class BenutzerOptionsStore extends signalStore(
@@ -20,28 +23,9 @@ export class BenutzerOptionsStore extends signalStore(
       return current.systemRollen?.fachRollen;
     }
   })),
-  withComputed(({entities, organisationsRollen, systemRollen}) => ({
-    arztOptions: computed((): BenutzerOptionJson[] => {
-      return entities().filter(benutzerOption => organisationsRollen(benutzerOption)?.includes(FachRolle.SCHULAERZTIN))
-    }),
-    hilfspersonOptions: computed((): BenutzerOptionJson[] => {
-      return entities()
-        .filter(benutzerOption => organisationsRollen(benutzerOption)?.some(
-          organisationsRolle => [FachRolle.MPA, FachRolle.PFP, FachRolle.SCHOOL_NURSE].includes(organisationsRolle)
-        ))
-    }),
-    supportOptions: computed((): BenutzerOptionJson[] => {
-      return entities()
-        .filter(benutzerOption => systemRollen(benutzerOption)?.includes(FachRolle.SUPPORT));
-    }),
-    supperuserOptions: computed((): BenutzerOptionJson[] => {
-      return entities().filter(benutzerOption => organisationsRollen(benutzerOption)?.includes(FachRolle.SUPERUSER));
-    }),
-    adminuserOptions: computed((): BenutzerOptionJson[] => {
-      return entities().filter(benutzerOption => organisationsRollen(benutzerOption)?.includes(FachRolle.ADMIN));
-    }),
+  withComputed(() => ({
   })),
-  withMethods((store) => ({
+  withMethods((store, benutzerStore = inject(BenutzerStore)) => ({
     getOptionForBenutzer(id: string | undefined): BenutzerOptionJson | undefined {
       if (isNullish(id)) {
         return undefined;
@@ -51,23 +35,47 @@ export class BenutzerOptionsStore extends signalStore(
     contains(entities: BenutzerOptionJson[], option: BenutzerOptionJson): boolean {
       return entities.filter(arzt => arzt.id === option.id).length > 0
     },
-    arztOptionsIncluding(current: BenutzerOptionJson | Nullish): BenutzerOptionJson[] {
-      if (isNullish(current) || this.contains(store.arztOptions(), current)) {
-        return store.arztOptions();
+    benutzerFiltered(
+      currentlySelectedOption: BenutzerOptionJson | Nullish,
+      benutzerOptionType: BenutzerOptionType,
+      onlyFromMyOrganisation: boolean
+    ): BenutzerOptionJson[] {
+      let result = store.entities();
+      // Wenn gewuenscht, nur spezifische Rollen
+      if (benutzerOptionType == 'ARZT') {
+        result = result.filter(option => option.organisationRollen?.fachRollen?.includes(FachRolle.SCHULAERZTIN));
+      } else if (benutzerOptionType == 'HILFSPERSON') {
+        result = result.filter(option => option.organisationRollen?.fachRollen?.some(
+          organisationsRolle => [FachRolle.MPA, FachRolle.PFP, FachRolle.SCHOOL_NURSE].includes(organisationsRolle)
+        ));
+      } else if (benutzerOptionType == 'VERWALTUNG') {
+        result = result.filter(option =>
+          option.organisationRollen?.fachRollen?.includes(FachRolle.ADMIN) ||
+          option.systemRollen?.fachRollen?.some(
+            systemRolle => [FachRolle.SUPPORT, FachRolle.SYSTEM_ADMIN].includes(systemRolle)
+          )
+        );
+      } else if (benutzerOptionType == 'FACHROLLEN') {
+        result = result.filter(option => !option.systemRollen?.fachRollen?.some(
+          organisationsRolle => [FachRolle.SUPPORT, FachRolle.SYSTEM_ADMIN].includes(organisationsRolle)
+        ));
       }
-      return [...store.arztOptions(), current];
-    },
-    hilfspersonOptionsIncluding(current: BenutzerOptionJson | Nullish): BenutzerOptionJson[] {
-      if (isNullish(current) || this.contains(store.hilfspersonOptions(), current)) {
-        return store.hilfspersonOptions();
+      // Wenn gewuenscht, nur die Elemente der eigenen Organisation zurueckgeben
+      if (onlyFromMyOrganisation) {
+        const myOrganisation = benutzerStore.currentOrganisation();
+        // Sonderfall: weder Organisation gesetzt noch SUPPORT -> keine Berechtigung
+        if (isNullish(myOrganisation) && !benutzerStore.hasFachrolleSupport()) {
+          return [];
+        }
+        if (isNotNullish(myOrganisation)) {
+          result = result.filter(entity => entity.organisationRollen?.organisation?.id === myOrganisation.id);
+        }
       }
-      return [...store.hilfspersonOptions(), current];
-    },
-    entitiesIncluding(current: BenutzerOptionJson | Nullish): BenutzerOptionJson[] {
-      if (isNullish(current) || this.contains(store.entities(), current)) {
-        return store.entities();
+      // Sicherstellen, dass nach allen Filtern das currentlySelectedOption noch in der Liste ist
+      if (isNullish(currentlySelectedOption) || this.contains(result, currentlySelectedOption)) {
+        return result;
       }
-      return [...store.entities(), current];
+      return [...result, currentlySelectedOption];
     },
   })),
 ) {
@@ -75,6 +83,7 @@ export class BenutzerOptionsStore extends signalStore(
 
   readonly #benutzerService = inject(BenutzerService);
   readonly #appErrorHandlerService = inject(AppErrorHandlerService);
+
   loadAllBenutzerOptions = rxMethod<void>(
     pipe(
       switchMap(() => this.loader.tapLoading$(this.#benutzerService.findAllActiveBenutzerOptions$(),

@@ -142,7 +142,7 @@ class FileUtilTest {
         File nonExistentFile = new File("non-existent-file.txt");
         Path nonExistentFilePath = nonExistentFile.toPath();
 
-        // Assert that the method throws an exception when given a non-existent file path
+        // ASSERT that the method throws an exception when given a non-existent file path
         Assertions.assertThrows(
             AppFailureException.class,
             () -> FileUtil.readTextFromPath(nonExistentFilePath),

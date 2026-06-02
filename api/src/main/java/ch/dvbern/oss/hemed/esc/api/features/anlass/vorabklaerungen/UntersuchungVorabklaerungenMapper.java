@@ -4,8 +4,7 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
-import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.vorabklaerungen.json.UntersuchungVorabklaerungenJson;
@@ -33,12 +32,21 @@ public class UntersuchungVorabklaerungenMapper {
         return new UntersuchungVorabklaerungenJson(
             vorabklaerungen.getId(),
             EntityInfoJson.fromEntity(vorabklaerungen),
-            new UntersuchungVorabklaerungenSaveJson(
-                SingleValueEnhancedMapper.toJson(FragebogenStatus.class, vorabklaerungen.getFragebogenStatus()),
-                SingleValueEnhancedMapper.toJson(EinverstaendnisImpfungen.class, vorabklaerungen.getEinverstaendnisImpfungen()),
-                SingleValueEnhancedMapper.toJson(ChronischeKrankheiten.class, vorabklaerungen.getChronischeKrankheiten()),
-                vorabklaerungen.getVersion()
-            )
+            toSaveJson(vorabklaerungen)
+        );
+    }
+
+    @NonNull
+    public static UntersuchungVorabklaerungenSaveJson toSaveJson(@NonNull UntersuchungVorabklaerungen vorabklaerungen) {
+        return new UntersuchungVorabklaerungenSaveJson(
+            SingleValueEnhancedMapper.toJson(FragebogenStatus.class, vorabklaerungen.getFragebogenStatus()),
+            SingleValueEnhancedMapper.toJson(
+                EinverstaendnisImpfungen.class,
+                vorabklaerungen.getEinverstaendnisImpfungen()),
+            SingleValueEnhancedMapper.toJson(
+                ChronischeKrankheiten.class,
+                vorabklaerungen.getChronischeKrankheiten()),
+            vorabklaerungen.getVersion()
         );
     }
 
@@ -67,21 +75,21 @@ public class UntersuchungVorabklaerungenMapper {
 
     @Nullable
     public UntersuchungVorabklaerungenJson getByEinladung(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedID,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedID);
         hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungVorabklaerungen());
     }
 
     @NonNull
     public UntersuchungVorabklaerungenJson save(
-        @NonNull ID<Einladung> einladungID,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull UntersuchungVorabklaerungenSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungVorabklaerungen vorabklaerungen = untersuchung.getUntersuchungVorabklaerungen();
         UntersuchungVorabklaerungen entity = toEntity(untersuchung, vorabklaerungen, saveJson);

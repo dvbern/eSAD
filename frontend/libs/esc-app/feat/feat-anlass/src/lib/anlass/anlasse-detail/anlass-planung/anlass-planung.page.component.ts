@@ -1,4 +1,3 @@
-
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -8,21 +7,28 @@ import {
   linkedSignal,
   OnDestroy,
 } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AnlassStatus } from '@dvb/data-access-backend';
-import { BenutzerStore, ConfirmService, globalConstants, PageComponent, Path } from '@dvb/feat-shared';
-import { ButtonComponent, NgSelectDirective, PageHeaderButtonsComponent } from '@dvb/ui-components';
-import { AppNotificationStore } from '@dvb/util-angular';
-import { fromISODateString, hasExportAnlassPlanungBerechtigung, isNotNullish, requireValue } from '@dvb/util-shared';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
-import {interval, startWith, Unsubscribable} from 'rxjs';
-import { AnlassStore } from '../../anlass.store';
-import { AnlassJsonEnhanced, anlassTitle } from '../../anlass.util';
-import { AnlassKinderStore } from '../anlass-kinder.store';
-import { DatenComponent } from './daten/daten.component';
-import { EinladungenListeComponent } from './einladungen-liste/einladungen-liste.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
+import {AnlassStatus} from '@dvb/data-access-backend';
+import {
+  AnlassJsonEnhanced,
+  BenutzerStore,
+  ConfirmService,
+  globalConstants,
+  PageComponent,
+  Path
+} from '@dvb/feat-shared';
+import {ButtonComponent, NgSelectDirective, PageHeaderButtonsComponent} from '@dvb/ui-components';
+import {AppNotificationStore} from '@dvb/util-angular';
+import {fromISODateString, hasExportAnlassPlanungBerechtigung, isNotNullish, requireValue} from '@dvb/util-shared';
+import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
+import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
+import {interval, Unsubscribable} from 'rxjs';
+import {AnlassStore} from '../../anlass.store';
+import {anlassTitle} from '../../anlass.util';
+import {AnlassKinderStore} from '../anlass-kinder.store';
+import {DatenComponent} from './daten/daten.component';
+import {EinladungenListeComponent} from './einladungen-liste/einladungen-liste.component';
 
 @Component({
   selector: 'feat-anlass-detail-page',

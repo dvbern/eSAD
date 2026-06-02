@@ -2,12 +2,14 @@ package ch.dvbern.oss.hemed.esc.api.features.schule.json;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Value
@@ -18,7 +20,11 @@ public class SchuleOptionJson {
     @NotNull
     @NonNull
     @Schema(required = true)
-    private final ID<Schule> id;
+    private ID<Schule> id;
+
+    @Nullable
+    @Schema(required = false)
+    private ID<Organisation> organisationId;
 
     @NotNull
     @NonNull

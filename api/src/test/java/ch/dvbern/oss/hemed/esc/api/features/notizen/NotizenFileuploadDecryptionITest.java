@@ -116,9 +116,8 @@ class NotizenFileuploadDecryptionITest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void when_upload_encrypted_and_download_without_key_should_fail() {
-        // ARRANGe
+        // ARRANGE
         Notiz storedNotiz = fixtureService.createNotiz();
-        // Arrange
         String somreRandomKey = S3EncryptionKeyGenerator.generateKey();
 
         Mockito.when(s3RequestBuilderProducerMock.produceS3RequestBuilder())
@@ -161,7 +160,7 @@ class NotizenFileuploadDecryptionITest extends AbstractITest {
     void when_upload_encrypted_and_download_with_wrong_key_should_fail() {
         // ARRANGe
         Notiz storedNotiz = fixtureService.createNotiz();
-        // Arrange
+        // ARRANGE
         String somreRandomKey = S3EncryptionKeyGenerator.generateKey();
         String anotherRandomKey = S3EncryptionKeyGenerator.generateKey();
 

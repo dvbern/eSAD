@@ -22,6 +22,7 @@ enum FachRolleBE {
     ),
     MPA(
         EnumSet.of(
+            Berechtigung.BENUTZER_OPTIONS_LESEN,
             Berechtigung.AUFGABEN_LESEN,
             Berechtigung.AUFGABEN_SCHREIBEN,
             Berechtigung.ANLASSLISTE_LESEN,
@@ -61,13 +62,16 @@ enum FachRolleBE {
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
             Berechtigung.KOMPLETTER_EXPORT,
-            Berechtigung.LISTEN_LESEN,
             Berechtigung.IMPFSTOFFE_LESEN,
             Berechtigung.LABELS_LESEN,
         	Berechtigung.BENUTZER_BERECHTIGUNGEN_LESEN,
         	Berechtigung.ORGANISATION_VERWALTEN_LESEN,
             Berechtigung.VORLAGEN_LESEN,
-        	Berechtigung.ARCHIVIERUNG
+            Berechtigung.SCHULE_LESEN,
+            Berechtigung.KLASSEN_LESEN,
+            Berechtigung.KLASSEN_SCHREIBEN,
+            Berechtigung.INFOMATERIAL_LESEN,
+            Berechtigung.ARCHIVIERUNG
         )
     ),
     ORTHOPISTIN(
@@ -75,6 +79,7 @@ enum FachRolleBE {
     ),
     SCHULAERZTIN(
         EnumSet.of(
+            Berechtigung.BENUTZER_OPTIONS_LESEN,
             Berechtigung.AUFGABEN_LESEN,
             Berechtigung.AUFGABEN_SCHREIBEN,
             Berechtigung.ANLASSLISTE_LESEN,
@@ -114,13 +119,16 @@ enum FachRolleBE {
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
             Berechtigung.KOMPLETTER_EXPORT,
-            Berechtigung.LISTEN_LESEN,
             Berechtigung.IMPFSTOFFE_LESEN,
             Berechtigung.LABELS_LESEN,
         	Berechtigung.BENUTZER_BERECHTIGUNGEN_LESEN,
         	Berechtigung.BENUTZER_BERECHTIGUNGEN_SCHREIBEN,
         	Berechtigung.ORGANISATION_VERWALTEN_LESEN,
             Berechtigung.VORLAGEN_LESEN,
+            Berechtigung.SCHULE_LESEN,
+            Berechtigung.KLASSEN_LESEN,
+            Berechtigung.KLASSEN_SCHREIBEN,
+            Berechtigung.INFOMATERIAL_LESEN,
        	 	Berechtigung.ARCHIVIERUNG
         )
     ),
@@ -132,6 +140,7 @@ enum FachRolleBE {
     ),
     SCHOOL_NURSE(
         EnumSet.of(
+            Berechtigung.BENUTZER_OPTIONS_LESEN,
             Berechtigung.AUFGABEN_LESEN,
             Berechtigung.AUFGABEN_SCHREIBEN,
             Berechtigung.ANLASSLISTE_LESEN,
@@ -171,12 +180,15 @@ enum FachRolleBE {
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
             Berechtigung.KOMPLETTER_EXPORT,
-            Berechtigung.LISTEN_LESEN,
             Berechtigung.IMPFSTOFFE_LESEN,
             Berechtigung.LABELS_LESEN,
         	Berechtigung.BENUTZER_BERECHTIGUNGEN_LESEN,
         	Berechtigung.ORGANISATION_VERWALTEN_LESEN,
             Berechtigung.VORLAGEN_LESEN,
+            Berechtigung.SCHULE_LESEN,
+            Berechtigung.KLASSEN_LESEN,
+            Berechtigung.KLASSEN_SCHREIBEN,
+            Berechtigung.INFOMATERIAL_LESEN,
         	Berechtigung.ARCHIVIERUNG
         )
     ),
@@ -188,6 +200,7 @@ enum FachRolleBE {
     ),
     SUPPORT(
         EnumSet.of(
+            Berechtigung.BENUTZER_OPTIONS_LESEN,
             Berechtigung.AUFGABEN_LESEN,
             Berechtigung.AUFGABEN_SCHREIBEN,
             Berechtigung.ANLASSLISTE_LESEN,
@@ -229,9 +242,6 @@ enum FachRolleBE {
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
             Berechtigung.INDIVIDUELLE_REPORTS,
             Berechtigung.KOMPLETTER_EXPORT,
-        	Berechtigung.LISTEN_ADMIN_LESEN,
-            Berechtigung.LISTEN_LESEN,
-            Berechtigung.LISTEN_SCHREIBEN,
             Berechtigung.IMPFSTOFFE_LESEN,
             Berechtigung.IMPFSTOFFE_SCHREIBEN,
             Berechtigung.DUBLETTEN_ZUSAMMENFUHREN,
@@ -245,13 +255,20 @@ enum FachRolleBE {
         	Berechtigung.ORGANISATION_VERWALTEN_SCHREIBEN,
         	Berechtigung.VORLAGEN_LESEN,
         	Berechtigung.VORLAGEN_ADMIN_LESEN,
-        	Berechtigung.VORLAGEN_SCHREIBEN,
-        	Berechtigung.ARCHIVIERUNG,
+            Berechtigung.VORLAGEN_SCHREIBEN,
+            Berechtigung.SCHULE_LESEN,
+            Berechtigung.SCHULE_SCHREIBEN,
+            Berechtigung.KLASSEN_LESEN,
+            Berechtigung.KLASSEN_SCHREIBEN,
+            Berechtigung.INFOMATERIAL_LESEN,
+            Berechtigung.INFOMATERIAL_SCHREIBEN,
+            Berechtigung.ARCHIVIERUNG,
         	Berechtigung.SUPPORT
         )
     ),
     SYSTEM_ADMIN(
         EnumSet.of(
+            Berechtigung.BENUTZER_OPTIONS_LESEN,
             Berechtigung.AUFGABEN_LESEN,
             Berechtigung.AUFGABEN_SCHREIBEN,
             Berechtigung.ANLASSLISTE_LESEN,
@@ -293,9 +310,6 @@ enum FachRolleBE {
             Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
             Berechtigung.INDIVIDUELLE_REPORTS,
             Berechtigung.KOMPLETTER_EXPORT,
-        	Berechtigung.LISTEN_ADMIN_LESEN,
-            Berechtigung.LISTEN_LESEN,
-            Berechtigung.LISTEN_SCHREIBEN,
             Berechtigung.IMPFSTOFFE_LESEN,
             Berechtigung.IMPFSTOFFE_SCHREIBEN,
             Berechtigung.DUBLETTEN_ZUSAMMENFUHREN,
@@ -310,7 +324,13 @@ enum FachRolleBE {
             Berechtigung.VORLAGEN_LESEN,
             Berechtigung.VORLAGEN_ADMIN_LESEN,
             Berechtigung.VORLAGEN_SCHREIBEN,
-        	Berechtigung.ARCHIVIERUNG,
+            Berechtigung.SCHULE_LESEN,
+            Berechtigung.SCHULE_SCHREIBEN,
+            Berechtigung.KLASSEN_LESEN,
+            Berechtigung.KLASSEN_SCHREIBEN,
+            Berechtigung.INFOMATERIAL_LESEN,
+            Berechtigung.INFOMATERIAL_SCHREIBEN,
+            Berechtigung.ARCHIVIERUNG,
             Berechtigung.SUPPORT,
         	Berechtigung.SYSTEM_ADMIN
         )

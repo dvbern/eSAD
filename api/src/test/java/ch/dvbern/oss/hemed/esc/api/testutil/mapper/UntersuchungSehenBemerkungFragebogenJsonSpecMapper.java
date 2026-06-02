@@ -13,7 +13,7 @@ public interface UntersuchungSehenBemerkungFragebogenJsonSpecMapper extends Base
         INSTANCE = Mappers.getMapper(UntersuchungSehenBemerkungFragebogenJsonSpecMapper.class);
 
     @NonNull
-    UntersuchungSehenBemerkungFragebogenJsonSpec untersuchungSehenJsonToUntersuchungSehenJsonSpec(
+    UntersuchungSehenBemerkungFragebogenJsonSpec jsonToJsonSpec(
         @NonNull UntersuchungSehenBemerkungFragebogenJson json
     );
 }

@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
@@ -38,7 +39,6 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Verhalten;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
@@ -56,66 +56,70 @@ public class UntersuchungArztBeurteilungMapper {
     private final UntersuchungArztBeurteilungService untersuchungArztBeurteilungService;
     private final AnlassService anlassService;
 
-
     @Nullable
-    public static UntersuchungArztBeurteilungJson toJson(@Nullable UntersuchungArztBeurteilung arzt) {
-        if (arzt == null) {
+    public static UntersuchungArztBeurteilungJson toJson(@Nullable UntersuchungArztBeurteilung arztBeurteilung) {
+        if (arztBeurteilung == null) {
             return null;
         }
         return new UntersuchungArztBeurteilungJson(
-            arzt.getId(),
-            EntityInfoJson.fromEntity(arzt),
-            new UntersuchungArztBeurteilungSaveJson(
-                EnumSetUtil.toList(arzt.getEinverstaendniserklaerung()),
-                arzt.getVerhaltensfragebogen(),
-                arzt.getVerhalten(),
-                arzt.getBlutdruck(),
-                arzt.getBlutdruckSystolisch(),
-                arzt.getBlutdruckDiastolisch(),
-                arzt.getHerzauskultation(),
-                arzt.getHerzauskultationBemerkung(),
-                arzt.getHaut(),
-                arzt.getHautBemerkung(),
-                EnumSetUtil.toList(arzt.getMundAndZaehne()),
-                arzt.getMundAndZaehneBemerkung(),
-                arzt.getSprachfaehigkeitSingleValue(),
-                EnumSetUtil.toList(arzt.getSprachfaehigkeitMultiValue()),
-                arzt.getSprachfaehigkeitBemerkung(),
-                arzt.getSprachfaehigkeitPunkte(),
-                arzt.getMotorik(),
-                arzt.getMotorikPunkte(),
-                arzt.getKognition(),
-                arzt.getKognitionPunkte(),
-                EnumSetUtil.toList(arzt.getBewegungsapparat()),
-                arzt.getBewegungsapparatBemerkung(),
-                arzt.getEinbeinstand(),
-                arzt.getEinbeinstandRechts(),
-                arzt.getEinbeinstandLinks(),
-                arzt.getEinbeinstandBemerkung(),
-                arzt.getEinbeinhuepfen(),
-                arzt.getEinbeinhuepfenRechts(),
-                arzt.getEinbeinhuepfenLinks(),
-                arzt.getEinbeinhuepfenBemerkung(),
-                EnumSetUtil.toList(arzt.getFingeropposition()),
-                arzt.getFingeroppositionBemerkung(),
-                arzt.getHampelmann(),
-                arzt.getBallFangen(),
-                arzt.getBallWerfen(),
-                arzt.getNameSchreiben(),
-                arzt.getFigurNachmalen(),
-                arzt.getStifthaltung(),
-                arzt.getAussprache(),
-                arzt.getLesefit(),
-                arzt.getLesefitPunkte(),
-                arzt.getZahlenNachsprechen4(),
-                arzt.getZahlenNachsprechen5(),
-                arzt.getZeichnenKreis(),
-                arzt.getZeichnenViereck(),
-                arzt.getZeichnenDreieck(),
-                arzt.getZeichnenMensch(),
-                arzt.getZeichnenMenschPunkte(),
-                arzt.getVersion()
-            )
+            arztBeurteilung.getId(),
+            EntityInfoJson.fromEntity(arztBeurteilung),
+            toSaveJson(arztBeurteilung)
+        );
+    }
+
+    @NonNull
+    public static UntersuchungArztBeurteilungSaveJson toSaveJson(@NonNull UntersuchungArztBeurteilung arztBeurteilung) {
+        return new UntersuchungArztBeurteilungSaveJson(
+            EnumSetUtil.toList(arztBeurteilung.getEinverstaendniserklaerung()),
+            arztBeurteilung.getVerhaltensfragebogen(),
+            arztBeurteilung.getVerhalten(),
+            arztBeurteilung.getBlutdruck(),
+            arztBeurteilung.getBlutdruckSystolisch(),
+            arztBeurteilung.getBlutdruckDiastolisch(),
+            arztBeurteilung.getHerzauskultation(),
+            arztBeurteilung.getHerzauskultationBemerkung(),
+            arztBeurteilung.getHaut(),
+            arztBeurteilung.getHautBemerkung(),
+            EnumSetUtil.toList(arztBeurteilung.getMundAndZaehne()),
+            arztBeurteilung.getMundAndZaehneBemerkung(),
+            arztBeurteilung.getSprachfaehigkeitSingleValue(),
+            EnumSetUtil.toList(arztBeurteilung.getSprachfaehigkeitMultiValue()),
+            arztBeurteilung.getSprachfaehigkeitBemerkung(),
+            arztBeurteilung.getSprachfaehigkeitPunkte(),
+            arztBeurteilung.getMotorik(),
+            arztBeurteilung.getMotorikPunkte(),
+            arztBeurteilung.getKognition(),
+            arztBeurteilung.getKognitionPunkte(),
+            EnumSetUtil.toList(arztBeurteilung.getBewegungsapparat()),
+            arztBeurteilung.getBewegungsapparatBemerkung(),
+            arztBeurteilung.getEinbeinstand(),
+            arztBeurteilung.getEinbeinstandRechts(),
+            arztBeurteilung.getEinbeinstandLinks(),
+            arztBeurteilung.getEinbeinstandBemerkung(),
+            arztBeurteilung.getEinbeinhuepfen(),
+            arztBeurteilung.getEinbeinhuepfenRechts(),
+            arztBeurteilung.getEinbeinhuepfenLinks(),
+            arztBeurteilung.getEinbeinhuepfenBemerkung(),
+            EnumSetUtil.toList(arztBeurteilung.getFingeropposition()),
+            arztBeurteilung.getFingeroppositionBemerkung(),
+            arztBeurteilung.getHampelmann(),
+            arztBeurteilung.getBallFangen(),
+            arztBeurteilung.getBallWerfen(),
+            arztBeurteilung.getNameSchreiben(),
+            arztBeurteilung.getFigurNachmalen(),
+            arztBeurteilung.getStifthaltung(),
+            arztBeurteilung.getAussprache(),
+            arztBeurteilung.getLesefit(),
+            arztBeurteilung.getLesefitPunkte(),
+            arztBeurteilung.getZahlenNachsprechen4(),
+            arztBeurteilung.getZahlenNachsprechen5(),
+            arztBeurteilung.getZeichnenKreis(),
+            arztBeurteilung.getZeichnenViereck(),
+            arztBeurteilung.getZeichnenDreieck(),
+            arztBeurteilung.getZeichnenMensch(),
+            arztBeurteilung.getZeichnenMenschPunkte(),
+            arztBeurteilung.getVersion()
         );
     }
 
@@ -128,7 +132,9 @@ public class UntersuchungArztBeurteilungMapper {
         if (untersuchungArzt == null) {
             untersuchungArzt = UntersuchungArztBeurteilung.forUntersuchung(untersuchung);
         }
-        untersuchungArzt.setEinverstaendniserklaerung(EnumSetUtil.toEnumSet(saveJson.getEinverstaendniserklaerung(), Einverstaendniserklaerung.class));
+        untersuchungArzt.setEinverstaendniserklaerung(EnumSetUtil.toEnumSet(
+            saveJson.getEinverstaendniserklaerung(),
+            Einverstaendniserklaerung.class));
         untersuchungArzt.setVerhaltensfragebogen(saveJson.getVerhaltensfragebogen());
         untersuchungArzt.setVerhalten(saveJson.getVerhalten());
         untersuchungArzt.setBlutdruck(saveJson.getBlutdruck());
@@ -151,10 +157,13 @@ public class UntersuchungArztBeurteilungMapper {
                 saveJson.getMundAndZaehneBemerkung() : null
         );
         untersuchungArzt.setSprachfaehigkeitSingleValue(saveJson.getSprachfaehigkeitSingleValue());
-        untersuchungArzt.setSprachfaehigkeitMultiValue(EnumSetUtil.toEnumSet(saveJson.getSprachfaehigkeitMultiValue(), Sprachfaehigkeit.class));
+        untersuchungArzt.setSprachfaehigkeitMultiValue(EnumSetUtil.toEnumSet(
+            saveJson.getSprachfaehigkeitMultiValue(),
+            Sprachfaehigkeit.class));
         untersuchungArzt.setSprachfaehigkeitBemerkung(
             saveJson.getSprachfaehigkeitMultiValue() != null
-                && (saveJson.getSprachfaehigkeitMultiValue().contains(Sprachfaehigkeit.ANDERES) || saveJson.getSprachfaehigkeitMultiValue()
+                && (saveJson.getSprachfaehigkeitMultiValue().contains(Sprachfaehigkeit.ANDERES)
+                || saveJson.getSprachfaehigkeitMultiValue()
                 .contains(Sprachfaehigkeit.ARTIKULATIONSFEHLER)
             ) ?
                 saveJson.getSprachfaehigkeitBemerkung() : null
@@ -164,7 +173,9 @@ public class UntersuchungArztBeurteilungMapper {
         untersuchungArzt.setMotorikPunkte(saveJson.getMotorikPunkte());
         untersuchungArzt.setKognition(saveJson.getKognition());
         untersuchungArzt.setKognitionPunkte(saveJson.getKognitionPunkte());
-        untersuchungArzt.setBewegungsapparat(EnumSetUtil.toEnumSet(saveJson.getBewegungsapparat(), Bewegungsapparat.class));
+        untersuchungArzt.setBewegungsapparat(EnumSetUtil.toEnumSet(
+            saveJson.getBewegungsapparat(),
+            Bewegungsapparat.class));
         untersuchungArzt.setBewegungsapparatBemerkung(
             saveJson.getBewegungsapparat() != null && saveJson.getBewegungsapparat()
                 .contains(Bewegungsapparat.ANDERES) ?
@@ -185,7 +196,9 @@ public class UntersuchungArztBeurteilungMapper {
             saveJson.getEinbeinhuepfen() == Einbeinhuepfen.ANDERES ?
                 saveJson.getEinbeinhuepfenBemerkung() : null
         );
-        untersuchungArzt.setFingeropposition(EnumSetUtil.toEnumSet(saveJson.getFingeropposition(), Fingeropposition.class));
+        untersuchungArzt.setFingeropposition(EnumSetUtil.toEnumSet(
+            saveJson.getFingeropposition(),
+            Fingeropposition.class));
 
         untersuchungArzt.setFingeroppositionBemerkung(
             saveJson.getFingeropposition() != null && saveJson.getFingeropposition()
@@ -213,21 +226,21 @@ public class UntersuchungArztBeurteilungMapper {
 
     @Nullable
     public UntersuchungArztBeurteilungJson getByEinladung(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungArztBeurteilung());
     }
 
     @NonNull
     public UntersuchungArztBeurteilungJson save(
-        @NonNull ID<Einladung> einladungID,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull UntersuchungArztBeurteilungSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungArztBeurteilung arzt = untersuchung.getUntersuchungArztBeurteilung();
         UntersuchungArztBeurteilung entity = toEntity(untersuchung, arzt, saveJson);
@@ -267,7 +280,10 @@ public class UntersuchungArztBeurteilungMapper {
                 // SprachfaehigkeitSingleValue
                 null,
                 // SprachfaehigkeitMultiValue
-                EnumSetUtil.toList(UntersuchungArztUtil.getSprachfaehigkeit(config, null, Sprachfaehigkeit.GROBKURSORISCH_NORMAL)),
+                EnumSetUtil.toList(UntersuchungArztUtil.getSprachfaehigkeit(
+                    config,
+                    null,
+                    Sprachfaehigkeit.GROBKURSORISCH_NORMAL)),
                 // SprachfaehigkeitBemerkung
                 null,
                 // SprachfaehigkeitPunkte
@@ -281,7 +297,10 @@ public class UntersuchungArztBeurteilungMapper {
                 // KognitionPunkte
                 null,
                 // Bewegungsapparat
-                EnumSetUtil.toList(UntersuchungArztUtil.getBewegungsapparat(config, null, Bewegungsapparat.GROBKURSORISCH_NORMAL)),
+                EnumSetUtil.toList(UntersuchungArztUtil.getBewegungsapparat(
+                    config,
+                    null,
+                    Bewegungsapparat.GROBKURSORISCH_NORMAL)),
                 // BewegungsapparatBemerkung
                 null,
                 // Einbeinstand
@@ -301,7 +320,10 @@ public class UntersuchungArztBeurteilungMapper {
                 // EinbeinhuepfenBemerkung
                 null,
                 // Fingeropposition
-                EnumSetUtil.toList(UntersuchungArztUtil.getFingeropposition(config, null, Fingeropposition.ALTERSENTSPRECHEND)),
+                EnumSetUtil.toList(UntersuchungArztUtil.getFingeropposition(
+                    config,
+                    null,
+                    Fingeropposition.ALTERSENTSPRECHEND)),
                 // FingeroppositionBemerkung
                 null,
                 // Hampelmann

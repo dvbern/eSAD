@@ -1,6 +1,6 @@
 import {computed, inject, Injectable} from '@angular/core';
 import {LabelJson, LabelSaveJson, LabelsService, LabelTyp} from '@dvb/data-access-backend';
-import {BackendEntityId} from '@dvb/data-access-types';
+import {BackendEntityId, requireValidBackendEntityId} from '@dvb/data-access-types';
 import {AppErrorHandlerService, Loader, withSelectedEntity} from '@dvb/util-angular';
 import {requireValue} from '@dvb/util-shared';
 import {tapResponse} from '@ngrx/operators';
@@ -17,11 +17,11 @@ import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, pipe, switchMap, tap} from 'rxjs';
 import {TranslatedStringPipe} from '../translated-strings/view/translated-string.pipe';
 
-const IMPFAUSWEIS_AUTO_LABEL_ID: BackendEntityId = '350f2746-7db4-4dfa-ae28-1b3b5812434a';
-const FRAGEBOGEN_AUTO_LABEL_ID: BackendEntityId = 'f8514824-9694-408e-bdb6-d72e376d7833';
-const DISPENSATIONSGESUCH_AUTO_LABEL_ID: BackendEntityId = '345d4d49-ef8d-4236-94dc-3e35f4bdf76c';
-const ANMELDUNG_BESTAETIGUNG_AUTO_LABEL_ID: BackendEntityId = 'e84f6525-0f70-4440-bb62-11fd25fea5b1';
-const IMPFANMELDUNG_AUTO_LABEL_ID: BackendEntityId = '56986f77-1447-4d41-ba3a-1f792cdeb335';
+const IMPFAUSWEIS_AUTO_LABEL_ID: BackendEntityId = requireValidBackendEntityId('350f2746-7db4-4dfa-ae28-1b3b5812434a');
+const FRAGEBOGEN_AUTO_LABEL_ID: BackendEntityId = requireValidBackendEntityId('f8514824-9694-408e-bdb6-d72e376d7833');
+const DISPENSATIONSGESUCH_AUTO_LABEL_ID: BackendEntityId = requireValidBackendEntityId('345d4d49-ef8d-4236-94dc-3e35f4bdf76c');
+const ANMELDUNG_BESTAETIGUNG_AUTO_LABEL_ID: BackendEntityId = requireValidBackendEntityId('e84f6525-0f70-4440-bb62-11fd25fea5b1');
+const IMPFEINVERSTAENDNIS_AUTO_LABEL_ID: BackendEntityId = requireValidBackendEntityId('56986f77-1447-4d41-ba3a-1f792cdeb335');
 
 @Injectable({ providedIn: 'root' })
 export class LabelsStore extends signalStore(
@@ -38,8 +38,8 @@ export class LabelsStore extends signalStore(
     anmeldungBestaetigungAutoLabel: () => {
       return store.entities().find(entity => entity.id === ANMELDUNG_BESTAETIGUNG_AUTO_LABEL_ID);
     },
-    impfanmeldungAutoLabel: () => {
-      return store.entities().find(entity => entity.id === IMPFANMELDUNG_AUTO_LABEL_ID);
+    impfeinverstaendnisAutoLabel: () => {
+      return store.entities().find(entity => entity.id === IMPFEINVERSTAENDNIS_AUTO_LABEL_ID);
     },
     dispensationsgesuchAutoLabel: () => {
       return store.entities().find(entity => entity.id === DISPENSATIONSGESUCH_AUTO_LABEL_ID);

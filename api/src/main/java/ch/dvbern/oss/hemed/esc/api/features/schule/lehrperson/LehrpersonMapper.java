@@ -67,7 +67,7 @@ public final class LehrpersonMapper {
             lehrperson.getGeschlecht(),
             lehrperson.getName(),
             lehrperson.getVorname(),
-            lehrperson.getName() + ' ' + lehrperson.getVorname()
+            lehrperson.getNameVorname()
         );
     }
 

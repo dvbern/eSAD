@@ -87,11 +87,10 @@ public class EinladungResource {
     ) {
         List<ID<Einladung>> einladungenId =
             einladungListJson.getEinladungList().stream().map(EinladungJson::getId).toList();
+        einladungMapper.requireConsistentPathParams(einladungenId, anlassId);
         authorizerService.requireWriteAuthorizationAnlass(
             anlassId,
             List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE));
-        einladungMapper.requireConsistentPathParams(einladungenId, anlassId);
-
         einladungMapper.removeEinladungen(einladungListJson);
     }
 
@@ -101,10 +100,12 @@ public class EinladungResource {
     public EinladungListJson findEinladungenByAnlass(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId
     ) {
-        authorizerService.requireReadAuthorizationAnlass(
+        return new EinladungListJson(einladungMapper.findEinladungenByAnlassBerechtigt(
             anlassId,
-            List.of(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE));
-        return new EinladungListJson(einladungMapper.findEinladungenByAnlass(anlassId));
+            einladung -> authorizerService.hasReadAuthorizationEinladung(
+                einladung,
+                List.of(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE),
+                null)));
     }
 
     @GET
@@ -116,10 +117,11 @@ public class EinladungResource {
         @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
-        authorizerService.requireReadAuthorizationAnlass(
-            anlassId,
-            List.of(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE));
-        return einladungMapper.getById(wrappedId.toEinladungId());
+        return einladungMapper.getById(
+            wrappedId.toEinladungId(),
+            einladung -> authorizerService.requireReadAuthorizationEinladung(
+                einladung,
+                List.of(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE)));
     }
 
     @GET
@@ -131,10 +133,11 @@ public class EinladungResource {
         @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
-        authorizerService.requireReadAuthorizationAnlass(
-            anlassId,
-            List.of(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE));
-        return einladungMapper.getTabsSavedByEinladungId(wrappedId.toEinladungId());
+        return einladungMapper.getTabsSavedByEinladungId(
+            wrappedId,
+            untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
+                untersuchung,
+                List.of(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE)));
     }
 
     @PUT
@@ -147,10 +150,13 @@ public class EinladungResource {
         @NotNull @NonNull @Valid EinladungSaveJson einladungSaveJson
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
-        authorizerService.requireWriteAuthorizationAnlass(
-            anlassId,
-            List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE));
-        return einladungMapper.updateEinladung(wrappedId.toEinladungId(), einladungSaveJson);
+        return einladungMapper.updateEinladung(
+            wrappedId.toEinladungId(),
+            einladungSaveJson,
+            einladung -> authorizerService.requireWriteAuthorizationEinladung(
+                einladung,
+                List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE))
+        );
     }
 
     @POST
@@ -183,33 +189,37 @@ public class EinladungResource {
     @GET
     @Path("/tabinfo")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH})
+    @RolesAllowed({ BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH })
     public UntersuchungTabInfoListJson getUntersuchungTabInfos(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @QueryParam("einladungIds") List<ID<Einladung>> einladungIds
     ) {
         einladungMapper.requireConsistentPathParams(einladungIds, anlassId);
-        authorizerService.requireReadAuthorizationAnlass(
-            anlassId,
-            List.of(Berechtigung.KINDER_LESEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH));
-        List<UntersuchungTabInfoJson> untersuchungTabInfos = einladungMapper.getUntersuchungTabInfos(einladungIds);
+        List<UntersuchungTabInfoJson> untersuchungTabInfos = einladungMapper.getUntersuchungTabInfosBerechtigt(
+            einladungIds,
+            einladung -> authorizerService.hasReadAuthorizationEinladung(
+                einladung,
+                List.of(Berechtigung.KINDER_LESEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH),
+                null));
         return new UntersuchungTabInfoListJson(untersuchungTabInfos);
     }
 
     @GET
     @Path("/hiddentabinfo")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH})
+    @RolesAllowed({ BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH })
     public UntersuchungTabInfoListJson getHiddenUntersuchungTabInfos(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
         @NotNull @NonNull @QueryParam("einladungIds") List<ID<Einladung>> einladungIds
     ) {
         einladungMapper.requireConsistentPathParams(einladungIds, anlassId);
-        authorizerService.requireReadAuthorizationAnlass(
-            anlassId,
-            List.of(Berechtigung.KINDER_LESEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH));
         List<UntersuchungTabInfoJson> untersuchungTabInfos =
-            einladungMapper.getHiddenUntersuchungTabInfos(anlassId, einladungIds);
+            einladungMapper.getHiddenUntersuchungTabInfosBerechtigt(
+                anlassId, einladungIds,
+                einladung -> authorizerService.hasReadAuthorizationEinladung(
+                    einladung,
+                    List.of(Berechtigung.KINDER_LESEN_MEDIZINISCH, Berechtigung.KINDER_LESEN_NICHT_MEDIZINISCH),
+                    null));
         return new UntersuchungTabInfoListJson(untersuchungTabInfos);
     }
 
@@ -222,10 +232,11 @@ public class EinladungResource {
         @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
-        authorizerService.requireReadAuthorizationAnlass(
-            anlassId,
-            List.of(Berechtigung.SU_DATEN_LESEN));
-        return untersuchungKindDatenMapper.getByEinladung(wrappedId.toEinladungId());
+        return untersuchungKindDatenMapper.getByEinladung(
+            wrappedId.toEinladungId(),
+            untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
+                untersuchung,
+                List.of(Berechtigung.SU_DATEN_LESEN)));
     }
 
     @PUT
@@ -236,9 +247,10 @@ public class EinladungResource {
         @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
-        authorizerService.requireWriteAuthorizationAnlass(
-            anlassId,
-            List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE));
-        einladungMapper.untersuchungAbschliessen(wrappedId.toEinladungId());
+        einladungMapper.untersuchungAbschliessen(
+            wrappedId.toEinladungId(),
+            einladung -> authorizerService.requireWriteAuthorizationEinladung(
+                einladung,
+                List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE)));
     }
 }

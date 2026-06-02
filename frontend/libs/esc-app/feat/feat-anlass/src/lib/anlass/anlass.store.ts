@@ -4,15 +4,17 @@ import {
   AnlassSaveJson,
   AnlassService,
   AnlassStatus,
+  BenutzerOptionJson,
   PrinterService,
   SchulInformationenJson,
 } from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
-import {BenutzerStore} from '@dvb/feat-shared';
+import {AnlassJsonEnhanced, BenutzerStore, TenantSettingsStore} from '@dvb/feat-shared';
 import {AppErrorHandlerService, handleBlobResponseDownload, Loader, withSelectedEntity} from '@dvb/util-angular';
 import {
   hasAnlassCreateOrEditForNotAbgeschlossenBerechtigung,
   hasAnlassEditBerechtigungForAbgeschlossen,
+  isNullish,
   requireValue,
 } from '@dvb/util-shared';
 import {TranslocoService} from '@jsverse/transloco';
@@ -21,7 +23,7 @@ import {patchState, signalStore, withComputed, withMethods, withState} from '@ng
 import {addEntity, removeEntity, setAllEntities, setEntity, withEntities} from '@ngrx/signals/entities';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, pipe, switchMap} from 'rxjs';
-import {AnlassJsonEnhanced, enhanceAnlass} from './anlass.util';
+import {enhanceAnlass} from './anlass.util';
 import {withDevtools} from '@angular-architects/ngrx-toolkit';
 
 type AnlassState = {
@@ -48,10 +50,15 @@ export class AnlassStore extends signalStore(
   withComputed(({selectedEntity}) => {
     // Inject at store initialization
     const benutzerStore = inject(BenutzerStore);
+    const tenantSettingsStore = inject(TenantSettingsStore);
     return {
       canUserEditAnlassInCurrentState: computed(() => {
-        const selected = selectedEntity();
-        const permissionCheck = selected?.data?.anlassStatus === AnlassStatus.ABGESCHLOSSEN ?
+        if (!tenantSettingsStore.zentraleOrganisationEnabled()) {
+          if (!benutzerStore.isZustaendigForAnlass(selectedEntity())) {
+            return false;
+          }
+        }
+        const permissionCheck = selectedEntity()?.data?.anlassStatus === AnlassStatus.ABGESCHLOSSEN ?
           hasAnlassEditBerechtigungForAbgeschlossen() :
           hasAnlassCreateOrEditForNotAbgeschlossenBerechtigung();
         return benutzerStore.createHasRequiredRoleSig(permissionCheck)();
@@ -90,33 +97,58 @@ export class AnlassStore extends signalStore(
       showAnmeldungBestaetigung: computed(() => {
         return selectedEntity()?.anlassConfig.data.showAnmeldungBestaetigung;
       }),
-      showImpfanmeldung: computed(() => {
-        return selectedEntity()?.anlassConfig.data.showImpfanmeldung;
+      showImpfeinverstaendnis: computed(() => {
+        return selectedEntity()?.anlassConfig.data.showImpfeinverstaendnis;
       }),
       sehenBrilleLinsenValues: computed(() => {
         return selectedEntity()?.anlassConfig.data.sehenBrilleLinsenValues ?? [];
-      })
+      }),
+      isAnonymous: computed(() => {
+        return selectedEntity()?.data.anlassConfigOption.anonym ?? false;
+      }),
     };
   }),
 
-  withMethods((store) => ({
-    prefillKind(kindIdOrUndefined: BackendEntityId | undefined): void {
-      patchState(store, {
-        prefilledKindId: kindIdOrUndefined,
-      })
-    },
-    prefillAnlass(anlassPart: Partial<AnlassSaveJson> | undefined): void {
-      patchState(store, {
-        prefilledAnlass: anlassPart,
-      });
-    },
-    resetPrefill(): void {
-      patchState(store, {
-        prefilledAnlass: undefined,
-        prefilledKindId: undefined,
-      });
-    },
-  })),
+  withMethods((store) => {
+    const benutzerStore = inject(BenutzerStore);
+    const tenantSettingsStore = inject(TenantSettingsStore);
+    return {
+      selectedEntityOrganisationId(): BackendEntityId | undefined {
+        return store.selectedEntity()?.data.arzt?.organisationRollen?.organisation?.id;
+      },
+      showZustaendigerChangedWarning(newArzt: BenutzerOptionJson | undefined): boolean {
+        if (tenantSettingsStore.zentraleOrganisationEnabled()) {
+          // Bei zentraler Organisation nie warnen
+          return false;
+        }
+        if (isNullish(this.selectedEntityOrganisationId())) {
+          // Von null auf etwas -> nie warnen
+          return false;
+        }
+        if (benutzerStore.hasFachrolleSupport()) {
+          // Bei Support nie warnen
+          return false;
+        }
+        return this.selectedEntityOrganisationId() !== newArzt?.organisationRollen?.organisation?.id;
+      },
+      prefillKind(kindIdOrUndefined: BackendEntityId | undefined): void {
+        patchState(store, {
+          prefilledKindId: kindIdOrUndefined,
+        })
+      },
+      prefillAnlass(anlassPart: Partial<AnlassSaveJson> | undefined): void {
+        patchState(store, {
+          prefilledAnlass: anlassPart,
+        });
+      },
+      resetPrefill(): void {
+        patchState(store, {
+          prefilledAnlass: undefined,
+          prefilledKindId: undefined,
+        });
+      },
+    };
+  }),
 ) {
   readonly #anlassService = inject(AnlassService);
   readonly #printService = inject(PrinterService);

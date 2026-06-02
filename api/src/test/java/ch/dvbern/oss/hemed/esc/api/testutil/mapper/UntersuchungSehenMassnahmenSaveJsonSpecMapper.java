@@ -10,10 +10,10 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface UntersuchungSehenMassnahmenSaveJsonSpecMapper extends BaseMapper {
     UntersuchungSehenMassnahmenSaveJsonSpecMapper
-			INSTANCE = Mappers.getMapper(UntersuchungSehenMassnahmenSaveJsonSpecMapper.class);
+        INSTANCE = Mappers.getMapper(UntersuchungSehenMassnahmenSaveJsonSpecMapper.class);
 
     @NonNull
-    UntersuchungSehenMassnahmenSaveJsonSpec untersuchungMassnahmenJsonToUntersuchungMassnahmenJsonSpec(
-        @NonNull UntersuchungSehenMassnahmenSaveJson json
+    UntersuchungSehenMassnahmenSaveJsonSpec saveJsonToSaveJsonSpec(
+        @NonNull UntersuchungSehenMassnahmenSaveJson saveJson
     );
 }

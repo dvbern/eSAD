@@ -101,12 +101,11 @@ export class EinladungenListeComponent {
   readonly #ngModal = inject(NgbModal);
   readonly navigationService = inject(NavigationService);
   readonly #benutzerStore = inject(BenutzerStore);
-  readonly #tenantSettingStore = inject(TenantSettingsStore);
   readonly #fb = inject(NonNullableFormBuilder);
   readonly tenantSettingsStore = inject(TenantSettingsStore);
 
   protected readonly geschlechter = Object.values(Geschlecht);
-  protected readonly einladungStatusValues = Object.values(this.#tenantSettingStore.availableEinladungStatus());
+  protected readonly einladungStatusValues = Object.values(this.tenantSettingsStore.availableEinladungStatus());
   protected readonly klassenStufeValues = Object.values(Klassenstufe);
   protected readonly naechsteStationValues = Object.values(NaechsteStation);
   protected readonly getUseCaseGechlecht = getUseCaseGechlecht;
@@ -116,6 +115,7 @@ export class EinladungenListeComponent {
   canDownloadDossierExport = this.#benutzerStore.createHasRequiredRoleSig(hasDownloadDossierBerechtigung());
 
   isAnlassStatusBereit = computed(() => this.anlassStore.selectedEntity()?.data.anlassStatus === AnlassStatus.BEREIT);
+  showNachkontrolle = computed(() => !this.anlassStore.isAbgeschlossen() && this.tenantSettingsStore.nachkontrolleEnabled());
 
   itemTable = new TableModel<EinladungJsonEnhanced>(
     {rawListSignal: this.store.einladungen},
@@ -173,7 +173,7 @@ export class EinladungenListeComponent {
     if ($event === EinladungStatus.TEILNAHME_ABGESAGT) {
       await this.addAbmeldungsgrund(item);
     } else {
-      this.store.updateEinladungStatus({einladungId: toEinladungBackendEntityIdWithClass(item.id), status: $event});
+      this.store.updateEinladungStatus({einladungId: item.id, status: $event});
     }
   }
 

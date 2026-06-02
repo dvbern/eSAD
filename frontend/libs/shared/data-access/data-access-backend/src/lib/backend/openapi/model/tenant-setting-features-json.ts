@@ -25,6 +25,10 @@ export interface TenantSettingFeaturesJson {
     archivierungFeature: TenantSettingFeatureStateJson;
     zentraleOrganisationFeature: TenantSettingFeatureStateJson;
     anonymeStatistikFeature: TenantSettingFeatureStateJson;
+    nachkontrolleFeature: TenantSettingFeatureStateJson;
+    anlassSpracheSpalteFeature: TenantSettingFeatureStateJson;
+    anlassSpracheZusammenfassungFeature: TenantSettingFeatureStateJson;
+    anlassInformationenFeature: TenantSettingFeatureStateJson;
 }
 
 

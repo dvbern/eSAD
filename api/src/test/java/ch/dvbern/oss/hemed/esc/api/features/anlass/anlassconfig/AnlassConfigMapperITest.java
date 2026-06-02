@@ -18,28 +18,25 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig;
 
-import java.time.LocalDate;
-import java.util.EnumSet;
-
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateConst;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.json.AnlassConfigJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.json.AnlassConfigOptionJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.json.AnlassConfigOptionListJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.json.AnlassConfigSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.AnlassConfigStatus;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassConfigBuilder;
-import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.util.EnumSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -59,7 +56,8 @@ class AnlassConfigMapperITest extends AbstractITest {
     @SuppressWarnings("java:S5961" /* Keep number of assertions */)
     void toJson_shouldMapAllFields() {
         // ARRANGE
-        AnlassConfig entity = fixtureService.createAnlassConfigAllOptional(appClock.localDateTime().now().getYear(), AnlassTyp.KLASSE_4);
+        AnlassConfig entity =
+            fixtureService.createAnlassConfigAllOptional(appClock.localDateTime().now().getYear(), AnlassTyp.KLASSE_4);
 
         // ACT
         AnlassConfigJson json = AnlassConfigMapper.toJson(entity, appClock.getToday());
@@ -173,7 +171,7 @@ class AnlassConfigMapperITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void toEntityForCreate_should_use_end_of_time_guetligkeit(){
+    void toEntityForCreate_should_use_end_of_time_guetligkeit() {
         // ARRANGE
         var von = LocalDate.of(1998, 1, 1);
         var bis = LocalDate.of(1998, 12, 31);
@@ -190,20 +188,5 @@ class AnlassConfigMapperITest extends AbstractITest {
         assertThat(entityForCreate.getGueltigkeitsZeitraum().getDatumVon()).isEqualTo(von);
         assertThat(entityForCreate.getGueltigkeitsZeitraum().getDatumBis()).isEqualTo(DateConst.END_OF_TIME);
 
-    }
-
-    @Test
-    @TestAsAdminBE
-    void findAllVisible_shouldExcludeAnonymeAnlassTypen() {
-        // ARRANGE - seed data already contains IMPFTERMIN_ANONYM config (0071-insert-anlassconfig-anonym.xml)
-
-        // ACT
-        AnlassConfigOptionListJson result = anlassConfigMapper.findAllVisible();
-
-        // ASSERT
-        assertThat(result.getConfigList())
-            .isNotEmpty()
-            .extracting(AnlassConfigOptionJson::getAnlassTyp)
-            .doesNotContain(AnlassTyp.IMPFTERMIN_ANONYM);
     }
 }

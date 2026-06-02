@@ -36,6 +36,7 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Land;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
+import ch.dvbern.oss.hemed.esc.api.shared.util.HashValueGeneratorUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.KindJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindJsonSpec;
@@ -49,21 +50,27 @@ public class KindBuilder {
 
     private KindBuilder() {
         this.kind = defaultKind();
-        TestUtil.setEntityInfo(kind);
     }
 
     @NonNull
     public static Kind defaultKind() {
-        return new Kind(
+        String name = "Gerber";
+        String vorname = "Emma";
+        Geschlecht geschlecht = Geschlecht.WEIBLICH;
+        LocalDate geburtsdatum = LocalDate.of(2010, 1, 1);
+        Kind kind = new Kind(
             null,
             null,
+            HashValueGeneratorUtil.generateHashValueForKindValues(
+                name, vorname, geschlecht, geburtsdatum
+            ),
             null,
-            "Gerber",
-            "Emma",
+            name,
+            vorname,
             "gerber",
             "emma",
-            Geschlecht.WEIBLICH,
-            LocalDate.of(2010, 1, 1),
+            geschlecht,
+            geburtsdatum,
             Land.SCHWEIZ,
             "Deutsch/Chinesisch",
             "Eltern",
@@ -74,13 +81,16 @@ public class KindBuilder {
             null,
             EntityAktivStatus.AKTIV
         );
+        TestUtil.setEntityInfo(kind);
+        return kind;
     }
 
     @NonNull
     public static Kind defaultKindWithNullValues() {
-        return new Kind(
+        Kind kind = new Kind(
             null,
             null,
+            "dummyHash",
             null,
             "Gerber",
             "Emma",
@@ -98,6 +108,8 @@ public class KindBuilder {
             null,
             EntityAktivStatus.AKTIV
         );
+        TestUtil.setEntityInfo(kind);
+        return kind;
     }
 
     @NonNull
@@ -121,11 +133,22 @@ public class KindBuilder {
         return this;
     }
 
+
+
     @NonNull
     @CanIgnoreReturnValue
     public KindBuilder withName(@NonNull String name, @NonNull String vorname) {
         this.kind.setName(name);
         this.kind.setVorname(vorname);
+
+        String hashValue = HashValueGeneratorUtil.generateHashValueForKindValues(
+            name,
+            vorname,
+            this.kind.getGeschlecht(),
+            this.kind.getGeburtsdatum()
+        );
+
+        this.kind.setHashValue(hashValue);
         return this;
     }
 
@@ -134,6 +157,15 @@ public class KindBuilder {
     public KindBuilder withUniqueName(@NonNull String name, @NonNull String vorname) {
         this.kind.setName(TestUtil.getRandomString(name));
         this.kind.setVorname(TestUtil.getRandomString(vorname));
+
+        String hashValue = HashValueGeneratorUtil.generateHashValueForKindValues(
+            this.kind.getName(),
+            this.kind.getVorname(),
+            this.kind.getGeschlecht(),
+            this.kind.getGeburtsdatum()
+        );
+
+        this.kind.setHashValue(hashValue);
         return this;
     }
 
@@ -173,6 +205,15 @@ public class KindBuilder {
     @CanIgnoreReturnValue
     public KindBuilder withGeburtsdatum(@NonNull LocalDate geburtsdatum) {
         this.kind.setGeburtsdatum(geburtsdatum);
+
+        String hashValue = HashValueGeneratorUtil.generateHashValueForKindValues(
+            this.kind.getName(),
+            this.kind.getVorname(),
+            this.kind.getGeschlecht(),
+            geburtsdatum
+        );
+
+        this.kind.setHashValue(hashValue);
         return this;
     }
 
@@ -180,6 +221,14 @@ public class KindBuilder {
     @CanIgnoreReturnValue
     public KindBuilder withGeschlecht(@NonNull Geschlecht geschlecht) {
         this.kind.setGeschlecht(geschlecht);
+        String hashValue = HashValueGeneratorUtil.generateHashValueForKindValues(
+            this.kind.getName(),
+            this.kind.getVorname(),
+            geschlecht,
+            this.kind.getGeburtsdatum()
+        );
+
+        this.kind.setHashValue(hashValue);
         return this;
     }
 

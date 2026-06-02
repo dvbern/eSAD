@@ -295,9 +295,9 @@ class AnlassServiceITest extends AbstractITest {
     void nachkontrolle_frueherer_anlass_should_not_copy_nachkontrolle_to_dossier() {
         // ARRANGE
         final Dossier dossier = fixtureService.createDossier();
-        Untersuchung untersuchung1 = fixtureService.createUntersuchungWithMassnahmen(LocalDate.of(2025, 1, 1), dossier);
+        fixtureService.createUntersuchungWithMassnahmen(LocalDate.of(2025, 1, 1), dossier);
         Untersuchung untersuchung2 = fixtureService.createUntersuchungWithMassnahmen(LocalDate.of(2026, 1, 1), dossier);
-        Untersuchung untersuchung3 = fixtureService.createUntersuchungWithMassnahmen(LocalDate.of(2027, 1, 1), dossier);
+        fixtureService.createUntersuchungWithMassnahmen(LocalDate.of(2027, 1, 1), dossier);
 
         UntersuchungMassnahmenSaveJsonSpec saveJsonSpec =
             UntersuchungMassnahmenBuilder.createJaxSpec(builder -> builder
@@ -333,8 +333,8 @@ class AnlassServiceITest extends AbstractITest {
     void nachkontrolle_neuester_anlass_should_copy_nachkontrolle_to_dossier() {
         // ARRANGE
         final Dossier dossier = fixtureService.createDossier();
-        Untersuchung untersuchung1 = fixtureService.createUntersuchungWithMassnahmen(LocalDate.of(2025, 1, 1), dossier);
-        Untersuchung untersuchung2 = fixtureService.createUntersuchungWithMassnahmen(LocalDate.of(2026, 1, 1), dossier);
+        fixtureService.createUntersuchungWithMassnahmen(LocalDate.of(2025, 1, 1), dossier);
+        fixtureService.createUntersuchungWithMassnahmen(LocalDate.of(2026, 1, 1), dossier);
         Untersuchung untersuchung3 = fixtureService.createUntersuchungWithMassnahmen(LocalDate.of(2027, 1, 1), dossier);
 
         UntersuchungMassnahmenSaveJsonSpec saveJsonSpec =

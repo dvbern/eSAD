@@ -46,7 +46,7 @@
       "@dvb/feat-shared-aufgaben": ["libs/shared/feat/feat-shared-aufgaben/src/index.ts"],
       "@dvb/feat-shared-impfen": ["libs/shared/feat/feat-shared-impfen/src/index.ts"],
       "@dvb/feat-stammdaten": ["libs/esc-app/feat/feat-stammdaten/src/index.ts"],
-      "@dvb/feat-statistik": ["libs/esc-app/feat/feat-statistik/src/index.ts"],
+      "@dvb/feat-anonymer-anlass": ["libs/esc-app/feat/anonymer-anlass/src/index.ts"],
       "@dvb/feat-system": ["libs/esc-app/feat/feat-system/src/index.ts"],
       "@dvb/feat-tenant": ["libs/shared/feat/feat-tenant/src/index.ts"],
       "@dvb/feat-translated-strings": ["libs/shared/feat/feat-translated-strings/src/index.ts"],

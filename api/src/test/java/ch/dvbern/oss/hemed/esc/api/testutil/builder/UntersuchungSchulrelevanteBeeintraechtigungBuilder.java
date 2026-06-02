@@ -8,6 +8,7 @@ import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.UntersuchungSchulrelevanteBeeintraechtigung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.UntersuchungSchulrelevanteBeeintraechtigungMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.json.UntersuchungSchulrelevanteBeeintraechtigungJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.json.UntersuchungSchulrelevanteBeeintraechtigungSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.Feinmotorik;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.FreiesGehen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.GleichgewichtEinbeinstand;
@@ -18,8 +19,10 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.NichtGeprueftGrund;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
-import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungSchulrelevanteBeeintraechtigungSpecMapper;
+import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungSchulrelevanteBeeintraechtigungJsonSpecMapper;
+import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSchulrelevanteBeeintraechtigungJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -68,11 +71,22 @@ public class UntersuchungSchulrelevanteBeeintraechtigungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
+    public UntersuchungSchulrelevanteBeeintraechtigungBuilder withAnzahlMonateFreiesGehen(
+        @Nullable Integer anzahlMonateFreiesGehen
+    ) {
+        this.beeintraechtigung.setAnzahlMonateFreiesGehen(anzahlMonateFreiesGehen);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
     public UntersuchungSchulrelevanteBeeintraechtigungBuilder withOhneStuetzradVelofahren(
         @Nullable OhneStuetzradVelofahren ohneStuetzradVelofahren,
         @Nullable NichtGeprueftGrund nichtGeprueftGrund
     ) {
-        this.beeintraechtigung.setOhneStuetzradVelofahren(SingleValueEnhanced.of(ohneStuetzradVelofahren, nichtGeprueftGrund));
+        this.beeintraechtigung.setOhneStuetzradVelofahren(SingleValueEnhanced.of(
+            ohneStuetzradVelofahren,
+            nichtGeprueftGrund));
         return this;
     }
 
@@ -124,21 +138,44 @@ public class UntersuchungSchulrelevanteBeeintraechtigungBuilder {
     }
 
     @NonNull
-    public static UntersuchungSchulrelevanteBeeintraechtigung create(@NonNull Consumer<UntersuchungSchulrelevanteBeeintraechtigungBuilder> block) {
-        UntersuchungSchulrelevanteBeeintraechtigungBuilder builder = new UntersuchungSchulrelevanteBeeintraechtigungBuilder();
+    public static UntersuchungSchulrelevanteBeeintraechtigung create(
+        @NonNull Consumer<UntersuchungSchulrelevanteBeeintraechtigungBuilder> block
+    ) {
+        UntersuchungSchulrelevanteBeeintraechtigungBuilder builder =
+            new UntersuchungSchulrelevanteBeeintraechtigungBuilder();
         block.accept(builder);
         return builder.beeintraechtigung;
     }
 
     @NonNull
-    public static UntersuchungSchulrelevanteBeeintraechtigungJson createJax(@NonNull Consumer<UntersuchungSchulrelevanteBeeintraechtigungBuilder> block) {
+    public static UntersuchungSchulrelevanteBeeintraechtigungSaveJson createSaveJax(
+        @NonNull Consumer<UntersuchungSchulrelevanteBeeintraechtigungBuilder> block
+    ) {
+        UntersuchungSchulrelevanteBeeintraechtigung entity = create(block);
+        return UntersuchungSchulrelevanteBeeintraechtigungMapper.toSaveJson(entity);
+    }
+
+    @NonNull
+    public static UntersuchungSchulrelevanteBeeintraechtigungJson createJax(
+        @NonNull Consumer<UntersuchungSchulrelevanteBeeintraechtigungBuilder> block
+    ) {
         UntersuchungSchulrelevanteBeeintraechtigung entity = create(block);
         return UntersuchungSchulrelevanteBeeintraechtigungMapper.toJson(entity);
     }
 
     @NonNull
-    public static UntersuchungSchulrelevanteBeeintraechtigungJsonSpec createJaxSpec(@NonNull Consumer<UntersuchungSchulrelevanteBeeintraechtigungBuilder> block) {
+    public static UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec createSaveJaxSpec(
+        @NonNull Consumer<UntersuchungSchulrelevanteBeeintraechtigungBuilder> block
+    ) {
+        UntersuchungSchulrelevanteBeeintraechtigungSaveJson saveJson = createSaveJax(block);
+        return UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpecMapper.INSTANCE.saveJsonToSaveJsonSpec(saveJson);
+    }
+
+    @NonNull
+    public static UntersuchungSchulrelevanteBeeintraechtigungJsonSpec createJaxSpec(
+        @NonNull Consumer<UntersuchungSchulrelevanteBeeintraechtigungBuilder> block
+    ) {
         UntersuchungSchulrelevanteBeeintraechtigungJson json = createJax(block);
-        return UntersuchungSchulrelevanteBeeintraechtigungSpecMapper.INSTANCE.jsonToJsonSpec(json);
+        return UntersuchungSchulrelevanteBeeintraechtigungJsonSpecMapper.INSTANCE.jsonToJsonSpec(json);
     }
 }

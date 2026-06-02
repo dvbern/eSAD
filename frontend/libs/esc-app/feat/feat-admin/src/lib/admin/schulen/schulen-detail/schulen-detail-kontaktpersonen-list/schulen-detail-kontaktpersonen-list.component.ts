@@ -22,7 +22,7 @@ import {
   TableLinkComponent,
 } from '@dvb/ui-components';
 import {TableModel} from '@dvb/util-angular';
-import {hasListEditBerechtigung, requireValue} from '@dvb/util-shared';
+import {hasSchuleEditBerechtigung, joinNotBlank, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbDropdownItem, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {firstValueFrom} from 'rxjs';
@@ -64,7 +64,7 @@ export class SchulenDetailKontaktpersonenListComponent {
   readonly #ngModal = inject(NgbModal);
   protected readonly Path = Path;
 
-  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
+  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasSchuleEditBerechtigung());
 
   itemTable = new TableModel<KontaktPersonSchuleJson>(
     { rawListSignal: this.store.entities },
@@ -84,7 +84,7 @@ export class SchulenDetailKontaktpersonenListComponent {
     this.store.setSelectedEntityId(kontaktPerson.id);
     this.confirmService.confirm({
       question: this.#transloco.translate('schule.kontaktperson.list.delete.question',
-        { name: kontaktPerson.data.name + ' ' + kontaktPerson.data.vorname }),
+        { name: joinNotBlank([kontaktPerson.data.name, kontaktPerson.data.vorname]) }),
       consequence: this.#transloco.translate('schule.kontaktperson.list.delete.consequence'),
       decision: this.#transloco.translate('schule.kontaktperson.list.delete.decision'),
     }).subscribe(() => {
@@ -99,7 +99,7 @@ export class SchulenDetailKontaktpersonenListComponent {
     this.store.setSelectedEntityId(kontaktPerson.id);
     this.confirmService.confirm({
       question: this.#transloco.translate('schule.kontaktperson.list.remove-connection.question',
-        { name: kontaktPerson.data.name + ' ' + kontaktPerson.data.vorname }),
+        { name: joinNotBlank([kontaktPerson.data.name, kontaktPerson.data.vorname]) }),
       consequence: this.#transloco.translate('schule.kontaktperson.list.remove-connection.consequence'),
       decision: this.#transloco.translate('schule.kontaktperson.list.remove-connection.decision'),
     }).subscribe(() => {

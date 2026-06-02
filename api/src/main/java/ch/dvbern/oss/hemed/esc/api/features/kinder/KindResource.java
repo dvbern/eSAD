@@ -1,74 +1,132 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder;
 
+import java.util.List;
+import java.util.function.Predicate;
+
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.kinder.json.*;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.json.EsadIdJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindListJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindSaveResultJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindSchuleAndKlasseSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindSucheOptionsJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKindMapper;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.json.KontaktPersonKindListJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.types.KindSaveModeDuplikat;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatusSaveJson;
+import io.micrometer.core.annotation.Timed;
 import io.smallrye.faulttolerance.api.RateLimit;
 import io.vertx.core.http.HttpServerResponse;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH;
 
 @Path("/kinder")
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = Tags.TAG_KINDER)
-@RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
+@RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed("KindResourceMS")
 public class KindResource {
 
     private final KindMapper kindMapper;
     private final KontaktPersonKindMapper kontaktPersonKindMapper;
+    private final DossierMapper dossierMapper;
+    private final AuthorizerService authorizerService;
 
     @Context
     private HttpServerResponse response;
 
     @POST
     @NonNull
-    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
-    public KindSaveResultJson createKind(
+    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
+    public KindSaveResultJson createKindAndDossier(
         @NotNull @NonNull @Valid KindSaveJson kindJson,
-        @NotNull @QueryParam("kindSaveMode") KindSaveModeDuplikat kindSaveMode
+        @NotNull @QueryParam("kindSaveMode") KindSaveModeDuplikat kindSaveMode,
+        @Nullable @QueryParam("arztId") ID<Benutzer> zustaendigerArztId,
+        @Nullable @QueryParam("mpaId") ID<Benutzer> zustaendigeMpaId
     ) {
         response.setStatusCode(Status.CREATED.getStatusCode());
-        return kindMapper.create(kindJson, kindSaveMode);
+        KindSaveResultJson kindSaveResultJson = kindMapper.create(kindJson, kindSaveMode);
+        return createDossierAndSaveZustaendigePersonen(kindSaveResultJson, zustaendigerArztId, zustaendigeMpaId);
+    }
+
+    @PUT
+    @Path("/{kindId}/schule-klasse")
+    @NonNull
+    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
+    public KindSaveResultJson updateSchuleAndKlasse(
+        @NotNull @NonNull @PathParam("kindId") ID<Kind> kindID,
+        @NotNull @NonNull @Valid KindSchuleAndKlasseSaveJson kindSchuleAndKlasseSaveJson
+    ) {
+        return kindMapper.updateSchuleAndKlasse(kindID, kindSchuleAndKlasseSaveJson);
     }
 
     @PUT
     @Path("/{kindId}")
     @NonNull
-    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
-    public KindSaveResultJson updateKind(
+    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
+    public KindSaveResultJson updateKindAndVerantwortlichePersonen(
         @NotNull @NonNull @PathParam("kindId") ID<Kind> kindID,
         @NotNull @NonNull @Valid KindSaveJson kindJson,
-        @NotNull @QueryParam("kindSaveMode") KindSaveModeDuplikat kindSaveMode
+        @NotNull @QueryParam("kindSaveMode") KindSaveModeDuplikat kindSaveMode,
+        @Nullable @QueryParam("arztId") ID<Benutzer> zustaendigerArztId,
+        @Nullable @QueryParam("mpaId") ID<Benutzer> zustaendigeMpaId
     ) {
-        return kindMapper.update(kindID, kindJson, kindSaveMode);
+        KindSaveResultJson kindSaveResultJson = kindMapper.update(kindID, kindJson, kindSaveMode);
+        return createDossierAndSaveZustaendigePersonen(kindSaveResultJson, zustaendigerArztId, zustaendigeMpaId);
+    }
+
+    @NonNull
+    private KindSaveResultJson createDossierAndSaveZustaendigePersonen(@NonNull KindSaveResultJson kindSaveResultJson, @Nullable ID<Benutzer> zustaendigerArztId, @Nullable ID<Benutzer> zustaendigeMpaId) {
+        // Wenn das KindSaveResult null ist, war es ein Duplikat und es wurde kein Kind gespeichert
+        if (kindSaveResultJson.getKindJson() == null) {
+            return kindSaveResultJson;
+        }
+        Predicate<Dossier> canReadMedizinischeDaten = predicateReadMedizinischeDaten();
+        DossierJson dossierJson = dossierMapper.getOrCreateByKind(
+            kindSaveResultJson.getKindJson().getId(),
+            canReadMedizinischeDaten);
+        DossierJson savedDossierJson = dossierMapper.updateDossierVerantwortlicherArztUndMpa(
+            dossierJson.getId(),
+            zustaendigerArztId,
+            zustaendigeMpaId,
+            canReadMedizinischeDaten);
+        return new KindSaveResultJson(
+            kindSaveResultJson.getIdsOfPotentialDuplicates(),
+            savedDossierJson.getKind(),
+            savedDossierJson
+        );
     }
 
     @PUT
     @Path("/{kindId}/kindaktivstatus")
-    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
+    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
     public KindJson updateKindAktivStatus(
         @NonNull @NotNull @PathParam("kindId") ID<Kind> kindId,
         @NotNull @NonNull @Valid EntityAktivStatusSaveJson saveJson
@@ -78,7 +136,7 @@ public class KindResource {
 
     @DELETE
     @Path("/{kindId}")
-    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
+    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
     public void removeKind(@NotNull @NonNull @PathParam("kindId") ID<Kind> kindID) {
         kindMapper.remove(kindID);
     }
@@ -125,7 +183,7 @@ public class KindResource {
     @PUT
     @Path("/{kindId}/esad-id-generated")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
+    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
     public KindJson generateEsadIdForKind(
         @NotNull @NonNull @PathParam("kindId") ID<Kind> kindId
     ) {
@@ -135,11 +193,19 @@ public class KindResource {
     @PUT
     @Path("/{kindId}/esad-id-manual")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
+    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
     public KindJson setEsadIdForKind(
         @NotNull @NonNull @PathParam("kindId") ID<Kind> kindId,
         @NotNull @NonNull @Valid EsadIdJson esadIdJson
     ) {
         return kindMapper.setEsadIdForKind(kindId, esadIdJson);
+    }
+
+    @NonNull
+    private Predicate<Dossier> predicateReadMedizinischeDaten() {
+        return dossier -> authorizerService.hasReadAuthorizationDossier(
+            dossier,
+            List.of(Berechtigung.KINDER_LESEN_MEDIZINISCH),
+            null);
     }
 }

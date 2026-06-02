@@ -72,11 +72,7 @@ export class BriefvorlagenListPageComponent {
   readonly spracheOptions = this.#tenantSettingsStore.supportedLanguages();
 
   editBriefvorlagenBenutzerOptions = computed(() => {
-    const adminUsers = this.benutzerOptionsStore.adminuserOptions();
-    const superUsers = this.benutzerOptionsStore.supperuserOptions();
-    const supportUsers = this.benutzerOptionsStore.supportOptions();
-
-    const allUsers = [...adminUsers, ...superUsers, ...supportUsers];
+    const allUsers = this.benutzerOptionsStore.benutzerFiltered(undefined, 'VERWALTUNG', false);
     return [...new Map(allUsers.map(user => [user.id, user])).values()];
   });
 

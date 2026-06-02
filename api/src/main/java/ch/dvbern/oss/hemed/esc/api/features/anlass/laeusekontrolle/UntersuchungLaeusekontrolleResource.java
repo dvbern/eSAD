@@ -53,7 +53,7 @@ public class UntersuchungLaeusekontrolleResource {
             wrappedId.toEinladungId(),
             untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
                 untersuchung,
-                Berechtigung.SU_LAEUSE_LESEN));
+                List.of(Berechtigung.SU_LAEUSE_LESEN)));
     }
 
     @PUT

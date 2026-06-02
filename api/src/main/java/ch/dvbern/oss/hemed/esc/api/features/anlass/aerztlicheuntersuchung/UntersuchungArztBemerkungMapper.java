@@ -4,10 +4,9 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
-import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.json.UntersuchungArztBemerkungJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.json.UntersuchungArztBemerkungSaveJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import lombok.RequiredArgsConstructor;
@@ -22,17 +21,22 @@ public class UntersuchungArztBemerkungMapper {
     private final UntersuchungArztBemerkungService untersuchungArztBemerkungService;
 
     @Nullable
-    public static UntersuchungArztBemerkungJson toJson(@Nullable UntersuchungArztBemerkung arzt) {
-        if (arzt == null) {
+    public static UntersuchungArztBemerkungJson toJson(@Nullable UntersuchungArztBemerkung arztBemerkung) {
+        if (arztBemerkung == null) {
             return null;
         }
         return new UntersuchungArztBemerkungJson(
-            arzt.getId(),
-            EntityInfoJson.fromEntity(arzt),
-            new UntersuchungArztBemerkungSaveJson(
-                arzt.getBemerkungen(),
-                arzt.getVersion()
-            )
+            arztBemerkung.getId(),
+            EntityInfoJson.fromEntity(arztBemerkung),
+            toSaveJson(arztBemerkung)
+        );
+    }
+
+    @NonNull
+    public static UntersuchungArztBemerkungSaveJson toSaveJson(@NonNull UntersuchungArztBemerkung arztBemerkung) {
+        return new UntersuchungArztBemerkungSaveJson(
+            arztBemerkung.getBemerkungen(),
+            arztBemerkung.getVersion()
         );
     }
 
@@ -51,21 +55,21 @@ public class UntersuchungArztBemerkungMapper {
 
     @Nullable
     public UntersuchungArztBemerkungJson getByEinladung(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungArztBemerkung());
     }
 
     @NonNull
     public UntersuchungArztBemerkungJson save(
-        @NonNull ID<Einladung> einladungID,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull UntersuchungArztBemerkungSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungArztBemerkung arztBem = untersuchung.getUntersuchungArztBemerkung();
         UntersuchungArztBemerkung entity = toEntity(untersuchung, arztBem, saveJson);

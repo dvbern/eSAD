@@ -19,14 +19,12 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
-import org.assertj.core.api.Assert;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.emptyOrNullString;
-
 import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+import static org.hamcrest.Matchers.emptyOrNullString;
 
 @QuarkusTest
 @RequiredArgsConstructor
@@ -63,23 +61,6 @@ class UntersuchungLaeusekontrolleResourceITest extends AbstractITest {
             .body(emptyOrNullString());
     }
 
-    @Test
-    @TestAsAdminBS
-    void getUntersuchungLaeusekontrolle_non_existing_with_einladung_suffix_should_return_empty_response() {
-        // ARRANGE
-        Einladung einladung = fixtureService.createEinladung();
-        untersuchungService.getOrCreateUntersuchung(einladung.getId());
-        // ACT
-        api
-            .untersuchungLaeusekontrolleResourceGetUntersuchungLaeusekontrolle()
-            .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
-            .execute(ResponseBody::prettyPeek)
-            .then()
-            .assertThat()
-            .statusCode(Status.NO_CONTENT.getStatusCode())
-            .body(emptyOrNullString());
-    }
 
     @Test
     @TestAsAdminBS

@@ -26,8 +26,16 @@ public class UntersuchungImpfungenMassnahmenService {
 
     @NonNull
     public UntersuchungImpfungenMassnahmen persistWithOptimisticLocking(@NonNull UntersuchungImpfungenMassnahmen massnahmen, @NonNull Long versionFromFrontend) {
+        return persistWithOptimisticLocking(massnahmen, versionFromFrontend,true);
+    }
+
+    @NonNull
+    public UntersuchungImpfungenMassnahmen persistWithOptimisticLocking(@NonNull UntersuchungImpfungenMassnahmen massnahmen, @NonNull Long versionFromFrontend, boolean createAufgaben) {
         UntersuchungImpfungenMassnahmen persistedEntity = massnahmenRepo.persistWithOptimisticLocking(massnahmen, versionFromFrontend);
-        return afterPersist(persistedEntity);
+        if(createAufgaben){
+            return afterPersist(persistedEntity);
+        }
+        return persistedEntity;
     }
 
     @NonNull

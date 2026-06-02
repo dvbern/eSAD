@@ -3,8 +3,8 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 import java.util.Set;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.infomaterial.Infomaterial;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.InfomaterialBuilder;
 import org.junit.jupiter.api.Test;

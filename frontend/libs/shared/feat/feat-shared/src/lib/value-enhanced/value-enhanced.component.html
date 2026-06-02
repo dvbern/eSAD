@@ -1,17 +1,24 @@
-<div [formGroup]="form().group" >
+<div [formGroup]="form().group">
 
   <!-- Single Select -->
   @if (form().getSelectionType() === 'single') {
-
     <svui-kachel-form-section [heading]=" valueTitleKey() | transloco">
       <ng-content select="fieldsBeforeSingle"></ng-content>
       @for (each of form().getOptions(); track each) {
         <svui-kachel-control [label]="valuePrefix() + '.' + each |transloco">
-          <input svuiRadio
-                 type="radio"
-                 [name]="getRadioGroupName()"
-                 [formControl]="form().group.controls.value"
-                 [value]="each"/>
+          @if (form().getOptions().length === 1) {
+            <input svuiSingleValueCheckbox
+                   type="checkbox"
+                   name="multivalue"
+                   [value]="each"
+                   [formControl]="form().group.controls.value"/>
+          } @else {
+            <input svuiRadio
+                   type="radio"
+                   [name]="getRadioGroupName()"
+                   [formControl]="form().group.controls.value"
+                   [value]="each"/>
+          }
         </svui-kachel-control>
       }
       <ng-content select="fieldsAfterSingle"></ng-content>
@@ -35,7 +42,7 @@
 
   @if (nichtGeprueftGrundEnabled()) {
     <!-- Nicht geprueft Grund -->
-    @if (form().isNichtGeprueftChecked()) {
+    @if (isNichtGeprueftChecked()) {
       <svui-form-control [label]="'value.enhanced.nicht.geprueft.grund' | transloco"
                          [viewValue]="form().group.value.nichtGeprueftGrund">
         <ng-select

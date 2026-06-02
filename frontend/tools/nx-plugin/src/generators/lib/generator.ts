@@ -33,7 +33,6 @@ export default async function libGenerator(tree: Tree, schema: LibGeneratorSchem
     directory: buildLibraryDirectory(params),
     tags: buildTags(params),
     setParserOptionsProject: true,
-    simpleName: true,
     prefix: prefixMap[params.type],
     style: 'scss',
     buildable: true,

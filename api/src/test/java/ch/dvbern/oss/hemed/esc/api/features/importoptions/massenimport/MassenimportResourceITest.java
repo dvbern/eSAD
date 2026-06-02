@@ -21,6 +21,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
+import ch.dvbern.oss.hemed.esc.api.shared.util.HashValueGeneratorUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
@@ -128,14 +129,11 @@ class MassenimportResourceITest extends AbstractITest {
             .statusCode(Status.BAD_REQUEST.getStatusCode())
             .extract()
             .as(AppValidationErrorJsonSpec.class);
-        assertThat(response.getViolations())
-            .containsExactlyInAnyOrder(
-                new ViolationJsonSpec(
-                    "",
-                    "InvalidSturctureInMassenuploadFile",
-                    "Das Hochgeladene File hat nicht die erwartete Struktur. Bitte benutzen Sie das bereitgestellte "
-                        + "Vorlagenfile.")
-            );
+        assertThat(response.getViolations()).containsExactlyInAnyOrder(new ViolationJsonSpec(
+            "",
+            "InvalidSturctureInMassenuploadFile",
+            "Das Hochgeladene File hat nicht die erwartete Struktur. Bitte benutzen Sie das bereitgestellte "
+                + "Vorlagenfile."));
 
     }
 
@@ -156,14 +154,11 @@ class MassenimportResourceITest extends AbstractITest {
             .statusCode(Status.BAD_REQUEST.getStatusCode())
             .extract()
             .as(AppValidationErrorJsonSpec.class);
-        assertThat(response.getViolations())
-            .containsExactlyInAnyOrder(
-                new ViolationJsonSpec(
-                    "",
-                    "InvalidSturctureInMassenuploadFile",
-                    "Das Hochgeladene File hat nicht die erwartete Struktur. Bitte benutzen Sie das bereitgestellte "
-                        + "Vorlagenfile.")
-            );
+        assertThat(response.getViolations()).containsExactlyInAnyOrder(new ViolationJsonSpec(
+            "",
+            "InvalidSturctureInMassenuploadFile",
+            "Das Hochgeladene File hat nicht die erwartete Struktur. Bitte benutzen Sie das bereitgestellte "
+                + "Vorlagenfile."));
     }
 
     @Order(50)
@@ -224,6 +219,14 @@ class MassenimportResourceITest extends AbstractITest {
         updatedListSchule.forEach(kind -> {
             Assertions.assertThat(kind.getSchule()).isNotNull();
             Assertions.assertThat(kind.getSchule().getSchulhaus()).isEqualTo(schule.getSchulhaus());
+            Assertions.assertThat(kind.getHashValue())
+                .isNotNull()
+                .isEqualTo(HashValueGeneratorUtil.generateHashValueForKindValues(
+                    kind.getName(),
+                    kind.getVorname(),
+                    kind.getGeschlecht(),
+                    kind.getGeburtsdatum()));
+
             Assertions.assertThat(kind.getKlasse()).isNotNull();
             Assertions.assertThat(kind.getKlasse().getSchule().getSchulhaus()).isEqualTo(schule.getSchulhaus());
             Assertions.assertThat(kind.getKlasse().getBezeichnung()).isEqualTo(klasse.getBezeichnung());
@@ -275,8 +278,7 @@ class MassenimportResourceITest extends AbstractITest {
                 && kindService.findByKlasse(klasse3.getId()).size() == listKlasse3.size() + numberOfKinderInKlasse3,
             20,
             100,
-            TOO_MANY_RETRIES_MESSAGE
-        );
+            TOO_MANY_RETRIES_MESSAGE);
 
         Assertions.assertThat(listSchule).isEmpty();
         Assertions.assertThat(listKlasse1).isEmpty();
@@ -350,11 +352,7 @@ class MassenimportResourceITest extends AbstractITest {
         waitForConditionOrAssertFails(
             () -> kindService.findBySchule(schule.getId()).size() == listSchule.size() + numberOfKinderImportedFirstTry
                 && kindService.findByKlasse(klasse.getId()).size()
-                == listKlasse.size() + numberOfKinderImportedFirstTry,
-            20,
-            100,
-            TOO_MANY_RETRIES_MESSAGE
-        );
+                == listKlasse.size() + numberOfKinderImportedFirstTry, 20, 100, TOO_MANY_RETRIES_MESSAGE);
 
         Assertions.assertThat(listSchule).isEmpty();
         Assertions.assertThat(listKlasse).isEmpty();
@@ -401,11 +399,7 @@ class MassenimportResourceITest extends AbstractITest {
             () -> kindService.findBySchule(schule.getId()).size()
                 == firstUpdatedListSchule.size() + numberOfKinderImportedSecondTry
                 && kindService.findByKlasse(klasse.getId()).size()
-                == firstUpdatedListKlasse.size() + numberOfKinderImportedSecondTry,
-            20,
-            100,
-            TOO_MANY_RETRIES_MESSAGE
-        );
+                == firstUpdatedListKlasse.size() + numberOfKinderImportedSecondTry, 20, 100, TOO_MANY_RETRIES_MESSAGE);
 
         List<Kind> secondUpdatedListSchule = kindService.findBySchule(schule.getId());
         List<Kind> secondUpdatedListKlasse = kindService.findByKlasse(klasse.getId());
@@ -456,11 +450,7 @@ class MassenimportResourceITest extends AbstractITest {
         waitForConditionOrAssertFails(
             () -> kindService.findBySchule(schule.getId()).size() == listSchule.size() + numberOfKinderImportedFirstTry
                 && kindService.findByKlasse(klasse.getId()).size()
-                == listKlasse.size() + numberOfKinderImportedFirstTry,
-            20,
-            100,
-            TOO_MANY_RETRIES_MESSAGE
-        );
+                == listKlasse.size() + numberOfKinderImportedFirstTry, 20, 100, TOO_MANY_RETRIES_MESSAGE);
 
         Assertions.assertThat(listSchule).isEmpty();
         Assertions.assertThat(listKlasse).isEmpty();
@@ -502,11 +492,7 @@ class MassenimportResourceITest extends AbstractITest {
             () -> kindService.findBySchule(schule.getId()).size()
                 == firstUpdatedListSchule.size() + numberOfKinderImportedSecondTry
                 && kindService.findByKlasse(klasse.getId()).size()
-                == firstUpdatedListKlasse.size() + numberOfKinderImportedSecondTry,
-            20,
-            100,
-            TOO_MANY_RETRIES_MESSAGE
-        );
+                == firstUpdatedListKlasse.size() + numberOfKinderImportedSecondTry, 20, 100, TOO_MANY_RETRIES_MESSAGE);
 
         List<Kind> secondUpdatedListSchule = kindService.findBySchule(schule.getId());
         List<Kind> secondUpdatedListKlasse = kindService.findByKlasse(klasse.getId());

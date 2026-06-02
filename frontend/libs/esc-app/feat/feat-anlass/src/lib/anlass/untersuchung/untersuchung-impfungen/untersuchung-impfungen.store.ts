@@ -298,7 +298,7 @@ export class UntersuchungImpfungenStore extends signalStore(
     ),
   );
 
-  visierenDoppelkontrolleVisum1 = rxMethod<{ anlassId: BackendEntityId; einladungId: BackendEntityIdWithClass }>(
+  visierenDoppelkontrolleVisum1 = rxMethod<{ anlassId: BackendEntityId; einladungId: BackendEntityId }>(
     pipe(
       exhaustMap(payload =>
         this.saveImpfungenLoader.tapLoading$(
@@ -323,7 +323,7 @@ export class UntersuchungImpfungenStore extends signalStore(
 
   anfordernDoppelkontrolleVisum2 = rxMethod<{
     anlassId: BackendEntityId;
-    einladungId: BackendEntityIdWithClass;
+    einladungId: BackendEntityId;
     user: BenutzerOptionJson;
   }>(
     pipe(
@@ -352,7 +352,7 @@ export class UntersuchungImpfungenStore extends signalStore(
     ),
   );
 
-  visierenDoppelkontrolleVisum2 = rxMethod<{ anlassId: BackendEntityId; einladungId: BackendEntityIdWithClass }>(
+  visierenDoppelkontrolleVisum2 = rxMethod<{ anlassId: BackendEntityId; einladungId: BackendEntityId }>(
     pipe(
       exhaustMap(payload =>
         this.saveImpfungenLoader.tapLoading$(
@@ -375,7 +375,7 @@ export class UntersuchungImpfungenStore extends signalStore(
     ),
   );
 
-  resetDoppelkontrolle = rxMethod<{ anlassId: BackendEntityId; einladungId: BackendEntityIdWithClass }>(
+  resetDoppelkontrolle = rxMethod<{ anlassId: BackendEntityId; einladungId: BackendEntityId }>(
     pipe(
       exhaustMap(payload =>
         this.saveImpfungenLoader.tapLoading$(
@@ -427,7 +427,7 @@ export class UntersuchungImpfungenStore extends signalStore(
 
   einzelTerminErstellen = rxMethod<{
     anlassId: BackendEntityId;
-    einladungId: BackendEntityIdWithClass;
+    einladungId: BackendEntityId;
     onSuccess: () => void;
   }>(
     pipe(

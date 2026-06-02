@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, computed, inject} from "@angular/core";
 import {ReactiveFormsModule} from "@angular/forms";
 import {ButtonComponent, HeadingDirective} from "@dvb/ui-components";
-import {toEinladungBackendEntityIdWithClass} from "@dvb/data-access-types";
 import {TranslocoPipe, TranslocoService} from "@jsverse/transloco";
 import {BenutzerStore, ConfirmService} from "@dvb/feat-shared";
 import {UntersuchungStore} from "../../untersuchung.store";
@@ -35,7 +34,8 @@ export class UntersuchungSignaturComponent {
 
   readonly #translocoService = inject(TranslocoService);
 
-  canEditAbschluss = computed(() => this.#benutzerStore.createHasRequiredRoleSig(hasUntersuchungAbschlussEditBerechtigung())()
+  canEditAbschluss = computed(() => this.#benutzerStore.createHasRequiredRoleSig(
+      hasUntersuchungAbschlussEditBerechtigung())()
     && this.anlassStore.canUserEditAnlassInCurrentState());
 
   buttonText = computed(() => {
@@ -59,7 +59,6 @@ export class UntersuchungSignaturComponent {
 
   async changeSignatur(): Promise<void> {
     const anlassId = requireValue(this.anlassStore.selectedEntity()?.id);
-    const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
     if (this.store.isSigniert()) {
       this.#confirmService.confirm({
         question: this.#translocoService.translate('untersuchung.signatur.delete.question'),
@@ -68,13 +67,13 @@ export class UntersuchungSignaturComponent {
       }).subscribe(() => {
         this.store.resetSignatur({
           anlassId: anlassId,
-          einladungId: toEinladungBackendEntityIdWithClass(einladungId),
+          einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
         });
       });
     } else {
       this.store.signieren({
         anlassId: anlassId,
-        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
+        einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
       });
     }
   }

@@ -1,5 +1,7 @@
 package ch.dvbern.dvbstarter.infrastructure.logging;
 
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProvider;
 import com.vdurmont.semver4j.Semver;
 import java.util.Optional;
 
@@ -38,6 +40,9 @@ public class LoggingCommonMDCFieldsRequestFilter implements ContainerRequestFilt
     @Inject
     ConfigService configService;
 
+    @Inject
+    TenantProvider tenantProvider;
+
     @Override
     public void filter(ContainerRequestContext requestContext) {
         var loggingPrincipal = Optional.ofNullable(requestContext.getSecurityContext().getUserPrincipal())
@@ -71,8 +76,11 @@ public class LoggingCommonMDCFieldsRequestFilter implements ContainerRequestFilt
         }
     }
 
-    // FIXME: starter: init: roll your own tenant provider
     String getTenant() {
+        TenantEnum tenant = tenantProvider.produceTenant();
+        if(tenant != null) {
+            return tenant.toString();
+        }
         return "";
     }
 

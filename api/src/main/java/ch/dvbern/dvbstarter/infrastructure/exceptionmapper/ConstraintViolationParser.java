@@ -35,12 +35,7 @@ class ConstraintViolationParser {
         return result;
     }
 
-    // TODO: B3000-388: REST Error Response verbessern
-    // die Methode muss raus aus Violation, da sie nicht nur fuer AppValidation gebrauchtg wird
-    // sondern auch fuer AppFailures. Failures werden hier aber nur mit einer RuntimeException behandelt
-    // und werden damit recht unschoen ans GUI weitergeleitet.
-    // In der Endausbaustufe sollte Methode wohl andhand der Teile im Path entscheiden,
-    // ob eine ValidationErrorResponse oder AppFailureResponse gebaut wird.
+
     private String buildPath(ConstraintViolation<?> constraintViolation) {
         Path propertyPath = constraintViolation.getPropertyPath();
         Iterator<Node> iterator = propertyPath.iterator();

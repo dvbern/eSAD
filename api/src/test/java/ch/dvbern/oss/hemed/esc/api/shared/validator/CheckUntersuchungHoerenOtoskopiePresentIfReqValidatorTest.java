@@ -32,6 +32,10 @@ class CheckUntersuchungHoerenOtoskopiePresentIfReqValidatorTest {
         "REQUIRED	    ,ANDERES	,ANDERES,BemR	,	    ,false",
         "REQUIRED	    ,ANDERES	,ANDERES,	    ,	    ,false",
         "REQUIRED	    ,ANDERES	,ANDERES,BemR	,BemL	,true",
+        "REQUIRED	    ,ANDERES	,NORMAL ,	    ,	    ,false",
+        "REQUIRED	    ,NORMAL	    ,ANDERES,	    ,	    ,false",
+        "REQUIRED	    ,ANDERES	,NORMAL ,	    ,BemL	,false",
+        "REQUIRED	    ,NORMAL	    ,ANDERES,BemR	,	    ,false",
     })
     void validateOtoskopie(
         @NonNull RequirementSetting requirementSetting,

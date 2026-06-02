@@ -7,11 +7,12 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilungMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.json.UntersuchungSehenBeurteilungJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.json.UntersuchungSehenBeurteilungSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenAugeEinzelnResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
@@ -22,13 +23,16 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftret
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.NichtGeprueftGrund;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungSehenBeurteilungJsonSpecMapper;
+import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungSehenBeurteilungSaveJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenBeurteilungJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenBeurteilungSaveJsonSpec;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -126,6 +130,22 @@ public class UntersuchungSehenBeurteilungBuilder {
     @CanIgnoreReturnValue
     public UntersuchungSehenBeurteilungBuilder withFernvisusRechts(@Nullable BigDecimal fernvisusRechts) {
         this.sehen.setFernvisusRechts(fernvisusRechts);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungSehenBeurteilungBuilder withFernvisusAuge(
+        @Nullable DistanzSehenAugeEinzelnResultat fernvisusLinks,
+        @Nullable DistanzSehenAugeEinzelnResultat fernvisusRechts,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.sehen.setFernvisusAugeLinks(SingleValueEnhanced.of(
+            fernvisusLinks,
+            nichtGeprueftGrund));
+        this.sehen.setFernvisusAugeRechts(SingleValueEnhanced.of(
+            fernvisusRechts,
+            nichtGeprueftGrund));
         return this;
     }
 
@@ -244,16 +264,34 @@ public class UntersuchungSehenBeurteilungBuilder {
     }
 
     @NonNull
+    public static UntersuchungSehenBeurteilungSaveJson createSaveJax(
+        @NonNull Consumer<UntersuchungSehenBeurteilungBuilder> block
+    ) {
+        UntersuchungSehenBeurteilung entity = create(block);
+        return UntersuchungSehenBeurteilungMapper.toSaveJson(entity);
+    }
+
+    @NonNull
     public static UntersuchungSehenBeurteilungJson createJax(
-        @NonNull Consumer<UntersuchungSehenBeurteilungBuilder> block) {
+        @NonNull Consumer<UntersuchungSehenBeurteilungBuilder> block
+    ) {
         UntersuchungSehenBeurteilung entity = create(block);
         return UntersuchungSehenBeurteilungMapper.toJson(entity);
     }
 
     @NonNull
+    public static UntersuchungSehenBeurteilungSaveJsonSpec createSaveJaxSpec(
+        @NonNull Consumer<UntersuchungSehenBeurteilungBuilder> block
+    ) {
+        UntersuchungSehenBeurteilungSaveJson saveJson = createSaveJax(block);
+        return UntersuchungSehenBeurteilungSaveJsonSpecMapper.INSTANCE.saveJsonToSaveJsonSpec(saveJson);
+    }
+
+    @NonNull
     public static UntersuchungSehenBeurteilungJsonSpec createJaxSpec(
-        @NonNull Consumer<UntersuchungSehenBeurteilungBuilder> block) {
+        @NonNull Consumer<UntersuchungSehenBeurteilungBuilder> block
+    ) {
         UntersuchungSehenBeurteilungJson json = createJax(block);
-        return UntersuchungSehenBeurteilungJsonSpecMapper.INSTANCE.untersuchungSehenJsonToUntersuchungSehenJsonSpec(json);
+        return UntersuchungSehenBeurteilungJsonSpecMapper.INSTANCE.jsonToJsonSpec(json);
     }
 }

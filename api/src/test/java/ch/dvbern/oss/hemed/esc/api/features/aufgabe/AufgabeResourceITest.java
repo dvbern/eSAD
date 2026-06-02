@@ -113,7 +113,7 @@ class AufgabeResourceITest extends AbstractITest {
         //ARRANGE
         Benutzer defaultEmpfaenger = BenutzerBuilder.defaultBenutzer();
         benutzerService.persist(defaultEmpfaenger);
-        int numOfFaelligeAufgabenBefore = aufgabeService.getNumOfOffeneFaelligeAufgaben();
+        int numOfFaelligeAufgabenBefore = aufgabeService.getOffeneFaelligeAufgaben().size();
 
         Aufgabe aufgabe1 = AufgabeBuilder.create(builder -> builder
             .withTitle(TestUtil.getRandomString("Abgeschlossene Aufgabe Titel"))
@@ -224,7 +224,7 @@ class AufgabeResourceITest extends AbstractITest {
         Benutzer someOtherUser = BenutzerBuilder.defaultBenutzer();
         benutzerService.persist(someOtherUser);
         var numOfOffeneFaelligeAufgabenByCurrentUser = aufgabeService.getNumOfOffeneFaelligeAufgabenByCurrentUser();
-        var numOfFaelligeTotal = aufgabeService.getNumOfOffeneFaelligeAufgaben();
+        var numOfFaelligeTotal = aufgabeService.getOffeneFaelligeAufgaben().size();
 
         Aufgabe aufgabe1 = AufgabeBuilder.create(builder -> builder
             .withTitle(TestUtil.getRandomString("My faellige Aufgabe Titel"))
@@ -265,7 +265,7 @@ class AufgabeResourceITest extends AbstractITest {
         // ASSERT
         assertThat(resForMe.getNumOfOffeneFaelligeAufgaben()).isEqualTo(numOfOffeneFaelligeAufgabenByCurrentUser + 1);
         assertThat(restTotal.getNumOfOffeneFaelligeAufgaben()).isEqualTo(numOfFaelligeTotal + 2);
-        assertThat(resForMe.getNumOfOffeneFaelligeAufgaben()).isLessThan(aufgabeService.getNumOfOffeneFaelligeAufgaben());
+        assertThat(resForMe.getNumOfOffeneFaelligeAufgaben()).isLessThan(aufgabeService.getOffeneFaelligeAufgaben().size());
     }
 
     @Test

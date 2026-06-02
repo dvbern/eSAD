@@ -3,6 +3,8 @@ package ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
@@ -28,6 +30,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -35,6 +38,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
@@ -118,11 +122,11 @@ public class KontaktPersonKind
     private boolean korrespondenz;
 
     @NonNull
+    @Transient
     public String getNameVorname() {
-        if(vorname != null) {
-            return name + ' ' + vorname;
-        }
-        return name;
+        return Stream.of(name, vorname)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.joining(" "));
     }
 
     @Nullable

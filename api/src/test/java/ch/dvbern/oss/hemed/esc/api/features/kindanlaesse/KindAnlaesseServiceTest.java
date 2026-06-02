@@ -48,16 +48,16 @@ class KindAnlaesseServiceTest {
     @Test
     void loadAndMapKindAnlaesse() {
 
-        // Arrange
+        // ARRANGE
         Mockito.doAnswer(invocation -> List.of(einladung1, einladung2))
             .when(repo).findAllEinladungForKind(ArgumentMatchers.any());
         Mockito.doAnswer(invocation -> true)
             .when(authorizerService).hasReadAuthorizationAnlass(ArgumentMatchers.any(Anlass.class), ArgumentMatchers.any());
 
-        // Act
+        // ACT
         List<KindAnlassSummaryJson> mappedList = mapper.findAllForKind(ID.random(Kind.class), anlass -> true);
 
-        // Assert
+        // ASSERT
         assertThat(mappedList).hasSize(2);
         KindAnlassSummaryJson json1 = mappedList.get(0);
         assertThat(json1.getAnlassId()).isEqualTo(einladung1.getAnlass().getId());

@@ -9,9 +9,8 @@ import {
   TextareaDirective,
   TitleComponent,
 } from '@dvb/ui-components';
-import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import {DirtyMarker} from '@dvb/util-angular';
-import {requireValue} from '@dvb/util-shared';
+import {hasSehenEditBerechtigung, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {AnlassStore} from '../../../anlass.store';
 import {UntersuchungStore} from '../../untersuchung.store';
@@ -43,7 +42,8 @@ export class UntersuchungSehenBemerkungfragebogenComponent implements DirtyMarke
 
   protected readonly RequirementSetting = RequirementSetting;
 
-  canEdit = computed(() => this.anlassStore.canUserEditAnlassInCurrentState());
+  canEdit = computed(() => this.benutzerStore.createHasRequiredRoleSig(hasSehenEditBerechtigung())()
+    && this.anlassStore.canUserEditAnlassInCurrentState());
 
   form = new UntersuchungSehenBemerkungfragebogenForm({
     fb: inject(NonNullableFormBuilder),
@@ -77,10 +77,9 @@ export class UntersuchungSehenBemerkungfragebogenComponent implements DirtyMarke
     if (await this.form.validate()) {
       const payload = this.form.valueOnValid();
       const anlassId = requireValue(this.anlassStore.selectedEntity()?.id);
-      const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       this.store.saveSehenBemerkungFragebogen({
         anlassId: anlassId,
-        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
+        einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
         untersuchungSehenBemerkungFragebogenSaveJson: payload,
       });
     }

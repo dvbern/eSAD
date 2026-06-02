@@ -1,4 +1,3 @@
-
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {OtoskopieResultat, RequirementSetting} from '@dvb/data-access-backend';
@@ -15,7 +14,6 @@ import {
   TextareaDirective,
   TitleComponent,
 } from '@dvb/ui-components';
-import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import {DirtyMarker} from '@dvb/util-angular';
 import {hasHoerenEditBerechtigung, isNotNullish, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
@@ -110,20 +108,16 @@ export class UntersuchungHoerenOtoskopieComponent implements DirtyMarker {
   }
 
   abbrechen(): void {
-    const hoeren = this.hoerenOtoskopieStore.hoerenOtoskopie();
-    if (hoeren) {
-      this.form.resetForm(hoeren.otoskopieData);
-    }
+    this.form.resetForm(this.hoerenOtoskopieStore.hoerenOtoskopie()?.otoskopieData ?? undefined);
   }
 
   async submitIfValid(): Promise<void> {
     if (await this.form.validate()) {
       const payload = this.form.valueOnValid();
       const anlassId = requireValue(this.anlassStore.selectedEntity()?.id);
-      const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       this.hoerenOtoskopieStore.saveHoerenOtoskopie({
         anlassId: anlassId,
-        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
+        einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
         untersuchungHoerenOtoskopieSaveJson: payload,
       });
     }

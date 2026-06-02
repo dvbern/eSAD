@@ -1763,7 +1763,7 @@ class SearchResourceITest extends AbstractITest {
         void findPaginatedKinder_should_filter_anlass_schuljahr() {
             // ARRANGE
             int schuljahr2023 = 2023;
-            int schuljahr2024 = 2024;
+
 
             // Create kind with anlass in schuljahr 2023
             Dossier dossier1 = fixtureService.createDossier();
@@ -1928,7 +1928,7 @@ class SearchResourceITest extends AbstractITest {
             // ACT search by MPA
             SearchJsonFiltersInnerSpec mpaFilter = new SearchJsonFiltersInnerSpec(
                 SearchColumnsSpec.ANLASS_MPA_ID,
-                mpa1.getId().getId().toString(),
+                mpa1.getId().getId(),
                 FilterCombinationSpec.AND);
 
             SearchJsonSpec searchByMpa = new SearchJsonSpec(
@@ -2021,7 +2021,7 @@ class SearchResourceITest extends AbstractITest {
             Dossier dossier1 = fixtureService.createDossier();
             Kind kind1 = dossier1.getKind();
             Anlass anlass1 = fixtureService.createAnlass();
-            Einladung einladung1 = einladungService.persist(EinladungBuilder.create(builder -> builder
+            einladungService.persist(EinladungBuilder.create(builder -> builder
                 .withAnlass(anlass1)
                 .withDossier(dossier1)
                 .withStatus(EinladungStatus.TEILNAHME_BESTAETIGT)));
@@ -2030,7 +2030,7 @@ class SearchResourceITest extends AbstractITest {
             Dossier dossier2 = fixtureService.createDossier();
             Kind kind2 = dossier2.getKind();
             Anlass anlass2 = fixtureService.createAnlass();
-            Einladung einladung2 = einladungService.persist(EinladungBuilder.create(builder -> builder
+            einladungService.persist(EinladungBuilder.create(builder -> builder
                 .withAnlass(anlass2)
                 .withDossier(dossier2)
                 .withStatus(EinladungStatus.TEILNAHME_ABGESAGT)));
@@ -2237,7 +2237,7 @@ class SearchResourceITest extends AbstractITest {
             Dossier dossierWithAnlass = fixtureService.createDossier();
             Kind kindWithAnlass = dossierWithAnlass.getKind();
             Anlass anlass = fixtureService.createAnlass();
-            Einladung einladung = fixtureService.createEinladung(anlass, dossierWithAnlass);
+            fixtureService.createEinladung(anlass, dossierWithAnlass);
 
             // Create kind without anlass assignment
             Dossier dossierWithoutAnlass = fixtureService.createDossier();
@@ -2430,7 +2430,7 @@ class SearchResourceITest extends AbstractITest {
 
             Anlass newAnlass = fixtureService.createAnlass(LocalDate.of(2024, 1, 1));
             Einladung newEinladung = fixtureService.createEinladung(newAnlass, dossier);
-            Untersuchung newUntersuchung = fixtureService.createUntersuchungWithImpfungen(newEinladung);
+            fixtureService.createUntersuchungWithImpfungen(newEinladung);
             return Pair.of(dossier, interneImpfung);
         }
 

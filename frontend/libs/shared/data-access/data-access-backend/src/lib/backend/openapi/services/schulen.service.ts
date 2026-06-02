@@ -34,10 +34,6 @@ export interface SchulenServiceCreateSchuleRequestParams {
     schuleSaveJson: SchuleSaveJson;
 }
 
-export interface SchulenServiceFindAllOptionsRequestParams {
-    onlyActive: boolean;
-}
-
 export interface SchulenServiceFindSchuleKlassenRequestParams {
     schuleId: BackendEntityId;
 }
@@ -213,24 +209,13 @@ export class SchulenService {
 
     /**
      * Find All Options
-     * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public findAllOptions$(requestParameters?: SchulenServiceFindAllOptionsRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<SchuleOptionListJson>;
-    public findAllOptions$(requestParameters?: SchulenServiceFindAllOptionsRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<SchuleOptionListJson>>;
-    public findAllOptions$(requestParameters?: SchulenServiceFindAllOptionsRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<SchuleOptionListJson>>;
-    public findAllOptions$(requestParameters?: SchulenServiceFindAllOptionsRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        const onlyActive = requestParameters?.onlyActive;
-        if (onlyActive === null || onlyActive === undefined) {
-            throw new Error('Required parameter onlyActive was null or undefined when calling findAllOptions.');
-        }
-
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (onlyActive !== undefined && onlyActive !== null) {
-          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>onlyActive, 'onlyActive');
-        }
+    public findAllOptions$(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<SchuleOptionListJson>;
+    public findAllOptions$(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<SchuleOptionListJson>>;
+    public findAllOptions$(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<SchuleOptionListJson>>;
+    public findAllOptions$(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -278,7 +263,6 @@ export class SchulenService {
         return this.httpClient.request<SchuleOptionListJson>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

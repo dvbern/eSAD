@@ -75,7 +75,7 @@ class KinderDeactivationServiceTest extends AbstractITest {
     @TestTransaction
         // rollback after test since we might introduce new anlass configs
     void given_manually_created_kinder_findKinderToDeactivate_should_find_unused_kinder() {
-        // Arrange
+        // ARRANGE
         LocalDate cutoffGeburtsdatum = getAppClock().localDateTime().now().minusYears(INACTIVATION_AGE).toLocalDate();
         LocalDate cutoffNotizAndAnlass =
             getAppClock().localDateTime().now().toLocalDate().minusMonths(UNUSED_FOR_MOTHS);
@@ -124,12 +124,12 @@ class KinderDeactivationServiceTest extends AbstractITest {
             null, cutoffNotizAndAnlass, cutoffNotizAndAnlass
         ).stream().map(Kind::getId).toList();
 
-        // Act
+        // ACT
         List<ID<Kind>> kinderToDeactivate = kindDeactivationService.findKinderToDeactivate(
             UNUSED_FOR_MOTHS, INACTIVATION_AGE,
             DEFAULT_BATCHSIZE_FOR_TESTING);
 
-        // Assert
+        // ASSERT
         assertThat(kinderToDeactivate).isNotEmpty()
             .containsAll(manualKinderToBeDeleted)
             .containsAll(manualDeletedWithOldNotiz)

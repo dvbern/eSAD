@@ -1,7 +1,13 @@
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
-import {Geschlecht, PerzentileGewicht, PerzentileGroesse, RequirementSetting,} from '@dvb/data-access-backend';
-import {BackendEntityId, toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
+import {
+  AnlassConfigJson, AnlassConfigSaveJson,
+  Geschlecht,
+  PerzentileGewicht,
+  PerzentileGroesse,
+  RequirementSetting,
+} from '@dvb/data-access-backend';
+import {BackendEntityId} from '@dvb/data-access-types';
 import {
   BenutzerStore,
   createSingleValueEnhancedForm,
@@ -80,6 +86,33 @@ export class UntersuchungGroessegewichtComponent implements DirtyMarker {
 
   canEdit = computed(() => this.benutzerStore.createHasRequiredRoleSig(hasGroesseGewichtEditBerechtigung())()
     && this.anlassStore.canUserEditAnlassInCurrentState());
+  showDiagarammFemale = computed((): boolean => {
+    if (this.anlassStore.isAnonymous()) {
+      return false;
+    }
+    const currentKind = this.kind();
+    return isNotNullish(currentKind?.geschlecht) && currentKind?.geschlecht !== Geschlecht.MAENNLICH;
+  });
+
+  showDiagarammMale = computed((): boolean =>  {
+    if (this.anlassStore.isAnonymous()) {
+      return false;
+    }
+    const currentKind = this.kind();
+    return isNotNullish(currentKind?.geschlecht) && currentKind?.geschlecht !== Geschlecht.WEIBLICH;
+  });
+
+  showDiagrammGroesse = computed((): boolean =>
+    isSettingVisible(this.anlassStore.selectedEntity()?.anlassConfig,'groesseGewichtGroesse')
+  );
+
+  showDiagrammGewicht = computed((): boolean =>
+    isSettingVisible(this.anlassStore.selectedEntity()?.anlassConfig, 'groesseGewichtGewicht')
+  );
+
+  showDiagrammBmi = computed((): boolean =>
+    isSettingVisible(this.anlassStore.selectedEntity()?.anlassConfig, 'groesseGewichtBmi')
+  );
 
   perzentileGroesse = Object.values(PerzentileGroesse);
   perzentileGewicht = Object.values(PerzentileGewicht);
@@ -111,35 +144,6 @@ export class UntersuchungGroessegewichtComponent implements DirtyMarker {
     return this.form.isDirty() || this.groesseGewichtStore.saveLoader.isLoading();
   }
 
-  showDiagarammFemale(): boolean {
-    const currentKind = this.kind();
-    return isNotNullish(currentKind?.geschlecht) && currentKind?.geschlecht !== Geschlecht.MAENNLICH;
-  }
-
-  showDiagarammMale(): boolean {
-    const currentKind = this.kind();
-    return isNotNullish(currentKind?.geschlecht) && currentKind?.geschlecht !== Geschlecht.WEIBLICH;
-  }
-
-  showDiagrammGroesse(): boolean {
-    const anlassConfig = this.anlassStore.selectedEntity()?.anlassConfig;
-    return isNotNullish(anlassConfig) && anlassConfig.data.groesseGewichtGroesse !== RequirementSetting.NOT_VISIBLE;
-  }
-
-  showDiagrammGewicht(): boolean {
-    const anlassConfig = this.anlassStore.selectedEntity()?.anlassConfig;
-    return isNotNullish(anlassConfig)
-      && this.anlassStore.selectedEntity()?.anlassConfig?.data.groesseGewichtGewicht
-      !== RequirementSetting.NOT_VISIBLE;
-  }
-
-  showDiagrammBmi(): boolean {
-    const anlassConfig = this.anlassStore.selectedEntity()?.anlassConfig;
-    return isNotNullish(anlassConfig)
-      && this.anlassStore.selectedEntity()?.anlassConfig?.data.groesseGewichtBmi
-      !== RequirementSetting.NOT_VISIBLE;
-  }
-
   abbrechen(): void {
     const data = this.groesseGewichtStore.groesseGewicht();
     this.form.resetForm(data, this.alter(), this.alterDuodezimal());
@@ -149,12 +153,14 @@ export class UntersuchungGroessegewichtComponent implements DirtyMarker {
     if (await this.form.validate()) {
       const payload = this.form.valueOnValid();
       const anlassId = requireValue(this.anlassStore.selectedEntity()?.id);
-      const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       this.groesseGewichtStore.saveGroesseGewicht({
         anlassId: anlassId,
-        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
+        einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
         untersuchungGroesseGewichtSaveJson: payload,
       });
     }
   }
 }
+ function isSettingVisible(anlassConfig: AnlassConfigJson | undefined, property: keyof  AnlassConfigSaveJson) : boolean {
+   return isNotNullish(anlassConfig) && anlassConfig.data[property] !== RequirementSetting.NOT_VISIBLE;
+ }

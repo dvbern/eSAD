@@ -1,26 +1,22 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
-import java.time.LocalDate;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
-import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.Util;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.Immunsuppression;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatusMinimal;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfausweisGeprueft;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfempfehlungMinimal;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfungDurchgefuehrtMinimal;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
@@ -33,6 +29,8 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.DossierService;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AufgabeService;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.types.AufgabeStatus;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
@@ -44,6 +42,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenDataMin
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenMassnahmenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.UntersuchungImpfungenApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppFailureErrorJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionJsonSpec;
@@ -68,6 +67,14 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasAnonymerEintragIdWrapper;
 import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
 
 @QuarkusTest
@@ -86,6 +93,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 	private final AufgabeService aufgabeService;
 	private final DossierService dossierService;
 	private final AppClock appClock;
+    private final TenantProducer tenantProducer;
 
 	@Override
 	@BeforeEach
@@ -232,7 +240,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
                 .forUntersuchungImpfungen(existingImpfungen)).getData();
 		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceVisierenDoppelkontrolleVisum1()
 				.anlassIdPath(untersuchung.getAnlass().getId().getId())
-				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
+				.einladungIdPath(untersuchung.getEinladungRequired().getId().getId())
                 .body(payload)
 				.execute(ResponseBody::prettyPeek)
 				.then()
@@ -268,7 +276,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
                 .withVisum2(anotherBenutzer, LocalDate.now())).getData();
 		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceAnfordernDoppelkontrolleVisum2()
 				.anlassIdPath(untersuchung.getAnlass().getId().getId())
-				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
+				.einladungIdPath(untersuchung.getEinladungRequired().getId().getId())
 				.body(payload)
 				.execute(ResponseBody::prettyPeek)
 				.then()
@@ -319,7 +327,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
                 .forUntersuchungImpfungen(existingImpfungen)).getData();
 		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceVisierenDoppelkontrolleVisum2()
 				.anlassIdPath(untersuchung.getAnlass().getId().getId())
-				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
+				.einladungIdPath(untersuchung.getEinladungRequired().getId().getId())
                 .body(payload)
 				.execute(ResponseBody::prettyPeek)
 				.then()
@@ -353,7 +361,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
                 .forUntersuchungImpfungen(existingImpfungen)).getData();
         UntersuchungImpfungenJsonSpec resultVisum = api.untersuchungImpfungenResourceVisierenDoppelkontrolleVisum1()
             .anlassIdPath(untersuchung.getAnlass().getId().getId())
-            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
+            .einladungIdPath(untersuchung.getEinladungRequired().getId().getId())
             .body(payloadSetVisum1)
             .execute(ResponseBody::prettyPeek)
             .then()
@@ -373,7 +381,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
                 .forUntersuchungImpfungen(existingImpfungen)).getData();
 		UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceResetDoppelkontrolle()
 				.anlassIdPath(untersuchung.getAnlass().getId().getId())
-				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
+				.einladungIdPath(untersuchung.getEinladungRequired().getId().getId())
                 .body(payload)
 				.execute(ResponseBody::prettyPeek)
 				.then()
@@ -1439,7 +1447,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		// ACT
 		api.untersuchungImpfungenResourceEinzelTerminErstellen()
 				.anlassIdPath(untersuchung.getAnlass().getId().getId())
-				.einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
+				.einladungIdPath(untersuchung.getEinladungRequired().getId().getId())
 				.execute(ResponseBody::prettyPeek)
 				.then()
 				.assertThat()
@@ -1519,5 +1527,210 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         Assertions.assertThat(resultRead.getDataMinimal().getData().getImpfausweisGeprueft().getValue()).contains(ImpfausweisGeprueft.JA.name());
         Assertions.assertThat(resultRead.getDataMinimal().getData().getMasernImpfstatus().getValue()).contains(ImpfStatusMinimal.VOLLSTAENDIG.name());
         Assertions.assertThat(resultRead.getDataMinimal().getData().getMasernAnzahlImpfungen()).isEqualTo(4);
+    }
+
+    @Test
+    @TestAsSchularztBE
+    void saveUntersuchungImpfungen_anonym() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+
+        Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
+        untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), false);
+
+        // ACT
+        UntersuchungImpfungenSaveJsonSpec saveJsonSpec =
+            UntersuchungImpfungenBuilder.createJaxSpec(builder -> builder
+                .withBemerkungen("Test saveUntersuchungImpfungen_anonym")
+                .withVisum1(schularzt, appClock.offsetDateTime().now().toLocalDate())
+            ).getData();
+        saveJsonSpec.setVersion(saveJsonSpec.getVersion() - 1);
+
+        UntersuchungImpfungenJsonSpec result = api.untersuchungImpfungenResourceSaveUntersuchungImpfungen()
+            .anlassIdPath(anonymerEintrag.getAnlass().getId().getId())
+            .einladungIdPath(toHasAnonymerEintragIdWrapper(anonymerEintrag.getId()))
+            .body(saveJsonSpec)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungImpfungenJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getId()).isNotNull();
+        Assertions.assertThat(result.getData().getCheckliste().getBemerkungen())
+            .isNotNull()
+            .isEqualTo("Test saveUntersuchungImpfungen_anonym");
+        Assertions.assertThat(result.getData().getDoppelkontrolle().getVisumPerson1())
+            .isNotNull()
+            .extracting(BenutzerOptionJsonSpec::getId)
+            .isEqualTo(schularzt.getId().getId());
+        Assertions.assertThat(untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), true)
+            .getUntersuchungImpfungen()).isNotNull();
+    }
+
+    @Test
+    @TestAsSchularztBE
+    void saveUntersuchungMassnahmen_anonym() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+
+        Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
+        untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), false);
+
+        // ACT
+        UntersuchungImpfungenMassnahmenJsonSpec massnahmen =
+            UntersuchungImpfungenMassnahmenBuilder.createJaxSpec(builder -> builder
+                .withInformationEltern(InformationEltern.BRIEF)
+                .withInformationHausarzt(true)
+                .withRueckfrageHausarzt(true)
+                .withBemerkungen("Test saveUntersuchungMassnahmen_anonym"));
+
+        UntersuchungImpfungenMassnahmenJsonSpec result = api.untersuchungImpfungenResourceSaveUntersuchungMassnahmen()
+            .anlassIdPath(anonymerEintrag.getAnlass().getId().getId())
+            .einladungIdPath(toHasAnonymerEintragIdWrapper(anonymerEintrag.getId()))
+            .body(massnahmen.getData())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungImpfungenMassnahmenJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getData().getInformationEltern()).isEqualTo(InformationElternSpec.BRIEF);
+        Assertions.assertThat(result.getData().getBemerkungen()).isEqualTo("Test saveUntersuchungMassnahmen_anonym");
+
+        Untersuchung untersuchungAfter =
+            untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), true);
+        Assertions.assertThat(untersuchungAfter.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungenMassnahmen massnahmenAfter =
+            untersuchungAfter.getUntersuchungImpfungen().getUntersuchungImpfungenMassnahmen();
+        Assertions.assertThat(massnahmenAfter).isNotNull();
+    }
+
+    @Test
+    @TestAsSchularztBE
+    void saveUntersuchungImpfungenImpfstatus_anonym() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+
+        Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
+        untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), false);
+
+        // ACT
+        UntersuchungImpfstatusKrankheitSaveJsonSpec createJsonSpec =
+            UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder
+                .forKrankheit(Krankheit.MASERN)
+                .withAnzahlImpfungen(4));
+        UntersuchungImpfstatusListSaveJsonSpec listSpec =
+            new UntersuchungImpfstatusListSaveJsonSpec(List.of(createJsonSpec));
+
+        UntersuchungImpfstatusListSaveJsonSpec result =
+            api.untersuchungImpfungenResourceSaveUntersuchungImpfungenImpfstatus()
+                .anlassIdPath(anonymerEintrag.getAnlass().getId().getId())
+                .einladungIdPath(toHasAnonymerEintragIdWrapper(anonymerEintrag.getId()))
+                .body(listSpec)
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.OK.getStatusCode())
+                .extract()
+                .as(UntersuchungImpfstatusListSaveJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(result.getImpfstatusList()).isNotNull().isNotEmpty();
+        // Der Impfstatus fuer Masern sollte 4 Impfungen haben
+        UntersuchungImpfstatusKrankheitSaveJsonSpec masernJson = result.getImpfstatusList()
+            .stream()
+            .filter(impfstatus -> impfstatus.getKrankheit() == KrankheitSpec.MASERN)
+            .findFirst()
+            .orElseThrow();
+        Assertions.assertThat(masernJson.getAnzahlImpfungen()).isEqualTo(4);
+
+        // UntersuchungImpfungen wurde auf der anonymen Untersuchung erstellt
+        Assertions.assertThat(untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), true)
+            .getUntersuchungImpfungen()).isNotNull();
+    }
+
+    @Test
+    @TestAsSchularztBE
+    void saveUntersuchungImpfungenDataMinimal_anonym() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+
+        Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
+        untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), false);
+
+        // ACT
+        UntersuchungImpfungenDataMinimalJsonSpec saveJson =
+            UntersuchungImpfungenDataMinimalBuilder.createJaxSpec(builder -> builder
+                .withImpfausweisGeprueft(ImpfausweisGeprueft.JA, null)
+                .withImmunsuppression(Immunsuppression.NEIN, null)
+                .withMasernImpfstatus(ImpfStatusMinimal.VOLLSTAENDIG, null)
+                .withMasernAnzahlImpfungen(4)
+                .withHpvImpfstatus(ImpfStatusMinimal.VOLLSTAENDIG, null)
+                .withHpvAnzahlImpfungen(2)
+                .withImpfempfehlung(ImpfempfehlungMinimal.JA, null)
+                .withImpfungDurchgefuehrt(ImpfungDurchgefuehrtMinimal.JA, null));
+        // Neue DataMinimal, daher Version 0
+        saveJson.getData().setVersion(0L);
+
+        UntersuchungImpfungenDataMinimalJsonSpec saveResult =
+            api.untersuchungImpfungenResourceSaveUntersuchungImpfungenDataMinimal()
+                .anlassIdPath(anonymerEintrag.getAnlass().getId().getId())
+                .einladungIdPath(toHasAnonymerEintragIdWrapper(anonymerEintrag.getId()))
+                .body(saveJson.getData())
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.OK.getStatusCode())
+                .extract()
+                .as(UntersuchungImpfungenDataMinimalJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(saveResult).isNotNull();
+        Assertions.assertThat(saveResult.getData().getImpfausweisGeprueft().getValue()).contains(ImpfausweisGeprueft.JA.name());
+        Assertions.assertThat(saveResult.getData().getMasernImpfstatus().getValue()).contains(ImpfStatusMinimal.VOLLSTAENDIG.name());
+        Assertions.assertThat(saveResult.getData().getMasernAnzahlImpfungen()).isEqualTo(4);
+
+        // UntersuchungImpfungenDataMinimal wurde auf der anonymen Untersuchung persistiert
+        Untersuchung untersuchungAfter =
+            untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), true);
+        Assertions.assertThat(untersuchungAfter.getUntersuchungImpfungen()).isNotNull();
+        Assertions.assertThat(untersuchungAfter.getUntersuchungImpfungen().getUntersuchungImpfungenDataMinimal()).isNotNull();
+    }
+
+    @Test
+    @TestAsSchularztBE
+    void getUntersuchungImpfungenData_anonym() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+
+        Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
+        untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), false);
+
+        // ACT
+        UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
+            .anlassIdPath(anonymerEintrag.getAnlass().getId().getId())
+            .einladungIdPath(toHasAnonymerEintragIdWrapper(anonymerEintrag.getId()))
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungImpfungenDataJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(data).isNotNull();
+        Assertions.assertThat(data.getUntersuchungImpfungen()).isNotNull();
     }
 }

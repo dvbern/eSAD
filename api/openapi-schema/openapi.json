@@ -186,7 +186,7 @@
       },
       "AnlassConfigOptionJson" : {
         "type" : "object",
-        "required" : [ "id", "anlassTyp", "datumVon", "datumBis", "bezeichnung" ],
+        "required" : [ "id", "anlassTyp", "datumVon", "datumBis", "bezeichnung", "anonym" ],
         "properties" : {
           "id" : {
             "$ref" : "#/components/schemas/IDAnlassConfig"
@@ -204,6 +204,9 @@
           },
           "bezeichnung" : {
             "type" : "string"
+          },
+          "anonym" : {
+            "type" : "boolean"
           }
         }
       },
@@ -221,7 +224,7 @@
       },
       "AnlassConfigSaveJson" : {
         "type" : "object",
-        "required" : [ "anlassTyp", "datumVon", "datumBis", "bezeichnung", "showImpfausweis", "showFragebogen", "showAnmeldungBestaetigung", "showImpfanmeldung", "showDatenPersonendaten", "showDatenPersonendatenEsadId", "datenUntersuchung", "showDatenSchule", "datenBemerkung", "vorabklaerungenFragebogenStatus", "vorabklaerungenEinverstaendnisImpfungen", "vorabklaerungenChronischeKrankheiten", "showImpfungenHeaderImpfausweisUnvollstaendig", "showImpfungenHeaderImpfausweisNichtVorhanden", "showImpfungenHeaderImpfausweisZweiPlusEinsSchema", "showImpfungenHeaderImpfausweisUpload", "impfungenUebersicht", "impfungenListe", "showImpfungenDoppelkontrolle", "impfungenMassnahmeKeineMassnahmen", "impfungenMassnahmeGruppenFolgetermin", "impfungenMassnahmeImpfenFolgetermin", "impfungenMassnahmeEinzelFolgetermin", "impfungenMassnahmeInfoKinderarzt", "impfungenMassnahmeBeratungMPA", "impfungenMassnahmeInfomaterialAbgegeben", "impfungenMassnahmeInfoEltern", "impfungenMassnahmeRueckfrageKinderarzt", "impfungenMassnahmeBemerkungen", "checkEinwilligungVorhanden", "checkKontraindikationenAbgeklaert", "checkDoppelkontrolleImpfentscheidDurchgefuehrt", "untersuchungImpfungEmpfehlung", "untersuchungImpfungEmpfehlungValues", "untersuchungImpfungAchtung", "untersuchungImpfungBemerkungen", "untersuchungImpfungKrankheitenLinksValues", "untersuchungImpfungKrankheitenRechtsValues", "impfungenDataMinimalImpfausweisGeprueft", "impfungenDataMinimalImmunsuppression", "impfungenDataMinimalMasernImpfstatus", "impfungenDataMinimalMasernAnzahlImpfungen", "impfungenDataMinimalHpvImpfstatus", "impfungenDataMinimalHpvAnzahlImpfungen", "impfungenDataMinimalImpfempfehlung", "impfungenDataMinimalImpfungDurchgefuehrt", "sehenBrilleLinsen", "sehenBrilleLinsenValues", "sehenFarbsehen", "sehenTafel", "sehenFernvisus", "sehenFernvisusAugeEinzeln", "sehenStereoTest", "sehenStrabismus", "sehenStrabismusValues", "sehenStrabismusAuspraegung", "sehenStrabismusAuftreten", "sehenInspektion", "sehenKonvergenz", "sehenMotilitaet", "sehenNahvisus", "sehenEmpfehlung", "sehenBemerkungen", "sehenBemerkungenFragebogen", "sehenMassnahmen", "hoerenAudiogramm", "hoerenAudiogramm250Hz", "hoerenAudiogramm8000Hz", "hoerenAudiogrammSimpel", "hoerenAudiogrammBeurteilung", "hoerenAudiogrammZusaetzlicheAngaben", "hoerenAudiogrammEmpfehlung", "hoerenAudiogrammBemerkungen", "hoerenHoerhilfe", "hoerenOtoskopie", "hoerenOtoskopieBemerkungen", "groesseGewichtGroesse", "groesseGewichtGewicht", "groesseGewichtBmi", "groesseGewichtGroessePerzentile", "groesseGewichtGewichtPerzentile", "groesseGewichtBmiPerzentile", "groesseGewichtBmiPerzentileValues", "groesseGewichtEmpfehlung", "groesseGewichtBemerkungen", "showTriageTriage", "showTriageKindWeiterleiten", "laeusekontrolleBeurteilung", "laeusekontrolleEmpfehlung", "laeusekontrolleBemerkungen", "untersuchungBewegungsapparat", "untersuchungEinbeinstand", "untersuchungEinbeinstandRechtsLinks", "untersuchungEinbeinstandValues", "untersuchungEinbeinhuepfen", "untersuchungEinbeinhuepfenRechtsLinks", "untersuchungEinbeinhuepfenValues", "untersuchungFingeropposition", "untersuchungHampelmann", "untersuchungBallFangen", "untersuchungBallWerfen", "untersuchungNameSchreiben", "untersuchungFigurNachmalen", "untersuchungStifthaltung", "untersuchungAussprache", "untersuchungLesefit", "untersuchungLesefitPunkte", "untersuchungZahlenNachsprechen4", "untersuchungZahlenNachsprechen5", "untersuchungZeichnenKreis", "untersuchungZeichnenViereck", "untersuchungZeichnenDreieck", "untersuchungZeichnenMensch", "untersuchungZeichnenMenschPunkte", "untersuchungMotorik", "untersuchungMotorikValues", "untersuchungMotorikPunkte", "untersuchungKognition", "untersuchungKognitionPunkte", "untersuchungSprachfaehigkeitSingleValue", "untersuchungSprachfaehigkeitMultiValue", "untersuchungSprachfaehigkeitValues", "untersuchungSprachePunkte", "untersuchungMundZaehne", "untersuchungHaut", "untersuchungHerz", "untersuchungBlutdruck", "untersuchungVerhalten", "unterlagenEinverstaendnis", "unterlagenVerhaltensfragebogen", "untersuchungEmpfehlung", "untersuchungBemerkungen", "untersuchungSpracheNachsprechen", "untersuchungSpracheWortschatz", "untersuchungSpracheSprachverstaendnis", "untersuchungSpracheBemerkungen", "bewegungsapparatSkoliose", "bewegungsapparatHaltungsschwaeche", "bewegungsapparatVerkuerzungHamstringmuskulatur", "bewegungsapparatBemerkung", "untersuchungBeeintraechtigungFreiesGehen", "untersuchungBeeintraechtigungOhneStuetzradVelofahren", "untersuchungBeeintraechtigungGrafomotorik", "untersuchungBeeintraechtigungFeinmotorik", "untersuchungBeeintraechtigungGrobmotorik", "untersuchungBeeintraechtigungGleichgewicht", "untersuchungBeeintraechtigungBemerkung", "abschlussUeberweisungErfolgt", "abschlussAerztlicheValidierungErforderlich", "abschlussBeratungDurchgefuehrt", "abschlussBeurteilungEmpfohleneMassnahmen", "showCardAbschlussSignatur", "showMassnahmenPathologischeBefunde", "showMassnahmenKeine", "showMassnahmenBeratungMpa", "showMassnahmenBeratungSchulAerztin", "showMassnahmenBereitsBehandelt", "showMassnahmenInfomaterial", "showMassnahmenInfoEltern", "showMassnahmenUeberweisungHausarzt", "showMassnahmenUeberweisungAugenarzt", "showMassnahmenNachkontrolleSaed", "showMassnahmenAnderes" ],
+        "required" : [ "anlassTyp", "datumVon", "datumBis", "bezeichnung", "showImpfausweis", "showFragebogen", "showAnmeldungBestaetigung", "showImpfeinverstaendnis", "showDatenPersonendaten", "showDatenPersonendatenEsadId", "datenUntersuchung", "showDatenSchule", "datenBemerkung", "vorabklaerungenFragebogenStatus", "vorabklaerungenEinverstaendnisImpfungen", "vorabklaerungenChronischeKrankheiten", "showImpfungenHeaderImpfausweisUnvollstaendig", "showImpfungenHeaderImpfausweisNichtVorhanden", "showImpfungenHeaderImpfausweisZweiPlusEinsSchema", "showImpfungenHeaderImpfausweisUpload", "impfungenUebersicht", "impfungenListe", "showImpfungenDoppelkontrolle", "impfungenMassnahmeKeineMassnahmen", "impfungenMassnahmeGruppenFolgetermin", "impfungenMassnahmeImpfenFolgetermin", "impfungenMassnahmeEinzelFolgetermin", "impfungenMassnahmeInfoKinderarzt", "impfungenMassnahmeBeratungMPA", "impfungenMassnahmeInfomaterialAbgegeben", "impfungenMassnahmeInfoEltern", "impfungenMassnahmeRueckfrageKinderarzt", "impfungenMassnahmeBemerkungen", "checkEinwilligungVorhanden", "checkKontraindikationenAbgeklaert", "checkDoppelkontrolleImpfentscheidDurchgefuehrt", "untersuchungImpfungEmpfehlung", "untersuchungImpfungEmpfehlungValues", "untersuchungImpfungAchtung", "untersuchungImpfungBemerkungen", "untersuchungImpfungKrankheitenLinksValues", "untersuchungImpfungKrankheitenRechtsValues", "impfungenDataMinimalImpfausweisGeprueft", "impfungenDataMinimalImmunsuppression", "impfungenDataMinimalMasernImpfstatus", "impfungenDataMinimalMasernAnzahlImpfungen", "impfungenDataMinimalHpvImpfstatus", "impfungenDataMinimalHpvAnzahlImpfungen", "impfungenDataMinimalImpfempfehlung", "impfungenDataMinimalImpfungDurchgefuehrt", "sehenBrilleLinsen", "sehenBrilleLinsenValues", "sehenFarbsehen", "sehenTafel", "sehenFernvisus", "sehenFernvisusAugeEinzeln", "sehenStereoTest", "sehenStrabismus", "sehenStrabismusValues", "sehenStrabismusAuspraegung", "sehenStrabismusAuftreten", "sehenInspektion", "sehenKonvergenz", "sehenMotilitaet", "sehenNahvisus", "sehenEmpfehlung", "sehenBemerkungen", "sehenBemerkungenFragebogen", "sehenMassnahmen", "hoerenAudiogramm", "hoerenAudiogramm250Hz", "hoerenAudiogramm8000Hz", "hoerenAudiogrammSimpel", "hoerenAudiogrammBeurteilung", "hoerenAudiogrammZusaetzlicheAngaben", "hoerenAudiogrammEmpfehlung", "hoerenAudiogrammBemerkungen", "hoerenHoerhilfe", "hoerenOtoskopie", "hoerenOtoskopieBemerkungen", "groesseGewichtGroesse", "groesseGewichtGewicht", "groesseGewichtBmi", "groesseGewichtGroessePerzentile", "groesseGewichtGewichtPerzentile", "groesseGewichtBmiPerzentile", "groesseGewichtBmiPerzentileValues", "groesseGewichtEmpfehlung", "groesseGewichtBemerkungen", "showTriageTriage", "showTriageKindWeiterleiten", "laeusekontrolleBeurteilung", "laeusekontrolleEmpfehlung", "laeusekontrolleBemerkungen", "untersuchungBewegungsapparat", "untersuchungEinbeinstand", "untersuchungEinbeinstandRechtsLinks", "untersuchungEinbeinstandValues", "untersuchungEinbeinhuepfen", "untersuchungEinbeinhuepfenRechtsLinks", "untersuchungEinbeinhuepfenValues", "untersuchungFingeropposition", "untersuchungHampelmann", "untersuchungBallFangen", "untersuchungBallWerfen", "untersuchungNameSchreiben", "untersuchungFigurNachmalen", "untersuchungStifthaltung", "untersuchungAussprache", "untersuchungLesefit", "untersuchungLesefitPunkte", "untersuchungZahlenNachsprechen4", "untersuchungZahlenNachsprechen5", "untersuchungZeichnenKreis", "untersuchungZeichnenViereck", "untersuchungZeichnenDreieck", "untersuchungZeichnenMensch", "untersuchungZeichnenMenschPunkte", "untersuchungMotorik", "untersuchungMotorikValues", "untersuchungMotorikPunkte", "untersuchungKognition", "untersuchungKognitionPunkte", "untersuchungSprachfaehigkeitSingleValue", "untersuchungSprachfaehigkeitMultiValue", "untersuchungSprachfaehigkeitValues", "untersuchungSprachePunkte", "untersuchungMundZaehne", "untersuchungHaut", "untersuchungHerz", "untersuchungBlutdruck", "untersuchungVerhalten", "unterlagenEinverstaendnis", "unterlagenVerhaltensfragebogen", "untersuchungEmpfehlung", "untersuchungBemerkungen", "untersuchungSpracheNachsprechen", "untersuchungSpracheWortschatz", "untersuchungSpracheSprachverstaendnis", "untersuchungSpracheBemerkungen", "bewegungsapparatSkoliose", "bewegungsapparatHaltungsschwaeche", "bewegungsapparatVerkuerzungHamstringmuskulatur", "bewegungsapparatBemerkung", "untersuchungBeeintraechtigungFreiesGehen", "untersuchungBeeintraechtigungOhneStuetzradVelofahren", "untersuchungBeeintraechtigungGrafomotorik", "untersuchungBeeintraechtigungFeinmotorik", "untersuchungBeeintraechtigungGrobmotorik", "untersuchungBeeintraechtigungGleichgewicht", "untersuchungBeeintraechtigungBemerkung", "abschlussUeberweisungErfolgt", "abschlussAerztlicheValidierungErforderlich", "abschlussBeratungDurchgefuehrt", "abschlussBeurteilungEmpfohleneMassnahmen", "showCardAbschlussSignatur", "showMassnahmenPathologischeBefunde", "showMassnahmenKeine", "showMassnahmenBeratungMpa", "showMassnahmenBeratungSchulAerztin", "showMassnahmenBereitsBehandelt", "showMassnahmenInfomaterial", "showMassnahmenInfoEltern", "showMassnahmenUeberweisungHausarzt", "showMassnahmenUeberweisungAugenarzt", "showMassnahmenNachkontrolleSaed", "showMassnahmenAnderes" ],
         "properties" : {
           "anlassTyp" : {
             "$ref" : "#/components/schemas/AnlassTyp"
@@ -246,7 +249,7 @@
           "showAnmeldungBestaetigung" : {
             "type" : "boolean"
           },
-          "showImpfanmeldung" : {
+          "showImpfeinverstaendnis" : {
             "type" : "boolean"
           },
           "showDatenPersonendaten" : {
@@ -986,6 +989,47 @@
           }
         }
       },
+      "AnonymerEintragCreateJson" : {
+        "type" : "object",
+        "required" : [ "anlassTyp", "anlassDatum", "kindName", "kindVorname", "kindGeschlecht", "kindGeburtsdatum" ],
+        "properties" : {
+          "anlassTyp" : {
+            "$ref" : "#/components/schemas/AnlassTyp"
+          },
+          "anlassDatum" : {
+            "type" : "string",
+            "$ref" : "#/components/schemas/LocalDate"
+          },
+          "kindName" : {
+            "type" : "string"
+          },
+          "kindVorname" : {
+            "type" : "string"
+          },
+          "kindGeschlecht" : {
+            "$ref" : "#/components/schemas/Geschlecht"
+          },
+          "kindGeburtsdatum" : {
+            "type" : "string",
+            "$ref" : "#/components/schemas/LocalDate"
+          }
+        }
+      },
+      "AnonymerEintragJson" : {
+        "type" : "object",
+        "required" : [ "id", "hash", "anlassJson" ],
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/IDAnonymerEintrag"
+          },
+          "hash" : {
+            "type" : "string"
+          },
+          "anlassJson" : {
+            "$ref" : "#/components/schemas/AnlassJson"
+          }
+        }
+      },
       "AppFailureErrorJson" : {
         "type" : "object",
         "required" : [ "type", "id", "summary" ],
@@ -1413,7 +1457,7 @@
       },
       "Berechtigung" : {
         "type" : "string",
-        "enum" : [ "AUFGABEN_LESEN", "AUFGABEN_SCHREIBEN", "ANLASSLISTE_LESEN", "ANLASSLISTE_LESEN_LAEUSE", "ANLASSPLANUNG_LESEN", "ANLASSPLANUNG_SCHREIBEN", "ANLASSPLANUNG_LESEN_LAEUSE", "ANLASSPLANUNG_SCHREIBEN_LAEUSE", "VERANDERUNGEN_NACH_ABSCHLUSS", "SU_DATEN_LESEN", "SU_DATEN_SCHREIBEN", "SU_IMPFEN_LESEN", "SU_IMPFEN_SCHREIBEN", "SU_SEHEN_LESEN", "SU_SEHEN_SCHREIBEN", "SU_HOREN_LESEN", "SU_HOREN_SCHREIBEN", "SU_GROSSE_GEWICHT_LESEN", "SU_GROSSE_GEWICHT_SCHREIBEN", "SU_LAEUSE_LESEN", "SU_LAEUSE_SCHREIBEN", "SU_TRIAGE_LESEN", "SU_TRIAGE_SCHREIBEN", "SU_AERZTLICHE_UNTERSUCHUNG_LESEN", "SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN", "SU_MASSNAHMEN_LESEN", "SU_MASSNAHMEN_SCHREIBEN", "SU_ABSCHLUSS_LESEN", "SU_ABSCHLUSS_SCHREIBEN", "SU_VORABKLAERUNGEN_LESEN", "SU_VORABKLAERUNGEN_SCHREIBEN", "KINDER_LESEN_MEDIZINISCH", "KINDER_LESEN_NICHT_MEDIZINISCH", "KINDER_SCHREIBEN_MEDIZINISCH", "KINDER_SCHREIBEN_NICHT_MEDIZINISCH", "KINDER_ALLE_NOTIZEN_LESEN", "KINDER_ALLE_NOTIZEN_SCHREIBEN", "KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN", "KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN", "INDIVIDUELLE_REPORTS", "SPSS_EXPORT", "KOMPLETTER_EXPORT", "LISTEN_ADMIN_LESEN", "LISTEN_LESEN", "LISTEN_SCHREIBEN", "IMPFSTOFFE_LESEN", "IMPFSTOFFE_SCHREIBEN", "DUBLETTEN_ZUSAMMENFUHREN", "LABELS_LESEN", "LABELS_ADMIN_LESEN", "LABELS_SCHREIBEN", "EIGENE_BERECHTIGUNGEN_LESEN", "VORLAGEN_LESEN", "VORLAGEN_ADMIN_LESEN", "VORLAGEN_SCHREIBEN", "AERZTE_LESEN", "AERZTE_SCHREIBEN", "BENUTZER_BERECHTIGUNGEN_LESEN", "BENUTZER_BERECHTIGUNGEN_SCHREIBEN", "ARCHIVIERUNG", "ORGANISATION_VERWALTEN_LESEN", "ORGANISATION_VERWALTEN_SCHREIBEN", "SUPPORT", "SYSTEM_ADMIN", "ESCADA_PUSH", "FILE_INGRESS_PUSH", "PUPIL_PUSH" ]
+        "enum" : [ "BENUTZER_OPTIONS_LESEN", "AUFGABEN_LESEN", "AUFGABEN_SCHREIBEN", "ANLASSLISTE_LESEN", "ANLASSLISTE_LESEN_LAEUSE", "ANLASSPLANUNG_LESEN", "ANLASSPLANUNG_SCHREIBEN", "ANLASSPLANUNG_LESEN_LAEUSE", "ANLASSPLANUNG_SCHREIBEN_LAEUSE", "VERANDERUNGEN_NACH_ABSCHLUSS", "SU_DATEN_LESEN", "SU_DATEN_SCHREIBEN", "SU_IMPFEN_LESEN", "SU_IMPFEN_SCHREIBEN", "SU_SEHEN_LESEN", "SU_SEHEN_SCHREIBEN", "SU_HOREN_LESEN", "SU_HOREN_SCHREIBEN", "SU_GROSSE_GEWICHT_LESEN", "SU_GROSSE_GEWICHT_SCHREIBEN", "SU_LAEUSE_LESEN", "SU_LAEUSE_SCHREIBEN", "SU_TRIAGE_LESEN", "SU_TRIAGE_SCHREIBEN", "SU_AERZTLICHE_UNTERSUCHUNG_LESEN", "SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN", "SU_MASSNAHMEN_LESEN", "SU_MASSNAHMEN_SCHREIBEN", "SU_ABSCHLUSS_LESEN", "SU_ABSCHLUSS_SCHREIBEN", "SU_VORABKLAERUNGEN_LESEN", "SU_VORABKLAERUNGEN_SCHREIBEN", "KINDER_LESEN_MEDIZINISCH", "KINDER_LESEN_NICHT_MEDIZINISCH", "KINDER_SCHREIBEN_MEDIZINISCH", "KINDER_SCHREIBEN_NICHT_MEDIZINISCH", "KINDER_ALLE_NOTIZEN_LESEN", "KINDER_ALLE_NOTIZEN_SCHREIBEN", "KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN", "KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN", "INDIVIDUELLE_REPORTS", "SPSS_EXPORT", "KOMPLETTER_EXPORT", "IMPFSTOFFE_LESEN", "IMPFSTOFFE_SCHREIBEN", "DUBLETTEN_ZUSAMMENFUHREN", "LABELS_LESEN", "LABELS_ADMIN_LESEN", "LABELS_SCHREIBEN", "EIGENE_BERECHTIGUNGEN_LESEN", "BENUTZER_BERECHTIGUNGEN_LESEN", "BENUTZER_BERECHTIGUNGEN_SCHREIBEN", "ORGANISATION_VERWALTEN_LESEN", "ORGANISATION_VERWALTEN_SCHREIBEN", "VORLAGEN_LESEN", "VORLAGEN_ADMIN_LESEN", "VORLAGEN_SCHREIBEN", "AERZTE_LESEN", "AERZTE_SCHREIBEN", "SCHULE_LESEN", "SCHULE_SCHREIBEN", "KLASSEN_LESEN", "KLASSEN_SCHREIBEN", "INFOMATERIAL_LESEN", "INFOMATERIAL_SCHREIBEN", "ARCHIVIERUNG", "SUPPORT", "SYSTEM_ADMIN", "ESCADA_PUSH", "FILE_INGRESS_PUSH", "PUPIL_PUSH" ]
       },
       "Bewegungsapparat" : {
         "type" : "string",
@@ -2373,7 +2417,7 @@
       },
       "Feinmotorik" : {
         "type" : "string",
-        "enum" : [ "DREISSIG_IN_ZEHN_SEK", "FUENFUNDZWANZIG_IN_ZEHN_SEK", "NICHT_MOEGLICH", "NICHT_GEPRUEFT" ]
+        "enum" : [ "BESTANDEN", "NICHT_BESTANDEN", "NICHT_GEPRUEFT" ]
       },
       "FigurNachmalen" : {
         "type" : "string",
@@ -2436,7 +2480,7 @@
       },
       "FileTyp" : {
         "type" : "string",
-        "enum" : [ "ESCADA_SYNC", "PUPIL_SYNC", "IMPFAUSWEIS", "NOTIZUPLOAD", "AUFGABEUPLOAD", "FRAGEBOGEN", "KINDERDOSSIER", "BRIEFVORLAGE", "ANMELDUNG_BESTAETIGUNG", "IMPFANMELDUNG", "PLAYGROUND", "PLAYGROUND_ERROR", "SPSS_REPORT", "CSV_REPORT", "MASSENBRIEF_ZIP" ]
+        "enum" : [ "ESCADA_SYNC", "PUPIL_SYNC", "IMPFAUSWEIS", "NOTIZUPLOAD", "AUFGABEUPLOAD", "FRAGEBOGEN", "KINDERDOSSIER", "BRIEFVORLAGE", "ANMELDUNG_BESTAETIGUNG", "IMPFEINVERSTAENDNIS", "PLAYGROUND", "PLAYGROUND_ERROR", "SPSS_REPORT", "CSV_REPORT", "MASSENBRIEF_ZIP" ]
       },
       "FilterCombination" : {
         "type" : "string",
@@ -2458,7 +2502,7 @@
       },
       "FreiesGehen" : {
         "type" : "string",
-        "enum" : [ "NORMAL", "PATHOLOGISCH", "NICHT_GEPRUEFT" ]
+        "enum" : [ "NICHT_GEPRUEFT" ]
       },
       "GanzZahl" : {
         "type" : "integer"
@@ -2469,7 +2513,7 @@
       },
       "GleichgewichtEinbeinstand" : {
         "type" : "string",
-        "enum" : [ "MEHR_ALS_ZEHN_SEKUNDEN", "WENIGER_ALS_ZEHN_SEKUNDEN", "NICHT_GEPRUEFT" ]
+        "enum" : [ "BESTANDEN", "NICHT_BESTANDEN", "NICHT_GEPRUEFT" ]
       },
       "Grafomotorik" : {
         "type" : "string",
@@ -2477,7 +2521,7 @@
       },
       "GrobmotorikEinbeinhuepfen" : {
         "type" : "string",
-        "enum" : [ "MEHR_ALS_VIER_METER", "WENIGER_ALS_VIER_METER", "NICHT_GEPRUEFT" ]
+        "enum" : [ "BESTANDEN", "NICHT_BESTANDEN", "NICHT_GEPRUEFT" ]
       },
       "GroesseGewichtDataPointJson" : {
         "type" : "object",
@@ -2561,6 +2605,12 @@
         "examples" : [ "11111111-1111-1111-1111-111111111111" ]
       },
       "IDAnlassConfig" : {
+        "type" : "string",
+        "format" : "entity-id",
+        "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+        "examples" : [ "11111111-1111-1111-1111-111111111111" ]
+      },
+      "IDAnonymerEintrag" : {
         "type" : "string",
         "format" : "entity-id",
         "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
@@ -3149,12 +3199,15 @@
       },
       "KindJson" : {
         "type" : "object",
-        "required" : [ "id", "entityInfo", "data" ],
+        "required" : [ "id", "hashValue", "entityInfo", "data" ],
         "properties" : {
           "id" : {
             "$ref" : "#/components/schemas/IDKind"
           },
           "esadId" : {
+            "type" : "string"
+          },
+          "hashValue" : {
             "type" : "string"
           },
           "externalImportInfoJson" : {
@@ -3273,8 +3326,27 @@
           },
           "kindJson" : {
             "$ref" : "#/components/schemas/KindJson"
+          },
+          "dossierJson" : {
+            "$ref" : "#/components/schemas/DossierJson"
           }
         }
+      },
+      "KindSchuleAndKlasseSaveJson" : {
+        "type" : "object",
+        "properties" : {
+          "schule" : {
+            "$ref" : "#/components/schemas/SchuleOptionJson"
+          },
+          "klasse" : {
+            "$ref" : "#/components/schemas/KlasseOptionJson"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        },
+        "required" : [ "version" ]
       },
       "KindSearchJson" : {
         "type" : "object",
@@ -3969,7 +4041,7 @@
       },
       "NotizTyp" : {
         "type" : "string",
-        "enum" : [ "DEFAULT", "FRAGEBOGEN", "IMPFAUSWEIS", "ANMELDUNG_BESTAETIGUNG", "ABMELDUNG", "IMPFANMELDUNG" ]
+        "enum" : [ "DEFAULT", "FRAGEBOGEN", "IMPFAUSWEIS", "ANMELDUNG_BESTAETIGUNG", "ABMELDUNG", "IMPFEINVERSTAENDNIS" ]
       },
       "NumOfOffeneFaelligeAufgabeJson" : {
         "type" : "object",
@@ -4468,6 +4540,9 @@
           "id" : {
             "$ref" : "#/components/schemas/IDSchule"
           },
+          "organisationId" : {
+            "$ref" : "#/components/schemas/IDOrganisation"
+          },
           "bezeichnung" : {
             "type" : "string"
           },
@@ -4720,7 +4795,7 @@
       },
       "TenantSettingFeaturesJson" : {
         "type" : "object",
-        "required" : [ "esadIdFeature", "laenderCodeFeature", "mobileScannerFeature", "massenimportFeature", "massenbriefFeature", "nichtGeprueftGrundFeature", "arztListeFeature", "adHocImpfstoffChargenFeature", "footerFeature", "benutzerverwaltungInternFeature", "benutzerverwaltungIgnoreFachRolleFromKeycloakFeature", "archivierungFeature", "zentraleOrganisationFeature", "anonymeStatistikFeature" ],
+        "required" : [ "esadIdFeature", "laenderCodeFeature", "mobileScannerFeature", "massenimportFeature", "massenbriefFeature", "nichtGeprueftGrundFeature", "arztListeFeature", "adHocImpfstoffChargenFeature", "footerFeature", "benutzerverwaltungInternFeature", "benutzerverwaltungIgnoreFachRolleFromKeycloakFeature", "archivierungFeature", "zentraleOrganisationFeature", "anonymeStatistikFeature", "nachkontrolleFeature", "anlassSpracheSpalteFeature", "anlassSpracheZusammenfassungFeature", "anlassInformationenFeature" ],
         "properties" : {
           "esadIdFeature" : {
             "$ref" : "#/components/schemas/TenantSettingFeatureStateJson"
@@ -4762,6 +4837,18 @@
             "$ref" : "#/components/schemas/TenantSettingFeatureStateJson"
           },
           "anonymeStatistikFeature" : {
+            "$ref" : "#/components/schemas/TenantSettingFeatureStateJson"
+          },
+          "nachkontrolleFeature" : {
+            "$ref" : "#/components/schemas/TenantSettingFeatureStateJson"
+          },
+          "anlassSpracheSpalteFeature" : {
+            "$ref" : "#/components/schemas/TenantSettingFeatureStateJson"
+          },
+          "anlassSpracheZusammenfassungFeature" : {
+            "$ref" : "#/components/schemas/TenantSettingFeatureStateJson"
+          },
+          "anlassInformationenFeature" : {
             "$ref" : "#/components/schemas/TenantSettingFeatureStateJson"
           }
         }
@@ -4808,7 +4895,7 @@
       },
       "TenantSettingsJson" : {
         "type" : "object",
-        "required" : [ "id", "tenant", "entityInfo", "data", "fachrollen" ],
+        "required" : [ "id", "tenant", "entityInfo", "data", "fachrollen", "delegierbareFachrollen" ],
         "properties" : {
           "id" : {
             "$ref" : "#/components/schemas/IDTenantSetting"
@@ -4823,6 +4910,12 @@
             "$ref" : "#/components/schemas/TenantSettingSaveJson"
           },
           "fachrollen" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/FachRolle"
+            }
+          },
+          "delegierbareFachrollen" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/FachRolle"
@@ -5953,6 +6046,10 @@
           "freiesGehen" : {
             "$ref" : "#/components/schemas/ValueEnhancedJson"
           },
+          "anzahlMonateFreiesGehen" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "ohneStuetzradVelofahren" : {
             "$ref" : "#/components/schemas/ValueEnhancedJson"
           },
@@ -6604,6 +6701,8 @@
   }, {
     "name" : "Anlass-Config"
   }, {
+    "name" : "Anonymer-Eintrag"
+  }, {
     "name" : "Archivdokument"
   }, {
     "name" : "Aufgabe"
@@ -6655,6 +6754,8 @@
     "name" : "Organisation"
   }, {
     "name" : "Plz"
+  }, {
+    "name" : "Preview"
   }, {
     "name" : "Printer"
   }, {
@@ -8747,7 +8848,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
+            "$ref" : "#/components/schemas/IDEinladung"
           }
         } ],
         "requestBody" : {
@@ -8859,7 +8960,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
+            "$ref" : "#/components/schemas/IDEinladung"
           }
         } ],
         "responses" : {
@@ -9167,7 +9268,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
+            "$ref" : "#/components/schemas/IDEinladung"
           }
         } ],
         "requestBody" : {
@@ -9223,7 +9324,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
+            "$ref" : "#/components/schemas/IDEinladung"
           }
         } ],
         "requestBody" : {
@@ -9279,7 +9380,7 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
+            "$ref" : "#/components/schemas/IDEinladung"
           }
         } ],
         "requestBody" : {
@@ -10786,6 +10887,119 @@
         } ]
       }
     },
+    "/api/anonymer-eintrag" : {
+      "post" : {
+        "operationId" : "AnonymerEintragResource_createAnonymerEintrag",
+        "tags" : [ "Anonymer-Eintrag" ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AnonymerEintragCreateJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnonymerEintragJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Create Anonymer Eintrag",
+        "security" : [ {
+          "SecurityScheme" : [ "ANLASSPLANUNG_SCHREIBEN", "ANLASSPLANUNG_SCHREIBEN_LAEUSE" ]
+        } ]
+      }
+    },
+    "/api/anonymer-eintrag/{anlassId}/{anonymerEintragId}/abschluss" : {
+      "put" : {
+        "operationId" : "AnonymerEintragResource_abschlussAnonymerEintrag",
+        "tags" : [ "Anonymer-Eintrag" ],
+        "parameters" : [ {
+          "name" : "anlassId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDAnlass"
+          }
+        }, {
+          "name" : "anonymerEintragId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/HasUntersuchungIDWrapper"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "summary" : "Abschluss Anonymer Eintrag",
+        "security" : [ {
+          "SecurityScheme" : [ "ANLASSPLANUNG_SCHREIBEN", "ANLASSPLANUNG_SCHREIBEN_LAEUSE" ]
+        } ]
+      }
+    },
+    "/api/anonymer-eintrag/{anonymerEintragId}" : {
+      "get" : {
+        "operationId" : "AnonymerEintragResource_getAnonymerEintrag",
+        "tags" : [ "Anonymer-Eintrag" ],
+        "parameters" : [ {
+          "name" : "anonymerEintragId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDAnonymerEintrag"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnonymerEintragJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "summary" : "Get Anonymer Eintrag",
+        "security" : [ {
+          "SecurityScheme" : [ "ANLASSPLANUNG_LESEN", "ANLASSPLANUNG_LESEN_LAEUSE" ]
+        } ]
+      }
+    },
     "/api/archivdokumente" : {
       "get" : {
         "operationId" : "ArchivdokumentResource_findAllArchivdokumente",
@@ -11485,7 +11699,7 @@
         },
         "summary" : "Find All Active Benutzer Options",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "BENUTZER_OPTIONS_LESEN" ]
         } ]
       }
     },
@@ -11611,7 +11825,7 @@
         },
         "summary" : "Update Benutzer Aktiv Status",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "BENUTZER_BERECHTIGUNGEN_SCHREIBEN", "ORGANISATION_VERWALTEN_SCHREIBEN" ]
         } ]
       }
     },
@@ -12640,7 +12854,7 @@
         },
         "summary" : "Update Dossier Papierakte Status",
         "security" : [ {
-          "SecurityScheme" : [ "KINDER_SCHREIBEN_MEDIZINISCH", "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
+          "SecurityScheme" : [ "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
         } ]
       }
     },
@@ -12689,7 +12903,7 @@
         },
         "summary" : "Update Dossier Verantwortlich Arzt",
         "security" : [ {
-          "SecurityScheme" : [ "KINDER_SCHREIBEN_MEDIZINISCH", "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
+          "SecurityScheme" : [ "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
         } ]
       }
     },
@@ -12738,7 +12952,7 @@
         },
         "summary" : "Update Dossier Verantwortlich Mpa",
         "security" : [ {
-          "SecurityScheme" : [ "KINDER_SCHREIBEN_MEDIZINISCH", "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
+          "SecurityScheme" : [ "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
         } ]
       }
     },
@@ -13304,7 +13518,7 @@
         },
         "summary" : "Find All By Impfstoff",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "IMPFSTOFFE_LESEN" ]
         } ]
       },
       "post" : {
@@ -13602,7 +13816,7 @@
         },
         "summary" : "Find All Infomaterialien",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "INFOMATERIAL_LESEN" ]
         } ]
       },
       "post" : {
@@ -13641,7 +13855,7 @@
         },
         "summary" : "Create Infomaterial",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "INFOMATERIAL_SCHREIBEN" ]
         } ]
       }
     },
@@ -13690,7 +13904,7 @@
         },
         "summary" : "Update Infomaterial",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "INFOMATERIAL_SCHREIBEN" ]
         } ]
       },
       "delete" : {
@@ -13717,7 +13931,7 @@
         },
         "summary" : "Remove Infomaterial",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "INFOMATERIAL_SCHREIBEN" ]
         } ]
       }
     },
@@ -13821,15 +14035,27 @@
         } ]
       },
       "post" : {
-        "operationId" : "KindResource_createKind",
+        "operationId" : "KindResource_createKindAndDossier",
         "tags" : [ "Kinder" ],
         "parameters" : [ {
+          "name" : "arztId",
+          "in" : "query",
+          "schema" : {
+            "$ref" : "#/components/schemas/IDBenutzer"
+          }
+        }, {
           "name" : "kindSaveMode",
           "in" : "query",
           "schema" : {
             "$ref" : "#/components/schemas/KindSaveModeDuplikat"
           },
           "required" : true
+        }, {
+          "name" : "mpaId",
+          "in" : "query",
+          "schema" : {
+            "$ref" : "#/components/schemas/IDBenutzer"
+          }
         } ],
         "requestBody" : {
           "content" : {
@@ -13862,7 +14088,7 @@
             "description" : "Bad Request"
           }
         },
-        "summary" : "Create Kind",
+        "summary" : "Create Kind And Dossier",
         "security" : [ {
           "SecurityScheme" : [ "KINDER_SCHREIBEN_MEDIZINISCH", "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
         } ]
@@ -13941,7 +14167,7 @@
         },
         "summary" : "Find Aktiv By Kind",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN", "KINDER_LESEN_NICHT_MEDIZINISCH" ]
+          "SecurityScheme" : [ "KINDER_LESEN_NICHT_MEDIZINISCH" ]
         } ]
       },
       "post" : {
@@ -13988,7 +14214,7 @@
         },
         "summary" : "Create Kontakt Person Kind",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN", "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
+          "SecurityScheme" : [ "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
         } ]
       }
     },
@@ -14030,7 +14256,7 @@
         },
         "summary" : "Find All Options Active",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_SCHREIBEN", "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
+          "SecurityScheme" : [ "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
         } ]
       }
     },
@@ -14066,7 +14292,7 @@
         },
         "summary" : "Remove Kontakt Person Kind From Kind",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN", "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
+          "SecurityScheme" : [ "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
         } ]
       },
       "put" : {
@@ -14107,7 +14333,7 @@
         },
         "summary" : "Add Kontakt Person Kind To Kind",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN", "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
+          "SecurityScheme" : [ "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
         } ]
       }
     },
@@ -14163,7 +14389,7 @@
         },
         "summary" : "Update Kontakt Person Kind",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN", "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
+          "SecurityScheme" : [ "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
         } ]
       },
       "get" : {
@@ -14204,7 +14430,7 @@
         },
         "summary" : "Get Kontakt Person Kind",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "KINDER_LESEN_NICHT_MEDIZINISCH" ]
+          "SecurityScheme" : [ "KINDER_LESEN_NICHT_MEDIZINISCH" ]
         } ]
       },
       "delete" : {
@@ -14238,13 +14464,13 @@
         },
         "summary" : "Delete Kontakt Person Kind",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN", "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
+          "SecurityScheme" : [ "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
         } ]
       }
     },
     "/api/kinder/{kindId}" : {
       "put" : {
-        "operationId" : "KindResource_updateKind",
+        "operationId" : "KindResource_updateKindAndVerantwortlichePersonen",
         "tags" : [ "Kinder" ],
         "parameters" : [ {
           "name" : "kindId",
@@ -14254,12 +14480,24 @@
             "$ref" : "#/components/schemas/IDKind"
           }
         }, {
+          "name" : "arztId",
+          "in" : "query",
+          "schema" : {
+            "$ref" : "#/components/schemas/IDBenutzer"
+          }
+        }, {
           "name" : "kindSaveMode",
           "in" : "query",
           "schema" : {
             "$ref" : "#/components/schemas/KindSaveModeDuplikat"
           },
           "required" : true
+        }, {
+          "name" : "mpaId",
+          "in" : "query",
+          "schema" : {
+            "$ref" : "#/components/schemas/IDBenutzer"
+          }
         } ],
         "requestBody" : {
           "content" : {
@@ -14292,7 +14530,7 @@
             "description" : "Bad Request"
           }
         },
-        "summary" : "Update Kind",
+        "summary" : "Update Kind And Verantwortliche Personen",
         "security" : [ {
           "SecurityScheme" : [ "KINDER_SCHREIBEN_MEDIZINISCH", "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
         } ]
@@ -14529,6 +14767,55 @@
         } ]
       }
     },
+    "/api/kinder/{kindId}/schule-klasse" : {
+      "put" : {
+        "operationId" : "KindResource_updateSchuleAndKlasse",
+        "tags" : [ "Kinder" ],
+        "parameters" : [ {
+          "name" : "kindId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDKind"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/KindSchuleAndKlasseSaveJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/KindSaveResultJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Update Schule And Klasse",
+        "security" : [ {
+          "SecurityScheme" : [ "KINDER_SCHREIBEN_MEDIZINISCH", "KINDER_SCHREIBEN_NICHT_MEDIZINISCH" ]
+        } ]
+      }
+    },
     "/api/klasse/{klasseID}/lehrpersonen" : {
       "get" : {
         "operationId" : "LehrpersonResource_findAllAktivByKlasse",
@@ -14561,7 +14848,7 @@
         },
         "summary" : "Find All Aktiv By Klasse",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "KLASSEN_LESEN" ]
         } ]
       },
       "post" : {
@@ -14608,7 +14895,7 @@
         },
         "summary" : "Create Lehrperson",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "KLASSEN_SCHREIBEN" ]
         } ]
       }
     },
@@ -14650,7 +14937,7 @@
         },
         "summary" : "Find All Options Active",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "KLASSEN_LESEN" ]
         } ]
       }
     },
@@ -14686,7 +14973,7 @@
         },
         "summary" : "Remove Lehrperson From Klasse",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "KLASSEN_SCHREIBEN" ]
         } ]
       },
       "put" : {
@@ -14727,7 +15014,7 @@
         },
         "summary" : "Add Lehrperson To Klasse",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "KLASSEN_SCHREIBEN" ]
         } ]
       }
     },
@@ -14783,7 +15070,7 @@
         },
         "summary" : "Update Lehrperson",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "KLASSEN_SCHREIBEN" ]
         } ]
       },
       "get" : {
@@ -14824,7 +15111,7 @@
         },
         "summary" : "Get Lehrperson",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "KLASSEN_LESEN" ]
         } ]
       },
       "delete" : {
@@ -14858,7 +15145,7 @@
         },
         "summary" : "Delete Lehrperson",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "KLASSEN_SCHREIBEN" ]
         } ]
       }
     },
@@ -14886,7 +15173,7 @@
         },
         "summary" : "Find All Klassen",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "KLASSEN_LESEN" ]
         } ]
       },
       "post" : {
@@ -14925,7 +15212,7 @@
         },
         "summary" : "Create Klasse",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "KLASSEN_SCHREIBEN" ]
         } ]
       }
     },
@@ -14974,7 +15261,7 @@
         },
         "summary" : "Update Klasse",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "KLASSEN_SCHREIBEN" ]
         } ]
       },
       "delete" : {
@@ -15001,7 +15288,7 @@
         },
         "summary" : "Remove Klasse",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "KLASSEN_SCHREIBEN" ]
         } ]
       },
       "get" : {
@@ -15035,7 +15322,7 @@
         },
         "summary" : "Find Klasse",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "KLASSEN_LESEN" ]
         } ]
       }
     },
@@ -15084,7 +15371,7 @@
         },
         "summary" : "Update Klasse Aktiv Status",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "KLASSEN_SCHREIBEN" ]
         } ]
       }
     },
@@ -15472,7 +15759,7 @@
     },
     "/api/notizen" : {
       "get" : {
-        "operationId" : "NotizResource_findAll",
+        "operationId" : "NotizResource_findAllBerechtigt",
         "tags" : [ "Notizen" ],
         "responses" : {
           "200" : {
@@ -15492,7 +15779,7 @@
             "description" : "Not Allowed"
           }
         },
-        "summary" : "Find All",
+        "summary" : "Find All Berechtigt",
         "security" : [ {
           "SecurityScheme" : [ "KINDER_ALLE_NOTIZEN_LESEN", "KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN" ]
         } ]
@@ -15897,6 +16184,94 @@
         } ]
       }
     },
+    "/api/preview/aufgaben/{aufgabeId}/file/{fileId}/preview" : {
+      "get" : {
+        "operationId" : "PreviewResource_downloadPreviewAufgabeFile",
+        "tags" : [ "Preview" ],
+        "parameters" : [ {
+          "name" : "aufgabeId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDAufgabe"
+          }
+        }, {
+          "name" : "fileId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDFileData"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/octet-stream" : {
+                "schema" : {
+                  "format" : "binary",
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "summary" : "Download Preview Aufgabe File",
+        "security" : [ {
+          "SecurityScheme" : [ "AUFGABEN_LESEN" ]
+        } ]
+      }
+    },
+    "/api/preview/notizen/{notizId}/file/{fileId}/preview" : {
+      "get" : {
+        "operationId" : "PreviewResource_downloadPreviewNotizFile",
+        "tags" : [ "Preview" ],
+        "parameters" : [ {
+          "name" : "fileId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDFileData"
+          }
+        }, {
+          "name" : "notizId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IDNotiz"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/octet-stream" : {
+                "schema" : {
+                  "format" : "binary",
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "summary" : "Download Preview Notiz File",
+        "security" : [ {
+          "SecurityScheme" : [ "KINDER_ALLE_NOTIZEN_LESEN", "KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN" ]
+        } ]
+      }
+    },
     "/api/printer/anlass/{anlassId}" : {
       "get" : {
         "operationId" : "PrinterResource_downloadAnlassPrint",
@@ -16148,7 +16523,7 @@
         },
         "summary" : "Find All Quartiere",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "SCHULE_LESEN" ]
         } ]
       }
     },
@@ -16176,7 +16551,7 @@
         },
         "summary" : "Find All Quartier Options",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "SCHULE_LESEN" ]
         } ]
       }
     },
@@ -16241,7 +16616,7 @@
         },
         "summary" : "Find All Schulen",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "SCHULE_LESEN" ]
         } ]
       },
       "post" : {
@@ -16280,7 +16655,7 @@
         },
         "summary" : "Create Schule",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "SCHULE_SCHREIBEN" ]
         } ]
       }
     },
@@ -16288,14 +16663,6 @@
       "get" : {
         "operationId" : "SchuleResource_findAllOptions",
         "tags" : [ "Schulen" ],
-        "parameters" : [ {
-          "name" : "onlyActive",
-          "in" : "query",
-          "schema" : {
-            "type" : "boolean"
-          },
-          "required" : true
-        } ],
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -16316,7 +16683,7 @@
         },
         "summary" : "Find All Options",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "SCHULE_LESEN" ]
         } ]
       }
     },
@@ -16352,7 +16719,7 @@
         },
         "summary" : "Find All Aktiv By Schule",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "SCHULE_LESEN" ]
         } ]
       },
       "post" : {
@@ -16399,7 +16766,7 @@
         },
         "summary" : "Create Kontakt Person Schule",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "SCHULE_SCHREIBEN" ]
         } ]
       }
     },
@@ -16441,7 +16808,7 @@
         },
         "summary" : "Find All Options Active",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "SCHULE_LESEN" ]
         } ]
       }
     },
@@ -16477,7 +16844,7 @@
         },
         "summary" : "Remove Kontakt Person Schule From Schule",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "SCHULE_SCHREIBEN" ]
         } ]
       },
       "put" : {
@@ -16518,7 +16885,7 @@
         },
         "summary" : "Add Kontakt Person Schule To Schule",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "SCHULE_SCHREIBEN" ]
         } ]
       }
     },
@@ -16574,7 +16941,7 @@
         },
         "summary" : "Update Kontakt Person Schule",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "SCHULE_SCHREIBEN" ]
         } ]
       },
       "get" : {
@@ -16615,7 +16982,7 @@
         },
         "summary" : "Get Kontakt Person Schule",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "SCHULE_LESEN" ]
         } ]
       },
       "delete" : {
@@ -16649,7 +17016,7 @@
         },
         "summary" : "Delete Kontakt Person Schule",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "SCHULE_SCHREIBEN" ]
         } ]
       }
     },
@@ -16698,7 +17065,7 @@
         },
         "summary" : "Update Schule",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "SCHULE_SCHREIBEN" ]
         } ]
       },
       "delete" : {
@@ -16725,7 +17092,7 @@
         },
         "summary" : "Remove Schule",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "SCHULE_SCHREIBEN" ]
         } ]
       },
       "get" : {
@@ -16759,7 +17126,7 @@
         },
         "summary" : "Get Schule",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "SCHULE_LESEN" ]
         } ]
       }
     },
@@ -16795,7 +17162,7 @@
         },
         "summary" : "Find Schule Klassen",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "SCHULE_LESEN" ]
         } ]
       }
     },
@@ -16838,7 +17205,7 @@
         },
         "summary" : "Find Schule Klassen Options",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_ADMIN_LESEN", "LISTEN_LESEN" ]
+          "SecurityScheme" : [ "SCHULE_LESEN" ]
         } ]
       }
     },
@@ -16887,7 +17254,7 @@
         },
         "summary" : "Update Schule Aktiv Status",
         "security" : [ {
-          "SecurityScheme" : [ "LISTEN_SCHREIBEN" ]
+          "SecurityScheme" : [ "SCHULE_SCHREIBEN" ]
         } ]
       }
     },
@@ -17221,6 +17588,27 @@
           }
         },
         "summary" : "Trigger Document Queue Job",
+        "security" : [ {
+          "SecurityScheme" : [ "SUPPORT" ]
+        } ]
+      }
+    },
+    "/api/super-admin-runner/trigger-filestore-healthcheck" : {
+      "post" : {
+        "operationId" : "SuperAdminRunnerResource_triggerFilestoreHealthcheck",
+        "tags" : [ "Super-Admin-Runner" ],
+        "responses" : {
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "summary" : "Trigger Filestore Healthcheck",
         "security" : [ {
           "SecurityScheme" : [ "SUPPORT" ]
         } ]

@@ -29,7 +29,7 @@ import {
   TextInputDirective,
 } from '@dvb/ui-components';
 import { FilterSessionStorage, TableModel } from '@dvb/util-angular';
-import { ensureProps, hasListEditBerechtigung, isValidEnumValue } from '@dvb/util-shared';
+import {ensureProps, hasLabelEditBerechtigung, isValidEnumValue} from '@dvb/util-shared';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { NgbDropdownItem } from '@ng-bootstrap/ng-bootstrap';
 import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
@@ -77,7 +77,7 @@ export class LabelListPageComponent extends FilterSessionStorage<LabelFilterForm
   readonly Path = Path;
   readonly labelTypen = Object.values(LabelTyp);
 
-  canEditLabel = this.benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
+  canEditLabel = this.benutzerStore.createHasRequiredRoleSig(hasLabelEditBerechtigung());
 
   readonly SESSIONSTORAGE_KEY = 'labelFilter';
 

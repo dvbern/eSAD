@@ -11,7 +11,6 @@ import {
   StereotestResultat,
   StrabismusAuftretenResultat,
   StrabismusAuspraegungResultat,
-  StrabismusResultat,
   VerwendetTafelResultat,
 } from '@dvb/data-access-backend';
 import {
@@ -23,9 +22,8 @@ import {
   TextareaDirective,
   TitleComponent,
 } from '@dvb/ui-components';
-import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import {DirtyMarker} from '@dvb/util-angular';
-import {isNotNullish, requireValue} from '@dvb/util-shared';
+import {hasSehenEditBerechtigung, isNotNullish, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {AnlassStore} from '../../../anlass.store';
@@ -34,6 +32,7 @@ import {hasSomeNotNullishValueIgnoringVersion} from '../../untersuchung.util';
 import {UntersuchungSehenStore} from './../untersuchung-sehen.store';
 import {UntersuchungSehenBeurteilungForm} from './untersuchung-sehen-beurteilung.form';
 import {
+  BenutzerStore,
   createMultiValueEnhancedForm,
   createSingleValueEnhancedForm,
   TenantSettingsStore,
@@ -68,6 +67,10 @@ export class UntersuchungSehenBeurteilungComponent implements DirtyMarker {
   readonly untersuchungStore = inject(UntersuchungStore);
   readonly store = inject(UntersuchungSehenStore);
   readonly tenantSettingsStore = inject(TenantSettingsStore);
+  readonly benutzerStore = inject(BenutzerStore);
+
+  canEdit = computed(() => this.benutzerStore.createHasRequiredRoleSig(hasSehenEditBerechtigung())()
+    && this.anlassStore.canUserEditAnlassInCurrentState());
 
   distanzSehenAugeEinzelnItems = Object.values(DistanzSehenAugeEinzelnResultat);
   stereotestItems = Object.values(StereotestResultat);
@@ -79,10 +82,10 @@ export class UntersuchungSehenBeurteilungComponent implements DirtyMarker {
   inspektionKonvergenzItems = Object.values(InspektionKonvergenzResultat);
   visusOptions = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
   distanzSehenItems = Object.values(DistanzSehenResultat);
-  strabismusResultatItems = Object.values(StrabismusResultat);
   sehenEmpfehlungItems = Object.values(SehenEmpfehlung);
 
-  strabismusItemsAnlassConfig = computed(() => this.anlassStore.selectedEntity()?.anlassConfig.data.sehenStrabismusValues || [])
+  strabismusItemsAnlassConfig = computed(() => this.anlassStore.selectedEntity()?.anlassConfig.data.sehenStrabismusValues
+    || []);
 
   form = new UntersuchungSehenBeurteilungForm({
     fb: inject(NonNullableFormBuilder),
@@ -139,19 +142,16 @@ export class UntersuchungSehenBeurteilungComponent implements DirtyMarker {
 
   abbrechen(): void {
     const sehen = this.store.sehenBeurteilung();
-    if (sehen) {
-      this.form.resetForm(sehen.data);
-    }
+      this.form.resetForm(sehen?.data);
   }
 
   async submitIfValid(): Promise<void> {
     if (await this.form.validate()) {
       const anlassId = requireValue(this.anlassStore.selectedEntity()?.id);
-      const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       const payload = this.form.valueOnValid();
       this.store.saveSehenBeurteilung({
         anlassId: anlassId,
-        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
+        einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
         untersuchungSehenBeurteilungSaveJson: payload,
       });
     }

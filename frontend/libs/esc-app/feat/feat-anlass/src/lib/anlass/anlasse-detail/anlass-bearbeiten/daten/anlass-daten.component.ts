@@ -5,6 +5,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {
   AnlassArt,
   AnlassConfigOptionJson,
+  AnlassSaveJson,
   AnlassTyp,
   BenutzerOptionJson,
   EntityAktivStatus
@@ -13,8 +14,10 @@ import {
   AnlassConfigOptionsStore,
   BenutzerOptionsStore,
   BenutzerStore,
+  ConfirmService,
   KlassenOptionsStore,
   Path,
+  TenantSettingsStore,
   TimetravelStore,
 } from '@dvb/feat-shared';
 import {
@@ -74,6 +77,8 @@ export class AnlassDatenComponent {
   readonly timetravelStore = inject(TimetravelStore);
   readonly benutzerStore = inject(BenutzerStore);
   readonly anlassConfigOptionsStore = inject(AnlassConfigOptionsStore);
+  readonly tenantSettingsStore = inject(TenantSettingsStore);
+  readonly #confirmService = inject(ConfirmService);
 
   public form = new AnlassDatenForm({
     fb: inject(NonNullableFormBuilder),
@@ -83,16 +88,18 @@ export class AnlassDatenComponent {
     anlassConfig: this.store.selectedEntity()?.anlassConfig,
     timetravelStore: inject(TimetravelStore),
     anlassConfigOptionsStore: this.anlassConfigOptionsStore,
+    tenantSettingsStore: this.tenantSettingsStore,
+    benutzerStore: this.benutzerStore,
     isNew: this.store.selectedIsNew()
   });
 
   anlassArten = Object.values(AnlassArt);
 
-  #showLaeuseAnlass = this.benutzerStore.createHasRequiredRoleSig(hasLaeuseAnlassBerechtigungen());
-  #showAlleAnlaesse = this.benutzerStore.createHasRequiredRoleSig(hasAlleAnlaesseBerechtigungen());
+  readonly #showLaeuseAnlass = this.benutzerStore.createHasRequiredRoleSig(hasLaeuseAnlassBerechtigungen());
+  readonly #showAlleAnlaesse = this.benutzerStore.createHasRequiredRoleSig(hasAlleAnlaesseBerechtigungen());
   anlassTypen = computed(() => {
     if (this.#showAlleAnlaesse()) {
-      return Object.values(this.anlassConfigOptionsStore.getVisibleAnlassTypen());
+      return Object.values(this.anlassConfigOptionsStore.getVisibleAnlassTypenNotAnonym());
     }
     if (this.#showLaeuseAnlass()) {
       return [AnlassTyp.LAEUSEKONTROLLE];
@@ -100,7 +107,20 @@ export class AnlassDatenComponent {
     return [];
   });
 
+  arztOptions = computed(() => {
+   return this.benutzerOptionsStore.benutzerFiltered(this.store.arztOfCurrentAnlass(), 'ARZT', !this.store.selectedEntity());
+  });
+
+  hilfspersonOptions = computed(() => {
+    return this.benutzerOptionsStore.benutzerFiltered(this.store.mpaOfCurrentAnlass(), 'HILFSPERSON', !this.store.selectedEntity());
+  });
+
+  weiterePersonOptions = computed(() => {
+    return this.benutzerOptionsStore.benutzerFiltered(this.store.weiterePersonOfCurrentAnlass(), 'FACHROLLEN', !this.store.selectedEntity());
+  });
+
   protected readonly Path = Path;
+  protected readonly EntityAktivStatus = EntityAktivStatus;
   protected readonly compareFnBenutzer = compareFn<BenutzerOptionJson>;
   protected readonly compareFnAnlassConfig = compareFn<AnlassConfigOptionJson>;
 
@@ -173,18 +193,35 @@ export class AnlassDatenComponent {
         });
       } else {
         // update existing Anlass
-        this.store.updateAnlass({
-          anlass: payload,
-          onSuccess: () => {
-            this.form.reset();
-            this.#router.navigate([Path.RELATIVE_ONE_UP, Path.ANLASS_PLANUNG], {
-              relativeTo: this.#activatedRoute,
+        if (this.store.showZustaendigerChangedWarning(payload.arzt)) {
+          this.#confirmService
+            .confirm({
+              question: this.transloco.translate('anlass.change.zustaendigkeit.question'),
+              consequence: this.transloco.translate('anlass.change.zustaendigkeit.consequence'),
+              decision: this.transloco.translate('anlass.change.zustaendigkeit.decision'),
+            })
+            .subscribe(() => {
+             this.updateAnlass(payload, [Path.RELATIVE_TWO_UP], true);
             });
-          },
-        });
+        } else {
+          this.updateAnlass(payload, [Path.RELATIVE_ONE_UP, Path.ANLASS_PLANUNG], false);
+        }
       }
     }
   }
 
-  protected readonly EntityAktivStatus = EntityAktivStatus;
+  private updateAnlass(payload: AnlassSaveJson, path: Path[], reloadAnlassListe: boolean) {
+    this.store.updateAnlass({
+      anlass: payload,
+      onSuccess: () => {
+        this.form.reset();
+        if (reloadAnlassListe) {
+          this.store.loadAnlassList();
+        }
+        this.#router.navigate(path, {
+          relativeTo: this.#activatedRoute,
+        });
+      },
+    });
+  }
 }

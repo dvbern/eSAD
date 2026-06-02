@@ -23,11 +23,11 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoerenOtoskopieJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoerenOtoskopieSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
@@ -57,23 +57,28 @@ public class UntersuchungHoerenOtoskopieMapper {
         return new UntersuchungHoerenOtoskopieJson(
             hoeren.getId(),
             EntityInfoJson.fromEntity(hoeren),
-            new UntersuchungHoerenOtoskopieSaveJson(
-                MultiValueEnhancedMapper.toJson(OtoskopieResultat.class, hoeren.getOtoskopieRechts()),
-                hoeren.getOtoskopieRechtsResultatAndere(),
-                MultiValueEnhancedMapper.toJson(OtoskopieResultat.class, hoeren.getOtoskopieLinks()),
-                hoeren.getOtoskopieLinksResultatAndere(),
-                hoeren.getBemerkungen(),
-                hoeren.getVersion()
-            )
+            toSaveJson(hoeren)
+        );
+    }
+
+    @NonNull
+    public static UntersuchungHoerenOtoskopieSaveJson toSaveJson(@NonNull UntersuchungHoerenOtoskopie hoeren) {
+        return new UntersuchungHoerenOtoskopieSaveJson(
+            MultiValueEnhancedMapper.toJson(OtoskopieResultat.class, hoeren.getOtoskopieRechts()),
+            hoeren.getOtoskopieRechtsResultatAndere(),
+            MultiValueEnhancedMapper.toJson(OtoskopieResultat.class, hoeren.getOtoskopieLinks()),
+            hoeren.getOtoskopieLinksResultatAndere(),
+            hoeren.getBemerkungen(),
+            hoeren.getVersion()
         );
     }
 
     @Nullable
     public UntersuchungHoerenOtoskopieJson getByEinladung(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungHoerenOtoskopie());
     }
@@ -102,7 +107,7 @@ public class UntersuchungHoerenOtoskopieMapper {
             saveJson.getOtoskopieLinks()));
         hoeren.setOtoskopieLinksResultatAndere(
             ValueEnhancedUtil.getEnumSetOrEmpty(
-                MultiValueEnhancedMapper.toEntity(OtoskopieResultat.class, saveJson.getOtoskopieRechts()),
+                MultiValueEnhancedMapper.toEntity(OtoskopieResultat.class, saveJson.getOtoskopieLinks()),
                 OtoskopieResultat.class).contains(OtoskopieResultat.ANDERES)
                 ? saveJson.getOtoskopieLinksResultatAndere()
                 : null
@@ -113,11 +118,11 @@ public class UntersuchungHoerenOtoskopieMapper {
 
     @NonNull
     public UntersuchungHoerenOtoskopieJson saveOtoskopie(
-        @NonNull ID<Einladung> einladungID,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull UntersuchungHoerenOtoskopieSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungHoerenOtoskopie hoerenOtoskopie = untersuchung.getUntersuchungHoerenOtoskopie();
         UntersuchungHoerenOtoskopie entity = toEntity(untersuchung, hoerenOtoskopie, saveJson);

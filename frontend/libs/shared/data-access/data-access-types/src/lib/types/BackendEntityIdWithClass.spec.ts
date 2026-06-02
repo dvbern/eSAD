@@ -1,6 +1,18 @@
-import { isValidBackendEntityIdWithClass } from './BackendEntityIdWithClass';
+import {
+  isValidBackendEntityIdWithClass,
+  toEinladungBackendEntityIdWithClass,
+} from './BackendEntityIdWithClass';
+import { BackendEntityId } from './EntityId';
 
 describe('BackendEntityIdWithClass', () => {
+  describe('toEinladungBackendEntityIdWithClass', () => {
+    it('should append -einladung to a BackendEntityId', () => {
+      const id = '00000000-0000-4000-8000-000000000001' as BackendEntityId;
+      const actual = toEinladungBackendEntityIdWithClass(id);
+      expect(actual).toBe('00000000-0000-4000-8000-000000000001-einladung');
+    });
+  });
+
   describe('isValidBackendEntityIdWithClass', () => {
     it.each([
       '00000000-0000-4000-8000-000000000000-anonym',

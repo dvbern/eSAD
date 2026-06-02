@@ -7,12 +7,14 @@ import java.util.List;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
 import ch.dvbern.oss.hemed.esc.api.shared.util.HasZustaendigkeit;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.types.PapierakteStatus;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckArztRequiredForDezentraleTenants;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckArztUndMpaSameOrganisation;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,6 +49,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckArztUndMpaSameOrganisation
+@CheckArztRequiredForDezentraleTenants
 public class Dossier extends AbstractEntity<Dossier> implements EntityWithOptimisticLocking, HasZustaendigkeit {
 
     @Serial
@@ -139,17 +142,22 @@ public class Dossier extends AbstractEntity<Dossier> implements EntityWithOptimi
         return this.zustaendigArzt;
     }
 
-    @NonNull
-    public List<ID<Benutzer>> getBerechtigteAerzteIdsFromDossierOrSchule() {
-        // TODO ESC-1120: Change this to include Organisationsberechtigungen!
-        List<ID<Benutzer>> berechtigteAerzte = new ArrayList<>();
-        if (getZustaendigArztIdFromSchule() != null) {
-            berechtigteAerzte.add(getZustaendigArztIdFromSchule());
+    public boolean isBenutzerZustaendigForDossier(@NonNull Benutzer benutzer) {
+        if (benutzer.hasFachRolleSupport()) {
+            return true;
         }
-        if (zustaendigArzt != null) {
-            berechtigteAerzte.add(zustaendigArzt.getId());
+        Organisation benutzerOrganisation = benutzer.getSingleOrganisation();
+        if (benutzerOrganisation == null) {
+            return false;
         }
-        return berechtigteAerzte;
+
+        Organisation dossierOrganisation = this.getSingleOrganisation();
+        if (benutzerOrganisation.equals(dossierOrganisation)) {
+            return true;
+        }
+
+        Organisation schuleOrganisation = this.getKind().getSchule() != null ? this.getKind().getSchule().getSingleOrganisation() : null;
+        return benutzerOrganisation.equals(schuleOrganisation);
     }
 
     @Nullable

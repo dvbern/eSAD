@@ -18,7 +18,11 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.fileio;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.db.baserepo.BaseRepo;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -29,10 +33,22 @@ public class FileDataRepo extends BaseRepo<FileData> {
 
     @NonNull
     public FileData getByFileIdInBucket(@NonNull String fileIdInBucket) {
-        return db
+        FileData fileData = db
             .selectFrom(QFileData.fileData)
             .where(QFileData.fileData.fileInfoBucket.fileIdInBucket.eq(fileIdInBucket))
             .fetchFirst();
+        if (fileData == null) {
+            throw new AppFailureException(AppFailureMessage.entityNotFoundUsingExternalId(FileData.class, fileIdInBucket));
+        }
+        return fileData;
+    }
+
+    @NonNull
+    public List<String> findAllFileIdsInBucket() {
+        return db
+            .select(QFileData.fileData.fileInfoBucket.fileIdInBucket)
+            .from(QFileData.fileData)
+            .fetch();
     }
 
 }

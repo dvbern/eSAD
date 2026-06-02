@@ -136,8 +136,9 @@
               [multiple]="true"
             >
               <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-              @if (benutzerOptionsStore.arztOptions()) {
-                @for (each of benutzerOptionsStore.arztOptions(); track each.id; ) {
+              @let arztOption = benutzerOptionsStore.benutzerFiltered(undefined, 'ARZT', true);
+              @if (arztOption) {
+                @for (each of arztOption; track each.id; ) {
                   <ng-option [value]="each.id">
                     {{ each.fullName }}
                   </ng-option>
@@ -158,8 +159,9 @@
               [multiple]="true"
             >
               <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-              @if (benutzerOptionsStore.hilfspersonOptions()) {
-                @for (each of benutzerOptionsStore.hilfspersonOptions(); track each; ) {
+              @let hilfspersonen = benutzerOptionsStore.benutzerFiltered(undefined, 'HILFSPERSON', true);
+              @if (hilfspersonen) {
+                @for (each of hilfspersonen; track each; ) {
                   <ng-option [value]="each.id">
                     {{ each.fullName }}
                   </ng-option>
@@ -180,8 +182,9 @@
               [multiple]="true"
             >
               <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-              @if (benutzerOptionsStore.entities()) {
-                @for (each of benutzerOptionsStore.entities(); track each.id) {
+              @let weiterePerson = benutzerOptionsStore.benutzerFiltered(undefined, 'FACHROLLEN', true);
+              @if (weiterePerson) {
+                @for (each of weiterePerson; track each.id) {
                   <ng-option [value]="each.id">
                     {{ each.fullName }}
                   </ng-option>

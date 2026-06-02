@@ -159,7 +159,7 @@ class UtilTest {
         void using_the_supplier_returns_fallback_on_null_value() {
             var actual = Stream.of("asdf", null, "asdf")
                 .map(Util.mapNull(() -> "Schnitzel"))
-                .collect(Collectors.toList());
+                .toList();
 
             assertThat(actual)
                 .containsExactly("asdf", "Schnitzel", "asdf");
@@ -169,7 +169,7 @@ class UtilTest {
         void using_an_actual_fallback_value_returns_fallback_on_null_value() {
             var actual = Stream.of("asdf", null, "asdf")
                 .map(Util.mapNull("Schnitzel"))
-                .collect(Collectors.toList());
+                .toList();
 
             assertThat(actual)
                 .containsExactly("asdf", "Schnitzel", "asdf");

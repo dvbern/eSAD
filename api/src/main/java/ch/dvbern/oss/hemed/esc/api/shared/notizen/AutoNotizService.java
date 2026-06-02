@@ -113,16 +113,16 @@ public class AutoNotizService {
         );
     }
 
-    public void moveImpfanmeldungNotiz(
+    public void moveImpfeinverstaendnisNotiz(
         @NonNull Einladung einladungSource,
         @NonNull Einladung einladungTarget
     ) {
         moveNotiz(
             einladungSource,
             einladungTarget,
-            Einladung::getImpfanmeldungsNotiz,
-            "einladung.impfanmeldung.notiz.title",
-            "einladung.impfanmeldung.notiz.bemerkung.nachzuegler"
+            Einladung::getImpfeinverstaendnisNotiz,
+            "einladung.impfeinverstaendnis.notiz.title",
+            "einladung.impfeinverstaendnis.notiz.bemerkung.nachzuegler"
         );
     }
 
@@ -209,7 +209,7 @@ public class AutoNotizService {
             case NotizTyp.ANMELDUNG_BESTAETIGUNG -> Label.ID_LABEL_ANMELDUNG_BESTAETIGUNG;
             case NotizTyp.IMPFAUSWEIS -> Label.ID_LABEL_IMPFAUSWEIS;
             case NotizTyp.ABMELDUNG -> Label.ID_LABEL_ABMELDUNGSGRUND;
-            case NotizTyp.IMPFANMELDUNG -> Label.ID_LABEL_IMPFANMELDUNG;
+            case NotizTyp.IMPFEINVERSTAENDNIS -> Label.ID_LABEL_IMPFEINVERSTAENDNIS;
             case NotizTyp.DEFAULT -> null;
         };
     }

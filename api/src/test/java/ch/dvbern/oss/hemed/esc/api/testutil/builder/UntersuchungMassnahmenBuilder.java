@@ -7,13 +7,13 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.json.UntersuchungMassnahmenJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmenMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungSehenMassnahmenMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.json.UntersuchungMassnahmenJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.json.UntersuchungSehenMassnahmenSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.infomaterial.Infomaterial;
 import ch.dvbern.oss.hemed.esc.api.shared.anlass.anlassflags.AnlassFlags;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
@@ -38,7 +38,8 @@ public class UntersuchungMassnahmenBuilder {
 
     @NonNull
     public static UntersuchungMassnahmen defaultUntersuchungMassnahmen(@NonNull LocalDate now) {
-        UntersuchungMassnahmen entity = UntersuchungMassnahmen.forUntersuchung(UntersuchungBuilder.defaultUntersuchung(now));
+        UntersuchungMassnahmen entity =
+            UntersuchungMassnahmen.forUntersuchung(UntersuchungBuilder.defaultUntersuchung(now));
         entity.setNachkontrolle(new AnlassFlags());
         entity.setAbgegebenesInfomaterial(Collections.emptySet());
         return entity;
@@ -160,7 +161,14 @@ public class UntersuchungMassnahmenBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungMassnahmenBuilder withNachkontrolle(boolean sehen, boolean hoeren, boolean groesseGewicht, boolean sprache, boolean motorik, boolean andere) {
+    public UntersuchungMassnahmenBuilder withNachkontrolle(
+        boolean sehen,
+        boolean hoeren,
+        boolean groesseGewicht,
+        boolean sprache,
+        boolean motorik,
+        boolean andere
+    ) {
         this.massnahmen.getNachkontrolle().setNachkontrolleSehen(sehen);
         this.massnahmen.getNachkontrolle().setNachkontrolleHoeren(hoeren);
         this.massnahmen.getNachkontrolle().setNachkontrolleGroesseGewicht(groesseGewicht);
@@ -184,22 +192,28 @@ public class UntersuchungMassnahmenBuilder {
     }
 
     @NonNull
-    public static UntersuchungSehenMassnahmenSaveJson createSehenMassnahmenSaveJax(@NonNull Consumer<UntersuchungMassnahmenBuilder> block) {
+    public static UntersuchungSehenMassnahmenSaveJson createSehenMassnahmenSaveJax(
+        @NonNull Consumer<UntersuchungMassnahmenBuilder> block
+    ) {
         UntersuchungMassnahmen entity = create(block);
-        return UntersuchungSehenMassnahmenMapper.toJson(entity).getData();
+        return UntersuchungSehenMassnahmenMapper.toSaveJson(entity);
     }
 
     @NonNull
-    public static UntersuchungMassnahmenJsonSpec createJaxSpec(@NonNull Consumer<UntersuchungMassnahmenBuilder> block) {
+    public static UntersuchungMassnahmenJsonSpec createJaxSpec(
+        @NonNull Consumer<UntersuchungMassnahmenBuilder> block
+    ) {
         UntersuchungMassnahmenJson json = createJax(block);
-        return UntersuchungMassnahmenJsonSpecMapper.INSTANCE.untersuchungMassnahmenJsonToUntersuchungMassnahmenJsonSpec(
+        return UntersuchungMassnahmenJsonSpecMapper.INSTANCE.jsonToJsonSpec(
             json);
     }
 
     @NonNull
-    public static UntersuchungSehenMassnahmenSaveJsonSpec createSehenMassnahmenSaveJaxSpec(@NonNull Consumer<UntersuchungMassnahmenBuilder> block) {
-        UntersuchungSehenMassnahmenSaveJson json = createSehenMassnahmenSaveJax(block);
-        return UntersuchungSehenMassnahmenSaveJsonSpecMapper.INSTANCE.untersuchungMassnahmenJsonToUntersuchungMassnahmenJsonSpec(
-            json);
+    public static UntersuchungSehenMassnahmenSaveJsonSpec createSehenMassnahmenSaveJaxSpec(
+        @NonNull Consumer<UntersuchungMassnahmenBuilder> block
+    ) {
+        UntersuchungSehenMassnahmenSaveJson saveJson = createSehenMassnahmenSaveJax(block);
+        return UntersuchungSehenMassnahmenSaveJsonSpecMapper.INSTANCE.saveJsonToSaveJsonSpec(
+            saveJson);
     }
 }

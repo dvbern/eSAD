@@ -3,6 +3,8 @@ package ch.dvbern.oss.hemed.esc.api.shared.aufgabe;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
@@ -111,10 +113,11 @@ public class AufgabeMapper {
     }
 
     @NonNull
-    public AufgabeListJson findAll() {
+    public AufgabeListJson findAllAufgabenBerechtigt(@NonNull Predicate<Aufgabe> hasReadAuthorizationAufgabe) {
         List<Aufgabe> aufgaben = aufgabeService.findAll();
         // since we have to load all anyway we might es well count here to avoid another query
         List<AufgabeJson> aufgabenJson = aufgaben.stream()
+            .filter(hasReadAuthorizationAufgabe)
             .map(a -> AufgabeMapper.toJson(a, tenantProducer.produceTenant()))
             .toList();
         long anzahlEigeneFaelligeAufgaben = getNumOfFaelligeAufgabenForCurrentUser();
@@ -123,9 +126,10 @@ public class AufgabeMapper {
     }
 
     @NonNull
-    public AufgabeListJson findAllForKind(@NonNull ID<Kind> kindId) {
+    public AufgabeListJson findAllForKind(@NonNull ID<Kind> kindId, @NonNull Predicate<Aufgabe> hasReadAuthorizationAufgabe) {
         List<AufgabeJson> aufgabenJson = aufgabeService.findAllForKind(kindId)
             .stream()
+            .filter(hasReadAuthorizationAufgabe)
             .map(a -> AufgabeMapper.toJson(a, tenantProducer.produceTenant()))
             .toList();
         long anzahlEigeneFaelligeAufgaben = getNumOfFaelligeAufgabenForCurrentUser();
@@ -134,13 +138,22 @@ public class AufgabeMapper {
     }
 
     @NonNull
-    public AufgabeJson getById(@NonNull ID<Aufgabe> aufgabeId) {
-        return toJson(aufgabeService.getById(aufgabeId), tenantProducer.produceTenant());
+    public AufgabeJson getById(
+        @NonNull ID<Aufgabe> aufgabeId,
+        @NonNull Consumer<Aufgabe> requireAuthorization
+    ) {
+        Aufgabe aufgabe = aufgabeService.getById(aufgabeId);
+        requireAuthorization.accept(aufgabe);
+        return toJson(aufgabe, tenantProducer.produceTenant());
     }
 
     @NonNull
-    public AufgabeJson create(@NonNull AufgabeSaveJson aufgabeJson) {
+    public AufgabeJson create(
+        @NonNull AufgabeSaveJson aufgabeJson,
+        @NonNull Consumer<Aufgabe> requireAuthorization
+    ) {
         Aufgabe entity = toEntityForCreate(aufgabeJson);
+        requireAuthorization.accept(entity);
         if (aufgabeJson.getKind() != null) {
             Kind kind = kindService.getById(aufgabeJson.getKind().getId());
             KindValidationUtil.throwErrorIfKindIsInactive(
@@ -153,8 +166,13 @@ public class AufgabeMapper {
     }
 
     @NonNull
-    public AufgabeJson update(@NonNull ID<Aufgabe> aufgabeID, @NonNull AufgabeSaveJson aufgabeJson) {
+    public AufgabeJson update(
+        @NonNull ID<Aufgabe> aufgabeID,
+        @NonNull AufgabeSaveJson aufgabeJson,
+        @NonNull Consumer<Aufgabe> requireAuthorization
+    ) {
         Aufgabe existingAufgabe = aufgabeService.getById(aufgabeID);
+        requireAuthorization.accept(existingAufgabe);
         if (existingAufgabe.getKind() != null) {
             KindValidationUtil.throwErrorIfKindIsInactive(
                 existingAufgabe.getKind(),
@@ -166,16 +184,22 @@ public class AufgabeMapper {
         return toJson(aufgabeService.persistWithOptimisticLocking(entity, aufgabeJson.getVersion()), tenantProducer.produceTenant());
     }
 
-    int getNumOfOffeneFaelligeAufgaben() {
-        return aufgabeService.getNumOfOffeneFaelligeAufgaben();
+    int getNumOfOffeneFaelligeAufgaben(@NonNull Predicate<Aufgabe> hasReadAuthorizationAufgabe) {
+        return Math.toIntExact(aufgabeService.getOffeneFaelligeAufgaben().stream()
+            .filter(hasReadAuthorizationAufgabe)
+            .count());
     }
 
     public int getNumOfFaelligeAufgabenForCurrentUser() {
         return aufgabeService.getNumOfOffeneFaelligeAufgabenByCurrentUser();
     }
 
-    public void remove(@NonNull ID<Aufgabe> aufgabeID) {
+    public void remove(
+        @NonNull ID<Aufgabe> aufgabeID,
+        @NonNull Consumer<Aufgabe> requireAuthorization
+    ) {
         Aufgabe aufgabe = aufgabeService.getById(aufgabeID);
+        requireAuthorization.accept(aufgabe);
         if (aufgabe.getKind() != null) {
             KindValidationUtil.throwErrorIfKindIsInactive(
                 aufgabe.getKind(),
@@ -187,8 +211,13 @@ public class AufgabeMapper {
     }
 
     @NonNull
-    public AufgabeJson addUploadedFile(@NonNull ID<Aufgabe> aufgabeID, @NonNull FileUpload file) {
+    public AufgabeJson addUploadedFile(
+        @NonNull ID<Aufgabe> aufgabeID,
+        @NonNull FileUpload file,
+        @NonNull Consumer<Aufgabe> requireAuthorization
+    ) {
         Aufgabe aufgabe = aufgabeService.getById(aufgabeID);
+        requireAuthorization.accept(aufgabe);
         if (aufgabe.getKind() != null) {
             KindValidationUtil.throwErrorIfKindIsInactive(
                 aufgabe.getKind(),
@@ -202,7 +231,11 @@ public class AufgabeMapper {
     }
 
     @NonNull
-    public AufgabeJson removeUploadedFile(@NonNull ID<Aufgabe> aufgabeID, @NonNull ID<FileData> fileIdToRemove) {
+    public AufgabeJson removeUploadedFile(
+        @NonNull ID<Aufgabe> aufgabeID,
+        @NonNull ID<FileData> fileIdToRemove,
+        @NonNull Consumer<Aufgabe> requireAuthorization
+    ) {
         Aufgabe existingAufgabe = aufgabeService.getById(aufgabeID);
         if (existingAufgabe.getKind() != null) {
             KindValidationUtil.throwErrorIfKindIsInactive(
@@ -211,7 +244,7 @@ public class AufgabeMapper {
                     existingAufgabe.getKind(),
                     new FileData()));
         }
-        aufgabeService.removeUploadedFile(existingAufgabe, fileIdToRemove);
+        aufgabeService.removeUploadedFile(existingAufgabe, fileIdToRemove, requireAuthorization);
         return toJson(existingAufgabe, tenantProducer.produceTenant());
     }
 

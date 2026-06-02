@@ -225,6 +225,29 @@ public class AppFailureMessage {
         ));
     }
 
+    @NonNull
+    public static AppFailureMessage mustHaveArztForOrganisation() {
+        return build(I18nMessage.of(
+            "AppFailure.MUST_HAVE_ARZT_FOR_ORGANISATION"
+        ));
+    }
+
+    @NonNull
+    public static AppFailureMessage previewGenerationFailed(@NonNull String message) {
+        return build(I18nMessage.of(
+            "AppFailure.PREVIEW_GENERATION_FAILED",
+            MESSAGE, message
+        ));
+    }
+
+    @NonNull
+    public static AppFailureMessage previewUnsupportedMimeType(@NonNull String mimeType) {
+        return build(I18nMessage.of(
+            "AppFailure.PREVIEW_UNSUPPORTED_MIME_TYPE",
+            "mimeType", mimeType
+        ));
+    }
+
     private final I18nMessage i18nMessage;
 
     @IgnoreForIdClassTest

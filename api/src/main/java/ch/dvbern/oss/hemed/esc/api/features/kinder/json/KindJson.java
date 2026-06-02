@@ -30,6 +30,11 @@ public class KindJson {
     @IgnoreForIdClassTest
     private final String esadId;
 
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private final String hashValue;
+
     @Valid
     @Nullable
     @Schema(required = false)

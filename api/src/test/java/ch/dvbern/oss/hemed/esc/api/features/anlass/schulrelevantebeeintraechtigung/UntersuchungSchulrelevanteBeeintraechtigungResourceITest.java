@@ -1,15 +1,25 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung;
 
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.Feinmotorik;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.FreiesGehen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Nachsprechen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.GleichgewichtEinbeinstand;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.Grafomotorik;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.GrobmotorikEinbeinhuepfen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.OhneStuetzradVelofahren;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.NichtGeprueftGrund;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSchulrelevanteBeeintraechtigungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.UntersuchungSchulrelevanteBeeintraechtigungApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FreiesGehenSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSchulrelevanteBeeintraechtigungJsonSpec;
@@ -21,9 +31,9 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasAnonymerEintragIdWrapper;
 import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
 @RequiredArgsConstructor
@@ -36,6 +46,7 @@ class UntersuchungSchulrelevanteBeeintraechtigungResourceITest extends AbstractI
     private final UntersuchungService untersuchungService;
     private final UntersuchungSchulrelevanteBeeintraechtigungService untersuchungBeeintraechtigungService;
     private final FixtureService fixtureService;
+    private final TenantProducer tenantProducer;
 
     @Override
     @BeforeEach
@@ -71,7 +82,7 @@ class UntersuchungSchulrelevanteBeeintraechtigungResourceITest extends AbstractI
             untersuchungBeeintraechtigungService.getById(untersuchung.getUntersuchungSchulrelevanteBeeintraechtigung()
                 .getId());
         assertThat(existingBeeintraechtigung).isNotNull();
-        assertThat(existingBeeintraechtigung.getFreiesGehen().getEnumValue(FreiesGehen.class)).isEqualTo(FreiesGehen.NORMAL);
+        assertThat(existingBeeintraechtigung.getAnzahlMonateFreiesGehen()).isEqualTo(15);
         assertThat(existingBeeintraechtigung.getBemerkungen()).isNotNull();
         // ACT
         UntersuchungSchulrelevanteBeeintraechtigungJsonSpec result =
@@ -87,10 +98,8 @@ class UntersuchungSchulrelevanteBeeintraechtigungResourceITest extends AbstractI
         // ASSERT
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(existingBeeintraechtigung.getId().getId());
-        assertThat(existingBeeintraechtigung.getFreiesGehen()).isNotNull();
         assertThat(result.getData()
-            .getFreiesGehen().getValue()).contains(existingBeeintraechtigung.getFreiesGehen().toEnumValueName(
-            FreiesGehen.class));
+            .getAnzahlMonateFreiesGehen()).isEqualTo(existingBeeintraechtigung.getAnzahlMonateFreiesGehen());
         assertThat(result.getData().getBemerkungen()).isNotNull().isEqualTo(existingBeeintraechtigung.getBemerkungen());
     }
 
@@ -106,7 +115,7 @@ class UntersuchungSchulrelevanteBeeintraechtigungResourceITest extends AbstractI
             untersuchungBeeintraechtigungService.getById(untersuchung.getUntersuchungSchulrelevanteBeeintraechtigung()
                 .getId());
         assertThat(existingBeeintraechtigung).isNotNull();
-        assertThat(existingBeeintraechtigung.getFreiesGehen().getEnumValue(FreiesGehen.class)).isEqualTo(FreiesGehen.NORMAL);
+        assertThat(existingBeeintraechtigung.getAnzahlMonateFreiesGehen()).isEqualTo(15);
         assertThat(existingBeeintraechtigung.getBemerkungen()).isNotNull()
             .isEqualTo("Untersuchung Schulrelevante Beeinträchtigung Bemerkung");
 
@@ -114,24 +123,80 @@ class UntersuchungSchulrelevanteBeeintraechtigungResourceITest extends AbstractI
         UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec saveJsonSpec =
             UntersuchungSchulrelevanteBeeintraechtigungBuilder.createJaxSpec(builder -> builder
                 .forUntersuchungSchulrelevanteBeeintraechtigung(existingBeeintraechtigung)
-                .withFreiesGehen(FreiesGehen.PATHOLOGISCH, null)
+                .withAnzahlMonateFreiesGehen(10)
                 .withBemerkungen("Test updateUntersuchungSchulrelevanteBeeintraechtigung")).getData();
 
-        UntersuchungSchulrelevanteBeeintraechtigungJsonSpec result = api.untersuchungSchulrelevanteBeeintraechtigungResourceSaveUntersuchungSchulrelevanteBeeintraechtigung()
-            .anlassIdPath(einladung.getAnlass().getId().getId())
-            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
-            .body(saveJsonSpec)
-            .execute(ResponseBody::prettyPeek)
-            .then()
-            .assertThat()
-            .statusCode(Status.OK.getStatusCode())
-            .extract()
-            .as(UntersuchungSchulrelevanteBeeintraechtigungJsonSpec.class);
+        UntersuchungSchulrelevanteBeeintraechtigungJsonSpec result =
+            api.untersuchungSchulrelevanteBeeintraechtigungResourceSaveUntersuchungSchulrelevanteBeeintraechtigung()
+                .anlassIdPath(einladung.getAnlass().getId().getId())
+                .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
+                .body(saveJsonSpec)
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.OK.getStatusCode())
+                .extract()
+                .as(UntersuchungSchulrelevanteBeeintraechtigungJsonSpec.class);
 
         // ASSERT
         assertThat(result).isNotNull();
         assertThat(result.getId()).isNotNull();
-        assertThat(result.getData().getBemerkungen()).isNotNull().isEqualTo("Test updateUntersuchungSchulrelevanteBeeintraechtigung");
-        assertThat(result.getData().getFreiesGehen().getValue()).contains(FreiesGehenSpec.PATHOLOGISCH.name());
+        assertThat(result.getData().getBemerkungen()).isNotNull()
+            .isEqualTo("Test updateUntersuchungSchulrelevanteBeeintraechtigung");
+        assertThat(result.getData().getAnzahlMonateFreiesGehen()).isEqualTo(10);
+    }
+
+    @Test
+    @TestAsSchularztBE
+    void saveUntersuchungSchulrelevanteBeeintraechtigung_anonym() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        Benutzer arzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(arzt);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), false);
+
+        assertThat(untersuchung.getUntersuchungSchulrelevanteBeeintraechtigung()).isNull();
+
+        // ACT
+        UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec saveJsonSpec =
+            UntersuchungSchulrelevanteBeeintraechtigungBuilder.createSaveJaxSpec(builder -> builder
+                .withFreiesGehen(FreiesGehen.NICHT_GEPRUEFT, NichtGeprueftGrund.ANDERER_GRUND)
+                .withOhneStuetzradVelofahren(OhneStuetzradVelofahren.JA_OHNE_STUETZRAD_VELOFAHREN, null)
+                .withGrafomotorik(Grafomotorik.GUT, null)
+                .withFeinmotorik(Feinmotorik.NICHT_BESTANDEN, null)
+                .withGrobmotorik(GrobmotorikEinbeinhuepfen.BESTANDEN, null)
+                .withGleichgewicht(GleichgewichtEinbeinstand.BESTANDEN, null)
+                .withBemerkungen("Test updateUntersuchungSchulrelevanteBeeintraechtigung"));
+
+        UntersuchungSchulrelevanteBeeintraechtigungJsonSpec result =
+            api.untersuchungSchulrelevanteBeeintraechtigungResourceSaveUntersuchungSchulrelevanteBeeintraechtigung()
+                .anlassIdPath(anonymerEintrag.getAnlass().getId().getId())
+                .einladungIdPath(toHasAnonymerEintragIdWrapper(anonymerEintrag.getId()))
+                .body(saveJsonSpec)
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.OK.getStatusCode())
+                .extract()
+                .as(UntersuchungSchulrelevanteBeeintraechtigungJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getData().getVersion()).isNotNull();
+        assertThat(result.getData().getBemerkungen()).isNotNull()
+            .isEqualTo("Test updateUntersuchungSchulrelevanteBeeintraechtigung");
+        assertThat(result.getData().getFreiesGehen().getValue()).contains(FreiesGehenSpec.NICHT_GEPRUEFT.name());
+        assertThat(result.getData().getOhneStuetzradVelofahren().getValue())
+            .contains(OhneStuetzradVelofahren.JA_OHNE_STUETZRAD_VELOFAHREN.name());
+        assertThat(result.getData().getGrafomotorik().getValue()).contains(Grafomotorik.GUT.name());
+        assertThat(result.getData()
+            .getFeinmotorik()
+            .getValue()).contains(Feinmotorik.NICHT_BESTANDEN.name());
+        assertThat(result.getData().getGrobmotorikEinbeinhuepfen().getValue())
+            .contains(GrobmotorikEinbeinhuepfen.BESTANDEN.name());
+        assertThat(result.getData().getGleichgewichtEinbeinstand().getValue())
+            .contains(GleichgewichtEinbeinstand.BESTANDEN.name());
+
     }
 }

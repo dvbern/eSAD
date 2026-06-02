@@ -30,7 +30,7 @@ import {
   LanguageStore,
   provideAppTransloco,
 } from '@dvb/util-i18n';
-import {hasListViewBerechtigung} from '@dvb/util-shared';
+import {hasBenutzerOptionReadBerechtigung, hasSchuleViewBerechtigung} from '@dvb/util-shared';
 import {TranslocoService} from '@jsverse/transloco';
 import {provideNgIconLoader, withCaching} from '@ng-icons/core';
 import * as Sentry from '@sentry/angular';
@@ -43,6 +43,7 @@ import {TenantSettingsStore} from '../tenant/tenant-settings.store';
 import {provideAppErrorHandler} from './provideAppErrorHandler';
 import {TimetravelStore} from './timetravel-store';
 import {TranslocoMultiLoader} from './TranslocoMultiLoader';
+import {SchulenOptionsStore} from "../admin-shared/schulen-options.store";
 
 // needed for number and date formatting
 registerLocaleData(localeDeCH, 'de-CH', localeDeCHExtra);
@@ -136,15 +137,20 @@ function appInitializer(
   benutzerStore = inject(BenutzerStore),
   benutzerOptionsStore = inject(BenutzerOptionsStore),
   timetravelStore = inject(TimetravelStore),
+  schulenOptionsStore = inject(SchulenOptionsStore),
 ) {
   return async () => {
     await languageStore.init();
     transloco.setActiveLang(languageStore.activeLocale());
     await deploymentStore.init();
     await benutzerStore.init();
-    if (benutzerStore.createHasRequiredRoleSig(hasListViewBerechtigung())()) {
+    if (benutzerStore.createHasRequiredRoleSig(hasBenutzerOptionReadBerechtigung())()) {
       benutzerOptionsStore.loadAllBenutzerOptions();
     }
+    if (benutzerStore.createHasRequiredRoleSig(hasSchuleViewBerechtigung())()) {
+      schulenOptionsStore.loadSchulenOptions();
+    }
+
     await tenantSettingsStore.init();
 
     // load current timetravel state

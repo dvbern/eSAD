@@ -79,6 +79,14 @@ export class UntersuchungDatenComponent implements DirtyMarker {
       this.anlassStore.canUserEditAnlassInCurrentState(),
   );
 
+  arztOptions = computed(() => {
+    return this.benutzerOptionsStore.benutzerFiltered(this.anlassStore.arztOfCurrentAnlass(), 'ARZT', true);
+  });
+
+  hilfspersonOptions = computed(() => {
+    return this.benutzerOptionsStore.benutzerFiltered(this.anlassStore.mpaOfCurrentAnlass(), 'HILFSPERSON', true);
+  });
+
   protected readonly DetailMode = DetailMode;
   protected readonly Geschlecht = Geschlecht;
   protected readonly klassenstufe = Object.values(Klassenstufe);
@@ -145,7 +153,7 @@ export class UntersuchungDatenComponent implements DirtyMarker {
       } else {
         this.datenStore.saveDurchfuehrungDaten({
           anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-          einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
+          einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
           untersuchungDurchfuehrungSaveJson: this.form.valueOnValid(),
         });
       }

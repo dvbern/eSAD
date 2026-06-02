@@ -35,7 +35,7 @@ public enum FileTyp {
     KINDERDOSSIER("kinderdossier"),
     BRIEFVORLAGE("briefvorlage"),
     ANMELDUNG_BESTAETIGUNG("anmeldung-bestaetigung"),
-    IMPFANMELDUNG("impfanmeldung"),
+    IMPFEINVERSTAENDNIS("impfeinverstaendnis"),
 
     // Types to test DocumentQueue,
     PLAYGROUND("playground"),

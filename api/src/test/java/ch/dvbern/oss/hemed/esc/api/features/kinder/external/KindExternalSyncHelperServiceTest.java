@@ -142,13 +142,13 @@ class KindExternalSyncHelperServiceTest {
 
         @Test
         void should_change_all_values_if_previous_db_valu_was_unchanged_vs_escada() {
-            // Arrange
+            // ARRANGE
             KindExternal existingKindExternal = KindExternalBuilder.defaultKindExternal();
             Kind kindWithUnchangedEscadaData = KindExternalSyncHelperService.toEntityForCreate(
                 existingKindExternal, KlasseBuilder.defaultKlasse(), appClock.offsetDateTime().now(), ImportTyp.ESCADA
             );
 
-            // Act
+            // ACT
             Kind kindAfterUpdate = KindExternalSyncHelperService.updateKindBasedOnKindExternal(
                 kindWithUnchangedEscadaData,
                 kindExternalUpdated,
@@ -156,7 +156,7 @@ class KindExternalSyncHelperServiceTest {
                 appClock.offsetDateTime().now(),
                 ImportTyp.ESCADA);
 
-            // Assert
+            // ASSERT
             // Check if the data is updated correctly, all fields should have changed
             Assertions.assertThat(kindAfterUpdate).isNotNull()
                 .returns("Mychangename_name", Kind::getName)
@@ -178,7 +178,7 @@ class KindExternalSyncHelperServiceTest {
 
         @Test
         void should_not_change_values_if_previous_db_valud_was_changed_vs_escada() {
-            // Arrange
+            // ARRANGE
             KindExternal previousKindExternal = KindExternalBuilder.defaultKindExternal();
             Kind defaultKind = KindBuilder.defaultKind();
 
@@ -209,7 +209,7 @@ class KindExternalSyncHelperServiceTest {
 
         @Test
         void should_change_all_values_if_null_before() {
-            // Arrange
+            // ARRANGE
             KindExternal previousKindExternal = KindExternalBuilder.defaultKindExternal();
             Kind defaultKind = new Kind();
 

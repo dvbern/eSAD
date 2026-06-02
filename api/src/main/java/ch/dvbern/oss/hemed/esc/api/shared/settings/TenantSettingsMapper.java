@@ -43,7 +43,8 @@ public final class TenantSettingsMapper {
                 EnumSetUtil.toList(settings.getEinladungStatusValues()),
                 settings.getDefaultLandingPage()
             ),
-            FachRolle.getFachrollenWithBerechtigung(tenant)
+            FachRolle.getFachrollenWithBerechtigung(tenant),
+            FachRolle.getBerechtigteDelegierBareFachrollen(tenant)
         );
     }
 

@@ -81,7 +81,7 @@
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
       [compareWith]="compareBenutzerFn"
     >
-      @for (arzt of benutzerOptionsStore.arztOptionsIncluding(form.group.value.zustaendigArzt); track arzt) {
+      @for (arzt of benutzerOptionsStore.benutzerFiltered(form.group.value.zustaendigArzt, 'ARZT', true); track arzt) {
         <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
         @if (arzt) {
           <ng-option [value]="arzt" [disabled]="arzt.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
@@ -103,7 +103,7 @@
       [placeholder]="'global.select.bitte-auswaehlen' | transloco"
       [compareWith]="compareBenutzerFn"
     >
-      @for (hilfsperson of benutzerOptionsStore.hilfspersonOptionsIncluding(form.group.value.zustaendigMPA); track hilfsperson) {
+      @for (hilfsperson of benutzerOptionsStore.benutzerFiltered(form.group.value.zustaendigMPA, 'HILFSPERSON', true); track hilfsperson) {
         <ng-option [value]="hilfsperson" [disabled]="hilfsperson.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
           {{ hilfsperson.fullName }}
         </ng-option>

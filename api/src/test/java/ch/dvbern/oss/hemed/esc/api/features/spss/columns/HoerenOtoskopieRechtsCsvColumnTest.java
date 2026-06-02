@@ -3,9 +3,9 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 import java.util.EnumSet;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

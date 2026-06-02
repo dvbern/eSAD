@@ -10,6 +10,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+import ch.dvbern.oss.hemed.esc.api.shared.util.HashValueGeneratorUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.util.StringNormalizerUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -46,6 +47,7 @@ public class AbstractEntityListener {
         entity.setUserMutiert(currentUserService.currentUserRef().getId().getId());
 
         ensureNormalization(entity);
+        ensureHashValueUpdate(entity);
     }
 
     @PreUpdate
@@ -58,12 +60,23 @@ public class AbstractEntityListener {
 
         ensureOptimisticLocking(entity);
         ensureNormalization(entity);
+        ensureHashValueUpdate(entity);
     }
 
     private void ensureNormalization(@NonNull AbstractEntity<?> entity) {
         if (entity instanceof Kind kind) {
             kind.setNormalizedName(StringNormalizerUtil.normalizeAndStripDiarcritics(kind.getName()));
             kind.setNormalizedVorname(StringNormalizerUtil.normalizeAndStripDiarcritics(kind.getVorname()));
+        }
+    }
+
+    private void ensureHashValueUpdate(@NonNull AbstractEntity<?> entity) {
+        if (entity instanceof Kind kind) {
+            kind.setHashValue(HashValueGeneratorUtil.generateHashValueForKindValues(
+                kind.getName(),
+                kind.getVorname(),
+                kind.getGeschlecht(),
+                kind.getGeburtsdatum()));
         }
     }
 
@@ -76,8 +89,12 @@ public class AbstractEntityListener {
                 return;
             }
             if (entity.getVersionFromFrontend() == null) {
-				throw new AppFailureException(AppFailureMessage.internalError(
-                    "Version from frontend is null for Entity " + entity.getClass().getSimpleName() + ". Use " + BaseRepo.class.getName() + ".persistWithOptimisticLocking for update"));
+                throw new AppFailureException(AppFailureMessage.internalError(
+                    "Version from frontend is null for Entity "
+                        + entity.getClass().getSimpleName()
+                        + ". Use "
+                        + BaseRepo.class.getName()
+                        + ".persistWithOptimisticLocking for update"));
             }
             if (!Objects.equals(entity.getVersion(), entity.getVersionFromFrontend())) {
                 throw new AppFailureException(AppFailureMessage.changedByOtherUser(entity));

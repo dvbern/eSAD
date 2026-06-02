@@ -26,6 +26,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -121,8 +122,12 @@ public class AufgabeService {
         return aufgabeRepo.addUploadedFile(aufgabeID, fileData);
     }
 
-    public void removeUploadedFile(@NonNull Aufgabe loadedAufgabe, @NonNull ID<FileData> fileId) {
-        FileInfo fileToRemove = findUploadedFileInfoS3(loadedAufgabe.getId(), fileId);
+    public void removeUploadedFile(
+        @NonNull Aufgabe loadedAufgabe,
+        @NonNull ID<FileData> fileId,
+        @NonNull Consumer<Aufgabe> requireAuthorization
+    ) {
+        FileInfo fileToRemove = findUploadedFileInfoS3(loadedAufgabe.getId(), fileId, requireAuthorization);
         loadedAufgabe.disableOptimisticLockingCheck();
         boolean removedFromList = loadedAufgabe.getFiles().removeIf(fileData -> fileId.equals(fileData.getId()));
         if (!removedFromList) {
@@ -142,7 +147,7 @@ public class AufgabeService {
     @NonNull
     private FileInfo saveAufgabeAttachmentInFilestorage(@NonNull FileUpload fileUpload) {
         // prepare the file info Embeddable
-        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfo(fileUpload, FileTyp.AUFGABEUPLOAD);
+        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfoWithMIMEDetect(fileUpload, FileTyp.AUFGABEUPLOAD);
         // upload the file to S3
         Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileUpload, fileInfo);
         PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
@@ -152,16 +157,32 @@ public class AufgabeService {
     }
 
     @NonNull
-    public FileInfo findUploadedFileInfoS3(@NonNull ID<Aufgabe> aufgabeId, @NonNull ID<FileData> fileId) {
-        return getById(aufgabeId).getFiles().stream()
+    public FileData findUploadedFileData(
+        @NonNull ID<Aufgabe> aufgabeId,
+        @NonNull ID<FileData> fileId,
+        @NonNull Consumer<Aufgabe> requireAuthorization
+    ) {
+        Aufgabe aufgabe = getById(aufgabeId);
+        requireAuthorization.accept(aufgabe);
+        return aufgabe
+            .getFiles().stream()
             .filter(fileData -> fileData.getId().equals(fileId))
             .findFirst()
-            .orElseThrow(() -> new AppFailureException(AppFailureMessage.entityNotFound(fileId, "File not found")))
+            .orElseThrow(() -> new AppFailureException(AppFailureMessage.entityNotFound(fileId, "File not found")));
+    }
+
+    @NonNull
+    public FileInfo findUploadedFileInfoS3(
+        @NonNull ID<Aufgabe> aufgabeId,
+        @NonNull ID<FileData> fileId,
+        @NonNull Consumer<Aufgabe> requireAuthorization
+    ) {
+        return this.findUploadedFileData(aufgabeId, fileId, requireAuthorization)
             .getFileInfoBucket();
     }
 
-    public int getNumOfOffeneFaelligeAufgaben() {
-        return aufgabeRepo.getNumOfOffeneFaelligeAufgaben();
+    public List<Aufgabe> getOffeneFaelligeAufgaben() {
+        return aufgabeRepo.getOffeneFaelligeAufgaben();
     }
 
     public int getNumOfOffeneFaelligeAufgabenByCurrentUser() {

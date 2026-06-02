@@ -1,14 +1,9 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.impfung;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
-
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfstatusKrankheitSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfstatusListSaveJson;
@@ -21,6 +16,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpf
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungenJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungenSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmenMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
@@ -28,6 +25,10 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 @JaxMapper
 @RequiredArgsConstructor
@@ -113,16 +114,20 @@ public final class UntersuchungImpfungenMapper {
 
     @NonNull
     public UntersuchungImpfungenDataJson getByEinladung(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungImpfungen impfungen =
             untersuchungImpfungenService.getOrCreateUntersuchungImpfungen(untersuchung.getId());
-        List<UntersuchungImpfstatusKrankheitSaveJson> impfstatusJsonList =
-            untersuchungImpfstatusKrankheitMapper.getByUntersuchungImpfungen(impfungen);
-        List<UntersuchungImpfungInternJson> impfungenInternList = untersuchungImpfungInternMapper.findByEinladung(einladungId);
+
+        List<UntersuchungImpfstatusKrankheitSaveJson> impfstatusJsonList = untersuchungImpfstatusKrankheitMapper.getByUntersuchungImpfungen(impfungen, !wrappedId.isAnonymerEintrag());
+        List<UntersuchungImpfungInternJson> impfungenInternList = List.of();
+        if(!wrappedId.isAnonymerEintrag()){
+            impfungenInternList = untersuchungImpfungInternMapper.findByEinladung(wrappedId);
+        }
+
         return new UntersuchungImpfungenDataJson(
             toJson(impfungen, tenantProducer.produceTenant()),
             UntersuchungImpfungenMassnahmenMapper.toJson(impfungen.getUntersuchungImpfungenMassnahmen()),
@@ -133,11 +138,11 @@ public final class UntersuchungImpfungenMapper {
 
     @NonNull
     public UntersuchungImpfungenJson save(
-        @NonNull ID<Einladung> einladungID,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull UntersuchungImpfungenSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungImpfungen existingUntersuchungImpfung = untersuchung.getUntersuchungImpfungen();
         UntersuchungImpfungen entity = toEntity(untersuchung, existingUntersuchungImpfung, saveJson);

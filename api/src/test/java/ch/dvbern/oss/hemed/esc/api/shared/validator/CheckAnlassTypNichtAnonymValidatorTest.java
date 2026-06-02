@@ -17,7 +17,7 @@ class CheckAnlassTypNichtAnonymValidatorTest {
 
     @Test
     void test_CheckAnlassTypNichtAnonymValidator_returnsFalse_whenAnlassTypIsAnonym() {
-        // Arrange
+        // ARRANGE
 
         AnlassConfig config = AnlassConfigBuilder.create(ac -> ac.withAnlassTyp(
             AnlassTyp.KINDERGARTEN_ANONYM));
@@ -27,16 +27,16 @@ class CheckAnlassTypNichtAnonymValidatorTest {
             });
         Einladung einladung = EinladungBuilder.create(builder -> builder.withAnlass(anlass));
 
-        // Act
+        // ACT
         boolean result = validatorUdnerTest.isEntityValid(einladung);
 
-        // Assert
+        // ASSERT
         assertThat(result).isFalse();
     }
 
     @Test
     void test_CheckAnlassTypNichtAnonymValidator_returnsTrue_whenAnlassTypIsNotAnonym() {
-        // Arrange
+        // ARRANGE
         AnlassConfig config = AnlassConfigBuilder.create(ac -> ac.withAnlassTyp(
             AnlassTyp.KINDERGARTEN));
         Anlass anlass =
@@ -45,10 +45,10 @@ class CheckAnlassTypNichtAnonymValidatorTest {
             });
         Einladung einladung = EinladungBuilder.create(builder -> builder.withAnlass(anlass));
 
-        // Act
+        // ACT
         boolean result = validatorUdnerTest.isEntityValid(einladung);
 
-        // Assert
+        // ASSERT
         assertThat(result).isTrue();
     }
 

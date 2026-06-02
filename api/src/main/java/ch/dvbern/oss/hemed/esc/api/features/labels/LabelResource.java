@@ -34,7 +34,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = Tags.TAG_LABELS)
-@RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+@RolesAllowed(BerechtigungName.LABELS_LESEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed("LabelResourceMS")
 @Slf4j

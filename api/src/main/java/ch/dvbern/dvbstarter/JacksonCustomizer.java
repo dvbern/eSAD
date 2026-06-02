@@ -31,8 +31,6 @@ public class JacksonCustomizer implements ObjectMapperCustomizer {
 
     @Override
     public void customize(ObjectMapper mapper) {
-        // FIXME: starter: init decide how to handle unknown properties
-        //  for public APIS, FAIL_ON_UNKNOWN_PROPERTIES might not be the best option
         mapper.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setConstructorDetector(ConstructorDetector.USE_PROPERTIES_BASED);
 

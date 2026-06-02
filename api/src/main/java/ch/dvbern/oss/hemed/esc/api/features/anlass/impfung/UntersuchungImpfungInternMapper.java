@@ -1,18 +1,11 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.impfung;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungInternJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungInternSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
@@ -31,6 +24,13 @@ import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @JaxMapper
 @RequiredArgsConstructor
@@ -75,10 +75,10 @@ public final class UntersuchungImpfungInternMapper {
 
     @NonNull
     private UntersuchungImpfungIntern toEntity(
-        @NonNull ID<Einladung> einladungID,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @Nullable UntersuchungImpfungIntern existingImpfungIntern,
         @NonNull UntersuchungImpfungInternSaveJson saveJson) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         UntersuchungImpfungen impfungen =
             untersuchungImpfungenService.getOrCreateUntersuchungImpfungen(untersuchung.getId());
         Impfstoff impfstoff = impfstoffService.getById(saveJson.getImpfstoff().getId());
@@ -144,8 +144,8 @@ public final class UntersuchungImpfungInternMapper {
     }
 
     @NonNull
-    public List<UntersuchungImpfungInternJson> findByEinladung(@NonNull ID<Einladung> einladungId) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+    public List<UntersuchungImpfungInternJson> findByEinladung(@NonNull HasUntersuchungIDWrapper wrappedId) {
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         // Sicherstellen, dass das UntersuchungImpfungen Objekt existiert
         UntersuchungImpfungen impfungen =
             untersuchungImpfungenService.getOrCreateUntersuchungImpfungen(untersuchung.getId());
@@ -154,35 +154,35 @@ public final class UntersuchungImpfungInternMapper {
 
     @NonNull
     public UntersuchungImpfungInternJson create(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull UntersuchungImpfungInternSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        return save(einladungId, null, saveJson, hasAuthorizationUntersuchung);
+        return save(wrappedId, null, saveJson, hasAuthorizationUntersuchung);
     }
 
     @NonNull
     public UntersuchungImpfungInternJson update(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull ID<UntersuchungImpfungIntern> impfungInternId,
         @NonNull UntersuchungImpfungInternSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
         UntersuchungImpfungIntern existingImpfung = untersuchungImpfungInternService.getById(impfungInternId);
-        return save(einladungId, existingImpfung, saveJson, hasAuthorizationUntersuchung);
+        return save(wrappedId, existingImpfung, saveJson, hasAuthorizationUntersuchung);
     }
 
     @NonNull
     private UntersuchungImpfungInternJson save(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @Nullable UntersuchungImpfungIntern existingImpfung,
         @NonNull UntersuchungImpfungInternSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        UntersuchungImpfungIntern entity = toEntity(einladungId, existingImpfung, saveJson);
+        UntersuchungImpfungIntern entity = toEntity(wrappedId, existingImpfung, saveJson);
         replaceKrankheitImmunitaeten(entity, saveJson);
         UntersuchungImpfungIntern persisted =
-            untersuchungImpfungInternService.persistWithOptimisticLocking(entity, saveJson.getVersion());
+            untersuchungImpfungInternService.persistWithOptimisticLocking(entity, saveJson.getVersion(), !wrappedId.isAnonymerEintrag());
         hasAuthorizationUntersuchung.accept(persisted.getUntersuchungImpfungen().getUntersuchung());
         return toJson(persisted, tenantProducer.produceTenant());
     }

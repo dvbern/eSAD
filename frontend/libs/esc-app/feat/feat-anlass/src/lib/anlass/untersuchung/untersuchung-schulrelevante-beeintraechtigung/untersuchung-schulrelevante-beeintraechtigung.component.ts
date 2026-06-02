@@ -3,22 +3,27 @@ import {NonNullableFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {
   FormControlComponent,
   FormLayoutComponent,
-  SaveCancelButtonsComponent, TextareaDirective, TitleComponent
+  SaveCancelButtonsComponent,
+  TextareaDirective,
+  TextInputDirective,
+  TitleComponent
 } from "@dvb/ui-components";
-import {toEinladungBackendEntityIdWithClass} from "@dvb/data-access-types";
 import {TranslocoPipe} from "@jsverse/transloco";
 import {DirtyMarker} from "@dvb/util-angular";
 import {UntersuchungStore} from "../untersuchung.store";
 import {
   Feinmotorik,
-  FreiesGehen, GleichgewichtEinbeinstand, Grafomotorik, GrobmotorikEinbeinhuepfen,
+  FreiesGehen,
+  GleichgewichtEinbeinstand,
+  Grafomotorik,
+  GrobmotorikEinbeinhuepfen,
   OhneStuetzradVelofahren,
   RequirementSetting,
 } from "@dvb/data-access-backend";
 import {requireValue} from "@dvb/util-shared";
 import {UntersuchungSchulrelevanteBeeintraechtigungStore} from "./untersuchung-schulrelevante-beeintraechtigung.store";
 import {UntersuchungSchulrelevanteBeeintraechtigungForm} from "./untersuchung-schulrelevante-beeintraechtigung.form";
-import { AnlassStore } from "../../anlass.store";
+import {AnlassStore} from "../../anlass.store";
 import {createSingleValueEnhancedForm, TenantSettingsStore, ValueEnhancedComponent} from "@dvb/feat-shared";
 
 @Component({
@@ -32,6 +37,7 @@ import {createSingleValueEnhancedForm, TenantSettingsStore, ValueEnhancedCompone
     TextareaDirective,
     TitleComponent,
     ValueEnhancedComponent,
+    TextInputDirective,
   ],
   templateUrl: './untersuchung-schulrelevante-beeintraechtigung.component.html',
   styleUrl: './untersuchung-schulrelevante-beeintraechtigung.component.scss',
@@ -84,19 +90,16 @@ export class UntersuchungSchulrelevanteBeeintraechtigungComponent implements Dir
 
   abbrechen(): void {
     const untersuchungSchulrelevanteBeeintraechtigung = this.store.untersuchungSchulrelevanteBeeintraechtigung();
-    if (untersuchungSchulrelevanteBeeintraechtigung) {
-      this.form.resetForm(untersuchungSchulrelevanteBeeintraechtigung.data);
-    }
+    this.form.resetForm(untersuchungSchulrelevanteBeeintraechtigung?.data);
   }
 
   async submitIfValid(): Promise<void> {
     if (await this.form.validate()) {
       const anlassId = requireValue(this.anlassStore.selectedEntity()?.id);
-      const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       const payload = this.form.valueOnValid();
       this.store.saveUntersuchungSchulrelevanteBeeintraechtigung({
         anlassId: anlassId,
-        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
+        einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
         untersuchungSchulrelevanteBeeintraechtigungSaveJson: payload,
       });
     }

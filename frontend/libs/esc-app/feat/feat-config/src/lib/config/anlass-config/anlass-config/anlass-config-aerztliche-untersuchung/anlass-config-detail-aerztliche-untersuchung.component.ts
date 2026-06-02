@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Einbeinhuepfen, Einbeinstand, Motorik, RequirementSetting, Sprachfaehigkeit } from '@dvb/data-access-backend';
@@ -23,7 +23,6 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'feat-config-detail-aerztliche-untersuchung',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FormButtonsComponent,
     FormControlComponent,
@@ -34,8 +33,8 @@ import { ActivatedRoute } from '@angular/router';
     NgSelectComponent,
     NgSelectDirective,
     TranslocoPipe,
-    TranslatedEnumViewValuePipe,
-  ],
+    TranslatedEnumViewValuePipe
+],
   templateUrl: './anlass-config-detail-aerztliche-untersuchung.component.html',
   styleUrl: './anlass-config-detail-aerztliche-untersuchung.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,8 +1,9 @@
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
-import {BenutzerJson, EntityAktivStatus, FachRolle} from '@dvb/data-access-backend';
+import {BenutzerJson, EntityAktivStatus, FachRolle, OrganisationRollenJson} from '@dvb/data-access-backend';
 import {
-  BenutzerEnhancedJson, BenutzerListStore,
+  BenutzerEnhancedJson,
+  BenutzerListStore,
   BenutzerStore,
   PageComponent,
   Path,
@@ -26,7 +27,7 @@ import {
   TextInputDirective,
 } from '@dvb/ui-components';
 import {TableModel} from '@dvb/util-angular';
-import {hasBenutzerverwaltungEditBerechtigungen, hasListEditBerechtigung} from '@dvb/util-shared';
+import {hasBenutzerverwaltungEditBerechtigungen} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbDropdownItem} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
@@ -92,6 +93,14 @@ export class BenutzerListPageComponent {
       .join(', ');
   }
 
+  public printOrganisationen(organisationsRollen: Array<OrganisationRollenJson>) {
+    return organisationsRollen
+      .map(each => each.organisation?.verantwortlicherArztFullname)
+      .join(', ');
+  }
+
+  isZentralOrganisiert = this.tenantSettingsStore.zentraleOrganisationEnabled();
+
   summaryItems = computed(() => {
     const items: SummaryListItem[] = [
       {
@@ -103,7 +112,7 @@ export class BenutzerListPageComponent {
     return items;
   });
 
-  canEditActive = this.benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
+  canEditActive = this.benutzerStore.createHasRequiredRoleSig(hasBenutzerverwaltungEditBerechtigungen());
   canEditBenutzer = computed(() => this.benutzerStore.createHasRequiredRoleSig(hasBenutzerverwaltungEditBerechtigungen())
     && this.tenantSettingsStore.benutzerverwaltungInternEnabled());
 

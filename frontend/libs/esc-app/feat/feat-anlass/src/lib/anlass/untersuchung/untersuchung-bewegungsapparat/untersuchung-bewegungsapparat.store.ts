@@ -3,7 +3,6 @@ import {
   UntersuchungBewegungsapparatServiceGetUntersuchungBewegungsapparatRequestParams,
   UntersuchungBewegungsapparatServiceSaveUntersuchungBewegungsapparatRequestParams,
 } from '@dvb/data-access-backend';
-import { toEinladungBackendEntityIdWithClass } from '@dvb/data-access-types';
 import {inject, Injectable} from '@angular/core';
 import {patchState, signalStore, withState} from '@ngrx/signals';
 import {AppErrorHandlerService, AppNotificationStore, Loader, rxMethod} from '@dvb/util-angular';

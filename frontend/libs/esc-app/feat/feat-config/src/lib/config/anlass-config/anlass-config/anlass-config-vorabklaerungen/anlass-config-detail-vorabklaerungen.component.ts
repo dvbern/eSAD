@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked} from "@angular/core";
-import {CommonModule} from "@angular/common";
+
 import {NonNullableFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {
   FormButtonsComponent,
@@ -18,15 +18,14 @@ import { AnlassConfigStore } from "../../anlass-config.store";
 @Component({
   selector: 'feat-config-vorabklaerungen',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FormButtonsComponent,
     FormErrorMessageComponent,
     FormLayoutComponent,
     HeadingDirective,
     TranslocoPipe,
-    AnlassConfigRequirementSettingComponent,
-  ],
+    AnlassConfigRequirementSettingComponent
+],
   templateUrl: './anlass-config-detail-vorabklaerungen.component.html',
   styleUrl: './anlass-config-detail-vorabklaerungen.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

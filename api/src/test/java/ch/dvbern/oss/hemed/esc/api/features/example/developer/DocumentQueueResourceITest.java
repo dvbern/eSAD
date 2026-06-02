@@ -367,7 +367,7 @@ class DocumentQueueResourceITest extends AbstractITest {
             .then()
             .assertThat()
             .statusCode(Status.NO_CONTENT.getStatusCode());
-        // Act & Assert
+        // ACT & ASSERT
         // Expecting 500 Interal Server Error, File shouldn't be found because automatic deletion worked successfully
         api.documentQueueResourceDownloadFile()
             .documentQueueIdPath(id.getId())
@@ -472,7 +472,7 @@ class DocumentQueueResourceITest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void addMassenbriefToDocumentQueue() {
-        // Arrange
+        // ARRANGE
         Kind kind1 = fixtureService.createKind("Muster", "Max");
         Kind kind2 = fixtureService.createKind("Muster", "Moritz");
         Briefvorlage briefvorlage = fixtureService.createBriefvorlage(BriefvorlageType.KIND);
@@ -485,7 +485,7 @@ class DocumentQueueResourceITest extends AbstractITest {
         List<DocumentQueueDisplayJson> displayJsonList = documentQueueMapper.findAllByCurrentBenutzer().getList();
         int expectedSize = displayJsonList.size() + 1;
 
-        // Act
+        // ACT
         api.documentQueueResourceCreateMassenbrief()
             .body(saveJsonSpec)
             .execute(ResponseBody::prettyPeek)

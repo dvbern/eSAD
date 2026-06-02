@@ -1,0 +1,42 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <!--
+    Bereinigung der entfernten FreiesGehen Enum-Werte (NORMAL, PATHOLOGISCH).
+    Bestehende Daten mit einem der gelöschten Enum-Werte werden auf
+    NICHT_GEPRUEFT mit dem Grund ANDERER_GRUND gesetzt.
+
+    Format der DB-Werte (SingleValueEnhanced):
+      $1$<ENUM>$1$$2$<NICHT_GEPRUEFT_GRUND>$2$
+    Siehe AbstractValueEnhanced.ENUM_VALUES_DELIMITER und NICHT_GEPRUEFT_GRUND_DELIMITER.
+  -->
+  <changeSet author="gema" id="0076-freiesgehen-enum-cleanup-1">
+    <sql>
+      update untersuchungschulrelevantebeeintraechtigung
+      set freiesgehen = '$1$NICHT_GEPRUEFT$1$$2$ANDERER_GRUND$2$'
+      where freiesgehen like '$1$NORMAL$1$%'
+         or freiesgehen like '$1$PATHOLOGISCH$1$%';
+    </sql>
+  </changeSet>
+
+  <!--
+    Neue Spalte anzahlMonateFreiesGehen (optional) gemäss
+    UntersuchungSchulrelevanteBeeintraechtigung Entity.
+  -->
+  <changeSet author="gema" id="0076-add-anzahlmonatefreiesgehen-1">
+    <addColumn tableName="untersuchungschulrelevantebeeintraechtigung">
+      <column name="anzahlmonatefreiesgehen" type="INTEGER"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="gema" id="0076-add-anzahlmonatefreiesgehen-2">
+    <addColumn tableName="untersuchungschulrelevantebeeintraechtigung_aud">
+      <column name="anzahlmonatefreiesgehen" type="INTEGER"/>
+    </addColumn>
+  </changeSet>
+
+</databaseChangeLog>

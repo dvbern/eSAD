@@ -114,7 +114,7 @@ public class AnlassResource {
     public AnlassJson getAnlass(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassID
     ) {
-        authorizerService.requireReadAuthorizationAnlass(
+        authorizerService.requireReadAuthorizationAnlassBasic(
             anlassID,
             List.of(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE));
         return anlassMapper.getById(anlassID);
@@ -127,7 +127,7 @@ public class AnlassResource {
     public SchulInformationenListJson getSchulInformationenForAnlass(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassID
     ) {
-        authorizerService.requireReadAuthorizationAnlass(
+        authorizerService.requireReadAuthorizationAnlassBasic(
             anlassID,
             List.of(Berechtigung.ANLASSPLANUNG_LESEN, Berechtigung.ANLASSPLANUNG_LESEN_LAEUSE));
         return new SchulInformationenListJson(anlassMapper.findSchulInformationen(anlassID));

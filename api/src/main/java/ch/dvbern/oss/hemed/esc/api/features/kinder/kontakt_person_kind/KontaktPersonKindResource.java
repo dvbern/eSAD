@@ -33,7 +33,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = Tags.TAG_KONTAKTPERSON_KIND)
-@RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+@RolesAllowed(BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed("KontaktPersonKindResourceMS")
 public class KontaktPersonKindResource {
@@ -45,7 +45,7 @@ public class KontaktPersonKindResource {
 
     @GET
     @NonNull
-    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH })
+    @RolesAllowed(BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH)
     public KontaktPersonKindListJson findAktivByKind(
         @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID
     ) {
@@ -55,7 +55,7 @@ public class KontaktPersonKindResource {
     @GET
     @Path("/options")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_SCHREIBEN, BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH })
+    @RolesAllowed(BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH)
     public KontaktPersonKindOptionListJson findAllOptionsActive(
         @NotNull @NonNull @PathParam("kindID") ID<Kind> kindId,
         @NotNull @QueryParam("excludeKind") boolean excludeKind
@@ -67,7 +67,7 @@ public class KontaktPersonKindResource {
     @GET
     @Path("/{kontaktPersonKindID}")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH  })
+    @RolesAllowed(BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH)
     @NonNull
     public KontaktPersonKindJson getKontaktPersonKind(
         @NonNull @NotNull @PathParam("kindID") ID<Kind> kindID,
@@ -78,7 +78,7 @@ public class KontaktPersonKindResource {
     }
 
     @POST
-    @RolesAllowed({ BerechtigungName.LISTEN_SCHREIBEN, BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH })
+    @RolesAllowed(BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH)
     @NonNull
     public KontaktPersonKindJson createKontaktPersonKind(
         @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID,
@@ -91,7 +91,7 @@ public class KontaktPersonKindResource {
     @PUT
     @Path("/{kontaktPersonKindID}")
     @NonNull
-    @RolesAllowed({ BerechtigungName.LISTEN_SCHREIBEN, BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH })
+    @RolesAllowed(BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH)
     public KontaktPersonKindJson updateKontaktPersonKind(
         @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID,
         @NotNull @NonNull @PathParam("kontaktPersonKindID") ID<KontaktPersonKind> kontaktPersonKindID,
@@ -103,7 +103,7 @@ public class KontaktPersonKindResource {
 
     @DELETE
     @Path("/{kontaktPersonKindID}")
-    @RolesAllowed({ BerechtigungName.LISTEN_SCHREIBEN, BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH })
+    @RolesAllowed(BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH)
     public void deleteKontaktPersonKind(
         @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID,
         @NotNull @NonNull @PathParam("kontaktPersonKindID") ID<KontaktPersonKind> kontaktPersonKindID
@@ -114,7 +114,7 @@ public class KontaktPersonKindResource {
 
     @PUT
     @Path("/schule/{kontaktPersonKindID}")
-    @RolesAllowed({ BerechtigungName.LISTEN_SCHREIBEN, BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH })
+    @RolesAllowed(BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH)
     public KontaktPersonKindJson addKontaktPersonKindToKind(
         @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID,
         @NotNull @NonNull @PathParam("kontaktPersonKindID") ID<KontaktPersonKind> kontaktPersonKindID
@@ -124,7 +124,7 @@ public class KontaktPersonKindResource {
 
     @DELETE
     @Path("/schule/{kontaktPersonKindID}")
-    @RolesAllowed({ BerechtigungName.LISTEN_SCHREIBEN, BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH })
+    @RolesAllowed(BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH)
     public void removeKontaktPersonKindFromKind(
         @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID,
         @NotNull @NonNull @PathParam("kontaktPersonKindID") ID<KontaktPersonKind> kontaktPersonKindID

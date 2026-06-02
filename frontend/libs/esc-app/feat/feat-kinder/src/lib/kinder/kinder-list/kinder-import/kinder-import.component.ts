@@ -76,7 +76,7 @@ export class KinderImportComponent {
   protected readonly compareFnKlasse = compareFn<KlasseOptionJson>;
   protected readonly DetailMode = DetailMode;
 
-  schuleOptions = computed(() => this.schulenOptionsStore.entitiesAktiv());
+  schuleOptions = computed(() => this.schulenOptionsStore.schulenFiltered(undefined, true, true));
   klassenOptions = computed(() => this.klassenOptionsStore.entitiesAktiv());
   canEdit = this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung());
 

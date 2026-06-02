@@ -37,7 +37,7 @@ class FileStoreServiceTest extends AbstractITest {
     @TestAsAdminBS
     void testUploadAndDeleteFile() {
         FileUpload fileUpload = TestUtil.fileToFileUpload(TestUtil.loadTestSimpleEscadaFile(), "test-file.txt");
-        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfo(fileUpload, FileTyp.ESCADA_SYNC);
+        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfoWithMIMEDetect(fileUpload, FileTyp.ESCADA_SYNC);
         String fileIdInBucket = fileInfo.getFileIdInBucket();
         PutObjectResponse putObjectResponse =
             fileStoreService.uploadToS3Async(fileUpload, fileInfo).await().atMost(TIMEOUT);
@@ -53,7 +53,7 @@ class FileStoreServiceTest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void testDeleteNonExistentFile() {
-        // Act & Assert
+        // ACT & ASSERT
         var response = fileStoreService.deleteFileWithIdAsyncAndReturnResponseIgnoringErrors(
             "non-existent-file",
             "test-response"
@@ -65,15 +65,14 @@ class FileStoreServiceTest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void getFileAsync() throws ExecutionException, InterruptedException, IOException {
-        // Arrange
+        // ARRANGE
         FileUpload fileUpload = TestUtil.fileToFileUpload(TestUtil.loadTestSimpleEscadaFile(), "test-file.csv");
-        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfo(fileUpload, FileTyp.ESCADA_SYNC);
+        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfoWithMIMEDetect(fileUpload, FileTyp.ESCADA_SYNC);
         String fileIdInBucket = fileInfo.getFileIdInBucket();
         byte[] originalBytes = Files.readAllBytes(fileUpload.filePath());
-        PutObjectResponse putObjectResponse =
-            fileStoreService.uploadToS3Async(fileUpload, fileInfo).await().atMost(TIMEOUT);
+        fileStoreService.uploadToS3Async(fileUpload, fileInfo).await().atMost(TIMEOUT);
 
-        // Act
+        // ACT
         // await the completion stage
         ResponsePublisher<GetObjectResponse> responsePublisher =
             fileStoreService.getFileAsync(fileIdInBucket).toCompletableFuture().get();
@@ -97,20 +96,19 @@ class FileStoreServiceTest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void getFileBytesAsync() throws IOException, ExecutionException, InterruptedException, TimeoutException {
-        // Arrange
+        // ARRANGE
         FileUpload fileUpload = TestUtil.fileToFileUpload(TestUtil.loadTestSimpleEscadaFile(), "test-file.csv");
-        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfo(fileUpload, FileTyp.ESCADA_SYNC);
+        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfoWithMIMEDetect(fileUpload, FileTyp.ESCADA_SYNC);
         String fileIdInBucket = fileInfo.getFileIdInBucket();
         byte[] originalBytes = Files.readAllBytes(fileUpload.filePath());
-        PutObjectResponse putObjectResponse =
-            fileStoreService.uploadToS3Async(fileUpload, fileInfo).await().atMost(TIMEOUT);
+        fileStoreService.uploadToS3Async(fileUpload, fileInfo).await().atMost(TIMEOUT);
 
-        // Act
+        // ACT
         ResponseBytes<GetObjectResponse> response =
             fileStoreService.getFileBytesAsync(fileIdInBucket).get(10, TimeUnit.SECONDS);
         var loadedBytes = response.asByteArray();
 
-        // Assert
+        // ASSERT
         assertThat(loadedBytes).isNotEmpty()
         .hasSameSizeAs(originalBytes)
         .isEqualTo(originalBytes);
@@ -119,12 +117,12 @@ class FileStoreServiceTest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void testBufferConversion() {
-        // Arrange
+        // ARRANGE
         String testString = "Hello, World!";
         byte[] testBytes = testString.getBytes(StandardCharsets.UTF_8);
-        // Act
+        // ACT
         Buffer buffer = FileStoreService.toBuffer(ByteBuffer.wrap(testBytes));
-        // Assert
+        // ASSERT
         assertThat(buffer.toString()).hasToString(testString);
     }
 }

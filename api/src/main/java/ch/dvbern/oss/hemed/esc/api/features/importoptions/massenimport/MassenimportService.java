@@ -16,6 +16,7 @@ package ch.dvbern.oss.hemed.esc.api.features.importoptions.massenimport;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,9 +55,11 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
+import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
+import ch.dvbern.oss.hemed.esc.api.shared.util.HashValueGeneratorUtil;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
@@ -284,6 +287,10 @@ public class MassenimportService {
         if (!rowDTO.hasImportableKindData()) {
             return null;
         }
+        String name = Objects.requireNonNull(rowDTO.getNachname().getValue());
+        String vorname = Objects.requireNonNull(rowDTO.getVorname().getValue());
+        Geschlecht geschlecht = Objects.requireNonNull(rowDTO.getGeschlecht().getValue());
+        LocalDate geburtsdatum = Objects.requireNonNull(rowDTO.getGeburtsdatum().getValue());
 
         return new Kind(
             new ExternalImportInfo(
@@ -294,13 +301,14 @@ public class MassenimportService {
                 ImportTyp.EXCEL_MASSENIMPORT
             ),
             null,
+            "SetInListener", // will be set in AbstractEntityListener
             rowDTO.getSozialversicherungsNummer().getValue(),
-            Objects.requireNonNull(rowDTO.getNachname().getValue()),
-            Objects.requireNonNull(rowDTO.getVorname().getValue()),
+            name,
+            vorname,
             "TODO", // will be set in AbstractEntityListener
             "TODO", // will be set in AbstractEntityListener
-            Objects.requireNonNull(rowDTO.getGeschlecht().getValue()),
-            Objects.requireNonNull(rowDTO.getGeburtsdatum().getValue()),
+            geschlecht,
+            geburtsdatum,
             rowDTO.getNationalitaet().getValue(),
             rowDTO.getErstsprache().getValue(),
             rowDTO.getWohntyp().getValue(),

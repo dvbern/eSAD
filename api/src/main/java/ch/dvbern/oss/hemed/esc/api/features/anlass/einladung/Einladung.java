@@ -173,8 +173,8 @@ public class Einladung extends AbstractEntity<Einladung> implements EntityWithOp
     }
 
     @NonNull
-    public Optional<Notiz> getImpfanmeldungsNotiz() {
-        return getNotizByType(NotizTyp.IMPFANMELDUNG);
+    public Optional<Notiz> getImpfeinverstaendnisNotiz() {
+        return getNotizByType(NotizTyp.IMPFEINVERSTAENDNIS);
     }
 
     @NonNull

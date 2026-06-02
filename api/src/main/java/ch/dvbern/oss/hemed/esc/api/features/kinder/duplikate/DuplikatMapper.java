@@ -1,6 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder.duplikate;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
@@ -56,21 +58,32 @@ public final class DuplikatMapper {
     }
 
     @NonNull
-    public List<DuplikatJson> findAll() {
+    public List<DuplikatJson> findAllBerechtigt(@NonNull Predicate<Duplikat> hasReadAuthorization) {
         return duplikatService.findAll().stream()
+            .filter(hasReadAuthorization)
             .map(DuplikatMapper::toJson)
             .toList();
     }
 
     @NonNull
-    public DuplikatJson markAsFalsePositive(@NonNull ID<Duplikat> duplikatId) {
+    public DuplikatJson markAsFalsePositive(
+        @NonNull ID<Duplikat> duplikatId,
+        @NonNull Consumer<Duplikat> requireWriteAuthorization
+    ) {
         Duplikat duplikat = duplikatService.ensureDuplikatAndMarkAsFalsePositive(duplikatId);
+        requireWriteAuthorization.accept(duplikat);
         return DuplikatMapper.toJson(duplikat);
     }
 
     @NonNull
-    public DuplikatJson merge(@NonNull ID<Duplikat> duplikatId, @NonNull ID<Kind> basisKindId) {
-        Duplikat duplikat = duplikatService.merge(duplikatId, basisKindId);
-        return DuplikatMapper.toJson(duplikat);
+    public DuplikatJson merge(
+        @NonNull ID<Duplikat> duplikatId,
+        @NonNull ID<Kind> basisKindId,
+        @NonNull Consumer<Duplikat> requireWriteAuthorization
+    ) {
+        Duplikat duplikat = duplikatService.getById(duplikatId);
+        requireWriteAuthorization.accept(duplikat);
+        Duplikat result = duplikatService.merge(duplikatId, basisKindId);
+        return DuplikatMapper.toJson(result);
     }
 }

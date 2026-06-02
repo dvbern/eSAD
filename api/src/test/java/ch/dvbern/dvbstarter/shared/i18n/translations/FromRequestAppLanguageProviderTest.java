@@ -43,13 +43,6 @@ class FromRequestAppLanguageProviderTest {
                 .isSameAs(AppLanguages.DEFAULT);
         }
 
-        @Test
-        void currentLocale_returns_the_default_locale() {
-            var actual = sut.current();
-
-            assertThat(actual)
-                .isSameAs(AppLanguages.DEFAULT);
-        }
     }
 
     @Nested

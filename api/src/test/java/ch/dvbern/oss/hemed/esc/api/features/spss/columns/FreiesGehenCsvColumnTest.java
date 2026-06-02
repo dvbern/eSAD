@@ -26,13 +26,25 @@ class FreiesGehenCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        UntersuchungSchulrelevanteBeeintraechtigung beeintraechtigung = new UntersuchungSchulrelevanteBeeintraechtigung();
+        UntersuchungSchulrelevanteBeeintraechtigung beeintraechtigung =
+            new UntersuchungSchulrelevanteBeeintraechtigung();
         untersuchung.setUntersuchungSchulrelevanteBeeintraechtigung(beeintraechtigung);
 
         assertThat(column.extract(einladung)).isEmpty();
-        when(tlMock.translateValue(FreiesGehen.NORMAL)).thenReturn("Normal");
+        when(tlMock.translateValue(FreiesGehen.NICHT_GEPRUEFT)).thenReturn("Nicht geprüft");
 
-        beeintraechtigung.setFreiesGehen(SingleValueEnhanced.of(FreiesGehen.NORMAL, null));
-        assertThat(column.extract(einladung)).isEqualTo("Normal");
+        beeintraechtigung.setFreiesGehen(SingleValueEnhanced.of(FreiesGehen.NICHT_GEPRUEFT, null));
+        assertThat(column.extract(einladung)).isEqualTo("Nicht geprüft");
+
+        beeintraechtigung.setFreiesGehen(null);
+        beeintraechtigung.setAnzahlMonateFreiesGehen(15);
+
+        assertThat(column.extract(einladung)).isEqualTo("1 ³/₁₂");
+
+        beeintraechtigung.setFreiesGehen(SingleValueEnhanced.of(FreiesGehen.NICHT_GEPRUEFT, null));
+        beeintraechtigung.setAnzahlMonateFreiesGehen(24);
+
+        assertThat(column.extract(einladung)).isEqualTo("2 ⁰/₁₂");
     }
+
 }

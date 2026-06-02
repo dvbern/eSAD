@@ -24,6 +24,7 @@ import {
   fromISODateTimeString,
   hasNotizEditBerechtigung,
   isNullish,
+  joinNotBlank,
 } from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {DossierStore} from '../../dossier.store';
@@ -57,7 +58,7 @@ export class KindDossierNotizenComponent {
 
   dossier = computed(() => this.dossierStore.selectedDossier());
   kind = computed(() => this.dossier()?.kind);
-  fullName = computed(() => this.kind()?.data?.vorname + ' ' + this.kind()?.data?.name);
+  fullName = computed(() => joinNotBlank([this.kind()?.data?.vorname, this.kind()?.data?.name]));
   geschlecht = computed(() => this.getUseCaseGechlecht(this.kind()?.data?.geschlecht));
   adresse = computed(() => this.getAdresse(this.kind()?.data?.adresse));
   notizen = computed(

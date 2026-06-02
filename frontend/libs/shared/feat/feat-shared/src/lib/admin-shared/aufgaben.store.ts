@@ -2,7 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import { AufgabeJson, AufgabeSaveJson, AufgabeService, AufgabeStatus } from '@dvb/data-access-backend';
 import { BackendEntityId, isISODateString } from '@dvb/data-access-types';
 import {AppErrorHandlerService, handleBlobResponseDownload, Loader, withSelectedEntity} from '@dvb/util-angular';
-import { ensurePropsFlat, isNotNullish, requireValue, toValidEnumList } from '@dvb/util-shared';
+import { ensurePropsFlat, isNotNullish, joinNotBlank, requireValue, toValidEnumList } from '@dvb/util-shared';
 import {tapResponse} from '@ngrx/operators';
 import {EmptyFeatureResult, patchState, signalStore, SignalStoreFeature, withMethods, withState} from '@ngrx/signals';
 import {
@@ -255,9 +255,7 @@ export class AufgabenStore extends signalStore(
 export function enhanceAufgabe(aufgabe: AufgabeJson): AufgabeJsonEnhanced {
   return {
     ...aufgabe,
-    kindFullName: isNotNullish(aufgabe.data.kind)
-      ? aufgabe.data.kind?.vorname + ' ' + aufgabe.data.kind?.name
-      : '',
+    kindFullName: joinNotBlank([aufgabe.data.kind?.vorname, aufgabe.data.kind?.name]) ?? '',
     labelIds: aufgabe.data.labels.map(each => each.id),
     hasAnhang: aufgabe.data.files.length > 0,
   };

@@ -23,7 +23,6 @@ import {
   TextareaDirective,
   TitleComponent,
 } from '@dvb/ui-components';
-import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import {DirtyMarker} from '@dvb/util-angular';
 import {hasHoerenEditBerechtigung, isNotNullish, isNullish, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
@@ -152,20 +151,18 @@ export class UntersuchungHoerenAudiogrammComponent implements DirtyMarker {
   }
 
   abbrechen(): void {
-    const hoeren = this.hoerenAudiogrammStore.hoerenAudiogramm();
-    if (hoeren) {
-      this.form.resetForm(hoeren.audiogrammData);
-    }
+    this.form.resetForm(this.hoerenAudiogrammStore.hoerenAudiogramm()?.audiogrammData ?? undefined);
   }
 
   async submitIfValid(): Promise<void> {
     if (await this.form.validate()) {
       const payload = this.form.valueOnValid();
       const anlassId = requireValue(this.anlassStore.selectedEntity()?.id);
-      const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
+      const einladungId = requireValue(this.untersuchungStore.getWrappedEinladungId());
+
       this.hoerenAudiogrammStore.saveHoerenAudiogramm({
         anlassId: anlassId,
-        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
+        einladungId: einladungId,
         untersuchungHoerenAudiogrammSaveJson: payload,
       });
     }

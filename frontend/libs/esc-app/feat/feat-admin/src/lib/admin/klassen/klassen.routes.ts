@@ -1,13 +1,7 @@
 import {inject} from '@angular/core';
 import {ActivatedRouteSnapshot, Route} from '@angular/router';
 import {requireValidBackendEntityId} from '@dvb/data-access-types';
-import {
-  KlassenStore,
-  KontaktPersonSchuleOptionsStore,
-  SchulenOptionsStore,
-  SchulenStore,
-} from '@dvb/feat-shared';
-import {Path} from '@dvb/feat-shared';
+import {KlassenStore, KontaktPersonSchuleOptionsStore, Path, SchulenStore,} from '@dvb/feat-shared';
 import {confirmOnDirty, toDetailModeStrict} from '@dvb/util-angular';
 import {KlassenDatenComponent} from './klassen-detail/klassen-daten/klassen-daten.component';
 import {KlassenDetailPageComponent} from './klassen-detail/klassen-detail.page.component';
@@ -25,7 +19,6 @@ export const klassenRoutes: Route[] = [
     providers: [KontaktPersonSchuleOptionsStore],
     resolve: {
       _schulen: () => inject(SchulenStore).loadSchulenList(),
-      _schuloptions: () => inject(SchulenOptionsStore).loadSchulenOptions({onlyActive: false}),
     },
     children: [
       {

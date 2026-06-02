@@ -1,5 +1,5 @@
 import {Nullish} from './nullish';
-import {isFilledIn, requireFilledIn, requireNumber, trimToUndefined} from './string-utils';
+import {isFilledIn, isNotBlank, joinNotBlank, requireFilledIn, requireNumber, trimToUndefined} from './string-utils';
 import '@lukemorales/jest-type-matchers';
 
 describe('string-utils', () => {
@@ -45,6 +45,46 @@ describe('string-utils', () => {
           expect(input).toHaveStrictType<'' | Nullish>();
         }
       });
+    });
+  });
+
+  describe('isNotBlank', () => {
+    ['', null, undefined].forEach((value) => {
+      it(`returns false for nullish/blank string: ${value}`, () => {
+        expect(isNotBlank(value)).toEqual(false);
+      });
+    });
+
+    ['test', true, 5].forEach((value) => {
+      it(`returns true for non-blank values: ${value}`, () => {
+        expect(isNotBlank(value)).toEqual(true);
+      });
+    });
+  });
+
+  describe('joinNotBlank', () => {
+    it('joins non-blank parts with a space by default', () => {
+      expect(joinNotBlank(['a', 'b', 'c'])).toBe('a b c');
+    });
+
+    it('filters out empty strings, null, and undefined', () => {
+      expect(joinNotBlank(['a', '', null, 'b', undefined, 'c'])).toBe('a b c');
+    });
+
+    it('uses a custom separator', () => {
+      expect(joinNotBlank(['a', 'b', 'c'], ', ')).toBe('a, b, c');
+    });
+
+    it('returns undefined if all parts are blank', () => {
+      expect(joinNotBlank(['', null, undefined])).toBeUndefined();
+    });
+
+    it('returns undefined for an empty array', () => {
+      expect(joinNotBlank([])).toBeUndefined();
+    });
+
+    it('returns a single part without separator if only one part is non-blank', () => {
+      expect(joinNotBlank(['', 'a', null])).toBe('a');
     });
   });
 

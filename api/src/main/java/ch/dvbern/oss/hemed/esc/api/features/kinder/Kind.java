@@ -3,6 +3,8 @@ package ch.dvbern.oss.hemed.esc.api.features.kinder;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
@@ -43,6 +45,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
@@ -71,7 +74,7 @@ import org.hibernate.envers.Audited;
 @NoArgsConstructor
 @CheckKindKlasseSchuleConsistency
 public class Kind extends AbstractEntity<Kind>
-        implements Serializable, HasExternalImportInfo, EntityWithOptimisticLocking {
+    implements Serializable, HasExternalImportInfo, EntityWithOptimisticLocking {
 
     @Serial
     private static final long serialVersionUID = 8005202370526715032L;
@@ -86,6 +89,12 @@ public class Kind extends AbstractEntity<Kind>
     @IgnoreForIdClassTest
     @CheckEsadId
     private String esadId;
+
+    @NonNull
+    @NotNull
+    @Column(nullable = false, length = DbConst.DB_SHA256_LENGTH)
+    @Size(max = DbConst.DB_SHA256_LENGTH)
+    private String hashValue;
 
     @Nullable
     @Column(nullable = true, length = DbConst.DB_DEFAULT_MAX_LENGTH)
@@ -178,10 +187,12 @@ public class Kind extends AbstractEntity<Kind>
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     private EntityAktivStatus kindAktivStatus = EntityAktivStatus.AKTIV;
 
-
     @NonNull
+    @Transient
     public String getNameVorname() {
-        return name + ' ' + vorname;
+        return Stream.of(name, vorname)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.joining(" "));
     }
 
     @Nullable

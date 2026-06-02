@@ -103,9 +103,7 @@ export class UntersuchungMassnahmenComponent implements DirtyMarker {
 
   abbrechen(): void {
     const massnahmen = this.store.massnahmen();
-    if (massnahmen) {
-      this.form.resetForm(massnahmen.data);
-    }
+      this.form.resetForm(massnahmen?.data);
   }
 
   async submitIfValid(): Promise<void> {

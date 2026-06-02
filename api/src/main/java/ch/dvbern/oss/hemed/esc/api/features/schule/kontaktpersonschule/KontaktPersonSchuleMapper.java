@@ -60,7 +60,7 @@ public final class KontaktPersonSchuleMapper {
             kontaktPerson.getGeschlecht(),
             kontaktPerson.getName(),
             kontaktPerson.getVorname(),
-            kontaktPerson.getName() + ' ' + kontaktPerson.getVorname());
+            kontaktPerson.getNameVorname());
     }
 
     @NonNull

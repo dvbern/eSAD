@@ -1,6 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.features.arzt;
 
-import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -300,7 +299,7 @@ class ArztResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void exportAerzteCsvApi() throws IOException {
+    void exportAerzteCsvApi() {
         setTime(OffsetDateTime.of(2025, 6, 25, 0, 0, 0, 0, ZoneOffset.UTC));
         ArztIdListJsonSpec idList = new ArztIdListJsonSpec(
             Stream.of(

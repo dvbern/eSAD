@@ -37,10 +37,10 @@ class TimeTravelServiceTest {
     void initialState() {
         LocalDate systemToday = LocalDate.now(ZONE_ID);
 
-        // Act
+        // ACT
         LocalDate serviceToday = timetravelService.getNow();
 
-        // Assert
+        // ASSERT
         assertThat(serviceToday).isEqualTo(systemToday);
         assertThat(timetravelService.isTimeTravelling()).isFalse();
 
@@ -51,23 +51,23 @@ class TimeTravelServiceTest {
         LocalDate systemToday = LocalDate.now(ZONE_ID);
         LocalDate minus5days = systemToday.minusDays(5);
 
-        // Arrange
+        // ARRANGE
         timetravelService.setNow(minus5days);
 
-        // Act
+        // ACT
         LocalDate serviceToday = timetravelService.getNow();
 
-        // Assert
+        // ASSERT
         assertThat(serviceToday).isEqualTo(minus5days);
         assertThat(timetravelService.isTimeTravelling()).isTrue();
 
-        // Arrange
+        // ARRANGE
         timetravelService.resetNow();
 
-        // Act
+        // ACT
         serviceToday = timetravelService.getNow();
 
-        // Assert
+        // ASSERT
         assertThat(serviceToday).isEqualTo(systemToday);
         assertThat(timetravelService.isTimeTravelling()).isFalse();
     }
@@ -77,23 +77,23 @@ class TimeTravelServiceTest {
         LocalDate systemToday = LocalDate.now(ZONE_ID);
         LocalDate plus88days = systemToday.plusDays(88);
 
-        // Arrange
+        // ARRANGE
         timetravelService.setNow(plus88days);
 
-        // Act
+        // ACT
         LocalDate serviceToday = timetravelService.getNow();
 
-        // Assert
+        // ASSERT
         assertThat(serviceToday).isEqualTo(plus88days);
         assertThat(timetravelService.isTimeTravelling()).isTrue();
 
-        // Arrange
+        // ARRANGE
         timetravelService.resetNow();
 
-        // Act
+        // ACT
         serviceToday = timetravelService.getNow();
 
-        // Assert
+        // ASSERT
         assertThat(serviceToday).isEqualTo(systemToday);
         assertThat(timetravelService.isTimeTravelling()).isFalse();
     }
@@ -103,10 +103,10 @@ class TimeTravelServiceTest {
         LocalDate systemToday = LocalDate.now(ZONE_ID);
         LocalDate minus5days = systemToday.minusDays(5);
 
-        // Arrange
+        // ARRANGE
         when(configService.getEnvironment()).thenReturn(DeploymentEnvironment.PROD);
 
-        // Act & Assert
+        // ACT & ASSERT
         assertThrows(
             AppFailureException.class,
             () -> timetravelService.setNow(minus5days)
@@ -119,10 +119,10 @@ class TimeTravelServiceTest {
         LocalDate systemToday = LocalDate.now(ZONE_ID);
         LocalDate minus5days = systemToday.minusDays(5);
 
-        // Arrange
+        // ARRANGE
         when(configService.isFeatureTimeTravelEndpointEnabled()).thenReturn(false);
 
-        // Act & Assert
+        // ACT & ASSERT
         assertThrows(
             AppFailureException.class,
             () -> timetravelService.setNow(minus5days)

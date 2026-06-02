@@ -28,7 +28,7 @@ import {
   TextInputDirective,
 } from '@dvb/ui-components';
 import {TableModel} from '@dvb/util-angular';
-import {hasListEditBerechtigung} from '@dvb/util-shared';
+import {hasInfomaterialEditBerechtigung} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbDropdownItem} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
@@ -82,7 +82,7 @@ export class InfomaterialListPageComponent {
     paginatedTable: this.itemTable,
   });
 
-  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
+  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasInfomaterialEditBerechtigung());
   summaryItems = computed(() => {
     const items: SummaryListItem[] = [
       {

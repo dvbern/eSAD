@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.json.UntersuchungMassnahmenJson;
@@ -109,15 +110,19 @@ public class UntersuchungMassnahmenMapper {
 
     @NonNull
     public UntersuchungMassnahmenJson save(
-        @NonNull ID<Einladung> einladungID,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull UntersuchungMassnahmenSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId.toEinladungId());
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungMassnahmen massnahmen = untersuchung.getUntersuchungMassnahmen();
         UntersuchungMassnahmen entity = toEntity(untersuchung, massnahmen, saveJson);
-        UntersuchungMassnahmen persistedEntity = untersuchungMassnahmenService.persistWithOptimisticLocking(entity, saveJson.getVersion());
+        UntersuchungMassnahmen persistedEntity = untersuchungMassnahmenService.persistWithOptimisticLocking(
+            entity,
+            saveJson.getVersion(),
+            wrappedId.isAnonymerEintrag()
+        );
         return toJson(persistedEntity);
     }
 }

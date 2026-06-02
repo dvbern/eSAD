@@ -12,7 +12,7 @@ public interface UntersuchungMassnahmenJsonSpecMapper extends BaseMapper {
     UntersuchungMassnahmenJsonSpecMapper INSTANCE = Mappers.getMapper(UntersuchungMassnahmenJsonSpecMapper.class);
 
     @NonNull
-    UntersuchungMassnahmenJsonSpec untersuchungMassnahmenJsonToUntersuchungMassnahmenJsonSpec(
+    UntersuchungMassnahmenJsonSpec jsonToJsonSpec(
         @NonNull UntersuchungMassnahmenJson json
     );
 }

@@ -8,6 +8,7 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.NoTransactionService;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.oss.hemed.esc.api.shared.archivierung.ArchivierungRuleProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.mapper.BaseMapper;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.tngtech.archunit.base.DescribedPredicate;
@@ -221,6 +222,17 @@ class LayeringTest {
             .notDependOnEachOther()
             .because("Use a service to access repos outside of the feature package");
         rule.allowEmptyShould(true).check(ArchConst.APP_CLASSES);
+    }
+
+    @Test
+    void authorizer_service_should_only_be_called_from_resource() {
+        var rule = methods().that()
+            .areDeclaredIn(AuthorizerService.class)
+            .should()
+            .onlyBeCalled()
+            .byClassesThat(are(RESOURCE).or(are(assignableTo(AuthorizerService.class))))
+            .because("AuthorizerService should only be called from Resource layer (and may call itself)");
+        rule.allowEmptyShould(true).check(APP_CLASSES);
     }
 
     @Test

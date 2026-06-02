@@ -124,7 +124,7 @@ class DocumentQueueResourceAuthorizationITest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void downloadMassenbriefZIPFromAdmin_should_throw() {
-        // Act & assert
+        // ACT & assert
         api.documentQueueResourceDownloadFile()
             .documentQueueIdPath(documentQueueID.getId())
             .execute(ResponseOptions::andReturn)

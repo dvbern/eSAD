@@ -1,14 +1,14 @@
 package ch.dvbern.dvbstarter.shared.types.id;
 
-import java.util.Map;
-import java.util.UUID;
-
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
+import java.util.Map;
+import java.util.UUID;
 
 @Schema(
     type = SchemaType.STRING,
@@ -32,7 +32,7 @@ public class HasUntersuchungIDWrapper {
     @NonNull
     private final Class<? extends AbstractEntity<?>> entityClass;
 
-    public HasUntersuchungIDWrapper(@NonNull UUID uuid, @NonNull Class<? extends AbstractEntity<?>> entityClass) {
+    private HasUntersuchungIDWrapper(@NonNull UUID uuid, @NonNull Class<? extends AbstractEntity<?>> entityClass) {
         this.uuid = uuid;
         this.entityClass = entityClass;
     }
@@ -43,7 +43,7 @@ public class HasUntersuchungIDWrapper {
     }
 
     @NonNull
-    public ID<AnonymerEintrag> toAbstractEntityId() {
+    public ID<AnonymerEintrag> toAnonymerEintragId() {
         return toIdOfClass(AnonymerEintrag.class);
     }
 
@@ -99,10 +99,23 @@ public class HasUntersuchungIDWrapper {
     }
 
     public static HasUntersuchungIDWrapper fromEinladungId(@NonNull ID<Einladung> einladungID) {
-        UUID uuid = einladungID.getUUID();
-        Class<? extends AbstractEntity<?>> entityClass = Einladung.class;
+        return new HasUntersuchungIDWrapper(einladungID.getUUID(),  Einladung.class);
+    }
 
-        return new HasUntersuchungIDWrapper(uuid, entityClass);
+    public static HasUntersuchungIDWrapper fromAnonymerEintragId(@NonNull ID<AnonymerEintrag> anonymerEintragID) {
+        return new HasUntersuchungIDWrapper(anonymerEintragID.getUUID(), AnonymerEintrag.class);
+    }
+
+    public static HasUntersuchungIDWrapper fromEinladungUuid(@NonNull String uuid) {
+        return fromUuidString(uuid, Einladung.class);
+    }
+
+    public static HasUntersuchungIDWrapper fromAnonymerEintragUuid(@NonNull String uuid ) {
+        return fromUuidString(uuid, AnonymerEintrag.class);
+    }
+
+    private static HasUntersuchungIDWrapper fromUuidString(@NonNull String uuid, @NonNull Class<? extends AbstractEntity<?>> entityClass) {
+        return new HasUntersuchungIDWrapper(UUID.fromString(uuid), entityClass);
     }
 
     @NonNull

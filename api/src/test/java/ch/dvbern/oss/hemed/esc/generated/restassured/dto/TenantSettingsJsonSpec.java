@@ -38,7 +38,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   TenantSettingsJsonSpec.JSON_PROPERTY_TENANT,
   TenantSettingsJsonSpec.JSON_PROPERTY_ENTITY_INFO,
   TenantSettingsJsonSpec.JSON_PROPERTY_DATA,
-  TenantSettingsJsonSpec.JSON_PROPERTY_FACHROLLEN
+  TenantSettingsJsonSpec.JSON_PROPERTY_FACHROLLEN,
+  TenantSettingsJsonSpec.JSON_PROPERTY_DELEGIERBARE_FACHROLLEN
 })
 @JsonTypeName("TenantSettingsJson")
 @lombok.AllArgsConstructor
@@ -63,6 +64,10 @@ public class TenantSettingsJsonSpec {
   public static final String JSON_PROPERTY_FACHROLLEN = "fachrollen";
   @jakarta.annotation.Nonnull
   private List<FachRolleSpec> fachrollen;
+
+  public static final String JSON_PROPERTY_DELEGIERBARE_FACHROLLEN = "delegierbareFachrollen";
+  @jakarta.annotation.Nonnull
+  private List<FachRolleSpec> delegierbareFachrollen;
 
   public TenantSettingsJsonSpec() {
   }
@@ -200,6 +205,39 @@ public class TenantSettingsJsonSpec {
     this.fachrollen = fachrollen;
   }
 
+  public TenantSettingsJsonSpec delegierbareFachrollen(@jakarta.annotation.Nonnull List<FachRolleSpec> delegierbareFachrollen) {
+    
+    this.delegierbareFachrollen = delegierbareFachrollen;
+    return this;
+  }
+
+  public TenantSettingsJsonSpec addDelegierbareFachrollenItem(FachRolleSpec delegierbareFachrollenItem) {
+    if (this.delegierbareFachrollen == null) {
+      this.delegierbareFachrollen = new ArrayList<>();
+    }
+    this.delegierbareFachrollen.add(delegierbareFachrollenItem);
+    return this;
+  }
+
+  /**
+   * Get delegierbareFachrollen
+   * @return delegierbareFachrollen
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_DELEGIERBARE_FACHROLLEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<FachRolleSpec> getDelegierbareFachrollen() {
+    return delegierbareFachrollen;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_DELEGIERBARE_FACHROLLEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setDelegierbareFachrollen(@jakarta.annotation.Nonnull List<FachRolleSpec> delegierbareFachrollen) {
+    this.delegierbareFachrollen = delegierbareFachrollen;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -213,12 +251,13 @@ public class TenantSettingsJsonSpec {
         Objects.equals(this.tenant, tenantSettingsJson.tenant) &&
         Objects.equals(this.entityInfo, tenantSettingsJson.entityInfo) &&
         Objects.equals(this.data, tenantSettingsJson.data) &&
-        Objects.equals(this.fachrollen, tenantSettingsJson.fachrollen);
+        Objects.equals(this.fachrollen, tenantSettingsJson.fachrollen) &&
+        Objects.equals(this.delegierbareFachrollen, tenantSettingsJson.delegierbareFachrollen);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, tenant, entityInfo, data, fachrollen);
+    return Objects.hash(id, tenant, entityInfo, data, fachrollen, delegierbareFachrollen);
   }
 
   @Override
@@ -230,6 +269,7 @@ public class TenantSettingsJsonSpec {
     sb.append("    entityInfo: ").append(toIndentedString(entityInfo)).append("\n");
     sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("    fachrollen: ").append(toIndentedString(fachrollen)).append("\n");
+    sb.append("    delegierbareFachrollen: ").append(toIndentedString(delegierbareFachrollen)).append("\n");
     sb.append("}");
     return sb.toString();
   }

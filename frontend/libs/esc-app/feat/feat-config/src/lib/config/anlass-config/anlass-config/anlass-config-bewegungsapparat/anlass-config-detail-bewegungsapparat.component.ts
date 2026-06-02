@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RequirementSetting } from '@dvb/data-access-backend';
@@ -23,7 +23,6 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'feat-config-detail-bewegungsapparat',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FormButtonsComponent,
     FormControlComponent,
@@ -33,8 +32,8 @@ import { ActivatedRoute } from '@angular/router';
     NgOptionComponent,
     NgSelectComponent,
     NgSelectDirective,
-    TranslocoPipe,
-  ],
+    TranslocoPipe
+],
   templateUrl: './anlass-config-detail-bewegungsapparat.component.html',
   styleUrl: './anlass-config-detail-bewegungsapparat.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

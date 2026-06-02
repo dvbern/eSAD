@@ -17,4 +17,9 @@ public class TenantClaimUtil {
     public static Optional<String> extractTenantClaim(@NonNull JsonWebToken jsonWebToken) {
         return jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM);
     }
+
+    public static boolean isHinUser(@NonNull JsonWebToken jsonWebToken) {
+        Optional<String> hinGlnClaim = jsonWebToken.claim(JsonWebTokenClaims.HIN_EAN_NO_MEDICAL);
+        return hinGlnClaim.isPresent();
+    }
 }

@@ -5,13 +5,16 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.json.UntersuchungArztBemerkungJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkungMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.json.UntersuchungArztBemerkungJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.json.UntersuchungArztBemerkungSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungArztBemerkungJsonSpecMapper;
+import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungArztBemerkungSaveJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungArztBemerkungJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungArztBemerkungSaveJsonSpec;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -62,14 +65,32 @@ public class UntersuchungArztBemerkungBuilder {
     }
 
     @NonNull
+    public static UntersuchungArztBemerkungSaveJson createSaveJax(
+        @NonNull Consumer<UntersuchungArztBemerkungBuilder> block
+    ) {
+        UntersuchungArztBemerkung entity = create(block);
+        return UntersuchungArztBemerkungMapper.toSaveJson(entity);
+    }
+
+    @NonNull
     public static UntersuchungArztBemerkungJson createJax(@NonNull Consumer<UntersuchungArztBemerkungBuilder> block) {
         UntersuchungArztBemerkung entity = create(block);
         return UntersuchungArztBemerkungMapper.toJson(entity);
     }
 
     @NonNull
-    public static UntersuchungArztBemerkungJsonSpec createJaxSpec(@NonNull Consumer<UntersuchungArztBemerkungBuilder> block) {
+    public static UntersuchungArztBemerkungSaveJsonSpec createSaveJaxSpec(
+        @NonNull Consumer<UntersuchungArztBemerkungBuilder> block
+    ) {
+        UntersuchungArztBemerkungSaveJson saveJson = createSaveJax(block);
+        return UntersuchungArztBemerkungSaveJsonSpecMapper.INSTANCE.saveJsonToSaveJsonSpec(saveJson);
+    }
+
+    @NonNull
+    public static UntersuchungArztBemerkungJsonSpec createJaxSpec(
+        @NonNull Consumer<UntersuchungArztBemerkungBuilder> block) {
         UntersuchungArztBemerkungJson json = createJax(block);
-        return UntersuchungArztBemerkungJsonSpecMapper.INSTANCE.untersuchungArztBemerkungJsonToUntersuchungArztBemerkungJsonSpec(json);
+        return UntersuchungArztBemerkungJsonSpecMapper.INSTANCE.untersuchungArztBemerkungJsonToUntersuchungArztBemerkungJsonSpec(
+            json);
     }
 }

@@ -10,6 +10,7 @@ import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopieMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoerenOtoskopieJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoerenOtoskopieSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
@@ -17,7 +18,9 @@ import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.NichtGeprueftGrund;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungHoerenOtoskopieJsonSpecMapper;
+import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungHoerenOtoskopieSaveJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungHoerenOtoskopieJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungHoerenOtoskopieSaveJsonSpec;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -40,7 +43,8 @@ public class UntersuchungHoerenOtoskopieBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungHoerenOtoskopieBuilder forUntersuchungHoerenOtoskopie(@NonNull UntersuchungHoerenOtoskopie existing) {
+    public UntersuchungHoerenOtoskopieBuilder forUntersuchungHoerenOtoskopie(
+        @NonNull UntersuchungHoerenOtoskopie existing) {
         this.hoerenOtoskopie = existing;
         return this;
     }
@@ -70,7 +74,10 @@ public class UntersuchungHoerenOtoskopieBuilder {
         @Nullable NichtGeprueftGrund nichtGeprueftGrund,
         @Nullable String bemerkung
     ) {
-        this.hoerenOtoskopie.setOtoskopieRechts(MultiValueEnhanced.of(EnumSetUtil.toEnumSet(resultatList, OtoskopieResultat.class), nichtGeprueftGrund));
+        this.hoerenOtoskopie.setOtoskopieRechts(MultiValueEnhanced.of(
+            EnumSetUtil.toEnumSet(
+                resultatList,
+                OtoskopieResultat.class), nichtGeprueftGrund));
         this.hoerenOtoskopie.setOtoskopieRechtsResultatAndere(bemerkung);
         return this;
     }
@@ -90,7 +97,10 @@ public class UntersuchungHoerenOtoskopieBuilder {
         @Nullable Collection<OtoskopieResultat> resultatList,
         @Nullable NichtGeprueftGrund nichtGeprueftGrund
     ) {
-        this.hoerenOtoskopie.setOtoskopieLinks(MultiValueEnhanced.of(EnumSetUtil.toEnumSet(resultatList, OtoskopieResultat.class), nichtGeprueftGrund));
+        this.hoerenOtoskopie.setOtoskopieLinks(MultiValueEnhanced.of(
+            EnumSetUtil.toEnumSet(
+                resultatList,
+                OtoskopieResultat.class), nichtGeprueftGrund));
         return this;
     }
 
@@ -101,7 +111,10 @@ public class UntersuchungHoerenOtoskopieBuilder {
         @Nullable NichtGeprueftGrund nichtGeprueftGrund,
         @Nullable String bemerkung
     ) {
-        this.hoerenOtoskopie.setOtoskopieLinks(MultiValueEnhanced.of(EnumSetUtil.toEnumSet(resultatList, OtoskopieResultat.class), nichtGeprueftGrund));
+        this.hoerenOtoskopie.setOtoskopieLinks(MultiValueEnhanced.of(
+            EnumSetUtil.toEnumSet(
+                resultatList,
+                OtoskopieResultat.class), nichtGeprueftGrund));
         this.hoerenOtoskopie.setOtoskopieLinksResultatAndere(bemerkung);
         return this;
     }
@@ -130,15 +143,33 @@ public class UntersuchungHoerenOtoskopieBuilder {
     }
 
     @NonNull
+    public static UntersuchungHoerenOtoskopieSaveJson createSaveJax(
+        @NonNull Consumer<UntersuchungHoerenOtoskopieBuilder> block
+    ) {
+        UntersuchungHoerenOtoskopie entity = create(block);
+        return UntersuchungHoerenOtoskopieMapper.toSaveJson(entity);
+    }
+
+    @NonNull
     public static UntersuchungHoerenOtoskopieJson createJax(
-        @NonNull Consumer<UntersuchungHoerenOtoskopieBuilder> block) {
+        @NonNull Consumer<UntersuchungHoerenOtoskopieBuilder> block
+    ) {
         UntersuchungHoerenOtoskopie entity = create(block);
         return UntersuchungHoerenOtoskopieMapper.toJson(entity);
     }
 
     @NonNull
+    public static UntersuchungHoerenOtoskopieSaveJsonSpec createSaveJaxSpec(
+        @NonNull Consumer<UntersuchungHoerenOtoskopieBuilder> block
+    ) {
+        UntersuchungHoerenOtoskopieSaveJson saveJson = createSaveJax(block);
+        return UntersuchungHoerenOtoskopieSaveJsonSpecMapper.INSTANCE.saveJsonToSaveJsonSpec(saveJson);
+    }
+
+    @NonNull
     public static UntersuchungHoerenOtoskopieJsonSpec createJaxSpec(
-        @NonNull Consumer<UntersuchungHoerenOtoskopieBuilder> block) {
+        @NonNull Consumer<UntersuchungHoerenOtoskopieBuilder> block
+    ) {
         UntersuchungHoerenOtoskopieJson json = createJax(block);
         return UntersuchungHoerenOtoskopieJsonSpecMapper.INSTANCE.
             untersuchungHoerenOtoskopieJsonToUntersuchungHoerenOtoskopieJsonSpec(json);

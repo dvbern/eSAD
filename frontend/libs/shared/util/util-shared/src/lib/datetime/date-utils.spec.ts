@@ -1,9 +1,9 @@
 // FIXME: fix module boundaries
 // this is required to trick the compiler into not doing automatic type inferrence for test fixtures
-import {ISODateString, ISODateTimeString} from '@dvb/data-access-types';
+import { ISODateString, ISODateTimeString } from '@dvb/data-access-types';
 // which would making these tests useless.
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {atStartOfDay, fromISODateTimeString, toISODateTimeString, truncateToDate} from './date-utils';
+import { atStartOfDay, fromISODateTimeString, toISODateTimeString, truncateToDate } from './date-utils';
 import '@lukemorales/jest-type-matchers';
 
 describe('date-utils', () => {
@@ -18,21 +18,18 @@ describe('date-utils', () => {
       expect(actual).toEqual(expected);
     });
 
-    it.each([null, undefined])(
-      `returns null/undefined for null/undefined input: %s`,
-      (input) => {
-        const actual = fromISODateTimeString(input);
+    it.each([null, undefined])(`returns null/undefined for null/undefined input: %s`, input => {
+      const actual = fromISODateTimeString(input);
 
-        expect(actual).toEqual(input);
+      expect(actual).toEqual(input);
+    });
+
+    it.each(['asdfT123' as ISODateTimeString, '2021-07-01' as ISODateTimeString])(
+      'throws an error for invalid input: %s',
+      input => {
+        expect(() => fromISODateTimeString(input)).toThrow();
       },
     );
-
-    it.each([
-      'asdfT123' as ISODateTimeString,
-      '2021-07-01' as ISODateTimeString,
-    ])('throws an error for invalid input: %s', (input) => {
-      expect(() => fromISODateTimeString(input)).toThrowError();
-    });
 
     describe('type-magic', () => {
       it('implements returning Non-Nullish ISODateString', () => {
@@ -52,8 +49,7 @@ describe('date-utils', () => {
       });
 
       it('returns an undefinedable ISODateString for undefined input', () => {
-        const input: ISODateTimeString | undefined =
-          '2021-07-01T12:34:56Z' as any;
+        const input: ISODateTimeString | undefined = '2021-07-01T12:34:56Z' as any;
 
         const actual = fromISODateTimeString(input);
 
@@ -61,8 +57,7 @@ describe('date-utils', () => {
       });
 
       it('returns null|undefined for null|undefined input', () => {
-        const input: ISODateTimeString | null | undefined =
-          '2021-07-01T12:34:56Z' as any;
+        const input: ISODateTimeString | null | undefined = '2021-07-01T12:34:56Z' as any;
 
         const actual = fromISODateTimeString(input);
 
@@ -86,14 +81,11 @@ describe('date-utils', () => {
       expect(actual).toEqual(expected);
     });
 
-    it.each([null, undefined])(
-      `returns null/undefined for null/undefined input: %s`,
-      (input) => {
-        const actual = toISODateTimeString(input);
+    it.each([null, undefined])(`returns null/undefined for null/undefined input: %s`, input => {
+      const actual = toISODateTimeString(input);
 
-        expect(actual).toEqual(input);
-      },
-    );
+      expect(actual).toEqual(input);
+    });
 
     describe('type-magic', () => {
       it('implements returning Non-Nullish ISODateTimeString', () => {
@@ -121,9 +113,7 @@ describe('date-utils', () => {
       });
 
       it('returns null|undefined for null|undefined input', () => {
-        const input: Date | null | undefined = new Date(
-          '2021-07-01T12:34:56Z',
-        ) as any;
+        const input: Date | null | undefined = new Date('2021-07-01T12:34:56Z') as any;
 
         const actual = toISODateTimeString(input);
 
@@ -159,19 +149,16 @@ describe('date-utils', () => {
       expect(result).toEqual('2021-07-01');
     });
 
-    it.each([null, undefined])(
-      'returns null/undefined for null/undefined input: %s',
-      (input) => {
-        const result = truncateToDate(input);
+    it.each([null, undefined])('returns null/undefined for null/undefined input: %s', input => {
+      const result = truncateToDate(input);
 
-        expect(result).toEqual(input);
-      },
-    );
+      expect(result).toEqual(input);
+    });
 
     it('throws an error for invalid input', () => {
       const input = 'asdfT123' as ISODateTimeString;
 
-      expect(() => truncateToDate(input)).toThrowError();
+      expect(() => truncateToDate(input)).toThrow();
     });
 
     describe('type-magic', () => {
@@ -192,8 +179,7 @@ describe('date-utils', () => {
       });
 
       it('returns an undefinedable ISODateString for undefined input', () => {
-        const input: ISODateTimeString | undefined =
-          '2021-07-01T12:34:56Z' as any;
+        const input: ISODateTimeString | undefined = '2021-07-01T12:34:56Z' as any;
 
         const actual = truncateToDate(input);
 
@@ -201,8 +187,7 @@ describe('date-utils', () => {
       });
 
       it('returns null|undefined for null|undefined input', () => {
-        const input: ISODateTimeString | null | undefined =
-          '2021-07-01T12:34:56Z' as any;
+        const input: ISODateTimeString | null | undefined = '2021-07-01T12:34:56Z' as any;
 
         const actual = truncateToDate(input);
 
@@ -222,14 +207,11 @@ describe('date-utils', () => {
       expect(result).toEqual('2021-07-01T00:00:00.000Z');
     });
 
-    it.each([null, undefined])(
-      'returns null/undefined for null/undefined input: %s',
-      (input) => {
-        const result = atStartOfDay(input);
+    it.each([null, undefined])('returns null/undefined for null/undefined input: %s', input => {
+      const result = atStartOfDay(input);
 
-        expect(result).toEqual(input);
-      },
-    );
+      expect(result).toEqual(input);
+    });
 
     it('accepts an ISO date with time and sets the time to midnight', () => {
       const utcDate = '2021-07-01T12:34:56Z' as any;

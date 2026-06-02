@@ -25,7 +25,9 @@
       <col svuiColWidth [colWidth]="'date'">
       @if (!isAnlassStatusBereit()) {
         <!-- sprache-->
-        <col svuiColWidth [colWidth]="'text-small'">
+        @if (tenantSettingsStore.anlassSpracheSpalteEnabled()) {
+          <col svuiColWidth [colWidth]="'text-small'">
+        }
         <!-- idnummer-->
         @if (tenantSettingsStore.idEsadIdVisible()) {
           <col svuiColWidth [colWidth]="'text-medium'">
@@ -34,7 +36,7 @@
       <!-- klassenstufe-->
       <col svuiColWidth [colWidth]="'select-medium'">
       <!-- nachkontrolle-->
-      @if (!anlassStore.isAbgeschlossen()) {
+      @if (showNachkontrolle()) {
         <col svuiColWidth [colWidth]="'select-medium'">
       }
       <!-- einladungstatus-->
@@ -45,8 +47,8 @@
         <!-- naechstestationSeit-->
         <col svuiColWidth [colWidth]="'options'">
       }
-      <!-- impfanmeldung -->
-      @if (anlassStore.showImpfanmeldung()) {
+      <!-- impfeinverstaendnis -->
+      @if (anlassStore.showImpfeinverstaendnis()) {
         <col svuiColWidth [colWidth]="'options'">
       }
       <!-- impfausweis-->
@@ -94,12 +96,14 @@
       >{{ 'anlass.kinder.geburtsdatum' | transloco }}
       </th>
       @if (!isAnlassStatusBereit()) {
-        <th scope="col"
-            svuiSortable
-            [sortState]="itemTable.findColSortDTO('kind.data.erstsprache')"
-            (sort)="itemTable.onColSort($event, 'kind.data.erstsprache')"
-        >{{ 'anlass.kinder.sprache' | transloco }}
-        </th>
+        @if (tenantSettingsStore.anlassSpracheSpalteEnabled()) {
+          <th scope="col"
+              svuiSortable
+              [sortState]="itemTable.findColSortDTO('kind.data.erstsprache')"
+              (sort)="itemTable.onColSort($event, 'kind.data.erstsprache')"
+          >{{ 'anlass.kinder.sprache' | transloco }}
+          </th>
+        }
         @if (tenantSettingsStore.idEsadIdVisible()) {
           <th scope="col"
               svuiSortable
@@ -115,7 +119,7 @@
           (sort)="itemTable.onColSort($event, 'kind.data.klassenstufe')"
       >{{ 'anlass.kinder.klassenstufe' | transloco }}
       </th>
-      @if (!anlassStore.isAbgeschlossen()) {
+      @if (showNachkontrolle()) {
         <th scope="col"
             svuiSortable
             [sortState]="itemTable.findColSortDTO('nachkontrolleString')"
@@ -143,10 +147,6 @@
         >{{ 'anlass.kinder.naechstestationseit' | transloco }}
         </th>
       }
-      @if (anlassStore.showImpfanmeldung()) {
-        <th scope="col">{{ 'anlass.kinder.impfanmeldung' | transloco }}
-        </th>
-      }
       @if (anlassStore.showImpfausweis()) {
         <th scope="col">{{ 'anlass.kinder.impfausweis' | transloco }}
         </th>
@@ -157,6 +157,10 @@
       }
       @if (anlassStore.showAnmeldungBestaetigung()) {
         <th scope="col">{{ 'anlass.kinder.anmeldungBestaetigung' | transloco }}
+        </th>
+      }
+      @if (anlassStore.showImpfeinverstaendnis()) {
+        <th scope="col">{{ 'anlass.kinder.impfeinverstaendnis' | transloco }}
         </th>
       }
       <th scope="col">{{ 'global.actionmenu.col' | transloco }}
@@ -217,11 +221,13 @@
       </th>
 
       @if (!isAnlassStatusBereit()) {
-        <th scope="col">
-          <svui-table-filter [columnHeader]="'anlass.kinder.sprache' | transloco">
-            <input svuiTextInput [formControl]="tableFilterForm.group.controls.sprache"/>
-          </svui-table-filter>
-        </th>
+        @if (tenantSettingsStore.anlassSpracheSpalteEnabled()) {
+          <th scope="col">
+            <svui-table-filter [columnHeader]="'anlass.kinder.sprache' | transloco">
+              <input svuiTextInput [formControl]="tableFilterForm.group.controls.sprache"/>
+            </svui-table-filter>
+          </th>
+        }
         @if (tenantSettingsStore.idEsadIdVisible()) {
           <th scope="col">
             <svui-table-filter [columnHeader]="'anlass.kinder.idNr' | transloco">
@@ -250,7 +256,7 @@
           </ng-select>
         </svui-table-filter>
       </th>
-      @if (!anlassStore.isAbgeschlossen()) {
+      @if (showNachkontrolle()) {
         <th scope="col">
           <svui-table-filter [columnHeader]="'anlass.kinder.nachkontrolle' | transloco">
             <ng-select
@@ -316,9 +322,6 @@
         </th>
         <th scope="col"></th>
       }
-      @if (anlassStore.showImpfanmeldung()) {
-        <th scope="col"></th>
-      }
       @if (anlassStore.showImpfausweis()) {
         <th scope="col"></th>
       }
@@ -326,6 +329,9 @@
         <th scope="col"></th>
       }
       @if (anlassStore.showAnmeldungBestaetigung()) {
+        <th scope="col"></th>
+      }
+      @if (anlassStore.showImpfeinverstaendnis()) {
         <th scope="col"></th>
       }
       <th scope="col"></th>
@@ -359,7 +365,9 @@
           </td>
           <td>{{ item.kind.data.geburtsdatum | date: 'dd.MM.yyyy' }}</td>
           @if (!isAnlassStatusBereit()) {
-            <td>{{ item.kind.data.erstsprache }}</td>
+            @if (tenantSettingsStore.anlassSpracheSpalteEnabled()) {
+              <td>{{ item.kind.data.erstsprache }}</td>
+            }
             @if (tenantSettingsStore.idEsadIdVisible()) {
               <td>{{ item.kind.esadId }}</td>
             }
@@ -379,7 +387,7 @@
               }}
             </td>
           }
-          @if (!anlassStore.isAbgeschlossen()) {
+          @if (showNachkontrolle()) {
             <td>
               @if (item?.nachkontrolle?.data?.anlassFlags?.nachkontrolleSehen) {
                 <svui-badge> {{ 'Nachkontrolle.NachkontrolleSehen' | transloco }}</svui-badge>
@@ -429,29 +437,6 @@
             <td>{{
                 formatTimeWithDateIfNotToday(item.naechsteStation?.naechsteStationSeit)
               }}
-            </td>
-          }
-          @if (anlassStore.showImpfanmeldung()) {
-            <td class="text-center">
-              @if (hasNotizFile(item.data.notizen, NotizTyp.IMPFANMELDUNG)) {
-                <button svuiIconOnlyButton="success"
-                        type="button"
-                        [tooltip]="'global.tooltip.impfanmeldung' | transloco"
-                        [icon]="'check'"
-                        [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
-                        (click)="gotoEinladungNotiz(item, NotizTyp.IMPFANMELDUNG)"
-                        data-testid="button-add-impfanmeldung-success">
-                </button>
-              } @else {
-                <button svuiIconOnlyButton="primary"
-                        type="button"
-                        [tooltip]="'global.tooltip.impfanmeldung.upload' | transloco"
-                        [icon]="'upload'"
-                        [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
-                        (click)="gotoEinladungNotiz(item, NotizTyp.IMPFANMELDUNG)"
-                        data-testid="button-add-impfanmeldung">
-                </button>
-              }
             </td>
           }
           @if (anlassStore.showImpfausweis()) {
@@ -517,6 +502,29 @@
                         [icon]="'upload'"
                         [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
                         (click)="gotoEinladungNotiz(item, NotizTyp.ANMELDUNG_BESTAETIGUNG)">
+                </button>
+              }
+            </td>
+          }
+          @if (anlassStore.showImpfeinverstaendnis()) {
+            <td class="text-center">
+              @if (hasNotizFile(item.data.notizen, NotizTyp.IMPFEINVERSTAENDNIS)) {
+                <button svuiIconOnlyButton="success"
+                        type="button"
+                        [tooltip]="'global.tooltip.impfeinverstaendnis' | transloco"
+                        [icon]="'check'"
+                        [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
+                        (click)="gotoEinladungNotiz(item, NotizTyp.IMPFEINVERSTAENDNIS)"
+                        data-testid="button-add-impfeinverstaendnis-success">
+                </button>
+              } @else {
+                <button svuiIconOnlyButton="primary"
+                        type="button"
+                        [tooltip]="'global.tooltip.impfeinverstaendnis.upload' | transloco"
+                        [icon]="'upload'"
+                        [disabled]="!canEditNotiz() || !anlassStore.canUserEditAnlassInCurrentState()"
+                        (click)="gotoEinladungNotiz(item, NotizTyp.IMPFEINVERSTAENDNIS)"
+                        data-testid="button-add-impfeinverstaendnis">
                 </button>
               }
             </td>

@@ -16,8 +16,11 @@ export class AnlassConfigOptionsStore extends signalStore(
   withEntities<AnlassConfigOptionJson>(),
   withSelectedEntity<AnlassConfigOptionJson>(),
   withComputed(store => ({
-    getVisibleAnlassTypen(): AnlassTyp[] {
-      return Array.from(new Set(store.entities().map(config => config.anlassTyp)));
+    getVisibleAnlassTypenNotAnonym(): AnlassTyp[] {
+      return Array.from(new Set(store.entities().filter(config => !config.anonym).map(config => config.anlassTyp)));
+    },
+    getVisibleAnlassTypenAnonym(): AnlassTyp[] {
+      return Array.from(new Set(store.entities().filter(config => config.anonym).map(config => config.anlassTyp)));
     },
   })),
   withMethods(store => ({
@@ -57,7 +60,9 @@ export class AnlassConfigOptionsStore extends signalStore(
         ),
       ),
       tapResponse({
-        next: optionList => patchState(this, setAllEntities(optionList.configList)),
+        next: optionList => {
+          patchState(this, setAllEntities(optionList.configList))
+        },
         error: console.error,
       }),
     ),

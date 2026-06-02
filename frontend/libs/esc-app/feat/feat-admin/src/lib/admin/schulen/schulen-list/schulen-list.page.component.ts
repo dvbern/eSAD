@@ -10,7 +10,7 @@ import {
   SummaryListItem,
 } from '@dvb/ui-components';
 import { FilterSessionStorage, TableModel } from '@dvb/util-angular';
-import { ensureProps, hasListEditBerechtigung, isValidEnumValue } from '@dvb/util-shared';
+import { ensureProps, hasSchuleEditBerechtigung, isValidEnumValue } from '@dvb/util-shared';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { SchulenListComponent } from './list/schulen-list.component';
 import { KlassenListFilter, SchulenListFilterForm } from './schulen-list-filter.form';
@@ -35,7 +35,7 @@ export class SchulenListPageComponent extends FilterSessionStorage<KlassenListFi
   protected readonly Path = Path;
   readonly #transloco = inject(TranslocoService);
 
-  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
+  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasSchuleEditBerechtigung());
 
   readonly SESSIONSTORAGE_KEY = 'schulenFilter';
 

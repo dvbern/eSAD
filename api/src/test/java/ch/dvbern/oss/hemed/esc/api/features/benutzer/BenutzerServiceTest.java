@@ -16,23 +16,32 @@ import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationRollen;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationRollenService;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.DVBSupportRoleUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.FachrollenService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSetting;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.features.FeatureEnabledSetting;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.OrganisationRollenBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.TenantSettingBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
 import io.quarkus.mailer.MockMailbox;
+import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -218,12 +227,80 @@ class BenutzerServiceTest {
             TenantEnum.BS.name(),
             Set.of(FachRolle.SYSTEM_ADMIN, FachRolle.MPA)
         );
-        AppFailureException ex = assertThrows(AppFailureException.class, () -> {
-            service.createBenutzerFromJWT(jwtData);
-        });
+        AppFailureException ex = assertThrows(
+            AppFailureException.class, () -> {
+                service.createBenutzerFromJWT(jwtData);
+            });
 
         // ASSERT
         assertThat(ex.getLocalizedMessage()).contains("NOT_POSSIBLE_ORGANISATION_ROLES_WITH_SYSTEM_ROLES");
+    }
+
+    @Test
+    @TestAsAdminBS
+    void createBenutzerFromJWT_assigns_support_fachrolle_when_tenant_is_dvb_support_marker() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        var testemail = "dvb-support-" + UUID.randomUUID() + "@dvbern.ch";
+        JsonWebTokenDataDTO jwtData = new JsonWebTokenDataDTO(
+            null,
+            UUID.randomUUID(),
+            testemail,
+            "Support",
+            "DVB",
+            EmailAddress.fromString(testemail),
+            "issuer",
+            null,
+            null,
+            null,
+            DVBSupportRoleUtil.DVB_SUPPORT_TENANT_MARKER,
+            Set.of()
+        );
+
+        // ACT
+        Benutzer benutzer = service.createBenutzerFromJWT(jwtData);
+
+        // ASSERT
+        assertThat(benutzer.getSystemRollen()).isNotNull();
+        assertThat(benutzer.getSystemRollen().getFachRollen()).containsExactly(FachRolle.SUPPORT);
+    }
+
+    @Test
+    @TestAsAdminBS
+    void createBenutzerFromJWT_does_not_sync_fachrollen_when_ignoreFachrollenFromKeycloak_is_enabled() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        TenantSettingsService tenantSettingsServiceMock = Mockito.mock(TenantSettingsService.class);
+        TenantSetting tenantSetting = TenantSettingBuilder.create(builder -> builder
+            .withBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature(FeatureEnabledSetting.ENABLED)
+        );
+        Mockito.when(tenantSettingsServiceMock.getTenantSetting()).thenReturn(tenantSetting);
+        Mockito.when(tenantSettingsServiceMock.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled())
+            .thenReturn(true);
+        QuarkusMock.installMockForType(tenantSettingsServiceMock, TenantSettingsService.class);
+
+        var testemail = "no-sync-" + UUID.randomUUID() + "@example.com";
+        JsonWebTokenDataDTO jwtData = new JsonWebTokenDataDTO(
+            null,
+            UUID.randomUUID(),
+            testemail,
+            "Nosync",
+            "User",
+            EmailAddress.fromString(testemail),
+            "issuer",
+            null,
+            null,
+            null,
+            TenantEnum.BS.name(),
+            Set.of(FachRolle.SYSTEM_ADMIN)
+        );
+
+        // ACT
+        Benutzer benutzer = service.createBenutzerFromJWT(jwtData);
+
+        // ASSERT: roles from JWT should NOT be synced
+        assertThat(benutzer.getSystemRollen()).isNull();
+        assertThat(benutzer.getOrganisationRollen()).isEmpty();
     }
 
     @Test
@@ -240,7 +317,11 @@ class BenutzerServiceTest {
         service.persist(benutzer);
 
         // ACT
-        fachrollenService.handleOrganisationsRollen(EnumSet.noneOf(FachRolle.class), benutzer, null);
+        fachrollenService.handleOrganisationsRollen(
+            EnumSet.noneOf(FachRolle.class),
+            benutzer,
+            null,
+            service.getCurrentBenutzerOrThrowException());
 
         // ASSERT
         assertThat(benutzer.getOrganisationRollen()).isEmpty();
@@ -273,16 +354,58 @@ class BenutzerServiceTest {
 
         // ACT
         fachrollenService.handleOrganisationsRollen(
-            EnumSet.of(FachRolle.SCHULAERZTIN), verantwortlicherArzt, organisation);
+            EnumSet.of(FachRolle.SCHULAERZTIN),
+            verantwortlicherArzt,
+            organisation,
+            service.getCurrentBenutzerOrThrowException());
 
         // ASSERT
         assertThat(mailbox.getTotalMessagesSent()).isZero();
     }
 
     @Test
-    @TestAsAdminBE
+    @Transactional
+    @TestAsSchularztBE
     void handleOrganisationsRollen_sends_mail_when_benutzer_is_not_verantwortlicher_arzt() {
         // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+
+        Benutzer verantwortlicherArzt = service.getByIdWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        Organisation organisation = organisationService.getById(TestAsSchularztBE.ORGANISATION_ID_ID);
+
+        Benutzer delegierterBenutzer = BenutzerBuilder.create(builder -> builder
+            .withRandomEmail("delegiert@example.com")
+            .withRandomVorname("Delegiert")
+            .withRandomNachname("Benutzer")
+            .withKeycloakId(UUID.randomUUID().toString())
+        );
+        service.persist(delegierterBenutzer);
+
+        // ACT
+        fachrollenService.handleOrganisationsRollen(
+            EnumSet.of(FachRolle.MPA),
+            delegierterBenutzer,
+            organisation,
+            verantwortlicherArzt
+        );
+
+        // ASSERT
+        assertThat(mailbox.getTotalMessagesSent()).isPositive();
+    }
+
+    @Test
+    @TestAsAdminBE
+    void handleOrganisationsRollen_should_not_sends_mail_when_benuzer_added_by_support() {
+        // ARRANGE
+        Benutzer supportBenuzter = BenutzerBuilder.create(builder -> builder
+            .withRandomEmail("support@example.com")
+            .withRandomVorname("Max")
+            .withRandomNachname("Supporter")
+            .withKeycloakId(UUID.randomUUID().toString())
+            .withSystemRolle(List.of(FachRolle.SUPPORT))
+        );
+        service.persist(supportBenuzter);
+
         tenantProducer.setCurrentTenant(TenantEnum.BE);
         Benutzer verantwortlicherArzt = BenutzerBuilder.create(builder -> builder
             .withRandomEmail("arzt@example.com")
@@ -313,9 +436,13 @@ class BenutzerServiceTest {
 
         // ACT
         fachrollenService.handleOrganisationsRollen(
-            EnumSet.of(FachRolle.MPA), delegierterBenutzer, organisation);
+            EnumSet.of(FachRolle.MPA),
+            delegierterBenutzer,
+            organisation,
+            supportBenuzter
+        );
 
         // ASSERT: wait briefly for async mail sending to complete
-        assertThat(mailbox.getTotalMessagesSent()).isPositive();
+        assertThat(mailbox.getTotalMessagesSent()).isZero();
     }
 }

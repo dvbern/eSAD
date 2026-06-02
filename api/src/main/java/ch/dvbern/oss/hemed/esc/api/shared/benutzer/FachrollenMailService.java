@@ -23,38 +23,38 @@ public class FachrollenMailService {
     public void sendEinladungOrganisationMail(@NonNull Benutzer benutzer, @NonNull Organisation organisation) {
         // Mail nur senden wenn der Benutzer nicht der Verantwortliche Arzt ist -> Also in eine bestehende
         // Organisation hinzugefügt worden ist.
-        if (!benutzer.getOrganisationRollen().isEmpty()) {
-            Benutzer verantwortlicherArzt = organisation.getVerantwortlicherArzt();
-            if (!benutzer.getId().equals(verantwortlicherArzt.getId())) {
-                String base = "benutzer-organisation-delegieren.mail.";
-
-                String link = configService.getPublicUrl().toString();
-                String eMailBenutzer = benutzer.getEmail().getAddress();
-                String eMailSupport = tenantSettingsService.getTenantSetting().getSupportEmail();
-                String nameArzt = verantwortlicherArzt.getVorname() + ' ' + verantwortlicherArzt.getNachname();
-
-                String subject = tl.translate(base + "subject");
-                String content = tl.translate(
-                    base + "content",
-                    "nameArzt", nameArzt,
-                    "eMailBenutzer", eMailBenutzer,
-                    "linkeSAD", link,
-                    "eMailsupport", eMailSupport
-                );
-
-                mailDAO.sendEmail(
-                        eMailBenutzer,
-                        subject,
-                        content
-                    ).subscribeAsCompletionStage()
-                    .thenAccept(v -> LOG.debug(
-                        "BENUTZER-ORGANISATION-DELEGIEREN: Success, E-mail sent to {}",
-                        eMailBenutzer))
-                    .exceptionally(t -> {
-                        LOG.error("BENUTZER-ORGANISATION-DELEGIEREN: Error sending error mail to {}", eMailBenutzer, t);
-                        return null;
-                    });
-            }
+        Benutzer verantwortlicherArzt = organisation.getVerantwortlicherArzt();
+        if (benutzer.equals(verantwortlicherArzt)) {
+            return;
         }
+
+        String base = "benutzer-organisation-delegieren.mail.";
+
+        String link = configService.getPublicUrl().toString();
+        String eMailBenutzer = benutzer.getEmail().getAddress();
+        String eMailSupport = tenantSettingsService.getTenantSetting().getSupportEmail();
+        String nameArzt = verantwortlicherArzt.getVorname() + ' ' + verantwortlicherArzt.getNachname();
+
+        String subject = tl.translate(base + "subject");
+        String content = tl.translate(
+            base + "content",
+            "nameArzt", nameArzt,
+            "eMailBenutzer", eMailBenutzer,
+            "linkeSAD", link,
+            "eMailsupport", eMailSupport
+        );
+
+        mailDAO.sendEmail(
+                eMailBenutzer,
+                subject,
+                content
+            ).subscribeAsCompletionStage()
+            .thenAccept(v -> LOG.debug(
+                "BENUTZER-ORGANISATION-DELEGIEREN: Success, E-mail sent to {}",
+                eMailBenutzer))
+            .exceptionally(t -> {
+                LOG.error("BENUTZER-ORGANISATION-DELEGIEREN: Error sending error mail to {}", eMailBenutzer, t);
+                return null;
+            });
     }
 }

@@ -4,13 +4,12 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
-import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.json.UntersuchungBewegungsapparatJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.json.UntersuchungBewegungsapparatSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.types.Haltungsschwaeche;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.types.Skoliose;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.types.VerkuerzungHamstringmuskulatur;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhancedMapper;
@@ -33,13 +32,22 @@ public class UntersuchungBewegungsapparatMapper {
         return new UntersuchungBewegungsapparatJson(
             bewegungsapparat.getId(),
             EntityInfoJson.fromEntity(bewegungsapparat),
-            new UntersuchungBewegungsapparatSaveJson(
-                SingleValueEnhancedMapper.toJson(Skoliose.class, bewegungsapparat.getSkoliose()),
-                SingleValueEnhancedMapper.toJson(Haltungsschwaeche.class, bewegungsapparat.getHaltungsschwaeche()),
-                SingleValueEnhancedMapper.toJson(VerkuerzungHamstringmuskulatur.class, bewegungsapparat.getVerkuerzungHamstringmuskulatur()),
-                bewegungsapparat.getBemerkungen(),
-                bewegungsapparat.getVersion()
-            )
+            toSaveJson(bewegungsapparat)
+        );
+    }
+
+    @NonNull
+    public static UntersuchungBewegungsapparatSaveJson toSaveJson(
+        @NonNull UntersuchungBewegungsapparat bewegungsapparat
+    ) {
+        return new UntersuchungBewegungsapparatSaveJson(
+            SingleValueEnhancedMapper.toJson(Skoliose.class, bewegungsapparat.getSkoliose()),
+            SingleValueEnhancedMapper.toJson(Haltungsschwaeche.class, bewegungsapparat.getHaltungsschwaeche()),
+            SingleValueEnhancedMapper.toJson(
+                VerkuerzungHamstringmuskulatur.class,
+                bewegungsapparat.getVerkuerzungHamstringmuskulatur()),
+            bewegungsapparat.getBemerkungen(),
+            bewegungsapparat.getVersion()
         );
     }
 
@@ -53,8 +61,12 @@ public class UntersuchungBewegungsapparatMapper {
             bewegungsapparat = UntersuchungBewegungsapparat.forUntersuchung(untersuchung);
         }
         bewegungsapparat.setSkoliose(SingleValueEnhancedMapper.toEntity(Skoliose.class, saveJson.getSkoliose()));
-        bewegungsapparat.setHaltungsschwaeche(SingleValueEnhancedMapper.toEntity(Haltungsschwaeche.class, saveJson.getHaltungsschwaeche()));
-        bewegungsapparat.setVerkuerzungHamstringmuskulatur(SingleValueEnhancedMapper.toEntity(VerkuerzungHamstringmuskulatur.class, saveJson.getVerkuerzungHamstringmuskulatur()));
+        bewegungsapparat.setHaltungsschwaeche(SingleValueEnhancedMapper.toEntity(
+            Haltungsschwaeche.class,
+            saveJson.getHaltungsschwaeche()));
+        bewegungsapparat.setVerkuerzungHamstringmuskulatur(SingleValueEnhancedMapper.toEntity(
+            VerkuerzungHamstringmuskulatur.class,
+            saveJson.getVerkuerzungHamstringmuskulatur()));
         bewegungsapparat.setBemerkungen(saveJson.getBemerkungen());
 
         return bewegungsapparat;
@@ -62,21 +74,21 @@ public class UntersuchungBewegungsapparatMapper {
 
     @Nullable
     public UntersuchungBewegungsapparatJson getByEinladung(
-        @NonNull ID<Einladung> einladungID,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungBewegungsapparat());
     }
 
     @NonNull
     public UntersuchungBewegungsapparatJson save(
-        @NonNull ID<Einladung> einladungID,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull UntersuchungBewegungsapparatSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungBewegungsapparat bewegungsapparat = untersuchung.getUntersuchungBewegungsapparat();
         UntersuchungBewegungsapparat entity = toEntity(untersuchung, bewegungsapparat, saveJson);

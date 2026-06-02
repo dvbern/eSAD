@@ -66,7 +66,7 @@ export class KinderLsteComponent {
     {rawListSignal: this.anlassKinderStore.availableKinder},
     {frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll'});
 
-  schuleOptions = computed(() => this.schulenOptionsStore.entitiesAktiv());
+  schuleOptions = computed(() => this.schulenOptionsStore.schulenFiltered(undefined, true, true));
   klassenOptions = computed(() => this.klassenOptionsStore.entities());
 
   protected readonly compareFnSchule = compareFn<SchuleOptionJson>;

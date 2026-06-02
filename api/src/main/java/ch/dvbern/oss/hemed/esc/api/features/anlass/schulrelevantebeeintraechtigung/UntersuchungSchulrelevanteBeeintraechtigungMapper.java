@@ -4,8 +4,7 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
-import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.json.UntersuchungSchulrelevanteBeeintraechtigungJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.json.UntersuchungSchulrelevanteBeeintraechtigungSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.Feinmotorik;
@@ -37,16 +36,30 @@ public class UntersuchungSchulrelevanteBeeintraechtigungMapper {
         return new UntersuchungSchulrelevanteBeeintraechtigungJson(
             beeintraechtung.getId(),
             EntityInfoJson.fromEntity(beeintraechtung),
-            new UntersuchungSchulrelevanteBeeintraechtigungSaveJson(
-                SingleValueEnhancedMapper.toJson(FreiesGehen.class, beeintraechtung.getFreiesGehen()),
-                SingleValueEnhancedMapper.toJson(OhneStuetzradVelofahren.class, beeintraechtung.getOhneStuetzradVelofahren()),
-                SingleValueEnhancedMapper.toJson(Grafomotorik.class, beeintraechtung.getGrafomotorik()),
-                SingleValueEnhancedMapper.toJson(Feinmotorik.class, beeintraechtung.getFeinmotorik()),
-                SingleValueEnhancedMapper.toJson(GrobmotorikEinbeinhuepfen.class, beeintraechtung.getGrobmotorikEinbeinhuepfen()),
-                SingleValueEnhancedMapper.toJson(GleichgewichtEinbeinstand.class, beeintraechtung.getGleichgewichtEinbeinstand()),
-                beeintraechtung.getBemerkungen(),
-                beeintraechtung.getVersion()
-            )
+            toSaveJson(beeintraechtung)
+        );
+    }
+
+    @NonNull
+    public static UntersuchungSchulrelevanteBeeintraechtigungSaveJson toSaveJson(
+        @NonNull UntersuchungSchulrelevanteBeeintraechtigung beeintraechtung
+    ) {
+        return new UntersuchungSchulrelevanteBeeintraechtigungSaveJson(
+            SingleValueEnhancedMapper.toJson(FreiesGehen.class, beeintraechtung.getFreiesGehen()),
+            beeintraechtung.getAnzahlMonateFreiesGehen(),
+            SingleValueEnhancedMapper.toJson(
+                OhneStuetzradVelofahren.class,
+                beeintraechtung.getOhneStuetzradVelofahren()),
+            SingleValueEnhancedMapper.toJson(Grafomotorik.class, beeintraechtung.getGrafomotorik()),
+            SingleValueEnhancedMapper.toJson(Feinmotorik.class, beeintraechtung.getFeinmotorik()),
+            SingleValueEnhancedMapper.toJson(
+                GrobmotorikEinbeinhuepfen.class,
+                beeintraechtung.getGrobmotorikEinbeinhuepfen()),
+            SingleValueEnhancedMapper.toJson(
+                GleichgewichtEinbeinstand.class,
+                beeintraechtung.getGleichgewichtEinbeinstand()),
+            beeintraechtung.getBemerkungen(),
+            beeintraechtung.getVersion()
         );
     }
 
@@ -59,12 +72,25 @@ public class UntersuchungSchulrelevanteBeeintraechtigungMapper {
         if (beeintraechtung == null) {
             beeintraechtung = UntersuchungSchulrelevanteBeeintraechtigung.forUntersuchung(untersuchung);
         }
-        beeintraechtung.setFreiesGehen(SingleValueEnhancedMapper.toEntity(FreiesGehen.class, saveJson.getFreiesGehen()));
-        beeintraechtung.setOhneStuetzradVelofahren(SingleValueEnhancedMapper.toEntity(OhneStuetzradVelofahren.class, saveJson.getOhneStuetzradVelofahren()));
-        beeintraechtung.setGrafomotorik(SingleValueEnhancedMapper.toEntity(Grafomotorik.class, saveJson.getGrafomotorik()));
-        beeintraechtung.setFeinmotorik(SingleValueEnhancedMapper.toEntity(Feinmotorik.class, saveJson.getFeinmotorik()));
-        beeintraechtung.setGrobmotorikEinbeinhuepfen(SingleValueEnhancedMapper.toEntity(GrobmotorikEinbeinhuepfen.class, saveJson.getGrobmotorikEinbeinhuepfen()));
-        beeintraechtung.setGleichgewichtEinbeinstand(SingleValueEnhancedMapper.toEntity(GleichgewichtEinbeinstand.class, saveJson.getGleichgewichtEinbeinstand()));
+        beeintraechtung.setFreiesGehen(SingleValueEnhancedMapper.toEntity(
+            FreiesGehen.class,
+            saveJson.getFreiesGehen()));
+        beeintraechtung.setAnzahlMonateFreiesGehen(saveJson.getAnzahlMonateFreiesGehen());
+        beeintraechtung.setOhneStuetzradVelofahren(SingleValueEnhancedMapper.toEntity(
+            OhneStuetzradVelofahren.class,
+            saveJson.getOhneStuetzradVelofahren()));
+        beeintraechtung.setGrafomotorik(SingleValueEnhancedMapper.toEntity(
+            Grafomotorik.class,
+            saveJson.getGrafomotorik()));
+        beeintraechtung.setFeinmotorik(SingleValueEnhancedMapper.toEntity(
+            Feinmotorik.class,
+            saveJson.getFeinmotorik()));
+        beeintraechtung.setGrobmotorikEinbeinhuepfen(SingleValueEnhancedMapper.toEntity(
+            GrobmotorikEinbeinhuepfen.class,
+            saveJson.getGrobmotorikEinbeinhuepfen()));
+        beeintraechtung.setGleichgewichtEinbeinstand(SingleValueEnhancedMapper.toEntity(
+            GleichgewichtEinbeinstand.class,
+            saveJson.getGleichgewichtEinbeinstand()));
         beeintraechtung.setBemerkungen(saveJson.getBemerkungen());
 
         return beeintraechtung;
@@ -72,10 +98,10 @@ public class UntersuchungSchulrelevanteBeeintraechtigungMapper {
 
     @Nullable
     public UntersuchungSchulrelevanteBeeintraechtigungJson getByEinladung(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungSchulrelevanteBeeintraechtigung beeintraechtigung =
             untersuchungSchulrelevanteBeeintraechtigungService.getByUntersuchung(untersuchung.getId());
@@ -86,11 +112,11 @@ public class UntersuchungSchulrelevanteBeeintraechtigungMapper {
 
     @NonNull
     public UntersuchungSchulrelevanteBeeintraechtigungJson save(
-        @NonNull ID<Einladung> einladungID,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull UntersuchungSchulrelevanteBeeintraechtigungSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungSchulrelevanteBeeintraechtigung beeintraechtigung =
             untersuchung.getUntersuchungSchulrelevanteBeeintraechtigung();

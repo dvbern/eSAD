@@ -13,7 +13,21 @@
         [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.freiesGehen'"
         [valuePrefix]="'FreiesGehen'"
         [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-        >
+        <div ngProjectAs="fieldsBeforeSingle" class="freies-gehen-fields">
+          <svui-form-control
+            class="textcontrol"
+            [label]="'untersuchung.tab.schulrelevanteBeeintraechtigung.freiesGehen.jahre' | transloco"
+            [viewValue]="form.group.controls.anzahlJahreFreiesGehen.value?.toString()">
+            <input [svuiTextInput]="'number'" [formControl]="form.group.controls.anzahlJahreFreiesGehen"/>
+          </svui-form-control>
+
+          <svui-form-control
+            class="textcontrol"
+            [label]="'untersuchung.tab.schulrelevanteBeeintraechtigung.freiesGehen.monate' | transloco"
+            [viewValue]="form.group.controls.anzahlMonateFreiesGehen.value?.toString()">
+            <input [svuiTextInput]="'number'" [formControl]="form.group.controls.anzahlMonateFreiesGehen"/>
+          </svui-form-control>
+        </div>
       </feat-value-enhanced>
     }
 
@@ -24,7 +38,6 @@
         [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.ohneStuetzradVelofahren'"
         [valuePrefix]="'OhneStuetzradVelofahren'"
         [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-        >
       </feat-value-enhanced>
     }
 
@@ -35,7 +48,6 @@
         [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.grafomotorik'"
         [valuePrefix]="'Grafomotorik'"
         [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-        >
       </feat-value-enhanced>
     }
 
@@ -46,7 +58,6 @@
         [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.feinmotorik'"
         [valuePrefix]="'Feinmotorik'"
         [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-        >
       </feat-value-enhanced>
     }
 
@@ -57,7 +68,6 @@
         [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.grobmotorik'"
         [valuePrefix]="'GrobmotorikEinbeinhuepfen'"
         [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-        >
       </feat-value-enhanced>
     }
 
@@ -68,7 +78,6 @@
         [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.gleichgewicht'"
         [valuePrefix]="'GleichgewichtEinbeinstand'"
         [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-        >
       </feat-value-enhanced>
     }
 

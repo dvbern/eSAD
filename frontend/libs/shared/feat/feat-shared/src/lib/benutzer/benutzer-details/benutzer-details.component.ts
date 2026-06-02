@@ -3,7 +3,10 @@ import {
   FormButtonsComponent,
   FormControlComponent,
   FormErrorMessageComponent,
-  FormLayoutComponent, InputWithIconComponent, NgSelectDirective, TextInputDirective
+  FormLayoutComponent,
+  InputWithIconComponent,
+  NgSelectDirective,
+  TextInputDirective
 } from "@dvb/ui-components";
 import {TranslatedEnumViewValuePipe} from '../../translated-strings/view/translated-enum-view-value.pipe';
 import {TranslocoPipe} from "@jsverse/transloco";
@@ -58,11 +61,21 @@ export class BenutzerDetailsComponent implements DirtyMarker {
   readonly benutzerStore = inject(BenutzerStore);
   readonly tenantSettingsStore = inject(TenantSettingsStore);
 
-  readonly fachrollen = this.tenantSettingsStore.settings()?.fachrollen
-    .filter(rolle => {
-      return rolle !== FachRolle.SYSTEM_ADMIN && (rolle != FachRolle.SUPPORT || this.benutzerStore.hasFachrolleSupport());
-    }) ?? [];
   benutzerAktivStati = Object.values(EntityAktivStatus);
+
+  readonly fachrollen = computed(() => {
+    const tenntenantSettings = this.tenantSettingsStore.settings();
+
+    // Support kann alle Organisationsrollen vergeben
+    if (this.benutzerStore.hasFachrolleSupport()) {
+      return tenntenantSettings?.fachrollen.filter(
+        rolle => ![FachRolle.SYSTEM_ADMIN, FachRolle.SUPPORT].includes(rolle)
+      ) ?? [];
+    }
+
+    // Benuzter mit Organisationsrollen koennen nur delegierbare rollen vergeben
+    return tenntenantSettings?.delegierbareFachrollen ?? [];
+  });
 
   // Der Support kann beim erstellen eines Benutzer über Benutzer & Rechte eine Organisation auswählen
   possibleOrganisationsRollen = computed(() =>

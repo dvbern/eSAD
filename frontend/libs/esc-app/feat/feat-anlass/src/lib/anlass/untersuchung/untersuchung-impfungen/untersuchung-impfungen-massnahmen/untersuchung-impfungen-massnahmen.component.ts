@@ -100,9 +100,7 @@ export class UntersuchungImpfungenMassnahmenComponent implements DirtyMarker {
   abbrechen(): void {
     const massnahmen = this.impfungenStore.massnahmen();
     const anlassConfig = this.anlassStore.selectedEntity()?.anlassConfig;
-    if (massnahmen && anlassConfig) {
-      this.form.resetForm(massnahmen.data, anlassConfig);
-    }
+    this.form.resetForm(massnahmen?.data, anlassConfig);
     this.form.getAndResetImpfFolgetermin();
   }
 
@@ -111,7 +109,7 @@ export class UntersuchungImpfungenMassnahmenComponent implements DirtyMarker {
       const payload = this.form.valueOnValid();
       this.impfungenStore.saveMassnahmen({
         anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-        einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
+        einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
         untersuchungImpfungenMassnahmenSaveJson: payload,
       });
 
@@ -130,7 +128,7 @@ export class UntersuchungImpfungenMassnahmenComponent implements DirtyMarker {
   public einzelFolgeterminErstellen(): void {
     this.impfungenStore.einzelTerminErstellen({
       anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-      einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
+      einladungId: requireValidBackendEntityId(requireValue(this.untersuchungStore.currentTab()).einladungID),
       onSuccess: () => {
         const anlassTitel = this.#translocoService.translate('anlass.impfen.einzeltermin', {
           kind: this.untersuchungStore.currentTab()?.label,

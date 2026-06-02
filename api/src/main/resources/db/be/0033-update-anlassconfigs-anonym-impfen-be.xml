@@ -1,0 +1,57 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (C) 2026 DV Bern AG, Switzerland
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet id="2026-05-20-update-anlassconfig-anonym-impfen" author="junie">
+    <sql>
+      -- Hide everything on the Impfen tab for _ANONYM anlassconfigs except the
+      -- "Obligatorische Statistikdaten zu den Impfungen" card (impfungendataminimal*).
+      UPDATE anlassconfig
+      SET vorabklaerungeneinverstaendnisimpfungen          = 'NOT_VISIBLE',
+          showimpfungenheaderimpfausweisunvollstaendig     = false,
+          showimpfungenheaderimpfausweisnichtvorhanden     = false,
+          showimpfungenheaderimpfausweiszweipluseinsschema = false,
+          showimpfungenheaderimpfausweisupload             = false,
+          impfungenuebersicht                              = 'NOT_VISIBLE',
+          impfungenliste                                   = 'NOT_VISIBLE',
+          showimpfungendoppelkontrolle                     = false,
+          impfungenmassnahmekeinemassnahmen                = false,
+          impfungenmassnahmegruppenfolgetermin             = false,
+          impfungenmassnahmeimpfenfolgetermin              = false,
+          impfungenmassnahmeeinzelfolgetermin              = false,
+          impfungenmassnahmeinfokinderarzt                 = false,
+          impfungenmassnahmeberatungmpa                    = false,
+          impfungenmassnahmeinfomaterialabgegeben          = false,
+          impfungenmassnahmeinfoeltern                     = false,
+          impfungenmassnahmerueckfragekinderarzt           = false,
+          impfungenmassnahmebemerkungen                    = 'NOT_VISIBLE',
+          checkeinwilligungvorhanden                       = 'NOT_VISIBLE',
+          checkkontraindikationenabgeklaert                = 'NOT_VISIBLE',
+          checkdoppelkontrolleimpfentscheiddurchgefuehrt   = 'NOT_VISIBLE',
+          untersuchungimpfungempfehlung                    = 'NOT_VISIBLE',
+          untersuchungimpfungempfehlungvalues              = NULL,
+          untersuchungimpfungachtung                       = 'NOT_VISIBLE',
+          untersuchungimpfungbemerkungen                   = 'NOT_VISIBLE',
+          untersuchungimpfungkrankheitenlinksvalues        = NULL,
+          untersuchungimpfungkrankheitenrechtsvalues       = NULL
+      WHERE id IN (
+                   'faea0676-07fd-48c9-aa06-7607fd28c952', -- KINDERGARTEN_ANONYM
+                   'eeb61fee-f2c2-4489-b61f-eef2c214890d', -- KLASSE_4_ANONYM
+                   'd1246180-fd8d-40eb-a461-80fd8dd0eb5e', -- KLASSE_8_ANONYM
+                   '80712a8d-7405-4e11-b12a-8d7405ce1109'  -- IMPFTERMIN_ANONYM
+          );
+    </sql>
+  </changeSet>
+</databaseChangeLog>

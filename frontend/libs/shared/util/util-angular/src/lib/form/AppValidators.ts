@@ -4,7 +4,8 @@ import {
   AhvNummerUtil,
   fromISODateString,
   getSchoolYearFromISODateString,
-  isFilledIn,  isNullish,
+  isFilledIn,
+  isNullish,
   toDateStr,
 } from '@dvb/util-shared';
 import {addYears, subYears} from 'date-fns';
@@ -48,7 +49,8 @@ export const AppValidatorKeys = {
   datumBisAfterDatumVon: 'datumBisAfterDatumVon',
   datumBisAtleastDatumVonOrAfter: 'datumBisAtleastDatumVonOrAfter',
   dateRangeIsMaximumNumberOfYears: 'dateRangeIsMaximumNumberOfYears',
-  multipleEmails: 'multipleEmails'
+  multipleEmails: 'multipleEmails',
+  numberRange: 'numberRange',
 } as const satisfies ValidatorKeyMap<AppValidators>;
 
 const MIN_KIND_AGE = 3;
@@ -126,6 +128,34 @@ export class AppValidators {
   }
 
   /**
+   * Number is within Range
+   */
+  static numberWithinRange(min: number, max: number): ValidatorFn {
+    return control => {
+      const numberErrors = AppValidators.numberOrNumericChars()(control);
+      if (numberErrors) {
+        return numberErrors;
+      }
+
+      const noDecimalErrors = AppValidators.zeroDecimalPlaces()(control);
+      if (noDecimalErrors) {
+        return noDecimalErrors;
+      }
+
+      if (!Validators.min(min)(control) && !Validators.max(max)(control)) {
+        return null; // the date is valid
+      }
+
+      return {
+        [AppValidatorKeys.numberRange]: {
+          min: min,
+          max: max,
+        },
+      };
+    };
+  }
+
+  /**
    * Date
    */
   static date(): ValidatorFn {
@@ -191,6 +221,23 @@ export class AppValidators {
       const inputDate = new Date(control.value);
       if (inputDate.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0)) {
         return {[AppValidatorKeys.dateRange]: {beforeDate: toDateStr(currentDate), afterDate: '31.12.9999'}};
+      }
+      return null;
+    }
+  }
+
+  static maxDate(currentDate: Date): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (isNullish(control.value)) {
+        return null;
+      }
+      const dateErrors = AppValidators.date()(control);
+      if (dateErrors) {
+        return dateErrors;
+      }
+      const inputDate = new Date(control.value);
+      if (inputDate.setHours(0, 0, 0, 0) > currentDate.setHours(0, 0, 0, 0)) {
+        return {[AppValidatorKeys.dateRange]: {beforeDate: '01.01.1900', afterDate: toDateStr(currentDate)}};
       }
       return null;
     }

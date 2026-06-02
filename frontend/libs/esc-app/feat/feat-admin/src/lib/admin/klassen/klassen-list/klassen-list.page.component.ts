@@ -10,7 +10,7 @@ import {
   PageHeaderListSummaryComponent,
   SummaryListItem,
 } from '@dvb/ui-components';
-import { ensureProps, hasListEditBerechtigung, isValidEnumValue } from '@dvb/util-shared';
+import { ensureProps, hasKlassenEditBerechtigung, isValidEnumValue } from '@dvb/util-shared';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { KlassenListComponent } from './klassen-list.component';
 import { FilterSessionStorage, TableModel } from '@dvb/util-angular';
@@ -38,7 +38,7 @@ export class KlassenListPageComponent extends FilterSessionStorage<KlassenListFi
   readonly #benutzerStore = inject(BenutzerStore);
   readonly #transloco = inject(TranslocoService);
 
-  canEditList = this.#benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
+  canEditList = this.#benutzerStore.createHasRequiredRoleSig(hasKlassenEditBerechtigung());
 
   readonly SESSIONSTORAGE_KEY = 'klassenFilter';
 

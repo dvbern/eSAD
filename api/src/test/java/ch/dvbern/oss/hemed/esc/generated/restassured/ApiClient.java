@@ -48,6 +48,9 @@ public class ApiClient {
     public AnlassConfigApiSpec anlassConfig() {
         return AnlassConfigApiSpec.anlassConfig(config.reqSpecSupplier);
     }
+    public AnonymerEintragApiSpec anonymerEintrag() {
+        return AnonymerEintragApiSpec.anonymerEintrag(config.reqSpecSupplier);
+    }
     public ArchivdokumentApiSpec archivdokument() {
         return ArchivdokumentApiSpec.archivdokument(config.reqSpecSupplier);
     }
@@ -125,6 +128,9 @@ public class ApiClient {
     }
     public PlzApiSpec plz() {
         return PlzApiSpec.plz(config.reqSpecSupplier);
+    }
+    public PreviewApiSpec preview() {
+        return PreviewApiSpec.preview(config.reqSpecSupplier);
     }
     public PrinterApiSpec printer() {
         return PrinterApiSpec.printer(config.reqSpecSupplier);

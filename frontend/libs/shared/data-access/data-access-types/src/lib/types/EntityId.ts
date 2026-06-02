@@ -1,7 +1,10 @@
-export type BackendEntityId = `${string}-${string}-${string}-${string}-${string}`;
+declare const __brand: unique symbol;
+
+export type BackendEntityId =
+  `${string}-${string}-${string}-${string}-${string}` & { [__brand]: 'plainId' };
 
 export function randomEntityId(): BackendEntityId {
-  return crypto.randomUUID();
+  return requireValidBackendEntityId(crypto.randomUUID())
 }
 
 export function nilEntityId(): '00000000-0000-0000-0000-000000000000' {
@@ -36,8 +39,7 @@ export function isValidBackendEntityId(value: unknown): value is BackendEntityId
     return false;
   }
   // this matcher is a less strict uuid matcher that allows for 'hand-made' uuids that do not conform to spec exactly
-  const isValid = /^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/i.test(value);
-  return isValid;
+  return /^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/i.test(value);
 }
 
 export function isValidEntityId(value: unknown): value is BackendEntityId {

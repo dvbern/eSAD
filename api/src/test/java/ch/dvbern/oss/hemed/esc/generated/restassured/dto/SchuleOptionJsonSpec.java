@@ -29,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  */
 @JsonPropertyOrder({
   SchuleOptionJsonSpec.JSON_PROPERTY_ID,
+  SchuleOptionJsonSpec.JSON_PROPERTY_ORGANISATION_ID,
   SchuleOptionJsonSpec.JSON_PROPERTY_BEZEICHNUNG,
   SchuleOptionJsonSpec.JSON_PROPERTY_AKTIV_STATUS
 })
@@ -39,6 +40,10 @@ public class SchuleOptionJsonSpec {
   public static final String JSON_PROPERTY_ID = "id";
   @jakarta.annotation.Nonnull
   private String id;
+
+  public static final String JSON_PROPERTY_ORGANISATION_ID = "organisationId";
+  @jakarta.annotation.Nullable
+  private String organisationId;
 
   public static final String JSON_PROPERTY_BEZEICHNUNG = "bezeichnung";
   @jakarta.annotation.Nonnull
@@ -74,6 +79,31 @@ public class SchuleOptionJsonSpec {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setId(@jakarta.annotation.Nonnull String id) {
     this.id = id;
+  }
+
+  public SchuleOptionJsonSpec organisationId(@jakarta.annotation.Nullable String organisationId) {
+    
+    this.organisationId = organisationId;
+    return this;
+  }
+
+  /**
+   * Get organisationId
+   * @return organisationId
+   */
+  @jakarta.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ORGANISATION_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getOrganisationId() {
+    return organisationId;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ORGANISATION_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setOrganisationId(@jakarta.annotation.Nullable String organisationId) {
+    this.organisationId = organisationId;
   }
 
   public SchuleOptionJsonSpec bezeichnung(@jakarta.annotation.Nonnull String bezeichnung) {
@@ -136,13 +166,14 @@ public class SchuleOptionJsonSpec {
     }
     SchuleOptionJsonSpec schuleOptionJson = (SchuleOptionJsonSpec) o;
     return Objects.equals(this.id, schuleOptionJson.id) &&
+        Objects.equals(this.organisationId, schuleOptionJson.organisationId) &&
         Objects.equals(this.bezeichnung, schuleOptionJson.bezeichnung) &&
         Objects.equals(this.aktivStatus, schuleOptionJson.aktivStatus);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, bezeichnung, aktivStatus);
+    return Objects.hash(id, organisationId, bezeichnung, aktivStatus);
   }
 
   @Override
@@ -150,6 +181,7 @@ public class SchuleOptionJsonSpec {
     StringBuilder sb = new StringBuilder();
     sb.append("class SchuleOptionJsonSpec {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    organisationId: ").append(toIndentedString(organisationId)).append("\n");
     sb.append("    bezeichnung: ").append(toIndentedString(bezeichnung)).append("\n");
     sb.append("    aktivStatus: ").append(toIndentedString(aktivStatus)).append("\n");
     sb.append("}");

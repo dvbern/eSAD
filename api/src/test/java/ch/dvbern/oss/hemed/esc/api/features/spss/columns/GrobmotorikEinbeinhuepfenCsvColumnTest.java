@@ -30,9 +30,9 @@ class GrobmotorikEinbeinhuepfenCsvColumnTest extends AbstractBaseColumnTest {
         untersuchung.setUntersuchungSchulrelevanteBeeintraechtigung(beeintraechtigung);
 
         assertThat(column.extract(einladung)).isEmpty();
-        when(tlMock.translateValue(GrobmotorikEinbeinhuepfen.MEHR_ALS_VIER_METER)).thenReturn("Mehr als 4 Meter");
+        when(tlMock.translateValue(GrobmotorikEinbeinhuepfen.BESTANDEN)).thenReturn("Bestanden");
 
-        beeintraechtigung.setGrobmotorikEinbeinhuepfen(SingleValueEnhanced.of(GrobmotorikEinbeinhuepfen.MEHR_ALS_VIER_METER, null));
-        assertThat(column.extract(einladung)).isEqualTo("Mehr als 4 Meter");
+        beeintraechtigung.setGrobmotorikEinbeinhuepfen(SingleValueEnhanced.of(GrobmotorikEinbeinhuepfen.BESTANDEN, null));
+        assertThat(column.extract(einladung)).isEqualTo("Bestanden");
     }
 }

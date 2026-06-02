@@ -32,7 +32,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = Tags.TAG_KLASSEN)
-@RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+@RolesAllowed(BerechtigungName.KLASSEN_LESEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed("KlasseResourceMS")
 public class KlasseResource {
@@ -44,7 +44,7 @@ public class KlasseResource {
 
     @GET
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
+    @RolesAllowed(BerechtigungName.KLASSEN_LESEN)
     public KlasseListJson findAllKlassen() {
         return new KlasseListJson(klasseMapper.findAll());
     }
@@ -52,7 +52,7 @@ public class KlasseResource {
     @GET
     @Path("/{klasseId}")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
+    @RolesAllowed(BerechtigungName.KLASSEN_LESEN)
     public KlasseJson findKlasse(
         @NonNull @NotNull @PathParam("klasseId") ID<Klasse> klasseId
     ) {
@@ -62,7 +62,7 @@ public class KlasseResource {
     @PUT
     @Path("/{klasseId}")
     @NonNull
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.KLASSEN_SCHREIBEN)
     public KlasseJson updateKlasse(
         @NotNull @NonNull @PathParam("klasseId") ID<Klasse> klasseID,
         @NotNull @NonNull @Valid KlasseSaveJson klasseJson
@@ -73,7 +73,7 @@ public class KlasseResource {
     @PUT
     @Path("/{klasseId}/klasseaktivstatus")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.KLASSEN_SCHREIBEN)
     public KlasseJson updateKlasseAktivStatus(
         @NotNull @NonNull @PathParam("klasseId") ID<Klasse> klasseId,
         @NotNull @NonNull @Valid EntityAktivStatusSaveJson saveJson
@@ -85,7 +85,7 @@ public class KlasseResource {
     @NonNull
     @Counted("createKlasseCount")
     @Timed("createKlasseMS")
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.KLASSEN_SCHREIBEN)
     public KlasseJson createKlasse(
         @NotNull @NonNull @Valid KlasseSaveJson klasseJson
     ) {
@@ -95,7 +95,7 @@ public class KlasseResource {
 
     @DELETE
     @Path("/{klasseId}")
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.KLASSEN_SCHREIBEN)
     public void removeKlasse(@NotNull @NonNull @PathParam("klasseId") ID<Klasse> klasseId) {
         klasseMapper.remove(klasseId);
     }

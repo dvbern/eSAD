@@ -15,6 +15,7 @@ package ch.dvbern.oss.hemed.esc.generated.restassured.dto;
 
 import java.util.Objects;
 import java.util.Arrays;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindJsonSpec;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -32,7 +33,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  */
 @JsonPropertyOrder({
   KindSaveResultJsonSpec.JSON_PROPERTY_IDS_OF_POTENTIAL_DUPLICATES,
-  KindSaveResultJsonSpec.JSON_PROPERTY_KIND_JSON
+  KindSaveResultJsonSpec.JSON_PROPERTY_KIND_JSON,
+  KindSaveResultJsonSpec.JSON_PROPERTY_DOSSIER_JSON
 })
 @JsonTypeName("KindSaveResultJson")
 @lombok.AllArgsConstructor
@@ -45,6 +47,10 @@ public class KindSaveResultJsonSpec {
   public static final String JSON_PROPERTY_KIND_JSON = "kindJson";
   @jakarta.annotation.Nullable
   private KindJsonSpec kindJson;
+
+  public static final String JSON_PROPERTY_DOSSIER_JSON = "dossierJson";
+  @jakarta.annotation.Nullable
+  private DossierJsonSpec dossierJson;
 
   public KindSaveResultJsonSpec() {
   }
@@ -107,6 +113,31 @@ public class KindSaveResultJsonSpec {
     this.kindJson = kindJson;
   }
 
+  public KindSaveResultJsonSpec dossierJson(@jakarta.annotation.Nullable DossierJsonSpec dossierJson) {
+    
+    this.dossierJson = dossierJson;
+    return this;
+  }
+
+  /**
+   * Get dossierJson
+   * @return dossierJson
+   */
+  @jakarta.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DOSSIER_JSON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public DossierJsonSpec getDossierJson() {
+    return dossierJson;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_DOSSIER_JSON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDossierJson(@jakarta.annotation.Nullable DossierJsonSpec dossierJson) {
+    this.dossierJson = dossierJson;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -117,12 +148,13 @@ public class KindSaveResultJsonSpec {
     }
     KindSaveResultJsonSpec kindSaveResultJson = (KindSaveResultJsonSpec) o;
     return Objects.equals(this.idsOfPotentialDuplicates, kindSaveResultJson.idsOfPotentialDuplicates) &&
-        Objects.equals(this.kindJson, kindSaveResultJson.kindJson);
+        Objects.equals(this.kindJson, kindSaveResultJson.kindJson) &&
+        Objects.equals(this.dossierJson, kindSaveResultJson.dossierJson);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(idsOfPotentialDuplicates, kindJson);
+    return Objects.hash(idsOfPotentialDuplicates, kindJson, dossierJson);
   }
 
   @Override
@@ -131,6 +163,7 @@ public class KindSaveResultJsonSpec {
     sb.append("class KindSaveResultJsonSpec {\n");
     sb.append("    idsOfPotentialDuplicates: ").append(toIndentedString(idsOfPotentialDuplicates)).append("\n");
     sb.append("    kindJson: ").append(toIndentedString(kindJson)).append("\n");
+    sb.append("    dossierJson: ").append(toIndentedString(dossierJson)).append("\n");
     sb.append("}");
     return sb.toString();
   }

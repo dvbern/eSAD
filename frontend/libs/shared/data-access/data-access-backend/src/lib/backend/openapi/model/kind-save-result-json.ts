@@ -9,11 +9,13 @@
  */
 import { BackendEntityId } from '@dvb/data-access-types';
 import { KindJson } from './kind-json';
+import { DossierJson } from './dossier-json';
 
 
 export interface KindSaveResultJson { 
     idsOfPotentialDuplicates?: Array<BackendEntityId>;
     kindJson?: KindJson;
+    dossierJson?: DossierJson;
 }
 
 

@@ -14,8 +14,11 @@ import {
   hasBriefvorlagenViewBerechtigung,
   hasDuplikateBerechtigung,
   hasImpfstoffePageViewBerechtigung,
+  hasInfomaterialViewBerechtigung,
+  hasKlassenViewBerechtigung,
   hasLabelPageViewBerechtigung,
-  hasListViewBerechtigung, hasOrganisationVerwaltungViewBerechtigung,
+  hasOrganisationVerwaltungViewBerechtigung,
+  hasSchuleViewBerechtigung,
   isNotNullish,
 } from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
@@ -42,8 +45,12 @@ export class AdminPageComponent {
   tenantSettingsStore = inject(TenantSettingsStore);
 
   canViewLabel = this.benutzerStore.createHasRequiredRoleSig(hasLabelPageViewBerechtigung());
-  canViewList = this.benutzerStore.createHasRequiredRoleSig(hasListViewBerechtigung());
-  canViewBenutzer = this.benutzerStore.createHasRequiredRoleSig(hasBenutzerViewBerechtigung());
+  canViewSchulen = this.benutzerStore.createHasRequiredRoleSig(hasSchuleViewBerechtigung());
+  canViewKlassen = this.benutzerStore.createHasRequiredRoleSig(hasKlassenViewBerechtigung());
+  canViewBenutzer = computed(() => this.benutzerStore.createHasRequiredRoleSig(hasBenutzerViewBerechtigung())()
+    && (this.tenantSettingsStore.zentraleOrganisationEnabled() || this.benutzerStore.hasFachrolleSupport())
+  );
+  canViewInfomaterial = this.benutzerStore.createHasRequiredRoleSig(hasInfomaterialViewBerechtigung());
   canViewImpfstoffe = this.benutzerStore.createHasRequiredRoleSig(hasImpfstoffePageViewBerechtigung());
   canViewBriefvorlage = this.benutzerStore.createHasRequiredRoleSig(hasBriefvorlagenViewBerechtigung());
   canViewDuplikate = this.benutzerStore.createHasRequiredRoleSig(hasDuplikateBerechtigung());

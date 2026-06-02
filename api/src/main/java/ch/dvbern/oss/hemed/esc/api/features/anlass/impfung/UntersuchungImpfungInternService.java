@@ -1,16 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.impfung;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-
-import com.google.common.collect.MultimapBuilder;
-import com.google.common.collect.SetMultimap;
-
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
@@ -18,8 +7,8 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.Impfstoff;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffCharge;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffChargeRepo;
@@ -31,9 +20,19 @@ import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.scheduler.SchedulerProcessingResult;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
+import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.SetMultimap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -49,8 +48,15 @@ public class UntersuchungImpfungInternService {
 
     @NonNull
     public UntersuchungImpfungIntern persist(@NonNull UntersuchungImpfungIntern impfstatusKrankheit) {
+        return persist(impfstatusKrankheit, true);
+    }
+
+    @NonNull
+    public UntersuchungImpfungIntern persist(@NonNull UntersuchungImpfungIntern impfstatusKrankheit, boolean checkImmunitaeten) {
         untersuchungImpfungInternRepo.persist(impfstatusKrankheit);
-        checkImmunitaetenForDossier(impfstatusKrankheit);
+        if(checkImmunitaeten){
+            checkImmunitaetenForDossier(impfstatusKrankheit);
+        }
         return impfstatusKrankheit;
     }
 
@@ -58,9 +64,19 @@ public class UntersuchungImpfungInternService {
     public UntersuchungImpfungIntern persistWithOptimisticLocking(
         @NonNull UntersuchungImpfungIntern entity,
         @NonNull Long versionFromFrontend) {
+        return persistWithOptimisticLocking(entity, versionFromFrontend, true);
+    }
+
+    @NonNull
+    public UntersuchungImpfungIntern persistWithOptimisticLocking(
+        @NonNull UntersuchungImpfungIntern entity,
+        @NonNull Long versionFromFrontend,
+        boolean checkImmunitaeten) {
         UntersuchungImpfungIntern persisted =
             untersuchungImpfungInternRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
-        checkImmunitaetenForDossier(persisted);
+        if(checkImmunitaeten) {
+            checkImmunitaetenForDossier(persisted);
+        }
         return persisted;
     }
 

@@ -29,4 +29,9 @@ public class KindSaveResultJson {
     @Schema(required = false)
     private final KindJson kindJson;
 
+    @Valid
+    @Nullable
+    @Schema(required = false)
+    private final DossierJson dossierJson;
+
 }

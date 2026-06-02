@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, input, untracked } from '@angular/core';
 import { ButtonElement } from '../button-element.directive';
 import { ButtonColor } from '../bootstrap-button-color';
 import { WorkingIconComponent } from '../../icons/working-icon/working-icon.component';
@@ -11,12 +11,18 @@ import { WorkingIconComponent } from '../../icons/working-icon/working-icon.comp
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [WorkingIconComponent]
 })
-export class ButtonComponent extends ButtonElement implements OnInit {
+export class ButtonComponent extends ButtonElement {
   readonly buttonColor = input.required<ButtonColor>({
     alias: 'svuiButton',
   });
 
-  ngOnInit(): void {
-    this.buttonType = this.buttonColor();
+  constructor() {
+    super();
+    effect(() => {
+      const color = this.buttonColor();
+      untracked(() => {
+        this.buttonType = color;
+      });
+    });
   }
 }

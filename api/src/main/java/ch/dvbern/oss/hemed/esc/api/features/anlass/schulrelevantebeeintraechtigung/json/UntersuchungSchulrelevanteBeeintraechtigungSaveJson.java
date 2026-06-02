@@ -20,6 +20,10 @@ public class UntersuchungSchulrelevanteBeeintraechtigungSaveJson implements Save
     @Valid
     private ValueEnhancedJson freiesGehen;
 
+    @Nullable
+    @Schema(required = false)
+    private Integer anzahlMonateFreiesGehen;
+
     @NonNull
     @Schema(required = true)
     @Valid

@@ -4,6 +4,7 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
+  BenutzerOptionJson,
   EntityAktivStatus,
   Geschlecht,
   KindJson,
@@ -12,7 +13,17 @@ import {
   Land,
 } from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
-import {AdresseComponent, AdresseForm, BenutzerStore, EventBusStore, NavigationService, Path} from '@dvb/feat-shared';
+import {
+  AdresseComponent,
+  AdresseForm,
+  BenutzerOptionsStore,
+  BenutzerStore,
+  ConfirmService,
+  EventBusStore,
+  NavigationService,
+  Path,
+  TenantSettingsStore
+} from '@dvb/feat-shared';
 import {
   CheckboxDirective,
   FormButtonsComponent,
@@ -69,6 +80,7 @@ import {KindPersonendatenForm} from './kind-personendaten.form';
     FormFullWidthDirective,
     NgbAlert,
     CheckboxDirective,
+
   ],
 })
 export class KindPersonendatenComponent implements DirtyMarker {
@@ -77,14 +89,18 @@ export class KindPersonendatenComponent implements DirtyMarker {
   readonly dossierStore = inject(DossierStore);
   readonly benutzerStore = inject(BenutzerStore);
   readonly #eventBusStore = inject(EventBusStore);
+  readonly benutzerOptionsStore = inject(BenutzerOptionsStore);
+  readonly tenantSettingsStore = inject(TenantSettingsStore);
 
   readonly navigationService = inject(NavigationService);
   readonly #router = inject(Router);
   readonly #activatedRoute = inject(ActivatedRoute);
   readonly #destroyRef = inject(DestroyRef);
   readonly #transloco = inject(TranslocoService);
+  readonly #confirmService = inject(ConfirmService);
 
   protected readonly Path = Path;
+  protected readonly EntityAktivStatus = EntityAktivStatus;
 
   public canEditKind = computed(() => {
     return this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung())()
@@ -114,10 +130,30 @@ export class KindPersonendatenComponent implements DirtyMarker {
     return undefined;
   }
 
+  compareBenutzerFn(item: BenutzerOptionJson, selected: BenutzerOptionJson): boolean {
+    return item.id === selected.id;
+  }
+
+  arztOptions = computed(() => {
+    return this.benutzerOptionsStore.benutzerFiltered(
+      this.dossierStore.selectedDossier()?.dataNichtMedizinisch.zustaendigArzt,
+      'ARZT',
+      !this.dossierStore.selectedDossier()?.dataNichtMedizinisch.zustaendigArzt);
+  });
+
+  hilfspersonOptions = computed(() => {
+    return this.benutzerOptionsStore.benutzerFiltered(
+      this.dossierStore.selectedDossier()?.dataNichtMedizinisch.zustaendigMPA,
+      'HILFSPERSON',
+      !this.dossierStore.selectedDossier()?.dataNichtMedizinisch.zustaendigMPA);
+  });
+
   public form = new KindPersonendatenForm({
     fb: inject(NonNullableFormBuilder),
     destroyRef: inject(DestroyRef),
     kinderStore: this.store,
+    tenantSettingsStore: this.tenantSettingsStore,
+    benutzerStore: this.benutzerStore,
     adresseForm: new AdresseForm({
       fb: inject(NonNullableFormBuilder),
       destroyRef: this.#destroyRef,
@@ -129,14 +165,13 @@ export class KindPersonendatenComponent implements DirtyMarker {
   constructor() {
     effect(() => {
       const selectedEntity = this.dossierStore.selectedKind();
-      const mode = this.dossierStore.detailMode();
       if (isNullish(selectedEntity)) {
         this.isNew = true;
         return; // stop processing
       } else {
         this.isNew = false;
       }
-      this.form.reset(selectedEntity.data, mode);
+      this.resetForm();
       if (this.isExternalObject()) {
         this.form.disableEscadaFields()
       }
@@ -164,6 +199,15 @@ export class KindPersonendatenComponent implements DirtyMarker {
     });
   }
 
+  resetForm(): void {
+    const selectedEntity = this.dossierStore.selectedKind();
+    if (isNotNullish(selectedEntity)) {
+      const selectedDossierIfExisting = this.dossierStore.selectedDossier();
+      const mode = this.dossierStore.detailMode();
+      this.form.resetForm(selectedEntity.data, selectedDossierIfExisting?.dataNichtMedizinisch?.zustaendigArzt, selectedDossierIfExisting?.dataNichtMedizinisch?.zustaendigMPA, mode);
+    }
+  }
+
   resetDuplikatFields(): void {
     this.kindTriedToSave.set(undefined);
     this.kindIdsOfDuplicates.set([]);
@@ -177,9 +221,12 @@ export class KindPersonendatenComponent implements DirtyMarker {
   async submitIfValid(): Promise<void> {
     if (await this.form.validate()) {
       const payload = this.form.valueOnValid();
+      const {zustaendigArzt, zustaendigMPA, ...kindSaveJson} = payload;
       if (this.isNew) {
         this.store.createKind({
-          kind: payload,
+          kind: kindSaveJson,
+          arztId: zustaendigArzt?.id,
+          mpaId: zustaendigMPA?.id,
           kindSaveMode: this.markDuplicatesAsFalsePositives ?
             KindSaveModeDuplikat.MARK_AS_FALSE_POSITIVE :
             KindSaveModeDuplikat.CHECK,
@@ -193,18 +240,40 @@ export class KindPersonendatenComponent implements DirtyMarker {
           },
         });
       } else {
-        this.dossierStore.updateKind({
-          kind: payload,
-          kindSaveMode: this.markDuplicatesAsFalsePositives ?
-            KindSaveModeDuplikat.MARK_AS_FALSE_POSITIVE :
-            KindSaveModeDuplikat.CHECK,
-          onSuccess: () => {
-            this.form.reset();
-            this.resetDuplikatFields();
-            this.#router.navigate([Path.RELATIVE_ONE_UP, DetailMode.VIEW], {relativeTo: this.#activatedRoute});
-          },
-        });
+        if (this.dossierStore.showZustaendigerChangedWarning(payload.zustaendigArzt)) {
+          this.#confirmService
+            .confirm({
+              question: this.#transloco.translate('dossier.change.zustaendigkeit.question'),
+              consequence: this.#transloco.translate('dossier.change.zustaendigkeit.consequence'),
+              decision: this.#transloco.translate('dossier.change.zustaendigkeit.decision'),
+            })
+            .subscribe(() => {
+              this.updateKind(kindSaveJson, zustaendigArzt?.id, zustaendigMPA?.id);
+            });
+        } else {
+          this.updateKind(kindSaveJson, zustaendigArzt?.id, zustaendigMPA?.id);
+        }
       }
     }
+  }
+
+  private updateKind(
+    kindSaveJson: KindSaveJson,
+    zustaendigArzt: BackendEntityId | undefined,
+    zustaendigMPA: BackendEntityId | undefined
+  ): void {
+    this.dossierStore.updateKind({
+      kind: kindSaveJson,
+      arztId: zustaendigArzt,
+      mpaId: zustaendigMPA,
+      kindSaveMode: this.markDuplicatesAsFalsePositives ?
+        KindSaveModeDuplikat.MARK_AS_FALSE_POSITIVE :
+        KindSaveModeDuplikat.CHECK,
+      onSuccess: () => {
+        this.resetForm();
+        this.resetDuplikatFields();
+        this.#router.navigate([Path.RELATIVE_ONE_UP, DetailMode.VIEW], {relativeTo: this.#activatedRoute});
+      },
+    });
   }
 }

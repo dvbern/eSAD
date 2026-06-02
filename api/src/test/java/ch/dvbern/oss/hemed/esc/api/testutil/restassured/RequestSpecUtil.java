@@ -10,13 +10,14 @@
 
 package ch.dvbern.oss.hemed.esc.api.testutil.restassured;
 
-import java.util.function.Supplier;
-
 import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import io.restassured.builder.RequestSpecBuilder;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.function.Supplier;
 
 public final class RequestSpecUtil {
 
@@ -32,5 +33,10 @@ public final class RequestSpecUtil {
     public static String toHasUntersuchungIdWrapper(@NonNull ID<Einladung> einladungId) {
 
         return HasUntersuchungIDWrapper.fromEinladungId(einladungId).toExternalForm();
+    }
+
+    public static String toHasAnonymerEintragIdWrapper(@NonNull ID<AnonymerEintrag> anonymerEintragId) {
+
+        return HasUntersuchungIDWrapper.fromAnonymerEintragId(anonymerEintragId).toExternalForm();
     }
 }

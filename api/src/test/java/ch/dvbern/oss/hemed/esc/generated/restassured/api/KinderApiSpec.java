@@ -20,6 +20,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindListJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindSaveModeDuplikatSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindSaveResultJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindSchuleAndKlasseSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KontaktPersonKindListJsonSpec;
 
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class KinderApiSpec {
 
     public List<Oper> getAllOperations() {
         return Arrays.asList(
-                kindResourceCreateKind(),
+                kindResourceCreateKindAndDossier(),
                 kindResourceFindAktivKindKontaktPersonen(),
                 kindResourceFindAllKinder(),
                 kindResourceFindKinderBySchuleOrKlasse(),
@@ -72,13 +73,14 @@ public class KinderApiSpec {
                 kindResourceGetKind(),
                 kindResourceRemoveKind(),
                 kindResourceSetEsadIdForKind(),
-                kindResourceUpdateKind(),
-                kindResourceUpdateKindAktivStatus()
+                kindResourceUpdateKindAktivStatus(),
+                kindResourceUpdateKindAndVerantwortlichePersonen(),
+                kindResourceUpdateSchuleAndKlasse()
         );
     }
 
-    public KindResourceCreateKindOper kindResourceCreateKind() {
-        return new KindResourceCreateKindOper(createReqSpec());
+    public KindResourceCreateKindAndDossierOper kindResourceCreateKindAndDossier() {
+        return new KindResourceCreateKindAndDossierOper(createReqSpec());
     }
 
     public KindResourceFindAktivKindKontaktPersonenOper kindResourceFindAktivKindKontaktPersonen() {
@@ -109,12 +111,16 @@ public class KinderApiSpec {
         return new KindResourceSetEsadIdForKindOper(createReqSpec());
     }
 
-    public KindResourceUpdateKindOper kindResourceUpdateKind() {
-        return new KindResourceUpdateKindOper(createReqSpec());
-    }
-
     public KindResourceUpdateKindAktivStatusOper kindResourceUpdateKindAktivStatus() {
         return new KindResourceUpdateKindAktivStatusOper(createReqSpec());
+    }
+
+    public KindResourceUpdateKindAndVerantwortlichePersonenOper kindResourceUpdateKindAndVerantwortlichePersonen() {
+        return new KindResourceUpdateKindAndVerantwortlichePersonenOper(createReqSpec());
+    }
+
+    public KindResourceUpdateSchuleAndKlasseOper kindResourceUpdateSchuleAndKlasse() {
+        return new KindResourceUpdateSchuleAndKlasseOper(createReqSpec());
     }
 
     /**
@@ -128,14 +134,16 @@ public class KinderApiSpec {
     }
 
     /**
-     * Create Kind
+     * Create Kind And Dossier
      * 
      *
      * @see #kindSaveModeQuery  (required)
      * @see #body  (required)
+     * @see #arztIdQuery  (optional)
+     * @see #mpaIdQuery  (optional)
      * return KindSaveResultJsonSpec
      */
-    public static class KindResourceCreateKindOper implements Oper {
+    public static class KindResourceCreateKindAndDossierOper implements Oper {
 
         public static final Method REQ_METHOD = POST;
         public static final String REQ_URI = "/api/kinder";
@@ -143,7 +151,7 @@ public class KinderApiSpec {
         private RequestSpecBuilder reqSpec;
         private ResponseSpecBuilder respSpec;
 
-        public KindResourceCreateKindOper(RequestSpecBuilder reqSpec) {
+        public KindResourceCreateKindAndDossierOper(RequestSpecBuilder reqSpec) {
             this.reqSpec = reqSpec;
             reqSpec.setContentType("application/json");
             reqSpec.setAccept("application/json");
@@ -175,8 +183,19 @@ public class KinderApiSpec {
          * @param kindSaveJsonSpec (KindSaveJsonSpec)  (required)
          * @return operation
          */
-        public KindResourceCreateKindOper body(KindSaveJsonSpec kindSaveJsonSpec) {
+        public KindResourceCreateKindAndDossierOper body(KindSaveJsonSpec kindSaveJsonSpec) {
             reqSpec.setBody(kindSaveJsonSpec);
+            return this;
+        }
+
+        public static final String ARZT_ID_QUERY = "arztId";
+
+        /**
+         * @param arztId (String)  (optional)
+         * @return operation
+         */
+        public KindResourceCreateKindAndDossierOper arztIdQuery(Object... arztId) {
+            reqSpec.addQueryParam(ARZT_ID_QUERY, arztId);
             return this;
         }
 
@@ -186,8 +205,19 @@ public class KinderApiSpec {
          * @param kindSaveMode (KindSaveModeDuplikatSpec)  (required)
          * @return operation
          */
-        public KindResourceCreateKindOper kindSaveModeQuery(Object... kindSaveMode) {
+        public KindResourceCreateKindAndDossierOper kindSaveModeQuery(Object... kindSaveMode) {
             reqSpec.addQueryParam(KIND_SAVE_MODE_QUERY, kindSaveMode);
+            return this;
+        }
+
+        public static final String MPA_ID_QUERY = "mpaId";
+
+        /**
+         * @param mpaId (String)  (optional)
+         * @return operation
+         */
+        public KindResourceCreateKindAndDossierOper mpaIdQuery(Object... mpaId) {
+            reqSpec.addQueryParam(MPA_ID_QUERY, mpaId);
             return this;
         }
 
@@ -196,7 +226,7 @@ public class KinderApiSpec {
          * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
          * @return operation
          */
-        public KindResourceCreateKindOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+        public KindResourceCreateKindAndDossierOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
             reqSpecCustomizer.accept(reqSpec);
             return this;
         }
@@ -206,7 +236,7 @@ public class KinderApiSpec {
          * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
          * @return operation
          */
-        public KindResourceCreateKindOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+        public KindResourceCreateKindAndDossierOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
             respSpecCustomizer.accept(respSpec);
             return this;
         }
@@ -723,102 +753,6 @@ public class KinderApiSpec {
         }
     }
     /**
-     * Update Kind
-     * 
-     *
-     * @see #kindIdPath  (required)
-     * @see #kindSaveModeQuery  (required)
-     * @see #body  (required)
-     * return KindSaveResultJsonSpec
-     */
-    public static class KindResourceUpdateKindOper implements Oper {
-
-        public static final Method REQ_METHOD = PUT;
-        public static final String REQ_URI = "/api/kinder/{kindId}";
-
-        private RequestSpecBuilder reqSpec;
-        private ResponseSpecBuilder respSpec;
-
-        public KindResourceUpdateKindOper(RequestSpecBuilder reqSpec) {
-            this.reqSpec = reqSpec;
-            reqSpec.setContentType("application/json");
-            reqSpec.setAccept("application/json");
-            this.respSpec = new ResponseSpecBuilder();
-        }
-
-        /**
-         * PUT /api/kinder/{kindId}
-         * @param handler handler
-         * @param <T> type
-         * @return type
-         */
-        @Override
-        public <T> T execute(Function<Response, T> handler) {
-            return handler.apply(RestAssured.given().spec(reqSpec.build()).expect().spec(respSpec.build()).when().request(REQ_METHOD, REQ_URI));
-        }
-
-        /**
-         * PUT /api/kinder/{kindId}
-         * @param handler handler
-         * @return KindSaveResultJsonSpec
-         */
-        public KindSaveResultJsonSpec executeAs(Function<Response, Response> handler) {
-            TypeRef<KindSaveResultJsonSpec> type = new TypeRef<KindSaveResultJsonSpec>(){};
-            return execute(handler).as(type);
-        }
-
-         /**
-         * @param kindSaveJsonSpec (KindSaveJsonSpec)  (required)
-         * @return operation
-         */
-        public KindResourceUpdateKindOper body(KindSaveJsonSpec kindSaveJsonSpec) {
-            reqSpec.setBody(kindSaveJsonSpec);
-            return this;
-        }
-
-        public static final String KIND_ID_PATH = "kindId";
-
-        /**
-         * @param kindId (String)  (required)
-         * @return operation
-         */
-        public KindResourceUpdateKindOper kindIdPath(Object kindId) {
-            reqSpec.addPathParam(KIND_ID_PATH, kindId);
-            return this;
-        }
-
-        public static final String KIND_SAVE_MODE_QUERY = "kindSaveMode";
-
-        /**
-         * @param kindSaveMode (KindSaveModeDuplikatSpec)  (required)
-         * @return operation
-         */
-        public KindResourceUpdateKindOper kindSaveModeQuery(Object... kindSaveMode) {
-            reqSpec.addQueryParam(KIND_SAVE_MODE_QUERY, kindSaveMode);
-            return this;
-        }
-
-        /**
-         * Customize request specification
-         * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
-         * @return operation
-         */
-        public KindResourceUpdateKindOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
-            reqSpecCustomizer.accept(reqSpec);
-            return this;
-        }
-
-        /**
-         * Customize response specification
-         * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
-         * @return operation
-         */
-        public KindResourceUpdateKindOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
-            respSpecCustomizer.accept(respSpec);
-            return this;
-        }
-    }
-    /**
      * Update Kind Aktiv Status
      * 
      *
@@ -898,6 +832,210 @@ public class KinderApiSpec {
          * @return operation
          */
         public KindResourceUpdateKindAktivStatusOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+            respSpecCustomizer.accept(respSpec);
+            return this;
+        }
+    }
+    /**
+     * Update Kind And Verantwortliche Personen
+     * 
+     *
+     * @see #kindIdPath  (required)
+     * @see #kindSaveModeQuery  (required)
+     * @see #body  (required)
+     * @see #arztIdQuery  (optional)
+     * @see #mpaIdQuery  (optional)
+     * return KindSaveResultJsonSpec
+     */
+    public static class KindResourceUpdateKindAndVerantwortlichePersonenOper implements Oper {
+
+        public static final Method REQ_METHOD = PUT;
+        public static final String REQ_URI = "/api/kinder/{kindId}";
+
+        private RequestSpecBuilder reqSpec;
+        private ResponseSpecBuilder respSpec;
+
+        public KindResourceUpdateKindAndVerantwortlichePersonenOper(RequestSpecBuilder reqSpec) {
+            this.reqSpec = reqSpec;
+            reqSpec.setContentType("application/json");
+            reqSpec.setAccept("application/json");
+            this.respSpec = new ResponseSpecBuilder();
+        }
+
+        /**
+         * PUT /api/kinder/{kindId}
+         * @param handler handler
+         * @param <T> type
+         * @return type
+         */
+        @Override
+        public <T> T execute(Function<Response, T> handler) {
+            return handler.apply(RestAssured.given().spec(reqSpec.build()).expect().spec(respSpec.build()).when().request(REQ_METHOD, REQ_URI));
+        }
+
+        /**
+         * PUT /api/kinder/{kindId}
+         * @param handler handler
+         * @return KindSaveResultJsonSpec
+         */
+        public KindSaveResultJsonSpec executeAs(Function<Response, Response> handler) {
+            TypeRef<KindSaveResultJsonSpec> type = new TypeRef<KindSaveResultJsonSpec>(){};
+            return execute(handler).as(type);
+        }
+
+         /**
+         * @param kindSaveJsonSpec (KindSaveJsonSpec)  (required)
+         * @return operation
+         */
+        public KindResourceUpdateKindAndVerantwortlichePersonenOper body(KindSaveJsonSpec kindSaveJsonSpec) {
+            reqSpec.setBody(kindSaveJsonSpec);
+            return this;
+        }
+
+        public static final String KIND_ID_PATH = "kindId";
+
+        /**
+         * @param kindId (String)  (required)
+         * @return operation
+         */
+        public KindResourceUpdateKindAndVerantwortlichePersonenOper kindIdPath(Object kindId) {
+            reqSpec.addPathParam(KIND_ID_PATH, kindId);
+            return this;
+        }
+
+        public static final String ARZT_ID_QUERY = "arztId";
+
+        /**
+         * @param arztId (String)  (optional)
+         * @return operation
+         */
+        public KindResourceUpdateKindAndVerantwortlichePersonenOper arztIdQuery(Object... arztId) {
+            reqSpec.addQueryParam(ARZT_ID_QUERY, arztId);
+            return this;
+        }
+
+        public static final String KIND_SAVE_MODE_QUERY = "kindSaveMode";
+
+        /**
+         * @param kindSaveMode (KindSaveModeDuplikatSpec)  (required)
+         * @return operation
+         */
+        public KindResourceUpdateKindAndVerantwortlichePersonenOper kindSaveModeQuery(Object... kindSaveMode) {
+            reqSpec.addQueryParam(KIND_SAVE_MODE_QUERY, kindSaveMode);
+            return this;
+        }
+
+        public static final String MPA_ID_QUERY = "mpaId";
+
+        /**
+         * @param mpaId (String)  (optional)
+         * @return operation
+         */
+        public KindResourceUpdateKindAndVerantwortlichePersonenOper mpaIdQuery(Object... mpaId) {
+            reqSpec.addQueryParam(MPA_ID_QUERY, mpaId);
+            return this;
+        }
+
+        /**
+         * Customize request specification
+         * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
+         * @return operation
+         */
+        public KindResourceUpdateKindAndVerantwortlichePersonenOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+            reqSpecCustomizer.accept(reqSpec);
+            return this;
+        }
+
+        /**
+         * Customize response specification
+         * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
+         * @return operation
+         */
+        public KindResourceUpdateKindAndVerantwortlichePersonenOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+            respSpecCustomizer.accept(respSpec);
+            return this;
+        }
+    }
+    /**
+     * Update Schule And Klasse
+     * 
+     *
+     * @see #kindIdPath  (required)
+     * @see #body  (required)
+     * return KindSaveResultJsonSpec
+     */
+    public static class KindResourceUpdateSchuleAndKlasseOper implements Oper {
+
+        public static final Method REQ_METHOD = PUT;
+        public static final String REQ_URI = "/api/kinder/{kindId}/schule-klasse";
+
+        private RequestSpecBuilder reqSpec;
+        private ResponseSpecBuilder respSpec;
+
+        public KindResourceUpdateSchuleAndKlasseOper(RequestSpecBuilder reqSpec) {
+            this.reqSpec = reqSpec;
+            reqSpec.setContentType("application/json");
+            reqSpec.setAccept("application/json");
+            this.respSpec = new ResponseSpecBuilder();
+        }
+
+        /**
+         * PUT /api/kinder/{kindId}/schule-klasse
+         * @param handler handler
+         * @param <T> type
+         * @return type
+         */
+        @Override
+        public <T> T execute(Function<Response, T> handler) {
+            return handler.apply(RestAssured.given().spec(reqSpec.build()).expect().spec(respSpec.build()).when().request(REQ_METHOD, REQ_URI));
+        }
+
+        /**
+         * PUT /api/kinder/{kindId}/schule-klasse
+         * @param handler handler
+         * @return KindSaveResultJsonSpec
+         */
+        public KindSaveResultJsonSpec executeAs(Function<Response, Response> handler) {
+            TypeRef<KindSaveResultJsonSpec> type = new TypeRef<KindSaveResultJsonSpec>(){};
+            return execute(handler).as(type);
+        }
+
+         /**
+         * @param kindSchuleAndKlasseSaveJsonSpec (KindSchuleAndKlasseSaveJsonSpec)  (required)
+         * @return operation
+         */
+        public KindResourceUpdateSchuleAndKlasseOper body(KindSchuleAndKlasseSaveJsonSpec kindSchuleAndKlasseSaveJsonSpec) {
+            reqSpec.setBody(kindSchuleAndKlasseSaveJsonSpec);
+            return this;
+        }
+
+        public static final String KIND_ID_PATH = "kindId";
+
+        /**
+         * @param kindId (String)  (required)
+         * @return operation
+         */
+        public KindResourceUpdateSchuleAndKlasseOper kindIdPath(Object kindId) {
+            reqSpec.addPathParam(KIND_ID_PATH, kindId);
+            return this;
+        }
+
+        /**
+         * Customize request specification
+         * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
+         * @return operation
+         */
+        public KindResourceUpdateSchuleAndKlasseOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+            reqSpecCustomizer.accept(reqSpec);
+            return this;
+        }
+
+        /**
+         * Customize response specification
+         * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
+         * @return operation
+         */
+        public KindResourceUpdateSchuleAndKlasseOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
             respSpecCustomizer.accept(respSpec);
             return this;
         }

@@ -1,9 +1,9 @@
 import {DestroyRef} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {NonNullableFormBuilder} from '@angular/forms';
-import {KindSaveJson, KlasseOptionJson, SchuleOptionJson} from '@dvb/data-access-backend';
-import {KlassenOptionsStore} from '@dvb/feat-shared';
-import {BaseForm} from '@dvb/util-angular';
+import {KindSaveJson, KindSchuleAndKlasseSaveJson, KlasseOptionJson, SchuleOptionJson} from '@dvb/data-access-backend';
+import {globalConstants, KlassenOptionsStore} from '@dvb/feat-shared';
+import {BaseForm, DetailMode} from '@dvb/util-angular';
 import {requireValue} from '@dvb/util-shared';
 import {distinctUntilChanged} from 'rxjs';
 
@@ -18,6 +18,7 @@ function makeForm(config: Config) {
   const group = fb.group({
     schule: fb.control<SchuleOptionJson | undefined>(undefined, []),
     klasse: fb.control<KlasseOptionJson | undefined>(undefined, []),
+    version: fb.control<number | undefined>(undefined),
   });
 
 
@@ -37,16 +38,22 @@ function makeForm(config: Config) {
   return group;
 }
 
-export class KindSchuleKlasseForm extends BaseForm<ReturnType<typeof makeForm>, Partial<KindSaveJson>> {
+export class KindSchuleKlasseForm extends BaseForm<ReturnType<typeof makeForm>, KindSchuleAndKlasseSaveJson> {
   constructor(config: Config) {
     super(() => makeForm(config));
   }
 
-  override valueOnValid(): Partial<KindSaveJson> {
+  public resetForm(value: KindSaveJson | undefined): void {
+    this.group.reset({schule: value?.schule, klasse: value?.klasse, version: value?.version});
+    this.mode = DetailMode.EDIT;
+  }
+
+  override valueOnValid(): KindSchuleAndKlasseSaveJson {
     const value = requireValue(this.group.getRawValue());
     return {
       schule: value.schule ?? undefined,
       klasse: value.klasse ?? undefined,
+      version: value.version ?? globalConstants.entityPrePersistVersion
     };
   }
 

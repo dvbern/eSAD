@@ -1,5 +1,5 @@
-import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
-import {FormWalker, Visitor, VisitorContext} from './FormWalker';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormWalker, Visitor, VisitorContext } from './FormWalker';
 
 describe('FormWalker', () => {
   const fb = new FormBuilder();
@@ -43,18 +43,14 @@ describe('FormWalker', () => {
   }
 
   it('should visit all controls depth-first/top-down in order', () => {
-    const visitor = new FormWalker()
-      .walkDepthFirst(
-        {
-          root: group,
-          descentStrategy: 'top-down',
-          visitor: new ToArrayVisitor(),
-        },
-      );
+    const visitor = new FormWalker().walkDepthFirst({
+      root: group,
+      descentStrategy: 'top-down',
+      visitor: new ToArrayVisitor(),
+    });
 
-    expect(visitor.visited.map(v =>
-      `${v.path.padEnd(20)} ${v.name.padEnd(10)} ${v.control.constructor.name}`))
-      .toEqual([
+    expect(visitor.visited.map(v => `${v.path.padEnd(20)} ${v.name.padEnd(10)} ${v.control.constructor.name}`)).toEqual(
+      [
         '                                FormGroup',
         'first                first      FormControl2',
         'name                 name       FormControl2',
@@ -70,22 +66,19 @@ describe('FormWalker', () => {
         'phones[1].type       type       FormControl2',
         'phones[1].number     number     FormControl2',
         'last                 last       FormControl2',
-      ]);
+      ],
+    );
   });
 
   it('should visit all controls depth-first/bottom-up in order', () => {
-    const visitor = new FormWalker()
-      .walkDepthFirst(
-        {
-          root: group,
-          descentStrategy: 'bottom-up',
-          visitor: new ToArrayVisitor(),
-        },
-      );
+    const visitor = new FormWalker().walkDepthFirst({
+      root: group,
+      descentStrategy: 'bottom-up',
+      visitor: new ToArrayVisitor(),
+    });
 
-    expect(visitor.visited.map(v =>
-      `${v.path.padEnd(20)} ${v.name.padEnd(10)} ${v.control.constructor.name}`))
-      .toEqual([
+    expect(visitor.visited.map(v => `${v.path.padEnd(20)} ${v.name.padEnd(10)} ${v.control.constructor.name}`)).toEqual(
+      [
         'first                first      FormControl2',
         'name                 name       FormControl2',
         'age                  age        FormControl2',
@@ -101,7 +94,8 @@ describe('FormWalker', () => {
         'phones               phones     FormArray',
         'last                 last       FormControl2',
         '                                FormGroup',
-      ]);
+      ],
+    );
   });
 
   describe('with unsupported FormControl', () => {
@@ -128,46 +122,37 @@ describe('FormWalker', () => {
         foo: new MyControl(),
       });
 
-      expect(() => new FormWalker()
-        .walkDepthFirst(
-          {
-            root: form,
-            descentStrategy: 'bottom-up',
-            visitor: new ToArrayVisitor(),
-          },
-        ))
-        .toThrowError('Not supported: object = MyControl');
+      expect(() =>
+        new FormWalker().walkDepthFirst({
+          root: form,
+          descentStrategy: 'bottom-up',
+          visitor: new ToArrayVisitor(),
+        }),
+      ).toThrow('Not supported: object = MyControl');
     });
-  })
+  });
 
   describe('with partial visitor', () => {
-    class PartialVisitor implements Visitor {
-    }
+    class PartialVisitor implements Visitor {}
 
     it('still works for bottom-up', () => {
-      expect(() => new FormWalker()
-        .walkDepthFirst(
-          {
-            root: group,
-            descentStrategy: 'bottom-up',
-            visitor: new PartialVisitor(),
-          },
-        ))
-        .not
-        .toThrow();
-    })
+      expect(() =>
+        new FormWalker().walkDepthFirst({
+          root: group,
+          descentStrategy: 'bottom-up',
+          visitor: new PartialVisitor(),
+        }),
+      ).not.toThrow();
+    });
 
     it('still works for top-down', () => {
-      expect(() => new FormWalker()
-        .walkDepthFirst(
-          {
-            root: group,
-            descentStrategy: 'top-down',
-            visitor: new PartialVisitor(),
-          },
-        ))
-        .not
-        .toThrow();
+      expect(() =>
+        new FormWalker().walkDepthFirst({
+          root: group,
+          descentStrategy: 'top-down',
+          visitor: new PartialVisitor(),
+        }),
+      ).not.toThrow();
     });
   });
 });

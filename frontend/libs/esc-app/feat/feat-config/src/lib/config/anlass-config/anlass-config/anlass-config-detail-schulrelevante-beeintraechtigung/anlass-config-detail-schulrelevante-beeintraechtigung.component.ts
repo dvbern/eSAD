@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked} from "@angular/core";
-import {CommonModule} from "@angular/common";
+
 import {NonNullableFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {
   FormButtonsComponent,
@@ -21,7 +21,6 @@ import {isNullish} from "@dvb/util-shared";
 @Component({
   selector: 'feat-config-detail-schulrelevante-beeintraechtigung',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FormButtonsComponent,
     FormControlComponent,
@@ -31,8 +30,8 @@ import {isNullish} from "@dvb/util-shared";
     NgOptionComponent,
     NgSelectComponent,
     NgSelectDirective,
-    TranslocoPipe,
-  ],
+    TranslocoPipe
+],
   templateUrl: './anlass-config-detail-schulrelevante-beeintraechtigung.component.html',
   styleUrl: './anlass-config-detail-schulrelevante-beeintraechtigung.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

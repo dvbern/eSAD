@@ -1,9 +1,8 @@
-export default {
+module.exports = {
   displayName: 'backend',
   preset: '../../../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-  coverageDirectory:
-    '../../../../coverage/libs/shared/data-access/data-access-backend',
+  coverageDirectory: '../../../../coverage/libs/shared/data-access/data-access-backend',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',

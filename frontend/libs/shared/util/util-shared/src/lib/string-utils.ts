@@ -9,6 +9,15 @@ export function isFilledIn<T extends unknown | '' | Nullish>(
   return hasValue(value) && value !== '';
 }
 
+/**
+ * Convenience (for lighter reading): same as isFilledIn.
+ */
+export function isNotBlank<T extends unknown | '' | Nullish>(
+  value: T,
+): value is Exclude<T, '' | Nullish> {
+  return isFilledIn(value);
+}
+
 export function requireFilledIn<T>(
   value: T | '' | Nullish,
   description?: string,
@@ -47,6 +56,15 @@ export function trimToUndefined<T extends string = string>(
   }
 
   return undefined;
+}
+
+export function joinNotBlank(
+  parts: (string | Nullish)[],
+  separator = ' ',
+): string | undefined {
+  const joined = parts.filter(isNotBlank).join(separator);
+
+  return isNotBlank(joined) ? joined : undefined;
 }
 
 export function isEqualCaseInsensitive(s1: string | Nullish, s2: string | Nullish): boolean {

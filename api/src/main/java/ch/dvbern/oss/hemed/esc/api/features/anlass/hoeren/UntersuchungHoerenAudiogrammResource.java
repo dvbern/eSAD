@@ -14,6 +14,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.json.UntersuchungHoere
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import io.micrometer.core.annotation.Timed;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.security.RolesAllowed;
@@ -25,7 +26,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/hoeren/audiogramm")
@@ -50,10 +50,10 @@ public class UntersuchungHoerenAudiogrammResource {
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungHoerenAudiogrammMapper.getByEinladung(
-            wrappedId.toEinladungId(),
+            wrappedId,
             untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
                 untersuchung,
-                Berechtigung.SU_HOREN_LESEN));
+                List.of(Berechtigung.SU_HOREN_LESEN)));
     }
 
     @GET
@@ -77,7 +77,9 @@ public class UntersuchungHoerenAudiogrammResource {
         @NonNull @NotNull @Valid UntersuchungHoerenAudiogrammSaveJson saveJson
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
-        return untersuchungHoerenAudiogrammMapper.saveAudiogramm(wrappedId.toEinladungId(), saveJson,
+
+        return untersuchungHoerenAudiogrammMapper.saveAudiogramm(
+            wrappedId, saveJson,
             untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
                 untersuchung,
                 List.of(Berechtigung.SU_HOREN_SCHREIBEN)));

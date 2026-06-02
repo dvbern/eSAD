@@ -80,4 +80,20 @@ class UntersuchungHoerenOtoskopieMapperTest {
         Assertions.assertThat(entity.getOtoskopieRechtsResultatAndere()).isNull();
         Assertions.assertThat(entity.getOtoskopieLinksResultatAndere()).isNull();
     }
+
+    @Test
+    void toEntity_should_respect_independence_between_links_and_rechts() {
+        // ARRANGE
+        Untersuchung untersuchung = UntersuchungBuilder.defaultUntersuchung(LocalDate.now());
+        UntersuchungHoerenOtoskopieSaveJson json =
+            UntersuchungHoerenOtoskopieBuilder.createJax(builder -> builder
+                .withOtoskopieRechts(List.of(OtoskopieResultat.ANDERES), null, "Bemerkung Rechts")
+                .withOtoskopieLinks(List.of(OtoskopieResultat.NORMAL), null, "Bemerkung Links")
+            ).getOtoskopieData();
+        // ACT
+        UntersuchungHoerenOtoskopie entity = UntersuchungHoerenOtoskopieMapper.toEntity(untersuchung, null, json);
+        // ASSERT
+        Assertions.assertThat(entity.getOtoskopieRechtsResultatAndere()).isEqualTo("Bemerkung Rechts");
+        Assertions.assertThat(entity.getOtoskopieLinksResultatAndere()).isNull();
+    }
 }

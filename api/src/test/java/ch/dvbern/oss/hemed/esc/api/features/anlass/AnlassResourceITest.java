@@ -447,7 +447,7 @@ class AnlassResourceITest extends AbstractITest {
             .assertThat()
             .statusCode(Status.BAD_REQUEST.getStatusCode())
             .extract().as(AppValidationErrorJsonSpec.class);
-        // Assert
+        // ASSERT
 
         AppValidationErrorJsonSpecAssert.assertThatAppValidationErrorJsonSpec(validationError)
             .extractingExactlyOneViolation()

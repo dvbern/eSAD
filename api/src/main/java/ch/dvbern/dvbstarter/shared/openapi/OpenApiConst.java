@@ -25,12 +25,15 @@ import lombok.experimental.UtilityClass;
 public class OpenApiConst {
     @UtilityClass
     public static final class Tags {
+
         public static final String CLIENT_CONFIG = "Client-Config";
         public static final String EXAMPLE_LOGGING = "Example-Logging";
         public static final String TAG_AERZTE = "Aerzte";
         public static final String TAG_AKTIVITAET = "Aktivitaet";
         public static final String TAG_ANLASS = "Anlass";
         public static final String TAG_ANLASSCONFIG = "Anlass-Config";
+        public static final String TAG_ANONYMEREINTRAG = "Anonymer-Eintrag";
+        public static final String TAG_ARCHIVDOKUMENT = "Archivdokument";
         public static final String TAG_AUFGABE = "Aufgabe";
         public static final String TAG_BENUTZER = "Benutzer";
         public static final String TAG_BRIEFVORLAGE = "Briefvorlage";
@@ -41,12 +44,11 @@ public class OpenApiConst {
         public static final String TAG_EINLADUNGEN = "Einladungen";
         public static final String TAG_ESCADA = "Escada";
         public static final String TAG_FILE_INGRESS = "FileIngress";
-        public static final String TAG_PUPIL = "Pupil";
-        public static final String TAG_IMPFSTOFF_CHARGEN = "Impfstoff-Chargen";
         public static final String TAG_IMPFSTOFFE = "Impfstoffe";
+        public static final String TAG_IMPFSTOFF_CHARGEN = "Impfstoff-Chargen";
         public static final String TAG_INFOMATERIAL = "Infomaterial";
-        public static final String TAG_KINDER = "Kinder";
         public static final String TAG_KINDANLAESSE = "Kindanlaesse";
+        public static final String TAG_KINDER = "Kinder";
         public static final String TAG_KLASSEN = "Klassen";
         public static final String TAG_KONTAKTPERSON_KIND = "Kontaktperson-Kind";
         public static final String TAG_KONTAKTPERSON_SCHULE = "Kontaktperson-Schule";
@@ -54,33 +56,34 @@ public class OpenApiConst {
         public static final String TAG_LEHRPERSON = "Lehrperson";
         public static final String TAG_MASSENIMPORT = "Massenimport";
         public static final String TAG_NOTIZEN = "Notizen";
+        public static final String TAG_ORGANISATION = "Organisation";
         public static final String TAG_PLZ = "Plz";
+        public static final String TAG_PREVIEW = "Preview";
         public static final String TAG_PRINTER = "Printer";
+        public static final String TAG_PUPIL = "Pupil";
+        public static final String TAG_QUARTIERE = "Quartiere";
         public static final String TAG_SCHULEN = "Schulen";
         public static final String TAG_SEARCH = "Search";
         public static final String TAG_SETTINGS = "Tenant-Settings";
         public static final String TAG_SUPER_ADMIN_RUNNER = "Super-Admin-Runner";
         public static final String TAG_TIMETRAVEL = "Timetravel";
-        public static final String TAG_QUARTIERE = "Quartiere";
+        public static final String TAG_UNTERSUCHUNG_ABSCHLUSS = "UntersuchungAbschluss";
         public static final String TAG_UNTERSUCHUNG_ARZT = "UntersuchungArzt";
+        public static final String TAG_UNTERSUCHUNG_BEWEGUNGSAPPARAT = "UntersuchungBewegungsapparat";
         public static final String TAG_UNTERSUCHUNG_DURCHFUEHRUNG = "UntersuchungDurchfuehrung";
         public static final String TAG_UNTERSUCHUNG_GROESSEGEWICHT = "UntersuchungGroesseGewicht";
         public static final String TAG_UNTERSUCHUNG_HOEREN_AUDIOGRAMM = "UntersuchungHoerenAudiogramm";
         public static final String TAG_UNTERSUCHUNG_HOEREN_OTOSKOPIE = "UntersuchungHoerenOtoskopie";
         public static final String TAG_UNTERSUCHUNG_IMPFUNGEN = "UntersuchungImpfungen";
         public static final String TAG_UNTERSUCHUNG_KIND_DATEN = "UntersuchungKindDaten";
-        public static final String TAG_UNTERSUCHUNG_MASSNAHMEN = "UntersuchungMassnahmen";
-        public static final String TAG_UNTERSUCHUNG_SEHEN = "UntersuchungSehen";
-        public static final String TAG_UNTERSUCHUNG_TRIAGE = "UntersuchungTriage";
         public static final String TAG_UNTERSUCHUNG_LAEUSEKONTROLLE = "UntersuchungLaeusekontrolle";
-        public static final String TAG_UNTERSUCHUNG_SPRACHE = "UntersuchungSprache";
-        public static final String TAG_UNTERSUCHUNG_BEWEGUNGSAPPARAT = "UntersuchungBewegungsapparat";
+        public static final String TAG_UNTERSUCHUNG_MASSNAHMEN = "UntersuchungMassnahmen";
         public static final String TAG_UNTERSUCHUNG_SCHULRELEVANTE_BEEINTRAECHTIGUNG = "UntersuchungSchulrelevanteBeeintraechtigung";
-        public static final String TAG_UNTERSUCHUNG_ABSCHLUSS = "UntersuchungAbschluss";
-        public static final String TAG_UNTERSUCHUNG_VORABKLAERUNGEN = "UntersuchungVorabklaerungen";
+        public static final String TAG_UNTERSUCHUNG_SEHEN = "UntersuchungSehen";
         public static final String TAG_UNTERSUCHUNG_SIGNATUR = "UntersuchungSignatur";
-        public static final String TAG_ARCHIVDOKUMENT = "Archivdokument";
-        public static final String TAG_ORGANISATION = "Organisation";
+        public static final String TAG_UNTERSUCHUNG_SPRACHE = "UntersuchungSprache";
+        public static final String TAG_UNTERSUCHUNG_TRIAGE = "UntersuchungTriage";
+        public static final String TAG_UNTERSUCHUNG_VORABKLAERUNGEN = "UntersuchungVorabklaerungen";
     }
 
     @UtilityClass

@@ -44,9 +44,6 @@ public final class BerechtigungName {
     public static final String INDIVIDUELLE_REPORTS = "INDIVIDUELLE_REPORTS";
     public static final String SPSS_EXPORT = "SPSS_EXPORT";
     public static final String KOMPLETTER_EXPORT = "KOMPLETTER_EXPORT";
-    public static final String LISTEN_ADMIN_LESEN = "LISTEN_ADMIN_LESEN";
-    public static final String LISTEN_LESEN = "LISTEN_LESEN";
-    public static final String LISTEN_SCHREIBEN = "LISTEN_SCHREIBEN";
     public static final String IMPFSTOFFE_LESEN = "IMPFSTOFFE_LESEN";
     public static final String IMPFSTOFFE_SCHREIBEN = "IMPFSTOFFE_SCHREIBEN";
     public static final String DUBLETTEN_ZUSAMMENFUHREN = "DUBLETTEN_ZUSAMMENFUHREN";
@@ -64,9 +61,16 @@ public final class BerechtigungName {
     public static final String PUPIL_PUSH = "PUPIL_PUSH";
     public static final String AERZTE_LESEN = "AERZTE_LESEN";
     public static final String AERZTE_SCHREIBEN = "AERZTE_SCHREIBEN";
+    public static final String SCHULE_LESEN = "SCHULE_LESEN";
+    public static final String SCHULE_SCHREIBEN = "SCHULE_SCHREIBEN";
+    public static final String KLASSEN_LESEN = "KLASSEN_LESEN";
+    public static final String KLASSEN_SCHREIBEN = "KLASSEN_SCHREIBEN";
+    public static final String INFOMATERIAL_LESEN = "INFOMATERIAL_LESEN";
+    public static final String INFOMATERIAL_SCHREIBEN = "INFOMATERIAL_SCHREIBEN";
     public static final String ANLASSLISTE_LESEN_LAEUSE = "ANLASSLISTE_LESEN_LAEUSE";
     public static final String ANLASSPLANUNG_LESEN_LAEUSE = "ANLASSPLANUNG_LESEN_LAEUSE";
     public static final String ANLASSPLANUNG_SCHREIBEN_LAEUSE = "ANLASSPLANUNG_SCHREIBEN_LAEUSE";
+    public static final String BENUTZER_OPTIONS_LESEN = "BENUTZER_OPTIONS_LESEN";
     public static final String BENUTZER_BERECHTIGUNGEN_LESEN = "BENUTZER_BERECHTIGUNGEN_LESEN";
     public static final String BENUTZER_BERECHTIGUNGEN_SCHREIBEN = "BENUTZER_BERECHTIGUNGEN_SCHREIBEN";
     public static final String ARCHIVIERUNG = "ARCHIVIERUNG";

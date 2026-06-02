@@ -37,6 +37,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
+import io.micrometer.core.annotation.Timed;
 import io.smallrye.faulttolerance.api.RateLimit;
 import io.vertx.core.http.HttpServerResponse;
 import jakarta.annotation.security.RolesAllowed;
@@ -55,7 +56,6 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -90,7 +90,7 @@ public class AnlassConfigResource {
     @GET
     @Path("/visible")
     @NonNull
-    @RolesAllowed({BerechtigungName.ANLASSLISTE_LESEN, BerechtigungName.ANLASSLISTE_LESEN_LAEUSE})
+    @RolesAllowed({ BerechtigungName.ANLASSLISTE_LESEN, BerechtigungName.ANLASSLISTE_LESEN_LAEUSE })
     public AnlassConfigOptionListJson findAllAnlassConfigsVisible() {
         return anlassConfigMapper.findAllVisible();
     }

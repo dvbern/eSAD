@@ -6,6 +6,7 @@ import java.util.Set;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
@@ -25,10 +26,13 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.InfomaterialBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungMassnahmenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.UntersuchungMassnahmenApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppValidationErrorJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungMassnahmenJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungMassnahmenSaveJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenMassnahmenJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSehenMassnahmenSaveJsonSpec;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import jakarta.ws.rs.core.Response.Status;
@@ -36,9 +40,9 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasAnonymerEintragIdWrapper;
 import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
 @RequiredArgsConstructor
@@ -153,6 +157,114 @@ class UntersuchungMassnahmenResourceITest {
 
     @Test
     @TestAsAdminBS
+    void getUntersuchungSehenMassnahmen_existing_should_return_existing() {
+        // ARRANGE
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithSehenAndMassnahmen();
+        UntersuchungMassnahmen existingMassnahmen = untersuchung.getUntersuchungMassnahmen();
+        assertThat(existingMassnahmen).isNotNull();
+        // ACT
+        UntersuchungSehenMassnahmenJsonSpec result = api
+            .untersuchungMassnahmenResourceGetUntersuchungMassnahmenSehen()
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(UntersuchungSehenMassnahmenJsonSpec.class);
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(existingMassnahmen.getId().getId());
+        assertThat(result.getData().getBereitsBehandeltSehen()).isEqualTo(existingMassnahmen.isBereitsBehandeltSehen());
+        assertThat(result.getData().getUeberweisungAugenarzt()).isEqualTo(existingMassnahmen.isUeberweisungAugenarzt());
+        assertThat(result.getData().getNachkontrolleSehen())
+            .isEqualTo(existingMassnahmen.getNachkontrolle().isNachkontrolleSehen());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void saveUntersuchungSehenMassnahmen() {
+        // ARRANGE
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithSehenAndMassnahmen();
+        Einladung einladung = untersuchung.getEinladungRequired();
+        UntersuchungMassnahmen existingMassnahmen = untersuchung.getUntersuchungMassnahmen();
+        assertThat(existingMassnahmen).isNotNull();
+
+        // ACT
+        UntersuchungSehenMassnahmenSaveJsonSpec saveJsonSpec =
+            UntersuchungMassnahmenBuilder.createSehenMassnahmenSaveJaxSpec(
+                builder -> builder
+                    .forUntersuchung(untersuchung)
+                    .forUntersuchungMassnahmen(existingMassnahmen)
+                    .withBereitsBehandeltSehen(true)
+                    .withUeberweisungAugenarzt(true)
+                    .withInformationEltern(InformationEltern.KEINE)
+                    .withNachkontrolle(true, false, false, false, false, false)
+                    .withAbgegebenesInfomaterial(Set.of())
+            );
+
+        UntersuchungSehenMassnahmenJsonSpec result = api
+            .untersuchungMassnahmenResourceSaveUntersuchungMassnahmenSehen()
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
+            .body(saveJsonSpec)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(UntersuchungSehenMassnahmenJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getData().getBereitsBehandeltSehen()).isTrue();
+        assertThat(result.getData().getUeberweisungAugenarzt()).isTrue();
+        assertThat(result.getData().getNachkontrolleSehen()).isTrue();
+    }
+
+    @Test
+    @TestAsSchularztBE
+    void saveUntersuchungSehenMassnahmen_anonym() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        Benutzer arzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(arzt);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), false);
+        assertThat(untersuchung.getUntersuchungMassnahmen()).isNull();
+
+        // ACT
+        UntersuchungSehenMassnahmenSaveJsonSpec saveJsonSpec =
+            UntersuchungMassnahmenBuilder.createSehenMassnahmenSaveJaxSpec(
+                builder -> builder
+                    .withBereitsBehandeltSehen(true)
+                    .withInformationEltern(InformationEltern.KEINE)
+                    .withUeberweisungAugenarzt(true)
+                    .withNachkontrolle(true, false, false, false, false, false)
+                    .withAbgegebenesInfomaterial(Set.of())
+            );
+        UntersuchungSehenMassnahmenJsonSpec result = api
+            .untersuchungMassnahmenResourceSaveUntersuchungMassnahmenSehen()
+            .anlassIdPath(anonymerEintrag.getAnlass().getId().getId())
+            .einladungIdPath(toHasAnonymerEintragIdWrapper(anonymerEintrag.getId()))
+            .body(saveJsonSpec)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(UntersuchungSehenMassnahmenJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getData().getBereitsBehandeltSehen()).isTrue();
+        assertThat(result.getData().getAbgegebenesInfomaterial()).isEmpty();
+
+        assertThat(result.getData().getUeberweisungAugenarzt()).isTrue();
+        assertThat(result.getData().getNachkontrolleSehen()).isTrue();
+    }
+
+    @Test
+    @TestAsAdminBS
     void remove_inactive_infomaterial_throws_exception() {
         // ARRANGE
         Infomaterial inaktivesInfomaterial = infomaterialService.persist(InfomaterialBuilder.create(
@@ -212,7 +324,8 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
+        Untersuchung untersuchungSaved =
+            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeInformationEltern())
             .isNotNull()
@@ -245,7 +358,8 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
+        Untersuchung untersuchungSaved =
+            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeInformationEltern()).isNull();
     }
@@ -274,7 +388,8 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
+        Untersuchung untersuchungSaved =
+            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeInformationEltern()).isNull();
     }
@@ -303,12 +418,15 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
+        Untersuchung untersuchungSaved =
+            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeUeberweisungHausarzt())
             .isNotNull()
             .extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null).isEqualTo(AufgabeStatus.OFFEN);
-        assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeUeberweisungHausarzt().getBemerkung()).isNull();
+        assertThat(untersuchungSaved.getUntersuchungMassnahmen()
+            .getAufgabeUeberweisungHausarzt()
+            .getBemerkung()).isNull();
     }
 
     @Test
@@ -335,7 +453,8 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
+        Untersuchung untersuchungSaved =
+            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeUeberweisungHausarzt()).isNull();
     }
@@ -364,12 +483,15 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
+        Untersuchung untersuchungSaved =
+            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeUeberweisungAugenarzt())
             .isNotNull()
             .extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null).isEqualTo(AufgabeStatus.OFFEN);
-        assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeUeberweisungAugenarzt().getBemerkung()).isNull();
+        assertThat(untersuchungSaved.getUntersuchungMassnahmen()
+            .getAufgabeUeberweisungAugenarzt()
+            .getBemerkung()).isNull();
     }
 
     @Test
@@ -396,7 +518,8 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
+        Untersuchung untersuchungSaved =
+            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeUeberweisungAugenarzt()).isNull();
     }
@@ -425,7 +548,8 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
+        Untersuchung untersuchungSaved =
+            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeNachkontrolle())
             .isNotNull()
@@ -457,7 +581,8 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
+        Untersuchung untersuchungSaved =
+            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeNachkontrolle()).isNull();
     }
@@ -487,7 +612,8 @@ class UntersuchungMassnahmenResourceITest {
             .assertThat()
             .statusCode(Status.OK.getStatusCode());
 
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
+        Untersuchung untersuchungSaved =
+            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungSaved.getUntersuchungMassnahmen().getAufgabeInformationEltern())
             .isNotNull()
@@ -526,20 +652,25 @@ class UntersuchungMassnahmenResourceITest {
             .statusCode(Status.OK.getStatusCode());
 
         // ASSERT
-        Untersuchung untersuchungUpdated = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
+        Untersuchung untersuchungUpdated =
+            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungUpdated.getUntersuchungMassnahmen()).isNotNull();
         assertThat(untersuchungUpdated.getUntersuchungMassnahmen().getAufgabeInformationEltern())
             .isNotNull()
-            .extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null).isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
+            .extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null)
+            .isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
         assertThat(untersuchungUpdated.getUntersuchungMassnahmen().getAufgabeUeberweisungHausarzt())
             .isNotNull()
-            .extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null).isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
+            .extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null)
+            .isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
         assertThat(untersuchungUpdated.getUntersuchungMassnahmen().getAufgabeUeberweisungAugenarzt())
             .isNotNull()
-            .extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null).isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
+            .extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null)
+            .isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
         assertThat(untersuchungUpdated.getUntersuchungMassnahmen().getAufgabeNachkontrolle())
             .isNotNull()
-            .extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null).isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
+            .extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null)
+            .isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
     }
 
     @Test
@@ -567,12 +698,18 @@ class UntersuchungMassnahmenResourceITest {
             .assertThat()
             .statusCode(Status.OK.getStatusCode());
 
-        assertThat(aufgabeService.findAllForKind(untersuchung.getEinladungRequired().getDossier().getKind().getId())).hasSize(4);
-        Untersuchung untersuchungSaved = fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
+        assertThat(aufgabeService.findAllForKind(untersuchung.getEinladungRequired()
+            .getDossier()
+            .getKind()
+            .getId())).hasSize(4);
+        Untersuchung untersuchungSaved =
+            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
         assertThat(untersuchungSaved.getUntersuchungMassnahmen()).isNotNull();
         Aufgabe aufgabeInformationEltern = untersuchungSaved.getUntersuchungMassnahmen().getAufgabeInformationEltern();
-        Aufgabe aufgabeUeberweisungHausarzt = untersuchungSaved.getUntersuchungMassnahmen().getAufgabeUeberweisungHausarzt();
-        Aufgabe aufgabeUeberweisungAugenarzt = untersuchungSaved.getUntersuchungMassnahmen().getAufgabeUeberweisungAugenarzt();
+        Aufgabe aufgabeUeberweisungHausarzt =
+            untersuchungSaved.getUntersuchungMassnahmen().getAufgabeUeberweisungHausarzt();
+        Aufgabe aufgabeUeberweisungAugenarzt =
+            untersuchungSaved.getUntersuchungMassnahmen().getAufgabeUeberweisungAugenarzt();
         Aufgabe aufgabeNachkontrolle = untersuchungSaved.getUntersuchungMassnahmen().getAufgabeNachkontrolle();
 
         assertThat(aufgabeInformationEltern).isNotNull();
@@ -585,7 +722,10 @@ class UntersuchungMassnahmenResourceITest {
         einladungService.removeEinladungen(einladungIdList);
 
         // ASSERT
-        assertThat(aufgabeService.findAllForKind(untersuchung.getEinladungRequired().getDossier().getKind().getId())).isEmpty();
+        assertThat(aufgabeService.findAllForKind(untersuchung.getEinladungRequired()
+            .getDossier()
+            .getKind()
+            .getId())).isEmpty();
     }
 
     @Test
@@ -642,7 +782,8 @@ class UntersuchungMassnahmenResourceITest {
             .extract()
             .as(UntersuchungMassnahmenJsonSpec.class);
 
-        Untersuchung actualUntersuchungen =  fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
+        Untersuchung actualUntersuchungen =
+            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
 
         assertThat(actualUntersuchungen.getUntersuchungMassnahmen()).isNotNull();
         Aufgabe aufgabeNachkontrolle = actualUntersuchungen.getUntersuchungMassnahmen().getAufgabeNachkontrolle();

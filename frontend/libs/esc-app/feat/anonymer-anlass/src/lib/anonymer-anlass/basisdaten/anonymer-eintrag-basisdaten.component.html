@@ -1,0 +1,103 @@
+<form svuiFormLayout
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()"
+      [mode]="DetailMode.EDIT"
+>
+  <!-- Titel -->
+  <h2 svuiHeading="formSection" class="mb-3">{{ 'statistik.basisdaten.title' | transloco }}</h2>
+
+  <!-- Beschreibung -->
+  <p svuiFormFullWidth>{{ 'statistik.basisdaten.description' | transloco }}</p>
+
+  <!-- Titel -->
+  <h3 svuiHeading="formSection">{{ 'statistik.basisdaten.anlass.title' | transloco }}</h3>
+
+  <!-- Anlass Typ -->
+  <svui-form-control [label]="'anlass.detail.typ' | transloco"
+                     [viewValue]="form.group.value.anlassTyp ? ('AnlassTyp.' + form.group.value.anlassTyp | transloco) : undefined"
+                     data-testid="anlass-typ-select"
+                     [size]="'oneAndHalf'">
+    <ng-select
+      svuiNgSelect
+      bindLabel="dummy"
+      appendTo="body"
+      [formControl]="form.group.controls.anlassTyp"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [readonly]="!this.store.selectedIsNew()"
+    >
+      @for (typ of anlassTypen(); track typ) {
+        <!-- null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+        @if ('AnlassTyp.' + typ | transloco; as translatedTyp) {
+          <ng-option [value]="typ">
+            {{ translatedTyp }}
+          </ng-option>
+        }
+      }
+    </ng-select>
+  </svui-form-control>
+
+  <!-- Anlassdatum -->
+  <svui-form-control [label]="'anlass.detail.datum' | transloco"
+                     [viewValue]="form.group.value.anlassDatum"
+                     data-testid="anlass-datum-date-picker"
+                     [size]="'oneAndHalf'">
+    <input svuiTextInput="date" [formControl]="form.controlAt('anlassDatum')"/>
+  </svui-form-control>
+
+  <!-- Titel -->
+  <h3 svuiHeading="formSection">{{ 'statistik.basisdaten.kind.title' | transloco }}</h3>
+
+  <!-- Name -->
+  <svui-form-control [label]="'kind.name' | transloco"
+                     [viewValue]="form.group.value.kindName"
+                     [size]="'oneAndHalf'">
+    <input svuiTextInput
+           [formControl]="form.controlAt('kindName')"
+    />
+  </svui-form-control>
+
+  <!-- Vorname -->
+  <svui-form-control [label]="'kind.vorname' | transloco"
+                     [viewValue]="form.group.value.kindVorname"
+                     [size]="'oneAndHalf'">
+    <input svuiTextInput
+           [formControl]="form.controlAt('kindVorname')"
+    />
+  </svui-form-control>
+
+  <!-- Geschlecht -->
+  <svui-form-group [label]="'kind.geschlecht' | transloco"
+                   [direction]="'horizontal'"
+                   [viewValue]="form.group.getRawValue().kindGeschlecht ? ('Geschlecht.' + form.group.getRawValue().kindGeschlecht | transloco) : undefined "
+                   [size]="'oneAndHalf'">
+    @for (geschlecht of geschlechtOptions; track geschlecht) {
+      <svui-single-radio-wrapper [label]="'Geschlecht.' + geschlecht | transloco">
+        <input svuiRadio
+               type="radio"
+               name="geschlecht"
+               [formControl]="form.controlAt('kindGeschlecht')"
+               [value]="geschlecht"
+        />
+      </svui-single-radio-wrapper>
+    }
+  </svui-form-group>
+
+  <!-- Geburtsdatum -->
+  <svui-form-control [label]="'kind.geburtsdatum' | transloco"
+                     [viewValue]="form.group.getRawValue().kindGeburtsdatum | date: 'dd.MM.yyyy'"
+                     [size]="'oneAndHalf'">
+    <input svuiTextInput="date"
+           [formControl]="form.controlAt('kindGeburtsdatum')"
+    />
+  </svui-form-control>
+
+  <!-- BUTTONS -->
+  @if (canEdit()) {
+    <div class="d-flex justify-content-left align-items-left gap-3">
+      <button svuiButton="primary" type="submit">
+        {{ 'statistik.basisdaten.weiter' | transloco }}
+      </button>
+    </div>
+  }
+
+</form>

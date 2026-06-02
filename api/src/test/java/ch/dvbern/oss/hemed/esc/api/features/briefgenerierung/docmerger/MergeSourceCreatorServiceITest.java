@@ -50,10 +50,10 @@ class MergeSourceCreatorServiceITest {
     @Test
     @TestAsAdminBS
     void fromAnlass_should_create_a_merge_source() {
-        // Arrange
+        // ARRANGE
         Untersuchung untersuchung = fixtureService.createUntersuchungWithCompleteData();
         var einladung = untersuchung.getEinladungRequired();
-        // Act
+        // ACT
         RootMergeSource mergeSource = mergeSourceCreatorService.fromAnlass(einladung, null);
         // ASSERT
         Assertions.assertNotNull(mergeSource);
@@ -62,14 +62,14 @@ class MergeSourceCreatorServiceITest {
     @Test
     @TestAsAdminBS
     void fromAnlass_should_create_a_merge_source_with_arzt() {
-        // Arrange
+        // ARRANGE
         Untersuchung untersuchung = fixtureService.createUntersuchungWithCompleteData();
         Arzt arzt = ArztBuilder.create(builder -> builder.withAnrede("Dr. Med.")
             .withBemerkungen("Bemerkungen")
             .withName("Arzt")
             .withVorame("Armin"));
         var einladung = untersuchung.getEinladungRequired();
-        // Act
+        // ACT
         RootMergeSource mergeSource = mergeSourceCreatorService.fromAnlass(einladung, arzt);
         // ASSERT
         Assertions.assertNotNull(mergeSource);

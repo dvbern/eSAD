@@ -4,8 +4,7 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
-import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.json.UntersuchungSpracheJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.json.UntersuchungSpracheSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Nachsprechen;
@@ -33,13 +32,18 @@ public final class UntersuchungSpracheMapper {
         return new UntersuchungSpracheJson(
             sprache.getId(),
             EntityInfoJson.fromEntity(sprache),
-            new UntersuchungSpracheSaveJson(
-                SingleValueEnhancedMapper.toJson(Nachsprechen.class, sprache.getNachsprechen()),
-                SingleValueEnhancedMapper.toJson(Wortschatz.class, sprache.getWortschatz()),
-                SingleValueEnhancedMapper.toJson(Sprachverstaendnis.class, sprache.getSprachverstaendnis()),
-                sprache.getBemerkungen(),
-                sprache.getVersion()
-            )
+            toSaveJson(sprache)
+        );
+    }
+
+    @NonNull
+    public static UntersuchungSpracheSaveJson toSaveJson(@NonNull UntersuchungSprache sprache) {
+        return new UntersuchungSpracheSaveJson(
+            SingleValueEnhancedMapper.toJson(Nachsprechen.class, sprache.getNachsprechen()),
+            SingleValueEnhancedMapper.toJson(Wortschatz.class, sprache.getWortschatz()),
+            SingleValueEnhancedMapper.toJson(Sprachverstaendnis.class, sprache.getSprachverstaendnis()),
+            sprache.getBemerkungen(),
+            sprache.getVersion()
         );
     }
 
@@ -54,17 +58,19 @@ public final class UntersuchungSpracheMapper {
         }
         sprache.setNachsprechen(SingleValueEnhancedMapper.toEntity(Nachsprechen.class, saveJson.getNachsprechen()));
         sprache.setWortschatz(SingleValueEnhancedMapper.toEntity(Wortschatz.class, saveJson.getWortschatz()));
-        sprache.setSprachverstaendnis(SingleValueEnhancedMapper.toEntity(Sprachverstaendnis.class, saveJson.getSprachverstaendnis()));
+        sprache.setSprachverstaendnis(SingleValueEnhancedMapper.toEntity(
+            Sprachverstaendnis.class,
+            saveJson.getSprachverstaendnis()));
         sprache.setBemerkungen(saveJson.getBemerkungen());
         return sprache;
     }
 
     @Nullable
     public UntersuchungSpracheJson getByEinladung(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungSprache untersuchungSprache =
             untersuchungSpracheService.getByUntersuchung(untersuchung.getId());
@@ -73,11 +79,11 @@ public final class UntersuchungSpracheMapper {
 
     @NonNull
     public UntersuchungSpracheJson save(
-        @NonNull ID<Einladung> einladungID,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull UntersuchungSpracheSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungSprache sprache = untersuchung.getUntersuchungSprache();
         UntersuchungSprache entity = toEntity(untersuchung, sprache, saveJson);

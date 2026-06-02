@@ -107,7 +107,7 @@ class ArchivdokumentServiceITest extends AbstractITest {
     @Test
     @TestAsSupportBS
     void findAll_shouldReturnOffeneDokumente_forSupportUser_whenOnlyActiveIsTrue() {
-        // Arrange
+        // ARRANGE
         Archivdokument offenDoc = ArchivdokumentBuilder.create(builder -> builder
             .withOwner(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withStatus(ArchivierungStatus.OFFEN)
@@ -120,10 +120,10 @@ class ArchivdokumentServiceITest extends AbstractITest {
             .withFiledata(fixtureService.createFileData()));
         archivdokumentService.persist(downloadedDoc);
 
-        // Act
+        // ACT
         List<Archivdokument> result = archivdokumentService.findAll(true);
 
-        // Assert: SUPPORT user -> findAll with offene status, not filtered by benutzer
+        // ASSERT: SUPPORT user -> findAll with offene status, not filtered by benutzer
         assertThat(result)
             .anyMatch(doc -> doc.getId().equals(offenDoc.getId()))
             .noneMatch(doc -> doc.getId().equals(downloadedDoc.getId()));
@@ -132,7 +132,7 @@ class ArchivdokumentServiceITest extends AbstractITest {
     @Test
     @TestAsSupportBS
     void findAll_shouldReturnAbgeschlosseneDokumente_forSupportUser_whenOnlyActiveIsFalse() {
-        // Arrange
+        // ARRANGE
         Archivdokument offenDoc = ArchivdokumentBuilder.create(builder -> builder
             .withOwner(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withStatus(ArchivierungStatus.OFFEN)
@@ -145,10 +145,10 @@ class ArchivdokumentServiceITest extends AbstractITest {
             .withFiledata(fixtureService.createFileData()));
         archivdokumentService.persist(downloadedDoc);
 
-        // Act
+        // ACT
         List<Archivdokument> result = archivdokumentService.findAll(false);
 
-        // Assert: SUPPORT user + not onlyActive -> abgeschlossene status
+        // ASSERT: SUPPORT user + not onlyActive -> abgeschlossene status
         assertThat(result)
             .anyMatch(doc -> doc.getId().equals(downloadedDoc.getId()))
             .noneMatch(doc -> doc.getId().equals(offenDoc.getId()));
@@ -157,7 +157,7 @@ class ArchivdokumentServiceITest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void findAll_shouldReturnOnlyUserDokumente_forNonSupportUser_whenOnlyActiveIsTrue() {
-        // Arrange
+        // ARRANGE
         var adminId = ID.of(UUID.fromString(TestAsAdminBS.BENUTZER_ID), Benutzer.class);
         var currentBenutzer = benutzerService.getById(adminId);
 
@@ -173,10 +173,10 @@ class ArchivdokumentServiceITest extends AbstractITest {
             .withFiledata(fixtureService.createFileData()));
         archivdokumentService.persist(otherOffenDoc);
 
-        // Act
+        // ACT
         List<Archivdokument> result = archivdokumentService.findAll(true);
 
-        // Assert: non-SUPPORT user -> findAllBenutzer filtered by user ID
+        // ASSERT: non-SUPPORT user -> findAllBenutzer filtered by user ID
         assertThat(result)
             .anyMatch(doc -> doc.getId().equals(ownOffenDoc.getId()))
             .noneMatch(doc -> doc.getId().equals(otherOffenDoc.getId()));
@@ -185,7 +185,7 @@ class ArchivdokumentServiceITest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void findAll_shouldReturnAbgeschlosseneUserDokumente_forNonSupportUser_whenOnlyActiveIsFalse() {
-        // Arrange
+        // ARRANGE
         var adminId = ID.of(UUID.fromString(TestAsAdminBS.BENUTZER_ID), Benutzer.class);
         var currentBenutzer = benutzerService.getById(adminId);
 
@@ -201,10 +201,10 @@ class ArchivdokumentServiceITest extends AbstractITest {
             .withFiledata(fixtureService.createFileData()));
         archivdokumentService.persist(otherDownloadedDoc);
 
-        // Act
+        // ACT
         List<Archivdokument> result = archivdokumentService.findAll(false);
 
-        // Assert: non-SUPPORT user + not onlyActive -> abgeschlossene, filtered by user
+        // ASSERT: non-SUPPORT user + not onlyActive -> abgeschlossene, filtered by user
         assertThat(result)
             .anyMatch(doc -> doc.getId().equals(ownDownloadedDoc.getId()))
             .noneMatch(doc -> doc.getId().equals(otherDownloadedDoc.getId()));
@@ -213,7 +213,7 @@ class ArchivdokumentServiceITest extends AbstractITest {
     @Test
     @TestAsSupportBS
     void sendArchiveDocumentDownloadReminder_shouldFetchOwnersAndSendReminder() {
-        // Arrange
+        // ARRANGE
         Benutzer owner1 = fixtureService.createBenutzerFuerZentraleOrganisation();
         Benutzer owner2 = fixtureService.createBenutzerFuerZentraleOrganisation();
 
@@ -232,10 +232,10 @@ class ArchivdokumentServiceITest extends AbstractITest {
         ArchivdokumentMailService mailServiceMock = mock(ArchivdokumentMailService.class);
         QuarkusMock.installMockForType(mailServiceMock, ArchivdokumentMailService.class);
 
-        // Act
+        // ACT
         archivdokumentService.sendArchiveDocumentDownloadReminder();
 
-        // Assert
+        // ASSERT
         verify(mailServiceMock).sendArchiveDocumentDownloadReminder(
             ArgumentMatchers.argThat(benutzerList ->
                 benutzerList.stream().anyMatch(b -> b.getId().equals(owner1.getId()))

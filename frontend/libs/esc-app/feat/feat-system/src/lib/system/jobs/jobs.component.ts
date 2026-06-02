@@ -68,4 +68,9 @@ export class JobsComponent {
   public runArchiveDownloadEmailReminderJob(): void {
     this.#systemAdminStore.triggerArchiveDownloadEmailReminderJob();
   }
+
+  // FileStore health check
+  public runFilestoreHealthcheck(): void {
+    this.#systemAdminStore.triggerFilestoreHealthcheck();
+  }
 }

@@ -10,7 +10,7 @@ import {
 } from '@dvb/data-access-backend';
 import {
   BackendEntityId,
-  BackendEntityIdWithClass,
+  BackendEntityIdWithClass, toAnonymerEintragBackendEntityIdWithClass,
   toEinladungBackendEntityIdWithClass,
 } from '@dvb/data-access-types';
 import {Path} from '@dvb/feat-shared';
@@ -21,6 +21,7 @@ import {patchState, signalStore, withComputed, withMethods, withState} from '@ng
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, map, pipe, switchMap} from 'rxjs';
 import {AnlassEinladungenId} from './anlass-einladungen-id';
+import {AnlassStore} from "../anlass.store";
 
 type UntersuchungState = {
   tabList: UntersuchungTabInfoJson[];
@@ -45,19 +46,33 @@ export class UntersuchungStore extends signalStore(
   {protectedState: false},
   // withDevtools('untersuchung'),
   withState(initialState),
-  withComputed(({tabList, currentTabId}) => ({
+  withComputed(({tabList, currentTabId}, anlassStore = inject(AnlassStore)) => ({
     currentTab: computed(() => {
       return tabList().find((tab) => tab.einladungID === currentTabId());
     }),
+    getWrappedEinladungId: computed(() => {
+      const einladungId = currentTabId();
+      if(!einladungId){
+        return undefined;
+      }
+      return anlassStore.isAnonymous() ? toAnonymerEintragBackendEntityIdWithClass(einladungId) : toEinladungBackendEntityIdWithClass(einladungId);
+    })
   })),
   withMethods((store) => ({
     setCurrentTabId(query: BackendEntityId | undefined): void {
       patchState(store, (_state) => ({currentTabId: query}));
     },
+    setAnonymusTab(query: BackendEntityId): void {
+      patchState(store, (_state) => ({
+        tabList: [],
+        currentTabId: query
+      }));
+    },
     reset(): void {
       patchState(store, initialState);
     },
   })),
+
 ) {
   readonly #einladungenService = inject(EinladungenService);
   readonly #dossierService = inject(DossierService);

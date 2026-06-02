@@ -117,8 +117,10 @@ class SuperAdminRunnerServiceTest extends AbstractITest {
         TenantSetting tenantSettingOverride = TenantSettingBuilder.create(tenantSettingBuilder -> tenantSettingBuilder
             .withAdHocImpfstoffChargenFeature(FeatureEnabledSetting.ENABLED)
             .withSupportedLangagues(List.of(AppLanguages.DE, AppLanguages.FR))
+            .withZentraleOrganisationFeature(FeatureEnabledSetting.ENABLED)
         );
         Mockito.when(tenantSettingsServiceMock.getTenantSetting()).thenReturn(tenantSettingOverride);
+        Mockito.when(tenantSettingsServiceMock.isZentraleOrganisation()).thenReturn(true);
 
         ArchivierungRuleProducer archivierungRuleProducerMock = Mockito.mock(ArchivierungRuleProducer.class);
         QuarkusMock.installMockForType(archivierungRuleProducerMock, ArchivierungRuleProducer.class);

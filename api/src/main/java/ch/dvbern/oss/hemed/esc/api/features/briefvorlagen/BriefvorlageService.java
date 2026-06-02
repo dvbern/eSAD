@@ -61,7 +61,7 @@ public class BriefvorlageService {
         fileValidationService.requireFiletypeIsAllowed(fileUpload, FileTyp.BRIEFVORLAGE);
 
         // prepare the file info Embeddable
-        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfo(fileUpload, FileTyp.BRIEFVORLAGE);
+        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfoWithMIMEDetect(fileUpload, FileTyp.BRIEFVORLAGE);
         // upload the file to S3
         Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileUpload, fileInfo);
         PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());

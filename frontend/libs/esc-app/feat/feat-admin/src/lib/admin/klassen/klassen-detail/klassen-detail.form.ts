@@ -2,7 +2,7 @@ import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {EntityAktivStatus, Klassenstufe, KlasseSaveJson, SchuleOptionJson} from '@dvb/data-access-backend';
 import {globalConstants} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensureProps, Nullish, requireValue} from '@dvb/util-shared';
+import {ensurePropsFlat, Nullish, requireValue} from '@dvb/util-shared';
 
 type Config = {
   fb: NonNullableFormBuilder;
@@ -28,7 +28,7 @@ export class KlassenDetailForm extends BaseForm<ReturnType<typeof makeForm>, Kla
 
   override valueOnValid(): KlasseSaveJson {
     const value = requireValue(this.group.getRawValue());
-    return ensureProps<KlasseSaveJson>({
+    return ensurePropsFlat<KlasseSaveJson>({
       schule: requireValue(value.schule),
       bezeichnung: requireValue(value.bezeichnung),
       klassenstufe: requireValue(value.klassenstufe),

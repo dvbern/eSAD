@@ -53,7 +53,7 @@ public class UntersuchungTriageResource {
             wrappedId.toEinladungId(),
             untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
                 untersuchung,
-                Berechtigung.SU_TRIAGE_LESEN));
+                List.of(Berechtigung.SU_TRIAGE_LESEN)));
     }
 
     @PUT

@@ -1,12 +1,14 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {
-  FormControlComponent, FormLayoutComponent, HeadingDirective,
+  FormControlComponent,
+  FormLayoutComponent,
+  HeadingDirective,
   SaveCancelButtonsComponent,
-  TextareaDirective, TitleComponent
+  TextareaDirective,
+  TitleComponent
 } from '@dvb/ui-components';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {TranslocoPipe} from '@jsverse/transloco';
-import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import {DirtyMarker} from '@dvb/util-angular';
 import {UntersuchungStore} from '../untersuchung.store';
 import {requireValue} from '@dvb/util-shared';
@@ -78,17 +80,17 @@ export class UntersuchungBewegungsapparatComponent implements DirtyMarker {
   }
 
   abbrechen(): void {
-    this.form.reset(this.store.bewegungsapparat()?.data ?? undefined);
+    this.form.resetForm(this.store.bewegungsapparat()?.data ?? undefined);
   }
 
   async submitIfValid(): Promise<void> {
     if (await this.form.validate()) {
       const payload = this.form.valueOnValid();
       const anlassId = requireValue(this.anlassStore.selectedEntity()?.id);
-      const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
+      const einladungId = requireValue(this.untersuchungStore.getWrappedEinladungId());
       this.store.saveBewegungsapparat({
         anlassId: anlassId,
-        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
+        einladungId: einladungId,
         untersuchungBewegungsapparatSaveJson: payload,
       });
     }

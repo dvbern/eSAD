@@ -380,38 +380,61 @@ public class BasePrinter {
 
     @NonNull
     public Paragraph addBlockText(@NonNull I18nMessage key) {
+        return addBlockText(key, 10);
+    }
+
+    @NonNull
+    public Paragraph addBlockText(@NonNull I18nMessage key, float fontSize) {
         return addBlockText(
-            PDFAPrintUtil.sanitizeForPDFA(tl.translate(key)));
+            PDFAPrintUtil.sanitizeForPDFA(tl.translate(key)), fontSize);
     }
 
     @NonNull
     public Paragraph addBlockText(@NonNull String text) {
+        return addBlockText(text, 10);
+    }
+
+    @NonNull
+    public Paragraph addBlockText(@NonNull String text, float fontSize) {
         Paragraph blockText = new Paragraph();
         blockText.setMultipliedLeading(1.0f);
         blockText.add(PDFAPrintUtil.sanitizeForPDFA(text));
-        blockText.setFontSize(10);
+        blockText.setFontSize(fontSize);
         return blockText;
     }
 
     @NonNull
     public Paragraph getTableHeaderText(@NonNull I18nMessage key) {
+        return getTableHeaderText(key, 10);
+    }
+
+    @NonNull
+    public Paragraph getTableHeaderText(@NonNull I18nMessage key, float fontSize) {
         Paragraph blockText = new Paragraph();
         blockText.setMultipliedLeading(1.0f);
         blockText.add(PDFAPrintUtil.sanitizeForPDFA(tl.translate(key)));
-        blockText.setFontSize(10);
+        blockText.setFontSize(fontSize);
         blockText.setBold();
         return blockText;
     }
 
     public void addHeaderToTable(@NonNull List<I18nMessage> keys, @NonNull Table table) {
+        addHeaderToTable(keys, table, 10);
+    }
+
+    public void addHeaderToTable(@NonNull List<I18nMessage> keys, @NonNull Table table, float fontSize) {
         for (I18nMessage key : keys) {
-            table.addCell(new Cell().add(getTableHeaderText(key)));
+            table.addCell(new Cell().add(getTableHeaderText(key, fontSize)));
         }
     }
 
     public void addRowToTable(@NonNull List<String> values, @NonNull Table table) {
+        addRowToTable(values, table, 10);
+    }
+
+    public void addRowToTable(@NonNull List<String> values, @NonNull Table table, float fontSize) {
         for (String value : values) {
-            table.addCell(new Cell().add(addBlockText(value)));
+            table.addCell(new Cell().add(addBlockText(value, fontSize)));
         }
     }
 
@@ -429,22 +452,50 @@ public class BasePrinter {
         @NonNull Document document,
         boolean useFullWidth
     ) {
-        Table table = new Table(headerColumns.size());
+        addTable(headerColumns, rows, document, useFullWidth, 10);
+    }
+
+    public void addTable(
+        @NonNull List<I18nMessage> headerColumns,
+        @NonNull List<List<String>> rows,
+        @NonNull Document document,
+        boolean useFullWidth,
+        float fontSize
+    ) {
+        addTable(headerColumns, rows, document, useFullWidth, fontSize, null);
+    }
+
+    public void addTable(
+        @NonNull List<I18nMessage> headerColumns,
+        @NonNull List<List<String>> rows,
+        @NonNull Document document,
+        boolean useFullWidth,
+        float fontSize,
+        float @Nullable [] columnWidths
+    ) {
+        Table table;
+        // if available use passed columentWidths
+        if (columnWidths != null) {
+            table = new Table(columnWidths);
+            table.setFixedLayout();
+        } else {
+            table = new Table(headerColumns.size());
+        }
         table.setMarginBottom(10.0f);
         // Make table use full width if requested
         if (useFullWidth) {
             table.useAllAvailableWidth();
         }
 
-        addHeaderToTable(headerColumns, table);
+        addHeaderToTable(headerColumns, table, fontSize);
 
         if (rows.isEmpty()) {
             table.addCell(new Cell(1, headerColumns.size())
-                .add(addBlockText(I18nMessage.of("printer.table.no-entries")))
+                .add(addBlockText(I18nMessage.of("printer.table.no-entries"), fontSize))
                 .setTextAlignment(TextAlignment.CENTER));
         } else {
             for (List<String> row : rows) {
-                addRowToTable(row, table);
+                addRowToTable(row, table, fontSize);
             }
         }
 

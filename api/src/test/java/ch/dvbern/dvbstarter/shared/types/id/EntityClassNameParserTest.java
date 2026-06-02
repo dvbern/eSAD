@@ -67,6 +67,7 @@ class EntityClassNameParserTest {
         }
         class SomeEntity {
             public void method(TypeWithGenericParam<MyTypeParam> param) {
+                // empty
             }
         }
         var type = SomeEntity.class.getMethod("method", TypeWithGenericParam.class)

@@ -21,7 +21,7 @@ import {NotizenService, NotizJson, NotizSaveJson} from '@dvb/data-access-backend
 import {BackendEntityId} from '@dvb/data-access-types';
 import {NotizJsonEnhanced} from '@dvb/feat-shared';
 import {AppErrorHandlerService, Loader, withSelectedEntity} from '@dvb/util-angular';
-import {compareByEntityInfoTimestampErstellt, isNotNullish, requireValue} from '@dvb/util-shared';
+import {compareByEntityInfoTimestampErstellt, isNotNullish, joinNotBlank, requireValue} from '@dvb/util-shared';
 import {tapResponse} from '@ngrx/operators';
 import {patchState, signalStore, withComputed} from '@ngrx/signals';
 import {removeEntity, setAllEntities, setEntity, withEntities} from '@ngrx/signals/entities';
@@ -50,7 +50,7 @@ export class NotizenListStore extends signalStore(
   loadNotizen = rxMethod<void>(
     pipe(
       switchMap(() => this.loader.tapLoading$(
-        this.#notizenService.findAll$(),
+        this.#notizenService.findAllBerechtigt$(),
         error => this.#appErrorHandlerService.handleError(error))),
       tapResponse({
         next: listJson => patchState(this, setAllEntities(listJson.notizen.map(this.enhanceNotiz))),
@@ -148,7 +148,7 @@ export class NotizenListStore extends signalStore(
       ...notiz,
       labelIds: notiz.data.labels.map(each => each.id),
       hasAnhang: notiz.data.files.length > 0,
-      kindFullName: notiz.kind.vorname + ' ' + notiz.kind.name,
+      kindFullName: joinNotBlank([notiz.kind.vorname, notiz.kind.name]) ?? '',
     }
   }
 }

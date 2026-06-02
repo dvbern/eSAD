@@ -2,15 +2,15 @@
   "name": "@dvb/feat-system",
   "version": "0.0.1",
   "peerDependencies": {
-    "@angular/core": "20.2.4",
-    "@angular/router": "20.2.4",
+    "@angular/core": "21.2.9",
+    "@angular/router": "21.2.9",
     "@dvb/ui-components": "0.0.1",
     "@jsverse/transloco": "^7.5.0",
     "@dvb/data-access-types": "0.0.1",
-    "@angular/forms": "20.2.4",
+    "@angular/forms": "21.2.9",
     "@dvb/util-angular": "0.0.1",
     "@dvb/util-shared": "0.0.1",
-    "@ng-bootstrap/ng-bootstrap": "19.0.1",
+    "@ng-bootstrap/ng-bootstrap": "20.0.0",
     "@dvb/feat-shared": "0.0.1"
   },
   "sideEffects": false

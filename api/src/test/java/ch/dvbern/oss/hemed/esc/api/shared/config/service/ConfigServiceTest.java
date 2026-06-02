@@ -27,20 +27,20 @@ class ConfigServiceTest {
 
     @Test
     void validateNotProdAndDbResetFeatureEnabled_Success() {
-        // Arrange
+        // ARRANGE
         when(configService.getEnvironment()).thenReturn(DeploymentEnvironment.DEV);
         when(configService.isAllowDbReset()).thenReturn(true);
         Mockito.doCallRealMethod().when(configService).validateNotProdAndDbResetFeatureEnabled();
-        // Act & Assert
+        // ACT & ASSERT
         assertDoesNotThrow(configService::validateNotProdAndDbResetFeatureEnabled);
     }
 
     @Test
     void validateNotProdAndDbResetFeatureEnabled_ThrowsException_WhenInProd() {
-        // Arrange
+        // ARRANGE
         when(configService.getEnvironment()).thenReturn(DeploymentEnvironment.PROD);
         Mockito.doCallRealMethod().when(configService).validateNotProdAndDbResetFeatureEnabled();
-        // Act & Assert
+        // ACT & ASSERT
         assertThrows(
             AppFailureException.class,
             configService::validateNotProdAndDbResetFeatureEnabled);
@@ -48,11 +48,11 @@ class ConfigServiceTest {
 
     @Test
     void validateNotProdAndDbResetFeatureEnabled_ThrowsException_WhenDbResetDisabled() {
-        // Arrange
+        // ARRANGE
         when(configService.getEnvironment()).thenReturn(DeploymentEnvironment.DEV);
         when(configService.isAllowDbReset()).thenReturn(false);
         Mockito.doCallRealMethod().when(configService).validateNotProdAndDbResetFeatureEnabled();
-        // Act & Assert
+        // ACT & ASSERT
         assertThrows(
             AppFailureException.class,
             configService::validateNotProdAndDbResetFeatureEnabled);
@@ -60,20 +60,20 @@ class ConfigServiceTest {
 
     @Test
     void validateNotProdAndTimetravelFeatureEnabled_Success() {
-        // Arrange
+        // ARRANGE
         when(configService.getEnvironment()).thenReturn(DeploymentEnvironment.DEV);
         when(configService.isFeatureTimeTravelEndpointEnabled()).thenReturn(true);
         Mockito.doCallRealMethod().when(configService).validateNotProdAndTimeTravelFeatureEnabled();
-        // Act & Assert
+        // ACT & ASSERT
         assertDoesNotThrow(configService::validateNotProdAndTimeTravelFeatureEnabled);
     }
 
     @Test
     void validateNotProdAndTimetravelFeatureEnabled_ThrowsException_WhenInProd() {
-        // Arrange
+        // ARRANGE
         when(configService.getEnvironment()).thenReturn(DeploymentEnvironment.PROD);
         Mockito.doCallRealMethod().when(configService).validateNotProdAndTimeTravelFeatureEnabled();
-        // Act & Assert
+        // ACT & ASSERT
         assertThrows(
             AppFailureException.class,
             configService::validateNotProdAndTimeTravelFeatureEnabled);
@@ -81,11 +81,11 @@ class ConfigServiceTest {
 
     @Test
     void validateNotProdAndTimetravelFeatureEnabled_ThrowsException_WhenTimetravelDisabled() {
-        // Arrange
+        // ARRANGE
         when(configService.getEnvironment()).thenReturn(DeploymentEnvironment.DEV);
         when(configService.isFeatureTimeTravelEndpointEnabled()).thenReturn(false);
         Mockito.doCallRealMethod().when(configService).validateNotProdAndTimeTravelFeatureEnabled();
-        // Act & Assert
+        // ACT & ASSERT
         assertThrows(
             AppFailureException.class,
             configService::validateNotProdAndTimeTravelFeatureEnabled);
@@ -93,17 +93,17 @@ class ConfigServiceTest {
 
     @Test
     void isStufeProd_returns_true_when_environment_is_prod() {
-        // Arrange
+        // ARRANGE
         when(configService.getEnvironment()).thenReturn(DeploymentEnvironment.PROD);
-        // Act & Assert
+        // ACT & ASSERT
         Assertions.assertThat(configService.isStufeProd()).isTrue();
     }
 
     @Test
     void isStufeProd_returns_false_when_environment_is_not_prod() {
-        // Arrange
+        // ARRANGE
         when(configService.getEnvironment()).thenReturn(DeploymentEnvironment.DEV);
-        // Act & Assert
+        // ACT & ASSERT
         Assertions.assertThat(configService.isStufeProd()).isFalse();
     }
 

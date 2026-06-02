@@ -61,4 +61,12 @@
   .text-deleted-in-bucket {
       color: color.$text-disabled;
   }
+
+  &--preview-active {
+    --svui-table-bg: #E7EBF3;
+    --svui-table-bg-state: #E7EBF3;
+    --svui-table-bg-type: #E7EBF3;
+    --svui-table-accent-bg: #E7EBF3;
+
+  }
 }

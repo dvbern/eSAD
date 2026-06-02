@@ -26,7 +26,7 @@ import {
 import {DetailMode, DirtyMarker} from '@dvb/util-angular';
 import {
   fromISODateTimeString,
-  hasListEditBerechtigung,
+  hasSchuleEditBerechtigung,
   isExternalObject,
   isNotNullish,
   isNullish
@@ -69,7 +69,7 @@ export class SchulenDetailStammdatenComponent implements DirtyMarker {
   readonly schuleAktivStati = Object.values(EntityAktivStatus);
   protected readonly Path = Path;
 
-  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
+  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasSchuleEditBerechtigung());
 
   getImportSchnittstelle = computed(() => {
     const externalImportInfo = this.store.selectedEntity()?.externalImportInfoJson;

@@ -29,7 +29,7 @@ export interface AnlassConfigSaveJson {
     showImpfausweis: boolean;
     showFragebogen: boolean;
     showAnmeldungBestaetigung: boolean;
-    showImpfanmeldung: boolean;
+    showImpfeinverstaendnis: boolean;
     showDatenPersonendaten: boolean;
     showDatenPersonendatenEsadId: boolean;
     datenUntersuchung: RequirementSetting;

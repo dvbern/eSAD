@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -16,20 +17,23 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * in a way that makes sense to the customer.
  * In case a user has multiple FachRollen, the user will have all the BerechtigungsRollen of all the FachRollen.
  */
+@Getter
 @AllArgsConstructor
 public enum FachRolle {
 
-    EMPFANG,
-    MPA,
-    ORTHOPISTIN,
-    SCHULAERZTIN,
-    LAUSBEAUFTRAGTE,
-    PFP,
-    SCHOOL_NURSE,
-    SUPERUSER,
-    ADMIN,
-    SUPPORT,
-    SYSTEM_ADMIN;
+    EMPFANG(false),
+    MPA(true),
+    ORTHOPISTIN(false),
+    SCHULAERZTIN(false),
+    LAUSBEAUFTRAGTE(false),
+    PFP(false),
+    SCHOOL_NURSE(false),
+    SUPERUSER(false),
+    ADMIN(false),
+    SUPPORT(false),
+    SYSTEM_ADMIN(false);
+
+    private final boolean delegierbar;
 
     public static List<FachRolle> fachrollenHilfsperson() {
         return List.of(FachRolle.MPA, FachRolle.PFP, FachRolle.SCHOOL_NURSE);
@@ -72,6 +76,13 @@ public enum FachRolle {
     @NonNull
     public static List<FachRolle> getSystemRollen() {
         return List.of(SUPPORT, SYSTEM_ADMIN);
+    }
+
+    public static List<FachRolle> getBerechtigteDelegierBareFachrollen(@NonNull TenantEnum tenant) {
+        return getFachrollenWithBerechtigung(tenant)
+            .stream()
+            .filter(fr -> fr.isDelegierbar())
+            .toList();
     }
 
     @NonNull

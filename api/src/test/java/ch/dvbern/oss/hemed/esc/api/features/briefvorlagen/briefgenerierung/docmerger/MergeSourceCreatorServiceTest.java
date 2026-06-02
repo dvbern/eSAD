@@ -28,6 +28,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MergeSourceCreatorServiceTest {
+
     @Test
     void formatAddress_shouldReturnPlaceholder_whenAddressIsNull() {
         // Given

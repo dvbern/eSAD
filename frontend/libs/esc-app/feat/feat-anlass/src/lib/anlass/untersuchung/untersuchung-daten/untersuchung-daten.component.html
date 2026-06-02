@@ -67,7 +67,7 @@
   }
 
   <!--UNTERSUCHUNG-->
-  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.datenUntersuchung) {
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.datenUntersuchung !== RequirementSetting.NOT_VISIBLE) {
 
     <h2 svuiHeading="formSection">{{ 'untersuchung.tab.daten.untersuchung.titel' | transloco }}</h2>
     <svui-form-control [label]="'untersuchung.tab.daten.untersuchung.datum' | transloco"
@@ -86,10 +86,13 @@
         [placeholder]="'global.select.bitte-auswaehlen' | transloco"
         [compareWith]="compareFn"
       >
-        @for (arzt of benutzerOptionsStore.arztOptionsIncluding(form.group.value.arzt); track arzt) {
-          <ng-option [value]="arzt" [disabled]="arzt.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
-            {{ arzt.fullName }}
-          </ng-option>
+        <!-- null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+        @if (arztOptions()) {
+          @for (arzt of arztOptions(); track arzt) {
+            <ng-option [value]="arzt" [disabled]="arzt.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
+              {{ arzt.fullName }}
+            </ng-option>
+          }
         }
       </ng-select>
     </svui-form-control>
@@ -105,10 +108,13 @@
         [placeholder]="'global.select.bitte-auswaehlen' | transloco"
         [compareWith]="compareFn"
       >
-        @for (hilfsperson of benutzerOptionsStore.hilfspersonOptionsIncluding(form.group.value.mpa); track hilfsperson) {
-          <ng-option [value]="hilfsperson" [disabled]="hilfsperson.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
-            {{ hilfsperson.fullName }}
-          </ng-option>
+        <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+        @if (hilfspersonOptions()) {
+          @for (hilfsperson of hilfspersonOptions(); track hilfsperson) {
+            <ng-option [value]="hilfsperson" [disabled]="hilfsperson.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
+              {{ hilfsperson.fullName }}
+            </ng-option>
+          }
         }
       </ng-select>
     </svui-form-control>
@@ -166,7 +172,6 @@
                        [viewValue]="form.group.value.schulhausnummer">
       <input svuiTextInput [formControl]="form.group.controls.schulhausnummer">
     </svui-form-control>
-
 
     <svui-form-control [label]="'klasse.klassenstufe' | transloco"
                        [viewValue]="form.group.value.klassenstufe ? ('Klassenstufe.' + form.group.value.klassenstufe | transloco) : '' ">

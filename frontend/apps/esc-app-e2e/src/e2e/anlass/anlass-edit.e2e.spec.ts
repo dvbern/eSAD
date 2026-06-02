@@ -50,14 +50,14 @@ test.describe('anlass edit', () => {
     await expect(anlassPlanungPage.elements.buttonAddFragebogenSuccess()).toBeVisible();
   });
 
-  test('add impfanmeldung to kinder', async ({ page }) => {
+  test('add impfeinverstaendnis to kinder', async ({ page }) => {
     const anlassPlanungPage = new AnlassPlanungPageObject(page);
 
-    await anlassPlanungPage.elements.buttonAddImpfanmeldung().first().click();
+    await anlassPlanungPage.elements.buttonAddImpfeinverstaendnis().first().click();
 
     await fileupload(page, 'apps/esc-app-e2e/src/e2e/anlass/pdfFileExample.pdf');
 
-    await expect(anlassPlanungPage.elements.buttonAddImpfanmeldungSuccess()).toBeVisible();
+    await expect(anlassPlanungPage.elements.buttonAddImpfeinverstaendnisSuccess()).toBeVisible();
   });
 
   test.describe('change teilnahme status', () => {

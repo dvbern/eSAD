@@ -1,8 +1,7 @@
-
-import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {InfomaterialJson, InformationEltern, RequirementSetting,} from '@dvb/data-access-backend';
-import {InfomaterialStore, TranslatedStringPipe} from '@dvb/feat-shared';
+import {BenutzerStore, InfomaterialStore, TranslatedStringPipe} from '@dvb/feat-shared';
 import {
   CheckboxDirective,
   FormControlComponent,
@@ -12,9 +11,8 @@ import {
   NgSelectDirective,
   SaveCancelButtonsComponent,
 } from '@dvb/ui-components';
-import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import {DirtyMarker} from '@dvb/util-angular';
-import {compareFn, requireValue} from '@dvb/util-shared';
+import {compareFn, hasSehenEditBerechtigung, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {AnlassStore} from '../../../anlass.store';
@@ -37,7 +35,7 @@ import {UntersuchungSehenMassnahmenForm} from "./untersuchung-sehen-massnahmen.f
     NgSelectComponent,
     NgSelectDirective,
     TranslatedStringPipe
-],
+  ],
   templateUrl: './untersuchung-sehen-massnahmen.component.html',
   styleUrl: './untersuchung-sehen-massnahmen.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,11 +48,15 @@ export class UntersuchungSehenMassnahmenComponent implements DirtyMarker {
   readonly untersuchungStore = inject(UntersuchungStore);
   readonly store = inject(UntersuchungSehenStore);
   readonly infomaterialStore = inject(InfomaterialStore);
+  readonly benutzerStore = inject(BenutzerStore);
 
   form = new UntersuchungSehenMassnahmenForm({
     fb: inject(NonNullableFormBuilder),
     destroyRef: inject(DestroyRef),
   });
+
+  canEdit = computed(() => this.benutzerStore.createHasRequiredRoleSig(hasSehenEditBerechtigung())()
+    && this.anlassStore.canUserEditAnlassInCurrentState());
 
   informationEltern = Object.values(InformationEltern);
   infomaterialOptions: InfomaterialJson[] | undefined;
@@ -85,11 +87,10 @@ export class UntersuchungSehenMassnahmenComponent implements DirtyMarker {
   async submitIfValid(): Promise<void> {
     if (await this.form.validate()) {
       const anlassId = requireValue(this.anlassStore.selectedEntity()?.id);
-      const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       const payload = this.form.valueOnValid();
       this.store.saveSehenMassnahmen({
         anlassId: anlassId,
-        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
+        einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
         untersuchungSehenMassnahmenSaveJson: payload,
       });
     }

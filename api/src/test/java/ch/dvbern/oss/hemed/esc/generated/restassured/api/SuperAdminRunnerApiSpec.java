@@ -67,6 +67,7 @@ public class SuperAdminRunnerApiSpec {
                 superAdminRunnerResourceTriggerDocumentQueueJob(),
                 superAdminRunnerResourceTriggerDossierQueueCleanupJob(),
                 superAdminRunnerResourceTriggerDossierQueueProcessingJob(),
+                superAdminRunnerResourceTriggerFilestoreHealthcheck(),
                 superAdminRunnerResourceTriggerKinderInaktivierenJob(),
                 superAdminRunnerResourceTriggerReloadDuplikate()
         );
@@ -114,6 +115,10 @@ public class SuperAdminRunnerApiSpec {
 
     public SuperAdminRunnerResourceTriggerDossierQueueProcessingJobOper superAdminRunnerResourceTriggerDossierQueueProcessingJob() {
         return new SuperAdminRunnerResourceTriggerDossierQueueProcessingJobOper(createReqSpec());
+    }
+
+    public SuperAdminRunnerResourceTriggerFilestoreHealthcheckOper superAdminRunnerResourceTriggerFilestoreHealthcheck() {
+        return new SuperAdminRunnerResourceTriggerFilestoreHealthcheckOper(createReqSpec());
     }
 
     public SuperAdminRunnerResourceTriggerKinderInaktivierenJobOper superAdminRunnerResourceTriggerKinderInaktivierenJob() {
@@ -680,6 +685,56 @@ public class SuperAdminRunnerApiSpec {
          * @return operation
          */
         public SuperAdminRunnerResourceTriggerDossierQueueProcessingJobOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
+            respSpecCustomizer.accept(respSpec);
+            return this;
+        }
+    }
+    /**
+     * Trigger Filestore Healthcheck
+     * 
+     *
+     */
+    public static class SuperAdminRunnerResourceTriggerFilestoreHealthcheckOper implements Oper {
+
+        public static final Method REQ_METHOD = POST;
+        public static final String REQ_URI = "/api/super-admin-runner/trigger-filestore-healthcheck";
+
+        private RequestSpecBuilder reqSpec;
+        private ResponseSpecBuilder respSpec;
+
+        public SuperAdminRunnerResourceTriggerFilestoreHealthcheckOper(RequestSpecBuilder reqSpec) {
+            this.reqSpec = reqSpec;
+            reqSpec.setAccept("application/json");
+            this.respSpec = new ResponseSpecBuilder();
+        }
+
+        /**
+         * POST /api/super-admin-runner/trigger-filestore-healthcheck
+         * @param handler handler
+         * @param <T> type
+         * @return type
+         */
+        @Override
+        public <T> T execute(Function<Response, T> handler) {
+            return handler.apply(RestAssured.given().spec(reqSpec.build()).expect().spec(respSpec.build()).when().request(REQ_METHOD, REQ_URI));
+        }
+
+        /**
+         * Customize request specification
+         * @param reqSpecCustomizer consumer to modify the RequestSpecBuilder
+         * @return operation
+         */
+        public SuperAdminRunnerResourceTriggerFilestoreHealthcheckOper reqSpec(Consumer<RequestSpecBuilder> reqSpecCustomizer) {
+            reqSpecCustomizer.accept(reqSpec);
+            return this;
+        }
+
+        /**
+         * Customize response specification
+         * @param respSpecCustomizer consumer to modify the ResponseSpecBuilder
+         * @return operation
+         */
+        public SuperAdminRunnerResourceTriggerFilestoreHealthcheckOper respSpec(Consumer<ResponseSpecBuilder> respSpecCustomizer) {
             respSpecCustomizer.accept(respSpec);
             return this;
         }

@@ -21,6 +21,7 @@ function makeForm(config: Config) {
     email: fb.control<string>(''),
     benutzerAktivStatus: fb.control<boolean | null>(null),
     rolle: fb.control<FachRolle | null>(null),
+    organisation: fb.control<string | null>(null),
   });
 
   onTextInput(group.controls.name, config.destroyRef).subscribe({
@@ -54,6 +55,18 @@ function makeForm(config: Config) {
         filterMethod: FilterMethod.SUBSTRING,
         filterCombinationMethod: FilterCombinationMethod.AND,
         filterName: 'data.email',
+      });
+    },
+    error: console.error,
+  });
+
+  onTextInput(group.controls.organisation, config.destroyRef).subscribe({
+    next: organisation => {
+      config.paginatedTable.onFilterChanged({
+        filterValue: organisation ?? '',
+        filterMethod: FilterMethod.SUBSTRING,
+        filterCombinationMethod: FilterCombinationMethod.AND,
+        filterName: 'data.organisationRollen.organisation.verantwortlicherArztFullname',
       });
     },
     error: console.error,

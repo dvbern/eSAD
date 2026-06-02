@@ -14,6 +14,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigu
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import io.micrometer.core.annotation.Timed;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
@@ -25,7 +26,6 @@ import jakarta.ws.rs.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/schulrelevantebeeintraechtigung")
@@ -50,10 +50,10 @@ public class UntersuchungSchulrelevanteBeeintraechtigungResource {
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungSchulrelevanteBeeintraechtigungMapper.getByEinladung(
-            wrappedId.toEinladungId(),
+            wrappedId,
             untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
                 untersuchung,
-                Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN));
+                List.of(Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN)));
     }
 
     @PUT
@@ -66,7 +66,7 @@ public class UntersuchungSchulrelevanteBeeintraechtigungResource {
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungSchulrelevanteBeeintraechtigungMapper.save(
-            wrappedId.toEinladungId(),
+            wrappedId,
             saveJson,
             untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
                 untersuchung,

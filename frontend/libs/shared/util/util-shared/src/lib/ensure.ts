@@ -34,9 +34,12 @@
  *
  * Idea stolen from: https://github.com/microsoft/TypeScript/issues/31025#issuecomment-484734942
  */
-export type OptionalToUndefined<T> = {
-  [P in keyof Required<T>]: OptionalToUndefined<T[P]>;
-};
+// Stop recursion for primitives (and branded types, which extend string but look like objects to TypeScript)
+export type OptionalToUndefined<T> = T extends string | number | boolean | bigint | symbol | null | undefined
+  ? T
+  : {
+      [P in keyof Required<T>]: OptionalToUndefined<T[P]>;
+    };
 /**
  * See {@link OptionalToUndefined} but only for the root-level object.
  *

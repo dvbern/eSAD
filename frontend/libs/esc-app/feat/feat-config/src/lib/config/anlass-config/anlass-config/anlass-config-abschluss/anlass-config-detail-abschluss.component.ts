@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked} from "@angular/core";
-import {CommonModule} from "@angular/common";
+
 import {NonNullableFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {
   FormButtonsComponent,
@@ -23,7 +23,6 @@ import { AnlassConfigStore } from "../../anlass-config.store";
 @Component({
   selector: 'feat-config-abschluss',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FormButtonsComponent,
     FormErrorMessageComponent,
@@ -31,8 +30,8 @@ import { AnlassConfigStore } from "../../anlass-config.store";
     HeadingDirective,
     TranslocoPipe,
     AnlassConfigRequirementSettingComponent,
-    AnlassConfigSelectBooleanComponent,
-  ],
+    AnlassConfigSelectBooleanComponent
+],
   templateUrl: './anlass-config-detail-abschluss.component.html',
   styleUrl: './anlass-config-detail-abschluss.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -55,7 +55,7 @@ class DossierQueueServiceTest {
 
     @Test
     void testUpdate() {
-        // Arrange
+        // ARRANGE
         ID<DossierQueue> id = ID.of(UUID.randomUUID(), DossierQueue.class);
         DossierQueue existing = new DossierQueue();
         existing.setId(id);
@@ -69,10 +69,10 @@ class DossierQueueServiceTest {
         updateData.setTimestampResult(now);
         updateData.setErrorCount(1);
 
-        // Act
+        // ACT
         service.update(updateData);
 
-        // Assert
+        // ASSERT
         verify(dossierQueueRepo).persist(existing);
         assertThat(existing.getStatus()).isEqualTo(DossierQueueStatus.SUCCESS);
         assertThat(existing.getLastError()).isEqualTo("No error");
@@ -82,30 +82,30 @@ class DossierQueueServiceTest {
 
     @Test
     void testMarkAsInProgress() {
-        // Arrange
+        // ARRANGE
         ID<DossierQueue> id = ID.of(UUID.randomUUID(), DossierQueue.class);
         DossierQueue existing = new DossierQueue();
         existing.setId(id);
         existing.setStatus(DossierQueueStatus.NEW);
         when(dossierQueueRepo.getById(id)).thenReturn(existing);
 
-        // Act
+        // ACT
         service.markAsInProgress(id);
 
-        // Assert
+        // ASSERT
         verify(dossierQueueRepo).persist(existing);
         assertThat(existing.getStatus()).isEqualTo(DossierQueueStatus.IN_PROGRESS);
     }
 
     @Test
     void testCreateDossierQueueItem() {
-        // Arrange
+        // ARRANGE
         ID<Dossier> dossierID = ID.of(UUID.randomUUID(), Dossier.class);
 
-        // Act
+        // ACT
         service.createDossierQueueItem(dossierID, DossierQueueTyp.ARCHIVIERUNG, null);
 
-        // Assert
+        // ASSERT
         ArgumentCaptor<DossierQueue> captor = ArgumentCaptor.forClass(DossierQueue.class);
         verify(dossierQueueRepo).persist(captor.capture());
         DossierQueue created = captor.getValue();
@@ -123,37 +123,37 @@ class DossierQueueServiceTest {
 
     @Test
     void testProcessDossierQueueItem_Archivierung() {
-        // Arrange
+        // ARRANGE
         UUID dossierId = UUID.randomUUID();
         DossierQueue item = new DossierQueue();
         item.setDossierQueueTyp(DossierQueueTyp.ARCHIVIERUNG);
         item.setDossierID(dossierId);
 
-        // Act
+        // ACT
         service.processDossierQueueItem(item);
 
-        // Assert
+        // ASSERT
         verify(archivierungService).archivieren(ID.of(dossierId, Dossier.class));
     }
 
     @Test
     void testProcessDocumentQueueItem_ArchivierungDelete() {
-        // Arrange
+        // ARRANGE
         UUID dossierId = UUID.randomUUID();
         DossierQueue item = new DossierQueue();
         item.setDossierQueueTyp(DossierQueueTyp.ARCHIVIERUNG_DELETE);
         item.setDossierID(dossierId);
 
-        // Act
+        // ACT
         service.processDossierQueueItem(item);
 
-        // Assert
+        // ASSERT
         verify(archivierungService).delete(ID.of(dossierId, Dossier.class));
     }
 
     @Test
     void testCleanUpOldDossierQueue() {
-        // Arrange
+        // ARRANGE
         OffsetDateTime now = OffsetDateTime.parse("2026-03-18T10:00:00Z");
         AppClock.OffsetDateTimeProvider clockProvider = mock(AppClock.OffsetDateTimeProvider.class);
         when(appClock.offsetDateTime()).thenReturn(clockProvider);
@@ -176,10 +176,10 @@ class DossierQueueServiceTest {
         when(tenantSettingsService.getTenantSetting()).thenReturn(tenantSetting);
         when(tenantSetting.getSupportEmail()).thenReturn("support@example.com");
 
-        // Act
+        // ACT
         long count = service.cleanUpOldDossierQueue();
 
-        // Assert
+        // ASSERT
         assertThat(count).isEqualTo(2);
         verify(dossierQueueRepo).remove(item1.getId());
         verify(dossierQueueRepo).remove(item2.getId());

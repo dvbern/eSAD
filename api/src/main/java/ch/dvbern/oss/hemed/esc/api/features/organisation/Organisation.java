@@ -63,7 +63,7 @@ public class Organisation extends AbstractEntity<Organisation> implements Entity
 
     public void addMitglied(@NonNull OrganisationRollen mitglied) {
         if (this.getMitglieder().isEmpty()) {
-            this.setMitglieder(Set.of(mitglied));
+            this.setMitglieder(new HashSet<>(Set.of(mitglied)));
         } else {
             this.getMitglieder().add(mitglied);
         }

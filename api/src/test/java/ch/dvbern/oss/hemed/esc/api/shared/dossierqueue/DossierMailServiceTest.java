@@ -66,7 +66,7 @@ class DossierMailServiceTest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void sendDossierQueueFinishedFailureMail_should_use_failure_key_for_non_archive_delete_type() {
-        // Arrange
+        // ARRANGE
         DossierQueue dossierQueue = createDossierQueue(DossierQueueTyp.ARCHIVIERUNG);
 
         when(tlMock.translate(
@@ -74,10 +74,10 @@ class DossierMailServiceTest extends AbstractITest {
         )).thenReturn("translated content");
         when(tlMock.translate("dossier-queue.mail.failure.subject")).thenReturn("translated subject");
 
-        // Act
+        // ACT
         dossierMailService.sendDossierQueueFinishedFailureMail(dossierQueue);
 
-        // Assert
+        // ASSERT
         verify(tlMock).translate(
             "dossier-queue.mail.failure.content",
             "uuid", dossierQueue.getDossierID(),
@@ -89,7 +89,7 @@ class DossierMailServiceTest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void sendDossierQueueFinishedFailureMail_should_use_archive_delete_failure_key_for_archive_delete_type() {
-        // Arrange
+        // ARRANGE
         DossierQueue dossierQueue = createDossierQueue(DossierQueueTyp.ARCHIVIERUNG_DELETE);
 
         when(tlMock.translate(
@@ -98,10 +98,10 @@ class DossierMailServiceTest extends AbstractITest {
         when(tlMock.translate("dossier-queue.mail.archive.delete.failure.subject"))
             .thenReturn("translated archive delete subject");
 
-        // Act
+        // ACT
         dossierMailService.sendDossierQueueFinishedFailureMail(dossierQueue);
 
-        // Assert
+        // ASSERT
         verify(tlMock).translate(
             "dossier-queue.mail.archive.delete.failure.content",
             "uuid", dossierQueue.getDossierID(),
@@ -116,7 +116,7 @@ class DossierMailServiceTest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void sendDossierQueueFinishedFailureMail_should_use_failure_key_for_verantw_changed_type() {
-        // Arrange
+        // ARRANGE
         DossierQueue dossierQueue = createDossierQueue(DossierQueueTyp.VERANTW_CHANGED_ON_SCHULE);
 
         when(tlMock.translate(
@@ -124,10 +124,10 @@ class DossierMailServiceTest extends AbstractITest {
         )).thenReturn("translated content");
         when(tlMock.translate("dossier-queue.mail.failure.subject")).thenReturn("translated subject");
 
-        // Act
+        // ACT
         dossierMailService.sendDossierQueueFinishedFailureMail(dossierQueue);
 
-        // Assert
+        // ASSERT
         verify(tlMock).translate(
             "dossier-queue.mail.failure.content",
             "uuid", dossierQueue.getDossierID(),

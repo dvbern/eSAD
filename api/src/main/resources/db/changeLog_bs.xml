@@ -197,8 +197,16 @@
   <include file="db/bs/0093-update-anlassconfig-showimpfanmeldung-bs.xml"/>
   <include file="db/base/0070-tenant-setting-default-landing-page.xml"/>
   <include file="db/base/0067-create-anonymereintrag.xml"/>
-  <include file="db/base/0071-insert-anlassconfig-anonym.xml"/>
   <include file="db/base/0072-add-anonyme-statistik-feature.xml"/>
+  <include file="db/base/0072-add-hashvalue-for-kind.xml"/>
+  <include file="db/base/0073-update-impfanmeldung-to-impfeinverstaendnis.xml"/>
+  <include file="db/base/0071-insert-anlassconfig-anonym.xml"/>
+  <include file="db/base/0074-add-nachkontrolle-feature.xml"/>
+  <include file="db/bs/0094-enable-nachkontrolle-bs.xml"/>
+  <include file="db/base/0074-add-anlass-sprache-informationen-features.xml"/>
+  <include file="db/bs/0095-update-anlassconfig-bs-dev-20260529.xml"/>
+  <include file="db/base/0076-freiesgehen-enum-cleanup-and-anzahlmonate.xml"/>
+  <include file="db/base/0074-update-schulrelevante-beeintraechtigungen-renamed-enum-values.xml"/>
 
   <!--  The following scripts only run in the 'test' context-->
   <include file="db-test/0001-insert-test-benutzer-support.xml" context="@test"/>

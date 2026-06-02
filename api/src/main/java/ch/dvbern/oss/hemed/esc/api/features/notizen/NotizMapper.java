@@ -3,6 +3,8 @@ package ch.dvbern.oss.hemed.esc.api.features.notizen;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
@@ -18,12 +20,12 @@ import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.labels.LabelMapper;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizJson;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizSaveJson;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataMapper;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -37,7 +39,6 @@ public final class NotizMapper {
     private final DossierService dossierService;
     private final BenutzerService benutzerService;
     private final LabelMapper labelMapper;
-    private final AuthorizerService authorizerService;
     private final TenantProducer tenantProducer;
 
     @NonNull
@@ -107,9 +108,11 @@ public final class NotizMapper {
     public NotizJson create(
         @NonNull NotizSaveJson notizJson,
         @NonNull ID<Dossier> dossierId,
-        @NonNull List<FileUpload> fileUploads
+        @NonNull List<FileUpload> fileUploads,
+        @NonNull Consumer<Notiz> hasAuthorizationNotiz
     ) {
         Notiz savedNotiz = notizService.persist(toEntityForCreate(notizJson, dossierId));
+        hasAuthorizationNotiz.accept(savedNotiz);
         return toJson(notizService.updateWithFiles(savedNotiz, fileUploads, notizJson.getVersion()), tenantProducer.produceTenant());
     }
 
@@ -117,9 +120,11 @@ public final class NotizMapper {
     public NotizJson update(
         @NonNull ID<Notiz> notizId,
         @NonNull NotizSaveJson saveJson,
-        @NonNull List<FileUpload> fileUploads
+        @NonNull List<FileUpload> fileUploads,
+        @NonNull Consumer<Notiz> hasAuthorizationNotiz
     ) {
         Notiz existingNotiz = notizService.getById(notizId);
+        hasAuthorizationNotiz.accept(existingNotiz);
         Kind kind = existingNotiz.getDossier().getKind();
         KindValidationUtil.throwErrorIfKindIsInactive(
             kind,
@@ -140,29 +145,46 @@ public final class NotizMapper {
     }
 
     @NonNull
-    public NotizJson getNotiz(@NonNull ID<Notiz> notizId) {
-        return toJson(notizService.getById(notizId), tenantProducer.produceTenant());
+    public NotizJson getNotiz(
+        @NonNull ID<Notiz> notizId,
+        @NonNull Consumer<Notiz> hasAuthorizationNotiz
+    ) {
+        Notiz notiz = notizService.getById(notizId);
+        hasAuthorizationNotiz.accept(notiz);
+        return toJson(notiz, tenantProducer.produceTenant());
     }
 
     @NonNull
-    public List<NotizJson> findAll() {
-        List<Notiz> notizenList = notizService.findAll();
+    public List<NotizJson> findAllBerechtigt(
+        @NonNull Predicate<Notiz> hasAuthorizationNotiz
+    ) {
+        List<Notiz> notizenList = notizService.findAll().stream()
+            .filter(hasAuthorizationNotiz)
+            .toList();
         TenantEnum tenant = tenantProducer.produceTenant();
         return notizenList.stream().map(n -> NotizMapper.toJson(n, tenant)).toList();
     }
 
     @NonNull
-    public List<NotizJson> findAllForKind(@NonNull ID<Kind> kindID) {
+    public List<NotizJson> findAllForKindBerechtigt(
+        @NonNull ID<Kind> kindID,
+        @NonNull Predicate<Notiz> hasReadAuthorizationNotiz
+    ) {
         return notizService.findAllForKind(kindID).stream()
             // some Roles can only read Notizen with certain labels
-            .filter(authorizerService::hasReadAuthorizationNotiz)
+            .filter(hasReadAuthorizationNotiz)
             .map(n -> NotizMapper.toJson(n, tenantProducer.produceTenant()))
             .toList();
     }
 
     @NonNull
-    public NotizJson addUploadedFile(@NonNull ID<Notiz> notizID, @NonNull FileUpload file) {
+    public NotizJson addUploadedFile(
+        @NonNull ID<Notiz> notizID,
+        @NonNull FileUpload file,
+        @NonNull Consumer<Notiz> hasAuthorizationNotiz
+    ) {
         Notiz existingNotiz = notizService.getById(notizID);
+        hasAuthorizationNotiz.accept(existingNotiz);
         Kind kind = existingNotiz.getDossier().getKind();
         KindValidationUtil.throwErrorIfKindIsInactive(
             kind,
@@ -174,8 +196,13 @@ public final class NotizMapper {
     }
 
     @NonNull
-    public NotizJson removeUploadedFile(@NonNull ID<Notiz> notizID, @NonNull ID<FileData> fileIdToRemove) {
+    public NotizJson removeUploadedFile(
+        @NonNull ID<Notiz> notizID,
+        @NonNull ID<FileData> fileIdToRemove,
+        @NonNull Consumer<Notiz> hasAuthorizationNotiz
+    ) {
         Notiz existingNotiz = notizService.getById(notizID);
+        hasAuthorizationNotiz.accept(existingNotiz);
         Kind kind = existingNotiz.getDossier().getKind();
         KindValidationUtil.throwErrorIfKindIsInactive(
             kind,
@@ -184,5 +211,27 @@ public final class NotizMapper {
                 new FileData()));
         notizService.removeUploadedFile(existingNotiz, fileIdToRemove);
         return toJson(existingNotiz, tenantProducer.produceTenant());
+    }
+
+    @NonNull
+    public FileInfo findUploadedFileInfo(
+        @NonNull ID<Notiz> notizId,
+        @NonNull ID<FileData> fileId,
+        @NonNull Consumer<Notiz> hasAuthorizationNotiz
+    ) {
+        Notiz notiz = notizService.getById(notizId);
+        hasAuthorizationNotiz.accept(notiz);
+        return notizService.findUploadedFileInfo(notiz, fileId);
+    }
+
+    @NonNull
+    public FileData findUploadedFileData(
+        @NonNull ID<Notiz> notizId,
+        @NonNull ID<FileData> fileId,
+        @NonNull Consumer<Notiz> hasAuthorizationNotiz
+    ) {
+        Notiz notiz = notizService.getById(notizId);
+        hasAuthorizationNotiz.accept(notiz);
+        return notizService.findUploadedFileData(notiz, fileId);
     }
 }

@@ -51,7 +51,7 @@ class HibernateConstraintViolationExceptionMapperITest extends AbstractITest {
             appClock.offsetDateTime().now().toLocalDate()
         ).getData();
         AppValidationErrorJsonSpec errResult = kinderApi
-            .kindResourceCreateKind()
+            .kindResourceCreateKindAndDossier()
             .body(saveKindJson)
             .kindSaveModeQuery(KindSaveModeDuplikatSpec.CHECK)
             .execute(ResponseBody::prettyPeek)

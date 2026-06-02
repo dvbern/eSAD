@@ -1,0 +1,66 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (C) 2026 DV Bern AG, Switzerland
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="hora (generated)" id="1748958770722-1">
+    <addColumn tableName="kind">
+      <column name="hashvalue" type="VARCHAR(64)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora (generated)" id="1748958770722-2">
+    <addColumn tableName="kind_aud">
+      <column name="hashvalue" type="VARCHAR(64)"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hora" id="1748958770722-3">
+    <sql>
+      CREATE
+      EXTENSION IF NOT EXISTS pgcrypto;
+      CREATE
+      EXTENSION IF NOT EXISTS unaccent;
+
+      UPDATE kind
+      SET hashvalue = encode(digest(
+                               LOWER(
+                                 unaccent(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+                                                                                                                                    REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+                                                                                                                                                                                                                      name,
+                                                                                                                                                                                                                      'Ä', 'Ae'), 'Ö', 'Oe'), 'Ü', 'Ue'), 'ä', 'ae'), 'ö', 'oe'), 'ü', 'ue'),
+                                                                                                                                                                            'ß', 'ss'), 'æ', 'ae'), 'Ø', 'Oe'), 'ø', 'oe'), 'Å', 'Aa'), 'å', 'aa'),
+                                                                                                                                  'Æ', 'Ae'), 'Đ', 'D'), 'đ', 'd'), 'Ł', 'L'), 'ł', 'l'),
+                                                                                          'Þ', 'Th'), 'þ', 'th'), 'Ð', 'D'), 'ð', 'd'),
+                                                          'Œ', 'Oe'), 'œ', 'oe'))
+                                   ||
+                                 unaccent(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+                                                                                                                                    REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+                                                                                                                                                                                                                      vorname,
+                                                                                                                                                                                                                      'Ä', 'Ae'), 'Ö', 'Oe'), 'Ü', 'Ue'), 'ä', 'ae'), 'ö', 'oe'), 'ü', 'ue'),
+                                                                                                                                                                            'ß', 'ss'), 'æ', 'ae'), 'Ø', 'Oe'), 'ø', 'oe'), 'Å', 'Aa'), 'å', 'aa'),
+                                                                                                                                  'Æ', 'Ae'), 'Đ', 'D'), 'đ', 'd'), 'Ł', 'L'), 'ł', 'l'),
+                                                                                          'Þ', 'Th'), 'þ', 'th'), 'Ð', 'D'), 'ð', 'd'),
+                                                          'Œ', 'Oe'), 'œ', 'oe'))
+                                   ||
+                                 geschlecht ||
+                                 TO_CHAR(geburtsdatum, 'YYYY-MM-DD')
+                               ),
+                               'sha256'
+                             ), 'hex')
+      WHERE hashvalue IS NULL;
+    </sql>
+  </changeSet>
+  <changeSet author="hora" id="1748958770722-4">
+    <addNotNullConstraint tableName="kind" columnName="hashvalue"/>
+  </changeSet>
+</databaseChangeLog>

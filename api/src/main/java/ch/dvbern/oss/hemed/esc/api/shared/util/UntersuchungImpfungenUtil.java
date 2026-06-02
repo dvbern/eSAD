@@ -1,11 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.shared.util;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
@@ -14,6 +8,12 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public class UntersuchungImpfungenUtil {
@@ -24,14 +24,23 @@ public class UntersuchungImpfungenUtil {
         @NonNull List<UntersuchungImpfstatusKrankheit> impfstatusLastAnlass,
         @NonNull List<UntersuchungImpfungIntern> impfungenInternListLastAnlass
     ) {
-        List<UntersuchungImpfstatusKrankheit> completeImpfstatusList = new ArrayList<>();
+        return createOrUpdateImpstatusForAllKrankheiten(impfungen, impfungenInternListLastAnlass, impfstatusLastAnlass);
+    }
+    @NonNull
+    public static List<UntersuchungImpfstatusKrankheit> completeListFromExistingForEachKrankheit(@NonNull UntersuchungImpfungen impfungen) {
+        return createOrUpdateImpstatusForAllKrankheiten(impfungen, null, null);
+    }
 
+    @NonNull
+    private static List<UntersuchungImpfstatusKrankheit> createOrUpdateImpstatusForAllKrankheiten(
+        @NonNull UntersuchungImpfungen impfungen,
+        @Nullable List<UntersuchungImpfungIntern> impfungenInternListLastAnlass,
+        @Nullable List<UntersuchungImpfstatusKrankheit> impfstatusLastAnlass
+    ) {
         AnlassConfig config = impfungen.getUntersuchung().getAnlass().getAnlassConfig();
         EnumSet<Krankheit> krankheiten = getKrankheitenFromAnlassConfig(config);
 
-        for (Krankheit krankheit : krankheiten) {
-            // Falls beim letzten Anlass der Impfschutz als genügend eingestuft worden ist, werden die Werte
-            // übernommen. Ansonsten werden leere Einträge erstellt.
+        return krankheiten.stream().map( krankheit -> {
             UntersuchungImpfstatusKrankheit newImpfung =
                 UntersuchungImpfstatusKrankheit.forKrankheit(impfungen, krankheit);
 
@@ -39,12 +48,14 @@ public class UntersuchungImpfungenUtil {
             // avoid creating the version zero when actually persisting
             newImpfung.setVersion(-1L);
 
-            if (krankheit.benoetigtAuffrischung()) {
+            // Falls beim letzten Anlass der Impfschutz als genügend eingestuft worden ist, werden die Werte
+            // übernommen. Ansonsten werden leere Einträge erstellt.
+            if (krankheit.benoetigtAuffrischung() && impfstatusLastAnlass != null && impfungenInternListLastAnlass != null) {
                 setUebernehmbareImpfstatus(impfstatusLastAnlass, impfungenInternListLastAnlass, krankheit, newImpfung);
             }
-            completeImpfstatusList.add(newImpfung);
-        }
-        return completeImpfstatusList;
+
+            return newImpfung;
+        }).toList();
     }
 
     private static EnumSet<Krankheit> getKrankheitenFromAnlassConfig(AnlassConfig config) {

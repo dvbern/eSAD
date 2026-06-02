@@ -1,4 +1,4 @@
-import {CommonModule, DatePipe} from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {ImpfStatus, UntersuchungImpfungInternJson, UntersuchungImpfungInternSaveJson} from '@dvb/data-access-backend';
@@ -130,14 +130,14 @@ export class UntersuchungImpfungenInternListComponent {
         }
         this.untersuchungImpfungenStore.updateImpfungIntern({
           anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-          einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
+          einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
           impfungId: impfung.id,
           impfung: result,
         });
       } else {
         this.untersuchungImpfungenStore.createImpfungIntern({
           anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-          einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
+          einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
           impfung: result,
         });
       }
@@ -155,7 +155,7 @@ export class UntersuchungImpfungenInternListComponent {
     }).subscribe(() => {
       this.untersuchungImpfungenStore.removeImpfungIntern({
         anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-        einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
+        einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
         impfungId: impfung.id,
       });
     });

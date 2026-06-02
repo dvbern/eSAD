@@ -47,23 +47,23 @@ class ArchivdokumentResourceITest extends AbstractITest {
         //ARRANGE
         tenantProducer.setCurrentTenant(TenantEnum.BE);
 
-        Archivdokument archivdokument_offen_I = ArchivdokumentBuilder.create(builder -> builder
+        Archivdokument archivdokumentOffenI = ArchivdokumentBuilder.create(builder -> builder
             .withOwner(fixtureService.createBenutzerWithOrganisation())
             .withStatus(ArchivierungStatus.OFFEN)
             .withFiledata(fixtureService.createFileData()));
-        archivdokumentService.persist(archivdokument_offen_I);
+        archivdokumentService.persist(archivdokumentOffenI);
 
-        Archivdokument archivdokument_offen_II = ArchivdokumentBuilder.create(builder -> builder
+        Archivdokument archivdokumentOffenII = ArchivdokumentBuilder.create(builder -> builder
             .withOwner(fixtureService.createBenutzerWithOrganisation())
             .withStatus(ArchivierungStatus.OFFEN)
             .withFiledata(fixtureService.createFileData()));
-        archivdokumentService.persist(archivdokument_offen_II);
+        archivdokumentService.persist(archivdokumentOffenII);
 
-        Archivdokument archivdokument_abgeschlossen = ArchivdokumentBuilder.create(builder -> builder
+        Archivdokument archivdokumentAbgeschlossen = ArchivdokumentBuilder.create(builder -> builder
             .withOwner(fixtureService.createBenutzerWithOrganisation())
             .withStatus(ArchivierungStatus.DOWNLOADED)
             .withFiledata(fixtureService.createFileData()));
-        archivdokumentService.persist(archivdokument_abgeschlossen);
+        archivdokumentService.persist(archivdokumentAbgeschlossen);
 
         //ACT
         ArchivdokumentListJsonSpec result = api.archivdokumentResourceFindAllArchivdokumente()
@@ -79,8 +79,8 @@ class ArchivdokumentResourceITest extends AbstractITest {
         assertThat(result.getArchivdokumentList())
             .isNotEmpty()
             .anyMatch(resultItem ->
-                archivdokument_offen_II.getId().getId().equals(resultItem.getId()))
-            .anyMatch(resultItem -> archivdokument_offen_I.getId().getId().equals(resultItem.getId()));
+                archivdokumentOffenII.getId().getId().equals(resultItem.getId()))
+            .anyMatch(resultItem -> archivdokumentOffenI.getId().getId().equals(resultItem.getId()));
         assertThat(result.getArchivdokumentList()).hasSize(2);
     }
 

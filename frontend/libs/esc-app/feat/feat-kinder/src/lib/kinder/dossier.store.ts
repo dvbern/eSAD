@@ -14,12 +14,13 @@ import {
   KindJson,
   KindSaveJson,
   KindSaveModeDuplikat,
+  KindSchuleAndKlasseSaveJson,
   LastImpfungJson,
   PapierakteStatus,
   PrinterService,
 } from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
-import {EventBusStore, getOptionWithSuffix} from '@dvb/feat-shared';
+import {BenutzerStore, EventBusStore, getOptionWithSuffix, TenantSettingsStore} from '@dvb/feat-shared';
 import {
   AppErrorHandlerService,
   AppNotificationStore,
@@ -28,7 +29,7 @@ import {
   withDetailModeState,
   withIsNewModeFeature,
 } from '@dvb/util-angular';
-import {isNullish, isNullishOrEmpty, requireValue} from '@dvb/util-shared';
+import {isNullish, isNullishOrEmpty, joinNotBlank, requireValue} from '@dvb/util-shared';
 import {TranslocoService} from '@jsverse/transloco';
 import {tapResponse} from '@ngrx/operators';
 import {
@@ -76,18 +77,39 @@ export class DossierStore extends signalStore(
       || !!selectedDossier()?.dataMedizinisch?.nachkontrolle?.data?.anlassFlags.nachkontrolleMotorik
       || !!selectedDossier()?.dataMedizinisch?.nachkontrolle?.data?.anlassFlags.nachkontrolleAnderes,
     ),
-    nameKind: computed(() => (selectedDossier()
-      ? selectedDossier()?.kind.data.vorname + ' ' + selectedDossier()?.kind.data.name
-      : '')),
+    nameKind: computed(() => joinNotBlank([selectedDossier()?.kind.data.vorname, selectedDossier()?.kind.data.name])
+      ?? ''),
     isKindAktiv: computed(() => (
       selectedDossier()?.kind?.data?.kindAktivStatus === EntityAktivStatus.AKTIV
     )),
   })),
-  withMethods((store) => ({
-    reset(): void {
-      patchState(store, initialState);
-    }
-  })),
+  withMethods((store) => {
+    const benutzerStore = inject(BenutzerStore);
+    const tenantSettingsStore = inject(TenantSettingsStore);
+    return {
+      reset(): void {
+        patchState(store, initialState);
+      },
+      selectedEntityOrganisationId(): BackendEntityId | undefined {
+        return store.selectedDossier()?.dataNichtMedizinisch.zustaendigArzt?.organisationRollen?.organisation?.id;
+      },
+      showZustaendigerChangedWarning(newArzt: BenutzerOptionJson | undefined): boolean {
+        if (tenantSettingsStore.zentraleOrganisationEnabled()) {
+          // Bei zentraler Organisation nie warnen
+          return false;
+        }
+        if (isNullish(this.selectedEntityOrganisationId())) {
+          // Von null auf etwas -> nie warnen
+          return false;
+        }
+        if (benutzerStore.hasFachrolleSupport()) {
+          // Bei Support nie warnen
+          return false;
+        }
+        return this.selectedEntityOrganisationId() !== newArzt?.organisationRollen?.organisation?.id;
+      },
+    };
+  }),
 ) {
   readonly #dossierService = inject(DossierService);
   readonly #kinderService = inject(KinderService);
@@ -158,9 +180,9 @@ export class DossierStore extends signalStore(
           )
           .pipe(
             tapResponse({
-              next: (kind: KindJson ) => {
-                  this.patchStateKind(kind);
-                  onSuccess();
+              next: (kind: KindJson) => {
+                this.patchStateKind(kind);
+                onSuccess();
               },
               error: console.error,
             }),
@@ -169,26 +191,52 @@ export class DossierStore extends signalStore(
     ),
   );
 
+  updateSchuleKlasse = rxMethod<{ saveJson: KindSchuleAndKlasseSaveJson, onSuccess: () => void }>(
+    pipe(
+      exhaustMap(params => this.saveLoader.tapLoading$(this.#kinderService.updateSchuleAndKlasse$({
+            kindId: requireValue(this.selectedDossier()?.kind.id),
+            kindSchuleAndKlasseSaveJson: params.saveJson,
+          })
+          , error => this.#appErrorHandlerService.handleError(error))
+        .pipe(
+          tapResponse({
+            next: result => {
+              if (result.kindJson) {
+                this.patchStateKind(result.kindJson);
+              }
+              params.onSuccess();
+            },
+            error: console.error,
+          })
+        )
+      ),
+    )
+  );
+
   updateKind = rxMethod<{
     kind: KindSaveJson;
     kindSaveMode: KindSaveModeDuplikat;
+    arztId: BackendEntityId | undefined;
+    mpaId: BackendEntityId | undefined;
     onSuccess: () => void
   }>(
     pipe(
-      exhaustMap(({kind, kindSaveMode, onSuccess}) => {
+      exhaustMap(({kind, kindSaveMode, arztId, mpaId, onSuccess}) => {
           return this.saveLoader
             .tapLoading$(
-              this.#kinderService.updateKind$({
+              this.#kinderService.updateKindAndVerantwortlichePersonen$({
                 kindId: requireValue(this.selectedDossier()?.kind.id),
                 kindSaveJson: kind,
                 kindSaveMode: kindSaveMode,
+                arztId: arztId,
+                mpaId: mpaId,
               }), error => this.#appErrorHandlerService.handleError(error),
             )
             .pipe(
               tapResponse({
                 next: result => {
                   if (result.kindJson && isNullishOrEmpty(result.idsOfPotentialDuplicates)) {
-                    this.patchStateKind(result.kindJson);
+                    patchState(this, {selectedDossier: result.dossierJson});
                     onSuccess();
                   } else {
                     this.#eventBusStore.emit('KIND_DUPLIKAT_VORHANDEN',

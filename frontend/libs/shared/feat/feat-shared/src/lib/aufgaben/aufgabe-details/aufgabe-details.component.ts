@@ -1,5 +1,5 @@
 import {CommonModule} from '@angular/common';
-import {ChangeDetectionStrategy, Component, computed, effect, inject, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, effect, inject, input, output, signal} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {
   AufgabeJson,
@@ -44,6 +44,7 @@ import {KindSearchComponent} from '../../kind-search/kind-search.component';
 import {TranslatedStringPipe} from '../../translated-strings/view/translated-string.pipe';
 import {FileDropComponent} from '../../upload/file-drop/file-drop.component';
 import {UploadTableComponent} from '../../upload/upload-table/upload-table.component';
+import {FilePreviewComponent} from '../../notizen/file-preview/file-preview.component';
 import {AufgabeDetailsForm} from './aufgabe-details.form';
 
 @Component({
@@ -74,6 +75,7 @@ import {AufgabeDetailsForm} from './aufgabe-details.form';
     IconComponent,
     NgbNavItem,
     NgbNav,
+    FilePreviewComponent,
   ],
   templateUrl: './aufgabe-details.component.html',
   styles: `
@@ -83,7 +85,6 @@ import {AufgabeDetailsForm} from './aufgabe-details.form';
   `,
 })
 export class AufgabeDetailsComponent implements DirtyMarker {
-
   readonly defaultKind = input<KindJson>();
 
   readonly saveAction = output();
@@ -107,7 +108,14 @@ export class AufgabeDetailsComponent implements DirtyMarker {
 
   aufgabeStatus = Object.values(AufgabeStatus);
 
+  empfaengerOptions = computed(() => {
+    return this.benutzerOptionsStore.benutzerFiltered(
+      this.store.selectedEntity()?.data?.empfaenger, "FACHROLLEN", true);
+  });
+
   canEditAufgabe = this.benutzerStore.createHasRequiredRoleSig(hasAufgabenEditBerechtigungen());
+
+  readonly #fileIdSelectedForPreview = signal<string | null>(null);
 
   protected readonly compareBenutzer = compareFn<BenutzerOptionJson>;
   protected readonly compareLabel = compareFn<LabelJson>;
@@ -118,12 +126,21 @@ export class AufgabeDetailsComponent implements DirtyMarker {
 
   entityInfo = computed(() => this.store.selectedEntity()?.entityInfo);
   aufgabenFiles = computed(() => this.store.selectedEntity()?.data.files ?? []);
-  inaktivLabels = computed(() =>
-    this.store.selectedEntity()?.data?.labels?.filter(label => !label.data.aktiv) ?? []);
+  inaktivLabels = computed(() => this.store.selectedEntity()?.data?.labels?.filter(label => !label.data.aktiv) ?? []);
 
   uploadTable = new TableModel<FileDataJson>(
-    {rawListSignal: this.aufgabenFiles},
-    {frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll'});
+    { rawListSignal: this.aufgabenFiles },
+    { frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll' },
+  );
+
+  previewFile = computed<FileDataJson | null | undefined>(() => {
+    const files = this.aufgabenFiles();
+    if (files.length === 0) {
+      return null;
+    }
+    const id = this.#fileIdSelectedForPreview();
+    return files.find(f => f.id === id) ?? files.at(0);
+  });
 
   constructor() {
     effect(() => {
@@ -136,7 +153,7 @@ export class AufgabeDetailsComponent implements DirtyMarker {
       const selectedAufgabe = this.store.selectedEntity();
       if (selectedAufgabe) {
         // We need to create a copy as to not filter away the disabled labels everywhere.
-        const copy = {...selectedAufgabe.data};
+        const copy = { ...selectedAufgabe.data };
         // Take out the disabled labels as to not show up in the control
         copy.labels = copy.labels?.filter(label => label.data.aktiv);
         this.form.reset(copy, DetailMode.EDIT);
@@ -198,17 +215,20 @@ export class AufgabeDetailsComponent implements DirtyMarker {
 
   public onFileDelete($event: FileDataJson): void {
     const aufgabeId = requireValidBackendEntityId(this.store.selectedEntity()?.id);
-    this.confirmService.confirm({
-      question: this.transloco.translate('ui.upload.table.action.delete.confirm.question',
-        {filename: $event.calculatedFileName}),
-      consequence: this.transloco.translate('ui.upload.table.action.delete.confirm.consequence'),
-      decision: this.transloco.translate('ui.upload.table.action.delete.decision'),
-    }).subscribe(() => {
-      this.store.removeAufgabeFile({
-        aufgabeId: aufgabeId,
-        fileId: $event.id,
+    this.confirmService
+      .confirm({
+        question: this.transloco.translate('ui.upload.table.action.delete.confirm.question', {
+          filename: $event.calculatedFileName,
+        }),
+        consequence: this.transloco.translate('ui.upload.table.action.delete.confirm.consequence'),
+        decision: this.transloco.translate('ui.upload.table.action.delete.decision'),
+      })
+      .subscribe(() => {
+        this.store.removeAufgabeFile({
+          aufgabeId: aufgabeId,
+          fileId: $event.id,
+        });
       });
-    });
   }
 
   public onFileView($event: FileDataJson): void {
@@ -218,7 +238,9 @@ export class AufgabeDetailsComponent implements DirtyMarker {
       fileId: $event.id,
     });
   }
-
+  public onFilePreview($event: FileDataJson): void {
+    this.#fileIdSelectedForPreview.set($event.id);
+  }
   public onFileDirectDownload($event: FileDataJson): void {
     const aufgabeId = requireValidBackendEntityId(this.store.selectedEntity()?.id);
     this.store.downloadAufgabeFile({

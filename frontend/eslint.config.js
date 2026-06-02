@@ -20,10 +20,28 @@ module.exports = [
   {
     ignores: ['**/dist'],
   },
+  // TypeScript-only rules: Angular component conventions and TS-aware unused vars.
+  // These rules rely on the TS parser / Angular plugin which are only registered
+  // for *.ts/*.tsx by the Nx flat presets above.
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    rules: {
+      '@angular-eslint/prefer-on-push-component-change-detection': ['error'],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+    },
+  },
+  // Architectural rules apply to all source files (TS + JS), since module
+  // boundaries are meaningful regardless of the source language.
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     rules: {
-      '@angular-eslint/prefer-on-push-component-change-detection': ['error'],
       '@nx/enforce-module-boundaries': [
         'error',
         {
@@ -51,14 +69,6 @@ module.exports = [
               onlyDependOnLibsWithTags: ['scope:*-app', 'scope:shared'],
             },
           ],
-        },
-      ],
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
         },
       ],
     },

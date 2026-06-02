@@ -36,6 +36,9 @@ export class UploadTableComponent {
   readonly fileView = output<FileDataJson>();
   readonly fileDirectDownload = output<FileDataJson>();
   readonly fileRemove = output<FileDataJson>();
+  readonly filePreview = output<FileDataJson>();
+
+  readonly activePreviewFileId = input<string | null>(null);
 
   readonly uploadTable = input.required<TableModel<FileDataJson>>();
   readonly loading = input<boolean>(false);

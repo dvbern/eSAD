@@ -4,7 +4,10 @@ import java.io.Serial;
 import java.time.OffsetDateTime;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
@@ -14,6 +17,7 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumberConverter;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.SystemRollen;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationRollen;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
@@ -36,6 +40,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -45,6 +50,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
@@ -155,13 +161,19 @@ public class Benutzer extends AbstractEntity<Benutzer> implements EntityWithOpti
     private SystemRollen systemRollen;
 
     @NonNull
+    @Transient
     public String getNameVorname() {
-        return nachname + ' ' + vorname;
+        return Stream.of(nachname, vorname)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.joining(" "));
     }
 
     @NonNull
+    @Transient
     public String getVornameName() {
-        return vorname + ' ' + nachname;
+        return Stream.of(vorname, nachname)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.joining(" "));
     }
 
     @NonNull
@@ -200,6 +212,13 @@ public class Benutzer extends AbstractEntity<Benutzer> implements EntityWithOpti
                 "Ein Benutzer darf im Moment nicht in mehr als 1 Organisation Mitglied sein."));
         }
         return organisationRollenBenutzer.iterator().next();
+    }
+
+    @Nullable
+    public Organisation getSingleOrganisation() {
+        return Optional.ofNullable(this.getSingleOrganisationRollen())
+            .map(OrganisationRollen::getOrganisation)
+            .orElse(null);
     }
 
     public void addOrganisation(@NonNull OrganisationRollen newRollen) {

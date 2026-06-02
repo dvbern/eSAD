@@ -18,7 +18,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = Tags.TAG_QUARTIERE)
-@RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+@RolesAllowed(BerechtigungName.SCHULE_LESEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed("QuartierResourceMS")
 public class QuartierResource {
@@ -27,7 +27,7 @@ public class QuartierResource {
 
     @GET
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
+    @RolesAllowed(BerechtigungName.SCHULE_LESEN)
     public QuartierListJson findAllQuartiere() {
         return new QuartierListJson(quartierMapper.findAll());
     }
@@ -35,7 +35,7 @@ public class QuartierResource {
     @GET
     @Path("/options")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
+    @RolesAllowed(BerechtigungName.SCHULE_LESEN)
     public QuartierOptionListJson findAllQuartierOptions() {
         return new QuartierOptionListJson(quartierMapper.findAllOptions());
     }

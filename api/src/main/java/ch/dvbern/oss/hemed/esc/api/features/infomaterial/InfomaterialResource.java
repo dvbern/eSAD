@@ -31,7 +31,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = OpenApiConst.Tags.TAG_INFOMATERIAL)
-@RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+@RolesAllowed(BerechtigungName.INFOMATERIAL_LESEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed("InfomaterialResourceMS")
 public class InfomaterialResource {
@@ -43,7 +43,7 @@ public class InfomaterialResource {
 
     @GET
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
+    @RolesAllowed(BerechtigungName.INFOMATERIAL_LESEN)
     public InfomaterialListJson findAllInfomaterialien(
         @NotNull @QueryParam("onlyActive") boolean onlyActive
     ) {
@@ -51,7 +51,7 @@ public class InfomaterialResource {
     }
 
     @POST
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.INFOMATERIAL_SCHREIBEN)
     @NonNull
     public InfomaterialJson createInfomaterial(
         @NotNull @NonNull @Valid InfomaterialSaveJson createInfomaterialJson
@@ -63,7 +63,7 @@ public class InfomaterialResource {
     @PUT
     @Path("/{infomaterialId}")
     @NonNull
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.INFOMATERIAL_SCHREIBEN)
     public InfomaterialJson updateInfomaterial(
         @NotNull @NonNull @PathParam("infomaterialId") ID<Infomaterial> infomaterialID,
         @NotNull @NonNull @Valid InfomaterialSaveJson updateInfomaterialJson
@@ -73,7 +73,7 @@ public class InfomaterialResource {
 
     @DELETE
     @Path("/{infomaterialId}")
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.INFOMATERIAL_SCHREIBEN)
     public void removeInfomaterial(@NotNull @NonNull @PathParam("infomaterialId") ID<Infomaterial> infomaterialID) {
         infomaterialMapper.remove(infomaterialID);
     }

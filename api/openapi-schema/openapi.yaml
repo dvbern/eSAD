@@ -179,6 +179,7 @@ components:
       - datumVon
       - datumBis
       - bezeichnung
+      - anonym
       properties:
         id:
           $ref: "#/components/schemas/IDAnlassConfig"
@@ -192,6 +193,8 @@ components:
           $ref: "#/components/schemas/LocalDate"
         bezeichnung:
           type: string
+        anonym:
+          type: boolean
     AnlassConfigOptionListJson:
       type: object
       required:
@@ -211,7 +214,7 @@ components:
       - showImpfausweis
       - showFragebogen
       - showAnmeldungBestaetigung
-      - showImpfanmeldung
+      - showImpfeinverstaendnis
       - showDatenPersonendaten
       - showDatenPersonendatenEsadId
       - datenUntersuchung
@@ -388,7 +391,7 @@ components:
           type: boolean
         showAnmeldungBestaetigung:
           type: boolean
-        showImpfanmeldung:
+        showImpfeinverstaendnis:
           type: boolean
         showDatenPersonendaten:
           type: boolean
@@ -946,6 +949,43 @@ components:
         zeitBis:
           type: string
           $ref: "#/components/schemas/LocalDateTime"
+    AnonymerEintragCreateJson:
+      type: object
+      required:
+      - anlassTyp
+      - anlassDatum
+      - kindName
+      - kindVorname
+      - kindGeschlecht
+      - kindGeburtsdatum
+      properties:
+        anlassTyp:
+          $ref: "#/components/schemas/AnlassTyp"
+        anlassDatum:
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        kindName:
+          type: string
+        kindVorname:
+          type: string
+        kindGeschlecht:
+          $ref: "#/components/schemas/Geschlecht"
+        kindGeburtsdatum:
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+    AnonymerEintragJson:
+      type: object
+      required:
+      - id
+      - hash
+      - anlassJson
+      properties:
+        id:
+          $ref: "#/components/schemas/IDAnonymerEintrag"
+        hash:
+          type: string
+        anlassJson:
+          $ref: "#/components/schemas/AnlassJson"
     AppFailureErrorJson:
       type: object
       required:
@@ -1331,6 +1371,7 @@ components:
     Berechtigung:
       type: string
       enum:
+      - BENUTZER_OPTIONS_LESEN
       - AUFGABEN_LESEN
       - AUFGABEN_SCHREIBEN
       - ANLASSLISTE_LESEN
@@ -1373,9 +1414,6 @@ components:
       - INDIVIDUELLE_REPORTS
       - SPSS_EXPORT
       - KOMPLETTER_EXPORT
-      - LISTEN_ADMIN_LESEN
-      - LISTEN_LESEN
-      - LISTEN_SCHREIBEN
       - IMPFSTOFFE_LESEN
       - IMPFSTOFFE_SCHREIBEN
       - DUBLETTEN_ZUSAMMENFUHREN
@@ -1383,16 +1421,22 @@ components:
       - LABELS_ADMIN_LESEN
       - LABELS_SCHREIBEN
       - EIGENE_BERECHTIGUNGEN_LESEN
+      - BENUTZER_BERECHTIGUNGEN_LESEN
+      - BENUTZER_BERECHTIGUNGEN_SCHREIBEN
+      - ORGANISATION_VERWALTEN_LESEN
+      - ORGANISATION_VERWALTEN_SCHREIBEN
       - VORLAGEN_LESEN
       - VORLAGEN_ADMIN_LESEN
       - VORLAGEN_SCHREIBEN
       - AERZTE_LESEN
       - AERZTE_SCHREIBEN
-      - BENUTZER_BERECHTIGUNGEN_LESEN
-      - BENUTZER_BERECHTIGUNGEN_SCHREIBEN
+      - SCHULE_LESEN
+      - SCHULE_SCHREIBEN
+      - KLASSEN_LESEN
+      - KLASSEN_SCHREIBEN
+      - INFOMATERIAL_LESEN
+      - INFOMATERIAL_SCHREIBEN
       - ARCHIVIERUNG
-      - ORGANISATION_VERWALTEN_LESEN
-      - ORGANISATION_VERWALTEN_SCHREIBEN
       - SUPPORT
       - SYSTEM_ADMIN
       - ESCADA_PUSH
@@ -2295,9 +2339,8 @@ components:
     Feinmotorik:
       type: string
       enum:
-      - DREISSIG_IN_ZEHN_SEK
-      - FUENFUNDZWANZIG_IN_ZEHN_SEK
-      - NICHT_MOEGLICH
+      - BESTANDEN
+      - NICHT_BESTANDEN
       - NICHT_GEPRUEFT
     FigurNachmalen:
       type: string
@@ -2365,7 +2408,7 @@ components:
       - KINDERDOSSIER
       - BRIEFVORLAGE
       - ANMELDUNG_BESTAETIGUNG
-      - IMPFANMELDUNG
+      - IMPFEINVERSTAENDNIS
       - PLAYGROUND
       - PLAYGROUND_ERROR
       - SPSS_REPORT
@@ -2398,8 +2441,6 @@ components:
     FreiesGehen:
       type: string
       enum:
-      - NORMAL
-      - PATHOLOGISCH
       - NICHT_GEPRUEFT
     GanzZahl:
       type: integer
@@ -2413,8 +2454,8 @@ components:
     GleichgewichtEinbeinstand:
       type: string
       enum:
-      - MEHR_ALS_ZEHN_SEKUNDEN
-      - WENIGER_ALS_ZEHN_SEKUNDEN
+      - BESTANDEN
+      - NICHT_BESTANDEN
       - NICHT_GEPRUEFT
     Grafomotorik:
       type: string
@@ -2425,8 +2466,8 @@ components:
     GrobmotorikEinbeinhuepfen:
       type: string
       enum:
-      - MEHR_ALS_VIER_METER
-      - WENIGER_ALS_VIER_METER
+      - BESTANDEN
+      - NICHT_BESTANDEN
       - NICHT_GEPRUEFT
     GroesseGewichtDataPointJson:
       type: object
@@ -2525,6 +2566,12 @@ components:
       examples:
       - 11111111-1111-1111-1111-111111111111
     IDAnlassConfig:
+      type: string
+      format: entity-id
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      examples:
+      - 11111111-1111-1111-1111-111111111111
+    IDAnonymerEintrag:
       type: string
       format: entity-id
       pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
@@ -3101,12 +3148,15 @@ components:
       type: object
       required:
       - id
+      - hashValue
       - entityInfo
       - data
       properties:
         id:
           $ref: "#/components/schemas/IDKind"
         esadId:
+          type: string
+        hashValue:
           type: string
         externalImportInfoJson:
           $ref: "#/components/schemas/ExternalImportInfoJson"
@@ -3201,6 +3251,20 @@ components:
             $ref: "#/components/schemas/IDKind"
         kindJson:
           $ref: "#/components/schemas/KindJson"
+        dossierJson:
+          $ref: "#/components/schemas/DossierJson"
+    KindSchuleAndKlasseSaveJson:
+      type: object
+      properties:
+        schule:
+          $ref: "#/components/schemas/SchuleOptionJson"
+        klasse:
+          $ref: "#/components/schemas/KlasseOptionJson"
+        version:
+          type: integer
+          format: int64
+      required:
+      - version
     KindSearchJson:
       type: object
       required:
@@ -4094,7 +4158,7 @@ components:
       - IMPFAUSWEIS
       - ANMELDUNG_BESTAETIGUNG
       - ABMELDUNG
-      - IMPFANMELDUNG
+      - IMPFEINVERSTAENDNIS
     NumOfOffeneFaelligeAufgabeJson:
       type: object
       required:
@@ -4538,6 +4602,8 @@ components:
       properties:
         id:
           $ref: "#/components/schemas/IDSchule"
+        organisationId:
+          $ref: "#/components/schemas/IDOrganisation"
         bezeichnung:
           type: string
         aktivStatus:
@@ -4840,6 +4906,10 @@ components:
       - archivierungFeature
       - zentraleOrganisationFeature
       - anonymeStatistikFeature
+      - nachkontrolleFeature
+      - anlassSpracheSpalteFeature
+      - anlassSpracheZusammenfassungFeature
+      - anlassInformationenFeature
       properties:
         esadIdFeature:
           $ref: "#/components/schemas/TenantSettingFeatureStateJson"
@@ -4868,6 +4938,14 @@ components:
         zentraleOrganisationFeature:
           $ref: "#/components/schemas/TenantSettingFeatureStateJson"
         anonymeStatistikFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        nachkontrolleFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        anlassSpracheSpalteFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        anlassSpracheZusammenfassungFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        anlassInformationenFeature:
           $ref: "#/components/schemas/TenantSettingFeatureStateJson"
     TenantSettingSaveJson:
       type: object
@@ -4913,6 +4991,7 @@ components:
       - entityInfo
       - data
       - fachrollen
+      - delegierbareFachrollen
       properties:
         id:
           $ref: "#/components/schemas/IDTenantSetting"
@@ -4923,6 +5002,10 @@ components:
         data:
           $ref: "#/components/schemas/TenantSettingSaveJson"
         fachrollen:
+          type: array
+          items:
+            $ref: "#/components/schemas/FachRolle"
+        delegierbareFachrollen:
           type: array
           items:
             $ref: "#/components/schemas/FachRolle"
@@ -5833,6 +5916,9 @@ components:
       properties:
         freiesGehen:
           $ref: "#/components/schemas/ValueEnhancedJson"
+        anzahlMonateFreiesGehen:
+          type: integer
+          format: int32
         ohneStuetzradVelofahren:
           $ref: "#/components/schemas/ValueEnhancedJson"
         grafomotorik:
@@ -6374,6 +6460,7 @@ tags:
 - name: Aktivitaet
 - name: Anlass
 - name: Anlass-Config
+- name: Anonymer-Eintrag
 - name: Archivdokument
 - name: Aufgabe
 - name: Benutzer
@@ -6400,6 +6487,7 @@ tags:
 - name: Notizen
 - name: Organisation
 - name: Plz
+- name: Preview
 - name: Printer
 - name: Pupil
 - name: Quartiere
@@ -7905,7 +7993,7 @@ paths:
         in: path
         required: true
         schema:
-          $ref: "#/components/schemas/HasUntersuchungIDWrapper"
+          $ref: "#/components/schemas/IDEinladung"
       requestBody:
         content:
           application/json:
@@ -7983,7 +8071,7 @@ paths:
         in: path
         required: true
         schema:
-          $ref: "#/components/schemas/HasUntersuchungIDWrapper"
+          $ref: "#/components/schemas/IDEinladung"
       responses:
         "204":
           description: No Content
@@ -8202,7 +8290,7 @@ paths:
         in: path
         required: true
         schema:
-          $ref: "#/components/schemas/HasUntersuchungIDWrapper"
+          $ref: "#/components/schemas/IDEinladung"
       requestBody:
         content:
           application/json:
@@ -8241,7 +8329,7 @@ paths:
         in: path
         required: true
         schema:
-          $ref: "#/components/schemas/HasUntersuchungIDWrapper"
+          $ref: "#/components/schemas/IDEinladung"
       requestBody:
         content:
           application/json:
@@ -8280,7 +8368,7 @@ paths:
         in: path
         required: true
         schema:
-          $ref: "#/components/schemas/HasUntersuchungIDWrapper"
+          $ref: "#/components/schemas/IDEinladung"
       requestBody:
         content:
           application/json:
@@ -9354,6 +9442,90 @@ paths:
       security:
       - SecurityScheme:
         - SUPPORT
+  /api/anonymer-eintrag:
+    post:
+      operationId: AnonymerEintragResource_createAnonymerEintrag
+      tags:
+      - Anonymer-Eintrag
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnonymerEintragCreateJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnonymerEintragJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Create Anonymer Eintrag
+      security:
+      - SecurityScheme:
+        - ANLASSPLANUNG_SCHREIBEN
+        - ANLASSPLANUNG_SCHREIBEN_LAEUSE
+  /api/anonymer-eintrag/{anlassId}/{anonymerEintragId}/abschluss:
+    put:
+      operationId: AnonymerEintragResource_abschlussAnonymerEintrag
+      tags:
+      - Anonymer-Eintrag
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: anonymerEintragId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/HasUntersuchungIDWrapper"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Abschluss Anonymer Eintrag
+      security:
+      - SecurityScheme:
+        - ANLASSPLANUNG_SCHREIBEN
+        - ANLASSPLANUNG_SCHREIBEN_LAEUSE
+  /api/anonymer-eintrag/{anonymerEintragId}:
+    get:
+      operationId: AnonymerEintragResource_getAnonymerEintrag
+      tags:
+      - Anonymer-Eintrag
+      parameters:
+      - name: anonymerEintragId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnonymerEintrag"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnonymerEintragJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get Anonymer Eintrag
+      security:
+      - SecurityScheme:
+        - ANLASSPLANUNG_LESEN
+        - ANLASSPLANUNG_LESEN_LAEUSE
   /api/archivdokumente:
     get:
       operationId: ArchivdokumentResource_findAllArchivdokumente
@@ -9858,8 +10030,7 @@ paths:
       summary: Find All Active Benutzer Options
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - BENUTZER_OPTIONS_LESEN
   /api/benutzer/self:
     get:
       operationId: BenutzerResource_getMyBenutzerData
@@ -9948,7 +10119,8 @@ paths:
       summary: Update Benutzer Aktiv Status
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - BENUTZER_BERECHTIGUNGEN_SCHREIBEN
+        - ORGANISATION_VERWALTEN_SCHREIBEN
   /api/benutzer/{organisationID}:
     get:
       operationId: BenutzerResource_findAllBenutzerForOrganisation
@@ -10695,7 +10867,6 @@ paths:
       summary: Update Dossier Papierakte Status
       security:
       - SecurityScheme:
-        - KINDER_SCHREIBEN_MEDIZINISCH
         - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/dossiers/{dossierId}/verantwortlich-arzt:
     put:
@@ -10730,7 +10901,6 @@ paths:
       summary: Update Dossier Verantwortlich Arzt
       security:
       - SecurityScheme:
-        - KINDER_SCHREIBEN_MEDIZINISCH
         - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/dossiers/{dossierId}/verantwortlich-mpa:
     put:
@@ -10765,7 +10935,6 @@ paths:
       summary: Update Dossier Verantwortlich Mpa
       security:
       - SecurityScheme:
-        - KINDER_SCHREIBEN_MEDIZINISCH
         - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/dossiers/{kindId}/notizen:
     get:
@@ -11168,8 +11337,7 @@ paths:
       summary: Find All By Impfstoff
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - IMPFSTOFFE_LESEN
     post:
       operationId: ImpfstoffChargeResource_createImpfstoffCharge
       tags:
@@ -11382,8 +11550,7 @@ paths:
       summary: Find All Infomaterialien
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - INFOMATERIAL_LESEN
     post:
       operationId: InfomaterialResource_createInfomaterial
       tags:
@@ -11410,7 +11577,7 @@ paths:
       summary: Create Infomaterial
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - INFOMATERIAL_SCHREIBEN
   /api/infomaterialien/{infomaterialId}:
     put:
       operationId: InfomaterialResource_updateInfomaterial
@@ -11444,7 +11611,7 @@ paths:
       summary: Update Infomaterial
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - INFOMATERIAL_SCHREIBEN
     delete:
       operationId: InfomaterialResource_removeInfomaterial
       tags:
@@ -11465,7 +11632,7 @@ paths:
       summary: Remove Infomaterial
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - INFOMATERIAL_SCHREIBEN
   /api/kindanlaesse/kind/{kindId}/anlaesse:
     get:
       operationId: KindAnlaesseResource_findAnlaesseForKind
@@ -11541,15 +11708,23 @@ paths:
         - KINDER_LESEN_MEDIZINISCH
         - KINDER_LESEN_NICHT_MEDIZINISCH
     post:
-      operationId: KindResource_createKind
+      operationId: KindResource_createKindAndDossier
       tags:
       - Kinder
       parameters:
+      - name: arztId
+        in: query
+        schema:
+          $ref: "#/components/schemas/IDBenutzer"
       - name: kindSaveMode
         in: query
         schema:
           $ref: "#/components/schemas/KindSaveModeDuplikat"
         required: true
+      - name: mpaId
+        in: query
+        schema:
+          $ref: "#/components/schemas/IDBenutzer"
       requestBody:
         content:
           application/json:
@@ -11569,7 +11744,7 @@ paths:
           description: Not Allowed
         "400":
           description: Bad Request
-      summary: Create Kind
+      summary: Create Kind And Dossier
       security:
       - SecurityScheme:
         - KINDER_SCHREIBEN_MEDIZINISCH
@@ -11629,8 +11804,6 @@ paths:
       summary: Find Aktiv By Kind
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
         - KINDER_LESEN_NICHT_MEDIZINISCH
     post:
       operationId: KontaktPersonKindResource_createKontaktPersonKind
@@ -11664,7 +11837,6 @@ paths:
       summary: Create Kontakt Person Kind
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
         - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/kinder/{kindID}/kontaktpersonen/options:
     get:
@@ -11695,8 +11867,6 @@ paths:
       summary: Find All Options Active
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_SCHREIBEN
         - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/kinder/{kindID}/kontaktpersonen/schule/{kontaktPersonKindID}:
     delete:
@@ -11724,7 +11894,6 @@ paths:
       summary: Remove Kontakt Person Kind From Kind
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
         - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
     put:
       operationId: KontaktPersonKindResource_addKontaktPersonKindToKind
@@ -11755,7 +11924,6 @@ paths:
       summary: Add Kontakt Person Kind To Kind
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
         - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/kinder/{kindID}/kontaktpersonen/{kontaktPersonKindID}:
     put:
@@ -11795,7 +11963,6 @@ paths:
       summary: Update Kontakt Person Kind
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
         - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
     get:
       operationId: KontaktPersonKindResource_getKontaktPersonKind
@@ -11826,7 +11993,6 @@ paths:
       summary: Get Kontakt Person Kind
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
         - KINDER_LESEN_NICHT_MEDIZINISCH
     delete:
       operationId: KontaktPersonKindResource_deleteKontaktPersonKind
@@ -11853,11 +12019,10 @@ paths:
       summary: Delete Kontakt Person Kind
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
         - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/kinder/{kindId}:
     put:
-      operationId: KindResource_updateKind
+      operationId: KindResource_updateKindAndVerantwortlichePersonen
       tags:
       - Kinder
       parameters:
@@ -11866,11 +12031,19 @@ paths:
         required: true
         schema:
           $ref: "#/components/schemas/IDKind"
+      - name: arztId
+        in: query
+        schema:
+          $ref: "#/components/schemas/IDBenutzer"
       - name: kindSaveMode
         in: query
         schema:
           $ref: "#/components/schemas/KindSaveModeDuplikat"
         required: true
+      - name: mpaId
+        in: query
+        schema:
+          $ref: "#/components/schemas/IDBenutzer"
       requestBody:
         content:
           application/json:
@@ -11890,7 +12063,7 @@ paths:
           description: Not Allowed
         "400":
           description: Bad Request
-      summary: Update Kind
+      summary: Update Kind And Verantwortliche Personen
       security:
       - SecurityScheme:
         - KINDER_SCHREIBEN_MEDIZINISCH
@@ -12067,6 +12240,41 @@ paths:
       - SecurityScheme:
         - KINDER_LESEN_MEDIZINISCH
         - KINDER_LESEN_NICHT_MEDIZINISCH
+  /api/kinder/{kindId}/schule-klasse:
+    put:
+      operationId: KindResource_updateSchuleAndKlasse
+      tags:
+      - Kinder
+      parameters:
+      - name: kindId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDKind"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KindSchuleAndKlasseSaveJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KindSaveResultJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Update Schule And Klasse
+      security:
+      - SecurityScheme:
+        - KINDER_SCHREIBEN_MEDIZINISCH
+        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/klasse/{klasseID}/lehrpersonen:
     get:
       operationId: LehrpersonResource_findAllAktivByKlasse
@@ -12092,8 +12300,7 @@ paths:
       summary: Find All Aktiv By Klasse
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - KLASSEN_LESEN
     post:
       operationId: LehrpersonResource_createLehrperson
       tags:
@@ -12126,7 +12333,7 @@ paths:
       summary: Create Lehrperson
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - KLASSEN_SCHREIBEN
   /api/klasse/{klasseID}/lehrpersonen/options:
     get:
       operationId: LehrpersonResource_findAllOptionsActive
@@ -12156,8 +12363,7 @@ paths:
       summary: Find All Options Active
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - KLASSEN_LESEN
   /api/klasse/{klasseID}/lehrpersonen/schule/{lehrpersonID}:
     delete:
       operationId: LehrpersonResource_removeLehrpersonFromKlasse
@@ -12184,7 +12390,7 @@ paths:
       summary: Remove Lehrperson From Klasse
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - KLASSEN_SCHREIBEN
     put:
       operationId: LehrpersonResource_addLehrpersonToKlasse
       tags:
@@ -12214,7 +12420,7 @@ paths:
       summary: Add Lehrperson To Klasse
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - KLASSEN_SCHREIBEN
   /api/klasse/{klasseID}/lehrpersonen/{lehrpersonID}:
     put:
       operationId: LehrpersonResource_updateLehrperson
@@ -12253,7 +12459,7 @@ paths:
       summary: Update Lehrperson
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - KLASSEN_SCHREIBEN
     get:
       operationId: LehrpersonResource_getLehrperson
       tags:
@@ -12283,8 +12489,7 @@ paths:
       summary: Get Lehrperson
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - KLASSEN_LESEN
     delete:
       operationId: LehrpersonResource_deleteLehrperson
       tags:
@@ -12310,7 +12515,7 @@ paths:
       summary: Delete Lehrperson
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - KLASSEN_SCHREIBEN
   /api/klassen:
     get:
       operationId: KlasseResource_findAllKlassen
@@ -12330,8 +12535,7 @@ paths:
       summary: Find All Klassen
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - KLASSEN_LESEN
     post:
       operationId: KlasseResource_createKlasse
       tags:
@@ -12358,7 +12562,7 @@ paths:
       summary: Create Klasse
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - KLASSEN_SCHREIBEN
   /api/klassen/{klasseId}:
     put:
       operationId: KlasseResource_updateKlasse
@@ -12392,7 +12596,7 @@ paths:
       summary: Update Klasse
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - KLASSEN_SCHREIBEN
     delete:
       operationId: KlasseResource_removeKlasse
       tags:
@@ -12413,7 +12617,7 @@ paths:
       summary: Remove Klasse
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - KLASSEN_SCHREIBEN
     get:
       operationId: KlasseResource_findKlasse
       tags:
@@ -12438,8 +12642,7 @@ paths:
       summary: Find Klasse
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - KLASSEN_LESEN
   /api/klassen/{klasseId}/klasseaktivstatus:
     put:
       operationId: KlasseResource_updateKlasseAktivStatus
@@ -12473,7 +12676,7 @@ paths:
       summary: Update Klasse Aktiv Status
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - KLASSEN_SCHREIBEN
   /api/labels:
     get:
       operationId: LabelResource_findAllLabels
@@ -12750,7 +12953,7 @@ paths:
         - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
   /api/notizen:
     get:
-      operationId: NotizResource_findAll
+      operationId: NotizResource_findAllBerechtigt
       tags:
       - Notizen
       responses:
@@ -12764,7 +12967,7 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
-      summary: Find All
+      summary: Find All Berechtigt
       security:
       - SecurityScheme:
         - KINDER_ALLE_NOTIZEN_LESEN
@@ -13064,6 +13267,71 @@ paths:
       security:
       - SecurityScheme:
         - SUPPORT
+  /api/preview/aufgaben/{aufgabeId}/file/{fileId}/preview:
+    get:
+      operationId: PreviewResource_downloadPreviewAufgabeFile
+      tags:
+      - Preview
+      parameters:
+      - name: aufgabeId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAufgabe"
+      - name: fileId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDFileData"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Download Preview Aufgabe File
+      security:
+      - SecurityScheme:
+        - AUFGABEN_LESEN
+  /api/preview/notizen/{notizId}/file/{fileId}/preview:
+    get:
+      operationId: PreviewResource_downloadPreviewNotizFile
+      tags:
+      - Preview
+      parameters:
+      - name: fileId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDFileData"
+      - name: notizId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDNotiz"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Download Preview Notiz File
+      security:
+      - SecurityScheme:
+        - KINDER_ALLE_NOTIZEN_LESEN
+        - KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN
   /api/printer/anlass/{anlassId}:
     get:
       operationId: PrinterResource_downloadAnlassPrint
@@ -13246,8 +13514,7 @@ paths:
       summary: Find All Quartiere
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - SCHULE_LESEN
   /api/quartiere/options:
     get:
       operationId: QuartierResource_findAllQuartierOptions
@@ -13267,8 +13534,7 @@ paths:
       summary: Find All Quartier Options
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - SCHULE_LESEN
   /api/s3/files/{fileIdInbucket}:
     get:
       operationId: S3Resource_downloadFile
@@ -13315,8 +13581,7 @@ paths:
       summary: Find All Schulen
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - SCHULE_LESEN
     post:
       operationId: SchuleResource_createSchule
       tags:
@@ -13343,18 +13608,12 @@ paths:
       summary: Create Schule
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - SCHULE_SCHREIBEN
   /api/schulen/options:
     get:
       operationId: SchuleResource_findAllOptions
       tags:
       - Schulen
-      parameters:
-      - name: onlyActive
-        in: query
-        schema:
-          type: boolean
-        required: true
       responses:
         "200":
           description: OK
@@ -13369,8 +13628,7 @@ paths:
       summary: Find All Options
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - SCHULE_LESEN
   /api/schulen/{schuleID}/kontaktpersonen:
     get:
       operationId: KontaktPersonSchuleResource_findAllAktivBySchule
@@ -13396,8 +13654,7 @@ paths:
       summary: Find All Aktiv By Schule
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - SCHULE_LESEN
     post:
       operationId: KontaktPersonSchuleResource_createKontaktPersonSchule
       tags:
@@ -13430,7 +13687,7 @@ paths:
       summary: Create Kontakt Person Schule
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - SCHULE_SCHREIBEN
   /api/schulen/{schuleID}/kontaktpersonen/options:
     get:
       operationId: KontaktPersonSchuleResource_findAllOptionsActive
@@ -13460,8 +13717,7 @@ paths:
       summary: Find All Options Active
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - SCHULE_LESEN
   /api/schulen/{schuleID}/kontaktpersonen/schule/{kontaktPersonSchuleID}:
     delete:
       operationId: KontaktPersonSchuleResource_removeKontaktPersonSchuleFromSchule
@@ -13488,7 +13744,7 @@ paths:
       summary: Remove Kontakt Person Schule From Schule
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - SCHULE_SCHREIBEN
     put:
       operationId: KontaktPersonSchuleResource_addKontaktPersonSchuleToSchule
       tags:
@@ -13518,7 +13774,7 @@ paths:
       summary: Add Kontakt Person Schule To Schule
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - SCHULE_SCHREIBEN
   /api/schulen/{schuleID}/kontaktpersonen/{kontaktPersonSchuleID}:
     put:
       operationId: KontaktPersonSchuleResource_updateKontaktPersonSchule
@@ -13557,7 +13813,7 @@ paths:
       summary: Update Kontakt Person Schule
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - SCHULE_SCHREIBEN
     get:
       operationId: KontaktPersonSchuleResource_getKontaktPersonSchule
       tags:
@@ -13587,8 +13843,7 @@ paths:
       summary: Get Kontakt Person Schule
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - SCHULE_LESEN
     delete:
       operationId: KontaktPersonSchuleResource_deleteKontaktPersonSchule
       tags:
@@ -13614,7 +13869,7 @@ paths:
       summary: Delete Kontakt Person Schule
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - SCHULE_SCHREIBEN
   /api/schulen/{schuleId}:
     put:
       operationId: SchuleResource_updateSchule
@@ -13648,7 +13903,7 @@ paths:
       summary: Update Schule
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - SCHULE_SCHREIBEN
     delete:
       operationId: SchuleResource_removeSchule
       tags:
@@ -13669,7 +13924,7 @@ paths:
       summary: Remove Schule
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - SCHULE_SCHREIBEN
     get:
       operationId: SchuleResource_getSchule
       tags:
@@ -13694,8 +13949,7 @@ paths:
       summary: Get Schule
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - SCHULE_LESEN
   /api/schulen/{schuleId}/klassen:
     get:
       operationId: SchuleResource_findSchuleKlassen
@@ -13721,8 +13975,7 @@ paths:
       summary: Find Schule Klassen
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - SCHULE_LESEN
   /api/schulen/{schuleId}/klassen/options:
     get:
       operationId: SchuleResource_findSchuleKlassenOptions
@@ -13753,8 +14006,7 @@ paths:
       summary: Find Schule Klassen Options
       security:
       - SecurityScheme:
-        - LISTEN_ADMIN_LESEN
-        - LISTEN_LESEN
+        - SCHULE_LESEN
   /api/schulen/{schuleId}/schuleaktivstatus:
     put:
       operationId: SchuleResource_updateSchuleAktivStatus
@@ -13788,7 +14040,7 @@ paths:
       summary: Update Schule Aktiv Status
       security:
       - SecurityScheme:
-        - LISTEN_SCHREIBEN
+        - SCHULE_SCHREIBEN
   /api/search/paginated:
     post:
       operationId: SearchResource_findKinderPaginated
@@ -14038,6 +14290,22 @@ paths:
         "403":
           description: Not Allowed
       summary: Trigger Document Queue Job
+      security:
+      - SecurityScheme:
+        - SUPPORT
+  /api/super-admin-runner/trigger-filestore-healthcheck:
+    post:
+      operationId: SuperAdminRunnerResource_triggerFilestoreHealthcheck
+      tags:
+      - Super-Admin-Runner
+      responses:
+        "201":
+          description: Created
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Trigger Filestore Healthcheck
       security:
       - SecurityScheme:
         - SUPPORT

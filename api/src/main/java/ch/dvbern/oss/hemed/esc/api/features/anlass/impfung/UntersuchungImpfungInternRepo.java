@@ -44,6 +44,8 @@ public class UntersuchungImpfungInternRepo extends BaseRepo<UntersuchungImpfungI
             .innerJoin(QUntersuchungImpfungen.untersuchungImpfungen.untersuchung, QUntersuchung.untersuchung)
             .leftJoin(QUntersuchungImpfungIntern.untersuchungImpfungIntern.krankheitenImmunitaeten).fetchJoin()
             .where(QUntersuchung.untersuchung.id.eq(untersuchungID.getUUID()))
+            .orderBy(QUntersuchungImpfungIntern.untersuchungImpfungIntern.impfstoff.name.asc())
+            .orderBy(QUntersuchungImpfungIntern.untersuchungImpfungIntern.datumImpfung.asc().nullsLast())
             .fetch();
     }
 

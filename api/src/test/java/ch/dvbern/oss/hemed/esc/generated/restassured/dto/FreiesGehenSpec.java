@@ -26,10 +26,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum FreiesGehenSpec {
   
-  NORMAL("NORMAL"),
-  
-  PATHOLOGISCH("PATHOLOGISCH"),
-  
   NICHT_GEPRUEFT("NICHT_GEPRUEFT");
 
   private String value;

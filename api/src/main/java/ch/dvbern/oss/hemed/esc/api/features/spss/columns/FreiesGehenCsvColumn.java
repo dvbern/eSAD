@@ -1,5 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
+import ch.dvbern.dvbstarter.shared.i18n.datetime.DateUtil;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.FreiesGehen;
 import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
@@ -17,10 +18,18 @@ public class FreiesGehenCsvColumn extends AbstractCsvColumn {
     public String extract(@NonNull Einladung einladung) {
         return ExtractorForCsvUtil.extractUntersuchungSchulrelevanteBeeintraechtigung(
             einladung,
-            beeintraechtigung -> ValueEnhancedUtil.translateEnhancedEnumValue(
-                beeintraechtigung.getFreiesGehen(),
-                config.tl(),
-                FreiesGehen.class)
+            beeintraechtigung -> {
+                if (beeintraechtigung.getAnzahlMonateFreiesGehen() != null) {
+                    return DateUtil.calculateAlterDuodezimal(beeintraechtigung.getAnzahlMonateFreiesGehen());
+                }
+                if (beeintraechtigung.getFreiesGehen() != null) {
+                    return ValueEnhancedUtil.translateEnhancedEnumValue(
+                        beeintraechtigung.getFreiesGehen(),
+                        config.tl(),
+                        FreiesGehen.class);
+                }
+                return "";
+            }
         );
     }
 

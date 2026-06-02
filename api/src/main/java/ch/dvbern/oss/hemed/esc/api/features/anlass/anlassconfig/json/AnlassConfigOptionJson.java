@@ -52,4 +52,8 @@ public class AnlassConfigOptionJson {
     @Schema(required = true)
     private String bezeichnung;
 
+    @NotNull
+    @Schema(required = true)
+    private boolean anonym;
+
 }

@@ -45,6 +45,12 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 @NoTransactionService
 public final class AnlassPrinter {
 
+    /**
+     * Maximum length for {@code name} and {@code vorname} cells in the eingeladene-Kinder table.
+     * Longer values are truncated so the cells do not wrap.
+     */
+    private static final int MAX_NAME_LENGTH = 25;
+
     private AnlassPrinter() {
         // static and hidden so we don't get tempted to add services in here ;)
     }
@@ -199,9 +205,9 @@ public final class AnlassPrinter {
         headers.add(I18nMessage.of("printer.anlass.kind.klassenstufe"));
         headers.add(I18nMessage.of("printer.anlass.kind.nachkontrolle"));
         headers.add(I18nMessage.of("printer.anlass.kind.status"));
-        headers.add(I18nMessage.of("printer.anlass.kind.abmeldegrund"));
         headers.add(I18nMessage.of("printer.anlass.kind.impfausweis"));
         headers.add(I18nMessage.of("printer.anlass.kind.fragebogen"));
+        headers.add(I18nMessage.of("printer.anlass.kind.impfeinverstaendnis"));
 
         // Create table rows
         List<List<String>> rows = new ArrayList<>();
@@ -214,8 +220,11 @@ public final class AnlassPrinter {
                     .orElse(null) :
                 null;
             List<String> row = new ArrayList<>();
-            row.add(PrintUtil.trimToPlaceholder(kind.getName()));
-            row.add(PrintUtil.trimToPlaceholder(kind.getVorname()));
+            // Truncate name and vorname so the cells do not wrap.
+            row.add(PrintUtil.replaceWhitespaceWithNonBreakingSpace(
+                PrintUtil.truncate(kind.getName(), MAX_NAME_LENGTH)));
+            row.add(PrintUtil.replaceWhitespaceWithNonBreakingSpace(
+                PrintUtil.truncate(kind.getVorname(), MAX_NAME_LENGTH)));
             row.add(basePrinter.translateValue(kind.getGeschlecht()));
             row.add(PrintUtil.trimToPlaceholder(kind.getGeburtsdatum()));
 
@@ -235,17 +244,25 @@ public final class AnlassPrinter {
                 : (nachkontrolleOfKind != null && nachkontrolleOfKind.getAnlassFlags().hasAnyNachkontrolle());
             row.add(basePrinter.translateValue(nachkontrolle));
             row.add(basePrinter.translateValue(einladung.getEinladungStatus()));
-            row.add(basePrinter.translateValue(einladung.getGrundAbmeldung()));
             row.add(basePrinter.translateValue(isNotizWithFiles(einladung.getImpfausweisNotiz().orElse(null))));
             row.add(basePrinter.translateValue(isNotizWithFiles(einladung.getFragebogenNotiz().orElse(null))));
+            row.add(basePrinter.translateValue(isNotizWithFiles(einladung.getImpfeinverstaendnisNotiz().orElse(null))));
             rows.add(row);
         }
 
         // Add table to document
-        basePrinter.addTable(headers, rows, document, true);
+        float[] columnWidths = null;
+        if (printEsadId) {
+            columnWidths = new float[] { 18, 17, 8, 9, 8, 10, 5, 10, 5, 5, 5 };
+        } else {
+            columnWidths = new float[] { 22, 21, 8, 9, 10, 5, 10, 5, 5, 5 };
+        }
+        basePrinter.addTable(headers, rows, document, true, 9.0f, columnWidths);
+
         basePrinter.addValue(I18nMessage.of("printer.anlass.abbrevation.Nachkontrolle"), false, document);
         basePrinter.addValue(I18nMessage.of("printer.anlass.abbrevation.Impfausweis"), false, document);
         basePrinter.addValue(I18nMessage.of("printer.anlass.abbrevation.Fragebogen"), false, document);
+        basePrinter.addValue(I18nMessage.of("printer.anlass.abbrevation.Impfeinverstaendnis"), false, document);
     }
 
     private static boolean isNotizWithFiles(@Nullable Notiz notiz) {

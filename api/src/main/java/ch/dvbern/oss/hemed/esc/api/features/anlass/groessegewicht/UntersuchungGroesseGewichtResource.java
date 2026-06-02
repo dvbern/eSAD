@@ -50,10 +50,10 @@ public class UntersuchungGroesseGewichtResource {
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungGroesseGewichtMapper.getUntersuchungGroesseGewicht(
-            wrappedId.toEinladungId(),
+            wrappedId,
             untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
                 untersuchung,
-                Berechtigung.SU_GROSSE_GEWICHT_LESEN));
+                List.of(Berechtigung.SU_GROSSE_GEWICHT_LESEN)));
     }
 
     @PUT
@@ -66,7 +66,7 @@ public class UntersuchungGroesseGewichtResource {
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungGroesseGewichtMapper.saveUntersuchungGroesseGewicht(
-            wrappedId.toEinladungId(),
+            wrappedId,
             saveJson,
             untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
                 untersuchung,

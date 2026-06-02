@@ -24,7 +24,9 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ARCHIVIER
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AUFGABEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AUFGABEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.BENUTZER_BERECHTIGUNGEN_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.BENUTZER_OPTIONS_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.IMPFSTOFFE_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.INFOMATERIAL_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_ALLE_NOTIZEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_ALLE_NOTIZEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_LESEN_MEDIZINISCH;
@@ -33,9 +35,10 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_NO
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KLASSEN_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KLASSEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KOMPLETTER_EXPORT;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LABELS_LESEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.ORGANISATION_VERWALTEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_ABSCHLUSS_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_ABSCHLUSS_SCHREIBEN;
@@ -66,6 +69,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
 @TestSecurity(
     user = "testing-school-nurse",
     roles = {
+        BENUTZER_OPTIONS_LESEN,
         AUFGABEN_LESEN,
         AUFGABEN_SCHREIBEN,
         ANLASSLISTE_LESEN,
@@ -105,12 +109,14 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN,
         KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN,
         KOMPLETTER_EXPORT,
-        LISTEN_LESEN,
         IMPFSTOFFE_LESEN,
         LABELS_LESEN,
         BENUTZER_BERECHTIGUNGEN_LESEN,
         ORGANISATION_VERWALTEN_LESEN,
         VORLAGEN_LESEN,
+        KLASSEN_LESEN,
+        KLASSEN_SCHREIBEN,
+        INFOMATERIAL_LESEN,
         ARCHIVIERUNG
     }
 )

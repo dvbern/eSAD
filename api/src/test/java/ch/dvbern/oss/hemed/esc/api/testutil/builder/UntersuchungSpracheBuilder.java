@@ -8,6 +8,7 @@ import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.UntersuchungSprache;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.UntersuchungSpracheMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.json.UntersuchungSpracheJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.json.UntersuchungSpracheSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Nachsprechen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Sprachverstaendnis;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Wortschatz;
@@ -16,7 +17,9 @@ import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.NichtGeprueftGrund;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungSpracheJsonSpecMapper;
+import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungSpracheSaveJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSpracheJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSpracheSaveJsonSpec;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -87,21 +90,43 @@ public class UntersuchungSpracheBuilder {
     }
 
     @NonNull
-    public static UntersuchungSprache create(@NonNull Consumer<UntersuchungSpracheBuilder> block) {
+    public static UntersuchungSprache create(
+        @NonNull Consumer<UntersuchungSpracheBuilder> block
+    ) {
         UntersuchungSpracheBuilder builder = new UntersuchungSpracheBuilder();
         block.accept(builder);
         return builder.sprache;
     }
 
     @NonNull
-    public static UntersuchungSpracheJson createJax(@NonNull Consumer<UntersuchungSpracheBuilder> block) {
+    public static UntersuchungSpracheSaveJson createSaveJax(
+        @NonNull Consumer<UntersuchungSpracheBuilder> block
+    ) {
+        UntersuchungSprache entity = create(block);
+        return UntersuchungSpracheMapper.toSaveJson(entity);
+    }
+
+    @NonNull
+    public static UntersuchungSpracheJson createJax(
+        @NonNull Consumer<UntersuchungSpracheBuilder> block
+    ) {
         UntersuchungSprache entity = create(block);
         UntersuchungSpracheMapper mapper = new UntersuchungSpracheMapper(null, null);
         return mapper.toJson(entity);
     }
 
     @NonNull
-    public static UntersuchungSpracheJsonSpec createJaxSpec(@NonNull Consumer<UntersuchungSpracheBuilder> block) {
+    public static UntersuchungSpracheSaveJsonSpec createSaveJaxSpec(
+        @NonNull Consumer<UntersuchungSpracheBuilder> block
+    ) {
+        UntersuchungSpracheSaveJson saveJson = createSaveJax(block);
+        return UntersuchungSpracheSaveJsonSpecMapper.INSTANCE.saveJsonToSaveJsonSpec(saveJson);
+    }
+
+    @NonNull
+    public static UntersuchungSpracheJsonSpec createJaxSpec(
+        @NonNull Consumer<UntersuchungSpracheBuilder> block
+    ) {
         UntersuchungSpracheJson json = createJax(block);
         return UntersuchungSpracheJsonSpecMapper.INSTANCE.jsonToJsonSpec(json);
     }

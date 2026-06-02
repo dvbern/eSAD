@@ -84,7 +84,7 @@
     }
 
     <!-- Save / Cancel Buttons -->
-    @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+    @if (canEdit()) {
       <svui-save-cancel-buttons
         [saving]="false"
         [canEdit]="true"

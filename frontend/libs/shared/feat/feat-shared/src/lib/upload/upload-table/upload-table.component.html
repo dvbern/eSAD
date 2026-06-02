@@ -50,7 +50,7 @@
       <tr svui-empty-table-message [message]="'ui.upload.table.empty' | transloco"></tr>
     } @else {
       @for (item of uploadTable().displayedList(); track item.id) {
-        <tr>
+        <tr [class.svui_upload-table--preview-active]="activePreviewFileId() === item.id">
           <!--          Typ-->
           @if (showTyp()) {
             <td>{{ item.fileTyp }}</td>
@@ -94,11 +94,11 @@
                   </button>
                 }
                 @if (tableConfig().showViewAction && !item.deletedInBucket) {
-                  <button svuiIconOnlyButton="primary"
+                  <button [svuiIconOnlyButton]="activePreviewFileId() === item.id ? 'primary' : 'secondary'"
                           type="button"
                           [tooltip]="'global.tooltip.icon.eye' | transloco"
                           [icon]="'eye'"
-                          (click)="fileView.emit(item)">
+                          (click)="filePreview.emit(item)">
                   </button>
                 }
               </div>

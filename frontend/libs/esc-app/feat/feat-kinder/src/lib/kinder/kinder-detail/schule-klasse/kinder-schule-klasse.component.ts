@@ -1,14 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {
-  EntityAktivStatus,
-  ImportTyp,
-  KindSaveJson,
-  KindSaveModeDuplikat,
-  KlasseOptionJson,
-  SchuleOptionJson,
-} from '@dvb/data-access-backend';
+import {KlasseOptionJson, SchuleOptionJson} from '@dvb/data-access-backend';
 import {BenutzerStore, KlassenOptionsStore, Path, SchulenOptionsStore} from '@dvb/feat-shared';
 import {
   FormButtonsComponent,
@@ -19,7 +12,7 @@ import {
   NgSelectDirective,
 } from '@dvb/ui-components';
 import {DetailMode, DirtyMarker} from '@dvb/util-angular';
-import {hasKindEditBerechtigung, isExternalObject, isNotNullish, isNullish, requireValue} from '@dvb/util-shared';
+import {hasKindEditBerechtigung, isExternalObject, isNotNullish, isNullish} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {DossierStore} from '../../dossier.store';
@@ -55,8 +48,12 @@ export class KinderSchuleKlasseComponent implements DirtyMarker {
   readonly benutzerStore = inject(BenutzerStore);
   protected readonly Path = Path;
 
+
   schuleOptions = computed(() =>
-    this.schulenOptionsStore.entitiesIncluding(this.dossierStore.selectedKind()?.data.schule),
+      this.schulenOptionsStore.schulenFiltered(
+        this.dossierStore.selectedKind()?.data.schule,
+        true,
+        !this.dossierStore.selectedKind()?.data.schule),
   );
   klasseOptions = computed(() => {
     if (this.dossierStore.detailMode() == DetailMode.EDIT && this.form.group.controls.schule.dirty) {
@@ -110,14 +107,10 @@ export class KinderSchuleKlasseComponent implements DirtyMarker {
 
   async submitIfValid(): Promise<void> {
     if (await this.form.validate()) {
-      const value: KindSaveJson = {
-        ...requireValue(this.dossierStore.selectedKind()).data,
-        ...this.form.valueOnValid(),
-      };
+      const saveJson = this.form.valueOnValid();
 
-      this.dossierStore.updateKind({
-        kind: value,
-        kindSaveMode: KindSaveModeDuplikat.NO_CHECK,
+      this.dossierStore.updateSchuleKlasse({
+        saveJson,
         onSuccess: () => {
           // Beim Ändern der Schule können MPA und Arzt auf dem Dossier geändert werden, deshalb laden wir diese Daten ebenfalls nach
           const kindId = this.dossierStore.selectedKind()?.id;
@@ -132,17 +125,4 @@ export class KinderSchuleKlasseComponent implements DirtyMarker {
 
     }
   }
-}
-
-function getOptionWithSuffix<T extends {
-  aktivStatus: EntityAktivStatus,
-  bezeichnung: string
-}>(translatedSuffix: string, currentOption?: T) {
-  if (currentOption?.aktivStatus === EntityAktivStatus.INAKTIV) {
-    return {
-      ...currentOption,
-      bezeichnung: currentOption.bezeichnung + translatedSuffix,
-    };
-  }
-  return currentOption
 }

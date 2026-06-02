@@ -59,6 +59,10 @@ public class UntersuchungSchulrelevanteBeeintraechtigung
     @AttributeOverride(name = "value", column = @Column(name = "freiesGehen", length = DbConst.DB_DEFAULT_MAX_LENGTH))
     private SingleValueEnhanced<FreiesGehen> freiesGehen = SingleValueEnhanced.of();
 
+    @Nullable
+    @Column(nullable = true)
+    private Integer anzahlMonateFreiesGehen;
+
     @Valid
     @Embedded
     @Nullable

@@ -1,11 +1,17 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.signatur;
 
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.UntersuchungSignaturApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungSignaturJsonSpec;
@@ -18,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasAnonymerEintragIdWrapper;
 import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
 
 @QuarkusTest
@@ -27,7 +34,9 @@ class UntersuchungSignaturResourceITest extends AbstractITest {
     private final UntersuchungSignaturApiSpec api = UntersuchungSignaturApiSpec.untersuchungSignatur(RequestSpecUtil.quarkusSpec());
 
     private final UntersuchungSignaturService untersuchungSignaturService;
+    private final UntersuchungService untersuchungService;
     private final FixtureService fixtureService;
+    private final TenantProducer tenantProducer;
 
     @Override
     @BeforeEach
@@ -130,5 +139,37 @@ class UntersuchungSignaturResourceITest extends AbstractITest {
         assertThat(result).isNotNull();
         assertThat(result.getData().getPerson()).isNull();
         assertThat(result.getData().getTimestampVisiert()).isNull();
+    }
+
+    @Test
+    @TestAsSchularztBE
+    void visieren_anonym() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+
+        // Create anlass with arzt set (to pass authorizer)
+        Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), false);
+        assertThat(untersuchung.getUntersuchungSignatur()).isNull();
+
+        // ACT
+        UntersuchungSignaturJsonSpec result = api.untersuchungSignaturResourceSignieren()
+            .anlassIdPath(anonymerEintrag.getAnlass().getId().getId())
+            .einladungIdPath(toHasAnonymerEintragIdWrapper(anonymerEintrag.getId()))
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungSignaturJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getData().getPerson())
+            .isNotNull()
+            .extracting(BenutzerOptionJsonSpec::getId)
+            .isEqualTo(TestAsSchularztBE.BENUTZER_ID);
+        assertThat(result.getData().getTimestampVisiert()).isNotNull();
     }
 }

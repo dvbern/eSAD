@@ -2,11 +2,8 @@ import {AnlassJson, AnlassSaveJson, AnlassTyp} from '@dvb/data-access-backend';
 import {isISODateString, isISODateTimeString, ISODateTimeString} from '@dvb/data-access-types';
 import {isNullish, Nullish} from '@dvb/util-shared';
 import {TranslocoService} from '@jsverse/transloco';
+import {AnlassJsonEnhanced} from "@dvb/feat-shared";
 
-export interface AnlassJsonEnhanced extends AnlassJson {
-  fullTitle: string;
-  dateTime?: ISODateTimeString
-}
 
 export function enhanceAnlass(anlass: AnlassJson, transloco: TranslocoService): AnlassJsonEnhanced {
   return {

@@ -1,0 +1,24 @@
+<div class="file-preview__container">
+  @switch (status()) {
+    @case ('loading') {
+      <div class="file-preview__placeholder">
+        <output class="spinner-border text-primary">
+          <span class="visually-hidden">{{ 'global.loading' | transloco }}</span>
+        </output>
+      </div>
+    }
+    @case ('ready') {
+      <img class="file-preview__image" [src]="previewUrl()" [alt]="title()"/>
+    }
+    @case ('unsupported') {
+      <div class="file-preview__placeholder">
+        <svui-icon [useCase]="'document'"/>
+      </div>
+    }
+    @case ('error') {
+      <div class="file-preview__placeholder">
+        <svui-icon [useCase]="'document'"/>
+      </div>
+    }
+  }
+</div>

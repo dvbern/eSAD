@@ -260,6 +260,15 @@ public class ConfigService {
     @ConfigProperty(name = "esc.tmp.dir")
     Path tmpDir;
 
+    @ConfigProperty(name = "esc.filestore.healthcheck.enabled", defaultValue = "true")
+    boolean filestoreHealthcheckEnabled;
+
+    @ConfigProperty(name = "esc.filestore.healthcheck.whitelist-file")
+    Optional<Path> filestoreHealthcheckWhitelistFile;
+
+    @ConfigProperty(name = "esc.filestore.healthcheck.report-max-entries", defaultValue = "500")
+    int filestoreHealthcheckReportMaxEntries;
+
     public void validateNotProdAndDbResetFeatureEnabled() {
         if (isStufeProd() || !isAllowDbReset()) {
             LOG.warn("Resetting database is not allowed in production environment or if feature is not enabled!");

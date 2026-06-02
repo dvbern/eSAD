@@ -4,15 +4,20 @@ import java.util.List;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungHoerenOtoskopieBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.UntersuchungHoerenOtoskopieApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.OtoskopieResultatSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungHoerenOtoskopieJsonSpec;
@@ -23,9 +28,9 @@ import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasAnonymerEintragIdWrapper;
 import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
 @RequiredArgsConstructor
@@ -37,6 +42,7 @@ class UntersuchungHoerenOtoskopieResourceITest {
     private final UntersuchungService untersuchungService;
     private final UntersuchungHoerenOtoskopieService untersuchungHoerenOtoskopieService;
     private final FixtureService fixtureService;
+    private final TenantProducer tenantProducer;
 
     @Test
     @TestAsAdminBS
@@ -130,6 +136,83 @@ class UntersuchungHoerenOtoskopieResourceITest {
     }
 
     @Test
+    @TestAsSchularztBE
+    void saveUntersuchungHoerenOtoskopie_anonym() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+
+        Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), false);
+        assertThat(untersuchung.getUntersuchungHoerenOtoskopie()).isNull();
+
+        // ACT
+        UntersuchungHoerenOtoskopieSaveJsonSpec saveJsonSpec =
+            UntersuchungHoerenOtoskopieBuilder.createSaveJaxSpec(builder -> builder
+                .withOtoskopieLinks(List.of(OtoskopieResultat.TROMMELFELL_CERUMEN), null)
+                .withOtoskopieRechts(List.of(OtoskopieResultat.TROMMELFELL_CERUMEN), null)
+            );
+
+        UntersuchungHoerenOtoskopieJsonSpec result = api
+            .untersuchungHoerenOtoskopieResourceSaveUntersuchungHoerenOtoskopie()
+            .anlassIdPath(anonymerEintrag.getAnlass().getId().getId())
+            .einladungIdPath(toHasAnonymerEintragIdWrapper(anonymerEintrag.getId()))
+            .body(saveJsonSpec)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(UntersuchungHoerenOtoskopieJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getOtoskopieData()).isNotNull();
+        assertThat(result.getOtoskopieData().getOtoskopieRechts()).isNotNull();
+        assertThat(result.getOtoskopieData().getOtoskopieLinks()).isNotNull();
+        assertThat(result.getOtoskopieData().getOtoskopieRechts().getValue())
+            .contains(OtoskopieResultatSpec.TROMMELFELL_CERUMEN.name());
+        assertThat(result.getOtoskopieData().getOtoskopieLinks().getValue())
+            .contains(OtoskopieResultatSpec.TROMMELFELL_CERUMEN.name());
+        assertThat(untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), true)
+            .getUntersuchungHoerenOtoskopie()).isNotNull();
+    }
+
+    @Test
+    @TestAsAdminBS
+    void saveUntersuchungHoerenOtoskopie_should_respect_independence_between_links_and_rechts() {
+        // ARRANGE
+        // createAnlassWithSameRequirementSettings already persists the config
+        Anlass anlass = fixtureService.createAnlassWithSameRequirementSettings(RequirementSetting.REQUIRED);
+        Einladung einladung = fixtureService.createEinladung(anlass);
+        untersuchungService.getOrCreateUntersuchung(einladung.getId());
+
+        // ACT
+        UntersuchungHoerenOtoskopieSaveJsonSpec saveJsonSpec =
+            UntersuchungHoerenOtoskopieBuilder.createJaxSpec(builder -> builder
+                .withOtoskopieRechts(List.of(OtoskopieResultat.NORMAL), null, null)
+                .withOtoskopieLinks(List.of(OtoskopieResultat.ANDERES), null, "Bemerkung Links")
+                .withBemerkung("Bemerkung Allgemein")
+            ).getOtoskopieData();
+
+        UntersuchungHoerenOtoskopieJsonSpec result = api
+            .untersuchungHoerenOtoskopieResourceSaveUntersuchungHoerenOtoskopie()
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
+            .body(saveJsonSpec)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .extract().as(UntersuchungHoerenOtoskopieJsonSpec.class);
+
+        // ASSERT
+        assertThat(result.getOtoskopieData().getOtoskopieRechtsResultatAndere()).isNull();
+        assertThat(result.getOtoskopieData().getOtoskopieLinksResultatAndere()).isEqualTo("Bemerkung Links");
+        assertThat(result.getOtoskopieData().getBemerkungen()).isEqualTo("Bemerkung Allgemein");
+    }
+
+    @Test
     @TestAsAdminBS
     void getDefaultUntersuchungHoerenOtoskopieForAnlassConfig() {
         // ARRANGE
@@ -150,9 +233,11 @@ class UntersuchungHoerenOtoskopieResourceITest {
 
         // ASSERT
         assertThat(result).isNotNull();
-        assertThat(result.getOtoskopieRechts().getValue()).isEqualTo(List.of(OtoskopieResultatSpec.NICHT_GEPRUEFT.name()));
+        assertThat(result.getOtoskopieRechts()
+            .getValue()).isEqualTo(List.of(OtoskopieResultatSpec.NICHT_GEPRUEFT.name()));
         assertThat(result.getOtoskopieRechtsResultatAndere()).isNull();
-        assertThat(result.getOtoskopieLinks().getValue()).isEqualTo(List.of(OtoskopieResultatSpec.NICHT_GEPRUEFT.name()));
+        assertThat(result.getOtoskopieLinks()
+            .getValue()).isEqualTo(List.of(OtoskopieResultatSpec.NICHT_GEPRUEFT.name()));
         assertThat(result.getOtoskopieLinksResultatAndere()).isNull();
     }
 

@@ -55,37 +55,37 @@ class ArchivierungRuleProducerTest {
 
     @Test
     void testArchivierungRuleService_FeatureDisabled() {
-        // Arrange
+        // ARRANGE
         when(features.getArchivierungFeature()).thenReturn(FeatureEnabledSetting.DISABLED);
 
-        // Act
+        // ACT
         ArchivierungRuleService result = service.archivierungRuleService();
 
-        // Assert
+        // ASSERT
         assertThat(result).isSameAs(archivierungRuleNoopService);
     }
 
     @Test
     void testArchivierungRuleService_FeatureEnabled_TenantBE() {
-        // Arrange
+        // ARRANGE
         when(features.getArchivierungFeature()).thenReturn(FeatureEnabledSetting.ENABLED);
         when(tenantProducer.produceTenant()).thenReturn(TenantEnum.BE);
 
-        // Act
+        // ACT
         ArchivierungRuleService result = service.archivierungRuleService();
 
-        // Assert
+        // ASSERT
         assertThat(result).isSameAs(archivierungRuleByAgeService);
     }
 
     @ParameterizedTest
     @EnumSource(value = TenantEnum.class, names = {"BS", "WIN"})
     void testArchivierungRuleService_FeatureEnabled_TenantBS_WIN_ThrowsException(TenantEnum tenant) {
-        // Arrange
+        // ARRANGE
         when(features.getArchivierungFeature()).thenReturn(FeatureEnabledSetting.ENABLED);
         when(tenantProducer.produceTenant()).thenReturn(tenant);
 
-        // Act & Assert
+        // ACT & ASSERT
         assertThatThrownBy(() -> service.archivierungRuleService())
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("ArchivierungRuleService not defined for tenant: " + tenant);
@@ -93,11 +93,11 @@ class ArchivierungRuleProducerTest {
 
     @Test
     void testArchivierungRuleService_FeatureEnabled_DefaultTenant_ThrowsException() {
-        // Arrange
+        // ARRANGE
         when(features.getArchivierungFeature()).thenReturn(FeatureEnabledSetting.ENABLED);
         when(tenantProducer.produceTenant()).thenReturn(TenantEnum.DEFAULT);
 
-        // Act & Assert
+        // ACT & ASSERT
         assertThatThrownBy(() -> service.archivierungRuleService())
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("Unexpected value: " + TenantEnum.DEFAULT);

@@ -1,12 +1,12 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
+import java.time.LocalDate;
 import java.util.function.Consumer;
 
-import ch.dvbern.dvbstarter.shared.clock.AppClock;
-import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
+import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -16,8 +16,6 @@ public class AnonymerEintragBuilder {
 
     private AnonymerEintrag anonymerEintrag;
 
-    private final FixedClockProvider clockProvider = FixedClockProvider.now();
-    private final AppClock appClock = new AppClock(clockProvider);
 
     private AnonymerEintragBuilder() {
         this.anonymerEintrag = defaultAnonymerEintrag();
@@ -28,8 +26,22 @@ public class AnonymerEintragBuilder {
     public static AnonymerEintrag defaultAnonymerEintrag() {
         AnonymerEintrag eintrag = new AnonymerEintrag();
         eintrag.setHash("default-hash");
-        eintrag.setAnlass(AnlassBuilder.defaultAnlass(java.time.LocalDate.now()));
+        eintrag.setAnlass(AnlassBuilder.defaultAnlass(LocalDate.now()));
         return eintrag;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public AnonymerEintragBuilder forAnonymerEintrag(@NonNull AnonymerEintrag initAnonymerEintrag) {
+        this.anonymerEintrag = initAnonymerEintrag;
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public AnonymerEintragBuilder withID(@NonNull ID<AnonymerEintrag> id) {
+        this.anonymerEintrag.setId(id);
+        return this;
     }
 
     @NonNull

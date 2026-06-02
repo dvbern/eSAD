@@ -69,3 +69,5 @@ export * from './lib/value-enhanced/value-enhanced.util';
 export * from './lib/anlass-config/anlass-config-requirement-setting.component';
 export * from './lib/anlass-config/anlass-config-select-boolean.component';
 export * from './lib/core/impfstoff-charge-option';
+export * from './lib/anlass/anlass-json-enhanced';
+export * from './lib/kind/kind-save-json-enhanced';

@@ -29,4 +29,11 @@
              .getBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature()
              .isEnabledForDeploymentEnvironment(configService.getEnvironment());
      }
+
+     public boolean isZentraleOrganisation() {
+         return getTenantSetting()
+             .getTenantSettingFeatures()
+             .getZentraleOrganisationFeature()
+             .isEnabledForDeploymentEnvironment(configService.getEnvironment());
+     }
  }

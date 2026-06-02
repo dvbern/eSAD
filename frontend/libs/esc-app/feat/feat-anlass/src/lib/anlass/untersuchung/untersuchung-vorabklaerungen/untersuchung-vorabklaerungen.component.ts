@@ -7,7 +7,6 @@ import {
   TenantSettingsStore,
   ValueEnhancedComponent
 } from "@dvb/feat-shared";
-import {toEinladungBackendEntityIdWithClass} from "@dvb/data-access-types";
 import {DirtyMarker} from "@dvb/util-angular";
 import {UntersuchungStore} from "../untersuchung.store";
 import {
@@ -46,7 +45,8 @@ export class UntersuchungVorabklaerungenComponent implements DirtyMarker {
   einverstaendnisImpfungenItems = Object.values(EinverstaendnisImpfungen);
   chronischeKrankheitenItems = Object.values(ChronischeKrankheiten);
 
-  canEditVorabklaerungen = computed(() => this.#benutzerStore.createHasRequiredRoleSig(hasUntersuchungVorabklaerungenEditBerechtigung())
+  canEditVorabklaerungen = computed(() => this.#benutzerStore.createHasRequiredRoleSig(
+      hasUntersuchungVorabklaerungenEditBerechtigung())
     && this.anlassStore.canUserEditAnlassInCurrentState());
 
   form = new UntersuchungVorabklaerungenForm({
@@ -78,19 +78,16 @@ export class UntersuchungVorabklaerungenComponent implements DirtyMarker {
 
   abbrechen(): void {
     const untersuchungVorabklaerungen = this.store.untersuchungVorabklaerungen();
-    if (untersuchungVorabklaerungen) {
-      this.form.resetForm(untersuchungVorabklaerungen.data);
-    }
+    this.form.resetForm(untersuchungVorabklaerungen?.data);
   }
 
   async submitIfValid(): Promise<void> {
     if (await this.form.validate()) {
       const anlassId = requireValue(this.anlassStore.selectedEntity()?.id);
-      const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       const payload = this.form.valueOnValid();
       this.store.saveUntersuchungVorabklaerungen({
         anlassId: anlassId,
-        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
+        einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
         untersuchungVorabklaerungenSaveJson: payload,
       });
     }

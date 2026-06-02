@@ -18,7 +18,7 @@ import {
   TextInputDirective,
 } from '@dvb/ui-components';
 import {TableModel} from '@dvb/util-angular';
-import {hasListEditBerechtigung, isActiveInExternalSystem} from '@dvb/util-shared';
+import {hasSchuleEditBerechtigung, isActiveInExternalSystem} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbDropdownItem} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
@@ -55,7 +55,7 @@ export class SchulenListComponent {
   readonly confirmService = inject(ConfirmService);
   readonly #transloco = inject(TranslocoService);
 
-  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
+  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasSchuleEditBerechtigung());
 
   itemTable = input.required<TableModel<SchuleJson>>();
   tableFilterForm = input.required<SchulenListFilterForm>();

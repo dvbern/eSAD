@@ -80,6 +80,25 @@ public final class PrintUtilImpl {
         return input.replaceAll("\\s", "\u00A0");
     }
 
+    /**
+     * Truncates the given input to the given maximum length. If the input is longer than {@code maxLength},
+     * the result is cut and ends with an ellipsis ("…"). Returns the placeholder if input is null or blank.
+     */
+    @NonNull
+    public String truncate(@Nullable String input, int maxLength) {
+        if (input == null || input.isBlank()) {
+            return placeholder;
+        }
+        String sanitized = stringSanitizer.apply(input.trim());
+        if (maxLength <= 0 || sanitized.length() <= maxLength) {
+            return sanitized;
+        }
+        if (maxLength == 1) {
+            return "…";
+        }
+        return sanitized.substring(0, maxLength - 1) + '…';
+    }
+
     @NonNull
     public String formatDate(@NonNull LocalDate date) {
         return date.format(printDateFormat);

@@ -1,20 +1,26 @@
 import {computed, Inject, inject, Injectable, Optional} from '@angular/core';
 import {
   AgbResponsability,
+  AnlassJson,
+  BenutzerOptionJson,
   BenutzerService,
+  DossierJson,
   FachRolle,
   OrganisationRollenJson,
+  SchuleOptionJson,
   SystemRollenJson
 } from '@dvb/data-access-backend';
 
 import {AbstractSignalStore} from '@dvb/util-angular';
-import {isNotNullish, requireValue, RoleMatcher} from '@dvb/util-shared';
+import {isNotNullish, isNullish, Nullish, requireValue, RoleMatcher} from '@dvb/util-shared';
 import * as Sentry from '@sentry/browser';
 import {exhaustMap, firstValueFrom, pipe} from 'rxjs';
 import {BackendEntityId, ISODateTimeString} from "@dvb/data-access-types";
 import {rxMethod} from "@ngrx/signals/rxjs-interop";
 import {tapResponse} from "@ngrx/operators";
 import {TenantSettingsStore} from "../../tenant/tenant-settings.store";
+import {AnlassJsonEnhanced} from "../../anlass/anlass-json-enhanced";
+import {KindSaveJsonEnhanced} from "../../kind/kind-save-json-enhanced";
 
 export interface AppUser {
   id: BackendEntityId;
@@ -70,6 +76,7 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
       ?  this.#organisationFachrollen()
       : this.#systemFachrollen());
   hasFachrolleSupport = computed(() => this.fachrollen().includes(FachRolle.SUPPORT));
+  currentOrganisation = computed(() => this.state().user?.currentOrganisationRollen?.organisation);
   isAgbAccepted = computed(() => {
     if (this.tenantSettingsStore.agbResponsibility() == AgbResponsability.AGB_MANAGED_BY_USER) {
       return isNotNullish(this.state().user?.timestampAGBAccepted);
@@ -115,8 +122,6 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
   ) {
     const fullName = `${firstName} ${lastName}`;
     const kuerzel = this.buildKuerzel(firstName, lastName);
-
-
 
     this.patchState(_state => {
       const user: AppUser = {
@@ -167,6 +172,41 @@ export class BenutzerStore extends AbstractSignalStore<BenutzerState> {
         errorMessage: undefined,
       };
     });
+  }
+
+  public isZustaendigForKind(kind: KindSaveJsonEnhanced | Nullish): boolean {
+    return this.isSupportOrSameOrganisationAsArzt(kind?.zustaendigArzt);
+  }
+
+  public isZustaendigForDossier(dossier: DossierJson | Nullish): boolean {
+    return this.isSupportOrSameOrganisationAsArzt(dossier?.dataNichtMedizinisch.zustaendigArzt)
+      || this.isSupportOrSameOrganisationAsSchule(dossier?.kind.data.schule);
+  }
+
+  public isZustaendigForAnlass(anlass: AnlassJson | AnlassJsonEnhanced | Nullish): boolean {
+    return this.isSupportOrSameOrganisationAsArzt(anlass?.data.arzt);
+  }
+
+  private isSupportOrSameOrganisationAsArzt(arzt: BenutzerOptionJson | Nullish): boolean {
+    if (this.hasFachrolleSupport()) {
+      return true;
+    }
+    const organisation = this.currentOrganisation();
+    if (!organisation) {
+      return false;
+    }
+    return isNullish(arzt) || organisation?.id === arzt?.organisationRollen?.organisation?.id;
+  }
+
+  private isSupportOrSameOrganisationAsSchule(schule: SchuleOptionJson | Nullish): boolean {
+    if (this.hasFachrolleSupport()) {
+      return true;
+    }
+    const organisation = this.currentOrganisation();
+    if (!organisation) {
+      return false;
+    }
+    return isNullish(schule) || organisation?.id === schule?.organisationId;
   }
 
   // Factory-Function that returns a computed signal based on the passed argument

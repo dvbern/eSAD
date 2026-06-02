@@ -17,7 +17,8 @@ import {
   BenutzerStore,
   ImpfstoffeChargenStore,
   LabelsStore,
-  ModalDialogComponent, TenantSettingsStore,
+  ModalDialogComponent,
+  TenantSettingsStore,
   TimetravelStore,
   TranslatedStringPipe,
 } from '@dvb/feat-shared';
@@ -94,7 +95,7 @@ export class KinderFilterComponent extends FilterSessionStorage<ErweiterteFilter
   krankheitTypes = Object.values(Krankheit);
   anlassStatus = Object.values(AnlassStatus);
   anlassArt = Object.values(AnlassArt);
-  anlassTyp = Object.values(this.anlassConfigOptionsStore.getVisibleAnlassTypen());
+  anlassTyp = Object.values(this.anlassConfigOptionsStore.getVisibleAnlassTypenNotAnonym());
   einladungStatus = Object.values(this.tenantSettingsStore.availableEinladungStatus());
 
   protected readonly compareFn = compareFn<LabelJson>;
@@ -199,7 +200,7 @@ function safeId<T>(value: T): BackendEntityId | undefined {
   return isValidBackendEntityId(value) ? value : undefined;
 }
 
-function safeEnum<E extends object, T>(enumType: E, value: T):  E[keyof E] | undefined {
+function safeEnum<E extends object, T>(enumType: E, value: T): E[keyof E] | undefined {
   return isValidEnumValue(enumType, value) ? value : undefined;
 }
 
@@ -208,7 +209,7 @@ function safeDate(value?: ISODateString): ISODateString | undefined {
 }
 
 function safeNumber(value: unknown): number | undefined {
-  if(isNullish(value) || (typeof value === "string" && value.trim() === '')){
+  if (isNullish(value) || (typeof value === "string" && value.trim() === '')) {
     return undefined;
   }
   return Number.isFinite(Number(value)) ? undefined : Number(value);

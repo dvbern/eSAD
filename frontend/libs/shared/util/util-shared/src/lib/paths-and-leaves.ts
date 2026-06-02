@@ -3,7 +3,8 @@
 /**
  * Construct a string-template-type for properties of nested objects.
  */
-export type Paths<T> = T extends object ? {
+// Stop recursion for primitives (and branded types, which extend string but look like objects to TypeScript)
+export type Paths<T> = T extends string | number | boolean | bigint | symbol | null | undefined ? never : T extends object ? {
   [K in keyof T]:
   `${Exclude<K, symbol>}${'' | `.${Paths<T[K]>}`}`
 }[keyof T] : never
@@ -11,7 +12,8 @@ export type Paths<T> = T extends object ? {
 /**
  * See {@link Paths} but shows only leaves, not intermediates.
  */
-export type Leaves<T> = T extends object ? {
+// Stop recursion for primitives (and branded types, which extend string but look like objects to TypeScript)
+export type Leaves<T> = T extends string | number | boolean | bigint | symbol | null | undefined ? never : T extends object ? {
   [K in keyof T]:
   `${Exclude<K, symbol>}${Leaves<T[K]> extends never ? '' : `.${Leaves<T[K]>}`}`
 }[keyof T] : never

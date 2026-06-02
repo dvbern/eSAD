@@ -10,9 +10,10 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface UntersuchungBewegungsapparatJsonSpecMapper extends BaseMapper {
 
-    UntersuchungBewegungsapparatJsonSpecMapper INSTANCE = Mappers.getMapper(UntersuchungBewegungsapparatJsonSpecMapper.class);
+    UntersuchungBewegungsapparatJsonSpecMapper INSTANCE =
+        Mappers.getMapper(UntersuchungBewegungsapparatJsonSpecMapper.class);
 
     @NonNull
-    UntersuchungBewegungsapparatJsonSpec toUntersuchungBewegungsapparatJsonSpec(
+    UntersuchungBewegungsapparatJsonSpec jsonToJsonSpec(
         @NonNull UntersuchungBewegungsapparatJson json);
 }

@@ -47,7 +47,11 @@ public class TenantSettingsFeatureMapper {
             toTenantSettingFeatureState(featureSettings.getBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature()),
             toTenantSettingFeatureState(featureSettings.getArchivierungFeature()),
             toTenantSettingFeatureState(featureSettings.getZentraleOrganisationFeature()),
-            toTenantSettingFeatureState(featureSettings.getAnonymeStatistikFeature())
+            toTenantSettingFeatureState(featureSettings.getAnonymeStatistikFeature()),
+            toTenantSettingFeatureState(featureSettings.getNachkontrolleFeature()),
+            toTenantSettingFeatureState(featureSettings.getAnlassSpracheSpalteFeature()),
+            toTenantSettingFeatureState(featureSettings.getAnlassSpracheZusammenfassungFeature()),
+            toTenantSettingFeatureState(featureSettings.getAnlassInformationenFeature())
         );
     }
 
@@ -84,5 +88,9 @@ public class TenantSettingsFeatureMapper {
         existingFeatures.setArchivierungFeature(features.getArchivierungFeature().getFeatureEnabled());
         existingFeatures.setZentraleOrganisationFeature(features.getZentraleOrganisationFeature().getFeatureEnabled());
         existingFeatures.setAnonymeStatistikFeature(features.getAnonymeStatistikFeature().getFeatureEnabled());
+        existingFeatures.setNachkontrolleFeature(features.getNachkontrolleFeature().getFeatureEnabled());
+        existingFeatures.setAnlassSpracheSpalteFeature(features.getAnlassSpracheSpalteFeature().getFeatureEnabled());
+        existingFeatures.setAnlassSpracheZusammenfassungFeature(features.getAnlassSpracheZusammenfassungFeature().getFeatureEnabled());
+        existingFeatures.setAnlassInformationenFeature(features.getAnlassInformationenFeature().getFeatureEnabled());
     }
 }

@@ -1,6 +1,7 @@
 import {DestroyRef} from '@angular/core';
 import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {
+  BenutzerOptionJson,
   EntityAktivStatus,
   Geschlecht,
   KindSaveJson,
@@ -10,14 +11,16 @@ import {
   SchuleOptionJson,
 } from '@dvb/data-access-backend';
 import {ISODateString} from '@dvb/data-access-types';
-import {AdresseForm, globalConstants} from '@dvb/feat-shared';
-import {AppValidators, BaseForm} from '@dvb/util-angular';
+import {AdresseForm, BenutzerStore, globalConstants, KindSaveJsonEnhanced, TenantSettingsStore} from '@dvb/feat-shared';
+import {AppValidators, BaseForm, DetailMode} from '@dvb/util-angular';
 import {ensurePropsFlat, Nullish, requireFilledIn, requireValue, trimToUndefined} from '@dvb/util-shared';
 import {KinderSummaryStore} from '../../kinder-summary.store';
 
 type Config = {
   fb: NonNullableFormBuilder;
   kinderStore: KinderSummaryStore;
+  tenantSettingsStore: TenantSettingsStore;
+  benutzerStore: BenutzerStore;
   destroyRef: DestroyRef;
   adresseForm: AdresseForm;
 };
@@ -26,7 +29,7 @@ function makeForm(config: Config) {
   const fb = config.fb;
   const maxLength = AppValidators.dbMaxLength();
 
-  return fb.group({
+  const group = fb.group({
     sozialversicherungsNummer: fb.control<string | undefined>(undefined,
       [AppValidators.ahvNummerValdiator(), maxLength]),
     name: fb.control<string>('', [Validators.required, maxLength]),
@@ -45,21 +48,45 @@ function makeForm(config: Config) {
     klassenstufe: fb.control<Klassenstufe | undefined>(undefined, []),
     kindAktivStatus: fb.control<EntityAktivStatus>(EntityAktivStatus.AKTIV, Validators.required),
     version: fb.control<number | Nullish>({value: undefined, disabled: true}),
+    zustaendigArzt: fb.control<BenutzerOptionJson | undefined>(undefined),
+    zustaendigMPA: fb.control<BenutzerOptionJson | undefined>(undefined),
   });
+
+  // Arzt ist bei dezentralen Mandanten zwingend
+  group.controls.zustaendigArzt.setValidators([AppValidators.requiredIfValidator(() => !config.tenantSettingsStore.zentraleOrganisationEnabled())]);
+
+  return group;
 }
 
-export class KindPersonendatenForm extends BaseForm<ReturnType<typeof makeForm>, KindSaveJson> {
+export class KindPersonendatenForm extends BaseForm<ReturnType<typeof makeForm>, KindSaveJsonEnhanced> {
   readonly adresseForm: AdresseForm;
 
-  constructor(config: Config) {
+  constructor(private readonly config: Config) {
     super(() => makeForm(config));
     this.adresseForm = config.adresseForm;
   }
 
-  override valueOnValid(): KindSaveJson {
+  resetForm(
+    kindSaveJson: KindSaveJson,
+    zustaendigArzt: BenutzerOptionJson | undefined,
+    zustaendigMPA: BenutzerOptionJson | undefined,
+    mode: DetailMode
+  ): void {
+    const enhancedKind = this.enhanceKind(kindSaveJson, zustaendigArzt, zustaendigMPA);
+    this.reset(enhancedKind, mode);
+    this.group.controls.zustaendigArzt.reset(zustaendigArzt);
+    this.group.controls.zustaendigMPA.reset(zustaendigMPA);
+    // Arzt und MPA nur fuer aktuell Verantwortliche Person editierbar
+    if (!this.config.benutzerStore.isZustaendigForKind(enhancedKind)) {
+      this.group.controls.zustaendigArzt.disable();
+      this.group.controls.zustaendigMPA.disable();
+    }
+  }
+
+  override valueOnValid(): KindSaveJsonEnhanced {
     const value = requireValue(this.group.getRawValue());
     // TODO ESC-322 validate plz and ort belong together
-    return ensurePropsFlat<KindSaveJson>({
+    const kindSaveJson = ensurePropsFlat<KindSaveJson>({
       sozialversicherungsNummer: trimToUndefined(value.sozialversicherungsNummer),
       name: requireFilledIn(value.name),
       vorname: requireFilledIn(value.vorname),
@@ -78,6 +105,7 @@ export class KindPersonendatenForm extends BaseForm<ReturnType<typeof makeForm>,
       kindAktivStatus: requireFilledIn(value.kindAktivStatus),
       version: value.version ?? globalConstants.entityPrePersistVersion,
     });
+    return this.enhanceKind(kindSaveJson, value.zustaendigArzt, value.zustaendigMPA);
   }
 
   disableEscadaFields(): void {
@@ -98,5 +126,16 @@ export class KindPersonendatenForm extends BaseForm<ReturnType<typeof makeForm>,
     this.group.controls.adresse.controls.land.disable();
   }
 
+  private enhanceKind(
+    kind: KindSaveJson,
+    zustaendigArzt: BenutzerOptionJson | undefined,
+    zustaendigMPA: BenutzerOptionJson | undefined
+  ): KindSaveJsonEnhanced {
+    return {
+      ...kind,
+      zustaendigArzt: zustaendigArzt,
+      zustaendigMPA: zustaendigMPA,
+    }
+  }
 }
 

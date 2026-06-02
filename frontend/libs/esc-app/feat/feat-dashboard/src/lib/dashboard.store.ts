@@ -6,8 +6,8 @@ import {
   AufgabeService, KindAktivitaetHistoryJson,
 } from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
-import {AufgabeJsonEnhanced, enhanceAufgabe} from '@dvb/feat-shared';
-import {AnlassJsonEnhanced, enhanceAnlass} from '@dvb/feat-anlass';
+import {AnlassJsonEnhanced, AufgabeJsonEnhanced, enhanceAufgabe} from '@dvb/feat-shared';
+import {enhanceAnlass} from '@dvb/feat-anlass';
 import {AppErrorHandlerService, Loader} from '@dvb/util-angular';
 import {TranslocoService} from '@jsverse/transloco';
 import {tapResponse} from '@ngrx/operators';

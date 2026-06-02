@@ -29,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  */
 @JsonPropertyOrder({
   UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec.JSON_PROPERTY_FREIES_GEHEN,
+  UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec.JSON_PROPERTY_ANZAHL_MONATE_FREIES_GEHEN,
   UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec.JSON_PROPERTY_OHNE_STUETZRAD_VELOFAHREN,
   UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec.JSON_PROPERTY_GRAFOMOTORIK,
   UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec.JSON_PROPERTY_FEINMOTORIK,
@@ -44,6 +45,10 @@ public class UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec {
   public static final String JSON_PROPERTY_FREIES_GEHEN = "freiesGehen";
   @jakarta.annotation.Nonnull
   private ValueEnhancedJsonSpec freiesGehen;
+
+  public static final String JSON_PROPERTY_ANZAHL_MONATE_FREIES_GEHEN = "anzahlMonateFreiesGehen";
+  @jakarta.annotation.Nullable
+  private Integer anzahlMonateFreiesGehen;
 
   public static final String JSON_PROPERTY_OHNE_STUETZRAD_VELOFAHREN = "ohneStuetzradVelofahren";
   @jakarta.annotation.Nonnull
@@ -99,6 +104,31 @@ public class UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setFreiesGehen(@jakarta.annotation.Nonnull ValueEnhancedJsonSpec freiesGehen) {
     this.freiesGehen = freiesGehen;
+  }
+
+  public UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec anzahlMonateFreiesGehen(@jakarta.annotation.Nullable Integer anzahlMonateFreiesGehen) {
+    
+    this.anzahlMonateFreiesGehen = anzahlMonateFreiesGehen;
+    return this;
+  }
+
+  /**
+   * Get anzahlMonateFreiesGehen
+   * @return anzahlMonateFreiesGehen
+   */
+  @jakarta.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ANZAHL_MONATE_FREIES_GEHEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getAnzahlMonateFreiesGehen() {
+    return anzahlMonateFreiesGehen;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ANZAHL_MONATE_FREIES_GEHEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAnzahlMonateFreiesGehen(@jakarta.annotation.Nullable Integer anzahlMonateFreiesGehen) {
+    this.anzahlMonateFreiesGehen = anzahlMonateFreiesGehen;
   }
 
   public UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec ohneStuetzradVelofahren(@jakarta.annotation.Nonnull ValueEnhancedJsonSpec ohneStuetzradVelofahren) {
@@ -286,6 +316,7 @@ public class UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec {
     }
     UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec untersuchungSchulrelevanteBeeintraechtigungSaveJson = (UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec) o;
     return Objects.equals(this.freiesGehen, untersuchungSchulrelevanteBeeintraechtigungSaveJson.freiesGehen) &&
+        Objects.equals(this.anzahlMonateFreiesGehen, untersuchungSchulrelevanteBeeintraechtigungSaveJson.anzahlMonateFreiesGehen) &&
         Objects.equals(this.ohneStuetzradVelofahren, untersuchungSchulrelevanteBeeintraechtigungSaveJson.ohneStuetzradVelofahren) &&
         Objects.equals(this.grafomotorik, untersuchungSchulrelevanteBeeintraechtigungSaveJson.grafomotorik) &&
         Objects.equals(this.feinmotorik, untersuchungSchulrelevanteBeeintraechtigungSaveJson.feinmotorik) &&
@@ -297,7 +328,7 @@ public class UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec {
 
   @Override
   public int hashCode() {
-    return Objects.hash(freiesGehen, ohneStuetzradVelofahren, grafomotorik, feinmotorik, grobmotorikEinbeinhuepfen, gleichgewichtEinbeinstand, bemerkungen, version);
+    return Objects.hash(freiesGehen, anzahlMonateFreiesGehen, ohneStuetzradVelofahren, grafomotorik, feinmotorik, grobmotorikEinbeinhuepfen, gleichgewichtEinbeinstand, bemerkungen, version);
   }
 
   @Override
@@ -305,6 +336,7 @@ public class UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec {
     StringBuilder sb = new StringBuilder();
     sb.append("class UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec {\n");
     sb.append("    freiesGehen: ").append(toIndentedString(freiesGehen)).append("\n");
+    sb.append("    anzahlMonateFreiesGehen: ").append(toIndentedString(anzahlMonateFreiesGehen)).append("\n");
     sb.append("    ohneStuetzradVelofahren: ").append(toIndentedString(ohneStuetzradVelofahren)).append("\n");
     sb.append("    grafomotorik: ").append(toIndentedString(grafomotorik)).append("\n");
     sb.append("    feinmotorik: ").append(toIndentedString(feinmotorik)).append("\n");

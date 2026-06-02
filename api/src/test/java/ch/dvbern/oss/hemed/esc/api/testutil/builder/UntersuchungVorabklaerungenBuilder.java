@@ -9,6 +9,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.vorabklaerungen.UntersuchungVorabklaerungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.vorabklaerungen.UntersuchungVorabklaerungenMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.vorabklaerungen.json.UntersuchungVorabklaerungenJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.vorabklaerungen.json.UntersuchungVorabklaerungenSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.vorabklaerungen.types.ChronischeKrankheiten;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.vorabklaerungen.types.EinverstaendnisImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.vorabklaerungen.types.FragebogenStatus;
@@ -16,7 +17,9 @@ import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.NichtGeprueftGrund;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungVorabklaerungenJsonSpecMapper;
+import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungVorabklaerungenSaveJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungVorabklaerungenJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungVorabklaerungenSaveJsonSpec;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -39,7 +42,9 @@ public class UntersuchungVorabklaerungenBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungVorabklaerungenBuilder forUntersuchungVorabklaerungen(@NonNull UntersuchungVorabklaerungen existing) {
+    public UntersuchungVorabklaerungenBuilder forUntersuchungVorabklaerungen(
+        @NonNull UntersuchungVorabklaerungen existing
+    ) {
         this.vorabklaerungen = existing;
         return this;
     }
@@ -95,14 +100,35 @@ public class UntersuchungVorabklaerungenBuilder {
     }
 
     @NonNull
-    public static UntersuchungVorabklaerungenJson createJax(@NonNull Consumer<UntersuchungVorabklaerungenBuilder> block) {
+    public static UntersuchungVorabklaerungenJson createJax(
+        @NonNull Consumer<UntersuchungVorabklaerungenBuilder> block
+    ) {
         UntersuchungVorabklaerungen entity = create(block);
         return UntersuchungVorabklaerungenMapper.toJson(entity);
     }
 
     @NonNull
-    public static UntersuchungVorabklaerungenJsonSpec createJaxSpec(@NonNull Consumer<UntersuchungVorabklaerungenBuilder> block) {
+    public static UntersuchungVorabklaerungenSaveJson createSaveJax(
+        @NonNull Consumer<UntersuchungVorabklaerungenBuilder> block
+    ) {
+        UntersuchungVorabklaerungen entity = create(block);
+        return UntersuchungVorabklaerungenMapper.toSaveJson(entity);
+    }
+
+    @NonNull
+    public static UntersuchungVorabklaerungenJsonSpec createJaxSpec(
+        @NonNull Consumer<UntersuchungVorabklaerungenBuilder> block
+    ) {
         UntersuchungVorabklaerungenJson json = createJax(block);
         return UntersuchungVorabklaerungenJsonSpecMapper.INSTANCE.jsonToJsonSpec(json);
     }
+
+    @NonNull
+    public static UntersuchungVorabklaerungenSaveJsonSpec createSaveJaxSpec(
+        @NonNull Consumer<UntersuchungVorabklaerungenBuilder> block
+    ) {
+        UntersuchungVorabklaerungenSaveJson saveJson = createSaveJax(block);
+        return UntersuchungVorabklaerungenSaveJsonSpecMapper.INSTANCE.saveJsonToSaveJsonSpec(saveJson);
+    }
+
 }

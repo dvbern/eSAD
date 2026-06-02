@@ -18,6 +18,7 @@ export interface AnlassConfigOptionJson {
     datumVon: ISODateString;
     datumBis: ISODateString;
     bezeichnung: string;
+    anonym: boolean;
 }
 export namespace AnlassConfigOptionJson {
 }

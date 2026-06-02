@@ -1,5 +1,5 @@
 import {Location} from '@angular/common';
-import {ChangeDetectionStrategy, Component, computed, effect, inject, input, output, untracked} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, effect, inject, input, output, signal, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
 import {
@@ -44,6 +44,7 @@ import {TranslatedStringPipe} from '../translated-strings/view/translated-string
 import {FileDropComponent} from '../upload/file-drop';
 import {MobileUploadComponent} from '../upload/mobile-upload/mobile-upload.component';
 import {UploadTableComponent} from '../upload/upload-table';
+import {FilePreviewComponent} from './file-preview/file-preview.component';
 import {NotizenMobileUploadModalComponent} from './modal/notizen-mobile-upload-modal.component';
 import {NotizenFileParams} from './notizen.file.params';
 import {NotizenForm} from './notizen.form';
@@ -77,6 +78,7 @@ import {NotizenStore} from './notizen.store';
     NgbNav,
     NgbNavItem,
     MobileUploadComponent,
+    FilePreviewComponent,
   ],
   templateUrl: './notizen.component.html',
   styleUrl: './notizen.component.scss',
@@ -84,6 +86,7 @@ import {NotizenStore} from './notizen.store';
 export class NotizenComponent implements DirtyMarker {
   protected readonly Path = Path;
   protected readonly DetailMode = DetailMode;
+  protected readonly EntityAktivStatus = EntityAktivStatus;
   protected readonly compareFn = compareFn<LabelJson>;
   protected readonly compareFnBenutzer = compareFn<BenutzerOptionJson>;
 
@@ -131,6 +134,7 @@ export class NotizenComponent implements DirtyMarker {
   notizStatus = Object.values(NotizStatus);
 
   canEditNotiz = this.benutzerStore.createHasRequiredRoleSig(hasNotizEditBerechtigung());
+  readonly #fileIdSelectedForPreview = signal<string | null>(null);
 
   qrData = '';
 
@@ -152,8 +156,8 @@ export class NotizenComponent implements DirtyMarker {
   }
 
   uploadTable = new TableModel<FileDataJson>(
-    {rawListSignal: this.notizenFiles},
-    {frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll'},
+    { rawListSignal: this.notizenFiles },
+    { frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll' },
   );
 
   form = new NotizenForm({
@@ -175,7 +179,7 @@ export class NotizenComponent implements DirtyMarker {
         const resetTo = selectedEntity ?? initialNotiz;
         if (resetTo) {
           // We need to create a copy as to not filter away the disabled labels everywhere.
-          const copy = {...resetTo};
+          const copy = { ...resetTo };
           // Take out the disabled labels as to not show up in the control
           copy.labels = copy.labels?.filter(label => label.data.aktiv);
           this.form.reset(copy, mode);
@@ -221,6 +225,15 @@ export class NotizenComponent implements DirtyMarker {
     }
   }
 
+  previewFile = computed<FileDataJson | null | undefined>(() => {
+    const files = this.notizenFiles();
+    if (files.length === 0) {
+      return null;
+    }
+    const id = this.#fileIdSelectedForPreview();
+    return files.find(f => f.id === id) ?? files.at(0);
+  });
+
   public isDirty(): boolean {
     return this.form.isDirty() || this.fileUploads !== undefined;
   }
@@ -253,6 +266,9 @@ export class NotizenComponent implements DirtyMarker {
       notizId: notizId,
       fileId: $event.id,
     });
+  }
+  public onFilePreview($event: FileDataJson): void {
+    this.#fileIdSelectedForPreview.set($event.id);
   }
 
   public onFileDirectDownload($event: FileDataJson): void {
@@ -288,7 +304,7 @@ export class NotizenComponent implements DirtyMarker {
 
       this.setQr(notizId);
 
-      const ngbModalRef = this.#ngModal.open(NotizenMobileUploadModalComponent, {size: 'm'});
+      const ngbModalRef = this.#ngModal.open(NotizenMobileUploadModalComponent, { size: 'm' });
       ngbModalRef.componentInstance.notizTyp.set(this.notizTyp());
       ngbModalRef.componentInstance.qrCodeData.set(this.qrData);
 
@@ -303,6 +319,4 @@ export class NotizenComponent implements DirtyMarker {
       console.error('Failed to prepare mobile upload:', error);
     }
   }
-
-  protected readonly EntityAktivStatus = EntityAktivStatus;
 }

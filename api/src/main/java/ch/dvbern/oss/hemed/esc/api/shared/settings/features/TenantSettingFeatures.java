@@ -127,4 +127,26 @@ public class TenantSettingFeatures implements Serializable {
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     private FeatureEnabledSetting anonymeStatistikFeature;
 
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private FeatureEnabledSetting nachkontrolleFeature;
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private FeatureEnabledSetting anlassSpracheSpalteFeature;
+
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private FeatureEnabledSetting anlassSpracheZusammenfassungFeature;
+
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private FeatureEnabledSetting anlassInformationenFeature;
 }

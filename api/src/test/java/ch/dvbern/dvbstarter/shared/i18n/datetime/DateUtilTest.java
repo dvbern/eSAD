@@ -11,6 +11,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -67,5 +69,22 @@ class DateUtilTest {
         LocalDate stichtag = geburtsdatum.plusYears(5).plusMonths(6);
         assertThat(DateUtil.calculateAlter(geburtsdatum, stichtag)).isEqualByComparingTo(BigDecimal.valueOf(5.5));
         assertThat(DateUtil.calculateAlterDuodezimal(geburtsdatum, stichtag)).isEqualTo("5 ⁶/₁₂");
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "0  , 0 ⁰/₁₂",
+        "1  , 0 ¹/₁₂",
+        "11 , 0 ¹¹/₁₂",
+        "12 , 1 ⁰/₁₂",
+        "13 , 1 ¹/₁₂",
+        "18 , 1 ⁶/₁₂",
+        "24 , 2 ⁰/₁₂",
+        "66 , 5 ⁶/₁₂",
+        "119, 9 ¹¹/₁₂",
+        "120, 10 ⁰/₁₂",
+    })
+    void calculateAlterDuodezimal_fromAnzahlMonate(int anzahlMonate, String expected) {
+        assertThat(DateUtil.calculateAlterDuodezimal(anzahlMonate)).isEqualTo(expected);
     }
 }

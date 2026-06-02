@@ -259,4 +259,17 @@ export class SystemAdminStore extends signalStore(
     ),
   );
 
+  triggerFilestoreHealthcheck = rxMethod<void>(
+    pipe(
+      exhaustMap(() => this.#superAdminRunnerService.triggerFilestoreHealthcheck$()
+        .pipe(
+          tapResponse({
+            next: () => this.#appNotificationStore.addSuccessNotification("Batchjob ausgeführt"),
+            error: console.error
+          })
+        )
+      ),
+    ),
+  );
+
 }

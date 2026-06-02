@@ -35,9 +35,11 @@
           <button ngbDropdownItem (click)="editImmunisierungen()">
             {{ 'kind.dossier.link.immunisierung' | transloco }}
           </button>
-          <button ngbDropdownItem (click)="editNachkontrolle()">
-            {{ 'kind.dossier.link.nachkontrolle' | transloco }}
-          </button>
+          @if (tenantSettingsStore.nachkontrolleEnabled()) {
+            <button ngbDropdownItem (click)="editNachkontrolle()">
+              {{ 'kind.dossier.link.nachkontrolle' | transloco }}
+            </button>
+          }
         }
         @if (canDownloadDossierExport()) {
           <button ngbDropdownItem (click)="exportDossier()">
@@ -88,7 +90,7 @@
     </ng-select>
 
     <!-- Nachkontrolle -->
-    @if (dossierStore.hasNachkontrolle() && canReadMedizinischeDaten()) {
+    @if (dossierStore.hasNachkontrolle() && canReadMedizinischeDaten() && tenantSettingsStore.nachkontrolleEnabled()) {
       <svui-status-text icon="flag"
                         class="pt-3"
                         (clickAction)="editNachkontrolle()"
@@ -170,7 +172,7 @@
         [disabled]="!canEditKind()"
       >
         <!-- null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-        @if (benutzerOptionsStore.arztOptionsIncluding(zustaendigArzt()); as zustaendigArztOptions) {
+        @if (arztOptions(); as zustaendigArztOptions) {
           @for (arzt of zustaendigArztOptions; track arzt; ) {
             <ng-option [value]="arzt" [disabled]="arzt.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
               {{ arzt.fullName }}
@@ -196,7 +198,7 @@
         [disabled]="!canEditKind()"
       >
         <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-        @if (benutzerOptionsStore.hilfspersonOptionsIncluding(zustaendigMPA()); as zustaendigMPAOptions) {
+        @if (hilfspersonOptions(); as zustaendigMPAOptions) {
           @for (mpa of zustaendigMPAOptions; track mpa; ) {
             <ng-option [value]="mpa" [disabled]="mpa.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
               {{ mpa.fullName }}

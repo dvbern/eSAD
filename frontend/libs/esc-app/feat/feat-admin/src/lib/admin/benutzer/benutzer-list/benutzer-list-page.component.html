@@ -23,13 +23,17 @@
       <!-- col widths -->
       <colgroup>
         <!-- Name -->
-        <col svuiColWidth colWidth="text-medium">
+        <col svuiColWidth [colWidth]="'text-medium'">
         <!-- Vorname -->
         <col svuiColWidth [colWidth]="'text-medium'">
         <!-- E-Mail -->
         <col svuiColWidth [colWidth]="'text-medium'">
         <!-- Rollen -->
         <col svuiColWidth [colWidth]="'select-medium'">
+        <!-- Organisation -->
+        @if (!isZentralOrganisiert) {
+          <col svuiColWidth [colWidth]="'select-medium'">
+        }
         <!-- Aktiv/Deaktiviert -->
         <col svuiColWidth [colWidth]="'select-small'">
         <!-- Last Login -->
@@ -40,6 +44,7 @@
       <thead>
       <!-- Headers for sorting -->
       <tr>
+        <!-- Name -->
         <th
           scope="col"
           svuiSortable
@@ -48,6 +53,7 @@
         >
           {{ 'benutzer.name' | transloco }}
         </th>
+        <!-- Vorname -->
         <th
           scope="col"
           svuiSortable
@@ -56,6 +62,7 @@
         >
           {{ 'benutzer.vorname' | transloco }}
         </th>
+        <!-- E-Mail -->
         <th
           scope="col"
           svuiSortable
@@ -64,7 +71,20 @@
         >
           {{ 'benutzer.email' | transloco }}
         </th>
+        <!-- Rollen -->
         <th scope="col">{{ 'benutzer.rollen' | transloco }}</th>
+        <!-- Organisation -->
+        @if (!isZentralOrganisiert) {
+          <th
+            scope="col"
+            svuiSortable
+            [sortState]="itemTable.findColSortDTO('data.organisationRollen.organisation.verantwortlicherArztFullname')"
+            (sort)="itemTable.onColSort($event, 'data.organisationRollen.organisation.verantwortlicherArztFullname')"
+          >
+            {{ 'benutzer.organisation' | transloco }}
+          </th>
+        }
+        <!-- Aktiv/Deaktiviert -->
         <th
           scope="col"
           svuiSortable
@@ -73,6 +93,7 @@
         >
           {{ 'global.entityAktivStatus' | transloco }}
         </th>
+        <!-- Last Login -->
         <th
           scope="col"
           svuiSortable
@@ -81,6 +102,7 @@
         >
           {{ 'benutzer.lastUsedSessionTimestamp' | transloco }}
         </th>
+        <!-- Options -->
         <th scope="col">{{ 'global.actionmenu.col' | transloco }}</th>
 
 
@@ -126,6 +148,15 @@
           </svui-table-filter>
         </th>
 
+        <!-- Filter for Organisation -->
+        @if (!isZentralOrganisiert) {
+          <th scope="col">
+            <svui-table-filter [columnHeader]="('benutzer.organisation' | transloco)">
+              <input svuiTextInput [formControl]="tableFilterForm.group.controls.email"/>
+            </svui-table-filter>
+          </th>
+        }
+
         <!-- Filter for aktiv/deaktiviert -->
         <th scope="col">
           <svui-table-filter [columnHeader]="('benutzer.benutzerAktivStatus' | transloco)">
@@ -169,7 +200,10 @@
               }
             </td>
             <td>{{ printFachRollen(item.fachRollen) }}</td>
-            <td> {{ 'EntityAktivStatus.' + item.data.benutzerAktivStatus | transloco }}</td>
+            @if (!isZentralOrganisiert) {
+              <td>{{ printOrganisationen(item.data.organisationRollen) }}</td>
+            }
+            <td>{{ 'EntityAktivStatus.' + item.data.benutzerAktivStatus | transloco }}</td>
             <td>{{ item.lastUsedSessionTimestamp | date:'dd.MM.yyyy HH:mm' }}</td>
             <td>
               <svui-collapsible-menu

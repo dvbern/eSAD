@@ -18,16 +18,22 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintragCreateJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassListJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassOptionJson;
@@ -36,24 +42,26 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithDateTimeJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithDateTimeListJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithOpenSlotsListJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithOpenSlotsOptionJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassArt;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleMapper;
 import ch.dvbern.oss.hemed.esc.api.features.schule.json.SchulInformationenJson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.LehrpersonMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.ZustaendigePersonService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateTimeRange;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -71,6 +79,7 @@ public final class AnlassMapper {
     private final TenantSettingsService tenantSettingsService;
     private final ZustaendigePersonService zustaendigePersonService;
     private final TenantProducer tenantProducer;
+    private final AuthorizerService authorizerService;
 
     @NonNull
     public static AnlassJson toJson(@NonNull Anlass anlass, @NonNull TenantEnum tenant) {
@@ -141,6 +150,38 @@ public final class AnlassMapper {
     }
 
     @NonNull
+    private Anlass toEntityForCreateFromAnonymerEintrag(@NonNull AnonymerEintragCreateJson createJson) {
+        AnlassConfig anlassConfig = anlassConfigService.getByAnlassTypAndStichtag(
+            createJson.getAnlassTyp(),
+            createJson.getAnlassDatum());
+        int schuljahr = createJson.getAnlassDatum()
+            .isAfter(LocalDate.of(createJson.getAnlassDatum().getYear(), Month.AUGUST, 1))
+            ? createJson.getAnlassDatum().getYear()
+            : createJson.getAnlassDatum().getYear() - 1;
+
+        // IMPORTANT: Willingly throw exception for Support User
+        Benutzer arzt = Optional.ofNullable(benutzerService.getCurrentBenutzerOrThrowException().getSingleOrganisation())
+                .map(Organisation::getVerantwortlicherArzt)
+                .orElseThrow(() -> new AppFailureException(AppFailureMessage.mustHaveArztForOrganisation()));
+
+        return new Anlass(
+            anlassConfig,
+            "Anonymer Eintrag",
+            AnlassStatus.IN_PLANUNG,
+            createJson.getAnlassDatum(),
+            schuljahr,
+            null,
+            AnlassArt.EINZEL_ANLASS,
+            arzt,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+    }
+
+    @NonNull
     private Anlass toEntity(@NonNull Anlass existingAnlass, @NonNull AnlassSaveJson saveJson) {
         // Wird nur gespeichert, wenn von und bis vorhanden sind
         DateTimeRange dateTimeRange = saveJson.getZeitVon() != null && saveJson.getZeitBis() != null
@@ -191,19 +232,41 @@ public final class AnlassMapper {
     }
 
     @NonNull
-    public AnlassJson update(@NonNull ID<Anlass> anlassID, @NonNull AnlassSaveJson saveJson) {
+    public Anlass createForAnonymerEintrag(@NonNull AnonymerEintragCreateJson anonymerEintragCreateJson) {
+        Anlass entity = toEntityForCreateFromAnonymerEintrag(anonymerEintragCreateJson);
+        return anlassService.persist(entity);
+    }
+
+    @NonNull
+    public AnlassJson update(
+        @NonNull ID<Anlass> anlassID,
+        @NonNull AnlassSaveJson saveJson
+    ) {
         Anlass existingAnlass = anlassService.getById(anlassID);
+        ID<Benutzer> newZustaendigerArztID = saveJson.getArzt() != null ? saveJson.getArzt().getId() : null;
+        ID<Benutzer> newZustaendigerMpaID = saveJson.getMpa() != null ? saveJson.getMpa().getId() : null;
+        boolean zustaendigkeitChanged = zustaendigePersonService.hasZustaendigkeitChanged(
+            existingAnlass,
+            newZustaendigerArztID);
+
         Anlass entity = toEntity(existingAnlass, saveJson);
         Anlass updatedAnlass = anlassService.persistWithOptimisticLocking(entity, saveJson.getVersion());
 
+        if (zustaendigkeitChanged) {
+            // Zustaendigkeit darf nur vom aktuell Zuständigen geändert werden
+            zustaendigePersonService.requireZustaendigkeit(updatedAnlass);
+            // Falls die Zustaendigkeit geändert hat, muss die MPA null gesetzt werden
+            newZustaendigerMpaID = null;
+        }
+
         // https://intra.dvbern.ch/spaces/HEM/pages/284263663/Zust%C3%A4ndigkeiten+Archivierung
         // Change Zustaendigkeiten: Fall 4: Neue Verantwortliche auf Anlass
-        zustaendigePersonService.verantwortlicherChangedOnAnlass(
+        Anlass anlassWithZustaendigkeit = zustaendigePersonService.verantwortlicherChangedOnAnlass(
             updatedAnlass,
-            saveJson.getArzt() != null ? saveJson.getArzt().getId() : null,
-            saveJson.getMpa() != null ? saveJson.getMpa().getId() : null);
+            newZustaendigerArztID,
+            newZustaendigerMpaID);
 
-        return toJson(updatedAnlass, tenantProducer.produceTenant());
+        return toJson(anlassWithZustaendigkeit, tenantProducer.produceTenant());
     }
 
     @NonNull
@@ -229,8 +292,9 @@ public final class AnlassMapper {
         return new AnlassListJson(list, anlassService.getCountAllforUserInFuture(benutzerID));
     }
 
-    public @NonNull @NotNull List<SchulInformationenJson> findSchulInformationen(
-        @NotNull @NonNull ID<Anlass> anlassId
+    @NonNull
+    public List<SchulInformationenJson> findSchulInformationen(
+        @NonNull ID<Anlass> anlassId
     ) {
         List<Schule> schulen = new ArrayList<>();
         List<SchulInformationenJson> schulInformationenJsonList = new ArrayList<>();

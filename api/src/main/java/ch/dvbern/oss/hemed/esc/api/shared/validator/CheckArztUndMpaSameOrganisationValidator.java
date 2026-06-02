@@ -19,10 +19,9 @@ package ch.dvbern.oss.hemed.esc.api.shared.validator;
 
 import java.util.Optional;
 
-import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationRollen;
-import ch.dvbern.oss.hemed.esc.api.shared.util.HasZustaendigkeit;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.util.HasZustaendigkeit;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class CheckArztUndMpaSameOrganisationValidator extends AbstractValidator<CheckArztUndMpaSameOrganisation, HasZustaendigkeit> {
@@ -36,8 +35,7 @@ public class CheckArztUndMpaSameOrganisationValidator extends AbstractValidator<
 
         // Die Mpa der Organisation muss einer der Organisationen des Artzes angehören
         Organisation organisationMPA = Optional.ofNullable(entityWithZustaendigkeit.getZustaendigMPA())
-            .map(Benutzer::getSingleOrganisationRollen)
-            .map(OrganisationRollen::getOrganisation)
+            .map(Benutzer::getSingleOrganisation)
             .orElse(null);
 
         Organisation organisationArzt = entityWithZustaendigkeit.getSingleOrganisation();

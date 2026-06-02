@@ -135,4 +135,12 @@ public class SuperAdminRunnerResource {
     public void triggerArchiveDownloadEmailReminderJob() {
         superAdminRunnerService.runArchiveDocumentDownloadEmailReminderJob(true);
     }
+
+    @POST
+    @Path("/trigger-filestore-healthcheck")
+    @RolesAllowed(BerechtigungName.SUPPORT)
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void triggerFilestoreHealthcheck() {
+        superAdminRunnerService.runFileStoreHealthCheckJob(true);
+    }
 }

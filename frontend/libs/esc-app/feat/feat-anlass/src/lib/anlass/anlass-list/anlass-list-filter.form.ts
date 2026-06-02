@@ -5,7 +5,7 @@ import {AnlassStatus} from '@dvb/data-access-backend';
 import {BackendEntityId, ISODateString} from '@dvb/data-access-types';
 import {BaseForm, FilterCombinationMethod, FilterMethod, onTextInput, TableModel} from '@dvb/util-angular';
 import {distinctUntilChanged} from 'rxjs';
-import {AnlassJsonEnhanced} from '../anlass.util';
+import {AnlassJsonEnhanced} from "@dvb/feat-shared";
 
 export interface AnlassFilterForm {
   fullTitle: string;

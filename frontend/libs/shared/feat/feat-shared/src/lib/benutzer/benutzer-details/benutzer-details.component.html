@@ -47,7 +47,7 @@
         [multiple]="true"
         [placeholder]="'global.select.bitte-auswaehlen' | transloco"
       >
-        @for (value of fachrollen; track value) {
+        @for (value of fachrollen(); track value) {
           <ng-option [value]="value" [disabled]="isFachrolleDisabled(value)">
             {{ 'FachRolle.' + value | transloco }}
           </ng-option>

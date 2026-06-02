@@ -42,26 +42,26 @@ class DatabaseResourceTest {
 
     @Test
     void resetDatabase_Success() throws Exception {
-        // Arrange
+        // ARRANGE
         tenantProducer.setCurrentTenant(TenantEnum.BS);
         doNothing().when(configService).validateNotProdAndDbResetFeatureEnabled();
         doNothing().when(liquibase).dropAll();
 
-        // Act
+        // ACT
         databaseResource.resetDatabase();
 
-        // Assert
+        // ASSERT
         verify(configService).validateNotProdAndDbResetFeatureEnabled();
         verify(liquibase).dropAll();
     }
 
     @Test
     void resetDatabase_ThrowsException_WhenLiquibaseFailsToDropAll() throws Exception {
-        // Arrange
+        // ARRANGE
         doNothing().when(configService).validateNotProdAndDbResetFeatureEnabled();
         doThrow(new IllegalStateException("Some Database error")).when(liquibase).dropAll();
 
-        // Act & Assert
+        // ACT & ASSERT
         assertThrows(AppFailureException.class, databaseResource::resetDatabase);
     }
 }

@@ -32,7 +32,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = Tags.TAG_IMPFSTOFFE)
-@RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+@RolesAllowed(BerechtigungName.IMPFSTOFFE_LESEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed("ImpfstoffResourceMS")
 public class ImpfstoffResource {

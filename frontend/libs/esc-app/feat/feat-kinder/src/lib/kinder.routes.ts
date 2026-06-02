@@ -12,12 +12,12 @@ import {
   Path,
   requireAcceptedAgb,
   requireRole,
-  SchulenOptionsStore,
 } from '@dvb/feat-shared';
 import {confirmOnDirty, toDetailModeStrict} from '@dvb/util-angular';
 import {
   hasAerztePageViewBerechtigung,
-  hasAufgabenViewBerechtigungen, hasImpfstoffeViewBerechtigung,
+  hasAufgabenViewBerechtigungen,
+  hasImpfstoffeViewBerechtigung,
   hasKindEditBerechtigung,
   hasKinderMedizinischeDatenViewBerechtigung,
   hasKindNotizViewBerechtigung,
@@ -86,9 +86,6 @@ export const kinderRoutes: Route[] = [
       {
         path: '',
         resolve: {
-          _store: () => {
-            inject(SchulenOptionsStore).loadSchulenOptions({onlyActive: false});
-          },
           _labels: () => inject(LabelsStore).loadLabelsList(),
 
         },
@@ -152,9 +149,6 @@ export const kinderRoutes: Route[] = [
           {
             path: Path.PROFIL,
             component: KinderDetailPageComponent,
-            resolve: {
-              schulenOptions: () => inject(SchulenOptionsStore).loadSchulenOptions({onlyActive: true}),
-            },
             children: [
               {
                 path: '',

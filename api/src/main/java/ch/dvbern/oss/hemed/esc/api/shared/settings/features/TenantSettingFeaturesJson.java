@@ -115,4 +115,27 @@ public class TenantSettingFeaturesJson {
     @Schema(required = true)
     private final TenantSettingFeatureStateJson anonymeStatistikFeature;
 
+    @NotNull
+    @NonNull
+    @Valid
+    @Schema(required = true)
+    private final TenantSettingFeatureStateJson nachkontrolleFeature;
+    @NotNull
+    @NonNull
+    @Valid
+    @Schema(required = true)
+    private final TenantSettingFeatureStateJson anlassSpracheSpalteFeature;
+
+    @NotNull
+    @NonNull
+    @Valid
+    @Schema(required = true)
+    private final TenantSettingFeatureStateJson anlassSpracheZusammenfassungFeature;
+
+    @NotNull
+    @NonNull
+    @Valid
+    @Schema(required = true)
+    private final TenantSettingFeatureStateJson anlassInformationenFeature;
+
 }

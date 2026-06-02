@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, Signal} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {BenutzerOptionJson, UntersuchungImpfungenDoppelkontrolleSaveJson} from '@dvb/data-access-backend';
-import {ISODateString, toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
+import {ISODateString, requireValidBackendEntityId, toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import {BenutzerOptionsStore, BenutzerStore, ConfirmService} from '@dvb/feat-shared';
 import {
   ButtonComponent,
@@ -112,7 +112,7 @@ export class UntersuchungDoppelkontrolleImpfentscheidComponent {
   private visierenDoppelkontrolleVisum1(): void {
     this.#untersuchungImpfungenStore.visierenDoppelkontrolleVisum1({
       anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-      einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.#untersuchungStore.currentTab()).einladungID),
+      einladungId: requireValue(this.#untersuchungStore.currentTab()).einladungID,
     });
     this.status = 'Visum1Visiert';
   }
@@ -126,7 +126,7 @@ export class UntersuchungDoppelkontrolleImpfentscheidComponent {
     }
     this.#untersuchungImpfungenStore.anfordernDoppelkontrolleVisum2({
       anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-      einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.#untersuchungStore.currentTab()).einladungID),
+      einladungId: requireValue(this.#untersuchungStore.currentTab()).einladungID,
       user: requireValue(payload.visumPerson2),
     });
     this.status = 'Visum2Angefordert';
@@ -141,7 +141,7 @@ export class UntersuchungDoppelkontrolleImpfentscheidComponent {
     }
     this.#untersuchungImpfungenStore.visierenDoppelkontrolleVisum2({
       anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-      einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.#untersuchungStore.currentTab()).einladungID),
+      einladungId: requireValue(this.#untersuchungStore.currentTab()).einladungID,
     });
     this.status = 'Visum2Visiert';
   }
@@ -156,7 +156,7 @@ export class UntersuchungDoppelkontrolleImpfentscheidComponent {
       .subscribe(() => {
         this.#untersuchungImpfungenStore.resetDoppelkontrolle({
           anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-          einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.#untersuchungStore.currentTab()).einladungID),
+          einladungId: requireValue(this.#untersuchungStore.currentTab()).einladungID,
         });
         this.status = 'Visum1Visiert';
       });

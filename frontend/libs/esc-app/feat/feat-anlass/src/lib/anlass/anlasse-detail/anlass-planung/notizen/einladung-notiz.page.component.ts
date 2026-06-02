@@ -77,8 +77,8 @@ export class EinladungNotizPageComponent implements DirtyMarker {
         return 'fragebogen';
       case NotizTyp.ANMELDUNG_BESTAETIGUNG:
         return 'anmeldungBestaetigung';
-      case NotizTyp.IMPFANMELDUNG:
-        return 'impfanmeldung';
+      case NotizTyp.IMPFEINVERSTAENDNIS:
+        return 'impfeinverstaendnis';
       default:
         return '';
     }
@@ -110,8 +110,8 @@ export class EinladungNotizPageComponent implements DirtyMarker {
         return this.labelStore.fragebogenAutoLabel();
       case NotizTyp.ANMELDUNG_BESTAETIGUNG:
         return this.labelStore.anmeldungBestaetigungAutoLabel();
-      case NotizTyp.IMPFANMELDUNG:
-        return this.labelStore.impfanmeldungAutoLabel();
+      case NotizTyp.IMPFEINVERSTAENDNIS:
+        return this.labelStore.impfeinverstaendnisAutoLabel();
       default:
         return undefined;
     }

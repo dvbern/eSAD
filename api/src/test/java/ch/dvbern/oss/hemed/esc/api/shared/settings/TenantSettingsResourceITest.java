@@ -1,7 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.shared.settings;
 
-import java.util.List;
-
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
@@ -12,6 +10,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.api.TenantSettingsApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AgbResponsabilitySpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppLanguagesSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EinladungStatusSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FachRolleSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FeatureEnabledSettingSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LandingPageOptionSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.TenantSettingFeatureStateJsonSpec;
@@ -25,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 @QuarkusTest
 @RequiredArgsConstructor
@@ -59,6 +60,17 @@ class TenantSettingsResourceITest extends AbstractITest {
         Assertions.assertThat(result.getData().getFolgeTermineMaxSlots()).isEqualTo(16);
         Assertions.assertThat(result.getData().getSupportedLanguages()).hasSize(1);
         Assertions.assertThat(result.getData().getEinladungStatusValues()).hasSize(3);
+        Assertions.assertThat(result.getFachrollen()).containsExactlyInAnyOrder(
+            FachRolleSpec.EMPFANG,
+            FachRolleSpec.MPA,
+            FachRolleSpec.ORTHOPISTIN,
+            FachRolleSpec.SCHULAERZTIN,
+            FachRolleSpec.SUPERUSER,
+            FachRolleSpec.ADMIN,
+            FachRolleSpec.SUPPORT,
+            FachRolleSpec.SYSTEM_ADMIN
+        );
+        Assertions.assertThat(result.getDelegierbareFachrollen()).containsExactlyInAnyOrder(FachRolleSpec.MPA);
 
     }
 
@@ -82,6 +94,14 @@ class TenantSettingsResourceITest extends AbstractITest {
         Assertions.assertThat(result.getData().getDefaultLanguage().name()).isEqualTo(AppLanguages.DE.name());
         Assertions.assertThat(result.getData().getFolgeTermineMaxSlots()).isEqualTo(16);
         Assertions.assertThat(result.getData().getSupportedLanguages()).hasSize(1);
+        Assertions.assertThat(result.getFachrollen()).containsExactlyInAnyOrder(
+            FachRolleSpec.MPA,
+            FachRolleSpec.SCHULAERZTIN,
+            FachRolleSpec.SCHOOL_NURSE,
+            FachRolleSpec.SUPPORT,
+            FachRolleSpec.SYSTEM_ADMIN
+        );
+        Assertions.assertThat(result.getDelegierbareFachrollen()).containsExactlyInAnyOrder(FachRolleSpec.MPA);
     }
 
     @Test
@@ -108,6 +128,10 @@ class TenantSettingsResourceITest extends AbstractITest {
             AgbResponsabilitySpec.AGB_MANAGED_BY_TENANT,
             new TenantSettingFeaturesJsonSpec( // Add Assertions below if new Feature is added
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, false),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
@@ -163,11 +187,22 @@ class TenantSettingsResourceITest extends AbstractITest {
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
         Assertions.assertThat(result.getData().getFeatures().getBenutzerverwaltungInternFeature().getFeatureEnabled())
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
-        Assertions.assertThat(result.getData().getFeatures().getBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature().getFeatureEnabled())
+        Assertions.assertThat(result.getData()
+                .getFeatures()
+                .getBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature()
+                .getFeatureEnabled())
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
         Assertions.assertThat(result.getData().getFeatures().getZentraleOrganisationFeature().getFeatureEnabled())
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
         Assertions.assertThat(result.getData().getFeatures().getAnonymeStatistikFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData().getFeatures().getNachkontrolleFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData().getFeatures().getAnlassSpracheSpalteFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData().getFeatures().getAnlassSpracheZusammenfassungFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData().getFeatures().getAnlassInformationenFeature().getFeatureEnabled())
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
         Assertions.assertThat(result.getData()
             .getEinladungStatusValues()

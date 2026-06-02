@@ -151,6 +151,60 @@
     </div>
   }
 
+  <!-- ZUSTAENDIGKEITEN -->
+  @if (!tenantSettingsStore.zentraleOrganisationEnabled()) {
+    <h2 svuiHeading="formSection">{{ 'zustaendigkeiten.title' | transloco }}</h2>
+
+    <!-- Schularzt/ Schulaerztin -->
+    <svui-form-control [label]="'anlass.detail.schularzt' | transloco"
+                       [viewValue]="form.group.controls.zustaendigArzt.value?.fullName">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.zustaendigArzt"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        [searchable]="true"
+        [compareWith]="compareBenutzerFn"
+      >
+        <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+        @if (arztOptions()) {
+          @for (arzt of arztOptions(); track arzt.id; ) {
+            {{arzt}}
+            <ng-option [value]="arzt" [disabled]="arzt.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
+                <span class="w-100 d-flex justify-content-between">
+                  <span>{{ arzt.fullName }}</span>
+                </span>
+            </ng-option>
+          }
+        }
+      </ng-select>
+    </svui-form-control>
+
+    <!-- MPA -->
+    <svui-form-control [label]="'anlass.detail.mpa' | transloco"
+                       [viewValue]="form.group.controls.zustaendigMPA.value?.fullName">
+      <ng-select
+        svuiNgSelect
+        bindLabel='dummy'
+        appendTo="body"
+        [formControl]="form.group.controls.zustaendigMPA"
+        [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        [compareWith]="compareBenutzerFn"
+        [clearable]="false"
+      >
+        <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
+        @if (hilfspersonOptions(); as zustaendigMPAOptions) {
+          @for (mpa of zustaendigMPAOptions; track mpa; ) {
+            <ng-option [value]="mpa" [disabled]="mpa.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
+              {{ mpa.fullName }}
+            </ng-option>
+          }
+        }
+      </ng-select>
+    </svui-form-control>
+  }
+
   <!--messages for whole form -->
   <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
 

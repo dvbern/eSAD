@@ -75,11 +75,8 @@ public class AufgabeRepo extends BaseRepo<Aufgabe> {
         return lockedAufgabe;
     }
 
-    public int getNumOfOffeneFaelligeAufgaben() {
-        return getOffeneFaelligeAufgaben().size();
-    }
-
-    private List<Aufgabe> getOffeneFaelligeAufgaben() {
+    @NonNull
+    public List<Aufgabe> getOffeneFaelligeAufgaben() {
         return db.select(QAufgabe.aufgabe)
             .from(QAufgabe.aufgabe)
             .where(QAufgabe.aufgabe.aufgabeStatus.ne(AufgabeStatus.ABGESCHLOSSEN)
@@ -88,6 +85,7 @@ public class AufgabeRepo extends BaseRepo<Aufgabe> {
             .fetch();
     }
 
+    @NonNull
     public List<Aufgabe> getOffeneFaelligeAufgabenByEmpfaenger(@NonNull ID<Benutzer> empfaengerID) {
         return db.select(QAufgabe.aufgabe)
             .from(QAufgabe.aufgabe)

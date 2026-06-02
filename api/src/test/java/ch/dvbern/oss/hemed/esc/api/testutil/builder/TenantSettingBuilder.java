@@ -50,6 +50,10 @@ public class TenantSettingBuilder {
                 FeatureEnabledSetting.ENABLED,
                 FeatureEnabledSetting.ENABLED,
                 FeatureEnabledSetting.ENABLED,
+                FeatureEnabledSetting.ENABLED,
+                FeatureEnabledSetting.ENABLED,
+                FeatureEnabledSetting.ENABLED,
+                FeatureEnabledSetting.ENABLED,
                 FeatureEnabledSetting.ENABLED
             ),
             EnumSetUtil.toString(EnumSet.allOf(EinladungStatus.class))

@@ -9,7 +9,7 @@ public enum NotizTyp {
     IMPFAUSWEIS(true),
     ANMELDUNG_BESTAETIGUNG(true),
     ABMELDUNG(true),
-    IMPFANMELDUNG(true);
+    IMPFEINVERSTAENDNIS(true);
 
     private final boolean unique;
 

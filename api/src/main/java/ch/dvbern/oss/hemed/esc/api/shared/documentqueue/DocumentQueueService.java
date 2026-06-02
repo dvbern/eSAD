@@ -204,7 +204,7 @@ public class DocumentQueueService {
         CleanFileName cleanFileName = CleanFileName.parse(filePath);
 
         FileUpload fileUpload = FileUtil.fileToFileUpload(filePath, cleanFileName.toString());
-        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfo(fileUpload, documentQueue.getType());
+        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfoWithMIMEDetect(fileUpload, documentQueue.getType());
 
         fileStoreService.uploadToS3Async(fileUpload, fileInfo)
             .await()

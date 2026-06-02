@@ -109,7 +109,7 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
 
     @NotNull
     @Column(nullable = false)
-    private boolean showImpfanmeldung;
+    private boolean showImpfeinverstaendnis;
 
     // Daten
 

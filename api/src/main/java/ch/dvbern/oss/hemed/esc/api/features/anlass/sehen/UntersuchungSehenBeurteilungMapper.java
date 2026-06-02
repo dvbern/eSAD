@@ -24,11 +24,11 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.json.UntersuchungSehenBeurteilungJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.json.UntersuchungSehenBeurteilungSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
@@ -67,37 +67,51 @@ public class UntersuchungSehenBeurteilungMapper {
 
     @Nullable
     public static UntersuchungSehenBeurteilungJson toJson(
-        @Nullable UntersuchungSehenBeurteilung sehen
+        @Nullable UntersuchungSehenBeurteilung sehenBeurteilung
     ) {
-        if (sehen == null) {
+        if (sehenBeurteilung == null) {
             return null;
         }
         return new UntersuchungSehenBeurteilungJson(
-            sehen.getId(),
-            EntityInfoJson.fromEntity(sehen),
-            new UntersuchungSehenBeurteilungSaveJson(
-                SingleValueEnhancedMapper.toJson(BrilleLinsenResultat.class, sehen.getBrilleLinsen()),
-                SingleValueEnhancedMapper.toJson(StereotestResultat.class, sehen.getStereotest()),
-                SingleValueEnhancedMapper.toJson(FarbsehenResultat.class, sehen.getFarbsehen()),
-                SingleValueEnhancedMapper.toJson(VerwendetTafelResultat.class, sehen.getVerwendeteTafel()),
-                MultiValueEnhancedMapper.toJson(DistanzSehenResultat.class, sehen.getFernvisus()),
-                sehen.getFernvisusRechts(),
-                sehen.getFernvisusLinks(),
-                SingleValueEnhancedMapper.toJson(DistanzSehenAugeEinzelnResultat.class, sehen.getFernvisusAugeLinks()),
-                SingleValueEnhancedMapper.toJson(DistanzSehenAugeEinzelnResultat.class, sehen.getFernvisusAugeRechts()),
-                MultiValueEnhancedMapper.toJson(DistanzSehenResultat.class, sehen.getNahvisus()),
-                sehen.getNahvisusRechts(),
-                sehen.getNahvisusLinks(),
-                SingleValueEnhancedMapper.toJson(MotilitaetResultat.class, sehen.getMotilitaet()),
-                MultiValueEnhancedMapper.toJson(StrabismusResultat.class, sehen.getStrabismus()),
-                SingleValueEnhancedMapper.toJson(StrabismusAuspraegungResultat.class, sehen.getStrabismusAuspraegung()),
-                SingleValueEnhancedMapper.toJson(StrabismusAuftretenResultat.class, sehen.getStrabismusAuftreten()),
-                SingleValueEnhancedMapper.toJson(InspektionKonvergenzResultat.class, sehen.getInspektion()),
-                SingleValueEnhancedMapper.toJson(InspektionKonvergenzResultat.class, sehen.getKonvergenz()),
-                MultiValueEnhancedMapper.toJson(SehenEmpfehlung.class, sehen.getEmpfehlung()),
-                sehen.getBemerkungen(),
-                sehen.getVersion()
-            )
+            sehenBeurteilung.getId(),
+            EntityInfoJson.fromEntity(sehenBeurteilung),
+            toSaveJson(sehenBeurteilung)
+        );
+    }
+
+    @NonNull
+    public static UntersuchungSehenBeurteilungSaveJson toSaveJson(
+        @NonNull UntersuchungSehenBeurteilung sehenBeurteilung) {
+        return new UntersuchungSehenBeurteilungSaveJson(
+            SingleValueEnhancedMapper.toJson(BrilleLinsenResultat.class, sehenBeurteilung.getBrilleLinsen()),
+            SingleValueEnhancedMapper.toJson(StereotestResultat.class, sehenBeurteilung.getStereotest()),
+            SingleValueEnhancedMapper.toJson(FarbsehenResultat.class, sehenBeurteilung.getFarbsehen()),
+            SingleValueEnhancedMapper.toJson(VerwendetTafelResultat.class, sehenBeurteilung.getVerwendeteTafel()),
+            MultiValueEnhancedMapper.toJson(DistanzSehenResultat.class, sehenBeurteilung.getFernvisus()),
+            sehenBeurteilung.getFernvisusRechts(),
+            sehenBeurteilung.getFernvisusLinks(),
+            SingleValueEnhancedMapper.toJson(
+                DistanzSehenAugeEinzelnResultat.class,
+                sehenBeurteilung.getFernvisusAugeLinks()),
+            SingleValueEnhancedMapper.toJson(
+                DistanzSehenAugeEinzelnResultat.class,
+                sehenBeurteilung.getFernvisusAugeRechts()),
+            MultiValueEnhancedMapper.toJson(DistanzSehenResultat.class, sehenBeurteilung.getNahvisus()),
+            sehenBeurteilung.getNahvisusRechts(),
+            sehenBeurteilung.getNahvisusLinks(),
+            SingleValueEnhancedMapper.toJson(MotilitaetResultat.class, sehenBeurteilung.getMotilitaet()),
+            MultiValueEnhancedMapper.toJson(StrabismusResultat.class, sehenBeurteilung.getStrabismus()),
+            SingleValueEnhancedMapper.toJson(
+                StrabismusAuspraegungResultat.class,
+                sehenBeurteilung.getStrabismusAuspraegung()),
+            SingleValueEnhancedMapper.toJson(
+                StrabismusAuftretenResultat.class,
+                sehenBeurteilung.getStrabismusAuftreten()),
+            SingleValueEnhancedMapper.toJson(InspektionKonvergenzResultat.class, sehenBeurteilung.getInspektion()),
+            SingleValueEnhancedMapper.toJson(InspektionKonvergenzResultat.class, sehenBeurteilung.getKonvergenz()),
+            MultiValueEnhancedMapper.toJson(SehenEmpfehlung.class, sehenBeurteilung.getEmpfehlung()),
+            sehenBeurteilung.getBemerkungen(),
+            sehenBeurteilung.getVersion()
         );
     }
 
@@ -152,21 +166,21 @@ public class UntersuchungSehenBeurteilungMapper {
 
     @Nullable
     public UntersuchungSehenBeurteilungJson getByEinladung(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungSehenBeurteilung());
     }
 
     @NonNull
     public UntersuchungSehenBeurteilungJson save(
-        @NonNull ID<Einladung> einladungID,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull UntersuchungSehenBeurteilungSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungSehenBeurteilung sehen = untersuchung.getUntersuchungSehenBeurteilung();
         UntersuchungSehenBeurteilung entity = toEntity(untersuchung, sehen, saveJson);

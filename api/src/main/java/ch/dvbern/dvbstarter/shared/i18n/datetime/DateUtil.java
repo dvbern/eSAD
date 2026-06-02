@@ -81,9 +81,23 @@ public class DateUtil {
         return period.getYears() + " " + toSuperscript(period.getMonths()) + '/' + "₁₂";
     }
 
+    /**
+     * Gibt das Alter basierend auf einer Gesamtanzahl Monate als Duodezimal-Wert zurück
+     * (Jahre und Monate als Bruch der Form {@code "<jahre> <monate>/₁₂"}).
+     *
+     * @param anzahlMonate gesamte Anzahl Monate (muss {@code >= 0} sein)
+     * @return formatierter Duodezimal-String, z.B. {@code "1 ⁶/₁₂"} für 18 Monate
+     */
+    @NonNull
+    public static String calculateAlterDuodezimal(int anzahlMonate) {
+        int jahre = anzahlMonate / 12;
+        int monate = anzahlMonate % 12;
+        return jahre + " " + toSuperscript(monate) + '/' + "₁₂";
+    }
+
     @NonNull
     private static String toSuperscript(int number) {
-        String[] superscripts = {"⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹", "¹⁰", "¹¹"};
+        String[] superscripts = { "⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹", "¹⁰", "¹¹" };
         StringBuilder result = new StringBuilder();
         String numStr = String.valueOf(number);
         for (char digit : numStr.toCharArray()) {

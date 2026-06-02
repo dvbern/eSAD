@@ -1,12 +1,14 @@
 @if (anlassStore.selectedEntity()?.anlassConfig?.showTabGroesseGewicht) {
 
-  <svui-card-in-card class="mb-5">
-    <div class="d-flex" style="width: 100%; align-items: center;">
-      <b>{{
-          'untersuchung.tab.groessegewicht.alter' | transloco
-        }}: {{ alterDuodezimal() }} </b>
-    </div>
-  </svui-card-in-card>
+  @if (!anlassStore.isAnonymous()) {
+    <svui-card-in-card class="mb-5">
+      <div class="d-flex" style="width: 100%; align-items: center;">
+        <b>{{
+            'untersuchung.tab.groessegewicht.alter' | transloco
+          }}: {{ alterDuodezimal() }} </b>
+      </div>
+    </svui-card-in-card>
+  }
 
   <form svuiFormLayout
         [formType]="'kacheln'"
@@ -34,7 +36,7 @@
                 <input [svuiTextInput]="'number'" [formControl]="form.group.controls.groesse"/>
                 <span class="fs-6" control-message>{{ 'untersuchung.tab.groessegewicht.groesse.einheit' | transloco }}</span>
               </svui-form-control>
-            </div>/
+            </div>
           </feat-value-enhanced>
         }
       </svui-kachel-form-section>

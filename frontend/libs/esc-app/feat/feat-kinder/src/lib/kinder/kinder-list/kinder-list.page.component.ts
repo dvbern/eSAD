@@ -173,7 +173,7 @@ export class KinderListPageComponent extends FilterSessionStorage<KinderFilterFo
     paginatedTable: this.itemTable,
   });
 
-  schuleOptions = computed(() => this.#schulenOptionsStore.entitiesMarkedInactive());
+  schuleOptions = computed(() => this.#schulenOptionsStore.schulenFiltered(undefined, false, false));
 
   summaryItems = computed(() => {
     const items: SummaryListItem[] = [

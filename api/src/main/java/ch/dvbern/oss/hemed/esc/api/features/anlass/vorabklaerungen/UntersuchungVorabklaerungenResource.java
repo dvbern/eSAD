@@ -14,6 +14,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.vorabklaerungen.json.Untersuc
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import io.micrometer.core.annotation.Timed;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.security.RolesAllowed;
@@ -25,7 +26,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/tab/vorabklaerungen")
@@ -50,10 +50,10 @@ public class UntersuchungVorabklaerungenResource {
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungVorabklaerungenMapper.getByEinladung(
-            wrappedId.toEinladungId(),
+            wrappedId,
             untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
                 untersuchung,
-                Berechtigung.SU_VORABKLAERUNGEN_LESEN));
+                List.of(Berechtigung.SU_VORABKLAERUNGEN_LESEN)));
     }
 
     @PUT
@@ -66,7 +66,7 @@ public class UntersuchungVorabklaerungenResource {
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungVorabklaerungenMapper.save(
-            wrappedId.toEinladungId(),
+            wrappedId,
             saveJson,
             untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
                 untersuchung,

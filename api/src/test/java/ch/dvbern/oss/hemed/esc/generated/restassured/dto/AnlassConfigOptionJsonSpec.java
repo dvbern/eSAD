@@ -33,7 +33,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   AnlassConfigOptionJsonSpec.JSON_PROPERTY_ANLASS_TYP,
   AnlassConfigOptionJsonSpec.JSON_PROPERTY_DATUM_VON,
   AnlassConfigOptionJsonSpec.JSON_PROPERTY_DATUM_BIS,
-  AnlassConfigOptionJsonSpec.JSON_PROPERTY_BEZEICHNUNG
+  AnlassConfigOptionJsonSpec.JSON_PROPERTY_BEZEICHNUNG,
+  AnlassConfigOptionJsonSpec.JSON_PROPERTY_ANONYM
 })
 @JsonTypeName("AnlassConfigOptionJson")
 @lombok.AllArgsConstructor
@@ -58,6 +59,10 @@ public class AnlassConfigOptionJsonSpec {
   public static final String JSON_PROPERTY_BEZEICHNUNG = "bezeichnung";
   @jakarta.annotation.Nonnull
   private String bezeichnung;
+
+  public static final String JSON_PROPERTY_ANONYM = "anonym";
+  @jakarta.annotation.Nonnull
+  private Boolean anonym;
 
   public AnlassConfigOptionJsonSpec() {
   }
@@ -187,6 +192,31 @@ public class AnlassConfigOptionJsonSpec {
     this.bezeichnung = bezeichnung;
   }
 
+  public AnlassConfigOptionJsonSpec anonym(@jakarta.annotation.Nonnull Boolean anonym) {
+    
+    this.anonym = anonym;
+    return this;
+  }
+
+  /**
+   * Get anonym
+   * @return anonym
+   */
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_ANONYM)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Boolean getAnonym() {
+    return anonym;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ANONYM)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setAnonym(@jakarta.annotation.Nonnull Boolean anonym) {
+    this.anonym = anonym;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -200,12 +230,13 @@ public class AnlassConfigOptionJsonSpec {
         Objects.equals(this.anlassTyp, anlassConfigOptionJson.anlassTyp) &&
         Objects.equals(this.datumVon, anlassConfigOptionJson.datumVon) &&
         Objects.equals(this.datumBis, anlassConfigOptionJson.datumBis) &&
-        Objects.equals(this.bezeichnung, anlassConfigOptionJson.bezeichnung);
+        Objects.equals(this.bezeichnung, anlassConfigOptionJson.bezeichnung) &&
+        Objects.equals(this.anonym, anlassConfigOptionJson.anonym);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, anlassTyp, datumVon, datumBis, bezeichnung);
+    return Objects.hash(id, anlassTyp, datumVon, datumBis, bezeichnung, anonym);
   }
 
   @Override
@@ -217,6 +248,7 @@ public class AnlassConfigOptionJsonSpec {
     sb.append("    datumVon: ").append(toIndentedString(datumVon)).append("\n");
     sb.append("    datumBis: ").append(toIndentedString(datumBis)).append("\n");
     sb.append("    bezeichnung: ").append(toIndentedString(bezeichnung)).append("\n");
+    sb.append("    anonym: ").append(toIndentedString(anonym)).append("\n");
     sb.append("}");
     return sb.toString();
   }

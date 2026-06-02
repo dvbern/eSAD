@@ -33,7 +33,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = Tags.TAG_SCHULEN)
-@RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
+@RolesAllowed({ BerechtigungName.SCHULE_LESEN })
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed("SchuleResourceMS")
 public class SchuleResource {
@@ -43,7 +43,7 @@ public class SchuleResource {
 
     @GET
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
+    @RolesAllowed({ BerechtigungName.SCHULE_LESEN })
     public SchuleListJson findAllSchulen() {
         return new SchuleListJson(schuleMapper.findAll());
     }
@@ -51,17 +51,15 @@ public class SchuleResource {
     @GET
     @Path("/options")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
-    public SchuleOptionListJson findAllOptions(
-        @NotNull @QueryParam("onlyActive") boolean onlyActive
-    ) {
-        return new SchuleOptionListJson(schuleMapper.findAllOptions(onlyActive));
+    @RolesAllowed({ BerechtigungName.SCHULE_LESEN })
+    public SchuleOptionListJson findAllOptions() {
+        return new SchuleOptionListJson(schuleMapper.findAllOptions());
     }
 
     @GET
     @Path("/{schuleId}/klassen")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
+    @RolesAllowed({ BerechtigungName.SCHULE_LESEN })
     public KlasseListJson findSchuleKlassen(
         @NotNull @NonNull @PathParam("schuleId") ID<Schule> schuleId
     ) {
@@ -71,7 +69,7 @@ public class SchuleResource {
     @GET
     @Path("/{schuleId}/klassen/options")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
+    @RolesAllowed({ BerechtigungName.SCHULE_LESEN })
     public KlasseOptionListJson findSchuleKlassenOptions(
         @NotNull @NonNull @PathParam("schuleId") ID<Schule> schuleId,
         @NotNull @QueryParam("onlyActive") boolean onlyActive
@@ -82,7 +80,7 @@ public class SchuleResource {
     @GET
     @Path("/{schuleId}")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
+    @RolesAllowed({ BerechtigungName.SCHULE_LESEN })
     public SchuleJson getSchule(
         @NotNull @NonNull @PathParam("schuleId") ID<Schule> schuleId
     ) {
@@ -91,7 +89,7 @@ public class SchuleResource {
 
     @POST
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.SCHULE_SCHREIBEN)
     public SchuleJson createSchule(
         @NotNull @NonNull @Valid SchuleSaveJson schuleSaveJson
     ) {
@@ -102,7 +100,7 @@ public class SchuleResource {
     @NonNull
     @Path("/{schuleId}")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.SCHULE_SCHREIBEN)
     public SchuleJson updateSchule(
         @NotNull @NonNull @PathParam("schuleId") ID<Schule> schuleId,
         @NotNull @NonNull @Valid SchuleSaveJson schuleSaveJson
@@ -113,7 +111,7 @@ public class SchuleResource {
     @PUT
     @Path("/{schuleId}/schuleaktivstatus")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.SCHULE_SCHREIBEN)
     public SchuleJson updateSchuleAktivStatus(
         @NotNull @NonNull @PathParam("schuleId") ID<Schule> schuleId,
         @NotNull @NonNull @Valid EntityAktivStatusSaveJson saveJson
@@ -123,7 +121,7 @@ public class SchuleResource {
 
     @DELETE
     @Path("/{schuleId}")
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.SCHULE_SCHREIBEN)
     public void removeSchule(
         @NotNull @NonNull @PathParam("schuleId") ID<Schule> schuleId
     ) {

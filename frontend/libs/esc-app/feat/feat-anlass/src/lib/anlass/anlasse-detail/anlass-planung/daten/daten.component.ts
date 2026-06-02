@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
-import {Path} from '@dvb/feat-shared';
+import {Path, TenantSettingsStore} from '@dvb/feat-shared';
 import {
   AnlassSummaryLayoutComponent,
   CardComponent,
@@ -34,6 +34,7 @@ export class DatenComponent {
 
   readonly store = inject(AnlassStore);
   readonly anlassKinderStore = inject(AnlassKinderStore);
+  readonly tenantSettingsStore = inject(TenantSettingsStore);
 
   protected readonly Path = Path;
   protected readonly fromISODateString = fromISODateString;

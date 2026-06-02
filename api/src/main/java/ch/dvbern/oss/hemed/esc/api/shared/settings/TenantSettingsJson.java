@@ -45,4 +45,9 @@ public class TenantSettingsJson {
     @NonNull
     @Schema(required = true)
     private List<FachRolle> fachrollen;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private List<FachRolle> delegierbareFachrollen;
 }

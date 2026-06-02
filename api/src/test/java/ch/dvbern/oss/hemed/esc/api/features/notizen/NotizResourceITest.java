@@ -208,7 +208,7 @@ class NotizResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void findAllNotizen() {
+    void findAllBerechtigtNotizen() {
         // ARRANGE
         Notiz notizKind1 = notizService.persist(NotizBuilder.create(
             builder -> builder
@@ -223,7 +223,7 @@ class NotizResourceITest extends AbstractITest {
 
         // ACT
         NotizListJsonSpec result = api
-            .notizResourceFindAll()
+            .notizResourceFindAllBerechtigt()
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -239,7 +239,7 @@ class NotizResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void findAllNotizenForDossier() {
+    void findAllBerechtigtNotizenForDossier() {
         // ARRANGE
         Notiz notiz = NotizBuilder.create(
             builder -> builder

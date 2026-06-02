@@ -106,9 +106,7 @@ export class UntersuchungImpfungenDataMinimalComponent implements DirtyMarker {
 
   abbrechen(): void {
     const dataMinimal = this.impfungenStore.dataMinimal();
-    if (dataMinimal) {
-      this.form.resetForm(dataMinimal.data);
-    }
+    this.form.resetForm(dataMinimal?.data);
   }
 
   async submitIfValid(): Promise<void> {
@@ -116,7 +114,7 @@ export class UntersuchungImpfungenDataMinimalComponent implements DirtyMarker {
       const payload = this.form.valueOnValid();
       this.impfungenStore.saveDataMinimal({
         anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-        einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
+        einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
         untersuchungImpfungenDataMinimalSaveJson: payload,
       });
     }

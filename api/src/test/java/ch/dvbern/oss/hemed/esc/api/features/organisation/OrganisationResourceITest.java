@@ -46,12 +46,16 @@ class OrganisationResourceITest extends AbstractITest {
         // ARRANGE
         Benutzer verantwortlicherArzt1 = benutzerResourceHelper.createSchularztAsOrganisationsChef(TenantEnum.BE);
         Benutzer verantwortlicherArzt2 = benutzerResourceHelper.createSchularztAsOrganisationsChef(TenantEnum.BE);
-        Organisation organisation1 = verantwortlicherArzt1.getOrganisationRollen().stream().findFirst().get().getOrganisation();
-        Organisation organisation2 = verantwortlicherArzt2.getOrganisationRollen().stream().findFirst().get().getOrganisation();
+        Organisation organisation1 =
+            verantwortlicherArzt1.getOrganisationRollen().stream().findFirst().get().getOrganisation();
+        Organisation organisation2 =
+            verantwortlicherArzt2.getOrganisationRollen().stream().findFirst().get().getOrganisation();
 
-        Benutzer benutzer1 = BenutzerBuilder.create(builder -> builder.withOrganisationRollen(organisation1, List.of(
-            FachRolle.MPA)));
-        Benutzer benutzer2 = BenutzerBuilder.create(builder -> builder.withOrganisationRollen(organisation2, List.of(FachRolle.MPA)));
+        Benutzer benutzer1 = BenutzerBuilder.create(builder -> builder.withOrganisationRollen(
+            organisation1, List.of(
+                FachRolle.MPA)));
+        Benutzer benutzer2 =
+            BenutzerBuilder.create(builder -> builder.withOrganisationRollen(organisation2, List.of(FachRolle.MPA)));
         benutzerService.persist(benutzer1);
         benutzerService.persist(benutzer2);
 
@@ -68,18 +72,28 @@ class OrganisationResourceITest extends AbstractITest {
         Assertions.assertThat(result.getOrganisationList())
             .isNotEmpty()
             .map(OrganisationJsonSpec::getId)
-            .containsAll(List.of(TestAsSchularztBE.ORGANISATION_ID, organisation1.getId().getId(), organisation2.getId().getId()));
+            .containsAll(List.of(
+                TestAsSchularztBE.ORGANISATION_ID,
+                organisation1.getId().getId(),
+                organisation2.getId().getId()));
     }
 
     @Test
     @TestAsSchularztBE
     void findOrganisationenBerechtigt_as_SCHULARZT_returns_only_own() {
         // ARRANGE
+        // Hier muessen die "fremden" Schularzt-Organisationen direkt ueber die Services
+        // angelegt werden, da der SCHULAERZTIN-Aufrufer nach den neuen Berechtigungs-Regeln
+        // keine nicht-delegierbaren Rollen (SCHULAERZTIN) ueber den REST-Endpunkt anlegen darf.
         tenantProducer.setCurrentTenant(TenantEnum.BE);
-        Benutzer verantwortlicherArzt1 = benutzerResourceHelper.createSchularztAsOrganisationsChef(TenantEnum.BE);
-        Benutzer verantwortlicherArzt2 = benutzerResourceHelper.createSchularztAsOrganisationsChef(TenantEnum.BE);
-        Organisation organisation1 = verantwortlicherArzt1.getOrganisationRollen().stream().findFirst().get().getOrganisation();
-        Organisation organisation2 = verantwortlicherArzt2.getOrganisationRollen().stream().findFirst().get().getOrganisation();
+        Benutzer verantwortlicherArzt1 =
+            benutzerResourceHelper.createSchularztAsOrganisationsChefDirectly(TenantEnum.BE);
+        Benutzer verantwortlicherArzt2 =
+            benutzerResourceHelper.createSchularztAsOrganisationsChefDirectly(TenantEnum.BE);
+        Organisation organisation1 =
+            verantwortlicherArzt1.getOrganisationRollen().stream().findFirst().get().getOrganisation();
+        Organisation organisation2 =
+            verantwortlicherArzt2.getOrganisationRollen().stream().findFirst().get().getOrganisation();
 
         // ACT
         OrganisationListJsonSpec result = api

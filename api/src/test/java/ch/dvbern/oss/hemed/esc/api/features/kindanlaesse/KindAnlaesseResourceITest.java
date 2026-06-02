@@ -60,7 +60,7 @@ class KindAnlaesseResourceITest extends AbstractITest {
             .statusCode(Status.OK.getStatusCode())
             .extract().as(KindAnlassListJsonSpec.class);
 
-        // Assert
+        // ASSERT
         assertThat(result).isNotNull();
         assertThat(result.getAnlassList()).isNotEmpty();
         KindAnlassSummaryJsonSpec result1 = result.getAnlassList().getFirst();

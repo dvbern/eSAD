@@ -1,0 +1,43 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="gema" id="2026-05-26-09-58-01">
+    <sql>
+        -- DREISSIG_IN_ZEHN_SEK -> BESTANDEN
+        UPDATE untersuchungschulrelevantebeeintraechtigung
+        SET feinmotorik = '$1$BESTANDEN$1$$2$$2$'
+        WHERE feinmotorik = '$1$DREISSIG_IN_ZEHN_SEK$1$$2$$2$';
+    
+        -- FUENFUNDZWANZIG_IN_ZEHN_SEK -> NICHT_BESTANDEN
+        UPDATE untersuchungschulrelevantebeeintraechtigung
+        SET feinmotorik = '$1$NICHT_BESTANDEN$1$$2$$2$'
+        WHERE feinmotorik = '$1$FUENFUNDZWANZIG_IN_ZEHN_SEK$1$$2$$2$';
+    
+        -- NICHT_MOEGLICH -> NICHT_GEPRUEFT mit ANDERER GRUND
+        UPDATE untersuchungschulrelevantebeeintraechtigung
+        SET feinmotorik = '$1$NICHT_GEPRUEFT$1$$2$ANDERER_GRUND$2$'
+        WHERE feinmotorik = '$1$NICHT_MOEGLICH$1$$2$$2$';
+
+        -- MEHR_ALS_ZEHN_SEKUNDEN -> BESTANDEN
+        UPDATE untersuchungschulrelevantebeeintraechtigung
+        SET gleichgewichteinbeinstand = '$1$BESTANDEN$1$$2$$2$'
+        WHERE gleichgewichteinbeinstand = '$1$MEHR_ALS_ZEHN_SEKUNDEN$1$$2$$2$';
+    
+        -- WENIGER_ALS_ZEHN_SEKUNDEN -> NICHT_BESTANDEN
+        UPDATE untersuchungschulrelevantebeeintraechtigung
+        SET gleichgewichteinbeinstand = '$1$NICHT_BESTANDEN$1$$2$$2$'
+        WHERE gleichgewichteinbeinstand = '$1$WENIGER_ALS_ZEHN_SEKUNDEN$1$$2$$2$';
+
+        -- MEHR_ALS_VIER_METER -> BESTANDEN
+        UPDATE untersuchungschulrelevantebeeintraechtigung
+        SET grobmotorikeinbeinhuepfen = '$1$BESTANDEN$1$$2$$2$'
+        WHERE grobmotorikeinbeinhuepfen = '$1$MEHR_ALS_VIER_METER$1$$2$$2$';
+
+        -- WENIGER_ALS_VIER_METER -> NICHT_BESTANDEN
+        UPDATE untersuchungschulrelevantebeeintraechtigung
+        SET grobmotorikeinbeinhuepfen = '$1$NICHT_BESTANDEN$1$$2$$2$'
+        WHERE grobmotorikeinbeinhuepfen = '$1$WENIGER_ALS_VIER_METER$1$$2$$2$';
+    </sql>
+  </changeSet>
+</databaseChangeLog>

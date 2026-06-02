@@ -57,7 +57,7 @@ public class UntersuchungDurchfuehrungResource {
             wrappedId.toEinladungId(),
             untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
                 untersuchung,
-                Berechtigung.SU_DATEN_LESEN));
+                List.of(Berechtigung.SU_DATEN_LESEN)));
     }
 
     @PUT

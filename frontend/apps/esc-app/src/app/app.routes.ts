@@ -17,7 +17,8 @@ import {
   hasAllNotizenEditBerechtigung,
   hasAnlassViewBerechtigung,
   hasAufgabenViewBerechtigungen,
-  hasConfigViewBerechtigung, hasDashboardBerechtigungen,
+  hasConfigViewBerechtigung,
+  hasDashboardBerechtigungen,
   hasKindPageViewBerechtigung,
   hasPlaygroundViewBerechtigung,
   hasReportViewBerechtigung,
@@ -65,13 +66,13 @@ export const appRoutes: Route[] = [
         loadChildren: () => import('@dvb/feat-app-mode-selection').then(c => c.appModeSelectionRoutes),
       },
       {
-        path: Path.STATISTIK,
+        path: Path.ANONYM_ANLASS,
         canActivate: [
           requireRole(withAnyBerechtigung()),
           requireAcceptedAgb(),
           requireStatistikEnabled,
         ],
-        loadChildren: () => import('@dvb/feat-statistik').then(c => c.statistikRoutes),
+        loadChildren: () => import('@dvb/feat-anonymer-anlass').then(c => c.anonymerEintragRoutes),
       },
       {
         path: Path.DASHBOARD,

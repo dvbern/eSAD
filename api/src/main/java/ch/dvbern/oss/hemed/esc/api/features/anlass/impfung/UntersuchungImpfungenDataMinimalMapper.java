@@ -1,11 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.impfung;
 
-import java.util.function.Consumer;
-
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
-import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungenDataMinimalJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungenDataMinimalSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.Immunsuppression;
@@ -19,6 +16,8 @@ import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhancedMappe
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.function.Consumer;
 
 @JaxMapper
 @RequiredArgsConstructor
@@ -76,11 +75,11 @@ public class UntersuchungImpfungenDataMinimalMapper {
 
     @NonNull
     public UntersuchungImpfungenDataMinimalJson save(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull UntersuchungImpfungenDataMinimalSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungImpfungen impfungen =
             untersuchungImpfungenService.getOrCreateUntersuchungImpfungen(untersuchung.getId());

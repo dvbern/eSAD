@@ -15,7 +15,6 @@ import {
   Path,
   requireAcceptedAgb,
   requireRole,
-  SchulenOptionsStore,
 } from '@dvb/feat-shared';
 import {confirmOnDirty, DetailMode} from '@dvb/util-angular';
 import {
@@ -25,8 +24,8 @@ import {
   hasGroesseGewichtViewBerechtigung,
   hasHoerenViewBerechtigung,
   hasImpfungenViewBerechtigung,
+  hasInfomaterialViewBerechtigung,
   hasLaeusekontrolleViewBerechtigung,
-  hasListViewBerechtigung,
   hasMassnahmenViewBerechtigung,
   hasSehenViewBerechtigung,
   hasTriageViewBerechtigung,
@@ -117,6 +116,8 @@ import {
 import {
   UntersuchungSignaturStore
 } from "./anlass/untersuchung/untersuchung-abschluss-page/untersuchung-signatur/untersuchung-signatur.store";
+import {toObservable} from "@angular/core/rxjs-interop";
+import {filter, take} from "rxjs";
 
 export const anlassRoutes: Route[] = [
   {
@@ -124,14 +125,20 @@ export const anlassRoutes: Route[] = [
     providers: [AnlassStore, AnlassKinderStore, UntersuchungStore, InfomaterialStore, provideTranslocoScope('Anlass')],
     resolve: {
       _store: () => {
-        inject(AnlassStore).loadAnlassList();
-        inject(AnlassStore).setSelectedEntityId(undefined);
+        const anlassStore = inject(AnlassStore);
+        anlassStore.loadAnlassList();
+        anlassStore.setSelectedEntityId(undefined);
+
         const benutzerStore = inject(BenutzerStore);
-        if (benutzerStore.createHasRequiredRoleSig(hasListViewBerechtigung())()) {
+        if (benutzerStore.createHasRequiredRoleSig(hasInfomaterialViewBerechtigung())()) {
           inject(InfomaterialStore).loadInfomaterialList({onlyActive: true});
-          inject(SchulenOptionsStore).loadSchulenOptions({onlyActive: true});
         }
         inject(AnlassConfigOptionsStore).loadAnlassConfigOptions();
+        // Warten bis die AnlassListe fertig geladen ist, damit es keine RaceCondition mit der LoadEntity Funktion gibt.
+        return toObservable(anlassStore.loader.isLoading).pipe(
+          filter(isLoading => !isLoading),
+          take(1),
+        );
       },
     },
     children: [

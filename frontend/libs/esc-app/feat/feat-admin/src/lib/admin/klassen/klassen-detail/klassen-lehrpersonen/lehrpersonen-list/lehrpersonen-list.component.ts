@@ -22,7 +22,7 @@ import {
   TableLinkComponent,
 } from '@dvb/ui-components';
 import {TableModel} from '@dvb/util-angular';
-import {hasListEditBerechtigung, requireValue} from '@dvb/util-shared';
+import {hasKlassenEditBerechtigung, joinNotBlank, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbDropdownItem, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {firstValueFrom} from 'rxjs';
@@ -65,7 +65,7 @@ export class LehrpersonenListComponent {
 
   readonly #ngModal = inject(NgbModal);
 
-  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
+  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasKlassenEditBerechtigung());
 
   itemTable = new TableModel<LehrpersonJson>(
     {rawListSignal: this.store.entities},
@@ -84,7 +84,7 @@ export class LehrpersonenListComponent {
   deleteLehrperson(lehrperson: LehrpersonJson) {
     this.confirmService.confirm({
       question: this.#transloco.translate('lehrpersonen.list.delete.question',
-        {name: lehrperson.data.name + ' ' + lehrperson.data.vorname}),
+        {name: joinNotBlank([lehrperson.data.name, lehrperson.data.vorname])}),
       consequence: this.#transloco.translate('lehrpersonen.list.delete.consequence'),
       decision: this.#transloco.translate('lehrpersonen.list.delete.decision'),
     }).subscribe(() => {
@@ -99,7 +99,7 @@ export class LehrpersonenListComponent {
     this.store.setSelectedEntityId(lehrperson.id);
     this.confirmService.confirm({
       question: this.#transloco.translate('lehrpersonen.list.remove-connection.question',
-        { name: lehrperson.data.name + ' ' + lehrperson.data.vorname }),
+        { name: joinNotBlank([lehrperson.data.name, lehrperson.data.vorname]) }),
       consequence: this.#transloco.translate('lehrpersonen.list.remove-connection.consequence'),
       decision: this.#transloco.translate('lehrpersonen.list.remove-connection.decision'),
     }).subscribe(() => {

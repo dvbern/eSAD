@@ -1,4 +1,4 @@
-import {hasValue, isNullish, requireValue} from './nullish';
+import { hasValue, isNullish, requireValue } from './nullish';
 
 describe('nullish', () => {
   describe('isNullish', () => {
@@ -10,13 +10,11 @@ describe('nullish', () => {
       expect(isNullish(undefined)).toEqual(true);
     });
 
-    ['', '0', 'asdf', 0, {}, [], new Date(), Infinity, -Infinity, NaN].forEach(
-      (value) => {
-        it(`should return false for all other values: ${value}`, () => {
-          expect(isNullish(value)).toEqual(false);
-        });
-      },
-    );
+    ['', '0', 'asdf', 0, {}, [], new Date(), Infinity, -Infinity, NaN].forEach(value => {
+      it(`should return false for all other values: ${value}`, () => {
+        expect(isNullish(value)).toEqual(false);
+      });
+    });
   });
 
   describe('hasValue', () => {
@@ -29,18 +27,7 @@ describe('nullish', () => {
     });
 
     it('should return true for all other values', () => {
-      [
-        '',
-        '0',
-        'asdf',
-        0,
-        {},
-        [],
-        new Date(),
-        Infinity,
-        -Infinity,
-        NaN,
-      ].forEach((value) => {
+      ['', '0', 'asdf', 0, {}, [], new Date(), Infinity, -Infinity, NaN].forEach(value => {
         expect(hasValue(value)).toEqual(true);
       });
     });
@@ -48,7 +35,7 @@ describe('nullish', () => {
 
   describe('requireValue', () => {
     describe('with given value', () => {
-      ['', [], {}, 1, new Date(), NaN].forEach((param) => {
+      ['', [], {}, 1, new Date(), NaN].forEach(param => {
         it(`should just return the value: ${param}`, () => {
           expect(requireValue(param)).toBe(param);
         });
@@ -56,16 +43,14 @@ describe('nullish', () => {
     });
 
     describe('with nullish value', () => {
-      [null, undefined].forEach((param) => {
+      [null, undefined].forEach(param => {
         it(`should throw with value: ${param}`, () => {
-          expect(() => requireValue(param)).toThrowError();
+          expect(() => requireValue(param)).toThrow();
         });
       });
 
       it('should throw with description', () => {
-        expect(() => requireValue(null, 'Hello Null')).toThrowError(
-          'Hello Null',
-        );
+        expect(() => requireValue(null, 'Hello Null')).toThrow('Hello Null');
       });
     });
   });

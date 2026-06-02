@@ -197,7 +197,6 @@ public class SchulenApiSpec {
      * Find All Options
      * 
      *
-     * @see #onlyActiveQuery  (required)
      * return SchuleOptionListJsonSpec
      */
     public static class SchuleResourceFindAllOptionsOper implements Oper {
@@ -233,17 +232,6 @@ public class SchulenApiSpec {
         public SchuleOptionListJsonSpec executeAs(Function<Response, Response> handler) {
             TypeRef<SchuleOptionListJsonSpec> type = new TypeRef<SchuleOptionListJsonSpec>(){};
             return execute(handler).as(type);
-        }
-
-        public static final String ONLY_ACTIVE_QUERY = "onlyActive";
-
-        /**
-         * @param onlyActive (Boolean)  (required)
-         * @return operation
-         */
-        public SchuleResourceFindAllOptionsOper onlyActiveQuery(Object... onlyActive) {
-            reqSpec.addQueryParam(ONLY_ACTIVE_QUERY, onlyActive);
-            return this;
         }
 
         /**

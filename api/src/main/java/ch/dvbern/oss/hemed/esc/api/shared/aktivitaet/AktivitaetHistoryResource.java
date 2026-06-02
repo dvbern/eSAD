@@ -28,7 +28,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = OpenApiConst.Tags.TAG_AKTIVITAET)
-@RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
+@RolesAllowed({
+    BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH,
+    BerechtigungName.ANLASSLISTE_LESEN, BerechtigungName.ANLASSLISTE_LESEN_LAEUSE })
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed("AktivitaetHistoryResourceMS")
 public class AktivitaetHistoryResource {
@@ -36,7 +38,6 @@ public class AktivitaetHistoryResource {
     private final AktivitaetHistoryMapper aktivitaetHistoryMapper;
     private final CurrentUserService currentUserService;
     private final AuthorizerService authorizerService;
-
 
     @GET
     @Path("self/kinder")

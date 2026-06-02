@@ -29,6 +29,8 @@ import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import java.util.List;
 import java.util.Optional;
+
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -91,6 +93,7 @@ public class AnlassService {
     }
 
     @NonNull
+    @CanIgnoreReturnValue
     public Anlass changeAnlassStatus(@NonNull ID<Anlass> anlassID, @NonNull AnlassStatus status) {
         Anlass anlass = getById(anlassID);
         anlass.disableOptimisticLockingCheck();

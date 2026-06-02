@@ -76,8 +76,8 @@ public class InMemoryLogHandler extends Handler {
     }
 
     @Override
-    public void publish(LogRecord record) {
-        entries.add(record);
+    public void publish(LogRecord logRecord) {
+        entries.add(logRecord);
     }
 
     @Override

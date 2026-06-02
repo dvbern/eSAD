@@ -44,10 +44,10 @@ public class KindAnlaesseResource {
     ) {
         return new KindAnlassListJson(kindAnlaesseMapper.findAllForKind(
             kindId,
-            anlass -> authorizerService.hasReadAuthorizationAnlass(
-                anlass,
-                List.of(Berechtigung.ANLASSLISTE_LESEN, Berechtigung.ANLASSLISTE_LESEN_LAEUSE)
-            )));
+            einladung -> authorizerService.hasReadAuthorizationEinladung(
+                einladung,
+                List.of(Berechtigung.ANLASSLISTE_LESEN, Berechtigung.ANLASSLISTE_LESEN_LAEUSE),
+                null)));
     }
 
     @GET

@@ -17,6 +17,7 @@ import { BackendEntityId } from '@dvb/data-access-types';
 export interface KindJson { 
     id: BackendEntityId;
     esadId?: string;
+    hashValue: string;
     externalImportInfoJson?: ExternalImportInfoJson;
     entityInfo: EntityInfoJson;
     data: KindSaveJson;

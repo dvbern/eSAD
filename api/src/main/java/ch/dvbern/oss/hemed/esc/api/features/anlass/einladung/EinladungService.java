@@ -1,12 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.einladung;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
-import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
@@ -29,12 +22,16 @@ import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AutoAufgabeService;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.notizen.AutoNotizService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
-import ch.dvbern.oss.hemed.esc.api.shared.settings.features.FeatureEnabledSetting;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
 import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -126,7 +123,7 @@ public class EinladungService {
                     autoNotizService.moveImpfausweisNotiz(einladungNachzuegler, einladung);
                     autoNotizService.moveFragebogenNotiz(einladungNachzuegler, einladung);
                     autoNotizService.moveAnmeldungBestaetigungNotiz(einladungNachzuegler, einladung);
-                    autoNotizService.moveImpfanmeldungNotiz(einladungNachzuegler, einladung);
+                    autoNotizService.moveImpfeinverstaendnisNotiz(einladungNachzuegler, einladung);
                 }
                 createdEinladungen.add(einladung);
             }
@@ -215,18 +212,13 @@ public class EinladungService {
         einladungRepo.markAsSpssExported(einladungIdList);
     }
 
-    public void untersuchungAbschliessen(@NotNull @NonNull ID<Einladung> einladungId) {
+    public void untersuchungAbschliessen(@NotNull @NonNull ID<Einladung> einladungID) {
         // Untersuchungen abschliessen
-        FeatureEnabledSetting nichtGeprueftGrundFeature =
-            tenantSettingsService.getTenantSetting().getTenantSettingFeatures().getNichtGeprueftGrundFeature();
-        DeploymentEnvironment deploymentEnvironment = configService.getEnvironment();
-        boolean nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv =
-            nichtGeprueftGrundFeature.isEnabledForDeploymentEnvironment(deploymentEnvironment);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        untersuchungService.untersuchungAbschliessen(untersuchung);
 
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
-        untersuchungService.untersuchungAbschliessen(untersuchung, nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv);
         // Einladung auf FERTIG setzen
-        Einladung einladung = getById(einladungId);
+        Einladung einladung = getById(einladungID);
         einladung.setNaechsteStation(NaechsteStation.FERTIG);
         einladung.setNaechsteStationSeit(appClock.localDateTime().now());
         persist(einladung);

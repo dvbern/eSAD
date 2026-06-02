@@ -19,6 +19,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
@@ -120,11 +121,11 @@ class AnlassResourceDezentralITest extends AbstractITest {
     @TestAsSchularztBE
     void getAnlass_noArzt_shouldFail() {
         // ARRANGE
-        Anlass anlass = createAnlassWithArzt(null, null);
-
+        UUID anlassID = UUID.randomUUID();
+        createAnlassWithNoArzt(anlassID);
         // ACT & ASSERT
         api.anlassResourceGetAnlass()
-            .anlassIdPath(anlass.getId().getId())
+            .anlassIdPath(anlassID.toString())
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -283,8 +284,7 @@ class AnlassResourceDezentralITest extends AbstractITest {
     void changeAnlassStatus_differentOrg_shouldFail() {
         // ARRANGE
         Benutzer arztInOtherOrg = getSchularztBE();
-        Anlass anlass = fixtureService.createAnlass();
-        anlass.setArzt(arztInOtherOrg);
+        Anlass anlass = fixtureService.createAnlass(AnlassStatus.IN_PLANUNG, arztInOtherOrg);
 
         // ACT & ASSERT
         api.anlassResourceChangeAnlassStatus()
@@ -450,7 +450,6 @@ class AnlassResourceDezentralITest extends AbstractITest {
 
         Anlass sameOrgAnlass = createAnlassWithArzt(sameOrgArzt, null);
         Anlass otherOrgAnlass = createAnlassWithArzt(otherOrgArzt, null);
-        Anlass noArztAnlass = createAnlassWithArzt(null, null);
 
         // ACT
         AnlassListJsonSpec result = api
@@ -466,8 +465,6 @@ class AnlassResourceDezentralITest extends AbstractITest {
             .anyMatch(a -> sameOrgAnlass.getId().getId().equals(a.getId()));
         Assertions.assertThat(result.getAnlassList())
             .noneMatch(a -> otherOrgAnlass.getId().getId().equals(a.getId()));
-        Assertions.assertThat(result.getAnlassList())
-            .noneMatch(a -> noArztAnlass.getId().getId().equals(a.getId()));
     }
 
     @Test
@@ -566,11 +563,12 @@ class AnlassResourceDezentralITest extends AbstractITest {
     @TestAsSchoolNurseBE
     void getAnlass_noArzt_asSchoolNurse_shouldFail() {
         // ARRANGE
-        Anlass anlass = createAnlassWithArzt(null, null);
+        UUID anlassID = UUID.randomUUID();
+        createAnlassWithNoArzt(anlassID);
 
         // ACT & ASSERT
         api.anlassResourceGetAnlass()
-            .anlassIdPath(anlass.getId().getId())
+            .anlassIdPath(anlassID.toString())
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -754,7 +752,6 @@ class AnlassResourceDezentralITest extends AbstractITest {
 
         Anlass sameOrgAnlass = createAnlassWithArzt(sameOrgArzt, null);
         Anlass otherOrgAnlass = createAnlassWithArzt(otherOrgArzt, null);
-        Anlass noArztAnlass = createAnlassWithArzt(null, null);
 
         // ACT
         AnlassListJsonSpec result = api
@@ -770,8 +767,6 @@ class AnlassResourceDezentralITest extends AbstractITest {
             .anyMatch(a -> sameOrgAnlass.getId().getId().equals(a.getId()));
         Assertions.assertThat(result.getAnlassList())
             .noneMatch(a -> otherOrgAnlass.getId().getId().equals(a.getId()));
-        Assertions.assertThat(result.getAnlassList())
-            .noneMatch(a -> noArztAnlass.getId().getId().equals(a.getId()));
     }
 
     @Test
@@ -825,8 +820,25 @@ class AnlassResourceDezentralITest extends AbstractITest {
             appClock.offsetDateTime().now().toLocalDate());
     }
 
+    private void createAnlassWithNoArzt(@NonNull UUID anlassID) {
+        // Anlass ohne Arzt kann nur direkt über SQL eingefügt werden, da sonst der Validator zuschlägt
+        AnlassConfig config =
+            anlassConfigService.getByAnlassTypAndStichtag(AnlassTyp.KLASSE_8, appClock.getToday().plusMonths(1));
+        String arztID = null;
+        String mpaID = null;
+        String sql = String.format(
+            "INSERT INTO anlass (id, version, timestamperstellt, timestampmutiert, usererstellt, usermutiert, datum, von, bis, anlassconfig_id, arzt_id, mpa_id, weitereperson_id, titel, anlassstatus, anlassart, schuljahr) "
+                + "VALUES ('%s', 0, '2023-01-01 00:00:00+00', '2023-01-01 00:00:00+00', 'test', 'test', '2023-01-01', '2023-01-01 11:30:00.000000', '2023-01-01 12:00:00.000000', '%s', %s, %s, null, 'Dummy Anlass', 'IN_PLANUNG', 'EINZEL_ANLASS', 2023)",
+            anlassID,
+            config.getId().getId(),
+            arztID,
+            mpaID
+        );
+        fixtureService.executeSql(sql);
+    }
+
     @NonNull
-    private Anlass createAnlassWithArzt(@Nullable Benutzer arzt, @Nullable Benutzer mpa) {
+    private Anlass createAnlassWithArzt(@NonNull Benutzer arzt, @Nullable Benutzer mpa) {
         return anlassService.persist(
             AnlassBuilder.create(builder -> builder
                 .withTitle("Dezentral Test Anlass")

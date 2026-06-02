@@ -1,12 +1,13 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
+import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.abschluss.UntersuchungAbschlussService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintragService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.UntersuchungBewegungsapparatService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
@@ -29,9 +30,17 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurte
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.UntersuchungSpracheService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriageService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.vorabklaerungen.UntersuchungVorabklaerungenService;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.features.FeatureEnabledSetting;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungImpfungenUtil;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +65,10 @@ public class UntersuchungService {
     private final UntersuchungSpracheService untersuchungSpracheService;
     private final UntersuchungVorabklaerungenService untersuchungVorabklaerungenService;
     private final UntersuchungSchulrelevanteBeeintraechtigungService untersuchungSchulrelevanteBeeintraechtigungService;
+    private final AnonymerEintragService anonymerEintragService;
+    private final UntersuchungAbschlussService untersuchungAbschlussService;
+    private final TenantSettingsService tenantSettingsService;
+    private final ConfigService configService;
 
     @NonNull
     public Untersuchung getOrCreateUntersuchung(
@@ -78,6 +91,28 @@ public class UntersuchungService {
             return untersuchungRepo.getByIdWithLoadedSubuntersuchungen(untersuchung.getId());
         }
         return einladung.getUntersuchung();
+
+    }
+
+    @NonNull
+    public Untersuchung getOrCreateUntersuchungAnonym(
+        @NonNull ID<AnonymerEintrag> anonymerEintragID,
+        boolean loadSubuntersuchungenEager
+    ) {
+        AnonymerEintrag anonymerEintrag = anonymerEintragService.getByIdLockedQuery(anonymerEintragID);
+        anonymerEintrag.disableOptimisticLockingCheck();
+        Untersuchung untersuchung = anonymerEintrag.getUntersuchung();
+        if (anonymerEintrag.getUntersuchung() == null) {
+            untersuchung = Untersuchung.forAnonymerEintrag(anonymerEintrag);
+            untersuchungRepo.persist(untersuchung);
+
+            // Erstellen der Impfungen ohne History
+            untersuchungImpfungenService.getOrCreateUntersuchungImpfungen(untersuchung.getId());
+        }
+        if (loadSubuntersuchungenEager) {
+            return untersuchungRepo.getByIdWithLoadedSubuntersuchungen(untersuchung.getId());
+        }
+        return anonymerEintrag.getUntersuchung();
 
     }
 
@@ -115,6 +150,13 @@ public class UntersuchungService {
                 impfungenInternListLastAnlass);
 
         impfstatusKrankheitList.forEach(untersuchungImpfstatusKrankheitService::persist);
+    }
+
+    public void createCompleteImpfstatusWithoutHistory(@NonNull UntersuchungImpfungen impfungen) {
+        List<UntersuchungImpfstatusKrankheit> impfstatusKrankheitList = UntersuchungImpfungenUtil.completeListFromExistingForEachKrankheit(impfungen);
+        impfstatusKrankheitList.forEach(
+            impfstatusKrankheit -> untersuchungImpfstatusKrankheitService.persist(impfstatusKrankheit, false)
+        );
     }
 
     public void createCompleteImpfungenInternBasedOnLastAnlass(@NonNull UntersuchungImpfungen impfungen) {
@@ -166,6 +208,16 @@ public class UntersuchungService {
     }
 
     @NonNull
+    public Untersuchung getOrCreateUntersuchung(@NonNull HasUntersuchungIDWrapper wrappedId) {
+        if (wrappedId.isAnonymerEintrag()) {
+            return getOrCreateUntersuchungAnonym(wrappedId.toAnonymerEintragId(), false);
+        }
+
+        return getOrCreateUntersuchung(wrappedId.toEinladungId(), false);
+    }
+
+    // the getOrCreateUntersuchung from above and stop using the one below
+    @NonNull
     public Untersuchung getOrCreateUntersuchung(@NonNull ID<Einladung> einladungId) {
         return getOrCreateUntersuchung(einladungId, false);
     }
@@ -173,6 +225,18 @@ public class UntersuchungService {
     public void removeUntersuchung(@NonNull Untersuchung untersuchung) {
         untersuchungImpfungenService.removeByUntersuchung(untersuchung);
         untersuchungRepo.remove(untersuchung.getId());
+    }
+
+    public void untersuchungAbschliessen(
+        @NotNull @NonNull Untersuchung untersuchung
+    ) {
+        FeatureEnabledSetting nichtGeprueftGrundFeature =
+            tenantSettingsService.getTenantSetting().getTenantSettingFeatures().getNichtGeprueftGrundFeature();
+        DeploymentEnvironment deploymentEnvironment = configService.getEnvironment();
+        boolean nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv =
+            nichtGeprueftGrundFeature.isEnabledForDeploymentEnvironment(deploymentEnvironment);
+
+        untersuchungAbschliessen(untersuchung, nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv);
     }
 
     public void untersuchungAbschliessen(
@@ -189,9 +253,12 @@ public class UntersuchungService {
         untersuchungLaeusekontrolleService.untersuchungAbschliessen(untersuchung);
         untersuchungArztBeurteilungService.untersuchungAbschliessen(untersuchung);
         untersuchungMassnahmenService.untersuchungAbschliessen(untersuchung);
-        untersuchungSchulrelevanteBeeintraechtigungService.untersuchungAbschliessen(untersuchung, needsNichtGeprueftGrund);
+        untersuchungSchulrelevanteBeeintraechtigungService.untersuchungAbschliessen(
+            untersuchung,
+            needsNichtGeprueftGrund);
         untersuchungSpracheService.untersuchungAbschliessen(untersuchung, needsNichtGeprueftGrund);
         untersuchungBewegungsapparatService.untersuchungAbschliessen(untersuchung, needsNichtGeprueftGrund);
         untersuchungVorabklaerungenService.untersuchungAbschliessen(untersuchung, needsNichtGeprueftGrund);
+        untersuchungAbschlussService.untersuchungAbschliessen(untersuchung, needsNichtGeprueftGrund);
     }
 }

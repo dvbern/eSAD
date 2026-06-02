@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { Nachsprechen, RequirementSetting, Sprachverstaendnis, Wortschatz } from '@dvb/data-access-backend';
+import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked} from '@angular/core';
+import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {Nachsprechen, RequirementSetting, Sprachverstaendnis, Wortschatz} from '@dvb/data-access-backend';
 import {
   FormControlComponent,
   FormLayoutComponent,
@@ -8,15 +8,14 @@ import {
   TextareaDirective,
   TitleComponent,
 } from '@dvb/ui-components';
-import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
-import { DirtyMarker } from '@dvb/util-angular';
-import { requireValue } from '@dvb/util-shared';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { UntersuchungSpracheForm } from './untersuchung-sprache.form';
-import { AnlassStore } from '../../anlass.store';
-import { UntersuchungStore } from '../untersuchung.store';
-import { UntersuchungSpracheStore } from './untersuchung-sprache.store';
-import { createSingleValueEnhancedForm, TenantSettingsStore, ValueEnhancedComponent } from '@dvb/feat-shared';
+import {DirtyMarker} from '@dvb/util-angular';
+import {requireValue} from '@dvb/util-shared';
+import {TranslocoPipe} from '@jsverse/transloco';
+import {UntersuchungSpracheForm} from './untersuchung-sprache.form';
+import {AnlassStore} from '../../anlass.store';
+import {UntersuchungStore} from '../untersuchung.store';
+import {UntersuchungSpracheStore} from './untersuchung-sprache.store';
+import {createSingleValueEnhancedForm, TenantSettingsStore, ValueEnhancedComponent} from '@dvb/feat-shared';
 
 @Component({
   selector: 'feat-untersuchung-sprache',
@@ -75,19 +74,16 @@ export class UntersuchungSpracheComponent implements DirtyMarker {
 
   abbrechen(): void {
     const untersuchungSprache = this.store.untersuchungSprache();
-    if (untersuchungSprache) {
-      this.form.resetForm(untersuchungSprache.data);
-    }
+    this.form.resetForm(untersuchungSprache?.data);
   }
 
   async submitIfValid(): Promise<void> {
     if (await this.form.validate()) {
       const anlassId = requireValue(this.anlassStore.selectedEntity()?.id);
-      const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       const payload = this.form.valueOnValid();
       this.store.saveUntersuchungSprache({
         anlassId: anlassId,
-        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
+        einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
         untersuchungSpracheSaveJson: payload,
       });
     }

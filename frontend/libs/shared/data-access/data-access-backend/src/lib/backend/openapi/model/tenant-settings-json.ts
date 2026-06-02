@@ -20,6 +20,7 @@ export interface TenantSettingsJson {
     entityInfo: EntityInfoJson;
     data: TenantSettingSaveJson;
     fachrollen: Array<FachRolle>;
+    delegierbareFachrollen: Array<FachRolle>;
 }
 export namespace TenantSettingsJson {
 }

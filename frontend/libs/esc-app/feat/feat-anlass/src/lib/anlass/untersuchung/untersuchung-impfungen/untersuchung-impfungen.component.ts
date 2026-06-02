@@ -80,7 +80,7 @@ export class UntersuchungImpfungenComponent implements DirtyMarker {
   public impfausweisUnvollstaendigChanged(value: boolean): void {
     this.untersuchungImpfungenStore.changeImpfausweisUnvollstaendig({
       anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-      einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
+      einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
       impfausweisUnvollstaendig: value,
     });
   }
@@ -88,7 +88,7 @@ export class UntersuchungImpfungenComponent implements DirtyMarker {
   public impfausweisNichtVorhandenChanged(value: boolean): void {
     this.untersuchungImpfungenStore.changeImpfausweisNichtVorhanden({
       anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-      einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
+      einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
       impfausweisNichtVorhanden: value,
     });
   }
@@ -96,17 +96,16 @@ export class UntersuchungImpfungenComponent implements DirtyMarker {
   public impfausweisZweiPlusEinsSchemaChanged(value: boolean): void {
     this.untersuchungImpfungenStore.changeImpfausweisZweiPlusEinsSchema({
       anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-      einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.untersuchungStore.currentTab()).einladungID),
+      einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
       impfausweisZweiPlusEinsSchema: value,
     });
   }
 
   public onSaveImpfstatusList(payload: UntersuchungImpfstatusListSaveJson): void {
     const anlassId = requireValue(this.anlassStore.selectedEntity()).id;
-    const einladungId = requireValue(this.untersuchungStore.currentTab()).einladungID;
     this.untersuchungImpfungenStore.saveUntersuchungImpfstatusList({
       anlassId: anlassId,
-      einladungId: toEinladungBackendEntityIdWithClass(einladungId),
+      einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
       impfstatusList: payload,
     });
   }

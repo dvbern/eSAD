@@ -58,7 +58,6 @@ class AppFailureErrorJsonTest {
 
     @Test
     void building_with_summary_and_some_references() {
-        var stub = new Object();
 
         var actual = new AppFailureErrorJson(
             id,

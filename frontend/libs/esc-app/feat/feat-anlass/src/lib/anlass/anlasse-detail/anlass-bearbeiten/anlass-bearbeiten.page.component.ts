@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, computed, inject, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Path} from '@dvb/feat-shared';
-import {PageComponent} from '@dvb/feat-shared';
+import {PageComponent, Path} from '@dvb/feat-shared';
 import {ButtonComponent, CardComponent, PageHeaderButtonsComponent} from '@dvb/ui-components';
 import {DirtyMarker} from '@dvb/util-angular';
 import {requireValue} from '@dvb/util-shared';

@@ -15,7 +15,7 @@ import {
   TableLinkComponent,
   TextInputDirective,
 } from '@dvb/ui-components';
-import {hasListEditBerechtigung, isActiveInExternalSystem} from '@dvb/util-shared';
+import {hasKlassenEditBerechtigung, isActiveInExternalSystem} from '@dvb/util-shared';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { NgbDropdownItem } from '@ng-bootstrap/ng-bootstrap';
 import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
@@ -51,7 +51,7 @@ export class KlassenListComponent {
   readonly confirmService = inject(ConfirmService);
   readonly #transloco = inject(TranslocoService);
 
-  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
+  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasKlassenEditBerechtigung());
 
   itemTable = input.required<TableModel<KlasseJsonEnhanced>>();
   tableFilterForm = input.required<KlassenListFilterForm>();

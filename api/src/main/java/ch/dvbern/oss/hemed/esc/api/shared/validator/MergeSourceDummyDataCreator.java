@@ -147,7 +147,9 @@ public final class MergeSourceDummyDataCreator {
             Set.of(),
             null
         );
-        benutzer.setOrganisationRollen(Set.of(getTestOrganisationBenutzer(benutzer, EnumSet.of(FachRolle.SCHULAERZTIN))));
+        benutzer.setOrganisationRollen(Set.of(getTestOrganisationBenutzer(
+            benutzer,
+            EnumSet.of(FachRolle.SCHULAERZTIN))));
         return benutzer;
     }
 
@@ -216,6 +218,7 @@ public final class MergeSourceDummyDataCreator {
         return new Kind(
             null,
             null,
+            "testdatahash",
             null,
             "Notter",
             "Nina",
@@ -551,7 +554,7 @@ public final class MergeSourceDummyDataCreator {
             true,            // showImpfausweis
             true,                           // showFragebogen
             true,                           // showAnmeldungBestaetigung
-            true,                           // showImpfanmeldung
+            true,                           // showImpfeinveständnis
             true,                           // showDatenPersonendaten
             true,                           // showDatenPersonendatenEsadId
             RequirementSetting.OPTIONAL,    // datenUntersuchung

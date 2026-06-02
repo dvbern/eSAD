@@ -18,9 +18,9 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.fileio;
 
+import ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil;
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import lombok.experimental.UtilityClass;
-import org.apache.tika.mime.MediaType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
@@ -28,12 +28,12 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 public class FileInfoS3Mapper {
 
     @NonNull
-    public static FileInfo mapFileUploadToFileInfo(@NonNull FileUpload fileUpload, @NonNull FileTyp fileTyp) {
+    public static FileInfo mapFileUploadToFileInfoWithMIMEDetect(@NonNull FileUpload fileUpload, @NonNull FileTyp fileTyp) {
         CleanFileName cleanFileName = new CleanFileName(fileUpload.fileName());
         return FileInfo.of(
             fileTyp.getPrefix(),
             cleanFileName,
-            MediaType.parse(fileUpload.contentType()),
+            FileUtil.parseMediaTypeFromContent(fileUpload.filePath()),
             fileUpload.size()
         );
     }

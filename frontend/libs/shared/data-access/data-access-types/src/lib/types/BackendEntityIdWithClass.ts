@@ -1,9 +1,16 @@
 import { BackendEntityId } from './EntityId';
 
-export type BackendEntityIdWithClass = `${string}-${string}-${string}-${string}-${string}${'-anonym' | '-einladung'}`;
+declare const __brand: unique symbol;
+
+export type BackendEntityIdWithClass =
+  `${string}-${string}-${string}-${string}-${string}${'-anonym' | '-einladung'}` & { [__brand]: 'withClass' };
 
 export function toEinladungBackendEntityIdWithClass(id: BackendEntityId): BackendEntityIdWithClass {
   return requireValidBackendEntityIdWithClass(`${id}-einladung`);
+}
+
+export function toAnonymerEintragBackendEntityIdWithClass(id: BackendEntityId): BackendEntityIdWithClass {
+  return requireValidBackendEntityIdWithClass(`${id}-anonym`);
 }
 
 export function requireValidBackendEntityIdWithClass(value: unknown): BackendEntityIdWithClass {

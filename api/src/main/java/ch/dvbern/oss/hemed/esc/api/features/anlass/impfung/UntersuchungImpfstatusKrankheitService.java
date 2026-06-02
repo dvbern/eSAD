@@ -1,8 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.impfung;
 
-import java.util.List;
-import java.util.Optional;
-
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
@@ -13,6 +10,9 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UntersuchungImpfstatusKrankheitService {
@@ -22,17 +22,31 @@ public class UntersuchungImpfstatusKrankheitService {
 
 	@NonNull
 	public UntersuchungImpfstatusKrankheit persist(@NonNull UntersuchungImpfstatusKrankheit impfstatusKrankheit) {
+		return persist(impfstatusKrankheit, true);
+	}
+
+	@NonNull
+	public UntersuchungImpfstatusKrankheit persist(@NonNull UntersuchungImpfstatusKrankheit impfstatusKrankheit, boolean checkImmunitaeten) {
 		impfstatusKrankheitRepo.persist(impfstatusKrankheit);
-		checkImmunitaetenForDossier(impfstatusKrankheit);
+        if(checkImmunitaeten){
+            checkImmunitaetenForDossier(impfstatusKrankheit);
+        }
 		return impfstatusKrankheit;
 	}
 
-    @NonNull
-    public UntersuchungImpfstatusKrankheit persistWithOptimisticLocking(@NonNull UntersuchungImpfstatusKrankheit entity, @NonNull Long versionFromFrontend) {
-        UntersuchungImpfstatusKrankheit persisted = impfstatusKrankheitRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
-        checkImmunitaetenForDossier(persisted);
-        return persisted;
-    }
+	@NonNull
+	public UntersuchungImpfstatusKrankheit persistWithOptimisticLocking(@NonNull UntersuchungImpfstatusKrankheit entity, @NonNull Long versionFromFrontend) {
+		return persistWithOptimisticLocking(entity, versionFromFrontend, true);
+	}
+
+	@NonNull
+	public UntersuchungImpfstatusKrankheit persistWithOptimisticLocking(@NonNull UntersuchungImpfstatusKrankheit entity, @NonNull Long versionFromFrontend, boolean checkImmunitaeten) {
+		UntersuchungImpfstatusKrankheit persisted = impfstatusKrankheitRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
+        if(checkImmunitaeten){
+		    checkImmunitaetenForDossier(persisted);
+        }
+		return persisted;
+	}
 
 	public void checkImmunitaetenForDossier(@NonNull UntersuchungImpfstatusKrankheit impfstatusKrankheit) {
         Dossier dossier = dossierService.getById(impfstatusKrankheit.getUntersuchungImpfungen()

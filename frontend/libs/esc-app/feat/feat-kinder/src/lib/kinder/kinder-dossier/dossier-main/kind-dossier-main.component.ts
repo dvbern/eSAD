@@ -4,6 +4,7 @@ import {FormsModule} from '@angular/forms';
 import {RouterLink} from '@angular/router';
 import {
   BenutzerOptionJson,
+  DossierJson,
   DossierMedizinischSaveJson,
   EntityAktivStatus,
   EsadIdJson,
@@ -45,6 +46,7 @@ import {
   hasKindVorlagenViewBerechtigung,
   isNotNullish,
   isNullish,
+  joinNotBlank,
 } from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbDropdownItem, NgbModal} from '@ng-bootstrap/ng-bootstrap';
@@ -103,10 +105,11 @@ export class KindDossierMainComponent {
   readonly #briefvorlagenStore = inject(BriefvorlagenStore);
   readonly kindAnlassStore = inject(KindAnlaesseStore);
   readonly tenantSettingsStore = inject(TenantSettingsStore);
+  readonly #confirmService = inject(ConfirmService);
 
   dossier = computed(() => this.dossierStore.selectedDossier());
   kind = this.dossierStore.selectedKind;
-  fullName = computed(() => this.kind()?.data?.name + ' ' + this.kind()?.data?.vorname);
+  fullName = computed(() => joinNotBlank([this.kind()?.data?.name, this.kind()?.data?.vorname]));
   geschlecht = computed(() => this.getUseCaseGechlecht(this.kind()?.data?.geschlecht));
   idNr = computed(() => this.dossier()?.kind?.esadId ?? '');
   adresse = computed(() => getAdresse(this.kind()?.data?.adresse));
@@ -119,7 +122,9 @@ export class KindDossierMainComponent {
   canWriteMedizinischeDaten = this.benutzerStore.createHasRequiredRoleSig(hasKinderMedizinischeDatenEditBerechtigung());
 
   canEditKind = computed(() =>
-    this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung())() && this.dossierStore.isKindAktiv()
+    this.benutzerStore.createHasRequiredRoleSig(hasKindEditBerechtigung())()
+    && this.dossierStore.isKindAktiv()
+    && this.benutzerStore.isZustaendigForDossier(this.dossier())
   );
   canDownloadDossierExport = this.benutzerStore.createHasRequiredRoleSig(hasDownloadDossierBerechtigung());
 
@@ -132,6 +137,14 @@ export class KindDossierMainComponent {
       return this.canEditKind() && this.canEditAfterAbgeschlossen();
     }
     return this.canEditKind();
+  });
+
+  arztOptions = computed(() => {
+    return this.benutzerOptionsStore.benutzerFiltered(this.zustaendigArzt(), 'ARZT', !this.zustaendigArzt());
+  });
+
+  hilfspersonOptions = computed(() => {
+    return this.benutzerOptionsStore.benutzerFiltered(this.zustaendigMPA(), 'HILFSPERSON', !this.zustaendigMPA());
   });
 
   papierakteStatusOptions = Object.values(PapierakteStatus);
@@ -189,7 +202,7 @@ export class KindDossierMainComponent {
     if (isNotNullish(this.dossierStore.selectedDossier) && isNotNullish(kind)) {
       // Generate ID for Kind if the Schule is Present
       if (isNotNullish(kind.data.schule)) {
-        const name = this.kind()?.data?.name + ' ' + this.kind()?.data?.vorname;
+        const name = joinNotBlank([this.kind()?.data?.name, this.kind()?.data?.vorname]);
         this.confirmService.confirm({
           question: this.transloco.translate('kind.dossier.id.generieren.question', {fullname: name}),
           consequence: this.transloco.translate('kind.dossier.id.generieren.consequence'),
@@ -236,11 +249,27 @@ export class KindDossierMainComponent {
   onArztChange(arzt: BenutzerOptionJson): void {
     const dossier = this.dossier();
     if (isNotNullish(arzt) && isNotNullish(dossier)) {
-      this.dossierStore.updateDossierVerantwortlichArzt({
-        dossier: dossier,
-        arztOption: arzt
-      });
+      if (this.dossierStore.showZustaendigerChangedWarning(arzt)) {
+        this.#confirmService
+          .confirm({
+            question: this.transloco.translate('dossier.change.zustaendigkeit.question'),
+            consequence: this.transloco.translate('dossier.change.zustaendigkeit.consequence'),
+            decision: this.transloco.translate('dossier.change.zustaendigkeit.decision'),
+          })
+          .subscribe(() => {
+            this.updateArzt(dossier, arzt);
+          });
+      } else {
+        this.updateArzt(dossier, arzt);
+      }
     }
+  }
+
+  private updateArzt(dossier: DossierJson, arzt: BenutzerOptionJson): void {
+    this.dossierStore.updateDossierVerantwortlichArzt({
+      dossier: dossier,
+      arztOption: arzt
+    });
   }
 
   onMPAChange(mpa: BenutzerOptionJson): void {

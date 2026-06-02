@@ -28,6 +28,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.DVBSupportRoleUtil.isDVBSupport;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -146,7 +147,8 @@ class RolesAugmentorTest {
     void augmentWithRoles_shouldReturnFileIngressPushRole_whenFileIngressClientUser() {
         // ARRANGE
         when(tenantSettingsServiceMock.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled()).thenReturn(false);
-        SecurityIdentity identity = buildIdentityWithToken(TEST_EMAIL, FILE_INGRESS_CLIENT_USER, FILE_INGRESS_AZP, "BS");
+        SecurityIdentity identity =
+            buildIdentityWithToken(TEST_EMAIL, FILE_INGRESS_CLIENT_USER, FILE_INGRESS_AZP, "BS");
 
         // ACT
         SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity);
@@ -218,6 +220,54 @@ class RolesAugmentorTest {
 
         // ASSERT
         assertThat(result.getRoles()).isEmpty();
+    }
+
+    @Test
+    void augmentWithRoles_shouldReturnSupportRolesForUrlTenant_whenDVBSupportMarkerInToken() {
+        // ARRANGE
+        when(tenantSettingsServiceMock.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled()).thenReturn(false);
+        tenantProducer.setCurrentTenant(TenantEnum.BS);
+
+        SecurityIdentity identity = buildIdentityWithToken(
+            TEST_EMAIL, TEST_USERNAME, "some-azp", DVBSupportRoleUtil.DVB_SUPPORT_TENANT_MARKER);
+
+        Set<Berechtigung> expectedBerechtigungen = FachRolle.collectAllBerechtigungen(TenantEnum.BS, FachRolle.SUPPORT);
+
+        // ACT
+        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity);
+
+        // ASSERT
+        Set<String> expectedRoleNames = new HashSet<>();
+        expectedBerechtigungen.forEach(b -> expectedRoleNames.add(b.getBerechtigungName()));
+        assertThat(result.getRoles()).containsExactlyInAnyOrderElementsOf(expectedRoleNames);
+    }
+
+    @Test
+    void augmentWithRoles_shouldReturnNoRoles_whenDVBSupportMarkerInTokenButUrlTenantIsNull() {
+        // ARRANGE
+        when(tenantSettingsServiceMock.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled()).thenReturn(false);
+        tenantProducer.setCurrentTenant(null);
+
+        SecurityIdentity identity = buildIdentityWithToken(
+            TEST_EMAIL, TEST_USERNAME, "some-azp", DVBSupportRoleUtil.DVB_SUPPORT_TENANT_MARKER);
+
+        // ACT
+        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity);
+
+        // ASSERT
+        assertThat(result.getRoles()).isEmpty();
+    }
+
+    @Test
+    void isDVBSupport_shouldReturnTrue_whenMarkerMatches() {
+        // ACT / ASSERT
+        assertThat(isDVBSupport(DVBSupportRoleUtil.DVB_SUPPORT_TENANT_MARKER)).isTrue();
+    }
+
+    @Test
+    void isDVBSupport_shouldReturnFalse_whenMarkerDoesNotMatch() {
+        // ACT / ASSERT
+        assertThat(isDVBSupport("BS")).isFalse();
     }
 
     @Test

@@ -1,6 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.shared.archivierung;
 
-import java.util.List;
 import java.util.Objects;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
@@ -86,10 +85,9 @@ public class ArchivierungService {
     }
 
     public void createTeilArchivdokumente(@NonNull Dossier dossier, @NonNull ArchivierungTyp archivierungTyp) {
-        List<ID<Benutzer>> berechtigtSchuleOrDossier = dossier.getBerechtigteAerzteIdsFromDossierOrSchule();
         einladungService.findAllByDossier(dossier.getId()).forEach(einladung -> {
                 Benutzer arztAnlass = einladung.getAnlass().getArzt();
-                if (arztAnlass != null && !berechtigtSchuleOrDossier.contains(arztAnlass.getId())) {
+                if (arztAnlass != null && !dossier.isBenutzerZustaendigForDossier(arztAnlass)) {
                     // Dieser Anlass muss einzeln archiviert werden
                     createArchivdokument(dossier, arztAnlass, archivierungTyp, einladung.getAnlass().getId());
                 }

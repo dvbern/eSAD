@@ -55,7 +55,7 @@ class MassenbriefgenerierungServiceITest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void generateMassenbriefZip_should_generate() {
-        // Arrange
+        // ARRANGE
         String filename = "Test.zip";
         Kind kind1 = fixtureService.createKind("Muster", "Max");
         Kind kind2 = fixtureService.createKind("Muster", "Moritz");
@@ -68,11 +68,11 @@ class MassenbriefgenerierungServiceITest extends AbstractITest {
         Benutzer benutzer =
             fixtureService.readBenutzerWithBerechtigungen(benutzerService.getCurrentBenutzerOrThrowException().getId());
 
-        // Act
+        // ACT
         Path result =
             massenbriefGeneratorService.generateMassenbriefZip(saveJson, benutzer, CleanFileName.parse(filename));
 
-        // Assert
+        // ASSERT
         assertThat(result).isNotNull();
         assertThat(result.getFileName().toFile()).hasName(filename);
 
@@ -81,7 +81,7 @@ class MassenbriefgenerierungServiceITest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void generateMassenbriefZip_forBriefvorlageTypeAnlass_should_throw() {
-        // Arrange
+        // ARRANGE
         Kind kind1 = fixtureService.createKind("Meier", "Hans");
         Kind kind2 = fixtureService.createKind("Tell", "Willhelm");
         Arzt arzt = fixtureService.createArzt();
@@ -94,7 +94,7 @@ class MassenbriefgenerierungServiceITest extends AbstractITest {
         Benutzer benutzer = benutzerService.getCurrentBenutzerOrThrowException();
         CleanFileName cleanFileName = CleanFileName.parse("Test-wrong-type-should-throw.zip");
 
-        // Act & Assert
+        // ACT & ASSERT
         assertThatThrownBy(() -> massenbriefGeneratorService.generateMassenbriefZip(
             saveJson,
             benutzer,
@@ -106,7 +106,7 @@ class MassenbriefgenerierungServiceITest extends AbstractITest {
     @Test
     @TestAsAdminBS
     void generateMassenbriefZip_withNoKinderIds_should_throw() {
-        // Arrange
+        // ARRANGE
         Arzt arzt = fixtureService.createArzt();
         Briefvorlage briefvorlage = fixtureService.createBriefvorlage(BriefvorlageType.KIND);
         DocumentQueueMassenbriefSaveJson saveJson = new DocumentQueueMassenbriefSaveJson(
@@ -117,7 +117,7 @@ class MassenbriefgenerierungServiceITest extends AbstractITest {
         Benutzer benutzer = benutzerService.getCurrentBenutzerOrThrowException();
         CleanFileName cleanFileName = CleanFileName.parse("Test-no-kids-should-throw.zip");
 
-        // Act & Assert
+        // ACT & ASSERT
         assertThatThrownBy(() -> massenbriefGeneratorService.generateMassenbriefZip(
             saveJson,
             benutzer,

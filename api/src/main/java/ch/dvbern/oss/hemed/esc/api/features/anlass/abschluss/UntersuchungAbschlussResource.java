@@ -50,10 +50,10 @@ public class UntersuchungAbschlussResource {
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungAbschlussMapper.getByEinladung(
-            wrappedId.toEinladungId(),
+            wrappedId,
             untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
                 untersuchung,
-                Berechtigung.SU_ABSCHLUSS_LESEN));
+                List.of(Berechtigung.SU_ABSCHLUSS_LESEN)));
     }
 
     @PUT
@@ -66,7 +66,7 @@ public class UntersuchungAbschlussResource {
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungAbschlussMapper.saveAbschluss(
-            wrappedId.toEinladungId(),
+            wrappedId,
             saveJson,
             untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
                 untersuchung,

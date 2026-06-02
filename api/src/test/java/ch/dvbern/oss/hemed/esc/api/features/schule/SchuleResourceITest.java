@@ -110,7 +110,6 @@ class SchuleResourceITest extends AbstractITest {
         // ACT
         SchuleOptionListJsonSpec result = api
             .schuleResourceFindAllOptions()
-            .onlyActiveQuery(false)
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -122,64 +121,6 @@ class SchuleResourceITest extends AbstractITest {
             .anyMatch(jsonSpec -> schule.getId().getId().equals(jsonSpec.getId())
                 && "TestSchulhaus".equals(jsonSpec.getBezeichnung()))
             .anyMatch(jsonSpec -> schuleInaktiv.getId().getId().equals(jsonSpec.getId()));
-    }
-
-    @Test
-    @TestAsAdminBS
-    void findAllAktivSchuleOptions() {
-        // ARRANGE
-        Schule schuleInaktiv = SchuleBuilder.create(
-            builder -> builder
-                .withID(ID.random(Schule.class))
-                .withSchulhaus("DeaktivierteSchule")
-                .withExternalImportInfo(
-                    UUID.randomUUID().toString(),
-                    false,
-                    getAppClock().offsetDateTime().now(),
-                    ImportTyp.ESCADA)
-                .withEntityAktivStatus(EntityAktivStatus.INAKTIV));
-        schuleService.persist(schuleInaktiv);
-
-        Schule schuleAktiv = SchuleBuilder.create(
-            builder -> builder
-                .withID(ID.random(Schule.class))
-                .withSchulhaus("Aktive Schule")
-                .withExternalImportInfo(
-                    UUID.randomUUID().toString(),
-                    true,
-                    getAppClock().offsetDateTime().now(),
-                    ImportTyp.ESCADA)
-                .withEntityAktivStatus(EntityAktivStatus.AKTIV));
-        schuleService.persist(schuleAktiv);
-
-        Schule schuleAktivInternal = SchuleBuilder.create(
-            builder -> builder
-                .withID(ID.random(Schule.class))
-                .withSchulhaus("Aktive Schule Internal")
-                .withEntityAktivStatus(EntityAktivStatus.AKTIV));
-        schuleService.persist(schuleAktivInternal);
-
-        // ACT
-        SchuleOptionListJsonSpec result = api
-            .schuleResourceFindAllOptions()
-            .onlyActiveQuery(true)
-            .execute(ResponseBody::prettyPeek)
-            .then()
-            .assertThat()
-            .statusCode(Status.OK.getStatusCode())
-            .extract().as(SchuleOptionListJsonSpec.class);
-        // ASSERT
-        Assertions.assertThat(result.getSchulenList())
-            .filteredOn(schuleOptionSpec -> schuleOptionSpec.getId().equals(schuleInaktiv.getId().getId()))
-            .isEmpty();
-
-        Assertions.assertThat(result.getSchulenList())
-            .filteredOn(schuleOptionSpec -> schuleOptionSpec.getId().equals(schuleAktiv.getId().getId()))
-            .isNotEmpty().hasSize(1);
-
-        Assertions.assertThat(result.getSchulenList())
-            .filteredOn(schuleOptionSpec -> schuleOptionSpec.getId().equals(schuleAktivInternal.getId().getId()))
-            .isNotEmpty().hasSize(1);
     }
 
     @ParameterizedTest
@@ -203,7 +144,6 @@ class SchuleResourceITest extends AbstractITest {
         // ACT
         SchuleOptionListJsonSpec result = api
             .schuleResourceFindAllOptions()
-            .onlyActiveQuery(true)
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()

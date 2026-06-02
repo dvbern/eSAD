@@ -32,6 +32,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateTimeRange;
 import ch.dvbern.oss.hemed.esc.api.shared.util.AnlassTitelUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckArztRequiredForDezentraleTenants;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckArztUndMpaSameOrganisation;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -71,6 +72,7 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @NoArgsConstructor
 @CheckArztUndMpaSameOrganisation
+@CheckArztRequiredForDezentraleTenants
 public class Anlass extends AbstractEntity<Anlass> implements EntityWithOptimisticLocking, HasZustaendigkeit {
 
     @Serial

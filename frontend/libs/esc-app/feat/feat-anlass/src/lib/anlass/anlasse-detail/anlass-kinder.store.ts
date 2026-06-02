@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core';
+import {computed, inject, Injectable} from '@angular/core';
 import {
   AnlassFlagsJson,
   EinladungenService,
@@ -14,7 +14,7 @@ import {
   NotizTyp,
   PrinterService,
 } from '@dvb/data-access-backend';
-import { BackendEntityId, BackendEntityIdWithClass, toEinladungBackendEntityIdWithClass } from '@dvb/data-access-types';
+import {BackendEntityId, BackendEntityIdWithClass, toEinladungBackendEntityIdWithClass,} from '@dvb/data-access-types';
 import {
   AppErrorHandlerService,
   AppNotificationStore,
@@ -22,12 +22,12 @@ import {
   Loader,
   rxMethod,
 } from '@dvb/util-angular';
-import { ensurePropsFlat, isNotNullish, requireValue } from '@dvb/util-shared';
-import { TranslocoService } from '@jsverse/transloco';
-import { tapResponse } from '@ngrx/operators';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { catchError, exhaustMap, filter, map, of, pipe, switchMap, tap } from 'rxjs';
-import { AnlassStore } from '../anlass.store';
+import {ensurePropsFlat, isNotNullish, joinNotBlank, requireValue} from '@dvb/util-shared';
+import {TranslocoService} from '@jsverse/transloco';
+import {tapResponse} from '@ngrx/operators';
+import {patchState, signalStore, withComputed, withMethods, withState} from '@ngrx/signals';
+import {catchError, exhaustMap, filter, map, of, pipe, switchMap, tap} from 'rxjs';
+import {AnlassStore} from '../anlass.store';
 
 export interface EinladungJsonEnhanced extends EinladungJson {
   nachkontrolleString: string;
@@ -76,7 +76,7 @@ export class AnlassKinderStore extends signalStore(
     ),
     nameKind: computed((): string => {
       const kind = einladungen().find(({ id }) => id === selectedEinladungId())?.kind;
-      return kind ? kind.data.vorname + ' ' + kind.data.name : '';
+      return joinNotBlank([kind?.data.vorname, kind?.data.name]) ?? '';
     }),
   })),
   withMethods((store, translateService = inject(TranslocoService)) => ({
@@ -328,7 +328,7 @@ export class AnlassKinderStore extends signalStore(
     ),
   );
 
-  updateEinladungStatus = rxMethod<{ einladungId: BackendEntityIdWithClass; status: EinladungStatus }>(
+  updateEinladungStatus = rxMethod<{ einladungId: BackendEntityId; status: EinladungStatus }>(
     pipe(
       exhaustMap(params => {
         const einladungById = this.einladungById(params.einladungId);
@@ -336,7 +336,7 @@ export class AnlassKinderStore extends signalStore(
         return this.loader.tapLoading$(
           this.#einladungenService.updateEinladung$({
             anlassId: requireValue(this.anlassStore.selectedEntity()?.id),
-            einladungId: params.einladungId,
+            einladungId: toEinladungBackendEntityIdWithClass(params.einladungId),
             einladungSaveJson: {
               ...requireValue(einladungById).data,
               einladungStatus: params.status,

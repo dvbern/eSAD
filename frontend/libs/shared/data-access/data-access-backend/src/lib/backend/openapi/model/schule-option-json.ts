@@ -13,6 +13,7 @@ import { BackendEntityId } from '@dvb/data-access-types';
 
 export interface SchuleOptionJson { 
     id: BackendEntityId;
+    organisationId?: BackendEntityId;
     bezeichnung: string;
     aktivStatus: EntityAktivStatus;
 }

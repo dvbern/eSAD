@@ -1,4 +1,3 @@
-
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {RequirementSetting} from '@dvb/data-access-backend';
@@ -11,7 +10,6 @@ import {
   TextareaDirective,
   TitleComponent,
 } from '@dvb/ui-components';
-import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
 import {DirtyMarker} from '@dvb/util-angular';
 import {hasAerztlicheUntersuchungEditBerechtigung, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
@@ -29,7 +27,7 @@ import {UntersuchungArztBemerkungForm} from './untersuchung-arzt-bemerkung.form'
     FormControlComponent,
     TextareaDirective,
     TitleComponent
-],
+  ],
   templateUrl: './untersuchung-arzt-bemerkung.component.html',
   styleUrl: './untersuchung-arzt-bemerkung.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,7 +50,6 @@ export class UntersuchungArztBemerkungComponent implements DirtyMarker {
     destroyRef: this.destroyRef,
   });
 
-
   constructor() {
     effect(() => {
       const untersuchung = this.store.untersuchungArztBemerkung();
@@ -73,19 +70,16 @@ export class UntersuchungArztBemerkungComponent implements DirtyMarker {
 
   abbrechen(): void {
     const arztUntersuchung = this.store.untersuchungArztBemerkung();
-    if (arztUntersuchung) {
-      this.form.resetForm(arztUntersuchung.data);
-    }
+    this.form.resetForm(arztUntersuchung?.data);
   }
 
   async submitIfValid(): Promise<void> {
     if (await this.form.validate()) {
       const payload = this.form.valueOnValid();
       const anlassId = requireValue(this.anlassStore.selectedEntity()?.id);
-      const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       this.store.saveUntersuchungArztBemerkung({
         anlassId: anlassId,
-        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
+        einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
         untersuchungArztBemerkungSaveJson: payload,
       });
     }

@@ -31,7 +31,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = Tags.TAG_IMPFSTOFF_CHARGEN)
-@RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+@RolesAllowed(BerechtigungName.IMPFSTOFFE_LESEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed("ImpfstoffChargeResourceMS")
 public class ImpfstoffChargeResource {
@@ -43,7 +43,7 @@ public class ImpfstoffChargeResource {
 
     @GET
     @NonNull
-    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
+    @RolesAllowed({ BerechtigungName.IMPFSTOFFE_LESEN })
     public ImpfstoffChargeListJson findAllByImpfstoff(
         @NotNull @NonNull @PathParam("impfstoffId") ID<Impfstoff> impfstoffId
     ) {

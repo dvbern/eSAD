@@ -1,5 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.notizen;
 
+import java.util.List;
+import java.util.Optional;
+
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileNameUtil;
@@ -9,7 +12,13 @@ import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.*;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataService;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3Mapper;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileValidationService;
 import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +26,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -125,7 +131,7 @@ public class NotizService {
     }
 
     public void removeUploadedFile(@NonNull Notiz loadedNotiz, @NonNull ID<FileData> fileId) {
-        FileInfo fileToRemove = findUploadedFileInfo(loadedNotiz.getId(), fileId);
+        FileInfo fileToRemove = findUploadedFileInfo(loadedNotiz, fileId);
         loadedNotiz.disableOptimisticLockingCheck();
         boolean removedFromList = loadedNotiz.getFiles().removeIf(fileData -> fileId.equals(fileData.getId()));
         if (!removedFromList) {
@@ -145,7 +151,7 @@ public class NotizService {
     @NonNull
     private FileInfo saveNotizAttachmentInFilestorage(@NonNull FileUpload fileUpload) {
         // prepare the file info Embeddable
-        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfo(fileUpload, FileTyp.NOTIZUPLOAD);
+        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfoWithMIMEDetect(fileUpload, FileTyp.NOTIZUPLOAD);
         // upload the file to S3
         Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileUpload, fileInfo);
         PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
@@ -154,11 +160,23 @@ public class NotizService {
     }
 
     @NonNull
-    public FileInfo findUploadedFileInfo(@NonNull ID<Notiz> notizId, @NonNull ID<FileData> fileId) {
-        return getById(notizId).getFiles().stream()
+    public FileInfo findUploadedFileInfo(
+        @NonNull Notiz notiz,
+        @NonNull ID<FileData> fileId
+    ) {
+        return this.findUploadedFileData(notiz, fileId)
+            .getFileInfoBucket();
+    }
+
+    @NonNull
+    public FileData findUploadedFileData(
+        @NonNull Notiz notiz,
+        @NonNull ID<FileData> fileId
+    ) {
+        return notiz.getFiles().stream()
             .filter(fileData -> fileData.getId().equals(fileId))
             .findFirst()
-            .orElseThrow(() -> new AppFailureException(AppFailureMessage.entityNotFound(fileId, "File not found")))
-            .getFileInfoBucket();
+            .orElseThrow(() -> new AppFailureException(AppFailureMessage.entityNotFound(fileId, "File not found")));
+
     }
 }

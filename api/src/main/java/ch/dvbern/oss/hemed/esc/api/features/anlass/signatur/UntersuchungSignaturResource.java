@@ -49,10 +49,10 @@ public class UntersuchungSignaturResource {
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungSignaturMapper.getByEinladung(
-            wrappedId.toEinladungId(),
+            wrappedId,
             untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
                 untersuchung,
-                Berechtigung.SU_ABSCHLUSS_LESEN));
+                List.of(Berechtigung.SU_ABSCHLUSS_LESEN)));
     }
 
     @PUT
@@ -64,7 +64,7 @@ public class UntersuchungSignaturResource {
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungSignaturMapper.signieren(
-            wrappedId.toEinladungId(),
+            wrappedId,
             untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
                 untersuchung,
                 List.of(Berechtigung.SU_ABSCHLUSS_SCHREIBEN)));
@@ -79,7 +79,7 @@ public class UntersuchungSignaturResource {
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungSignaturMapper.resetSignatur(
-            wrappedId.toEinladungId(),
+            wrappedId,
             untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
                 untersuchung,
                 List.of(Berechtigung.SU_ABSCHLUSS_SCHREIBEN)));

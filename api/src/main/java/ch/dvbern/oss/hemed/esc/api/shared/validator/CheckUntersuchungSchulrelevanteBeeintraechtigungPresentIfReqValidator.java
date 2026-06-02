@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.validator;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.UntersuchungSchulrelevanteBeeintraechtigung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.Feinmotorik;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.FreiesGehen;
@@ -14,7 +15,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 @ApplicationScoped
 public class CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReqValidator
-    extends AbstractValidator<CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReq, UntersuchungSchulrelevanteBeeintraechtigung> {
+    extends AbstractValidator<CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReq,
+    UntersuchungSchulrelevanteBeeintraechtigung> {
 
     @Override
     @SuppressWarnings({
@@ -23,8 +25,12 @@ public class CheckUntersuchungSchulrelevanteBeeintraechtigungPresentIfReqValidat
     public boolean isEntityValid(@NonNull UntersuchungSchulrelevanteBeeintraechtigung beeintraechtigung) {
         AnlassConfig anlassConfig = beeintraechtigung.getUntersuchung().getAnlass().getAnlassConfig();
 
-        if (ValueEnhancedUtil.isRequiredAndNull(anlassConfig.getUntersuchungBeeintraechtigungFreiesGehen(), beeintraechtigung.getFreiesGehen(), FreiesGehen.class)) {
-            return false;
+        boolean isFreiesGehenRequired = anlassConfig.getUntersuchungBeeintraechtigungFreiesGehen() == RequirementSetting.REQUIRED;
+
+        if (isFreiesGehenRequired) {
+            boolean isAnzahlMonateMissing = beeintraechtigung.getAnzahlMonateFreiesGehen() == null;
+            boolean isFreiesGehenValueMissing = ValueEnhancedUtil.isNull(beeintraechtigung.getFreiesGehen(), FreiesGehen.class);
+            return !(isAnzahlMonateMissing && isFreiesGehenValueMissing);
         }
         if (ValueEnhancedUtil.isRequiredAndNull(anlassConfig.getUntersuchungBeeintraechtigungOhneStuetzradVelofahren(), beeintraechtigung.getOhneStuetzradVelofahren(), OhneStuetzradVelofahren.class)) {
             return false;

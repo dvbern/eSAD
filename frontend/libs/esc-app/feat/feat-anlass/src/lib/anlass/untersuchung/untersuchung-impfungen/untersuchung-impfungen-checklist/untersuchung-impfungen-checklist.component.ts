@@ -103,7 +103,7 @@ export class UntersuchungImpfungenChecklistComponent implements DirtyMarker {
       const checklist = this.form.valueOnValid();
       this.#store.changeUntersuchungImpfungenChecklist({
         anlassId: requireValue(this.anlassStore.selectedEntity()).id,
-        einladungId: toEinladungBackendEntityIdWithClass(requireValue(this.#untersuchungStore.currentTab()).einladungID),
+        einladungId: requireValue(this.#untersuchungStore.getWrappedEinladungId()),
         checklist: checklist,
       });
     }

@@ -58,7 +58,6 @@ public final class AnlassConfigMapper {
         AnlassConfigListJson allConfigs = findAll();
         List<AnlassConfigOptionJson> allVisible = allConfigs.getAnlassConfigList().stream()
             .filter(AnlassConfigJson::isAnlassConfigVisible)
-            .filter(config -> !config.getData().getAnlassTyp().isAnonym())
             .map(AnlassConfigMapper::toOptionJson)
             .toList();
         return new AnlassConfigOptionListJson(allVisible);
@@ -127,7 +126,8 @@ public final class AnlassConfigMapper {
         boolean showTabBewegungsapparat = AnlassConfigUtil.showTabBewegungsapparat(config);
 
         // Schulrelevante Beeinträchtigung
-        boolean showTabSchulrelevanteBeeintraechtigung = AnlassConfigUtil.showTabSchulrelevanteBeeintraechtigung(config);
+        boolean showTabSchulrelevanteBeeintraechtigung =
+            AnlassConfigUtil.showTabSchulrelevanteBeeintraechtigung(config);
 
         // Abschluss
         boolean showCardAbschlussAbschluss = AnlassConfigUtil.showCardAbschlussAbschluss(config);
@@ -202,7 +202,8 @@ public final class AnlassConfigMapper {
             config.getAnlassTyp(),
             config.getGueltigkeitsZeitraum().getDatumVon(),
             config.getGueltigkeitsZeitraum().getDatumBis(),
-            config.getBezeichnung()
+            config.getBezeichnung(),
+            config.getAnlassTyp().isAnonym()
         );
     }
 
@@ -213,7 +214,8 @@ public final class AnlassConfigMapper {
             config.getData().getAnlassTyp(),
             config.getData().getDatumVon(),
             config.getData().getDatumBis(),
-            config.getData().getBezeichnung()
+            config.getData().getBezeichnung(),
+            config.getData().getAnlassTyp().isAnonym()
         );
     }
 

@@ -36,61 +36,61 @@ class S3ClientProducerTest extends AbstractITest {
 
     @Test
     void testGetS3AsyncClient_SingleBucket() {
-        // Arrange
+        // ARRANGE
         when(configServiceMock.isS3SingleBucket()).thenReturn(true);
 
-        // Act
+        // ACT
         S3AsyncClient client = s3ClientProducer.getS3AsyncClient();
 
-        // Assert
+        // ASSERT
         assertThat(client).isNotNull();
     }
 
     @Test
     void testGetS3AsyncClient_TenantBS() {
-        // Arrange
+        // ARRANGE
         when(configServiceMock.isS3SingleBucket()).thenReturn(false);
         tenantProducer.setCurrentTenant(TenantEnum.BS);
 
-        // Act
+        // ACT
         S3AsyncClient client = s3ClientProducer.getS3AsyncClient();
 
-        // Assert
+        // ASSERT
         assertThat(client).isNotNull();
     }
 
     @Test
     void testGetS3AsyncClient_TenantWIN() {
-        // Arrange
+        // ARRANGE
         when(configServiceMock.isS3SingleBucket()).thenReturn(false);
         tenantProducer.setCurrentTenant(TenantEnum.WIN);
 
-        // Act
+        // ACT
         S3AsyncClient client = s3ClientProducer.getS3AsyncClient();
 
-        // Assert
+        // ASSERT
         assertThat(client).isNotNull();
     }
 
     @Test
     void testGetS3AsyncClient_TenantBE() {
-        // Arrange
+        // ARRANGE
         when(configServiceMock.isS3SingleBucket()).thenReturn(false);
         tenantProducer.setCurrentTenant(TenantEnum.BE);
 
-        // Act
+        // ACT
         S3AsyncClient client = s3ClientProducer.getS3AsyncClient();
 
-        // Assert
+        // ASSERT
         assertThat(client).isNotNull();
     }
 
     @Test
     void testGetS3AsyncClient_DifferentTenantsProduceDifferentClients() {
-        // Arrange
+        // ARRANGE
         when(configServiceMock.isS3SingleBucket()).thenReturn(false);
 
-        // Act
+        // ACT
         tenantProducer.setCurrentTenant(TenantEnum.BS);
         S3AsyncClient clientBS = s3ClientProducer.getS3AsyncClient();
 
@@ -100,7 +100,7 @@ class S3ClientProducerTest extends AbstractITest {
         tenantProducer.setCurrentTenant(TenantEnum.BE);
         S3AsyncClient clientBE = s3ClientProducer.getS3AsyncClient();
 
-        // Assert
+        // ASSERT
         assertThat(clientBS).isNotNull();
         assertThat(clientWIN).isNotNull();
         assertThat(clientBE).isNotNull();
@@ -111,7 +111,7 @@ class S3ClientProducerTest extends AbstractITest {
 
     @Test
     void testGetS3AsyncClient_SingleBucketIsDifferentFromTenantClients() {
-        // Arrange
+        // ARRANGE
         when(configServiceMock.isS3SingleBucket()).thenReturn(true);
         S3AsyncClient singleBucketClient = s3ClientProducer.getS3AsyncClient();
 
@@ -119,7 +119,7 @@ class S3ClientProducerTest extends AbstractITest {
         tenantProducer.setCurrentTenant(TenantEnum.BS);
         S3AsyncClient clientBS = s3ClientProducer.getS3AsyncClient();
 
-        // Assert
+        // ASSERT
         assertThat(singleBucketClient).isNotSameAs(clientBS);
     }
 }

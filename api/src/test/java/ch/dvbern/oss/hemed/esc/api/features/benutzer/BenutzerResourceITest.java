@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.List;
 
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
-import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
@@ -234,13 +233,7 @@ class BenutzerResourceITest {
     })
     void updateActive(EntityAktivStatus oldAktivStatus, EntityAktivStatus newAktivStatus) {
         // ARRANGE
-        ID<Benutzer> id = ID.random(Benutzer.class);
-        Benutzer benutzer = BenutzerBuilder.create(
-            builder -> builder
-                .withBenutzerAktivStatus(oldAktivStatus)
-                .withID(id)
-        );
-        benutzerRepo.persist(benutzer);
+        Benutzer benutzer = fixtureService.createBenutzerFuerZentraleOrganisation();
         BenutzerSaveJsonSpec saveJson = BenutzerBuilder.createJaxSpec(
             builder -> builder
                 .forBenutzer(benutzer)
@@ -250,7 +243,7 @@ class BenutzerResourceITest {
         // ACT
         BenutzerJsonSpec result = api
             .benutzerResourceUpdateBenutzerAktivStatus()
-            .benutzerIDPath(id.getId())
+            .benutzerIDPath(benutzer.getId().getId())
             .body(saveJson)
             .execute(ResponseBody::prettyPeek)
             .then()

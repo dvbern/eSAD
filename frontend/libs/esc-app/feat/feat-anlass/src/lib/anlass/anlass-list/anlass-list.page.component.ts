@@ -4,7 +4,14 @@ import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {RouterLink} from '@angular/router';
 import {AnlassJson, AnlassStatus} from '@dvb/data-access-backend';
 import {BackendEntityId, isValidBackendEntityId} from '@dvb/data-access-types';
-import {BenutzerOptionsStore, BenutzerStore, ConfirmService, PageComponent, Path} from '@dvb/feat-shared';
+import {
+  AnlassJsonEnhanced,
+  BenutzerOptionsStore,
+  BenutzerStore,
+  ConfirmService,
+  PageComponent,
+  Path
+} from '@dvb/feat-shared';
 import {
   CardComponent,
   CollapsibleMenuComponent,
@@ -32,7 +39,7 @@ import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbDropdownItem} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {AnlassStore} from '../anlass.store';
-import {AnlassJsonEnhanced, anlassTitle} from '../anlass.util';
+import {anlassTitle} from '../anlass.util';
 import {AnlassFilterForm, AnlassListFilterForm} from './anlass-list-filter.form';
 
 @Component({

@@ -9,6 +9,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.abschluss.UntersuchungAbschluss;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.UntersuchungBewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
@@ -26,7 +27,6 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.signatur.UntersuchungSignatur
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.UntersuchungSprache;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.vorabklaerungen.UntersuchungVorabklaerungen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungEinladungOrAnonymerEintrag;
 import jakarta.persistence.CascadeType;
@@ -88,7 +88,6 @@ public class Untersuchung extends AbstractEntity<Untersuchung> {
     @Getter(AccessLevel.NONE)
     private Einladung einladung;
 
-
     @Nullable
     @OneToOne(optional = true, mappedBy = "untersuchung")
     private AnonymerEintrag anonymerEintrag;
@@ -131,7 +130,8 @@ public class Untersuchung extends AbstractEntity<Untersuchung> {
 
     @Nullable
     @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungsehenbemerkungfragebogen"), nullable = true)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungsehenbemerkungfragebogen"),
+        nullable = true)
     private UntersuchungSehenBemerkungFragebogen untersuchungSehenBemerkungFragebogen;
 
     @Nullable
@@ -181,7 +181,8 @@ public class Untersuchung extends AbstractEntity<Untersuchung> {
 
     @Nullable
     @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungschulrelevantebeeintraechtigung"), nullable = true)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungschulrelevantebeeintraechtigung"),
+        nullable = true)
     private UntersuchungSchulrelevanteBeeintraechtigung untersuchungSchulrelevanteBeeintraechtigung;
 
     @Nullable
@@ -193,7 +194,6 @@ public class Untersuchung extends AbstractEntity<Untersuchung> {
     @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_untersuchung_untersuchungsignatur"), nullable = true)
     private UntersuchungSignatur untersuchungSignatur;
-
 
     @NonNull
     public static Untersuchung forEinladung(@NonNull Einladung einladung) {
@@ -218,7 +218,9 @@ public class Untersuchung extends AbstractEntity<Untersuchung> {
     public Einladung getEinladungRequired() {
         return Optional.ofNullable(einladung)
             .orElseThrow(() -> {
-                LOG.error("Untersuchung was expected to have an Einladung but none was found. untersuchungId={}", this.getId().getId());
+                LOG.error(
+                    "Untersuchung was expected to have an Einladung but none was found. untersuchungId={}",
+                    this.getId().getId());
                 return new AppValidationException(AppValidationMessage.genericMessage(
                     "Untersuchung hat keine Einladung."));
             });
@@ -231,7 +233,13 @@ public class Untersuchung extends AbstractEntity<Untersuchung> {
         if (anonymerEintrag != null) {
             return anonymerEintrag.getAnlass();
         }
-        LOG.error("Untersuchung was expected to have an Anlass but none was found. untersuchungId={}", this.getId().getId());
+        LOG.error(
+            "Untersuchung was expected to have an Anlass but none was found. untersuchungId={}",
+            this.getId().getId());
         throw new AppValidationException(AppValidationMessage.genericMessage("Untersuchung hat keinen Anlass."));
+    }
+
+    public boolean isAnonymerEintrag() {
+        return anonymerEintrag != null;
     }
 }

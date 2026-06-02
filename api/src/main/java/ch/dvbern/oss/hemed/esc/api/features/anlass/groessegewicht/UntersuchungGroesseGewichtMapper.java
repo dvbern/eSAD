@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateUtil;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
@@ -34,19 +35,19 @@ public class UntersuchungGroesseGewichtMapper {
 
     @NonNull
     public UntersuchungGroesseGewichtDataJson getUntersuchungGroesseGewicht(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        return wrapToDataJson(einladungId, getByEinladung(einladungId, hasAuthorizationUntersuchung));
+        return wrapToDataJson(wrappedId, getByEinladung(wrappedId, hasAuthorizationUntersuchung));
     }
 
     @NonNull
     public UntersuchungGroesseGewichtDataJson saveUntersuchungGroesseGewicht(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull UntersuchungGroesseGewichtSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        return wrapToDataJson(einladungId, save(einladungId, saveJson, hasAuthorizationUntersuchung));
+        return wrapToDataJson(wrappedId, save(wrappedId, saveJson, hasAuthorizationUntersuchung));
     }
 
     @Nullable
@@ -68,8 +69,8 @@ public class UntersuchungGroesseGewichtMapper {
                 groesseGewicht.getBemerkungen(),
                 groesseGewicht.getVersion()
             ),
-            groesseGewicht.getAlter(),
-            groesseGewicht.getAlterDuodezimal()
+            groesseGewicht.getUntersuchung().isAnonymerEintrag() ? null : groesseGewicht.getAlter(),
+            groesseGewicht.getUntersuchung().isAnonymerEintrag() ? null : groesseGewicht.getAlterDuodezimal()
         );
     }
 
@@ -102,21 +103,21 @@ public class UntersuchungGroesseGewichtMapper {
 
     @Nullable
     private UntersuchungGroesseGewichtJson getByEinladung(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungGroesseGewicht());
     }
 
     @NonNull
     private UntersuchungGroesseGewichtJson save(
-        @NonNull ID<Einladung> einladungID,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull UntersuchungGroesseGewichtSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungGroesseGewicht groesseGewicht = untersuchung.getUntersuchungGroesseGewicht();
         UntersuchungGroesseGewicht entity = toEntity(untersuchung, groesseGewicht, saveJson);
@@ -138,10 +139,17 @@ public class UntersuchungGroesseGewichtMapper {
     }
 
     private UntersuchungGroesseGewichtDataJson wrapToDataJson(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @Nullable UntersuchungGroesseGewichtJson untersuchungGroesseGewichtToReturn
     ) {
-        Einladung einladung = einladungService.getById(einladungId);
+        if (wrappedId.isAnonymerEintrag()) {
+            return new UntersuchungGroesseGewichtDataJson(
+                untersuchungGroesseGewichtToReturn,
+                List.of(),
+                null,
+                null);
+        }
+        Einladung einladung = einladungService.getById(wrappedId.toEinladungId());
         BigDecimal alter = DateUtil.calculateAlter(
             einladung.getDossier().getKind().getGeburtsdatum(),
             einladung.getAnlass().getDatum());
@@ -150,7 +158,7 @@ public class UntersuchungGroesseGewichtMapper {
             einladung.getAnlass().getDatum());
         return new UntersuchungGroesseGewichtDataJson(
             untersuchungGroesseGewichtToReturn,
-            getPreviousDataPoints(einladungId),
+            getPreviousDataPoints(wrappedId.toEinladungId()),
             alter,
             alterDuodezimal);
     }

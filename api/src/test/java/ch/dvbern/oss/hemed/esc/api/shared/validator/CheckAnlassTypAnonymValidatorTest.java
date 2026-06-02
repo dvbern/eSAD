@@ -18,17 +18,17 @@ class CheckAnlassTypAnonymValidatorTest {
 	 */
 	@Test
 	void test_isEntityValid_returnsTrue_whenAnlassTypIsAnonym() {
-		// Arrange
+		// ARRANGE
 
         var anonymerEintrag = AnonymerEintragBuilder.create(builder -> builder.withAnlass(
             AnlassBuilder.create(anlassBuilder -> anlassBuilder.withAnlassConfig(AnlassConfigBuilder.create(ac -> ac.withAnlassTyp(
                 AnlassTyp.KINDERGARTEN_ANONYM))))
         ));
 
-		// Act
+		// ACT
 		boolean result = validatorUdnerTest.isEntityValid(anonymerEintrag);
 
-		// Assert
+		// ASSERT
 		assertThat(result).isTrue();
 	}
 
@@ -38,16 +38,16 @@ class CheckAnlassTypAnonymValidatorTest {
 	 */
 	@Test
 	void test_isEntityValid_returnsFalse_whenAnlassTypIsNichtAnonym() {
-		// Arrange
+		// ARRANGE
         var anonymerEintrag = AnonymerEintragBuilder.create(builder -> builder.withAnlass(
             AnlassBuilder.create(anlassBuilder -> anlassBuilder.withAnlassConfig(AnlassConfigBuilder.create(ac -> ac.withAnlassTyp(
                 AnlassTyp.KINDERGARTEN))))
         ));
 
-		// Act
+		// ACT
 		boolean result = validatorUdnerTest.isEntityValid(anonymerEintrag);
 
-		// Assert
+		// ASSERT
 		assertThat(result).isFalse();
 	}
 

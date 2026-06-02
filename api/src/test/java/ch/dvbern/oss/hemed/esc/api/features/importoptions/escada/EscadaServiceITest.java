@@ -651,7 +651,7 @@ class EscadaServiceITest extends AbstractITest {
         // we have one entry that is in 2 klassen where one of them is sfg
         // we have an entry that is sfg only
 
-        // Arrange
+        // ARRANGE
         this.importSchulenBasedataIntoEmptyDB("/EscadaTest/kinder/csv_kontaktpersonkind_with_schule_fuer_gest.csv");
         this.importKlassenBasedataIntoEmptyDB("/EscadaTest/kinder/csv_kontaktpersonkind_with_schule_fuer_gest.csv");
         this.importLehrpersonenBasedataIntoEmptyDB(

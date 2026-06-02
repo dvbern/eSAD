@@ -546,7 +546,7 @@ class EscadaCsvDataAnalysisServiceTest {
                 List<String> lines = offendingResult.entrySet()
                     .stream()
                     .map(entry -> entry.getKey() + " => " + entry.getValue())
-                    .collect(Collectors.toList());
+                    .toList();
                 writeToFile("escada_duplicate_schuler_id.txt", lines);
             }
 
@@ -600,7 +600,7 @@ class EscadaCsvDataAnalysisServiceTest {
                 List<String> lines = offendingResult.entrySet()
                     .stream()
                     .map(entry -> entry.getKey() + " => " + entry.getValue())
-                    .collect(Collectors.toList());
+                    .toList();
                 writeToFile("escada_non_unique_schuledata_by_id.txt", lines);
             }
 
@@ -806,7 +806,7 @@ class EscadaCsvDataAnalysisServiceTest {
 
         @Test
         void validation_for_phone_numbers_fails() {
-            // Arrange
+            // ARRANGE
             // transform file to reader
             Reader reader = createReaderFromPath(Path.of(escadaFile.getPath()));
             // ACT
@@ -837,7 +837,7 @@ class EscadaCsvDataAnalysisServiceTest {
 
         @Test
         void validation_for_email_fails() {
-            // Arrange
+            // ARRANGE
             // transform file to reader
             Reader reader = createReaderFromPath(Path.of(escadaFile.getPath()));
             // ACT
@@ -866,7 +866,7 @@ class EscadaCsvDataAnalysisServiceTest {
 
         @Test
         void validation_for_geb_datum_fails() {
-            // Arrange
+            // ARRANGE
             // transform file to reader
             Reader reader = createReaderFromPath(Path.of(escadaFile.getPath()));
             // ACT

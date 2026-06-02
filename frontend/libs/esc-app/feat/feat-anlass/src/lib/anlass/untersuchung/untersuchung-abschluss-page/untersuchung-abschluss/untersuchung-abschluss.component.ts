@@ -8,7 +8,6 @@ import {
   TextareaDirective,
   TitleComponent
 } from "@dvb/ui-components";
-import {toEinladungBackendEntityIdWithClass} from "@dvb/data-access-types";
 import {TranslocoPipe} from "@jsverse/transloco";
 import {
   BenutzerStore,
@@ -52,7 +51,8 @@ export class UntersuchungAbschlussComponent implements DirtyMarker {
 
   abschlussResultatItems = Object.values(AbschlussResultat);
 
-  canEditAbschluss = computed(() => this.#benutzerStore.createHasRequiredRoleSig(hasUntersuchungAbschlussEditBerechtigung())()
+  canEditAbschluss = computed(() => this.#benutzerStore.createHasRequiredRoleSig(
+      hasUntersuchungAbschlussEditBerechtigung())()
     && this.anlassStore.canUserEditAnlassInCurrentState());
 
   form = new UntersuchungAbschlussForm({
@@ -84,19 +84,16 @@ export class UntersuchungAbschlussComponent implements DirtyMarker {
 
   abbrechen(): void {
     const untersuchungAbschluss = this.store.untersuchungAbschluss();
-    if (untersuchungAbschluss) {
-      this.form.resetForm(untersuchungAbschluss.abschlussData);
-    }
+    this.form.resetForm(untersuchungAbschluss?.abschlussData);
   }
 
   async submitIfValid(): Promise<void> {
     if (await this.form.validate()) {
       const anlassId = requireValue(this.anlassStore.selectedEntity()?.id);
-      const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       const payload = this.form.valueOnValid();
       this.store.saveUntersuchungAbschluss({
         anlassId: anlassId,
-        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
+        einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
         untersuchungAbschlussSaveJson: payload,
       });
     }

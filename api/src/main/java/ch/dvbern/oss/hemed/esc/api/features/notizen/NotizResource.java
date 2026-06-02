@@ -12,6 +12,7 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizJson;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizListJson;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
@@ -69,8 +70,12 @@ public class NotizResource {
     @GET
     @NonNull
     @RolesAllowed({BerechtigungName.KINDER_ALLE_NOTIZEN_LESEN, BerechtigungName.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN})
-    public NotizListJson findAll() {
-        return new NotizListJson(notizMapper.findAll());
+    public NotizListJson findAllBerechtigt() {
+        return new NotizListJson(notizMapper.findAllBerechtigt(
+            notiz -> authorizerService.hasReadAuthorizationNotiz(
+                notiz,
+                List.of(Berechtigung.KINDER_ALLE_NOTIZEN_LESEN, Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN))
+        ));
     }
 
     @PUT
@@ -87,12 +92,17 @@ public class NotizResource {
         @Nullable @RestForm("file4") final FileUpload fileUpload4,
         @NotNull @NonNull @Valid @RestForm("notizSaveJson") @PartType(MediaType.APPLICATION_JSON) final NotizSaveJson saveJson
     ) {
-        authorizerService.requireWriteAuthorizationNotiz(notizId);
         // collect uploadedFiles
         List<FileUpload> fileUploads = Streams.of(fileUpload, fileUpload2, fileUpload3, fileUpload4)
             .filter(Objects::nonNull)
             .toList();
-        return notizMapper.update(notizId, saveJson, fileUploads);
+        return notizMapper.update(
+            notizId,
+            saveJson,
+            fileUploads,
+            notiz -> authorizerService.requireWriteAuthorizationNotiz(
+                notiz,
+                List.of (Berechtigung.KINDER_ALLE_NOTIZEN_SCHREIBEN, Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN)));
     }
 
     @POST
@@ -105,8 +115,10 @@ public class NotizResource {
         // schema genaration produces object instread of binary strin otherwise
         FileUpload file
     ) {
-        authorizerService.requireWriteAuthorizationNotiz(notizId);
-        return notizMapper.addUploadedFile(notizId, file);
+        return notizMapper.addUploadedFile(notizId, file,
+            notiz -> authorizerService.requireWriteAuthorizationNotiz(
+                notiz,
+                List.of (Berechtigung.KINDER_ALLE_NOTIZEN_SCHREIBEN, Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN)));
     }
 
     @DELETE
@@ -117,8 +129,10 @@ public class NotizResource {
         @PathParam("notizId") @NotNull @NonNull ID<Notiz> notizId,
         @NotNull @NonNull @PathParam("fileId") ID<FileData> fileId
     ) {
-        authorizerService.requireWriteAuthorizationNotiz(notizId);
-        return notizMapper.removeUploadedFile(notizId, fileId);
+        return notizMapper.removeUploadedFile(notizId, fileId,
+            notiz -> authorizerService.requireWriteAuthorizationNotiz(
+                notiz,
+                List.of (Berechtigung.KINDER_ALLE_NOTIZEN_SCHREIBEN, Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN)));
     }
 
     /**
@@ -137,8 +151,12 @@ public class NotizResource {
         @PathParam("notizId") @NotNull @NonNull ID<Notiz> notizId,
         @NotNull @NonNull @PathParam("fileId") ID<FileData> fileId
     ) {
-        authorizerService.requireReadAuthorizationNotiz(notizId);
-        FileInfo fileInfo = notizService.findUploadedFileInfo(notizId, fileId);
+        FileInfo fileInfo = notizMapper.findUploadedFileInfo(
+            notizId,
+            fileId,
+            notiz -> authorizerService.requireReadAuthorizationNotiz(
+                notiz,
+                List.of (Berechtigung.KINDER_ALLE_NOTIZEN_LESEN, Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN)));
         return FileDownloadUtil.getBufferRestMultiWithInfo(fileInfo, fileStoreService);
     }
 
@@ -158,8 +176,12 @@ public class NotizResource {
         @PathParam("notizId") @NotNull @NonNull ID<Notiz> notizId,
         @NotNull @NonNull @PathParam("fileId") ID<FileData> fileId
     ) {
-        authorizerService.requireReadAuthorizationNotiz(notizId);
-        FileInfo fileInfo = notizService.findUploadedFileInfo(notizId, fileId);
+        FileInfo fileInfo = notizMapper.findUploadedFileInfo(
+            notizId,
+            fileId,
+            notiz -> authorizerService.requireReadAuthorizationNotiz(
+                notiz,
+                List.of (Berechtigung.KINDER_ALLE_NOTIZEN_LESEN, Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN)));
         var content = fileStoreService.getFileBytesSync(fileInfo.getFileIdInBucket());
         return FileDownloadUtil.buildFileResponse("attachment", content, fileInfo);
     }
@@ -170,8 +192,10 @@ public class NotizResource {
     public void deleteNotiz(
         @PathParam("notizId") @NotNull @NonNull ID<Notiz> notizId
     ) {
-        authorizerService.requireWriteAuthorizationNotiz(notizId);
         Notiz notiz = notizService.getById(notizId);
+        authorizerService.requireWriteAuthorizationNotiz(
+            notiz,
+            List.of (Berechtigung.KINDER_ALLE_NOTIZEN_SCHREIBEN, Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_SCHREIBEN));
         notizMapper.checkRemoveAllowed(notiz);
         removeNotizService.removeNotizWithUnlink(notizId);
     }
@@ -183,7 +207,10 @@ public class NotizResource {
     public NotizJson getNotiz(
         @PathParam("notizId") @NotNull @NonNull ID<Notiz> notizId
     ) {
-        authorizerService.requireReadAuthorizationNotiz(notizId);
-        return notizMapper.getNotiz(notizId);
+        return notizMapper.getNotiz(
+            notizId,
+            notiz -> authorizerService.requireReadAuthorizationNotiz(
+                notiz,
+                List.of (Berechtigung.KINDER_ALLE_NOTIZEN_LESEN, Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN)));
     }
 }

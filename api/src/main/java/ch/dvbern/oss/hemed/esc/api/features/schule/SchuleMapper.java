@@ -19,6 +19,7 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.quartier.QuartierMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.ZustaendigePersonService;
 import ch.dvbern.oss.hemed.esc.api.shared.person.AdresseMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
@@ -66,8 +67,12 @@ public final class SchuleMapper {
 
     @NonNull
     public static SchuleOptionJson toOptionJson(@NonNull Schule schule) {
+        Benutzer zustaendigArzt = schule.getZustaendigArzt();
         return new SchuleOptionJson(
             schule.getId(),
+            zustaendigArzt != null && zustaendigArzt.getSingleOrganisation() != null
+                ? zustaendigArzt.getSingleOrganisation().getId()
+                : null,
             schule.getSchulhaus(),
             schule.getSchuleAktivStatus()
         );
@@ -139,14 +144,8 @@ public final class SchuleMapper {
     }
 
     @NonNull
-    public List<SchuleOptionJson> findAllOptions(boolean onlyActive) {
-        List<Schule> schulen;
-        if (onlyActive) {
-            schulen = schuleService.findAllAktiv();
-        } else {
-            schulen = schuleService.findAll();
-        }
-
+    public List<SchuleOptionJson> findAllOptions() {
+        List<Schule> schulen = schuleService.findAll();
         return schulen.stream()
             .map(SchuleMapper::toOptionJson)
             .toList();

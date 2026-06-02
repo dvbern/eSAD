@@ -1,0 +1,24 @@
+:host {
+  display: block;
+}
+
+.file-preview {
+  &__container {
+    width: 100%;
+    border: 1px solid #6c757d;
+  }
+
+  &__image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  &__placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    font-size: 3rem;
+  }
+}

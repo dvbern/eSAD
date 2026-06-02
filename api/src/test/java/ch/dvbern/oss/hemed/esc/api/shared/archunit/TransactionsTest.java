@@ -4,6 +4,7 @@ import ch.dvbern.oss.hemed.esc.api.features.importoptions.escada.EscadaResource;
 import ch.dvbern.oss.hemed.esc.api.features.example.developer.DatabaseResource;
 import ch.dvbern.oss.hemed.esc.api.features.example.developer.SuperAdminRunnerResource;
 import ch.dvbern.oss.hemed.esc.api.features.importoptions.pupil.PupilResource;
+import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckArztRequiredForDezentraleTenantsValidator;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
 import jakarta.enterprise.inject.Stereotype;
@@ -60,6 +61,7 @@ class TransactionsTest {
                         .or(fullyQualifiedName(EscadaResource.class.getName()))
                         .or(fullyQualifiedName(PupilResource.class.getName()))
                         .or(fullyQualifiedName(SuperAdminRunnerResource.class.getName()))
+                        .or(fullyQualifiedName(CheckArztRequiredForDezentraleTenantsValidator.class.getName()))
                     ),
                     not(annotatedWith(Stereotype.class))
                 )

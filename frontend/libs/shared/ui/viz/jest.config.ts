@@ -1,7 +1,16 @@
 // Diese Zeile war noetig, damit die jest-Tests laufen.
-const esModules = ['@angular', 'd3', 'd3-array', 'd3-delaunay', 'jest-runtime', 'internmap', 'delaunator', 'robust-predicates'];
+const esModules = [
+  '@angular',
+  'd3',
+  'd3-array',
+  'd3-delaunay',
+  'jest-runtime',
+  'internmap',
+  'delaunator',
+  'robust-predicates',
+];
 
-export default {
+module.exports = {
   displayName: 'viz',
   preset: '../../../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],

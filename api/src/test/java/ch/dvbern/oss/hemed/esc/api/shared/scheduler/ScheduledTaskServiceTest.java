@@ -121,15 +121,15 @@ class ScheduledTaskServiceTest {
 
     @Test
     void testRunForActiveTenants_MultipleTenants() {
-        // Arrange: Enable BE and BS
+        // ARRANGE: Enable BE and BS
         when(configService.isTenantEnabledForCurrentEnvironment(TenantEnum.BE)).thenReturn(true);
         when(configService.isTenantEnabledForCurrentEnvironment(TenantEnum.BS)).thenReturn(true);
         when(configService.isTenantEnabledForCurrentEnvironment(TenantEnum.WIN)).thenReturn(false);
 
-        // Act
+        // ACT
         service.scheduleBenutzerInaktivierenJob();
 
-        // Assert
+        // ASSERT
         InOrder inOrder = inOrder(tenantProducer, superAdminRunnerService);
 
         // Order is BS, WIN, BE in Enum? Let's check TenantEnum. BS(13), WIN(14), BE(15).
@@ -143,6 +143,14 @@ class ScheduledTaskServiceTest {
 
         verify(tenantProducer, never()).setCurrentTenant(TenantEnum.WIN);
         verify(tenantProducer, never()).setCurrentTenant(TenantEnum.DEFAULT);
+    }
+
+    @Test
+    void scheduleFileStoreHealthCheckJob_callsJobPerActiveTenant() {
+        service.scheduleFileStoreHealthCheckJob();
+
+        verifyJobWasCalledForEnabledTenants();
+        verify(superAdminRunnerService, atLeastOnce()).runFileStoreHealthCheckJob(false);
     }
 
     private void verifyJobWasCalledForEnabledTenants() {

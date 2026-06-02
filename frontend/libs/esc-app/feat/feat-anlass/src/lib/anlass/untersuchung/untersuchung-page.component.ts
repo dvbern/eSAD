@@ -1,30 +1,8 @@
 import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
-import {ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
+import {ActivatedRoute, RouterLink, RouterLinkActive} from '@angular/router';
 import {BackendEntityId, toEinladungBackendEntityIdWithClass,} from '@dvb/data-access-types';
 import {BenutzerStore, ConfirmService, EventBusStore, PageComponent, Path} from '@dvb/feat-shared';
-import {
-  ButtonComponent,
-  CardComponent,
-  CollapsibleMenuComponent,
-  IconComponent,
-  IconWithTooltipComponent,
-} from '@dvb/ui-components';
-import {AppNotificationStore} from '@dvb/util-angular';
-import {
-  hasAerztlicheUntersuchungViewBerechtigung,
-  hasGroesseGewichtViewBerechtigung,
-  hasHoerenViewBerechtigung,
-  hasImpfungenViewBerechtigung,
-  hasLaeusekontrolleViewBerechtigung,
-  hasMassnahmenViewBerechtigung,
-  hasSehenViewBerechtigung,
-  hasTriageViewBerechtigung,
-  hasUntersuchungAbschlussViewBerechtigung,
-  hasUntersuchungKindDatenViewBerechtigung,
-  hasUntersuchungVorabklaerungenViewBerechtigung,
-  isNullish,
-  requireValue,
-} from '@dvb/util-shared';
+import {CardComponent, CollapsibleMenuComponent,} from '@dvb/ui-components';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {
   NgbDropdownItem,
@@ -38,6 +16,9 @@ import {AnlassStore} from '../anlass.store';
 import {anlassTitle} from '../anlass.util';
 import {AnlassKinderStore} from '../anlasse-detail/anlass-kinder.store';
 import {UntersuchungStore} from './untersuchung.store';
+import {UntersuchungTabsComponent} from "./untersuchung-tabs/untersuchung-tabs.component";
+import {hasUntersuchungKindDatenViewBerechtigung, requireValue} from "@dvb/util-shared";
+import {AppNotificationStore} from '@dvb/util-angular';
 
 @Component({
   selector: 'feat-anlass-detail-page',
@@ -45,7 +26,6 @@ import {UntersuchungStore} from './untersuchung.store';
   styleUrl: './untersuchung-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RouterOutlet,
     PageComponent,
     TranslocoPipe,
     NgbNav,
@@ -53,13 +33,11 @@ import {UntersuchungStore} from './untersuchung.store';
     NgbNavLink,
     RouterLink,
     RouterLinkActive,
-    CardComponent,
-    IconComponent,
     CollapsibleMenuComponent,
     NgbDropdownItem,
     NgbNavLinkBase,
-    IconWithTooltipComponent,
-    ButtonComponent,
+    UntersuchungTabsComponent,
+    CardComponent,
   ],
 })
 export class UntersuchungPageComponent {
@@ -76,16 +54,6 @@ export class UntersuchungPageComponent {
   readonly confirmService = inject(ConfirmService);
 
   canViewUntersuchungKindDaten = this.benutzerStore.createHasRequiredRoleSig(hasUntersuchungKindDatenViewBerechtigung());
-  canViewUntersuchungVorabklaerungen = this.benutzerStore.createHasRequiredRoleSig(hasUntersuchungVorabklaerungenViewBerechtigung());
-  canViewUntersuchungImpfung = this.benutzerStore.createHasRequiredRoleSig(hasImpfungenViewBerechtigung());
-  canViewUntersuchungSehen = this.benutzerStore.createHasRequiredRoleSig(hasSehenViewBerechtigung());
-  canViewUntersuchungHoeren = this.benutzerStore.createHasRequiredRoleSig(hasHoerenViewBerechtigung());
-  canViewUntersuchungGroesseGewicht = this.benutzerStore.createHasRequiredRoleSig(hasGroesseGewichtViewBerechtigung());
-  canViewUntersuchungTriage = this.benutzerStore.createHasRequiredRoleSig(hasTriageViewBerechtigung());
-  canViewUntersuchungAertzlicheUntersuchung = this.benutzerStore.createHasRequiredRoleSig(hasAerztlicheUntersuchungViewBerechtigung());
-  canViewUntersuchungLaeusekontrolle = this.benutzerStore.createHasRequiredRoleSig(hasLaeusekontrolleViewBerechtigung());
-  canViewUntersuchungMassnahmen = this.benutzerStore.createHasRequiredRoleSig(hasMassnahmenViewBerechtigung());
-  canViewAbschluss = this.benutzerStore.createHasRequiredRoleSig(hasUntersuchungAbschlussViewBerechtigung());
 
   pageTitle = computed(() => {
     const currentAnlassData = this.anlassStore.selectedEntity()?.data;
@@ -96,42 +64,6 @@ export class UntersuchungPageComponent {
 
   isEinladungActive(id: BackendEntityId): boolean {
     return this.untersuchungStore.currentTabId() === id;
-  }
-
-  isHoerenTabSaved(): boolean {
-    const anlassConfig = this.anlassStore.selectedEntity()?.anlassConfig;
-    const tabsSaved = this.untersuchungStore.tabsSaved();
-    if (isNullish(tabsSaved) || isNullish(anlassConfig)) {
-      return false;
-    }
-    if (anlassConfig?.showTabHoerenAudiogramm && anlassConfig.showTabHoerenOtoskopie) {
-      return tabsSaved?.hoerenAudiogrammTabSaved && tabsSaved?.hoerenOtoskopieTabSaved;
-    }
-    if (anlassConfig?.showTabHoerenAudiogramm && !anlassConfig.showTabHoerenOtoskopie) {
-      return tabsSaved?.hoerenAudiogrammTabSaved;
-    }
-    if (!anlassConfig?.showTabHoerenAudiogramm && anlassConfig?.showTabHoerenOtoskopie) {
-      return tabsSaved?.hoerenOtoskopieTabSaved;
-    }
-    return false;
-  }
-
-  isAbschlussTabSaved(): boolean {
-    const anlassConfig = this.anlassStore.selectedEntity()?.anlassConfig;
-    const tabsSaved = this.untersuchungStore.tabsSaved();
-    if (isNullish(tabsSaved) || isNullish(anlassConfig)) {
-      return false;
-    }
-    if (anlassConfig?.showCardAbschlussAbschluss && anlassConfig.showCardAbschlussSignatur) {
-      return tabsSaved?.abschlussTabSaved && tabsSaved?.signaturTabSaved;
-    }
-    if (anlassConfig?.showCardAbschlussAbschluss && !anlassConfig.showCardAbschlussSignatur) {
-      return tabsSaved?.abschlussTabSaved;
-    }
-    if (!anlassConfig?.showCardAbschlussAbschluss && anlassConfig?.showCardAbschlussSignatur) {
-      return tabsSaved?.signaturTabSaved;
-    }
-    return false;
   }
 
   preventNav(event: NgbNavChangeEvent): void {
@@ -193,7 +125,6 @@ export class UntersuchungPageComponent {
             );
           },
         });
-
       },
     );
   }

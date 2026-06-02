@@ -8,6 +8,7 @@ import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.UntersuchungBewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.UntersuchungBewegungsapparatMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.json.UntersuchungBewegungsapparatJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.json.UntersuchungBewegungsapparatSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.types.Haltungsschwaeche;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.types.Skoliose;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.types.VerkuerzungHamstringmuskulatur;
@@ -16,7 +17,9 @@ import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.NichtGeprueftGrund;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungBewegungsapparatJsonSpecMapper;
+import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungBewegungsapparatSaveJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungBewegungsapparatJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungBewegungsapparatSaveJsonSpec;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -39,7 +42,8 @@ public class UntersuchungBewegungsapparatBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungBewegungsapparatBuilder forUntersuchungBewegungsapparat(@NonNull UntersuchungBewegungsapparat existing) {
+    public UntersuchungBewegungsapparatBuilder forUntersuchungBewegungsapparat(
+        @NonNull UntersuchungBewegungsapparat existing) {
         this.bewegungsapparat = existing;
         return this;
     }
@@ -77,7 +81,9 @@ public class UntersuchungBewegungsapparatBuilder {
         @Nullable VerkuerzungHamstringmuskulatur verkuerzungHamstringmuskulatur,
         @Nullable NichtGeprueftGrund nichtGeprueftGrund
     ) {
-        this.bewegungsapparat.setVerkuerzungHamstringmuskulatur(SingleValueEnhanced.of(verkuerzungHamstringmuskulatur, nichtGeprueftGrund));
+        this.bewegungsapparat.setVerkuerzungHamstringmuskulatur(SingleValueEnhanced.of(
+            verkuerzungHamstringmuskulatur,
+            nichtGeprueftGrund));
         return this;
     }
 
@@ -98,6 +104,13 @@ public class UntersuchungBewegungsapparatBuilder {
     }
 
     @NonNull
+    public static UntersuchungBewegungsapparatSaveJson createSaveJax(
+        @NonNull Consumer<UntersuchungBewegungsapparatBuilder> block) {
+        UntersuchungBewegungsapparat entity = create(block);
+        return UntersuchungBewegungsapparatMapper.toSaveJson(entity);
+    }
+
+    @NonNull
     public static UntersuchungBewegungsapparatJson createJax(
         @NonNull Consumer<UntersuchungBewegungsapparatBuilder> block) {
         UntersuchungBewegungsapparat entity = create(block);
@@ -105,9 +118,16 @@ public class UntersuchungBewegungsapparatBuilder {
     }
 
     @NonNull
+    public static UntersuchungBewegungsapparatSaveJsonSpec createSaveJaxSpec(
+        @NonNull Consumer<UntersuchungBewegungsapparatBuilder> block) {
+        UntersuchungBewegungsapparatSaveJson saveJson = createSaveJax(block);
+        return UntersuchungBewegungsapparatSaveJsonSpecMapper.INSTANCE.saveJsonToSaveJsonSpec(saveJson);
+    }
+
+    @NonNull
     public static UntersuchungBewegungsapparatJsonSpec createJaxSpec(
         @NonNull Consumer<UntersuchungBewegungsapparatBuilder> block) {
         UntersuchungBewegungsapparatJson json = createJax(block);
-        return UntersuchungBewegungsapparatJsonSpecMapper.INSTANCE.toUntersuchungBewegungsapparatJsonSpec(json);
+        return UntersuchungBewegungsapparatJsonSpecMapper.INSTANCE.jsonToJsonSpec(json);
     }
 }

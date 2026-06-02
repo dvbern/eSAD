@@ -16,7 +16,7 @@ import {
 import {DirtyMarker} from '@dvb/util-angular';
 import {
   fromISODateTimeString,
-  hasListEditBerechtigung,
+  hasKlassenEditBerechtigung,
   isExternalObject,
   isNotNullish,
   isNullish
@@ -57,10 +57,13 @@ export class KlassenDatenComponent implements DirtyMarker {
   readonly klasseAktivStati = Object.values(EntityAktivStatus);
   readonly #transloco = inject(TranslocoService);
 
-  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasListEditBerechtigung());
+  canEditList = this.benutzerStore.createHasRequiredRoleSig(hasKlassenEditBerechtigung());
 
   schuleOptions = computed(
-    () => this.schulenOptionsStore.entitiesActiveIncluding(this.store.selectedEntity()?.data.schule),
+    () => this.schulenOptionsStore.schulenFiltered(
+      this.store.selectedEntity()?.data.schule,
+      true,
+      true),
   );
 
   getImportSchnittstelle = computed(() => {

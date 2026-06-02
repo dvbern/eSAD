@@ -2,7 +2,6 @@ package ch.dvbern.dvbstarter.infrastructure.deployment;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
-import com.vdurmont.semver4j.Semver;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.UriInfo;
 import org.checkerframework.checker.nullness.qual.NonNull;

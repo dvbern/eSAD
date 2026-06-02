@@ -1,9 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen;
 
-import java.util.function.Consumer;
-
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
@@ -18,6 +17,8 @@ import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.function.Consumer;
 
 @JaxMapper
 @RequiredArgsConstructor
@@ -84,11 +85,11 @@ public class UntersuchungImpfungenMassnahmenMapper {
 
     @NonNull
     public UntersuchungImpfungenMassnahmenJson save(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull UntersuchungImpfungenMassnahmenSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungImpfungen impfungen =
             untersuchungImpfungenService.getOrCreateUntersuchungImpfungen(untersuchung.getId());
@@ -97,7 +98,9 @@ public class UntersuchungImpfungenMassnahmenMapper {
         UntersuchungImpfungenMassnahmen entity = toEntity(impfungen, massnahmen, saveJson);
         return toJson(untersuchungImpfungenMassnahmenService.persistWithOptimisticLocking(
             entity,
-            saveJson.getVersion()));
+            saveJson.getVersion(),
+            !wrappedId.isAnonymerEintrag()
+        ));
     }
 
     public void einzelTerminErstellen(

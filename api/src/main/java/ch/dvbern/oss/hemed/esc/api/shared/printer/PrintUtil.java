@@ -67,6 +67,11 @@ public final class PrintUtil {
     }
 
     @NonNull
+    public static String truncate(@Nullable String input, int maxLength) {
+        return PRINT_UTIL.truncate(input, maxLength);
+    }
+
+    @NonNull
     public static String formatDate(@NonNull LocalDate date) {
         return PRINT_UTIL.formatDate(date);
     }

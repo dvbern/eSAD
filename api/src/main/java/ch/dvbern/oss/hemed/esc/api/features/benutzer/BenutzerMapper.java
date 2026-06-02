@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.benutzer;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
@@ -18,7 +19,6 @@ import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.TestingResponseJson;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationRollenMapper;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.json.OrganisationRollenJson;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
@@ -64,7 +64,7 @@ public class BenutzerMapper {
             benutzer.getId(),
             benutzer.getNachname(),
             benutzer.getVorname(),
-            benutzer.getVorname() + ' ' + benutzer.getNachname(),
+            benutzer.getVornameName(),
             OrganisationRollenMapper.toJson(benutzer.getSingleOrganisationRollen(), tenant),
             SystemRollenMapper.toJson(benutzer.getSystemRollen(), tenant),
             benutzer.getBenutzerAktivStatus()
@@ -115,7 +115,10 @@ public class BenutzerMapper {
             existingBenutzer.disableOptimisticLockingCheck();
 
             existingBenutzer.setSystemRollen(SystemRollenMapper.toEntity(existingBenutzer, saveJson.getSystemRollen()));
-            existingBenutzer.setOrganisationRollen(organisationRollenMapper.toEntitySet(existingBenutzer, saveJson.getOrganisationRollen()));
+            existingBenutzer.setOrganisationRollen(organisationRollenMapper.toEntitySet(
+                existingBenutzer,
+                saveJson.getOrganisationRollen(),
+                benutzerService.getCurrentBenutzerOrThrowException()));
 
             // TODO ESC-1197: Aktuell wird nur 1 Organisation pro Benutzer unterstützt
             if (existingBenutzer.getOrganisationRollen().size() > 1) {
@@ -134,12 +137,18 @@ public class BenutzerMapper {
     }
 
     private boolean haveSystemRollenChanged(@NonNull BenutzerSaveJson saveJson, @NonNull Benutzer existingBenutzer) {
-        EnumSet<FachRolle> systemRollenVorher = existingBenutzer.getSystemRollen() != null ? existingBenutzer.getSystemRollen().getFachRollen() : EnumSet.noneOf(FachRolle.class);
-        EnumSet<FachRolle> systemRollenNachher = saveJson.getSystemRollen() != null ? EnumSetUtil.toEnumSet(saveJson.getSystemRollen().getFachRollen(), FachRolle.class) : EnumSet.noneOf(FachRolle.class);
+        EnumSet<FachRolle> systemRollenVorher = existingBenutzer.getSystemRollen() != null ?
+            existingBenutzer.getSystemRollen().getFachRollen() :
+            EnumSet.noneOf(FachRolle.class);
+        EnumSet<FachRolle> systemRollenNachher = saveJson.getSystemRollen() != null ?
+            EnumSetUtil.toEnumSet(saveJson.getSystemRollen().getFachRollen(), FachRolle.class) :
+            EnumSet.noneOf(FachRolle.class);
         return !systemRollenVorher.equals(systemRollenNachher);
     }
 
-    private boolean haveOrganisationRollenChanged(@NonNull BenutzerSaveJson saveJson, @NonNull Benutzer existingBenutzer) {
+    private boolean haveOrganisationRollenChanged(
+        @NonNull BenutzerSaveJson saveJson,
+        @NonNull Benutzer existingBenutzer) {
         if (saveJson.getOrganisationRollen().size() != existingBenutzer.getOrganisationRollen().size()) {
             return true;
         }
@@ -182,13 +191,15 @@ public class BenutzerMapper {
                 benutzer.getTitel(),
                 benutzer.getNachname(),
                 benutzer.getVorname(),
-                benutzer.getVorname() + ' ' + benutzer.getNachname(),
+                benutzer.getVornameName(),
                 benutzer.getEmail().toString(),
                 benutzer.getEmail(),
                 benutzer.getTelefon(),
                 benutzer.getBenutzerAktivStatus(),
                 OrganisationRollenMapper.toJsonList(benutzer.getOrganisationRollen(), tenant),
-                benutzer.getSystemRollen() != null ? SystemRollenMapper.toJson(benutzer.getSystemRollen(), tenant) : null,
+                benutzer.getSystemRollen() != null ?
+                    SystemRollenMapper.toJson(benutzer.getSystemRollen(), tenant) :
+                    null,
                 benutzer.getVersion()
             ),
             benutzer.getLoginInfos() != null ? benutzer.getLoginInfos().getLastUsedSessionTimestamp() : null,
@@ -232,18 +243,22 @@ public class BenutzerMapper {
 
     @NonNull
     public BenutzerJson create(
-        @NonNull BenutzerSaveJson benutzerJson
+        @NonNull BenutzerSaveJson benutzerJson,
+        @NonNull Consumer<Benutzer> requireAuthorization
     ) {
         Benutzer entity = toEntity(null, benutzerJson);
+        requireAuthorization.accept(entity);
         return Objects.requireNonNull(toJson(this.benutzerService.persist(entity)));
     }
 
     @NonNull
     public BenutzerJson update(
         @NonNull ID<Benutzer> benutzerID,
-        @NonNull BenutzerSaveJson benutzerJson
+        @NonNull BenutzerSaveJson benutzerJson,
+        @NonNull Consumer<Benutzer> requireAuthorization
     ) {
         Benutzer existingBenutzer = this.benutzerService.getById(benutzerID);
+        requireAuthorization.accept(existingBenutzer);
         Benutzer entity = toEntity(existingBenutzer, benutzerJson);
         return Objects.requireNonNull(toJson(this.benutzerService.persist(entity)));
     }
@@ -251,9 +266,11 @@ public class BenutzerMapper {
     @NonNull
     public BenutzerJson updateBenutzerAktivStatus(
         @NonNull ID<Benutzer> benutzerID,
-        EntityAktivStatus updateBenutzerAktivStatus
+        @NonNull EntityAktivStatus updateBenutzerAktivStatus,
+        @NonNull Consumer<Benutzer> requireAuthorization
     ) {
         Benutzer existingBenutzer = this.benutzerService.getById(benutzerID);
+        requireAuthorization.accept(existingBenutzer);
         if (isInaktiv(existingBenutzer.getBenutzerAktivStatus()) && isAktiv(updateBenutzerAktivStatus)) {
             existingBenutzer.setTimestampLastManuallyActivated(appClock.offsetDateTime().now());
         }
@@ -291,12 +308,11 @@ public class BenutzerMapper {
         if (!isBenutzerverwaltungIntern()) {
             return false;
         }
-        // Benoetigt BENUTZER_BERECHTIGUNGEN_SCHREIBEN
-        if (!benutzerService.hasCallerBerechtigung(Berechtigung.BENUTZER_BERECHTIGUNGEN_SCHREIBEN)) {
-            return false;
-        }
+
         // Systemrollen duerfen nicht zugeteilt werden
-        if (benutzerSaveJson.getSystemRollen() != null && !benutzerSaveJson.getSystemRollen().getFachRollen().isEmpty()) {
+        if (benutzerSaveJson.getSystemRollen() != null && !benutzerSaveJson.getSystemRollen()
+            .getFachRollen()
+            .isEmpty()) {
             return false;
         }
         return true;

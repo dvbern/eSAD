@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, HostBinding, inject, input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, effect, HostBinding, inject, input, untracked} from '@angular/core';
 import {TranslocoService} from '@jsverse/transloco';
 import {WorkingIconComponent} from '../../icons/working-icon/working-icon.component';
 import {IconButtonType} from '../bootstrap-button-color';
@@ -13,7 +13,7 @@ import {NgbTooltip} from "@ng-bootstrap/ng-bootstrap";
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [WorkingIconComponent, NgbTooltip]
 })
-export class IconOnlyButtonComponent extends ButtonElement implements OnInit {
+export class IconOnlyButtonComponent extends ButtonElement {
   readonly transloco = inject(TranslocoService);
 
   readonly badgeContent = input<number | null>(null);
@@ -50,7 +50,13 @@ export class IconOnlyButtonComponent extends ButtonElement implements OnInit {
     }
   }
 
-  ngOnInit(): void {
-    this.buttonType = this.buttonColor();
+  constructor() {
+    super();
+    effect(() => {
+      const color = this.buttonColor();
+      untracked(() => {
+        this.buttonType = color;
+      });
+    });
   }
 }

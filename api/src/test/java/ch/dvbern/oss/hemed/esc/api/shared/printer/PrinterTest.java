@@ -719,6 +719,30 @@ class PrinterTest {
         }
     }
 
+    @ParameterizedTest
+    @EnumSource(value = TenantEnum.class, names = "DEFAULT", mode = Mode.EXCLUDE)
+    void merge_image(TenantEnum tenantEnum) {
+        try (InputStream inputStream = BasePrinter.class.getResourceAsStream("/FileUtilTest/portrait.jpg");
+            FileOutputStream outputStream = getFileOutputStream("image-merge", tenantEnum)
+        ) {
+            BasePrinter basePrinter = new BasePrinter(AppLanguages.DE, tenantEnum, fileStoreServiceMock);
+            Document document = basePrinter.getDocument(outputStream);
+
+            basePrinter.addHeader(document);
+
+            FileData fileData = FileDataBuilder.defaultImgFileData();
+
+            if (inputStream != null) {
+                Mockito.when(fileStoreServiceMock.getFileBytesSync(any())).thenReturn(inputStream.readAllBytes());
+                basePrinter.addFile(fileData, document);
+            }
+
+            document.close();
+        } catch (IOException e) {
+            LOG.error("Error while writing to file", e);
+        }
+    }
+
     private FileOutputStream getFileOutputStream(@NonNull String filename, @NonNull TenantEnum tenant)
         throws FileNotFoundException {
         return new FileOutputStream(getTempFilenamePath(filename, tenant));
@@ -841,7 +865,27 @@ class PrinterTest {
             var u = UntersuchungBuilder.create(builder -> builder.withDurchgefuehrt(ud));
             einladung4.setUntersuchung(u);
 
-            List<Einladung> einladungen = List.of(einladung1, einladung2, einladung3, einladung4);
+            Schule schule4 = SchuleBuilder.create(builder -> builder
+                .withSchulhaus("Kindergarten Sonnenblume")
+                .withSchulstandort("Sonnenblumengasse")
+                .withSchulhausnummer("004"));
+
+            Klasse klasseKG2 = KlasseBuilder.create(builder -> builder
+                .forSchule(schule4)
+                .withBezeichnung("KG-Blau")
+                .withKlassenstufe(Klassenstufe.KINDERGARTEN_2)
+                .withKlasseSchulart(KlasseBuilder.KLASSENTYP_KG));
+
+            Einladung einladung5 = EinladungBuilder.create(builder -> builder
+                .withAnlass(anlass)
+                .withStatus(EinladungStatus.TEILNAHME_ABGESAGT)
+                .withDossier(DossierBuilder.create(dossierBuilder -> dossierBuilder
+                    .forKind(KindBuilder.create(kindBuilder -> kindBuilder
+                        .withKlasse(klasseKG2)
+                        .withEsadId("A0 11 111 11")
+                        .withName("Vonwildebergenstein-Huguenin", "Bartholomäus-Maximilianus"))))));
+
+            List<Einladung> einladungen = List.of(einladung1, einladung2, einladung3, einladung4, einladung5);
 
             AnlassPrintDTO anlassPrintDTO =
                 new AnlassPrintDTO(anlass, einladungen, LocalDate.now(), tenantEnum, AppLanguages.DE, null);

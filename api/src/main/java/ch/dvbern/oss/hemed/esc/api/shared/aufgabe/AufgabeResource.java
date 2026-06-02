@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.aufgabe;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileDownloadUtil;
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
@@ -10,6 +12,8 @@ import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.AufgabeJson;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.AufgabeListJson;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.AufgabeSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.NumOfOffeneFaelligeAufgabeJson;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 
@@ -52,6 +56,7 @@ public class AufgabeResource {
     private final AufgabeMapper aufgabeMapper;
     private final AufgabeService aufgabeService;
     private final FileStoreService fileStoreService;
+    private final AuthorizerService authorizerService;
 
     @Context
     private HttpServerResponse response;
@@ -60,7 +65,10 @@ public class AufgabeResource {
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
     @RolesAllowed(BerechtigungName.AUFGABEN_LESEN)
     public AufgabeListJson findAllAufgaben() {
-        return this.aufgabeMapper.findAll();
+        return this.aufgabeMapper.findAllAufgabenBerechtigt(aufgabe ->
+            authorizerService.hasReadAuthorizationAufgabe(
+                aufgabe,
+                List.of(Berechtigung.AUFGABEN_LESEN)));
     }
 
     @GET
@@ -71,7 +79,11 @@ public class AufgabeResource {
     public AufgabeListJson findAllForKind(
         @PathParam("kindId") @NotNull @NonNull ID<Kind> kindId
     ) {
-        return this.aufgabeMapper.findAllForKind(kindId);
+        return this.aufgabeMapper.findAllForKind(
+            kindId,
+            aufgabe -> authorizerService.hasReadAuthorizationAufgabe(
+                aufgabe,
+                List.of(Berechtigung.AUFGABEN_LESEN)));
     }
 
     @POST
@@ -80,8 +92,13 @@ public class AufgabeResource {
     public AufgabeJson createAufgabe(
         @NotNull @NonNull @Valid AufgabeSaveJson aufgabeJson
     ) {
+        AufgabeJson newAufgabeJson = aufgabeMapper.create(
+            aufgabeJson,
+            aufgabe -> authorizerService.requireWriteAuthorizationAufgabe(
+                aufgabe,
+                List.of(Berechtigung.AUFGABEN_SCHREIBEN)));
         response.setStatusCode(Status.CREATED.getStatusCode());
-        return aufgabeMapper.create(aufgabeJson);
+        return newAufgabeJson;
     }
 
     @PUT
@@ -92,7 +109,12 @@ public class AufgabeResource {
         @NotNull @NonNull @PathParam("aufgabeId") ID<Aufgabe> aufgabeID,
         @NotNull @NonNull @Valid AufgabeSaveJson aufgabeJson
     ) {
-        return aufgabeMapper.update(aufgabeID, aufgabeJson);
+        return aufgabeMapper.update(
+            aufgabeID,
+            aufgabeJson,
+            aufgabe -> authorizerService.requireWriteAuthorizationAufgabe(
+                aufgabe,
+                List.of(Berechtigung.AUFGABEN_SCHREIBEN)));
     }
 
     @GET
@@ -108,14 +130,22 @@ public class AufgabeResource {
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
     @RolesAllowed(BerechtigungName.AUFGABEN_LESEN)
     public NumOfOffeneFaelligeAufgabeJson getNumOfFaelligeAufgaben() {
-        return new NumOfOffeneFaelligeAufgabeJson(this.aufgabeMapper.getNumOfOffeneFaelligeAufgaben());
+        return new NumOfOffeneFaelligeAufgabeJson(this.aufgabeMapper.getNumOfOffeneFaelligeAufgaben(
+            aufgabe -> authorizerService.hasReadAuthorizationAufgabe(
+                aufgabe,
+                List.of(Berechtigung.AUFGABEN_LESEN))
+        ));
     }
 
     @DELETE
     @Path("/{aufgabeId}")
     @RolesAllowed(BerechtigungName.AUFGABEN_SCHREIBEN)
     public void removeAufgabe(@NotNull @NonNull @PathParam("aufgabeId") ID<Aufgabe> aufgabeId) {
-        aufgabeMapper.remove(aufgabeId);
+        aufgabeMapper.remove(
+            aufgabeId,
+            aufgabe -> authorizerService.requireWriteAuthorizationAufgabe(
+                aufgabe,
+                List.of(Berechtigung.AUFGABEN_SCHREIBEN)));
     }
 
     @POST
@@ -126,7 +156,12 @@ public class AufgabeResource {
         @PathParam("aufgabeId") @NotNull @NonNull ID<Aufgabe> aufgabeID,
         @FormParam(value = "file") @Schema(implementation = UploadItemSchema.class) FileUpload file
     ) {
-        return aufgabeMapper.addUploadedFile(aufgabeID, file);
+        return aufgabeMapper.addUploadedFile(
+            aufgabeID,
+            file,
+            aufgabe -> authorizerService.requireWriteAuthorizationAufgabe(
+                aufgabe,
+                List.of(Berechtigung.AUFGABEN_SCHREIBEN)));
     }
 
     @DELETE
@@ -137,7 +172,12 @@ public class AufgabeResource {
         @PathParam("aufgabeId") @NotNull @NonNull ID<Aufgabe> aufgabeId,
         @NotNull @NonNull @PathParam("fileId") ID<FileData> fileId
     ) {
-        return aufgabeMapper.removeUploadedFile(aufgabeId, fileId);
+        return aufgabeMapper.removeUploadedFile(
+            aufgabeId,
+            fileId,
+            aufgabe -> authorizerService.requireWriteAuthorizationAufgabe(
+                aufgabe,
+                List.of(Berechtigung.AUFGABEN_SCHREIBEN)));
     }
 
     /**
@@ -156,7 +196,12 @@ public class AufgabeResource {
         @PathParam("aufgabeId") @NotNull @NonNull ID<Aufgabe> aufgabeId,
         @NotNull @NonNull @PathParam("fileId") ID<FileData> fileId
     ) {
-        FileInfo fileInfoS3 = aufgabeService.findUploadedFileInfoS3(aufgabeId, fileId);
+        FileInfo fileInfoS3 = aufgabeService.findUploadedFileInfoS3(
+            aufgabeId,
+            fileId,
+            aufgabe -> authorizerService.requireReadAuthorizationAufgabe(
+                aufgabe,
+                List.of(Berechtigung.AUFGABEN_LESEN)));
         return FileDownloadUtil.getBufferRestMultiWithInfo(fileInfoS3, fileStoreService);
     }
 
@@ -176,7 +221,12 @@ public class AufgabeResource {
         @PathParam("aufgabeId") @NotNull @NonNull ID<Aufgabe> aufgabeId,
         @NotNull @NonNull @PathParam("fileId") ID<FileData> fileId
     ) {
-        FileInfo fileInfo = aufgabeService.findUploadedFileInfoS3(aufgabeId, fileId);
+        FileInfo fileInfo = aufgabeService.findUploadedFileInfoS3(
+            aufgabeId,
+            fileId,
+            aufgabe -> authorizerService.requireReadAuthorizationAufgabe(
+                aufgabe,
+                List.of(Berechtigung.AUFGABEN_LESEN)));
         var content = fileStoreService.getFileBytesSync(fileInfo.getFileIdInBucket());
         return FileDownloadUtil.buildFileResponse("attachment", content, fileInfo);
     }
@@ -188,7 +238,11 @@ public class AufgabeResource {
     public AufgabeJson getAufgabe(
         @NotNull @NonNull @PathParam("aufgabeId") ID<Aufgabe> aufgabeId
     ) {
-        return aufgabeMapper.getById(aufgabeId);
+        return aufgabeMapper.getById(
+            aufgabeId,
+            aufgabe -> authorizerService.requireReadAuthorizationAufgabe(
+                aufgabe,
+                List.of(Berechtigung.AUFGABEN_LESEN)));
     }
 
     @GET

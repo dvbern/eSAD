@@ -33,7 +33,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = Tags.TAG_KONTAKTPERSON_SCHULE)
-@RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+@RolesAllowed(BerechtigungName.SCHULE_LESEN)
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed("KontaktPersonSchuleResourceMS")
 public class KontaktPersonSchuleResource {
@@ -45,7 +45,7 @@ public class KontaktPersonSchuleResource {
 
     @GET
     @NonNull
-    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
+    @RolesAllowed(BerechtigungName.SCHULE_LESEN)
     public KontaktPersonSchuleListJson findAllAktivBySchule(
         @NotNull @NonNull @PathParam("schuleID") ID<Schule> schuleId) {
         return new KontaktPersonSchuleListJson(kontaktPersonSchuleMapper.findAllAktivBySchule(schuleId));
@@ -54,7 +54,7 @@ public class KontaktPersonSchuleResource {
     @GET
     @Path("/options")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
+    @RolesAllowed(BerechtigungName.SCHULE_LESEN)
     public KontaktPersonSchuleOptionListJson findAllOptionsActive(
         @NotNull @NonNull @PathParam("schuleID") ID<Schule> schuleId,
         @NotNull @QueryParam("excludeSchule") boolean excludeSchule
@@ -66,7 +66,7 @@ public class KontaktPersonSchuleResource {
     @GET
     @NonNull
     @Path("/{kontaktPersonSchuleID}")
-    @RolesAllowed({ BerechtigungName.LISTEN_ADMIN_LESEN, BerechtigungName.LISTEN_LESEN })
+    @RolesAllowed(BerechtigungName.SCHULE_LESEN)
     public KontaktPersonSchuleJson getKontaktPersonSchule(
         @NotNull @NonNull @PathParam("schuleID") ID<Schule> schuleId,
         @NotNull @NonNull @PathParam("kontaktPersonSchuleID") ID<KontaktPersonSchule> kontaktPersonSchuleID
@@ -76,7 +76,7 @@ public class KontaktPersonSchuleResource {
     }
 
     @POST
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.SCHULE_SCHREIBEN)
     @NonNull
     public KontaktPersonSchuleJson createKontaktPersonSchule(
         @NotNull @NonNull @PathParam("schuleID") ID<Schule> schuleId,
@@ -89,7 +89,7 @@ public class KontaktPersonSchuleResource {
     @PUT
     @Path("/{kontaktPersonSchuleID}")
     @NonNull
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.SCHULE_SCHREIBEN)
     public KontaktPersonSchuleJson updateKontaktPersonSchule(
         @NotNull @NonNull @PathParam("schuleID") ID<Schule> schuleId,
         @NotNull @NonNull @PathParam("kontaktPersonSchuleID") ID<KontaktPersonSchule> kontaktPersonSchuleID,
@@ -101,7 +101,7 @@ public class KontaktPersonSchuleResource {
 
     @DELETE
     @Path("/{kontaktPersonSchuleID}")
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.SCHULE_SCHREIBEN)
     public void deleteKontaktPersonSchule(
         @NotNull @NonNull @PathParam("schuleID") ID<Schule> schuleId,
         @NotNull @NonNull @PathParam("kontaktPersonSchuleID") ID<KontaktPersonSchule> kontaktPersonSchuleID
@@ -112,7 +112,7 @@ public class KontaktPersonSchuleResource {
 
     @PUT
     @Path("/schule/{kontaktPersonSchuleID}")
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.SCHULE_SCHREIBEN)
     public KontaktPersonSchuleJson addKontaktPersonSchuleToSchule(
         @NotNull @NonNull @PathParam("schuleID") ID<Schule> schuleId,
         @NotNull @NonNull @PathParam("kontaktPersonSchuleID") ID<KontaktPersonSchule> kontaktPersonSchuleID
@@ -122,7 +122,7 @@ public class KontaktPersonSchuleResource {
 
     @DELETE
     @Path("/schule/{kontaktPersonSchuleID}")
-    @RolesAllowed(BerechtigungName.LISTEN_SCHREIBEN)
+    @RolesAllowed(BerechtigungName.SCHULE_SCHREIBEN)
     public void removeKontaktPersonSchuleFromSchule(
         @NotNull @NonNull @PathParam("schuleID") ID<Schule> schuleId,
         @NotNull @NonNull @PathParam("kontaktPersonSchuleID") ID<KontaktPersonSchule> kontaktPersonSchuleID

@@ -94,6 +94,22 @@ function makeForm(config: Config) {
       featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
       enabledForStage: fb.control<boolean>({value: false, disabled: true}),
     }),
+    nachkontrolleFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
+    anlassSpracheSpalteFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
+    anlassSpracheZusammenfassungFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
+    anlassInformationenFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
   });
 
   // ZentraleOrganisation kann nicht verändert werden
@@ -120,7 +136,7 @@ export class TenantSettingsForm extends BaseForm<ReturnType<typeof makeForm>, Te
   override valueOnValid(): TenantSettingSaveJson {
     const value = requireValue(this.group.getRawValue());
 
-    const val = ensureProps<TenantSettingSaveJson>({
+    return ensureProps<TenantSettingSaveJson>({
       defaultLanguage: value.defaultLanguage,
       supportedLanguages: value.supportedLanguages,
       folgeTermineMaxSlots: value.folgeTermineMaxSlots,
@@ -182,13 +198,28 @@ export class TenantSettingsForm extends BaseForm<ReturnType<typeof makeForm>, Te
         anonymeStatistikFeature: {
           featureEnabled: value.features.anonymeStatistikFeature.featureEnabled,
           enabledForStage: value.features.anonymeStatistikFeature.enabledForStage,
+        },
+        nachkontrolleFeature: {
+          featureEnabled: value.features.nachkontrolleFeature.featureEnabled,
+          enabledForStage: value.features.nachkontrolleFeature.enabledForStage,
+        },
+        anlassSpracheSpalteFeature: {
+          featureEnabled: value.features.anlassSpracheSpalteFeature.featureEnabled,
+          enabledForStage: value.features.anlassSpracheSpalteFeature.enabledForStage,
+        },
+        anlassSpracheZusammenfassungFeature: {
+          featureEnabled: value.features.anlassSpracheZusammenfassungFeature.featureEnabled,
+          enabledForStage: value.features.anlassSpracheZusammenfassungFeature.enabledForStage,
+        },
+        anlassInformationenFeature: {
+          featureEnabled: value.features.anlassInformationenFeature.featureEnabled,
+          enabledForStage: value.features.anlassInformationenFeature.enabledForStage,
         }
       },
       einladungStatusValues: value.einladungStatusValues,
       customerAdminEmails: this.cleanCustomerAdminEmails(requireFilledIn(trimToUndefined(value.customerAdminEmails))),
       supportEmail: requireFilledIn(trimToUndefined(value.supportEmail)),
     });
-    return val;
   }
 
   private cleanCustomerAdminEmails(emails: string): string {

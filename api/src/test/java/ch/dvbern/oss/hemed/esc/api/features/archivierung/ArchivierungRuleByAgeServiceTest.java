@@ -40,62 +40,62 @@ class ArchivierungRuleByAgeServiceTest extends AbstractITest {
         Benutzer benutzer = fixtureService.createBenutzerFuerZentraleOrganisation();
 
         // Kind_1 -> Aktiv und keine Archivierungsdokumente -> sollte nicht gefunden werden.
-        Kind kind_1 = fixtureService.createKind(EntityAktivStatus.AKTIV);
-        Dossier dossier_1 = fixtureService.createDossier(kind_1);
-        Archivdokument archivdokument_1 = ArchivdokumentBuilder.create(builder -> builder
+        Kind kind1 = fixtureService.createKind(EntityAktivStatus.AKTIV);
+        Dossier dossier1 = fixtureService.createDossier(kind1);
+        Archivdokument archivdokument1 = ArchivdokumentBuilder.create(builder -> builder
             .withArchivierungTyp(ArchivierungTyp.KIND_DEAKTIVIERT)
             .withTimestampDownloaded(olderDate)
             .withOwner(benutzer)
             .withStatus(ArchivierungStatus.DOWNLOADED_READY_FOR_DELETION)
-            .withDossierID(dossier_1.getId().getUUID()));
-        archivdokumentService.persist(archivdokument_1);
+            .withDossierID(dossier1.getId().getUUID()));
+        archivdokumentService.persist(archivdokument1);
 
         // Kind_2 -> Inaktiv und Archivierungsdokumente (offen) -> sollte nicht gefunden werden;
-        Kind kind_2 = fixtureService.createKind(EntityAktivStatus.INAKTIV);
-        Dossier dossier_2 = fixtureService.createDossier(kind_2);
-        Archivdokument archivdokument_2 = ArchivdokumentBuilder.create(builder -> builder
+        Kind kind2 = fixtureService.createKind(EntityAktivStatus.INAKTIV);
+        Dossier dossier2 = fixtureService.createDossier(kind2);
+        Archivdokument archivdokument2 = ArchivdokumentBuilder.create(builder -> builder
             .withArchivierungTyp(ArchivierungTyp.KIND_DEAKTIVIERT)
             .withTimestampDownloaded(olderDate)
             .withOwner(benutzer)
             .withStatus(ArchivierungStatus.OFFEN)
-            .withDossierID(dossier_2.getId().getUUID()));
-        archivdokumentService.persist(archivdokument_2);
+            .withDossierID(dossier2.getId().getUUID()));
+        archivdokumentService.persist(archivdokument2);
 
         // Kind_3 -> Inaktiv und Archivierungsdokumente (abgeschlossen & Typ Arztwechsel) -> sollte nicht gefunden
         // werden;
-        Kind kind_3 = fixtureService.createKind(EntityAktivStatus.INAKTIV);
-        Dossier dossier_3 = fixtureService.createDossier(kind_3);
-        Archivdokument archivdokument_3 = ArchivdokumentBuilder.create(builder -> builder
+        Kind kind3 = fixtureService.createKind(EntityAktivStatus.INAKTIV);
+        Dossier dossier3 = fixtureService.createDossier(kind3);
+        Archivdokument archivdokument3 = ArchivdokumentBuilder.create(builder -> builder
             .withArchivierungTyp(ArchivierungTyp.ZUSTAENDIGER_ARZT_CHANGED)
             .withTimestampDownloaded(olderDate)
             .withOwner(benutzer)
             .withStatus(ArchivierungStatus.DOWNLOADED_READY_FOR_DELETION)
-            .withDossierID(dossier_3.getId().getUUID()));
-        archivdokumentService.persist(archivdokument_3);
+            .withDossierID(dossier3.getId().getUUID()));
+        archivdokumentService.persist(archivdokument3);
 
         // Kind_4 -> Inaktiv und Archivierungsdokumente (abgeschlossen & Typ Kind Deaktiviert & Datum 1 Monat alt) ->
         // sollte nicht gefunden werden;
-        Kind kind_4 = fixtureService.createKind(EntityAktivStatus.INAKTIV);
-        Dossier dossier_4 = fixtureService.createDossier(kind_4);
-        Archivdokument archivdokument_4 = ArchivdokumentBuilder.create(builder -> builder
+        Kind kind4 = fixtureService.createKind(EntityAktivStatus.INAKTIV);
+        Dossier dossier4 = fixtureService.createDossier(kind4);
+        Archivdokument archivdokument4 = ArchivdokumentBuilder.create(builder -> builder
             .withArchivierungTyp(ArchivierungTyp.KIND_DEAKTIVIERT)
             .withTimestampDownloaded(newerDate)
             .withOwner(benutzer)
             .withStatus(ArchivierungStatus.DOWNLOADED_READY_FOR_DELETION)
-            .withDossierID(dossier_4.getId().getUUID()));
-        archivdokumentService.persist(archivdokument_4);
+            .withDossierID(dossier4.getId().getUUID()));
+        archivdokumentService.persist(archivdokument4);
 
         // Kind_5 -> Inaktiv und Archivierungsdokumente (abgeschlossen & Typ Kind Deaktiviert & Datum 9 Monat alt) ->
         // sollte gefunden werden;
-        Kind kind_5 = fixtureService.createKind(EntityAktivStatus.INAKTIV);
-        Dossier dossier_5 = fixtureService.createDossier(kind_5);
-        Archivdokument archivdokument_5 = ArchivdokumentBuilder.create(builder -> builder
+        Kind kind5 = fixtureService.createKind(EntityAktivStatus.INAKTIV);
+        Dossier dossier5 = fixtureService.createDossier(kind5);
+        Archivdokument archivdokument5 = ArchivdokumentBuilder.create(builder -> builder
             .withArchivierungTyp(ArchivierungTyp.KIND_DEAKTIVIERT)
             .withTimestampDownloaded(olderDate)
             .withOwner(benutzer)
             .withStatus(ArchivierungStatus.DOWNLOADED_READY_FOR_DELETION)
-            .withDossierID(dossier_5.getId().getUUID()));
-        archivdokumentService.persist(archivdokument_5);
+            .withDossierID(dossier5.getId().getUUID()));
+        archivdokumentService.persist(archivdokument5);
 
         // ACT
         List<ID<Dossier>> dossierToDelete = archivierungRuleByAgeService.findDossiersToDelete(
@@ -106,6 +106,6 @@ class ArchivierungRuleByAgeServiceTest extends AbstractITest {
         assertThat(dossierToDelete)
             .isNotEmpty()
             .hasSize(1)
-            .anyMatch(dossier -> dossier.getUUID().equals(dossier_5.getId().getUUID()));
+            .anyMatch(dossier -> dossier.getUUID().equals(dossier5.getId().getUUID()));
     }
 }

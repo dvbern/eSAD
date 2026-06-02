@@ -527,4 +527,12 @@ public class AppValidationMessage {
             I18nMessage.of("AppValidation.INVALID_IMPFSTOFF_CHARGE", "charge", charge)
         );
     }
+
+    @NonNull
+    public static AppValidationMessage zustaendigkeitCanOnlyBeChangedByZustaendiger() {
+        return of(
+            "ZustaendigkeitCanOnlyBeChangedByZustaendiger",
+            I18nMessage.of("AppValidation.ZUSTAENDIGKEIT_CAN_ONLY_BE_CHANGED_BY_ZUSTAENDIGER")
+        );
+    }
 }

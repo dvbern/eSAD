@@ -1,6 +1,6 @@
-import { DestroyRef } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NonNullableFormBuilder, Validators } from '@angular/forms';
+import {DestroyRef} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {
   AnlassArt,
   AnlassConfigJson,
@@ -11,24 +11,32 @@ import {
   AnlassTyp,
   BenutzerOptionJson,
 } from '@dvb/data-access-backend';
-import { ISODateString } from '@dvb/data-access-types';
-import { AnlassConfigOptionsStore, globalConstants, KlassenOptionsStore, TimetravelStore } from '@dvb/feat-shared';
-import { AppValidators, BaseForm, DetailMode } from '@dvb/util-angular';
+import {ISODateString} from '@dvb/data-access-types';
 import {
-  ensureProps, ensurePropsFlat,
+  AnlassConfigOptionsStore,
+  BenutzerStore,
+  globalConstants,
+  KlassenOptionsStore,
+  TenantSettingsStore,
+  TimetravelStore
+} from '@dvb/feat-shared';
+import {AppValidators, BaseForm, DetailMode} from '@dvb/util-angular';
+import {
+  ensurePropsFlat,
   getDateTimeFromDateAndTime,
   getSchoolYearFromISODateString,
   getTimeFromISODateTimeString,
   isNotNullish,
+  isNullish,
   ISOTime,
   Nullish,
   requireFilledIn,
   requireValue,
   trimToUndefined,
 } from '@dvb/util-shared';
-import { toDate } from 'date-fns';
-import { combineLatest, distinctUntilChanged, filter, map } from 'rxjs';
-import { AnlassKinderStore } from '../../anlass-kinder.store';
+import {toDate} from 'date-fns';
+import {combineLatest, distinctUntilChanged, filter, map} from 'rxjs';
+import {AnlassKinderStore} from '../../anlass-kinder.store';
 
 type Config = {
   fb: NonNullableFormBuilder;
@@ -38,6 +46,8 @@ type Config = {
   anlassConfig: AnlassConfigJson | Nullish;
   timetravelStore: TimetravelStore;
   anlassConfigOptionsStore: AnlassConfigOptionsStore;
+  tenantSettingsStore: TenantSettingsStore;
+  benutzerStore: BenutzerStore;
   isNew: boolean;
 };
 
@@ -73,6 +83,9 @@ function makeForm(config: Config) {
       ],
     },
   );
+
+  // Arzt ist bei dezentralen Mandanten zwingend
+  group.controls.arzt.setValidators([AppValidators.requiredIfValidator(() => !config.tenantSettingsStore.zentraleOrganisationEnabled())]);
 
   group.controls.zeitVon.setValidators([AppValidators.requiredIfValidator(() => !!group.controls.zeitBis.value)]);
   group.controls.zeitBis.setValidators([AppValidators.requiredIfValidator(() => !!group.controls.zeitVon.value)]);
@@ -152,6 +165,17 @@ export class AnlassDatenForm extends BaseForm<ReturnType<typeof makeForm>, Anlas
       const von = toDate(anlassConfig.data.datumVon);
       const bis = toDate(anlassConfig.data.datumBis);
       this.group.controls.datum.addValidators([AppValidators.dateRange(von, bis)]);
+    }
+    // Arzt und MPA nur fuer aktuell Verantwortliche Person editierbar, oder wenn noch nicht gesetzt
+    if (isNullish(anlass?.data.arzt) || this.config.benutzerStore.isZustaendigForAnlass(anlass)) {
+      this.group.controls.arzt.enable();
+    } else {
+      this.group.controls.arzt.disable();
+    }
+    if (isNullish(anlass?.data.mpa) || this.config.benutzerStore.isZustaendigForAnlass(anlass)) {
+      this.group.controls.mpa.enable();
+    } else {
+      this.group.controls.mpa.disable();
     }
   }
 

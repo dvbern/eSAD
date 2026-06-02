@@ -23,6 +23,7 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AUFGABEN_
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.AUFGABEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.BENUTZER_BERECHTIGUNGEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.BENUTZER_BERECHTIGUNGEN_SCHREIBEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.BENUTZER_OPTIONS_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.DUBLETTEN_ZUSAMMENFUHREN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.EIGENE_BERECHTIGUNGEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.IMPFSTOFFE_LESEN;
@@ -40,9 +41,6 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KOMPLETTE
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LABELS_ADMIN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LABELS_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LABELS_SCHREIBEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_ADMIN_LESEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_LESEN;
-import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.LISTEN_SCHREIBEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SPSS_EXPORT;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SUPPORT;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SU_ABSCHLUSS_LESEN;
@@ -71,12 +69,19 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VERANDERU
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_ADMIN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_LESEN;
 import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_SCHREIBEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SCHULE_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.SCHULE_SCHREIBEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.INFOMATERIAL_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.INFOMATERIAL_SCHREIBEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KLASSEN_LESEN;
+import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.KLASSEN_SCHREIBEN;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @TestSecurity(
     user = "testing-support",
     roles = {
+        BENUTZER_OPTIONS_LESEN,
         AUFGABEN_LESEN,
         AUFGABEN_SCHREIBEN,
         ANLASSLISTE_LESEN,
@@ -119,9 +124,6 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         INDIVIDUELLE_REPORTS,
         SPSS_EXPORT,
         KOMPLETTER_EXPORT,
-        LISTEN_ADMIN_LESEN,
-        LISTEN_LESEN,
-        LISTEN_SCHREIBEN,
         IMPFSTOFFE_LESEN,
         IMPFSTOFFE_SCHREIBEN,
         DUBLETTEN_ZUSAMMENFUHREN,
@@ -134,6 +136,12 @@ import static ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName.VORLAGEN_
         VORLAGEN_LESEN,
         VORLAGEN_ADMIN_LESEN,
         VORLAGEN_SCHREIBEN,
+        SCHULE_LESEN,
+        SCHULE_SCHREIBEN,
+        KLASSEN_LESEN,
+        KLASSEN_SCHREIBEN,
+        INFOMATERIAL_LESEN,
+        INFOMATERIAL_SCHREIBEN,
         AERZTE_LESEN,
         AERZTE_SCHREIBEN,
         ARCHIVIERUNG,

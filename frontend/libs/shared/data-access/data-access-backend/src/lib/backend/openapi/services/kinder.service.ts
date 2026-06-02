@@ -25,14 +25,17 @@ import { KindListJson } from '../model/kind-list-json';
 import { KindSaveJson } from '../model/kind-save-json';
 import { KindSaveModeDuplikat } from '../model/kind-save-mode-duplikat';
 import { KindSaveResultJson } from '../model/kind-save-result-json';
+import { KindSchuleAndKlasseSaveJson } from '../model/kind-schule-and-klasse-save-json';
 import { KontaktPersonKindListJson } from '../model/kontakt-person-kind-list-json';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 
 
-export interface KinderServiceCreateKindRequestParams {
+export interface KinderServiceCreateKindAndDossierRequestParams {
+    arztId?: BackendEntityId;
     kindSaveMode: KindSaveModeDuplikat;
+    mpaId?: BackendEntityId;
     kindSaveJson: KindSaveJson;
 }
 
@@ -62,15 +65,22 @@ export interface KinderServiceSetEsadIdForKindRequestParams {
     esadIdJson: EsadIdJson;
 }
 
-export interface KinderServiceUpdateKindRequestParams {
-    kindId: BackendEntityId;
-    kindSaveMode: KindSaveModeDuplikat;
-    kindSaveJson: KindSaveJson;
-}
-
 export interface KinderServiceUpdateKindAktivStatusRequestParams {
     kindId: BackendEntityId;
     entityAktivStatusSaveJson: EntityAktivStatusSaveJson;
+}
+
+export interface KinderServiceUpdateKindAndVerantwortlichePersonenRequestParams {
+    kindId: BackendEntityId;
+    arztId?: BackendEntityId;
+    kindSaveMode: KindSaveModeDuplikat;
+    mpaId?: BackendEntityId;
+    kindSaveJson: KindSaveJson;
+}
+
+export interface KinderServiceUpdateSchuleAndKlasseRequestParams {
+    kindId: BackendEntityId;
+    kindSchuleAndKlasseSaveJson: KindSchuleAndKlasseSaveJson;
 }
 
 
@@ -139,28 +149,38 @@ export class KinderService {
     }
 
     /**
-     * Create Kind
+     * Create Kind And Dossier
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createKind$(requestParameters?: KinderServiceCreateKindRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<KindSaveResultJson>;
-    public createKind$(requestParameters?: KinderServiceCreateKindRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<KindSaveResultJson>>;
-    public createKind$(requestParameters?: KinderServiceCreateKindRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<KindSaveResultJson>>;
-    public createKind$(requestParameters?: KinderServiceCreateKindRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public createKindAndDossier$(requestParameters?: KinderServiceCreateKindAndDossierRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<KindSaveResultJson>;
+    public createKindAndDossier$(requestParameters?: KinderServiceCreateKindAndDossierRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<KindSaveResultJson>>;
+    public createKindAndDossier$(requestParameters?: KinderServiceCreateKindAndDossierRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<KindSaveResultJson>>;
+    public createKindAndDossier$(requestParameters?: KinderServiceCreateKindAndDossierRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const arztId = requestParameters?.arztId;
         const kindSaveMode = requestParameters?.kindSaveMode;
         if (kindSaveMode === null || kindSaveMode === undefined) {
-            throw new Error('Required parameter kindSaveMode was null or undefined when calling createKind.');
+            throw new Error('Required parameter kindSaveMode was null or undefined when calling createKindAndDossier.');
         }
+        const mpaId = requestParameters?.mpaId;
         const kindSaveJson = requestParameters?.kindSaveJson;
         if (kindSaveJson === null || kindSaveJson === undefined) {
-            throw new Error('Required parameter kindSaveJson was null or undefined when calling createKind.');
+            throw new Error('Required parameter kindSaveJson was null or undefined when calling createKindAndDossier.');
         }
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        if (arztId !== undefined && arztId !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>arztId, 'arztId');
+        }
         if (kindSaveMode !== undefined && kindSaveMode !== null) {
           localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
             <any>kindSaveMode, 'kindSaveMode');
+        }
+        if (mpaId !== undefined && mpaId !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>mpaId, 'mpaId');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -745,102 +765,6 @@ export class KinderService {
     }
 
     /**
-     * Update Kind
-     * @param requestParameters
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public updateKind$(requestParameters?: KinderServiceUpdateKindRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<KindSaveResultJson>;
-    public updateKind$(requestParameters?: KinderServiceUpdateKindRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<KindSaveResultJson>>;
-    public updateKind$(requestParameters?: KinderServiceUpdateKindRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<KindSaveResultJson>>;
-    public updateKind$(requestParameters?: KinderServiceUpdateKindRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        const kindId = requestParameters?.kindId;
-        if (kindId === null || kindId === undefined) {
-            throw new Error('Required parameter kindId was null or undefined when calling updateKind.');
-        }
-        const kindSaveMode = requestParameters?.kindSaveMode;
-        if (kindSaveMode === null || kindSaveMode === undefined) {
-            throw new Error('Required parameter kindSaveMode was null or undefined when calling updateKind.');
-        }
-        const kindSaveJson = requestParameters?.kindSaveJson;
-        if (kindSaveJson === null || kindSaveJson === undefined) {
-            throw new Error('Required parameter kindSaveJson was null or undefined when calling updateKind.');
-        }
-
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (kindSaveMode !== undefined && kindSaveMode !== null) {
-          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>kindSaveMode, 'kindSaveMode');
-        }
-
-        let localVarHeaders = this.defaultHeaders;
-
-        let localVarCredential: string | undefined;
-        // authentication (SecurityScheme) required
-        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
-        if (localVarCredential) {
-        }
-
-        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (localVarHttpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (localVarHttpHeaderAcceptSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-        }
-
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
-
-        let localVarTransferCache: boolean | undefined = options && options.transferCache;
-        if (localVarTransferCache === undefined) {
-            localVarTransferCache = true;
-        }
-
-
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'application/json'
-        ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-        }
-
-        let responseType_: 'text' | 'json' | 'blob' = 'json';
-        if (localVarHttpHeaderAcceptSelected) {
-            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-                responseType_ = 'text';
-            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-                responseType_ = 'json';
-            } else {
-                responseType_ = 'blob';
-            }
-        }
-
-        let localVarPath = `/api/kinder/${this.configuration.encodeParam({name: "kindId", value: kindId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
-        return this.httpClient.request<KindSaveResultJson>('put', `${this.configuration.basePath}${localVarPath}`,
-            {
-                context: localVarHttpContext,
-                body: kindSaveJson,
-                params: localVarQueryParameters,
-                responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
-                headers: localVarHeaders,
-                observe: observe,
-                transferCache: localVarTransferCache,
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
      * Update Kind Aktiv Status
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -915,6 +839,197 @@ export class KinderService {
             {
                 context: localVarHttpContext,
                 body: entityAktivStatusSaveJson,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Update Kind And Verantwortliche Personen
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public updateKindAndVerantwortlichePersonen$(requestParameters?: KinderServiceUpdateKindAndVerantwortlichePersonenRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<KindSaveResultJson>;
+    public updateKindAndVerantwortlichePersonen$(requestParameters?: KinderServiceUpdateKindAndVerantwortlichePersonenRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<KindSaveResultJson>>;
+    public updateKindAndVerantwortlichePersonen$(requestParameters?: KinderServiceUpdateKindAndVerantwortlichePersonenRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<KindSaveResultJson>>;
+    public updateKindAndVerantwortlichePersonen$(requestParameters?: KinderServiceUpdateKindAndVerantwortlichePersonenRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const kindId = requestParameters?.kindId;
+        if (kindId === null || kindId === undefined) {
+            throw new Error('Required parameter kindId was null or undefined when calling updateKindAndVerantwortlichePersonen.');
+        }
+        const arztId = requestParameters?.arztId;
+        const kindSaveMode = requestParameters?.kindSaveMode;
+        if (kindSaveMode === null || kindSaveMode === undefined) {
+            throw new Error('Required parameter kindSaveMode was null or undefined when calling updateKindAndVerantwortlichePersonen.');
+        }
+        const mpaId = requestParameters?.mpaId;
+        const kindSaveJson = requestParameters?.kindSaveJson;
+        if (kindSaveJson === null || kindSaveJson === undefined) {
+            throw new Error('Required parameter kindSaveJson was null or undefined when calling updateKindAndVerantwortlichePersonen.');
+        }
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        if (arztId !== undefined && arztId !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>arztId, 'arztId');
+        }
+        if (kindSaveMode !== undefined && kindSaveMode !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>kindSaveMode, 'kindSaveMode');
+        }
+        if (mpaId !== undefined && mpaId !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>mpaId, 'mpaId');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (SecurityScheme) required
+        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
+        if (localVarCredential) {
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/kinder/${this.configuration.encodeParam({name: "kindId", value: kindId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
+        return this.httpClient.request<KindSaveResultJson>('put', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: kindSaveJson,
+                params: localVarQueryParameters,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Update Schule And Klasse
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public updateSchuleAndKlasse$(requestParameters?: KinderServiceUpdateSchuleAndKlasseRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<KindSaveResultJson>;
+    public updateSchuleAndKlasse$(requestParameters?: KinderServiceUpdateSchuleAndKlasseRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<KindSaveResultJson>>;
+    public updateSchuleAndKlasse$(requestParameters?: KinderServiceUpdateSchuleAndKlasseRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<KindSaveResultJson>>;
+    public updateSchuleAndKlasse$(requestParameters?: KinderServiceUpdateSchuleAndKlasseRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const kindId = requestParameters?.kindId;
+        if (kindId === null || kindId === undefined) {
+            throw new Error('Required parameter kindId was null or undefined when calling updateSchuleAndKlasse.');
+        }
+        const kindSchuleAndKlasseSaveJson = requestParameters?.kindSchuleAndKlasseSaveJson;
+        if (kindSchuleAndKlasseSaveJson === null || kindSchuleAndKlasseSaveJson === undefined) {
+            throw new Error('Required parameter kindSchuleAndKlasseSaveJson was null or undefined when calling updateSchuleAndKlasse.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (SecurityScheme) required
+        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
+        if (localVarCredential) {
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/kinder/${this.configuration.encodeParam({name: "kindId", value: kindId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/schule-klasse`;
+        return this.httpClient.request<KindSaveResultJson>('put', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: kindSchuleAndKlasseSaveJson,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

@@ -4,12 +4,11 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
-import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.json.UntersuchungSehenBemerkungFragebogenJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.json.UntersuchungSehenBemerkungFragebogenSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -23,18 +22,25 @@ public class UntersuchungSehenBemerkungFragebogenMapper {
 
     @Nullable
     public static UntersuchungSehenBemerkungFragebogenJson toJson(
-        @Nullable UntersuchungSehenBemerkungFragebogen sehen
+        @Nullable UntersuchungSehenBemerkungFragebogen sehenBemerkungFragebogen
     ) {
-        if (sehen == null) {
+        if (sehenBemerkungFragebogen == null) {
             return null;
         }
         return new UntersuchungSehenBemerkungFragebogenJson(
-            sehen.getId(),
-            EntityInfoJson.fromEntity(sehen),
-            new UntersuchungSehenBemerkungFragebogenSaveJson(
-                sehen.getBemerkungenFragebogen(),
-                sehen.getVersion()
-            )
+            sehenBemerkungFragebogen.getId(),
+            EntityInfoJson.fromEntity(sehenBemerkungFragebogen),
+            toSaveJson(sehenBemerkungFragebogen)
+        );
+    }
+
+    @NonNull
+    public static UntersuchungSehenBemerkungFragebogenSaveJson toSaveJson(
+        @NonNull UntersuchungSehenBemerkungFragebogen sehenBemerkungFragebogen
+    ) {
+        return new UntersuchungSehenBemerkungFragebogenSaveJson(
+            sehenBemerkungFragebogen.getBemerkungenFragebogen(),
+            sehenBemerkungFragebogen.getVersion()
         );
     }
 
@@ -53,24 +59,26 @@ public class UntersuchungSehenBemerkungFragebogenMapper {
 
     @Nullable
     public UntersuchungSehenBemerkungFragebogenJson getByEinladung(
-        @NonNull ID<Einladung> einladungId,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungId);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         return toJson(untersuchung.getUntersuchungSehenBemerkungFragebogen());
     }
 
     @NonNull
     public UntersuchungSehenBemerkungFragebogenJson save(
-        @NonNull ID<Einladung> einladungID,
+        @NonNull HasUntersuchungIDWrapper wrappedId,
         @NonNull UntersuchungSehenBemerkungFragebogenSaveJson saveJson,
         @NonNull Consumer<Untersuchung> hasAuthorizationUntersuchung
     ) {
-        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungSehenBemerkungFragebogen sehen = untersuchung.getUntersuchungSehenBemerkungFragebogen();
         UntersuchungSehenBemerkungFragebogen entity = toEntity(untersuchung, sehen, saveJson);
-        return toJson(untersuchungSehenBemerkungFragebogenService.persistWithOptimisticLocking(entity, saveJson.getVersion()));
+        return toJson(untersuchungSehenBemerkungFragebogenService.persistWithOptimisticLocking(
+            entity,
+            saveJson.getVersion()));
     }
 }

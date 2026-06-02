@@ -157,6 +157,7 @@ public class SearchSummaryJson {
         }
         return new SchuleOptionJson(
             ID.of(schuleId, Schule.class),
+            null,
             schuleBezeichnung,
             schuleAktivStatus);
     }

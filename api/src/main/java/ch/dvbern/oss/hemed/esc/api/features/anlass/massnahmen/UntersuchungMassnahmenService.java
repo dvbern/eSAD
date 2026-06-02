@@ -20,16 +20,24 @@ public class UntersuchungMassnahmenService {
     private final AutoAufgabeService autoAufgabeService;
 
     @NonNull
-    public UntersuchungMassnahmen persist(@NonNull UntersuchungMassnahmen massnahmen) {
+    public UntersuchungMassnahmen persist(@NonNull UntersuchungMassnahmen massnahmen, boolean anonym) {
         massnahmenRepo.persist(massnahmen);
-        createOrUpdateAufgaben(massnahmen);
+        if (!anonym) { //getEinladungRequired() will throw if AnonymerEintrag
+            createOrUpdateAufgaben(massnahmen);
+        }
         return massnahmen;
     }
 
     @NonNull
-    public UntersuchungMassnahmen persistWithOptimisticLocking(@NonNull UntersuchungMassnahmen entity, @NonNull Long versionFromFrontend) {
+    public UntersuchungMassnahmen persistWithOptimisticLocking(
+        @NonNull UntersuchungMassnahmen entity,
+        @NonNull Long versionFromFrontend,
+        boolean anonym
+    ) {
         UntersuchungMassnahmen persisted = massnahmenRepo.persistWithOptimisticLocking(entity, versionFromFrontend);
-        createOrUpdateAufgaben(persisted);
+        if (!anonym) { //getEinladungRequired() will throw if AnonymerEintrag
+            createOrUpdateAufgaben(persisted);
+        }
         return persisted;
     }
 

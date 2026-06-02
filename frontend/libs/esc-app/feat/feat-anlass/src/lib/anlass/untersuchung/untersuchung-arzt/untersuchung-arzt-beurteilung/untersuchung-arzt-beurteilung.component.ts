@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked } from '@angular/core';
-import { FormArray, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
+import {FormArray, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {
   Aussprache,
   BallFangen,
@@ -20,7 +20,7 @@ import {
   Zeichnen,
   ZeichnenMensch,
 } from '@dvb/data-access-backend';
-import { BenutzerStore } from '@dvb/feat-shared';
+import {BenutzerStore} from '@dvb/feat-shared';
 import {
   CheckboxDirective,
   FormControlComponent,
@@ -32,14 +32,13 @@ import {
   TextareaDirective,
   TextInputDirective,
 } from '@dvb/ui-components';
-import {toEinladungBackendEntityIdWithClass} from '@dvb/data-access-types';
-import { DirtyMarker } from '@dvb/util-angular';
-import { hasAerztlicheUntersuchungEditBerechtigung, isNotNullish, requireValue } from '@dvb/util-shared';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { AnlassStore } from '../../../anlass.store';
-import { UntersuchungStore } from '../../untersuchung.store';
-import { hasSomeNotNullishValueIgnoringVersion } from '../../untersuchung.util';
-import { UntersuchungArztStore } from '../untersuchung-arzt.store';
+import {DirtyMarker} from '@dvb/util-angular';
+import {hasAerztlicheUntersuchungEditBerechtigung, isNotNullish, requireValue} from '@dvb/util-shared';
+import {TranslocoPipe} from '@jsverse/transloco';
+import {AnlassStore} from '../../../anlass.store';
+import {UntersuchungStore} from '../../untersuchung.store';
+import {hasSomeNotNullishValueIgnoringVersion} from '../../untersuchung.util';
+import {UntersuchungArztStore} from '../untersuchung-arzt.store';
 import {
   BewegungsapparatSubFormType,
   EinverstaendniserklaerungSubFormType,
@@ -141,9 +140,7 @@ export class UntersuchungArztBeurteilungComponent implements DirtyMarker {
 
   abbrechen(): void {
     const arztUntersuchung = this.store.untersuchungArztBeurteilung();
-    if (arztUntersuchung) {
-      this.form.resetForm(arztUntersuchung.data);
-    }
+    this.form.resetForm(arztUntersuchung?.data);
   }
 
   loadDefault(): void {
@@ -154,10 +151,9 @@ export class UntersuchungArztBeurteilungComponent implements DirtyMarker {
     if (await this.form.validate()) {
       const payload = this.form.valueOnValid();
       const anlassId = requireValue(this.anlassStore.selectedEntity()?.id);
-      const einladungId = requireValue(this.untersuchungStore.currentTab()?.einladungID);
       this.store.saveUntersuchungArzt({
         anlassId: anlassId,
-        einladungId: toEinladungBackendEntityIdWithClass(einladungId),
+        einladungId: requireValue(this.untersuchungStore.getWrappedEinladungId()),
         untersuchungArztBeurteilungSaveJson: payload,
       });
     }

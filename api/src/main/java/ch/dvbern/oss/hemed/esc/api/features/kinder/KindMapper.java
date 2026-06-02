@@ -38,6 +38,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindSaveResultJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindSchuleAndKlasseSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindSucheOptionsJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.types.KindSaveModeDuplikat;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
@@ -87,6 +88,7 @@ public final class KindMapper {
         return new KindJson(
             kind.getId(),
             kind.getEsadId(),
+            kind.getHashValue(),
             ExternalImportInfoJson.toJson(kind.getExternalImportInfo()),
             EntityInfoJson.fromEntity(kind),
             new KindSaveJson(
@@ -132,9 +134,9 @@ public final class KindMapper {
         @NonNull LocalDate now
     ) {
         if (kind != null) {
-            return new KindSaveResultJson(null, toJson(kind, now));
+            return new KindSaveResultJson(null, toJson(kind, now), null);
         }
-        return new KindSaveResultJson(kindDuplikatIds, null);
+        return new KindSaveResultJson(kindDuplikatIds, null, null);
     }
 
     @NonNull
@@ -144,6 +146,7 @@ public final class KindMapper {
         return new Kind(
             null, // Null because we are creating a new entity from our System, not importing
             null,
+            "SetInListener", // will be set in AbstractEntityListener
             saveJson.getSozialversicherungsNummer(),
             saveJson.getName(),
             saveJson.getVorname(),
@@ -259,13 +262,7 @@ public final class KindMapper {
             existingKind,
             AppValidationMessage.cannotEditInactiveKind(existingKind));
         Kind entity = toEntity(existingKind, kindJson);
-        KindSaveResultJson resultJson = saveKind(kindSaveMode, entity, kindJson.getVersion());
-        if (resultJson.getKindJson() == null) {
-            // Wenn es ein Duplikat ist, dann wird das KindJson nicht gesetzt. Wir brechen hier ab
-            return resultJson;
-        }
-        updateSchuleAndKlasse(kindJson, entity);
-        return saveKind(KindSaveModeDuplikat.NO_CHECK, entity, null);
+        return saveKind(kindSaveMode, entity, kindJson.getVersion());
     }
 
     @NonNull
@@ -323,30 +320,44 @@ public final class KindMapper {
         return toJson(kindService.persistWithoutDuplicateCheck(kind), now);
     }
 
-    private void updateSchuleAndKlasse(@NonNull KindSaveJson kindJson, @NonNull Kind entity) {
-        entity.disableOptimisticLockingCheck();
-        Klasse newklasse = kindJson.getKlasse() != null ? klasseService.getById(kindJson.getKlasse().getId()) : null;
-        entity.setKlasse(newklasse);
-        Schule newSchule = kindJson.getSchule() != null ? schuleService.getById(kindJson.getSchule().getId()) : null;
-        Schule newSchuleToSet = mapSchuleFromKlasseOrSchule(newklasse, newSchule);
-        resetArztMpaIfSchuleChanged(entity.getId(), entity.getSchule(), newSchuleToSet);
-        entity.setSchule(newSchuleToSet);
+    public KindSaveResultJson updateSchuleAndKlasse(@NonNull ID<Kind> kindID, @NonNull KindSchuleAndKlasseSaveJson schuleKlasseJson) {
+        Kind existingKind = kindService.getById(kindID);
+        KindValidationUtil.throwErrorIfKindIsInactive(
+            existingKind,
+            AppValidationMessage.cannotEditInactiveKind(existingKind));
+
+        Optional<Dossier> dossierOptional = dossierService.findByKind(kindID);
+        dossierOptional.ifPresent(zustaendigePersonService::requireZustaendigkeit);
+
+        Klasse newKlasse = schuleKlasseJson.getKlasse() != null ? klasseService.getById(schuleKlasseJson.getKlasse().getId()) : null;
+        Schule newSchule = schuleKlasseJson.getSchule() != null ? schuleService.getById(schuleKlasseJson.getSchule().getId()) : null;
+        Schule newSchuleToSet = mapSchuleFromKlasseOrSchule(newKlasse, newSchule);
+
+        dossierOptional.ifPresent(dossier -> {
+            dossier.disableOptimisticLockingCheck();
+            resetArztMpaIfSchuleChanged(dossier, existingKind.getSchule(), newSchuleToSet);
+        });
+
+        existingKind.setKlasse(newKlasse);
+        existingKind.setSchule(newSchuleToSet);
+
+        LocalDate now = appClock.offsetDateTime().now().toLocalDate();
+        return toSaveResultJson(kindService.persistWithoutDuplicateCheck(existingKind, schuleKlasseJson.getVersion()), null, now);
     }
 
     private void resetArztMpaIfSchuleChanged(
-        @NonNull ID<Kind> kindID,
+        @NonNull Dossier dossier,
         @Nullable Schule oldSchule,
         @Nullable Schule newSchule
     ) {
         if (newSchule == null) {
             return;
         }
-        Optional<Dossier> dossierOptional = dossierService.findByKind(kindID);
-        if ((!newSchule.equals(oldSchule)) && dossierOptional.isPresent()) {
+        if (!newSchule.equals(oldSchule)) {
             // https://intra.dvbern.ch/spaces/HEM/pages/284263663/Zust%C3%A4ndigkeiten+Archivierung
             // Change Zustaendigkeiten: Fall 5, 7: Neue Klasse/Schule auf Kind (manuell)
             VerantwortlicherSchuleChangedDTO args = VerantwortlicherSchuleChangedDTO.of(oldSchule, newSchule);
-            zustaendigePersonService.schuleChangedOnDossier(dossierOptional.get(), args);
+            zustaendigePersonService.schuleChangedOnDossier(dossier, args);
         }
     }
 }

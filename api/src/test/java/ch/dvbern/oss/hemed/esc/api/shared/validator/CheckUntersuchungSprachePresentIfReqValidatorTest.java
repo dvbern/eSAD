@@ -10,28 +10,11 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.validator;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.SehenEmpfehlung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftretenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.UntersuchungSprache;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Nachsprechen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Sprachverstaendnis;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Wortschatz;
-import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBeurteilungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSpracheBuilder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;

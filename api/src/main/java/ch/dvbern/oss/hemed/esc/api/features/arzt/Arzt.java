@@ -19,6 +19,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.arzt;
 
 import java.io.Serial;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
@@ -37,6 +39,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -44,6 +47,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
@@ -114,7 +118,10 @@ public class Arzt extends AbstractEntity<Arzt> implements EntityWithOptimisticLo
     private HpvTeilnahme hpvTeilnahme;
 
     @NonNull
+    @Transient
     public String getNameVorname() {
-        return name + ' ' + vorname;
+        return Stream.of(name, vorname)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.joining(" "));
     }
 }

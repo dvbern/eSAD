@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.kind;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
@@ -159,8 +160,12 @@ public final class UntersuchungKindDatenMapper {
     }
 
     @NonNull
-    public UntersuchungKindDatenJson getByEinladung(@NonNull ID<Einladung> einladungID) {
+    public UntersuchungKindDatenJson getByEinladung(
+        @NonNull ID<Einladung> einladungID,
+        @NonNull Consumer<Untersuchung> hasAuthorizationEinladung
+    ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladungID);
+        hasAuthorizationEinladung.accept(untersuchung);
         return UntersuchungKindDatenMapper.toJson(untersuchung, appClock.offsetDateTime().now().toLocalDate());
     }
 

@@ -16,6 +16,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import io.micrometer.core.annotation.Timed;
 import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.security.RolesAllowed;
@@ -27,7 +28,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/arzt")
@@ -54,10 +54,10 @@ public class UntersuchungArztResource {
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungArztBeurteilungMapper.getByEinladung(
-            wrappedId.toEinladungId(),
+            wrappedId,
             untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
                 untersuchung,
-                Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN));
+                List.of(Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN)));
     }
 
     @GET
@@ -83,7 +83,7 @@ public class UntersuchungArztResource {
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungArztBeurteilungMapper.save(
-            wrappedId.toEinladungId(),
+            wrappedId,
             saveJson,
             untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
                 untersuchung,
@@ -100,10 +100,10 @@ public class UntersuchungArztResource {
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungArztBemerkungMapper.getByEinladung(
-            wrappedId.toEinladungId(),
+            wrappedId,
             untersuchung -> authorizerService.requireReadAuthorizationUntersuchung(
                 untersuchung,
-                Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN));
+                List.of(Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN)));
     }
 
     @PUT
@@ -117,7 +117,7 @@ public class UntersuchungArztResource {
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungArztBemerkungMapper.save(
-            wrappedId.toEinladungId(),
+            wrappedId,
             saveJson,
             untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
                 untersuchung,

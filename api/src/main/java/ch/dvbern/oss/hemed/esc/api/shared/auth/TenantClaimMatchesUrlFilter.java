@@ -61,7 +61,10 @@ public class TenantClaimMatchesUrlFilter implements ContainerRequestFilter {
         );
     }
 
-    void checkIdentityForTenant(@NonNull ContainerRequestContext requestContext, @NonNull SecurityIdentity currentIdentity) {
+    void checkIdentityForTenant(
+        @NonNull ContainerRequestContext requestContext,
+        @NonNull SecurityIdentity currentIdentity
+    ) {
         // Skip validation for anonymous requests
         if (currentIdentity.isAnonymous()) {
             LOG.debug("Skipping tenant validation for anonymous request");
@@ -70,11 +73,15 @@ public class TenantClaimMatchesUrlFilter implements ContainerRequestFilter {
 
         String path = requestContext.getUriInfo().getPath();
         if (isPublicEndpointWithoutTenantValidation(path)) {
-            LOG.info("Skipping tenant validation for public endpoint '{}'", path);
+            LOG.debug("Skipping tenant validation for public endpoint '{}'", path);
             return;
         }
 
         JsonWebToken jsonWebToken = (JsonWebToken) currentIdentity.getPrincipal();
+        if (TenantClaimUtil.isHinUser(jsonWebToken)) {
+            // HIN Benutzer werden nicht mit Tenant validiert, da sie nie einen Tenant im JWT haben
+            return;
+        }
 
         // Extract tenant claim from token
         Optional<String> tenantClaimOpt = TenantClaimUtil.extractTenantClaim(jsonWebToken);
@@ -82,16 +89,20 @@ public class TenantClaimMatchesUrlFilter implements ContainerRequestFilter {
         if (tenantClaimOpt.isEmpty()) {
             LOG.warn("No tenant claim found in JWT token for user {}", currentIdentity.getPrincipal().getName());
             requestContext.abortWith(Response.status(Response.Status.FORBIDDEN)
-                    .type("text/plain")
-                    .entity("missing tenant")
+                .type("text/plain")
+                .entity("missing tenant")
                 .build());
             return;
         }
 
         String tenantClaim = tenantClaimOpt.get();
 
-        // Get current tenant from url
+        if (DVBSupportRoleUtil.isDVBSupport(tenantClaim)) {
+            LOG.debug("Skipping tenant / url matching validation for DVB-SUPPORT user '{}'", path);
+            return;
+        }
 
+        // Get current tenant from url
         URI absolutePath = requestContext.getUriInfo().getAbsolutePath();
         TenantEnum currentTenantFromUrl = TenantExtractorFromUrlRequestFilter.getTenantFromUrl(absolutePath);
 
@@ -114,17 +125,19 @@ public class TenantClaimMatchesUrlFilter implements ContainerRequestFilter {
 
         // Validate that token tenant matches current tenant
         if (currentTenantFromUrl != tenantFromClaim) {
-            LOG.warn("Tenant missmatch: token contains tenant '{}'  but current tenant is '{}' for principal {}",
+            LOG.warn(
+                "Tenant missmatch: token contains tenant '{}'  but current tenant is '{}' for principal {}",
                 tenantClaim, currentTenantFromUrl, currentIdentity.getPrincipal().getName());
 
             requestContext.abortWith(Response.status(Response.Status.FORBIDDEN)
-                    .type("text/plain")
+                .type("text/plain")
                 .entity("Tenant missmatch")
                 .build());
             return;
         }
 
-        LOG.debug("Tenant validation successful: token tenant '{}' matches current tenant '{}'",
+        LOG.debug(
+            "Tenant validation successful: token tenant '{}' matches current tenant '{}'",
             tenantClaim, currentTenantFromUrl);
     }
 

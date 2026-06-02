@@ -44,6 +44,7 @@ const ErrorMessageTranslations: TranslationMap<typeof AppValidatorKeys> | Record
   datumBisAtleastDatumVonOrAfter: 'ui.validation-error.datumBisAtleastDatumVonOrAfter',
   dateRangeIsMaximumNumberOfYears: 'ui.validation-error.dateRangeIsMaximumNumberOfYears',
   multipleEmails: 'ui.validation-error.multipleEmails',
+  numberRange: 'ui.validation-error.numberRange',
 };
 
 function translationIsDefined(messageKey: string): messageKey is keyof typeof ErrorMessageTranslations {

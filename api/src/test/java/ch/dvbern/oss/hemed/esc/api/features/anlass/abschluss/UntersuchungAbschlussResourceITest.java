@@ -1,17 +1,19 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.abschluss;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.abschluss.types.AbschlussResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.UntersuchungSprache;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Nachsprechen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungAbschlussBuilder;
-import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSpracheBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.UntersuchungAbschlussApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungAbschlussJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungAbschlussSaveJsonSpec;
@@ -22,9 +24,9 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasAnonymerEintragIdWrapper;
 import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasUntersuchungIdWrapper;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
 @RequiredArgsConstructor
@@ -35,6 +37,7 @@ class UntersuchungAbschlussResourceITest extends AbstractITest {
     private final UntersuchungService untersuchungService;
     private final UntersuchungAbschlussService untersuchungAbschlussService;
     private final FixtureService fixtureService;
+    private final TenantProducer tenantProducer;
 
     @Override
     @BeforeEach
@@ -127,6 +130,49 @@ class UntersuchungAbschlussResourceITest extends AbstractITest {
         assertThat(result).isNotNull();
         assertThat(result.getId()).isNotNull();
         assertThat(result.getAbschlussData().getBeurteilungEmpfohleneMassnahmen()).isNotNull().isEqualTo("Test updateUntersuchungAbschluss");
+        assertThat(result.getAbschlussData().getUeberweisungErfolgt()).isNotNull();
+        assertThat(result.getAbschlussData().getUeberweisungErfolgt().getValue()).contains(AbschlussResultat.NEIN.name());
+    }
+
+    @Test
+    @TestAsSchularztBE
+    void saveUntersuchungAbschluss_anonym() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+
+        // Create anlass with arzt set (to pass authorizer)
+        Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), false);
+        assertThat(untersuchung).isNotNull();
+
+        // ACT
+        UntersuchungAbschlussSaveJsonSpec saveJsonSpec =
+            UntersuchungAbschlussBuilder.createJaxSpec(builder -> builder
+                .withUeberweisungErfolgt(AbschlussResultat.NEIN, null)
+                .withBeratungDurchgefuehrt(AbschlussResultat.NEIN, null)
+                .withAerztlicheValidierungErforderlich(AbschlussResultat.NEIN, null)
+                .withBeurteilungEmpfohleneMassnahmen("Test saveUntersuchungAbschluss anonym")).getAbschlussData();
+
+        var response = api.untersuchungAbschlussResourceSaveUntersuchungAbschluss()
+            .anlassIdPath(anonymerEintrag.getAnlass().getId().getId())
+            .einladungIdPath(toHasAnonymerEintragIdWrapper(anonymerEintrag.getId()))
+            .body(saveJsonSpec)
+            .execute(ResponseBody::prettyPeek);
+
+        UntersuchungAbschlussJsonSpec result = response
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungAbschlussJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getAbschlussData().getBeurteilungEmpfohleneMassnahmen())
+            .isNotNull()
+            .isEqualTo("Test saveUntersuchungAbschluss anonym");
         assertThat(result.getAbschlussData().getUeberweisungErfolgt()).isNotNull();
         assertThat(result.getAbschlussData().getUeberweisungErfolgt().getValue()).contains(AbschlussResultat.NEIN.name());
     }

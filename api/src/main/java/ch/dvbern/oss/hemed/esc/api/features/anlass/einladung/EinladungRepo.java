@@ -34,9 +34,9 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.QAnlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.QAnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.QAnonymerEintrag;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
@@ -56,7 +56,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 @RequiredArgsConstructor
 @Slf4j
 public class EinladungRepo extends BaseRepo<Einladung> {
-
     @NonNull
     public Einladung getByIdLockedQuery(@NonNull ID<Einladung> id) {
         // we do this with a query instead of through db.findLocked() because findLocked does not work
@@ -199,7 +198,8 @@ public class EinladungRepo extends BaseRepo<Einladung> {
 
         List<ID<Einladung>> einladungenIds = new ArrayList<>(List.of());
 
-        // Für jede ermittelte DossierId suchen wir die Einladung im letzten Anlass da es mehrere Einladungen geben kann.
+        // Für jede ermittelte DossierId suchen wir die Einladung im letzten Anlass da es mehrere Einladungen geben
+        // kann.
         for (UUID dossierId : uniqueDossierIds) {
             Einladung einladung = db
                 .selectFrom(QEinladung.einladung)
@@ -230,15 +230,18 @@ public class EinladungRepo extends BaseRepo<Einladung> {
 
     @NonNull
     public Map<ID<?>, ID<Anlass>> getAnlassEinladungsMap(@NonNull List<? extends ID<?>> einladungIdList) {
-        List<Tuple> einladungenAnlass = db.select(QEinladung.einladung.id, QAnonymerEintrag.anonymerEintrag.id, QAnlass.anlass.id)
-            .from(QAnlass.anlass)
-            .leftJoin(QEinladung.einladung).on(QEinladung.einladung.anlass.eq(QAnlass.anlass))
-            .leftJoin(QAnonymerEintrag.anonymerEintrag).on(QAnonymerEintrag.anonymerEintrag.anlass.eq(QAnlass.anlass))
-            .where(
-                QEinladung.einladung.id.in(einladungIdList.stream().map(ID::getUUID).toList())
-                .or(QAnonymerEintrag.anonymerEintrag.id.in(einladungIdList.stream().map(ID::getUUID).toList()))
-            )
-            .fetch();
+        List<Tuple> einladungenAnlass =
+            db.select(QEinladung.einladung.id, QAnonymerEintrag.anonymerEintrag.id, QAnlass.anlass.id)
+                .from(QAnlass.anlass)
+                .leftJoin(QEinladung.einladung)
+                .on(QEinladung.einladung.anlass.eq(QAnlass.anlass))
+                .leftJoin(QAnonymerEintrag.anonymerEintrag)
+                .on(QAnonymerEintrag.anonymerEintrag.anlass.eq(QAnlass.anlass))
+                .where(
+                    QEinladung.einladung.id.in(einladungIdList.stream().map(ID::getUUID).toList())
+                        .or(QAnonymerEintrag.anonymerEintrag.id.in(einladungIdList.stream().map(ID::getUUID).toList()))
+                )
+                .fetch();
 
         Map<ID<?>, ID<Anlass>> map = new HashMap<>();
 
@@ -249,10 +252,10 @@ public class EinladungRepo extends BaseRepo<Einladung> {
 
                 ID<?> keyID = null;
 
-                if(einladungId != null){
+                if (einladungId != null) {
                     keyID = ID.of(einladungId, Einladung.class);
                 }
-                if(anonymerEintragId != null){
+                if (anonymerEintragId != null) {
                     keyID = ID.of(anonymerEintragId, AnonymerEintrag.class);
                 }
 

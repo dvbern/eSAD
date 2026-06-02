@@ -30,9 +30,9 @@ class GleichgewichtEinbeinstandCsvColumnTest extends AbstractBaseColumnTest {
         untersuchung.setUntersuchungSchulrelevanteBeeintraechtigung(beeintraechtigung);
 
         assertThat(column.extract(einladung)).isEmpty();
-        when(tlMock.translateValue(GleichgewichtEinbeinstand.MEHR_ALS_ZEHN_SEKUNDEN)).thenReturn("Mehr als 10 Sekunden");
+        when(tlMock.translateValue(GleichgewichtEinbeinstand.BESTANDEN)).thenReturn("Bestanden");
 
-        beeintraechtigung.setGleichgewichtEinbeinstand(SingleValueEnhanced.of(GleichgewichtEinbeinstand.MEHR_ALS_ZEHN_SEKUNDEN, null));
-        assertThat(column.extract(einladung)).isEqualTo("Mehr als 10 Sekunden");
+        beeintraechtigung.setGleichgewichtEinbeinstand(SingleValueEnhanced.of(GleichgewichtEinbeinstand.BESTANDEN, null));
+        assertThat(column.extract(einladung)).isEqualTo("Bestanden");
     }
 }

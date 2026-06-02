@@ -25,6 +25,7 @@ import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.runas.RunAs;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.healthcheck.FileStoreHealthCheckService;
 import ch.dvbern.oss.hemed.esc.api.features.archivierung.ArchivdokumentService;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.kinddeactivation.KindDeactivationService;
@@ -67,6 +68,7 @@ public class SuperAdminRunnerService {
     private final DossierQueueRunnerService dossierQueueRunnerService;
     private final ArchivierungRuleService archivierungRuleService;
     private final DossierQueueService dossierQueueService;
+    private final FileStoreHealthCheckService fileStoreHealthCheckService;
 
     @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
     public void runBenutzerInaktivierenJob(boolean forcerun) {
@@ -310,6 +312,16 @@ public class SuperAdminRunnerService {
         } else {
             LOG.debug("ESC-ARCHIVIERUNG-DELETE: Scheduler is disabled.");
         }
+    }
+
+    @Transactional(TxType.NOT_SUPPORTED)
+    @RunAs(username = "bs-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
+    public void runFileStoreHealthCheckJob(boolean forcerun) {
+        if (!configService.isFilestoreHealthcheckEnabled() && !forcerun) {
+            LOG.debug("ESC-FILESTORE-HEALTHCHECK: disabled");
+            return;
+        }
+        fileStoreHealthCheckService.runForCurrentTenant();
     }
 
     private void reevaluateAllExistingDuplikate() {

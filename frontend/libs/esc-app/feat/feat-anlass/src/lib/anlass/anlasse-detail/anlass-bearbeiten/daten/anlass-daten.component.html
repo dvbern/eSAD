@@ -153,8 +153,8 @@
       [compareWith]="compareFnBenutzer"
     >
       <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-      @if (benutzerOptionsStore.arztOptionsIncluding(store.arztOfCurrentAnlass())) {
-        @for (arzt of benutzerOptionsStore.arztOptionsIncluding(store.arztOfCurrentAnlass()); track arzt.id; ) {
+      @if (arztOptions()) {
+        @for (arzt of arztOptions(); track arzt.id; ) {
           <ng-option [value]="arzt" [disabled]="arzt.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
               <span class="w-100 d-flex justify-content-between">
                 <span>{{ arzt.fullName }}</span>
@@ -178,8 +178,8 @@
       [compareWith]="compareFnBenutzer"
     >
       <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-      @if (benutzerOptionsStore.hilfspersonOptionsIncluding(store.mpaOfCurrentAnlass())) {
-        @for (hilfsperson of benutzerOptionsStore.hilfspersonOptionsIncluding(store.mpaOfCurrentAnlass()); track hilfsperson.id; ) {
+      @if (hilfspersonOptions()) {
+        @for (hilfsperson of hilfspersonOptions(); track hilfsperson.id; ) {
           <ng-option [value]="hilfsperson" [disabled]="hilfsperson.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
               <span class="w-100 d-flex justify-content-between">
                 <span>{{ hilfsperson.fullName }}</span>
@@ -203,8 +203,8 @@
       [compareWith]="compareFnBenutzer"
     >
       <!--              null check can be removed once nc-select fixes the bug (> 20.2.0) -->
-      @if (benutzerOptionsStore.entitiesIncluding(store.weiterePersonOfCurrentAnlass())) {
-        @for (benutzer of benutzerOptionsStore.entitiesIncluding(store.weiterePersonOfCurrentAnlass()); track benutzer.id) {
+      @if (weiterePersonOptions()) {
+        @for (benutzer of weiterePersonOptions(); track benutzer.id) {
           <ng-option [value]="benutzer" [disabled]="benutzer.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
               <span class="w-100 d-flex justify-content-between">
                 <span>{{ benutzer.fullName }}</span>

@@ -153,14 +153,18 @@ export class KinderSummaryStore extends signalStore(
   createKind = rxMethod<{
     kind: KindSaveJson;
     kindSaveMode: KindSaveModeDuplikat;
+    arztId?: BackendEntityId;
+    mpaId?: BackendEntityId;
     onSuccess: (result: KindJson) => void
   }>(
     pipe(
-      exhaustMap(({kind, kindSaveMode, onSuccess}) =>
+      exhaustMap(({kind, kindSaveMode, arztId, mpaId, onSuccess}) =>
         this.saveLoader
-          .tapLoading$(this.#kinderService.createKind$({
+          .tapLoading$(this.#kinderService.createKindAndDossier$({
               kindSaveJson: kind,
               kindSaveMode: kindSaveMode,
+              arztId: arztId,
+              mpaId: mpaId,
             }), error => this.#appErrorHandlerService.handleError(error),
           )
           .pipe(

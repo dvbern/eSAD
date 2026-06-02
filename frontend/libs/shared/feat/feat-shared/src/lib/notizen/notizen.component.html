@@ -47,7 +47,7 @@
             [clearable]="false"
             [placeholder]="'global.select.bitte-auswaehlen' | transloco"
           >
-            @for (benutzer of benutzerOptionsStore.entitiesIncluding(form.group.value.verantwortlicher); track benutzer.id) {
+            @for (benutzer of benutzerOptionsStore.benutzerFiltered(form.group.value.verantwortlicher, 'FACHROLLEN', true); track benutzer.id) {
               <ng-option [value]="benutzer" [disabled]="benutzer.benutzerAktivStatus === EntityAktivStatus.INAKTIV">
                 {{ benutzer.fullName }}
               </ng-option>
@@ -166,11 +166,22 @@
       <feat-upload-table
         [accepted]="acceptedFiletypes"
         [uploadTable]="uploadTable"
+        [activePreviewFileId]="previewFile()?.id ?? null"
         (fileRemove)="onFileDelete($event)"
         (fileView)="onFileView($event)"
+        (filePreview)="onFilePreview($event)"
         (fileDirectDownload)="onFileDirectDownload($event)"
       >
       </feat-upload-table>
+
+
     </svui-card>
+    <!--Preview-->
+    @if (previewFile(); as file) {
+      <svui-card >
+        <h3 svuiHeading="card" class="mb-3">{{ file.calculatedFileName }}</h3>
+        <feat-file-preview [file]="file" [notizId]="existingNotiz()?.id ?? null" class="mt-3"/>
+    </svui-card>
+    }
   </div>
 </svui-dashboard>

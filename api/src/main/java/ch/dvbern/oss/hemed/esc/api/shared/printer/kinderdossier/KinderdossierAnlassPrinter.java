@@ -22,18 +22,27 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import ch.dvbern.dvbstarter.shared.i18n.datetime.DateUtil;
 import ch.dvbern.oss.commons.i18nl10n.I18nMessage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigUtil;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.UntersuchungBewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.types.Haltungsschwaeche;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.types.Skoliose;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.types.VerkuerzungHamstringmuskulatur;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammSimpel;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenEmpfehlung;
@@ -42,6 +51,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlic
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithDateTimeJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDaten;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.UntersuchungSchulrelevanteBeeintraechtigung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.Feinmotorik;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.FreiesGehen;
@@ -67,22 +78,12 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Nachsprechen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Sprachverstaendnis;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Wortschatz;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.anlass.anlassflags.AnlassFlags;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PDFAPrintUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
-import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtilRecord;
+import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.AreaBreak;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -870,9 +871,15 @@ public final class KinderdossierAnlassPrinter {
             new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.freiesGehen",
                 anlassConfig.getUntersuchungBeeintraechtigungFreiesGehen().isVisible(),
-                beeintraechtigung -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
-                    beeintraechtigung.getFreiesGehen(),
-                    FreiesGehen.class))),
+                beeintraechtigung -> {
+                    if (beeintraechtigung.getAnzahlMonateFreiesGehen() != null) {
+                        return PrintUtil.trimToPlaceholder(DateUtil.calculateAlterDuodezimal(beeintraechtigung.getAnzahlMonateFreiesGehen()));
+                    }
+                    return basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                        beeintraechtigung.getFreiesGehen(),
+                        FreiesGehen.class)
+                    );
+                }),
             new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.ohneStuetzradVelofahren",
                 anlassConfig.getUntersuchungBeeintraechtigungOhneStuetzradVelofahren().isVisible(),

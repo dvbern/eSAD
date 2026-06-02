@@ -33,11 +33,11 @@ public final class KindAnlaesseMapper {
     @NonNull
     public List<KindAnlassSummaryJson> findAllForKind(
         @NonNull ID<Kind> kindID,
-        @NonNull Predicate<Anlass> hasReadAuthorizationAnlass
+        @NonNull Predicate<Einladung> hasReadAuthorizationEinladung
     ) {
         return kindAnlaesseService.findAllEinladungForKind(kindID).stream()
             // some Roles can only read Einladungen of a certain AnlassTyp
-            .filter(einladung -> hasReadAuthorizationAnlass.test(einladung.getAnlass()))
+            .filter(hasReadAuthorizationEinladung)
             .map(KindAnlaesseMapper::toKindAnlassSummaryJson)
             .toList();
     }
