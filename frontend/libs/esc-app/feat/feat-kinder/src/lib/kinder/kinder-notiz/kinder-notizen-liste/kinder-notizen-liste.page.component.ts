@@ -52,7 +52,7 @@ export class KinderNotizenListePageComponent extends FilterSessionStorage<NotizF
   readonly SESSIONSTORAGE_KEY = 'notizenFilter';
 
   itemTable = new TableModel<NotizJsonEnhanced>(
-    { rawListSignal: this.kinderNotizStore.entities },
+    { rawListSignal: this.kinderNotizStore.notizenEnhanced },
     { frontendOrBackend: 'frontend', pageOrScrollOrNothing: 'scroll' },
   );
   readonly tableFilterForm = new NotizenListFilterForm({

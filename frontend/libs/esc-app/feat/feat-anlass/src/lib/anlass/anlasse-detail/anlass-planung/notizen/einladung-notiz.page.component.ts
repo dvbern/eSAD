@@ -1,5 +1,4 @@
-import {Location} from '@angular/common';
-import {ChangeDetectionStrategy, Component, computed, inject, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, viewChild} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {LabelJson, NotizJson, NotizStatus, NotizTyp} from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
@@ -20,7 +19,6 @@ import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {AnlassStore} from '../../../anlass.store';
 import {anlassTitleOptional} from '../../../anlass.util';
 import {AnlassKinderStore} from '../../anlass-kinder.store';
-import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'feat-anlass.einladung-notiz.page',
@@ -35,7 +33,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   ],
 })
 export class EinladungNotizPageComponent implements DirtyMarker {
-  @ViewChild(NotizenComponent) notizenComponent!: NotizenComponent;
+  notizenComponent = viewChild.required(NotizenComponent);
 
   readonly anlassStore = inject(AnlassStore);
   readonly anlassKinderStore = inject(AnlassKinderStore);
@@ -44,10 +42,6 @@ export class EinladungNotizPageComponent implements DirtyMarker {
   readonly #transloco = inject(TranslocoService);
   readonly labelStore = inject(LabelsStore);
   readonly #notificationService = inject(AppNotificationStore);
-
-  readonly location = inject(Location);
-  readonly router = inject(Router);
-  readonly route = inject(ActivatedRoute);
 
   protected readonly Path = Path;
   protected readonly requireValue = requireValue;
@@ -143,7 +137,7 @@ export class EinladungNotizPageComponent implements DirtyMarker {
   );
 
   public isDirty(): boolean {
-    return this.notizenComponent.isDirty();
+    return this.notizenComponent().isDirty();
   }
 
   onSaveNotiz(payload: NotizenSaveParams): void {
@@ -154,6 +148,7 @@ export class EinladungNotizPageComponent implements DirtyMarker {
 
   onSaveNotizSilent(payload: NotizenSaveParams) {
     this.saveNotiz(payload, (resultId: string) => {
+      this.notizenComponent().resetAfterSuccessfulSave();
       payload.afterSave?.(resultId);
     });
   }
@@ -186,7 +181,8 @@ export class EinladungNotizPageComponent implements DirtyMarker {
   }
 
   private afterSuccessfulSaveAndUpload(): void {
-    this.location.back();
+    this.notizenComponent().resetAfterSuccessfulSave();
+    this.#notificationService.addSuccessNotification(this.#transloco.translate('global.data.saved'));
   }
 
   public onMobileUpload(_: string) {

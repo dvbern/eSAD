@@ -28,6 +28,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.benutzer.FachrollenService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
+import io.quarkus.security.identity.CurrentIdentityAssociation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Validate;
@@ -49,12 +50,17 @@ public class BenutzerService {
     private final TenantProducer tenantProducer;
     private final FachrollenService fachrollenService;
     private final TenantSettingsService tenantSettingsService;
+    private final CurrentIdentityAssociation association;
 
     @NonNull
     public Optional<Benutzer> findCurrentBenutzerOptional() {
-        String email = jsonWebToken.getClaim(Claims.email);
-        if (email == null) {
-            throw new AppAuthException();
+        if (association.getIdentity() == null || association.getIdentity().isAnonymous()) {
+            return Optional.empty();
+        }
+        String email = association.getIdentity().getPrincipal().getName();
+
+        if (email == null || email.isBlank()) {
+            return Optional.empty();
         }
         return benutzerRepo.findByEmail(EmailAddress.fromString(email));
     }

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, inject, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, viewChild} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LabelJson, NotizStatus, NotizTyp} from '@dvb/data-access-backend';
@@ -33,7 +33,7 @@ import {KinderNotizStore} from './kinder-notiz.store';
   ],
 })
 export class KinderNotizPageComponent implements DirtyMarker {
-  @ViewChild(NotizenComponent) notizenComponent!: NotizenComponent;
+  notizenComponent = viewChild.required(NotizenComponent);
 
   readonly kinderNotizStore = inject(KinderNotizStore);
   readonly dossierStore = inject(DossierStore);
@@ -56,7 +56,7 @@ export class KinderNotizPageComponent implements DirtyMarker {
   });
 
   isDirty(): boolean {
-    return this.notizenComponent.isDirty() || this.kinderNotizStore.saveLoader.isLoading();
+    return this.notizenComponent().isDirty() || this.kinderNotizStore.saveLoader.isLoading();
   }
 
   kindId = computed<BackendEntityId | undefined>(() => this.dossierStore.selectedDossier()?.kind.id);
@@ -88,12 +88,15 @@ export class KinderNotizPageComponent implements DirtyMarker {
 
   onSaveNotiz(payload: NotizenSaveParams) {
     this.saveNotiz(payload, () => {
-      this.afterSuccessfulSaveAndUpload()
+      this.notizenComponent().resetAfterSuccessfulSave();
+      this.#notificationService.addSuccessNotification(this.#transloco.translate('global.data.saved'));
+      this.#goToEditPage();
     });
   }
 
   onSaveNotizSilent(payload: NotizenSaveParams) {
     this.saveNotiz(payload, (resultId: string) => {
+      this.notizenComponent().resetAfterSuccessfulSave();
       payload.afterSave?.(resultId);
     });
   }
@@ -127,15 +130,20 @@ export class KinderNotizPageComponent implements DirtyMarker {
     this.kinderNotizStore.removeNotizFile(params);
   }
 
-  private afterSuccessfulSaveAndUpload(): void {
-    this.notizenComponent.form.reset();
-    this.#router.navigate(
-      [Path.RELATIVE_TWO_UP],
-      {relativeTo: this.#activatedRoute});
+  #goToEditPage(): void {
+    this.#router.navigate([
+      Path.RELATIVE_ONE_UP,
+      this.kinderNotizStore.selectedEntity()?.id
+    ], {
+      relativeTo: this.#activatedRoute,
+      replaceUrl: true,
+    });
   }
 
   public onMobileUpload(notizId : string) : void{
-    if (this.kinderNotizStore.selectedIsNew()) {
+    // check what the current page url is to know if we are in create mode
+    const isOnCreateRoute = this.#router.url.endsWith(`/${Path.CREATE}`);
+    if (isOnCreateRoute) {
       this.#router.navigate([Path.RELATIVE_ONE_UP, notizId], {
         relativeTo: this.#activatedRoute,
         replaceUrl: true,

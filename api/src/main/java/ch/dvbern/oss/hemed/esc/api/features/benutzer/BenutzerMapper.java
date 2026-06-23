@@ -12,6 +12,7 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerJson;
+import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerNameJson;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.PrincipalJson;
@@ -68,6 +69,17 @@ public class BenutzerMapper {
             OrganisationRollenMapper.toJson(benutzer.getSingleOrganisationRollen(), tenant),
             SystemRollenMapper.toJson(benutzer.getSystemRollen(), tenant),
             benutzer.getBenutzerAktivStatus()
+        );
+    }
+
+    /**
+     * Minimal-Mapping (Id + voller Name) für Tabellen-/Listen-Ansichten.
+     */
+    @NonNull
+    public static BenutzerNameJson toNameJson(@NonNull Benutzer benutzer) {
+        return new BenutzerNameJson(
+            benutzer.getId(),
+            benutzer.getVornameName()
         );
     }
 

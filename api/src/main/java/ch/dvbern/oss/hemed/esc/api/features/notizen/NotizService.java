@@ -1,8 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.features.notizen;
 
-import java.util.List;
-import java.util.Optional;
-
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileNameUtil;
@@ -11,6 +8,7 @@ import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
+import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizListItemJson;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataService;
@@ -26,6 +24,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -92,8 +93,8 @@ public class NotizService {
     }
 
     @NonNull
-    public List<Notiz> findAll() {
-        return notizRepo.findAll();
+    public List<NotizListItemJson> findAllListItems() {
+        return notizRepo.findAllListItems();
     }
 
     @NonNull

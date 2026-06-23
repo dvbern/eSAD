@@ -129,6 +129,7 @@ export class AufgabenStore extends signalStore(
           tapResponse({
             next: result => {
               patchState(this, addEntity(enhanceAufgabe(result)));
+              this.setSelectedEntityId(result.id);
               onSuccess(result);
             },
             error: console.error,

@@ -28,6 +28,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -125,6 +126,7 @@ public class Aufgabe extends AbstractEntity<Aufgabe> implements EntityWithOptimi
     @NotNull
     @NonNull
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("timestampErstellt DESC")
     @JoinTable(name = "Aufgabe_Filedata",
         joinColumns = @JoinColumn(
             name = "aufgabe_id",

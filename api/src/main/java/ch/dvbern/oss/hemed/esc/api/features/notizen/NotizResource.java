@@ -1,24 +1,25 @@
 package ch.dvbern.oss.hemed.esc.api.features.notizen;
 
-import java.util.List;
-import java.util.Objects;
-
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileDownloadUtil;
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizJson;
-import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizListJson;
+import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizListItemListJson;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.UploadItemSchema;
 import ch.dvbern.oss.hemed.esc.api.shared.notizen.RemoveNotizService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.faulttolerance.api.RateLimit;
 import io.smallrye.mutiny.Multi;
@@ -51,6 +52,9 @@ import org.jboss.resteasy.reactive.PartType;
 import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
+import java.util.List;
+import java.util.Objects;
+
 @Slf4j
 @Path("/notizen")
 @JaxResource
@@ -65,17 +69,21 @@ public class NotizResource {
     private final FileStoreService fileStoreService;
     private final AuthorizerService authorizerService;
     private final RemoveNotizService removeNotizService;
+    private final TenantSettingsService tenantSettingsService;
+    private final ConfigService configService;
 
 
     @GET
     @NonNull
     @RolesAllowed({BerechtigungName.KINDER_ALLE_NOTIZEN_LESEN, BerechtigungName.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN})
-    public NotizListJson findAllBerechtigt() {
-        return new NotizListJson(notizMapper.findAllBerechtigt(
-            notiz -> authorizerService.hasReadAuthorizationNotiz(
-                notiz,
-                List.of(Berechtigung.KINDER_ALLE_NOTIZEN_LESEN, Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN))
-        ));
+    public NotizListItemListJson findAllBerechtigt() {
+        boolean isZentraleOrganisation = tenantSettingsService.isZentraleOrganisation();
+
+        if(isZentraleOrganisation){
+            return new NotizListItemListJson(notizMapper.findAllListItems());
+        }
+
+        throw new AppFailureException(AppFailureMessage.notizListNotAllowedForDezentralOrganisiert());
     }
 
     @PUT

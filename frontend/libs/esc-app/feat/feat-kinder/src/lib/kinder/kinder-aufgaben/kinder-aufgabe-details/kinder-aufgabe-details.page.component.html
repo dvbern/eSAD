@@ -1,5 +1,5 @@
 <feat-page [heading]="pageHeading()" [backLink]="{label: 'global.back' | transloco, routerLink: Path.RELATIVE_TWO_UP}">
   <feat-shared-aufgabe-details [defaultKind]="dossierStore.selectedKind() ?? undefined"
-                               (saveAction)="navigateBack()"
+                               (saveAction)="navigateToEditPage()"
                                (cancelAction)="navigateBack()"/>
 </feat-page>

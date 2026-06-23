@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2025 DV Bern AG, Switzerland
+ * Copyright (C) 2026 DV Bern AG, Switzerland
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -16,15 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {computed, inject, Injectable} from '@angular/core';
-import {NotizenService, NotizJson, NotizSaveJson} from '@dvb/data-access-backend';
+import {inject, Injectable} from '@angular/core';
+import {NotizenService, NotizJson, NotizListItemJson} from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
-import {NotizJsonEnhanced} from '@dvb/feat-shared';
-import {AppErrorHandlerService, Loader, withSelectedEntity} from '@dvb/util-angular';
-import {compareByEntityInfoTimestampErstellt, isNotNullish, joinNotBlank, requireValue} from '@dvb/util-shared';
+import {enhanceNotizJson, NotizJsonEnhanced} from '@dvb/feat-shared';
+import {AppErrorHandlerService, Loader} from '@dvb/util-angular';
+import {ensurePropsFlat, joinNotBlank, requireValue} from '@dvb/util-shared';
 import {tapResponse} from '@ngrx/operators';
-import {patchState, signalStore, withComputed} from '@ngrx/signals';
-import {removeEntity, setAllEntities, setEntity, withEntities} from '@ngrx/signals/entities';
+import {patchState, signalStore} from '@ngrx/signals';
+import {
+  removeEntity,
+  setAllEntities,
+  setEntity,
+  withEntities
+} from '@ngrx/signals/entities';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, pipe, switchMap} from 'rxjs';
 
@@ -33,16 +38,8 @@ export class NotizenListStore extends signalStore(
   {protectedState: false},
   //withDevtools('kinder-notizen'),
   withEntities<NotizJsonEnhanced>(),
-  withSelectedEntity<NotizJsonEnhanced>(),
-  withComputed(({selectedEntity}) => ({
-    notizenFiles: computed(
-      () => selectedEntity()?.data?.files
-        .sort(compareByEntityInfoTimestampErstellt) ?? [],
-    ),
-  })),
 ) {
   readonly loader = new Loader();
-  readonly saveLoader = new Loader();
   readonly deleteLoader = new Loader();
   readonly #notizenService = inject(NotizenService);
   readonly #appErrorHandlerService = inject(AppErrorHandlerService);
@@ -56,69 +53,6 @@ export class NotizenListStore extends signalStore(
         next: listJson => patchState(this, setAllEntities(listJson.notizen.map(this.enhanceNotiz))),
         error: console.error,
       }),
-    ),
-  );
-
-  removeNotizFile = rxMethod<{
-    notizId: BackendEntityId,
-    fileId: BackendEntityId,
-    onSuccess?: (notiz: NotizJson) => void
-  }>(
-    pipe(
-      exhaustMap(
-        ({notizId, fileId, onSuccess}) => this.saveLoader.tapLoading$(
-          this.#notizenService.removeNotizFile$(
-            {
-              notizId: notizId,
-              fileId: fileId,
-            }),
-          error => this.#appErrorHandlerService.handleError(error),
-        ).pipe(
-          tapResponse({
-            next: result => {
-              patchState(this, setEntity(this.enhanceNotiz(result)));
-              if (isNotNullish(onSuccess)) {
-                onSuccess(result);
-              }
-
-            },
-            error: console.error,
-          }),
-        ),
-      ),
-    ),
-  );
-
-  updateNotiz = rxMethod<{
-    notiz: NotizSaveJson,
-    fileUploads: File[];
-    onSuccess: (notiz: NotizJson) => void
-  }>(
-    pipe(
-      exhaustMap(
-        ({notiz, fileUploads, onSuccess}) => {
-          const [file, file2, file3, file4] = fileUploads;
-          return this.saveLoader.tapLoading$(
-            this.#notizenService.updateNotiz$({
-              notizId: requireValue(this.selectedEntity()).id,
-              notizSaveJson: notiz,
-              file: file,
-              file2: file2,
-              file3: file3,
-              file4: file4,
-            }),
-            error => this.#appErrorHandlerService.handleError(error),
-          ).pipe(
-            tapResponse({
-              next: result => {
-                patchState(this, setEntity(this.enhanceNotiz(result)));
-                onSuccess(result);
-              },
-              error: console.error,
-            }),
-          );
-        },
-      ),
     ),
   );
 
@@ -143,12 +77,14 @@ export class NotizenListStore extends signalStore(
     ),
   );
 
-  private enhanceNotiz(notiz: NotizJson): NotizJsonEnhanced {
+  public addNotizJsonToList(notiz: NotizJson): void {
+    patchState(this, setEntity(enhanceNotizJson(notiz)));
+  }
+
+  private enhanceNotiz(notiz: NotizListItemJson): NotizJsonEnhanced {
     return {
       ...notiz,
-      labelIds: notiz.data.labels.map(each => each.id),
-      hasAnhang: notiz.data.files.length > 0,
-      kindFullName: joinNotBlank([notiz.kind.vorname, notiz.kind.name]) ?? '',
-    }
+      labelIds: notiz.labels.map(each => each.id),
+    };
   }
 }

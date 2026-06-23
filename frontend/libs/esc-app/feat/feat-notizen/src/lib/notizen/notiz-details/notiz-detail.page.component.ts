@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, computed, inject, viewChild} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
 import {DossierStore} from '@dvb/feat-kinder';
 import {
   globalConstants,
@@ -13,6 +12,7 @@ import {
 import {AppNotificationStore, DirtyMarker} from '@dvb/util-angular';
 import {isNotNullish, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
+import {NotizDetailStore} from '../notiz-detail.store';
 import {NotizenListStore} from '../notizen-list.store';
 
 @Component({
@@ -27,23 +27,22 @@ import {NotizenListStore} from '../notizen-list.store';
   ],
 })
 export class NotizDetailPageComponent implements DirtyMarker {
-  readonly notizenComponent = viewChild(NotizenComponent);
+  readonly notizenComponent = viewChild.required(NotizenComponent);
 
+  readonly notizDetailStore = inject(NotizDetailStore);
   readonly notizenListStore = inject(NotizenListStore);
   readonly dossierStore = inject(DossierStore);
 
   readonly #transloco = inject(TranslocoService);
-  readonly #router = inject(Router);
-  readonly #activatedRoute = inject(ActivatedRoute);
   readonly #notificationService = inject(AppNotificationStore);
 
   protected readonly Path = Path;
   protected readonly requireValue = requireValue;
 
-  kind = computed(() => this.notizenListStore.selectedEntity()?.kind);
+  kind = computed(() => this.notizDetailStore.kind());
 
   isDirty(): boolean {
-    return this.notizenComponent()?.isDirty() || this.notizenListStore.saveLoader.isLoading();
+    return this.notizenComponent().isDirty() || this.notizDetailStore.saveLoader.isLoading();
   }
 
   onSaveNotiz(payload: NotizenSaveParams) {
@@ -54,6 +53,7 @@ export class NotizDetailPageComponent implements DirtyMarker {
 
   onSaveNotizSilent(payload: NotizenSaveParams) {
     this.saveNotiz(payload, (updatedId: string) => {
+      this.notizenComponent().resetAfterSuccessfulSave();
       payload.afterSave?.(updatedId);
     });
   }
@@ -63,7 +63,7 @@ export class NotizDetailPageComponent implements DirtyMarker {
       this.#notificationService.addDangerNotification(this.#transloco.translate('ui.validation-error.max-files'));
       return;
     }
-    this.notizenListStore.updateNotiz({
+    this.notizDetailStore.updateNotiz({
       notiz: payload.notiz,
       fileUploads: payload.fileUploads ?? [],
       onSuccess: (result) => onSuccess(result.id),
@@ -71,14 +71,12 @@ export class NotizDetailPageComponent implements DirtyMarker {
   }
 
   onRemoveNotizFile(params: NotizenFileParams) {
-    this.notizenListStore.removeNotizFile(params);
+    this.notizDetailStore.removeNotizFile(params);
   }
 
   private afterSuccessfulSaveAndUpload() {
-    this.notizenComponent()?.form.reset();
-    this.#router.navigate(
-      [Path.RELATIVE_ONE_UP],
-      {relativeTo: this.#activatedRoute});
+    this.notizenComponent().resetAfterSuccessfulSave();
+    this.#notificationService.addSuccessNotification(this.#transloco.translate('global.data.saved'));
   }
 
   public onMobileUpload(_: string) {

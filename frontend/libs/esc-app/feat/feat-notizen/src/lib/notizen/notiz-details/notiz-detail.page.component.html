@@ -2,9 +2,9 @@
            [backLink]="{label: 'global.back' | transloco, routerLink: Path.RELATIVE_ONE_UP}">
   <feat-notizen
     [kindId]="kind()?.id"
-    [existingNotiz]="notizenListStore.selectedEntity()"
-    [notizenFiles]="notizenListStore.notizenFiles()"
-    [loader]="notizenListStore.saveLoader"
+    [existingNotiz]="notizDetailStore.notiz()"
+    [notizenFiles]="notizDetailStore.notizenFiles()"
+    [loader]="notizDetailStore.saveLoader"
     (saveNotiz)="onSaveNotiz($event)"
     (saveNotizSilent)="onSaveNotizSilent($event)"
     (removeNotizFile)="onRemoveNotizFile($event)"

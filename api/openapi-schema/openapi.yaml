@@ -1299,6 +1299,16 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/BenutzerJson"
+    BenutzerNameJson:
+      type: object
+      required:
+      - id
+      - fullName
+      properties:
+        id:
+          $ref: "#/components/schemas/IDBenutzer"
+        fullName:
+          type: string
     BenutzerOptionJson:
       type: object
       required:
@@ -4101,6 +4111,45 @@ components:
           $ref: "#/components/schemas/NotizSaveJson"
         kind:
           $ref: "#/components/schemas/KindOptionJson"
+    NotizListItemJson:
+      type: object
+      required:
+      - id
+      - entityInfo
+      - titel
+      - status
+      - verantwortlicher
+      - labels
+      - hasAnhang
+      properties:
+        id:
+          $ref: "#/components/schemas/IDNotiz"
+        entityInfo:
+          $ref: "#/components/schemas/EntityInfoJson"
+        titel:
+          type: string
+          minLength: 1
+        status:
+          $ref: "#/components/schemas/NotizStatus"
+        verantwortlicher:
+          $ref: "#/components/schemas/BenutzerNameJson"
+        labels:
+          type: array
+          items:
+            $ref: "#/components/schemas/LabelJson"
+        kindFullName:
+          type: string
+        hasAnhang:
+          type: boolean
+    NotizListItemListJson:
+      type: object
+      required:
+      - notizen
+      properties:
+        notizen:
+          type: array
+          items:
+            $ref: "#/components/schemas/NotizListItemJson"
     NotizListJson:
       type: object
       required:
@@ -12962,7 +13011,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NotizListJson"
+                $ref: "#/components/schemas/NotizListItemListJson"
         "401":
           description: Not Authorized
         "403":
@@ -14443,6 +14492,6 @@ paths:
         - SUPPORT
 info:
   title: esc-api API
-  version: 26.5.0-SNAPSHOT
+  version: 26.8.0-SNAPSHOT
 servers:
 - url: https://local-esc-bs.localhost:8443

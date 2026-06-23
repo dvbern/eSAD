@@ -1,5 +1,16 @@
 import {Location} from '@angular/common';
-import {ChangeDetectionStrategy, Component, computed, effect, inject, input, output, signal, untracked} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+  untracked,
+  viewChild
+} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
 import {
@@ -84,6 +95,7 @@ import {NotizenStore} from './notizen.store';
   styleUrl: './notizen.component.scss',
 })
 export class NotizenComponent implements DirtyMarker {
+  fileDrop = viewChild(FileDropComponent);
   protected readonly Path = Path;
   protected readonly DetailMode = DetailMode;
   protected readonly EntityAktivStatus = EntityAktivStatus;
@@ -139,16 +151,19 @@ export class NotizenComponent implements DirtyMarker {
   qrData = '';
 
   private setQr(notizId: string) {
-    let baseUrl = this.router.url;
+    const baseUrl = this.router.url;
+    const normalizedUrl = baseUrl.toLowerCase();
 
-    if (baseUrl.toLowerCase().includes('fragebogen') || baseUrl.toLowerCase().includes('impfausweis')) {
+    if (normalizedUrl.includes('fragebogen') || normalizedUrl.includes('impfausweis')) {
       this.qrData = `${baseUrl}/${Path.UPLOAD}`;
       return;
     }
 
-    if (this.mode() === 'create') {
-      baseUrl = baseUrl.replace(/\/create$/, '');
-      this.qrData = `${baseUrl}/${notizId}/${Path.UPLOAD}`;
+    // Discriminate on the URL, not mode(): once a notiz is saved the store flips mode() to 'edit'
+    // while we may still be on the `create` URL, so only the URL reliably tells us to swap in the id.
+    if (normalizedUrl.endsWith(`/${Path.CREATE}`)) {
+      const baseUrlWithoutCreate = baseUrl.slice(0, baseUrl.length - `/${Path.CREATE}`.length);
+      this.qrData = `${baseUrlWithoutCreate}/${notizId}/${Path.UPLOAD}`;
       return;
     }
 
@@ -204,7 +219,7 @@ export class NotizenComponent implements DirtyMarker {
         notiz: requireValue(payload),
         fileUploads: this.fileUploads,
       });
-      this.fileUploads = undefined;
+      // Transient state is cleared only once the save succeeds; see resetAfterSuccessfulSave().
     }
   }
 
@@ -218,11 +233,15 @@ export class NotizenComponent implements DirtyMarker {
         fileUploads: this.fileUploads,
         afterSave,
       });
-      this.fileUploads = undefined;
-
-      this.form.group.markAsPristine();
-      this.form.group.markAsUntouched();
+      // Transient state is cleared only once the save succeeds; see resetAfterSuccessfulSave().
     }
+  }
+
+  public resetAfterSuccessfulSave(): void {
+    this.fileUploads = undefined;
+    this.fileDrop()?.clear();
+    this.form.group.markAsPristine();
+    this.form.group.markAsUntouched();
   }
 
   previewFile = computed<FileDataJson | null | undefined>(() => {

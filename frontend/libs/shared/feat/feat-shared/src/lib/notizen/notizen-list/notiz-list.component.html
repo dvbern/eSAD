@@ -33,32 +33,32 @@
           {{ 'notizen.list.erstelltAm' | transloco }}
         </th>
         <th
-          (sort)="notizenTable.onColSort($event, 'data.titel')"
-          [sortState]="notizenTable.findColSortDTO('data.titel')"
+          (sort)="notizenTable.onColSort($event, 'titel')"
+          [sortState]="notizenTable.findColSortDTO('titel')"
           scope="col"
           svuiSortable
         >
           {{ 'notizen.list.titel' | transloco }}
         </th>
         <th
-          (sort)="notizenTable.onColSort($event, 'data.labels.data.name')"
-          [sortState]="notizenTable.findColSortDTO('data.labels.data.name')"
+          (sort)="notizenTable.onColSort($event, 'labels.data.name')"
+          [sortState]="notizenTable.findColSortDTO('labels.data.name')"
           scope="col"
           svuiSortable
         >
           {{ 'notizen.list.label' | transloco }}
         </th>
         <th
-          (sort)="notizenTable.onColSort($event, 'data.status')"
-          [sortState]="notizenTable.findColSortDTO('data.status')"
+          (sort)="notizenTable.onColSort($event, 'status')"
+          [sortState]="notizenTable.findColSortDTO('status')"
           scope="col"
           svuiSortable
         >
           {{ 'notizen.list.status' | transloco }}
         </th>
         <th
-          (sort)="notizenTable.onColSort($event, 'data.verantwortlicher.fullName')"
-          [sortState]="notizenTable.findColSortDTO('data.verantwortlicher.fullName')"
+          (sort)="notizenTable.onColSort($event, 'verantwortlicher.fullName')"
+          [sortState]="notizenTable.findColSortDTO('verantwortlicher.fullName')"
           scope="col"
           svuiSortable
         >
@@ -68,8 +68,8 @@
           <th
             scope="col"
             svuiSortable
-            [sortState]="notizenTable.findColSortDTO('kind.name')"
-            (sort)="notizenTable.onColSort($event, 'kind.name')"
+            [sortState]="notizenTable.findColSortDTO('kindFullName')"
+            (sort)="notizenTable.onColSort($event, 'kindFullName')"
           >
             {{ 'aufgaben.list.kind' | transloco }}
           </th>
@@ -198,16 +198,16 @@
             <td>
               <button class="nav-link fw-bold"
                       (click)="goToNotiz.emit(item.id)">
-                {{ item.data.titel }}
+                {{ item.titel }}
               </button>
             </td>
             <td>
-              @for (label of item.data.labels; track label.id) {
+              @for (label of item.labels; track label.id) {
                 <svui-badge class="me-1"> {{ label.data.name | translatedStringPipe }}</svui-badge>
               }
             </td>
-            <td>{{ 'NotizStatus.' + item.data.status | transloco }}</td>
-            <td>{{ item.data.verantwortlicher.fullName }}</td>
+            <td>{{ 'NotizStatus.' + item.status | transloco }}</td>
+            <td>{{ item.verantwortlicher.fullName }}</td>
             @if (showKind()) {
               <td>{{ item.kindFullName }}</td>
             }

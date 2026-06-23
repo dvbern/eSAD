@@ -1,4 +1,4 @@
 <feat-page [heading]="pageHeading()"
            [backLink]="{label: 'global.back' | transloco, routerLink: Path.RELATIVE_ONE_UP}">
-  <feat-shared-aufgabe-details (saveAction)="navigateToList()" (cancelAction)="navigateToList()"/>
+  <feat-shared-aufgabe-details (saveAction)="navigateToEdit()" (cancelAction)="navigateToList()"/>
 </feat-page>

@@ -16,6 +16,8 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import io.smallrye.faulttolerance.api.RateLimit;
 import io.vertx.core.http.HttpServerResponse;
 import jakarta.annotation.security.RolesAllowed;
@@ -52,6 +54,8 @@ public class KinderNotizResource {
     private final NotizMapper notizMapper;
     private final DossierService dossierService;
     private final AuthorizerService authorizerService;
+    private final TenantSettingsService tenantSettingsService;
+    private final ConfigService configService;
 
     @Context
     private HttpServerResponse response;
@@ -63,11 +67,22 @@ public class KinderNotizResource {
     public NotizListJson findAllForKind(
         @PathParam("kindId") @NotNull @NonNull ID<Kind> kindId
     ) {
+        boolean isZentraleOrganisation = tenantSettingsService.isZentraleOrganisation();
+
         return new NotizListJson(notizMapper.findAllForKindBerechtigt(
             kindId,
-            notiz -> authorizerService.hasReadAuthorizationNotiz(
-                notiz,
-                List.of (Berechtigung.KINDER_ALLE_NOTIZEN_LESEN, Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN))));
+            notiz -> {
+                // Wird bewusst nur für diese Schnittstelle angewendet, die einzelnen Endpoints für Details und die schreibenden Endpoints sollen weiterhin geprüft werden.
+                if (isZentraleOrganisation) {
+                    return true;
+                }
+                return authorizerService.hasReadAuthorizationNotiz(
+                    notiz,
+                    List.of(
+                        Berechtigung.KINDER_ALLE_NOTIZEN_LESEN,
+                        Berechtigung.KINDER_NOTIZEN_MIT_LABEL_DISPENSATIONSGESUCHE_LESEN));
+            }
+        ));
     }
 
     @POST

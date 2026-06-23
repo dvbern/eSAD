@@ -44,6 +44,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -143,6 +144,7 @@ public class Notiz extends AbstractEntity<Notiz> implements EntityWithOptimistic
     @NotNull
     @NonNull
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("timestampErstellt DESC")
     @JoinTable(name = "Notiz_Filedata",
         joinColumns = @JoinColumn(
             name = "notiz_id",

@@ -80,6 +80,53 @@ class PreviewResourceITest {
     }
     @Test
     @TestAsAdminBS
+    void downloadNotizFilePreview_should_return_image_for_problematic_docx() {
+        // ARRANGE
+        // This real-world DOCX contains DOCPROPERTY fields referencing custom document properties
+        // that are not present in the package (docx4j FieldValueException/TransformerException) and
+        // headers/footers FOP cannot measure (anchored logo + floating w:framePr table), which
+        // produced a NumberFormatException in FOPAreaTreeHelper during PDF conversion. This test
+        // reproduces both scenarios end-to-end via the preview endpoint and verifies a valid image
+        // is returned (see DocxPreviewGenerator#flattenSimpleFields / DocxPreviewGenerator#convertToPdf,
+        // which renders with headers/footers and only falls back to removing them if FOP fails).
+        Notiz storedNotiz = fixtureService.createNotiz();
+
+        File testfile = TestUtil.loadProblematicPreviewWord();
+        NotizJsonSpec notizJsonSpec = notizApi.notizResourceAddNotizFile()
+            .notizIdPath(storedNotiz.getId().getId())
+            ._fileMultiPart(testfile)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(NotizJsonSpec.class);
+
+        assertThat(notizJsonSpec.getData().getFiles())
+            .isNotEmpty()
+            .asInstanceOf(InstanceOfAssertFactories.list(FileDataJsonSpec.class))
+            .hasSize(1);
+        // ACT
+
+        byte[] image = api.previewResourceDownloadPreviewNotizFile()
+            .notizIdPath(storedNotiz.getId().getId())
+            .fileIdPath(Objects.requireNonNull(notizJsonSpec.getData().getFiles()).getFirst().getId())
+            .execute(ResponseOptions::andReturn)
+            .then()
+            .statusCode(Status.OK.getStatusCode())
+            .header("Content-Disposition", "inline;filename=\"preview.png\"")
+            .header("Content-Type", "image/png")
+            .header("Cache-Control", "max-age=3600")
+            .extract()
+            .asByteArray();
+
+        // ASSERT
+        assertThat(image)
+            .isNotNull()
+            .isNotEmpty();
+    }
+
+    @Test
+    @TestAsAdminBS
     void downloadAufgabeFileSync() {
         // ARRANGE
         Aufgabe storedAufgabe = fixtureService.createAufgabe();

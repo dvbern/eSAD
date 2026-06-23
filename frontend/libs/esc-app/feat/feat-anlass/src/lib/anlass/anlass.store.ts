@@ -20,9 +20,16 @@ import {
 import {TranslocoService} from '@jsverse/transloco';
 import {tapResponse} from '@ngrx/operators';
 import {patchState, signalStore, withComputed, withMethods, withState} from '@ngrx/signals';
-import {addEntity, removeEntity, setAllEntities, setEntity, withEntities} from '@ngrx/signals/entities';
+import {
+  addEntity,
+  removeAllEntities,
+  removeEntity,
+  setEntities,
+  setEntity,
+  withEntities
+} from '@ngrx/signals/entities';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
-import {exhaustMap, pipe, switchMap} from 'rxjs';
+import {exhaustMap, pipe, switchMap, tap} from 'rxjs';
 import {enhanceAnlass} from './anlass.util';
 import {withDevtools} from '@angular-architects/ngrx-toolkit';
 
@@ -163,11 +170,12 @@ export class AnlassStore extends signalStore(
 
   loadAnlassList = rxMethod<void>(
     pipe(
+      tap(() => patchState(this, removeAllEntities())),
       switchMap(() => this.loader.tapLoading$(this.#anlassService.findAllAnlaesseBerechtigt$(),
         error => this.#appErrorHandlerService.handleError(error))),
       tapResponse({
         next: listJson => patchState(this,
-          setAllEntities(listJson.anlassList.map(each => enhanceAnlass(each, this.transloco)))),
+          setEntities(listJson.anlassList.map(each => enhanceAnlass(each, this.transloco)))),
         error: console.error,
       }),
     ),

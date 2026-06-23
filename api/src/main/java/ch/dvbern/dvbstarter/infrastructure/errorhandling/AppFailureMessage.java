@@ -18,8 +18,6 @@
 
 package ch.dvbern.dvbstarter.infrastructure.errorhandling;
 
-import java.time.LocalDate;
-
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.commons.i18nl10n.I18nMessage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
@@ -31,6 +29,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.time.LocalDate;
 
 @Value
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -246,6 +246,11 @@ public class AppFailureMessage {
             "AppFailure.PREVIEW_UNSUPPORTED_MIME_TYPE",
             "mimeType", mimeType
         ));
+    }
+
+    @NonNull
+    public static AppFailureMessage notizListNotAllowedForDezentralOrganisiert() {
+        return build(I18nMessage.of("AppFailure.NOT_ALLOWED_FOR_DEZENTRAL_ORGANISIERT"));
     }
 
     private final I18nMessage i18nMessage;

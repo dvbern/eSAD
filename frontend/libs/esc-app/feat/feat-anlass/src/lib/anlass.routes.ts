@@ -125,20 +125,13 @@ export const anlassRoutes: Route[] = [
     providers: [AnlassStore, AnlassKinderStore, UntersuchungStore, InfomaterialStore, provideTranslocoScope('Anlass')],
     resolve: {
       _store: () => {
-        const anlassStore = inject(AnlassStore);
-        anlassStore.loadAnlassList();
-        anlassStore.setSelectedEntityId(undefined);
-
+        inject(AnlassStore).loadAnlassList();
+        inject(AnlassStore).setSelectedEntityId(undefined);
         const benutzerStore = inject(BenutzerStore);
         if (benutzerStore.createHasRequiredRoleSig(hasInfomaterialViewBerechtigung())()) {
           inject(InfomaterialStore).loadInfomaterialList({onlyActive: true});
         }
         inject(AnlassConfigOptionsStore).loadAnlassConfigOptions();
-        // Warten bis die AnlassListe fertig geladen ist, damit es keine RaceCondition mit der LoadEntity Funktion gibt.
-        return toObservable(anlassStore.loader.isLoading).pipe(
-          filter(isLoading => !isLoading),
-          take(1),
-        );
       },
     },
     children: [

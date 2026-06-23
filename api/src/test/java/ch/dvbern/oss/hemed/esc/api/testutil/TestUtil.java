@@ -111,6 +111,11 @@ public class TestUtil {
     }
 
     @NonNull
+    public static File loadProblematicPreviewWord() {
+        return loadTestfile("/PreviewTest/1a_Augen_KG_Notter-Nina_26-05-2026_manualbreak.docx");
+    }
+
+    @NonNull
     public static File loadTestImage() {
         return loadTestfile("/FileUtilTest/logo.png");
     }

@@ -1,11 +1,11 @@
 
-import {ChangeDetectionStrategy, Component, computed, inject, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, viewChild} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {AufgabenStore} from '@dvb/feat-shared';
 import {Path} from '@dvb/feat-shared';
 import {PageComponent} from '@dvb/feat-shared';
-import {AufgabeDetailsComponent} from '@dvb/feat-shared';;
+import {AufgabeDetailsComponent} from '@dvb/feat-shared';
 import {DirtyMarker} from '@dvb/util-angular';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 
@@ -26,16 +26,17 @@ import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
   `,
 })
 export class AufgabeDetailsPageComponent implements DirtyMarker {
-  @ViewChild(AufgabeDetailsComponent) aufgabenDetailComponent!: AufgabeDetailsComponent;
+  aufgabenDetailComponent = viewChild.required(AufgabeDetailsComponent);
 
   readonly store = inject(AufgabenStore);
   readonly transloco = inject(TranslocoService);
   readonly #router = inject(Router);
+  readonly #activeRoute = inject(ActivatedRoute);
 
   protected readonly Path = Path;
 
   isDirty(): boolean {
-    return this.aufgabenDetailComponent.isDirty() || this.store.saveLoader.isLoading();
+    return this.aufgabenDetailComponent().isDirty() || this.store.saveLoader.isLoading();
   }
 
   pageHeading = computed(() => {
@@ -45,5 +46,12 @@ export class AufgabeDetailsPageComponent implements DirtyMarker {
 
   async navigateToList(): Promise<void> {
     await this.#router.navigate([Path.AUFGABEN]);
+  }
+
+  navigateToEdit(): void {
+    this.#router.navigate([Path.RELATIVE_ONE_UP, this.store.selectedEntityId()], {
+      relativeTo: this.#activeRoute,
+      replaceUrl: true,
+    });
   }
 }

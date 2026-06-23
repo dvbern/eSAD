@@ -142,6 +142,7 @@
   <include file="db/win/0036-update-anlassconfig-win-dev-20260529.xml"/>
   <include file="db/base/0076-freiesgehen-enum-cleanup-and-anzahlmonate.xml"/>
   <include file="db/base/0074-update-schulrelevante-beeintraechtigungen-renamed-enum-values.xml"/>
+  <include file="db/base/0077-alter-escadaklasseids-column-length.xml"/>
 
   <!--  The following scripts only run in the 'test' context-->
 

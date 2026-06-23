@@ -19,33 +19,49 @@
 import {computed, inject, Injectable} from '@angular/core';
 import {NotizenService, NotizJson, NotizSaveJson} from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
-import {NotizJsonEnhanced} from '@dvb/feat-shared';
-import {AppErrorHandlerService, Loader, withSelectedEntity} from '@dvb/util-angular';
-import {compareByEntityInfoTimestampErstellt, isNotNullish, joinNotBlank, requireValue} from '@dvb/util-shared';
+import {enhanceNotizJson, NotizJsonEnhanced} from '@dvb/feat-shared';
+import {AppErrorHandlerService, DetailMode, Loader, withSelectedEntity} from '@dvb/util-angular';
+import {compareByEntityInfoTimestampErstellt, isNotNullish, requireValue} from '@dvb/util-shared';
 import {tapResponse} from '@ngrx/operators';
 import {patchState, signalStore, withComputed} from '@ngrx/signals';
 import {addEntity, removeEntity, setAllEntities, setEntity, withEntities} from '@ngrx/signals/entities';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, pipe, switchMap} from 'rxjs';
 import {DossierStore} from '../../dossier.store';
+import {withDevtools} from '@angular-architects/ngrx-toolkit';
 
+/**
+ * Kind-Notiz Store.
+ *
+ * Hält für die Notizen-Tabelle des Kindes je Notiz das schlanke Tabellen-Format
+ * {@link NotizJson}; die angereicherte Variante {@link NotizJsonEnhanced} wird
+ * als computed bereitgestellt.
+ */
 @Injectable()
 export class KinderNotizStore extends signalStore(
   {protectedState: false},
-  //withDevtools('kinder-notizen'),
-  withEntities<NotizJsonEnhanced>(),
-  withSelectedEntity<NotizJsonEnhanced>(),
-  withComputed(({entities, selectedEntity}) => ({
-    notizenSortedAndSliced: computed(
-      () => entities()
-        .sort(compareByEntityInfoTimestampErstellt)
-        .slice(0, 10),
-    ),
-    notizenFiles: computed(
-      () => selectedEntity()?.data?.files
-        .sort(compareByEntityInfoTimestampErstellt),
-    ),
-  })),
+  withDevtools('kinder-notizen'),
+  withEntities<NotizJson>(),
+  withSelectedEntity<NotizJson>(),
+  withComputed(({ entities, selectedEntity }) => {
+    const notizenEnhanced = computed(
+      (): NotizJsonEnhanced[] => entities().map(enhanceNotizJson),
+    );
+    return {
+      notizenEnhanced,
+      notizenSortedAndSliced: computed(
+        (): NotizJsonEnhanced[] => notizenEnhanced()
+          .slice()
+          .sort(compareByEntityInfoTimestampErstellt)
+          .slice(0, 10),
+      ),
+      notizenFiles: computed(
+        () => selectedEntity()?.data?.files
+          .slice()
+          .sort(compareByEntityInfoTimestampErstellt),
+      ),
+    };
+  }),
 ) {
   readonly dossierStore = inject(DossierStore);
   readonly loader = new Loader();
@@ -62,7 +78,11 @@ export class KinderNotizStore extends signalStore(
         }),
         error => this.#appErrorHandlerService.handleError(error))),
       tapResponse({
-        next: listJson => patchState(this, setAllEntities(listJson.notizen.map(notiz => this.enhanceNotiz(notiz)))),
+        next: listJson => {
+          patchState(this,
+            setAllEntities(listJson.notizen),
+          );
+        },
         error: console.error,
       }),
     ),
@@ -90,7 +110,14 @@ export class KinderNotizStore extends signalStore(
           ).pipe(
             tapResponse({
               next: result => {
-                patchState(this, addEntity(this.enhanceNotiz(result)));
+                patchState(this,
+                  addEntity(result),
+                  {
+                    selectedEntityId: result.id,
+                    detailMode: DetailMode.EDIT
+                  }
+                );
+
                 onSuccess(result);
               },
               error: console.error,
@@ -118,7 +145,9 @@ export class KinderNotizStore extends signalStore(
         ).pipe(
           tapResponse({
             next: result => {
-              patchState(this, setEntity(this.enhanceNotiz(result)));
+              patchState(this,
+                setEntity(result),
+              );
               if (isNotNullish(onSuccess)) {
                 onSuccess(result);
               }
@@ -153,7 +182,9 @@ export class KinderNotizStore extends signalStore(
           ).pipe(
             tapResponse({
               next: result => {
-                patchState(this, setEntity(this.enhanceNotiz(result)));
+                patchState(this,
+                  setEntity(result),
+                );
                 onSuccess(result);
               },
               error: console.error,
@@ -176,7 +207,9 @@ export class KinderNotizStore extends signalStore(
         ).pipe(
           tapResponse({
             next: () => {
-              patchState(this, removeEntity(notizId));
+              patchState(this,
+                removeEntity(notizId),
+              );
             },
             error: console.error,
           }),
@@ -184,13 +217,4 @@ export class KinderNotizStore extends signalStore(
       ),
     ),
   );
-
-  private enhanceNotiz(notiz: NotizJson): NotizJsonEnhanced {
-    return {
-      ...notiz,
-      labelIds: notiz.data.labels.map(each => each.id),
-      hasAnhang: notiz.data.files.length > 0,
-      kindFullName: joinNotBlank([notiz.kind.vorname, notiz.kind.name]) ?? '',
-    }
-  }
 }

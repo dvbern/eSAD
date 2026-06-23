@@ -1,11 +1,11 @@
 import {Location} from '@angular/common';
-import {ChangeDetectionStrategy, Component, computed, inject, ViewChild} from '@angular/core';
-import {Router} from '@angular/router';
+import {ChangeDetectionStrategy, Component, computed, inject, viewChild} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {AufgabenStore} from '@dvb/feat-shared';
 import {Path} from '@dvb/feat-shared';
 
 import {PageComponent} from '@dvb/feat-shared';
-import {AufgabeDetailsComponent} from '@dvb/feat-shared';;
+import {AufgabeDetailsComponent} from '@dvb/feat-shared';
 import {DirtyMarker} from '@dvb/util-angular';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {DossierStore} from '../../dossier.store';
@@ -22,13 +22,14 @@ import {DossierStore} from '../../dossier.store';
   ],
 })
 export class KinderAufgabeDetailsPageComponent implements DirtyMarker {
-  @ViewChild(AufgabeDetailsComponent) aufgabeDetailsComponent!: AufgabeDetailsComponent;
+  aufgabeDetailsComponent = viewChild.required(AufgabeDetailsComponent);
 
   readonly store = inject(AufgabenStore);
   readonly dossierStore = inject(DossierStore);
 
   readonly transloco = inject(TranslocoService);
   readonly router = inject(Router);
+  readonly activeRoute = inject(ActivatedRoute);
   readonly location = inject(Location);
 
   protected readonly Path = Path;
@@ -41,10 +42,17 @@ export class KinderAufgabeDetailsPageComponent implements DirtyMarker {
   });
 
   isDirty(): boolean {
-    return this.aufgabeDetailsComponent.isDirty() || this.store.saveLoader.isLoading();
+    return this.aufgabeDetailsComponent().isDirty() || this.store.saveLoader.isLoading();
   }
 
   navigateBack(): void {
     this.location.back();
+  }
+
+  navigateToEditPage(): void {
+    this.router.navigate([Path.RELATIVE_ONE_UP, this.store.selectedEntityId()], {
+      relativeTo: this.activeRoute,
+      replaceUrl: true,
+    });
   }
 }

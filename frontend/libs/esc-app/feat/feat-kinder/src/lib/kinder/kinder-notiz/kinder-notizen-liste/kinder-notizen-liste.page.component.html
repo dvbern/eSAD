@@ -20,7 +20,7 @@
     (removeNotiz)="removeNotiz($event)"
     [deleteLoading]="kinderNotizStore.deleteLoader.isLoading()"
     [loading]="kinderNotizStore.loader.isLoading()"
-    [notizen]="this.kinderNotizStore.entities()"
+    [notizen]="kinderNotizStore.notizenEnhanced()"
     [showKind]="false"
   />
 </feat-page>

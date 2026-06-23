@@ -1,0 +1,22 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <!--
+    Vergroessern der Spalte escadaklasseids (kommaseparierte Liste von KlassenIds)
+    auf VARCHAR(2000), da 255 Zeichen bei vielen Klassen pro Lehrperson nicht
+    ausreichen. Gilt fuer die Tabelle lehrpersonexternal und die zugehoerige
+    Envers-Audit-Tabelle lehrpersonexternal_aud.
+  -->
+  <changeSet author="gema" id="0077-alter-escadaklasseids-column-length-1">
+    <modifyDataType columnName="escadaklasseids" newDataType="VARCHAR(2000)" tableName="lehrpersonexternal"/>
+  </changeSet>
+
+  <changeSet author="gema" id="0077-alter-escadaklasseids-column-length-2">
+    <modifyDataType columnName="escadaklasseids" newDataType="VARCHAR(2000)" tableName="lehrpersonexternal_aud"/>
+  </changeSet>
+
+</databaseChangeLog>

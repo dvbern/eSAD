@@ -19,6 +19,7 @@ import { Observable }                                        from 'rxjs';
 
 import { BackendEntityId } from '@dvb/data-access-types';
 import { NotizJson } from '../model/notiz-json';
+import { NotizListItemListJson } from '../model/notiz-list-item-list-json';
 import { NotizListJson } from '../model/notiz-list-json';
 import { NotizSaveJson } from '../model/notiz-save-json';
 
@@ -572,9 +573,9 @@ export class NotizenService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public findAllBerechtigt$(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<NotizListJson>;
-    public findAllBerechtigt$(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<NotizListJson>>;
-    public findAllBerechtigt$(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<NotizListJson>>;
+    public findAllBerechtigt$(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<NotizListItemListJson>;
+    public findAllBerechtigt$(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<NotizListItemListJson>>;
+    public findAllBerechtigt$(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<NotizListItemListJson>>;
     public findAllBerechtigt$(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
@@ -620,7 +621,7 @@ export class NotizenService {
         }
 
         let localVarPath = `/api/notizen`;
-        return this.httpClient.request<NotizListJson>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<NotizListItemListJson>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,

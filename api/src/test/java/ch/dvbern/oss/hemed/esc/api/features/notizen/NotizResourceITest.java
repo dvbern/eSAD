@@ -18,14 +18,6 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.notizen;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.time.LocalDate;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.FailureType;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileNameUtil;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -39,6 +31,8 @@ import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.labels.LabelMapper;
 import ch.dvbern.oss.hemed.esc.api.features.labels.LabelService;
 import ch.dvbern.oss.hemed.esc.api.features.labels.types.LabelTyp;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
@@ -50,6 +44,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.LabelBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.NotizBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.LabelJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.NotizenApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppFailureErrorJsonSpec;
@@ -57,6 +52,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppValidationErrorJsonS
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FileDataJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LabelJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizListItemListJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizListJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizStatusSpec;
@@ -73,6 +69,14 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -91,6 +95,7 @@ class NotizResourceITest extends AbstractITest {
     private final LabelService labelService;
     private final EinladungService einladungService;
     private final ObjectMapper objectMapper;
+    private final TenantProducer tenantProducer;
 
     private Benutzer verantwortlicher;
     private ID<Dossier> dossierId;
@@ -222,19 +227,124 @@ class NotizResourceITest extends AbstractITest {
                 .withVerantwortlicher(verantwortlicher)));
 
         // ACT
-        NotizListJsonSpec result = api
+        NotizListItemListJsonSpec result = api
             .notizResourceFindAllBerechtigt()
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
             .statusCode(Status.OK.getStatusCode())
-            .extract().as(NotizListJsonSpec.class);
+            .extract().as(NotizListItemListJsonSpec.class);
 
         // ASSERT
         assertThat(result.getNotizen())
             .isNotEmpty()
-            .anyMatch(notizJsonSpec -> notizKind1.getId().getId().equals(notizJsonSpec.getId()))
-            .anyMatch(notizJsonSpec -> notizKind2.getId().getId().equals(notizJsonSpec.getId()));
+            .anyMatch(notizListItemJsonSpec -> notizKind1.getId().getId().equals(notizListItemJsonSpec.getId()))
+            .anyMatch(notizListItemJsonSpec -> notizKind2.getId().getId().equals(notizListItemJsonSpec.getId()));
+    }
+
+    @Test
+    @TestAsAdminBS
+    void findAllBerechtigtNotizen_returnsListItemDtoWithAllFields() {
+        // ARRANGE
+        Dossier dossier = fixtureService.createDossier();
+        Notiz persisted = notizService.persist(NotizBuilder.create(
+            builder -> builder
+                .withTitel("ListItem Test Notiz")
+                .withStatus(NotizStatus.AKTIV)
+                .withDossier(dossier)
+                .withVerantwortlicher(verantwortlicher)));
+
+        // ACT
+        NotizListItemListJsonSpec result = api
+            .notizResourceFindAllBerechtigt()
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(NotizListItemListJsonSpec.class);
+
+        // ASSERT - schlankes DTO enthält alle für die Tabelle benötigten Felder
+        Kind kindOfNotiz = dossier.getKind();
+        String expectedKindFullName = kindOfNotiz.getVorname() + " " + kindOfNotiz.getName();
+        assertThat(result.getNotizen())
+            .isNotEmpty()
+            .anySatisfy(item -> {
+                assertThat(item.getId()).isEqualTo(persisted.getId().getId());
+                assertThat(item.getTitel()).isEqualTo("ListItem Test Notiz");
+                assertThat(item.getStatus()).isEqualTo(NotizStatusSpec.AKTIV);
+                assertThat(item.getEntityInfo()).isNotNull();
+                assertThat(item.getLabels()).isEmpty();
+                assertThat(item.getHasAnhang()).isFalse();
+                assertThat(item.getKindFullName()).isEqualTo(expectedKindFullName);
+                assertThat(item.getVerantwortlicher()).isNotNull();
+                assertThat(item.getVerantwortlicher().getId())
+                    .isEqualTo(verantwortlicher.getId().getId());
+                assertThat(item.getVerantwortlicher().getFullName())
+                    .isEqualTo(verantwortlicher.getVornameName());
+            });
+    }
+
+    @Test
+    @TestAsAdminBE
+    void findAllBerechtigtNotizen_should_fail_for_dezentral_tenant() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+
+        // ACT
+        api
+            .notizResourceFindAllBerechtigt()
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
+    }
+
+
+    @Test
+    @TestAsAdminBS
+    void findAllBerechtigtNotizen_withLabelAndFile_setsHasAnhangAndLabels() {
+        // ARRANGE
+        Label label = labelService.persist(LabelBuilder.create(
+            builder -> builder
+                .withRandomName("ListItem Label")
+                .withTyp(LabelTyp.NOTIZEN)));
+
+        Notiz notiz = notizService.persist(NotizBuilder.create(
+            builder -> builder
+                .withTitel("Notiz mit Anhang")
+                .withDossier(fixtureService.createDossier())
+                .withVerantwortlicher(verantwortlicher)
+                .withLabels(new LinkedHashSet<>(List.of(label)))));
+
+        // Datei via API hochladen, damit hasAnhang = true wird
+        api.notizResourceAddNotizFile()
+            .notizIdPath(notiz.getId().getId())
+            ._fileMultiPart(TestUtil.loadTestPDF())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode());
+
+        // ACT
+        NotizListItemListJsonSpec result = api
+            .notizResourceFindAllBerechtigt()
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(NotizListItemListJsonSpec.class);
+
+        // ASSERT
+        assertThat(result.getNotizen())
+            .isNotEmpty()
+            .anySatisfy(item -> {
+                assertThat(item.getId()).isEqualTo(notiz.getId().getId());
+                assertThat(item.getTitel()).isEqualTo("Notiz mit Anhang");
+                assertThat(item.getHasAnhang()).isTrue();
+                assertThat(item.getLabels())
+                    .hasSize(1)
+                    .anyMatch(l -> label.getId().getId().equals(l.getId()));
+            });
     }
 
     @Test

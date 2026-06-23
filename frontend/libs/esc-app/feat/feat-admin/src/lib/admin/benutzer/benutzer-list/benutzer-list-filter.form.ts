@@ -1,10 +1,9 @@
 import {DestroyRef} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {NonNullableFormBuilder} from '@angular/forms';
-import {FachRolle} from '@dvb/data-access-backend';
+import {EntityAktivStatus, FachRolle} from '@dvb/data-access-backend';
 import {BaseForm, FilterCombinationMethod, FilterMethod, onTextInput, TableModel} from '@dvb/util-angular';
-import {isNullish} from '@dvb/util-shared';
-import {distinctUntilChanged} from 'rxjs';
+import {distinctUntilChanged, startWith} from 'rxjs';
 import {BenutzerEnhancedJson} from "@dvb/feat-shared";
 
 type Config = {
@@ -19,7 +18,7 @@ function makeForm(config: Config) {
     name: fb.control<string>(''),
     vorname: fb.control<string>(''),
     email: fb.control<string>(''),
-    benutzerAktivStatus: fb.control<boolean | null>(null),
+    benutzerAktivStatus: fb.control<EntityAktivStatus | null>(EntityAktivStatus.AKTIV),
     rolle: fb.control<FachRolle | null>(null),
     organisation: fb.control<string | null>(null),
   });
@@ -72,13 +71,16 @@ function makeForm(config: Config) {
     error: console.error,
   });
 
-  group.controls.benutzerAktivStatus.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
+  group.controls.benutzerAktivStatus.valueChanges.pipe(
+    startWith(group.controls.benutzerAktivStatus.value),
+    distinctUntilChanged(),
+    takeUntilDestroyed(config.destroyRef)
+  )
     .subscribe({
       next: benutzerAktivStatus => {
-        const filterValue = isNullish(benutzerAktivStatus) ? '' : '' + benutzerAktivStatus;
         config.paginatedTable.onFilterChanged({
-          filterValue: filterValue,
-          filterMethod: FilterMethod.BOOL,
+          filterValue: benutzerAktivStatus ?? '',
+          filterMethod: FilterMethod.ENUM,
           filterCombinationMethod: FilterCombinationMethod.AND,
           filterName: 'data.benutzerAktivStatus',
         });

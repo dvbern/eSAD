@@ -1,5 +1,15 @@
 import {CommonModule} from '@angular/common';
-import {ChangeDetectionStrategy, Component, computed, effect, inject, input, output, signal} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+  viewChild
+} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {
   AufgabeJson,
@@ -26,8 +36,13 @@ import {
   TextareaDirective,
   TextInputDirective,
 } from '@dvb/ui-components';
-import {DetailMode, DirtyMarker, TableModel} from '@dvb/util-angular';
-import {compareFn, hasAufgabenEditBerechtigungen, isNotNullish} from '@dvb/util-shared';
+import {AppNotificationStore, DetailMode, DirtyMarker, TableModel} from '@dvb/util-angular';
+import {
+  compareByEntityInfoTimestampErstellt,
+  compareFn,
+  hasAufgabenEditBerechtigungen,
+  isNotNullish
+} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbNav, NgbNavItem} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
@@ -85,6 +100,7 @@ import {AufgabeDetailsForm} from './aufgabe-details.form';
   `,
 })
 export class AufgabeDetailsComponent implements DirtyMarker {
+  fileDrop = viewChild(FileDropComponent);
   readonly defaultKind = input<KindJson>();
 
   readonly saveAction = output();
@@ -98,6 +114,7 @@ export class AufgabeDetailsComponent implements DirtyMarker {
   readonly confirmService = inject(ConfirmService);
   readonly transloco = inject(TranslocoService);
   readonly navigationService = inject(NavigationService);
+  readonly notificationService = inject(AppNotificationStore);
 
   form = new AufgabeDetailsForm({
     fb: inject(NonNullableFormBuilder),
@@ -125,7 +142,11 @@ export class AufgabeDetailsComponent implements DirtyMarker {
   readonly acceptedFiletypes = globalConstants.acceptedFileTypes;
 
   entityInfo = computed(() => this.store.selectedEntity()?.entityInfo);
-  aufgabenFiles = computed(() => this.store.selectedEntity()?.data.files ?? []);
+  aufgabenFiles = computed(() =>
+    this.store.selectedEntity()?.data.files
+      ?.slice()
+      .sort(compareByEntityInfoTimestampErstellt) ?? []
+  );
   inaktivLabels = computed(() => this.store.selectedEntity()?.data?.labels?.filter(label => !label.data.aktiv) ?? []);
 
   uploadTable = new TableModel<FileDataJson>(
@@ -253,6 +274,8 @@ export class AufgabeDetailsComponent implements DirtyMarker {
   private afterSuccessfulSaveAndUpload(): void {
     this.form.reset();
     this.fileUploads = undefined;
+    this.fileDrop()?.clear();
+    this.notificationService.addSuccessNotification(this.transloco.translate('global.data.saved'));
     this.saveAction.emit();
   }
 

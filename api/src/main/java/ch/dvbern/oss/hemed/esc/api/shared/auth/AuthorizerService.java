@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.auth;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -37,6 +38,9 @@ import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueue;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueueService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.util.HasZustaendigkeit;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import io.quarkus.security.identity.CurrentIdentityAssociation;
+import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.enterprise.context.RequestScoped;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,6 +64,77 @@ public class AuthorizerService {
     private final ConfigService configService;
     private final EinladungService einladungService;
     private final DossierService dossierService;
+    private final CurrentIdentityAssociation association;
+
+    // Request-Scope-Caches: Daten, die innerhalb eines Requests konstant sind,
+    // werden hier lazy memoized, um in Listen-Endpoints (z.B. findAllAnlaesseBerechtigt)
+    // das N+1-Pattern zu vermeiden.
+    // SICHERHEITSHINWEIS: Diese Caches werden invalidiert, wenn sich der Tenant oder der Principal (User) ändert.
+    @Nullable
+    private Benutzer cachedCurrentBenutzer;
+    @Nullable
+    private SecurityIdentity cachedIdentity;
+    @Nullable
+    private Boolean cachedIsZentraleOrganisation;
+    @Nullable
+    private Organisation cachedZentraleOrganisation;
+    @Nullable
+    private TenantEnum cachedTenant;
+
+    @NonNull
+    private Benutzer currentBenutzer() {
+        updateCachedTenantAndClearCacheIfNeeded(); // stellt sicher, dass der Tenant-Cache aktuell ist und ggf. invalidiert wurde
+
+        // Die SecurityIdentity wird bei jedem Wechsel (z.B. @RunAs via RunAsInterceptor oder Re-Augmentation)
+        // komplett ersetzt. Ein Referenzvergleich (!=) ist daher korrekt
+        SecurityIdentity identity = association.getIdentity();
+
+        //noinspection ObjectEquality
+        if (cachedCurrentBenutzer == null || cachedIdentity != identity) {
+            cachedCurrentBenutzer = benutzerService.getCurrentBenutzerOrThrowException();
+            cachedIdentity = identity;
+        }
+        return cachedCurrentBenutzer;
+    }
+
+    private boolean isZentraleOrganisation() {
+        updateCachedTenantAndClearCacheIfNeeded();
+        if (cachedIsZentraleOrganisation == null) {
+            cachedIsZentraleOrganisation = tenantSettingsService.getTenantSetting()
+                .getTenantSettingFeatures()
+                .getZentraleOrganisationFeature()
+                .isEnabledForDeploymentEnvironment(configService.getEnvironment());
+        }
+        return cachedIsZentraleOrganisation;
+    }
+
+    @NonNull
+    private Organisation zentraleOrganisation() {
+        updateCachedTenantAndClearCacheIfNeeded();
+        if (cachedZentraleOrganisation == null) {
+            cachedZentraleOrganisation = organisationService.getZentraleOrganisation();
+        }
+        return cachedZentraleOrganisation;
+    }
+
+    @Nullable
+    @CanIgnoreReturnValue
+    private TenantEnum updateCachedTenantAndClearCacheIfNeeded() {
+        TenantEnum currentTenant = tenantProducer.produceTenant();
+        if (cachedTenant != currentTenant) {
+            clearCache();
+            cachedTenant = currentTenant;
+        }
+        return cachedTenant;
+    }
+
+    private void clearCache() {
+        cachedCurrentBenutzer = null;
+        cachedIdentity = null;
+        cachedIsZentraleOrganisation = null;
+        cachedZentraleOrganisation = null;
+        cachedTenant = null;
+    }
 
     // ORGANISATION
 
@@ -277,14 +352,9 @@ public class AuthorizerService {
     }
 
     public boolean hasReadAuthorizationAufgabe(@NonNull Aufgabe aufgabe, @NonNull List<Berechtigung> berechtigungenAnnotated) {
-        boolean isZentraleOrganisation = tenantSettingsService.getTenantSetting()
-            .getTenantSettingFeatures()
-            .getZentraleOrganisationFeature()
-            .isEnabledForDeploymentEnvironment(configService.getEnvironment());
-
-        if (isZentraleOrganisation) {
+        if (isZentraleOrganisation()) {
             return isInOrganisationWithBerechtigung(
-                organisationService.getZentraleOrganisation(),
+                zentraleOrganisation(),
                 berechtigungenAnnotated,
                 null);
         }
@@ -392,7 +462,7 @@ public class AuthorizerService {
     }
 
     public boolean checkReadAuthorizationDocument(@NonNull DocumentQueue documentQueue) {
-        Benutzer currentBenutzer = benutzerService.getCurrentBenutzerOrThrowException();
+        Benutzer currentBenutzer = currentBenutzer();
         return documentQueue.getBenutzer().equals(currentBenutzer);
     }
 
@@ -417,7 +487,7 @@ public class AuthorizerService {
         Archivdokument archivdokument = archivdokumentService.getById(archivDokumentID);
         Organisation organisationArchivOwner = archivdokument.getOwner().getSingleOrganisation();
 
-        Benutzer currentBenutzer = benutzerService.getCurrentBenutzerOrThrowException();
+        Benutzer currentBenutzer = currentBenutzer();
 
         if (!isInOrganisationWithBerechtigung(organisationArchivOwner, List.of(Berechtigung.ARCHIVIERUNG), null)
             || !(archivdokument.getOwner().equals(currentBenutzer)
@@ -433,12 +503,8 @@ public class AuthorizerService {
         @NonNull List<Berechtigung> berechtigungenAnnotated,
         @Nullable List<Berechtigung> additionalBerechtigungen
     ) {
-        boolean isZentraleOrganisation = tenantSettingsService.getTenantSetting()
-            .getTenantSettingFeatures()
-            .getZentraleOrganisationFeature()
-            .isEnabledForDeploymentEnvironment(configService.getEnvironment());
-        if (isZentraleOrganisation) {
-            return isInOrganisationWithBerechtigung(organisationService.getZentraleOrganisation(), berechtigungenAnnotated, additionalBerechtigungen);
+        if (isZentraleOrganisation()) {
+            return isInOrganisationWithBerechtigung(zentraleOrganisation(), berechtigungenAnnotated, additionalBerechtigungen);
         }
         if (entityWithZustaendigkeit.getZustaendigArzt() == null) {
             return false;
@@ -455,8 +521,8 @@ public class AuthorizerService {
         @NonNull List<Berechtigung> berechtigungenAnnotated,
         @Nullable List<Berechtigung> additionalBerechtigungen
     ) {
-        Benutzer currentBenutzer = benutzerService.getCurrentBenutzerOrThrowException();
-        TenantEnum tenant = tenantProducer.produceTenant();
+        Benutzer currentBenutzer = currentBenutzer();
+        TenantEnum tenant = Objects.requireNonNull(updateCachedTenantAndClearCacheIfNeeded(), "Tenant was null in isInOrganisationWithBerechtigung");
 
         boolean hasSystemBerechtigung = Optional.ofNullable(currentBenutzer.getSystemRollen())
             .map(rollen -> rollen.getBerechtigungen(tenant))

@@ -49,7 +49,8 @@ export * from './lib/notizen/notizen.save.params';
 export * from './lib/notizen/notizen.file.params';
 export * from './lib/notizen/notizen-list/notiz-list.component';
 export * from './lib/notizen/notizen-list/notizen-list-filter.form';
-export * from './lib/notizen/notiz-json-enhanced'
+export * from './lib/notizen/notiz-json-enhanced';
+export * from './lib/notizen/notizen.utils';
 export * from './lib/aufgaben/aufgaben-list';
 export * from './lib/aufgaben/aufgabe-details';
 export * from './lib/aufgaben/aufgaben-sidebar';

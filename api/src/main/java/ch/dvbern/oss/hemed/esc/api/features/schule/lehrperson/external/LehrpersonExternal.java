@@ -106,7 +106,7 @@ public class LehrpersonExternal extends AbstractEntity<LehrpersonExternal> imple
     private int lehrpersonNumber;
 
     @Nullable
-    @Column(nullable = true, length = DbConst.DB_DEFAULT_MAX_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
     @IgnoreForIdClassTest
     private String escadaKlasseIds; // Kommaseparierte Liste von KlassenIds
 

@@ -11,7 +11,7 @@ import {
   Path,
 } from '@dvb/feat-shared';
 import { ReactiveFormsModule } from '@angular/forms';
-import { NotizenListStore } from '../notizen-list.store';
+import { NotizDetailStore } from '../notiz-detail.store';
 import { DossierStore } from '@dvb/feat-kinder';
 import { AppNotificationStore } from '@dvb/util-angular';
 import { hasAllNotizenEditBerechtigung, isNotNullish } from '@dvb/util-shared';
@@ -33,7 +33,7 @@ import { NotizTyp } from '@dvb/data-access-backend';
 })
 export class NotizenHochladenPageComponent {
 
-  readonly notizenListStore = inject(NotizenListStore);
+  readonly notizDetailStore = inject(NotizDetailStore);
   readonly dossierStore = inject(DossierStore);
   readonly #benutzerStore = inject(BenutzerStore);
 
@@ -46,7 +46,7 @@ export class NotizenHochladenPageComponent {
 
   pageTitle = `notizen.hochladen.page.title`;
 
-  kind = computed(() => this.notizenListStore.selectedEntity()?.kind);
+  kind = computed(() => this.notizDetailStore.kind());
 
   canEditAllNotizen = this.#benutzerStore.createHasRequiredRoleSig(hasAllNotizenEditBerechtigung());
 
@@ -55,7 +55,7 @@ export class NotizenHochladenPageComponent {
       this.#notificationService.addDangerNotification(this.#transloco.translate('ui.validation-error.max-files'));
       return;
     }
-    this.notizenListStore.updateNotiz({
+    this.notizDetailStore.updateNotiz({
       notiz: payload.notiz,
       fileUploads: payload.fileUploads ?? [],
       onSuccess: (_) => {
@@ -65,7 +65,7 @@ export class NotizenHochladenPageComponent {
   }
 
   onRemoveNotizFile(params: NotizenFileParams) {
-    this.notizenListStore.removeNotizFile(params);
+    this.notizDetailStore.removeNotizFile(params);
   }
 
   private afterSuccessfulSaveAndUpload() {

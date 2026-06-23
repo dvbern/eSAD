@@ -1,11 +1,5 @@
 package ch.dvbern.oss.hemed.esc.api.features.notizen;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
@@ -19,6 +13,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.KindMapper;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.labels.LabelMapper;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizJson;
+import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizListItemJson;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
@@ -30,6 +25,12 @@ import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 @JaxMapper
 @RequiredArgsConstructor
@@ -155,14 +156,8 @@ public final class NotizMapper {
     }
 
     @NonNull
-    public List<NotizJson> findAllBerechtigt(
-        @NonNull Predicate<Notiz> hasAuthorizationNotiz
-    ) {
-        List<Notiz> notizenList = notizService.findAll().stream()
-            .filter(hasAuthorizationNotiz)
-            .toList();
-        TenantEnum tenant = tenantProducer.produceTenant();
-        return notizenList.stream().map(n -> NotizMapper.toJson(n, tenant)).toList();
+    public List<NotizListItemJson> findAllListItems() {
+        return notizService.findAllListItems();
     }
 
     @NonNull

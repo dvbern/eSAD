@@ -56,7 +56,7 @@ function makeForm(config: Config) {
         filterValue: titel ?? '',
         filterMethod: FilterMethod.SUBSTRING,
         filterCombinationMethod: FilterCombinationMethod.AND,
-        filterName: 'data.titel',
+        filterName: 'titel',
       });
     },
     error: console.error,
@@ -82,7 +82,7 @@ function makeForm(config: Config) {
         filterValue: notizStatus.map(status => status.toString()).join(' ') ?? '',
         filterMethod: FilterMethod.ENUM,
         filterCombinationMethod: FilterCombinationMethod.OR,
-        filterName: 'data.status',
+        filterName: 'status',
       });
     },
     error: console.error,
@@ -95,7 +95,7 @@ function makeForm(config: Config) {
         filterValue: verantwortlicher.join(' ') ?? '',
         filterMethod: FilterMethod.SUBSTRING,
         filterCombinationMethod: FilterCombinationMethod.OR,
-        filterName: 'data.verantwortlicher.id',
+        filterName: 'verantwortlicher.id',
       });
     },
     error: console.error,

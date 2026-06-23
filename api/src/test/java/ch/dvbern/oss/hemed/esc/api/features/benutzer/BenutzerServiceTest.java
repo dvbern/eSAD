@@ -7,8 +7,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppAuthException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.JsonWebTokenDataDTO;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
@@ -67,9 +67,9 @@ class BenutzerServiceTest {
     }
 
     @Test
-    void throws_on_missing_subject() {
+    void throws_when_no_user_is_logged_in() {
         assertThatThrownBy(service::getCurrentBenutzerOrThrowException)
-            .isInstanceOf(AppAuthException.class);
+            .isInstanceOf(AppValidationException.class);
     }
 
     @Test

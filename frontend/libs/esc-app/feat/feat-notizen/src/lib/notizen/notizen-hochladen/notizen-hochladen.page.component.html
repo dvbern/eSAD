@@ -4,9 +4,9 @@
   >
 
   <feat-notizen-mobile-upload
-    [existingNotiz]="notizenListStore.selectedEntity()"
-    [notizenFiles]="notizenListStore.notizenFiles()"
-    [loader]="notizenListStore.saveLoader"
+    [existingNotiz]="notizDetailStore.notiz()"
+    [notizenFiles]="notizDetailStore.notizenFiles()"
+    [loader]="notizDetailStore.saveLoader"
     (saveNotiz)="onSaveNotiz($event)"
     (removeNotizFile)="onRemoveNotizFile($event)"
   />

@@ -4,6 +4,7 @@ import {requireValidBackendEntityId} from '@dvb/data-access-types';
 import {DossierStore} from '@dvb/feat-kinder';
 import {LabelsStore, Path} from '@dvb/feat-shared';
 import {confirmOnDirty} from '@dvb/util-angular';
+import {NotizDetailStore} from './notiz-detail.store';
 import {NotizDetailPageComponent} from './notiz-details/notiz-detail.page.component';
 import {NotizenHochladenPageComponent} from './notizen-hochladen/notizen-hochladen.page.component';
 import {NotizenListStore} from './notizen-list.store';
@@ -25,10 +26,11 @@ export const notizenListRoutes: Route[] = [
       },
       {
         path: ':notizId',
+        providers: [NotizDetailStore],
         resolve: {
           _store: (route: ActivatedRouteSnapshot) => {
             const param = requireValidBackendEntityId(route.params['notizId']);
-            inject(NotizenListStore).setSelectedEntityId(param);
+            inject(NotizDetailStore).loadNotiz(param);
           },
         },
         children: [

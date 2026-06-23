@@ -48,6 +48,7 @@ describe('PageComponent', () => {
     supportedLanguages: signal([AppLanguages.DE, AppLanguages.FR]),
     footerEnabled: signal(true),
     settings: signal(undefined),
+    zentraleOrganisationEnabled: signal(true)
   };
 
   const mockLanguageStore: Partial<LanguageStore> = {

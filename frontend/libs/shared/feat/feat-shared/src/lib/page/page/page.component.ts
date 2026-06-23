@@ -1,7 +1,7 @@
 import {CommonModule} from '@angular/common';
 import {
   ChangeDetectionStrategy,
-  Component,
+  Component, computed,
   inject,
   input,
   OnInit,
@@ -84,8 +84,14 @@ export class PageComponent extends WithHeadingDirective implements OnInit {
   public canViewSystemPage = this.benutzerStore.createHasRequiredRoleSig(hasSystemPageViewBerechtiung());
   public canViewAufgaben = this.benutzerStore.createHasRequiredRoleSig(hasAufgabenViewBerechtigungen());
   public canViewKonfiguration = this.benutzerStore.createHasRequiredRoleSig(hasConfigViewBerechtigung());
-  public canViewNotizen = this.benutzerStore.createHasRequiredRoleSig(hasKindNotizViewBerechtigung());
   public hasAnyBerechtigung = this.benutzerStore.createHasRequiredRoleSig(withAnyBerechtigung());
+
+  private readonly notizenRoleSig =
+    this.benutzerStore.createHasRequiredRoleSig(hasKindNotizViewBerechtigung());
+
+  public canViewNotizen = computed(() =>
+    this.notizenRoleSig() && this.tenantSettingsStore.zentraleOrganisationEnabled()
+  );
 
   Path = Path;
   router = inject(Router);

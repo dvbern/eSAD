@@ -13,14 +13,14 @@
 
   @for (item of notizenStore.notizenSortedAndSliced(); track item.id; let index = $index) {
     <svui-fancy-list-item
-      [mainText]="item.data.titel"
+      [mainText]="item.titel"
       [date]="fromISODateTimeString(item.entityInfo.timestampErstellt)"
       [linkText]="'global.oeffnen' | transloco"
       [routerlinkDestination]="Path.NOTIZEN + '/' + item.id"
       [gray]="false"
     >
       <ng-content subBadges>
-        @for (label of item.data.labels; track label.id) {
+        @for (label of item.labels; track label.id) {
           <svui-badge> {{ label.data.name | translatedStringPipe }}</svui-badge>
         }
       </ng-content>
