@@ -1,12 +1,20 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.impfung;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungImpfungenPresentIfReq;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +25,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.envers.Audited;
 
 import java.io.Serial;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(
@@ -51,6 +60,10 @@ public class UntersuchungImpfungen extends AbstractEntity<UntersuchungImpfungen>
     @NotNull
     @Column(nullable = false)
     private boolean impfausweisNichtVorhanden;
+
+    @Nullable
+    @Column(nullable = true)
+    private OffsetDateTime impfausweisStatusFlagstimestampMutiert;
 
     @NotNull
     @Column(nullable = false)

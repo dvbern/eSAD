@@ -20,4 +20,8 @@ public class UntersuchungImpfungenImpfausweisSaveJson {
     @NotNull
     @Schema(required = true)
     private boolean impfausweisZweiPlusEinsSchema;
+
+    @NotNull
+    @Schema(required = true)
+    private boolean impfausweisStatusMutiert;
 }

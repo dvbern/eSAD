@@ -56,11 +56,11 @@ function makeForm(config: Config) {
 
   const group = fb.group(
     {
-      titel: fb.control<string>('', [Validators.required, AppValidators.dbMaxLength()]),
+      titel: fb.control<string>('', [AppValidators.dbMaxLength()]),
       datum: fb.control<ISODateString | undefined>(undefined, [Validators.required]),
       // Wird benötigt zum sicherstellen, dass beim Datumswechsel nicht in ein anderes Schuljahr gewechselt wird. Da
       // Schuljahr individuell wechselbar ist können wir uns nicht darauf verlassen.
-      originalDatum: fb.control<ISODateString | undefined>({ value: undefined, disabled: true }),
+      originalDatum: fb.control<ISODateString | undefined>({value: undefined, disabled: true}),
       schuljahr: fb.control<number | undefined>(undefined, [Validators.required]),
       anlassConfigOption: fb.control<AnlassConfigOptionJson | undefined>(undefined, Validators.required),
       anlassArt: fb.control<AnlassArt | undefined>(undefined, Validators.required),
@@ -74,7 +74,7 @@ function makeForm(config: Config) {
       arztInfo: fb.control<string>('', AppValidators.dbMaxLength()),
       mpaInfo: fb.control<string>('', AppValidators.dbMaxLength()),
       weiterePersonInfo: fb.control<string>('', AppValidators.dbMaxLength()),
-      version: fb.control<number | Nullish>({ value: undefined, disabled: true }),
+      version: fb.control<number | Nullish>({value: undefined, disabled: true}),
     },
     {
       validators: [
@@ -86,7 +86,10 @@ function makeForm(config: Config) {
 
   // Arzt ist bei dezentralen Mandanten zwingend
   group.controls.arzt.setValidators([AppValidators.requiredIfValidator(() => !config.tenantSettingsStore.zentraleOrganisationEnabled())]);
-
+  group.controls.titel.setValidators([
+    AppValidators.requiredIfValidator(() => !!config.tenantSettingsStore.anlassTitleRequiredEnabled()),
+    AppValidators.dbMaxLength()
+  ]);
   group.controls.zeitVon.setValidators([AppValidators.requiredIfValidator(() => !!group.controls.zeitBis.value)]);
   group.controls.zeitBis.setValidators([AppValidators.requiredIfValidator(() => !!group.controls.zeitVon.value)]);
 
@@ -183,7 +186,7 @@ export class AnlassDatenForm extends BaseForm<ReturnType<typeof makeForm>, Anlas
     const value = requireValue(this.group.getRawValue());
     return ensurePropsFlat<AnlassSaveJson>({
       anlassTyp: requireFilledIn(value.anlassTyp),
-      titel: requireFilledIn(value.titel),
+      titel: value.titel,
       anlassStatus: requireFilledIn(value.anlassStatus),
       datum: requireFilledIn(value.datum),
       schuljahr: requireFilledIn(value.schuljahr),

@@ -45,6 +45,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -146,15 +147,13 @@ public final class EinladungMapper {
         // bearbeitet wenn bei einem der Werte die Version > 0 ist.
         boolean hasImpfstatusNotInitial = impfstatus.stream().anyMatch(is -> is.getVersion() > 0);
         boolean hasImpfungInterNotInitial = impfungenInternList.stream().anyMatch(ii -> ii.getVersion() > 0);
-        boolean hasRelevantCheckboxes = untersuchungImpfungen.isImpfausweisZweiPlusEinsSchema()
-            || untersuchungImpfungen.isImpfausweisNichtVorhanden()
-            || untersuchungImpfungen.isImpfausweisUnvollstaendig();
+        boolean impfausweisStatusMutiert = Objects.nonNull(untersuchungImpfungen.getImpfausweisStatusFlagstimestampMutiert());
         boolean impfungMassnahmenPresent = untersuchungImpfungen.getUntersuchungImpfungenMassnahmen() != null;
         boolean impfungenDataMinimalPresent = untersuchungImpfungen.getUntersuchungImpfungenDataMinimal() != null;
 
         return hasImpfstatusNotInitial
             || hasImpfungInterNotInitial
-            || hasRelevantCheckboxes
+            || impfausweisStatusMutiert
             || impfungMassnahmenPresent
             || impfungenDataMinimalPresent;
     }

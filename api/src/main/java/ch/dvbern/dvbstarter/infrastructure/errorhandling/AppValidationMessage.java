@@ -356,15 +356,15 @@ public class AppValidationMessage {
     }
 
     @NonNull
-    public static AppValidationMessage noMpaForAufgabeEmpfaenger(Anlass anlass) {
+    public static AppValidationMessage noMpaForAufgabeEmpfaenger(@Nullable String titel, ID<Anlass> anlassId) {
         return of(
             "NoMpaForAufgabeErstellt",
             I18nMessage.of(
                 "AppValidation.NO_MPA_FOR_AUFGABE_EMPFAENGER",
                 "titel",
-                anlass.getTitel(),
+                titel,
                 "anlassId",
-                anlass.getId())
+                anlassId)
         );
     }
 
@@ -479,7 +479,6 @@ public class AppValidationMessage {
                 anlassTyp
             ));
     }
-
 
     @NonNull
     public static AppValidationMessage fileIngressNoDossierForEsadId(

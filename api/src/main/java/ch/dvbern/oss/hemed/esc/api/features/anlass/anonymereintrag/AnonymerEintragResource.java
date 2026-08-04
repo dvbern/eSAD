@@ -14,8 +14,6 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag;
 
-import java.util.List;
-
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
@@ -42,6 +40,8 @@ import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+import java.util.List;
 
 @Path("/anonymer-eintrag")
 @JaxResource
@@ -86,11 +86,11 @@ public class AnonymerEintragResource {
     @RolesAllowed({ BerechtigungName.ANLASSPLANUNG_SCHREIBEN, BerechtigungName.ANLASSPLANUNG_SCHREIBEN_LAEUSE })
     public void abschlussAnonymerEintrag(
         @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
-        @NotNull @NonNull @PathParam("anonymerEintragId") HasUntersuchungIDWrapper wrappedId
+        @NotNull @NonNull @PathParam("anonymerEintragId") ID<AnonymerEintrag> anonymerEintragID
     ) {
-        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        einladungMapper.requireConsistentPathParams(HasUntersuchungIDWrapper.fromAnonymerEintragId(anonymerEintragID), anlassId);
         anonymerEintragMapper.anonymerEintragAbschliessen(
-            wrappedId.toAnonymerEintragId(),
+            anonymerEintragID,
             anlassIdFromAnonymerEintrag -> authorizerService.requireWriteAuthorizationAnlass(
                 anlassIdFromAnonymerEintrag,
                 List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE)));

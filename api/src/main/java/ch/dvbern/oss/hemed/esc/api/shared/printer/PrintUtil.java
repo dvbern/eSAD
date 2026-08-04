@@ -18,9 +18,9 @@ public final class PrintUtil {
     public static final DateTimeFormatter PRINT_DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     public static final DateTimeFormatter PRINT_TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
     public static final Pattern WHITESPACE = Pattern.compile("\\s", Pattern.UNICODE_CHARACTER_CLASS);
+    public static final Pattern FILENAME_UNSAFE_CHARS = Pattern.compile("[/\\s]", Pattern.UNICODE_CHARACTER_CLASS);
     private static final PrintUtilImpl PRINT_UTIL =
         new PrintUtilImpl(PLACEHOLDER, PRINT_DATE_FORMAT, PRINT_TIME_FORMAT, PDFAPrintUtil::sanitizeForPDFA);
-
 
     private PrintUtil() {
         // utility class
@@ -95,7 +95,10 @@ public final class PrintUtil {
     }
 
     @NonNull
-    public static String getNameWithAnrede(@NonNull BasePrinter basePrinter, @NonNull Geschlecht geschlecht, @NonNull String nameVorname) {
-        return PRINT_UTIL.getNameWithAnrede(basePrinter,geschlecht, nameVorname);
+    public static String getNameWithAnrede(
+        @NonNull BasePrinter basePrinter,
+        @NonNull Geschlecht geschlecht,
+        @NonNull String nameVorname) {
+        return PRINT_UTIL.getNameWithAnrede(basePrinter, geschlecht, nameVorname);
     }
 }

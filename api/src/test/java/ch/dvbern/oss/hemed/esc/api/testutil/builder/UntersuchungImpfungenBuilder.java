@@ -18,18 +18,16 @@
 
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
-import java.time.LocalDate;
-import java.util.function.Consumer;
-
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.Visum;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungenJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungImpfungenJsonSpecMapper;
@@ -37,7 +35,9 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenJs
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+
+import java.time.LocalDate;
+import java.util.function.Consumer;
 
 public class UntersuchungImpfungenBuilder {
 
@@ -98,6 +98,14 @@ public class UntersuchungImpfungenBuilder {
     @CanIgnoreReturnValue
     public UntersuchungImpfungenBuilder withImpfausweisZweiPlusEinsSchema(boolean zweiPlusEinsSchema) {
         this.impfungen.setImpfausweisZweiPlusEinsSchema(zweiPlusEinsSchema);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungImpfungenBuilder withImpfausweisStatusMutiert(boolean mutiert) {
+        this.impfungen.setImpfausweisStatusFlagstimestampMutiert(
+            mutiert ? appClock.offsetDateTime().now() : null);
         return this;
     }
 

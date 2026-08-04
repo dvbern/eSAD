@@ -2,7 +2,20 @@ package ch.dvbern.oss.hemed.esc.api.features.kinder;
 
 import java.util.List;
 import java.util.function.Predicate;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response.Status;
 
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
@@ -25,21 +38,10 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatusSaveJson;
+
 import io.micrometer.core.annotation.Timed;
 import io.smallrye.faulttolerance.api.RateLimit;
 import io.vertx.core.http.HttpServerResponse;
-import jakarta.annotation.security.RolesAllowed;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -53,6 +55,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed("KindResourceMS")
 public class KindResource {
+
+    private static final List<Berechtigung> KINDER_SCHREIBEN_BERECHTIGUNGEN =
+        List.of(Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH, Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH);
 
     private final KindMapper kindMapper;
     private final KontaktPersonKindMapper kontaktPersonKindMapper;
@@ -84,6 +89,11 @@ public class KindResource {
         @NotNull @NonNull @PathParam("kindId") ID<Kind> kindID,
         @NotNull @NonNull @Valid KindSchuleAndKlasseSaveJson kindSchuleAndKlasseSaveJson
     ) {
+        // Schulwechsel ist ein Zustaendigkeits-Handoff, daher hier eine sprechende Validation-Meldung (400)
+        // statt der generischen Berechtigungs-Verletzung
+        if (!authorizerService.hasWriteAuthorizationKind(kindID, KINDER_SCHREIBEN_BERECHTIGUNGEN)) {
+            throw new AppValidationException(AppValidationMessage.zustaendigkeitCanOnlyBeChangedByZustaendiger());
+        }
         return kindMapper.updateSchuleAndKlasse(kindID, kindSchuleAndKlasseSaveJson);
     }
 
@@ -98,6 +108,7 @@ public class KindResource {
         @Nullable @QueryParam("arztId") ID<Benutzer> zustaendigerArztId,
         @Nullable @QueryParam("mpaId") ID<Benutzer> zustaendigeMpaId
     ) {
+        authorizerService.requireWriteAuthorizationKind(kindID, KINDER_SCHREIBEN_BERECHTIGUNGEN);
         KindSaveResultJson kindSaveResultJson = kindMapper.update(kindID, kindJson, kindSaveMode);
         return createDossierAndSaveZustaendigePersonen(kindSaveResultJson, zustaendigerArztId, zustaendigeMpaId);
     }
@@ -131,14 +142,8 @@ public class KindResource {
         @NonNull @NotNull @PathParam("kindId") ID<Kind> kindId,
         @NotNull @NonNull @Valid EntityAktivStatusSaveJson saveJson
     ) {
+        authorizerService.requireWriteAuthorizationKind(kindId, KINDER_SCHREIBEN_BERECHTIGUNGEN);
         return kindMapper.changeKindAktivStatus(kindId, saveJson);
-    }
-
-    @DELETE
-    @Path("/{kindId}")
-    @RolesAllowed({BerechtigungName.KINDER_SCHREIBEN_MEDIZINISCH, BerechtigungName.KINDER_SCHREIBEN_NICHT_MEDIZINISCH})
-    public void removeKind(@NotNull @NonNull @PathParam("kindId") ID<Kind> kindID) {
-        kindMapper.remove(kindID);
     }
 
     @GET
@@ -187,6 +192,7 @@ public class KindResource {
     public KindJson generateEsadIdForKind(
         @NotNull @NonNull @PathParam("kindId") ID<Kind> kindId
     ) {
+        authorizerService.requireWriteAuthorizationKind(kindId, KINDER_SCHREIBEN_BERECHTIGUNGEN);
         return kindMapper.generateEsadIdForKind(kindId);
     }
 
@@ -198,6 +204,7 @@ public class KindResource {
         @NotNull @NonNull @PathParam("kindId") ID<Kind> kindId,
         @NotNull @NonNull @Valid EsadIdJson esadIdJson
     ) {
+        authorizerService.requireWriteAuthorizationKind(kindId, KINDER_SCHREIBEN_BERECHTIGUNGEN);
         return kindMapper.setEsadIdForKind(kindId, esadIdJson);
     }
 

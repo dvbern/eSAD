@@ -327,7 +327,7 @@ public final class KindMapper {
             AppValidationMessage.cannotEditInactiveKind(existingKind));
 
         Optional<Dossier> dossierOptional = dossierService.findByKind(kindID);
-        dossierOptional.ifPresent(zustaendigePersonService::requireZustaendigkeit);
+        dossierOptional.ifPresent(zustaendigePersonService::requireImmediateZustaendigkeit);
 
         Klasse newKlasse = schuleKlasseJson.getKlasse() != null ? klasseService.getById(schuleKlasseJson.getKlasse().getId()) : null;
         Schule newSchule = schuleKlasseJson.getSchule() != null ? schuleService.getById(schuleKlasseJson.getSchule().getId()) : null;

@@ -18,10 +18,6 @@
 
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
-import java.time.LocalDate;
-import java.util.EnumSet;
-import java.util.function.Consumer;
-
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -47,6 +43,10 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassConfigJsonSpec;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.time.LocalDate;
+import java.util.EnumSet;
+import java.util.function.Consumer;
 
 public class AnlassConfigBuilder {
 
@@ -441,6 +441,13 @@ public class AnlassConfigBuilder {
     @CanIgnoreReturnValue
     public AnlassConfigBuilder withGueltigkeitsZeitraum(@NonNull LocalDate datumVon, @NonNull LocalDate datumBis) {
         this.anlassConfig.setGueltigkeitsZeitraum(DateRange.of(datumVon, datumBis));
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public AnlassConfigBuilder withImpfungenUebersicht(@NonNull RequirementSetting setting) {
+        this.anlassConfig.setImpfungenUebersicht(setting);
         return this;
     }
 

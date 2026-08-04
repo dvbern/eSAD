@@ -1,70 +1,57 @@
 package ch.dvbern.oss.hemed.esc.api.shared.printer;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Set;
-
 import ch.dvbern.dvbstarter.shared.EdokidIdTestGenerator;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.BallFangen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.BallWerfen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Hampelmann;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithDateTimeJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.UntersuchungLaeusekontrolle;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.types.LaeusekontrolleBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
-
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.BallFangen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.BallWerfen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Bewegungsapparat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Blutdruck;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinstand;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Fingeropposition;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Hampelmann;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Haut;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Herzauskultation;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.MundAndZaehne;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Verhalten;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithDateTimeJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.UntersuchungLaeusekontrolle;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.types.LaeusekontrolleBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StereotestResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuftretenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusAuspraegungResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
@@ -80,9 +67,11 @@ import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
-import ch.dvbern.oss.hemed.esc.api.shared.printer.anlass.AnlassPrintDTO;
-import ch.dvbern.oss.hemed.esc.api.shared.printer.anlass.AnlassPrinter;
-import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierAnlassPrintDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.anlass.AnlassPlanungPrintDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.anlass.AnlassPlanungPrinter;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.anonymer.AnonymerEintragPrintDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.anonymer.AnonymerEintragPrinter;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.AnlassUntersuchungPrintDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintVariant;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrinter;
@@ -115,8 +104,10 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungInternBui
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungLaeusekontrolleBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungMassnahmenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBeurteilungBuilder;
-
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungTriageBuilder;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
 import com.itextpdf.layout.Document;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -129,6 +120,21 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
 @SuppressWarnings("TestMethodWithoutAssertion")
@@ -151,7 +157,8 @@ class PrinterTest {
 
     @BeforeEach
     void setUpBeforeEach() {
-        Mockito.when(tenantSettingsServiceMock.getTenantSetting()).thenReturn(TenantSettingBuilder.defaultTenantSetting());
+        Mockito.when(tenantSettingsServiceMock.getTenantSetting())
+            .thenReturn(TenantSettingBuilder.defaultTenantSetting());
     }
 
     @ParameterizedTest
@@ -212,7 +219,7 @@ class PrinterTest {
                 AnlassBuilder.create(builder -> builder.withDatumSetSchuljahr(LocalDate.now().minusMonths(2)));
             UntersuchungImpfungIntern untersuchungImpfungIntern =
                 UntersuchungImpfungInternBuilder.create(builder -> builder.withDatumImpfung(LocalDate.now()));
-            KinderdossierAnlassPrintDTO anlassKeineTeilnahme = new KinderdossierAnlassPrintDTO(
+            AnlassUntersuchungPrintDTO anlassKeineTeilnahme = AnlassUntersuchungPrintDTO.ofEinladung(
                 EinladungBuilder.create(builder -> builder.withStatus(EinladungStatus.TEILNAHME_ABGESAGT)
                     .withAnlass(anlassLongAgo)
                     .withUntersuchung(untersuchungLongAgo)),
@@ -227,7 +234,7 @@ class PrinterTest {
                 UntersuchungBuilder.create(builder -> builder.withUntersuchungTriage(untersuchungTriage));
             Anlass anlassToday = AnlassBuilder.create(builder -> builder.withDatumSetSchuljahr(LocalDate.now()));
             anlassToday.setTitel(anlassToday.getTitel() + "\tTest");
-            KinderdossierAnlassPrintDTO anlassTeilnahme = new KinderdossierAnlassPrintDTO(
+            AnlassUntersuchungPrintDTO anlassTeilnahme = AnlassUntersuchungPrintDTO.ofEinladung(
                 EinladungBuilder.create(builder ->
                     builder.withStatus(EinladungStatus.TEILNAHME_BESTAETIGT)
                         .withAnlass(anlassToday)
@@ -247,7 +254,12 @@ class PrinterTest {
                 KinderdossierPrintVariant.GESAMTES
             );
 
-            KinderdossierPrinter.print(dto, outputStream, fileStoreServiceMock, tenantSettingsServiceMock, configServiceMock);
+            KinderdossierPrinter.print(
+                dto,
+                outputStream,
+                fileStoreServiceMock,
+                tenantSettingsServiceMock,
+                configServiceMock);
         } catch (IOException e) {
             LOG.error("Error while writing to file", e);
         }
@@ -275,6 +287,7 @@ class PrinterTest {
                     .withTitle("Folgetermin Impfung")
                     .withAnlassConfig(AnlassConfigBuilder.create(anlassConfigBuilder -> builder.withAnlassTyp(AnlassTyp.IMPFTERMIN)))
             );
+            assertThat(anlassFolgeTermin.getTitel()).isNotNull();
             AnlassWithDateTimeJson anlassWithDateTime = new AnlassWithDateTimeJson(
                 anlassFolgeTermin.getId().getUUID(),
                 anlassFolgeTermin.getAnlassConfig().getAnlassTyp(),
@@ -284,7 +297,7 @@ class PrinterTest {
                 anlassFolgeTermin.getZeitVonBis() != null ? anlassFolgeTermin.getZeitVonBis().getBis() : null
             );
 
-            KinderdossierAnlassPrintDTO anlassKeineTeilnahme = new KinderdossierAnlassPrintDTO(
+            AnlassUntersuchungPrintDTO anlassKeineTeilnahme = AnlassUntersuchungPrintDTO.ofEinladung(
                 EinladungBuilder.create(builder -> builder.withStatus(EinladungStatus.TEILNAHME_ABGESAGT)
                     .withAnlass(anlassLongAgo)),
                 List.of(UntersuchungImpfungInternBuilder.defaultUntersuchungImpfungIntern(LocalDate.now())),
@@ -307,7 +320,9 @@ class PrinterTest {
                     .withStereotest(StereotestResultat.NICHT_GEPRUEFT, null)
                     .withFarbsehen(FarbsehenResultat.PATHOLOGISCH, null)
                     .withVerwendeteTafel(VerwendetTafelResultat.BUCHSTABEN, null)
-                    .withFernvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT, DistanzSehenResultat.RECHTS_REDUZIERT), null)
+                    .withFernvisus(
+                        List.of(DistanzSehenResultat.NICHT_GEPRUEFT, DistanzSehenResultat.RECHTS_REDUZIERT),
+                        null)
                     .withFernvisusRechts(BigDecimal.valueOf(2.5))
                     .withNahvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT), null)
                     .withMotilitaet(MotilitaetResultat.NORMAL, null)
@@ -321,9 +336,10 @@ class PrinterTest {
 
             UntersuchungHoerenAudiogramm untersuchungHoerenAudiogramm = UntersuchungHoerenAudiogrammBuilder.create(
                 builder -> builder
-                    .withAudiogrammBeurteilung(List.of(
-                        AudiogrammBeurteilung.NICHT_GEPRUEFT,
-                        AudiogrammBeurteilung.RECHTS_REDUZIERT), null)
+                    .withAudiogrammBeurteilung(
+                        List.of(
+                            AudiogrammBeurteilung.NICHT_GEPRUEFT,
+                            AudiogrammBeurteilung.RECHTS_REDUZIERT), null)
                     .withAudiogrammRechts(Dezibel.DB50)
                     .withAudiogrammLinks(Dezibel.DB30)
                     .withZusaetzlicheAngaben(List.of(HoerenZusaetzlicheAngaben.ERKAELTUNG), null)
@@ -331,7 +347,9 @@ class PrinterTest {
             );
             UntersuchungHoerenOtoskopie untersuchungHoerenOtoskopie = UntersuchungHoerenOtoskopieBuilder.create(
                 builder -> builder
-                    .withOtoskopieRechts(List.of(OtoskopieResultat.ANDERES, OtoskopieResultat.TROMMELFELL_CERUMEN), null)
+                    .withOtoskopieRechts(
+                        List.of(OtoskopieResultat.ANDERES, OtoskopieResultat.TROMMELFELL_CERUMEN),
+                        null)
                     .withOtoskopieRechtsResultatAndere("Test")
                     .withOtoskopieLinks(List.of(OtoskopieResultat.SEROMUKOTYMPANON), null)
                     .withOtoskopieLinksResultatAndere("Test 2")
@@ -411,7 +429,7 @@ class PrinterTest {
                     .withImmunitaetForKrankheit(Krankheit.MASERN, true)
                     .withImmunitaetForKrankheit(Krankheit.ROETELN, true)
                     .withImmunitaetForKrankheit(Krankheit.MUMPS, false));
-            KinderdossierAnlassPrintDTO anlassTeilnahme = new KinderdossierAnlassPrintDTO(
+            AnlassUntersuchungPrintDTO anlassTeilnahme = AnlassUntersuchungPrintDTO.ofEinladung(
                 EinladungBuilder.create(builder ->
                     builder.withStatus(EinladungStatus.TEILNAHME_BESTAETIGT)
                         .withAnlass(anlassToday)
@@ -432,7 +450,12 @@ class PrinterTest {
                 KinderdossierPrintVariant.ANLAESSE
             );
 
-            KinderdossierPrinter.print(dto, outputStream, fileStoreServiceMock, tenantSettingsServiceMock, configServiceMock);
+            KinderdossierPrinter.print(
+                dto,
+                outputStream,
+                fileStoreServiceMock,
+                tenantSettingsServiceMock,
+                configServiceMock);
         } catch (IOException e) {
             LOG.error("Error while writing to file", e);
         }
@@ -463,7 +486,9 @@ class PrinterTest {
                     .withStereotest(StereotestResultat.NICHT_GEPRUEFT, null)
                     .withFarbsehen(FarbsehenResultat.PATHOLOGISCH, null)
                     .withVerwendeteTafel(VerwendetTafelResultat.BUCHSTABEN, null)
-                    .withFernvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT, DistanzSehenResultat.RECHTS_REDUZIERT), null)
+                    .withFernvisus(
+                        List.of(DistanzSehenResultat.NICHT_GEPRUEFT, DistanzSehenResultat.RECHTS_REDUZIERT),
+                        null)
                     .withFernvisusRechts(BigDecimal.valueOf(2.5))
                     .withNahvisus(List.of(DistanzSehenResultat.NICHT_GEPRUEFT), null)
                     .withMotilitaet(MotilitaetResultat.NORMAL, null)
@@ -476,9 +501,10 @@ class PrinterTest {
                 );
 
             UntersuchungHoerenAudiogramm untersuchungHoerenAudiogramm = UntersuchungHoerenAudiogrammBuilder.create(
-                builder -> builder.withAudiogrammBeurteilung(List.of(
-                        AudiogrammBeurteilung.NICHT_GEPRUEFT,
-                        AudiogrammBeurteilung.RECHTS_REDUZIERT), null)
+                builder -> builder.withAudiogrammBeurteilung(
+                        List.of(
+                            AudiogrammBeurteilung.NICHT_GEPRUEFT,
+                            AudiogrammBeurteilung.RECHTS_REDUZIERT), null)
                     .withAudiogrammRechts(Dezibel.DB50)
                     .withAudiogrammLinks(Dezibel.DB30)
                     .withZusaetzlicheAngaben(List.of(HoerenZusaetzlicheAngaben.ERKAELTUNG), null)
@@ -487,7 +513,9 @@ class PrinterTest {
 
             UntersuchungHoerenOtoskopie untersuchungHoerenOtoskopie = UntersuchungHoerenOtoskopieBuilder.create(
                 builder -> builder
-                    .withOtoskopieRechts(List.of(OtoskopieResultat.ANDERES, OtoskopieResultat.TROMMELFELL_CERUMEN), null)
+                    .withOtoskopieRechts(
+                        List.of(OtoskopieResultat.ANDERES, OtoskopieResultat.TROMMELFELL_CERUMEN),
+                        null)
                     .withOtoskopieRechtsResultatAndere("Test")
                     .withOtoskopieLinks(List.of(OtoskopieResultat.SEROMUKOTYMPANON), null)
                     .withOtoskopieLinksResultatAndere("Test 2")
@@ -546,7 +574,7 @@ class PrinterTest {
             Anlass anlassToday = AnlassBuilder.create(builder -> builder.withDatumSetSchuljahr(LocalDate.now())
                 .withArzt(BenutzerBuilder.defaultBenutzer())
                 .withAnlassConfig(AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.NOT_VISIBLE)));
-            KinderdossierAnlassPrintDTO anlassTeilnahme = new KinderdossierAnlassPrintDTO(
+            AnlassUntersuchungPrintDTO anlassTeilnahme = AnlassUntersuchungPrintDTO.ofEinladung(
                 EinladungBuilder.create(builder ->
                     builder.withStatus(EinladungStatus.TEILNAHME_BESTAETIGT)
                         .withAnlass(anlassToday)
@@ -566,10 +594,130 @@ class PrinterTest {
                 KinderdossierPrintVariant.ANLAESSE
             );
 
-            KinderdossierPrinter.print(dto, outputStream, fileStoreServiceMock, tenantSettingsServiceMock, configServiceMock);
+            KinderdossierPrinter.print(
+                dto,
+                outputStream,
+                fileStoreServiceMock,
+                tenantSettingsServiceMock,
+                configServiceMock);
         } catch (IOException e) {
             LOG.error("Error while writing to file", e);
         }
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = TenantEnum.class, names = "DEFAULT", mode = Mode.EXCLUDE)
+    void anonymer_eintrag_rendersHash_andSkipsPersonalData(TenantEnum tenantEnum) throws IOException {
+        // ARRANGE: an anonymous entry has no Kind/Dossier/Einladung. We build the Einladung-less
+        // print DTO exactly like AnonymerEintragPrintService does and render it through the
+        // dedicated AnonymerEintragPrinter.
+        String hash = "abc123-anonymous-hash";
+        String schulhausName = "Geheime Primarschule Musterberg";
+
+        // A name that must never leak into the anonymous document.
+        Kind kind = KindBuilder.create(builder -> builder.withName("Streng-Geheim", "Persönlich"));
+        Schule schule = SchuleBuilder.create(builder -> builder.withSchulhaus(schulhausName));
+        Klasse klasse = KlasseBuilder.create(builder -> builder
+            .forSchule(schule)
+            .withBezeichnung("4a")
+            .withKlassenstufe(Klassenstufe.PRIMAR_KLASSE_4)
+            .withKlasseSchulart(KlasseBuilder.KLASSENTYP_PRIM));
+        kind.setKlasse(klasse);
+
+        UntersuchungTriage untersuchungTriage =
+            UntersuchungTriageBuilder.create(builder -> builder.withTriageSu(true, "Alles gut"));
+        Untersuchung untersuchung =
+            UntersuchungBuilder.create(builder -> builder.withUntersuchungTriage(untersuchungTriage));
+        Anlass anlass = AnlassBuilder.create(builder -> builder
+            .withDatumSetSchuljahr(LocalDate.now())
+            .withAnlassTyp(AnlassTyp.KLASSE_4_ANONYM));
+
+        AnlassUntersuchungPrintDTO anlassDTO = AnlassUntersuchungPrintDTO.anonymous(
+            anlass,
+            untersuchung,
+            hash,
+            List.of(),
+            List.of(),
+            List.of());
+
+        AnonymerEintragPrintDTO dto = new AnonymerEintragPrintDTO(
+            hash,
+            List.of(anlassDTO),
+            LocalDate.now(),
+            tenantEnum,
+            AppLanguages.DE);
+
+        // ACT: render into memory (for assertions) and to a file (for visual inspection like the
+        // other printer tests).
+        byte[] pdfBytes;
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            AnonymerEintragPrinter.print(dto, byteArrayOutputStream, fileStoreServiceMock);
+            pdfBytes = byteArrayOutputStream.toByteArray();
+        }
+        try (FileOutputStream outputStream = getFileOutputStream("anonymer-eintrag", tenantEnum)) {
+            outputStream.write(pdfBytes);
+        }
+
+        // ASSERT
+        assertThat(pdfBytes).isNotEmpty();
+
+        String pdfText = extractPdfText(pdfBytes);
+        // The hash is rendered in the title, footer and under the Anlasstitel.
+        assertThat(pdfText)
+            .contains(hash)
+            .contains("anonym")
+            .doesNotContain(kind.getName())
+            .doesNotContain(kind.getVorname())
+            .doesNotContain(schulhausName)
+            .doesNotContain("4a");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = TenantEnum.class, names = "DEFAULT", mode = Mode.EXCLUDE)
+    void anonymer_eintrag_withoutUntersuchung_stillRendersHash(TenantEnum tenantEnum) throws IOException {
+        // ARRANGE: an anonymous entry may not have an Untersuchung yet (untersuchung == null).
+        String hash = "no-untersuchung-hash";
+        Anlass anlass = AnlassBuilder.create(builder -> builder
+            .withDatumSetSchuljahr(LocalDate.now())
+            .withAnlassTyp(AnlassTyp.KLASSE_4_ANONYM));
+
+        AnlassUntersuchungPrintDTO anlassDTO = AnlassUntersuchungPrintDTO.anonymous(
+            anlass,
+            null,
+            hash,
+            List.of(),
+            List.of(),
+            List.of());
+
+        AnonymerEintragPrintDTO dto = new AnonymerEintragPrintDTO(
+            hash,
+            List.of(anlassDTO),
+            LocalDate.now(),
+            tenantEnum,
+            AppLanguages.DE);
+
+        // ACT
+        byte[] pdfBytes;
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            AnonymerEintragPrinter.print(dto, byteArrayOutputStream, fileStoreServiceMock);
+            pdfBytes = byteArrayOutputStream.toByteArray();
+        }
+
+        // ASSERT
+        assertThat(pdfBytes).isNotEmpty();
+        assertThat(extractPdfText(pdfBytes)).contains(hash);
+    }
+
+    @NonNull
+    private static String extractPdfText(byte[] pdfBytes) throws IOException {
+        StringBuilder text = new StringBuilder();
+        try (PdfDocument pdfDocument = new PdfDocument(new PdfReader(new ByteArrayInputStream(pdfBytes)))) {
+            for (int page = 1; page <= pdfDocument.getNumberOfPages(); page++) {
+                text.append(PdfTextExtractor.getTextFromPage(pdfDocument.getPage(page)));
+                text.append('\n');
+            }
+        }
+        return text.toString();
     }
 
     @ParameterizedTest
@@ -621,7 +769,12 @@ class PrinterTest {
                 KinderdossierPrintVariant.NOTIZEN
             );
 
-            KinderdossierPrinter.print(dto, outputStream, fileStoreServiceMock, tenantSettingsServiceMock, configServiceMock);
+            KinderdossierPrinter.print(
+                dto,
+                outputStream,
+                fileStoreServiceMock,
+                tenantSettingsServiceMock,
+                configServiceMock);
         } catch (IOException e) {
             LOG.error("Error while writing to file", e);
         }
@@ -644,7 +797,12 @@ class PrinterTest {
                 KinderdossierPrintVariant.GESAMTES
             );
 
-            KinderdossierPrinter.print(dto, outputStream, fileStoreServiceMock, tenantSettingsServiceMock, configServiceMock);
+            KinderdossierPrinter.print(
+                dto,
+                outputStream,
+                fileStoreServiceMock,
+                tenantSettingsServiceMock,
+                configServiceMock);
         } catch (IOException e) {
             LOG.error("Error while writing to file", e);
         }
@@ -659,16 +817,46 @@ class PrinterTest {
             Einladung einladung = EinladungBuilder.create(builder -> builder
                 .withAnlass(anlass));
 
-            AnlassPrintDTO anlassPrintDTO =
-                new AnlassPrintDTO(anlass, List.of(einladung), LocalDate.now(), tenantEnum, AppLanguages.DE, null);
+            AnlassPlanungPrintDTO anlassPrintDTO =
+                new AnlassPlanungPrintDTO(anlass, List.of(einladung), LocalDate.now(), tenantEnum, AppLanguages.DE, null);
 
-            AnlassPrinter.print(anlassPrintDTO, outputStream, fileStoreServiceMock, tenantSettingsServiceMock, configServiceMock);
+            AnlassPlanungPrinter.print(
+                anlassPrintDTO,
+                outputStream,
+                fileStoreServiceMock,
+                tenantSettingsServiceMock,
+                configServiceMock);
 
         } catch (IOException e) {
             LOG.error("Error while writing to file", e);
             throw e;
         }
 
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = TenantEnum.class, names = "DEFAULT", mode = Mode.EXCLUDE)
+    void anlaesse_printer_anlass_without_titel(TenantEnum tenantEnum) throws IOException {
+        // ARRANGE: Anlass without titel — verifies no NPE and no " null" artifacts in title/footer
+        try (FileOutputStream outputStream = getFileOutputStream("anlass-print-no-titel", tenantEnum)) {
+            Anlass anlass = AnlassBuilder.create(b -> b
+                .withDatumSetSchuljahr(LocalDate.of(2020, 1, 1))
+                .withTitle(null));
+            Einladung einladung = EinladungBuilder.create(builder -> builder.withAnlass(anlass));
+
+            AnlassPlanungPrintDTO anlassPrintDTO =
+                new AnlassPlanungPrintDTO(anlass, List.of(einladung), LocalDate.now(), tenantEnum, AppLanguages.DE, null);
+
+            AnlassPlanungPrinter.print(
+                anlassPrintDTO,
+                outputStream,
+                fileStoreServiceMock,
+                tenantSettingsServiceMock,
+                configServiceMock);
+        } catch (IOException e) {
+            LOG.error("Error while writing to file", e);
+            throw e;
+        }
     }
 
     @ParameterizedTest
@@ -887,10 +1075,15 @@ class PrinterTest {
 
             List<Einladung> einladungen = List.of(einladung1, einladung2, einladung3, einladung4, einladung5);
 
-            AnlassPrintDTO anlassPrintDTO =
-                new AnlassPrintDTO(anlass, einladungen, LocalDate.now(), tenantEnum, AppLanguages.DE, null);
+            AnlassPlanungPrintDTO anlassPrintDTO =
+                new AnlassPlanungPrintDTO(anlass, einladungen, LocalDate.now(), tenantEnum, AppLanguages.DE, null);
 
-            AnlassPrinter.print(anlassPrintDTO, outputStream, fileStoreServiceMock, tenantSettingsServiceMock, configServiceMock);
+            AnlassPlanungPrinter.print(
+                anlassPrintDTO,
+                outputStream,
+                fileStoreServiceMock,
+                tenantSettingsServiceMock,
+                configServiceMock);
 
         } catch (IOException e) {
             LOG.error("Error while writing to file", e);
@@ -944,10 +1137,15 @@ class PrinterTest {
             List<Einladung> einladungen = List.of(einladung1, einladung2);
             List<Nachkontrolle> nachkontrollen = List.of(nachkontrolle1, nachkontrolle2);
 
-            AnlassPrintDTO anlassPrintDTO =
-                new AnlassPrintDTO(anlass, einladungen, LocalDate.now(), tenantEnum, AppLanguages.DE, nachkontrollen);
+            AnlassPlanungPrintDTO anlassPrintDTO =
+                new AnlassPlanungPrintDTO(anlass, einladungen, LocalDate.now(), tenantEnum, AppLanguages.DE, nachkontrollen);
 
-            AnlassPrinter.print(anlassPrintDTO, outputStream, fileStoreServiceMock, tenantSettingsServiceMock, configServiceMock);
+            AnlassPlanungPrinter.print(
+                anlassPrintDTO,
+                outputStream,
+                fileStoreServiceMock,
+                tenantSettingsServiceMock,
+                configServiceMock);
 
         } catch (IOException e) {
             LOG.error("Error while writing to file", e);

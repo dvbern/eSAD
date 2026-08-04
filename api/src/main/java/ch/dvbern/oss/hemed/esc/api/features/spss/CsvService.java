@@ -11,6 +11,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
 import ch.dvbern.oss.hemed.esc.api.features.spss.columns.AbstractCsvColumn;
+import ch.dvbern.oss.hemed.esc.api.shared.util.CsvSanitizerUtil;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class CsvService {
         Einladung einladung = einladungService.getById(id);
         List<String> columValueList = new ArrayList<>();
         for (AbstractCsvColumn column : columns) {
-            columValueList.add(column.extract(einladung));
+            columValueList.add(CsvSanitizerUtil.sanitize(column.extract(einladung)));
         }
         printer.printRecords(List.of(columValueList));
     }
@@ -49,7 +50,7 @@ public class CsvService {
         UntersuchungImpfungIntern impfung = untersuchungImpfungInternService.getById(id);
         List<String> columValueList = new ArrayList<>();
         for (AbstractCsvColumn column : columns) {
-            columValueList.add(column.extract(impfung));
+            columValueList.add(CsvSanitizerUtil.sanitize(column.extract(impfung)));
         }
         printer.printRecords(List.of(columValueList));
     }

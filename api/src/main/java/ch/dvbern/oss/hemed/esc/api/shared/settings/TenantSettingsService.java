@@ -1,39 +1,46 @@
- package ch.dvbern.oss.hemed.esc.api.shared.settings;
+package ch.dvbern.oss.hemed.esc.api.shared.settings;
 
- import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
- import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
- import lombok.RequiredArgsConstructor;
- import org.checkerframework.checker.nullness.qual.NonNull;
+import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
- @Service
- @RequiredArgsConstructor
- public class TenantSettingsService {
+@Service
+@RequiredArgsConstructor
+public class TenantSettingsService {
 
-     private final TenantSettingsRepo tenantSettingsRepo;
-     private final ConfigService configService;
+    private final TenantSettingsRepo tenantSettingsRepo;
+    private final ConfigService configService;
 
-     @NonNull
-     public TenantSetting persist(@NonNull TenantSetting tenantSettings) {
-         tenantSettingsRepo.persist(tenantSettings);
-         return tenantSettings;
-     }
+    @NonNull
+    public TenantSetting persist(@NonNull TenantSetting tenantSettings) {
+        tenantSettingsRepo.persist(tenantSettings);
+        return tenantSettings;
+    }
 
-     @NonNull
-     public TenantSetting getTenantSetting() {
-         return tenantSettingsRepo.getTenantSetting();
-     }
+    @NonNull
+    public TenantSetting getTenantSetting() {
+        return tenantSettingsRepo.getTenantSetting();
+    }
 
-     public boolean isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled() {
-         return getTenantSetting()
-             .getTenantSettingFeatures()
-             .getBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature()
-             .isEnabledForDeploymentEnvironment(configService.getEnvironment());
-     }
+    public boolean isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled() {
+        return getTenantSetting()
+            .getTenantSettingFeatures()
+            .getBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature()
+            .isEnabledForDeploymentEnvironment(configService.getEnvironment());
+    }
 
-     public boolean isZentraleOrganisation() {
-         return getTenantSetting()
-             .getTenantSettingFeatures()
-             .getZentraleOrganisationFeature()
-             .isEnabledForDeploymentEnvironment(configService.getEnvironment());
-     }
- }
+    public boolean isZentraleOrganisation() {
+        return getTenantSetting()
+            .getTenantSettingFeatures()
+            .getZentraleOrganisationFeature()
+            .isEnabledForDeploymentEnvironment(configService.getEnvironment());
+    }
+
+    public boolean isAnlassTitleRequired() {
+        return getTenantSetting()
+            .getTenantSettingFeatures()
+            .getAnlassTitleRequiredFeature()
+            .isEnabledForDeploymentEnvironment(configService.getEnvironment());
+    }
+}

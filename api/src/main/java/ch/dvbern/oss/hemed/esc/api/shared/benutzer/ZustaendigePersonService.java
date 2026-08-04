@@ -54,19 +54,23 @@ public class ZustaendigePersonService {
     private final AnlassService anlassService;
 
 
-    public void requireZustaendigkeit(@NonNull HasZustaendigkeit entity) {
+    public void requireImmediateZustaendigkeit(@NonNull HasZustaendigkeit entity) {
+        if (tenantSettingsService.isZentraleOrganisation()) {
+            return;
+        }
         // Zustaendigkeit darf nur vom aktuell Zuständigen geändert werden
-        Organisation currentOrganisationOrNull = entity.getSingleOrganisation();
+        Organisation currentOrganisation = entity.getSingleOrganisation();
         Benutzer currentBenutzer = benutzerService.getCurrentBenutzerOrThrowException();
         boolean hasSystemBerechtigung = currentBenutzer.getSystemRollen() != null;
         if (hasSystemBerechtigung) {
             return;
         }
-        if (currentOrganisationOrNull == null) {
-            return;
+        // Kein aktueller Zustaendiger: Kann bei dezentralen nicht vorkommen, bei zentralen OKAY
+        if (currentOrganisation == null) {
+            throw new AppValidationException(AppValidationMessage.zustaendigkeitCanOnlyBeChangedByZustaendiger());
         }
         boolean hasOrganisationBerechtigung = Optional.ofNullable(currentBenutzer.getSingleOrganisationRollen())
-            .filter(rolle -> rolle.getOrganisation().getId().equals(currentOrganisationOrNull.getId()))
+            .filter(rolle -> rolle.getOrganisation().getId().equals(currentOrganisation.getId()))
             .isPresent();
         if (!hasOrganisationBerechtigung) {
             throw new AppValidationException(AppValidationMessage.zustaendigkeitCanOnlyBeChangedByZustaendiger());

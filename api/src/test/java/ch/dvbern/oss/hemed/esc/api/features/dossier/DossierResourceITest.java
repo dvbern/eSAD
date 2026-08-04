@@ -19,6 +19,8 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
@@ -30,6 +32,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.NachkontrolleBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.SchuleBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.DossierApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.KinderApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.SchulenApiSpec;
@@ -51,6 +54,7 @@ import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -76,6 +80,7 @@ class DossierResourceITest extends AbstractITest {
     private final AppClock appClock;
     private final OrganisationService organisationService;
     private final FixtureService fixtureService;
+    private final TenantProducer tenantProducer;
 
     @Override
     @BeforeEach
@@ -579,5 +584,67 @@ class DossierResourceITest extends AbstractITest {
         assertThat(result2).isNotNull();
         assertThat(result2.getId()).isEqualTo(existingDossier.getId().getId());
         assertThat(result2.getDataNichtMedizinisch().getPapierakteStatus()).isEqualTo(PapierakteStatusSpec.NICHT_VORHANDEN);
+    }
+
+    @Test
+    @TestAsSchularztBE
+    void updateDossierPapierakteStatus_throws_if_user_not_zustaendig() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+
+        // Dossier gehoert einem Arzt einer anderen Organisation,
+        // der aktuelle Benutzer (TestAsSchularztBE) ist nicht zustaendig
+        Dossier existingDossier = createDossierOfOtherOrganisation();
+
+        // ACT
+        AppFailureErrorJsonSpec error = api
+            .dossierResourceUpdateDossierPapierakteStatus()
+            .dossierIdPath(existingDossier.getId().getId())
+            .statusPath(PapierakteStatusSpec.VORHANDEN)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
+            .extract().as(AppFailureErrorJsonSpec.class);
+
+        // ASSERT
+        assertThat(error).isNotNull();
+        assertThat(error.getType()).isEqualTo(FailureTypeSpec.FAILURE);
+    }
+
+    @Test
+    @TestAsSchularztBE
+    void updateDossierVerantwortlichArzt_throws_if_user_not_zustaendig() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+
+        Dossier existingDossier = createDossierOfOtherOrganisation();
+        Benutzer arzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        BenutzerOptionJsonSpec benutzerOptionJson = BenutzerBuilder.createOptionJaxSpec(
+            builder -> builder.forBenutzer(arzt));
+
+        // ACT
+        AppFailureErrorJsonSpec error = api
+            .dossierResourceUpdateDossierVerantwortlichArzt()
+            .dossierIdPath(existingDossier.getId().getId())
+            .body(benutzerOptionJson)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
+            .extract().as(AppFailureErrorJsonSpec.class);
+
+        // ASSERT
+        assertThat(error).isNotNull();
+        assertThat(error.getType()).isEqualTo(FailureTypeSpec.FAILURE);
+    }
+
+    @NonNull
+    private Dossier createDossierOfOtherOrganisation() {
+        Benutzer otherArzt = fixtureService.createBenutzerWithOrganisation();
+        Kind kind = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
+        return dossierService.persist(DossierBuilder.create(builder -> builder
+            .forKind(kind)
+            .withZustaendigArzt(otherArzt)));
     }
 }

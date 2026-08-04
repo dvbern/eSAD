@@ -78,7 +78,11 @@ public class FileNameUtil {
         int laufnummer
     ) {
         String formattedDate = date.format(DATE_FORMATTER_FOR_FILENAME);
-        String formattedName = name.replace(' ', SEPARATOR).substring(0, Math.min(name.length(), 50));
+        String sanitized = name.replace(' ', SEPARATOR)
+            .replace('/', SEPARATOR)
+            .replace('\\', SEPARATOR)
+            .replace("..", "");
+        String formattedName = sanitized.substring(0, Math.min(sanitized.length(), 50));
 
         if (laufnummer > 1) {
             return formattedDate + UNDERLINE + formattedName + UNDERLINE + laufnummer;

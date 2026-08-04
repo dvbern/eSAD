@@ -41,6 +41,7 @@ import {UntersuchungStore} from '../untersuchung.store';
 export class UntersuchungTabsComponent {
   showLinkToDossier = input(false);
   canViewUntersuchungKindDaten = input(false);
+  abschliessenLabelKey = input('untersuchung.tab.abschliessen');
 
   untersuchungAbschliessen = output();
 

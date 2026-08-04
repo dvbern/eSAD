@@ -193,4 +193,18 @@ class TenantClaimMatchesUrlFilterTest {
         // ASSERT
         verify(requestContext, never()).abortWith(any());
     }
+
+    @Test
+    void should_skip_validation_for_hin_user() {
+        // ARRANGE
+        when(securityIdentity.isAnonymous()).thenReturn(false);
+        when(securityIdentity.getPrincipal()).thenReturn(jsonWebToken);
+        when(jsonWebToken.claim(JsonWebTokenClaims.HIN_PERSON_CODE)).thenReturn(Optional.of("some-hin-code"));
+
+        // ACT
+        filter.checkIdentityForTenant(requestContext, securityIdentity);
+
+        // ASSERT
+        verify(requestContext, never()).abortWith(any());
+    }
 }

@@ -10,24 +10,40 @@
   <div
     style="display:flex; column-gap: 1rem; flex-grow: 1; justify-content: end; align-items: center; margin-right: 1rem;">
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showImpfungenHeaderImpfausweisUnvollstaendig) {
-      <div class="form-check">
+      <div class="form-check"
+           [class.warn-border]="!impfausweisStatusMutiert() && impfausweisUnvollstaendig()">
+        @if(!impfausweisStatusMutiert() && impfausweisUnvollstaendig()){
+          <svui-icon
+            class="input-icon"
+            useCase="warning"
+            [tooltip]="'untersuchung.impfungen.impfausweisStatusKopiert' | transloco"
+          />
+        }
         <input svuiCheckbox
                type="checkbox"
                id="impfausweisUnvollstaendigId"
                [(ngModel)]="impfausweisUnvollstaendig"
-               (change)="onImpfausweisUnvollstaendigChanged()"
+               (change)="impfausweisStatusChanged()"
                [disabled]="!hasImpfungenEditBerechtigung() || !anlassStore.canUserEditAnlassInCurrentState()"/>
         <label for="impfausweisUnvollstaendigId"
                class="form-check-label">{{ 'untersuchung.impfungen.impfausweisUnvollstaendig' | transloco }}</label>
       </div>
     }
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.showImpfungenHeaderImpfausweisNichtVorhanden) {
-      <div class="form-check">
+      <div class="form-check"
+           [class.warn-border]="!impfausweisStatusMutiert() && impfausweisNichtVorhanden()">
+        @if(!impfausweisStatusMutiert() && impfausweisNichtVorhanden()){
+          <svui-icon
+            class="input-icon"
+            useCase="warning"
+            [tooltip]="'untersuchung.impfungen.impfausweisStatusKopiert' | transloco"
+          />
+        }
         <input svuiCheckbox
                type="checkbox"
                id="impfausweisNichtVorhandenId"
                [(ngModel)]="impfausweisNichtVorhanden"
-               (change)="onImpfausweisNichtVorhandenChanged()"
+               (change)="impfausweisStatusChanged()"
                [disabled]="!hasImpfungenEditBerechtigung() || !anlassStore.canUserEditAnlassInCurrentState()"/>
         <label for="impfausweisNichtVorhandenId"
                class="form-check-label">{{ 'untersuchung.impfungen.impfausweisNichtVorhanden' | transloco }}</label>
@@ -39,7 +55,7 @@
                type="checkbox"
                id="impfausweisZweiPlusEinsSchemaId"
                [(ngModel)]="impfausweisZweiPlusEinsSchema"
-               (change)="onImpfausweisZweiPlusEinsSchemaChanged()"
+               (change)="impfausweisStatusChanged()"
                [disabled]="!hasImpfungenEditBerechtigung() || !anlassStore.canUserEditAnlassInCurrentState()"/>
         <label for="impfausweisZweiPlusEinsSchemaId"
                class="form-check-label">{{ 'untersuchung.impfungen.impfausweisZweiPlusEinsSchema' | transloco }}</label>
@@ -54,7 +70,7 @@
             [icon]="'impfausweis'"
             [badgeContent]="hasImpfausweisFile() ? 1 : 0"
             [disabled]="!hasImpfungenEditBerechtigung() || !anlassStore.canUserEditAnlassInCurrentState()"
-            (click)="onGotoImpfausweisClicked()">
+            (click)="gotoImpfausweisClicked.emit()">
     </button>
   }
 </div>

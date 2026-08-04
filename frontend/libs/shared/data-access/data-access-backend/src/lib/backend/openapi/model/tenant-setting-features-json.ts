@@ -29,6 +29,7 @@ export interface TenantSettingFeaturesJson {
     anlassSpracheSpalteFeature: TenantSettingFeatureStateJson;
     anlassSpracheZusammenfassungFeature: TenantSettingFeatureStateJson;
     anlassInformationenFeature: TenantSettingFeatureStateJson;
+    anlassTitleRequiredFeature: TenantSettingFeatureStateJson;
 }
 
 

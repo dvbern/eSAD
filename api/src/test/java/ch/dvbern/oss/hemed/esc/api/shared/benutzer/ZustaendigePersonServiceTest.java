@@ -127,7 +127,7 @@ class ZustaendigePersonServiceTest {
             Dossier dossier = DossierBuilder.create(d -> {});
 
             // ACT & ASSERT
-            assertThatCode(() -> service.requireZustaendigkeit(dossier))
+            assertThatCode(() -> service.requireImmediateZustaendigkeit(dossier))
                 .doesNotThrowAnyException();
         }
 
@@ -141,8 +141,8 @@ class ZustaendigePersonServiceTest {
             when(entity.getSingleOrganisation()).thenReturn(null);
 
             // ACT & ASSERT
-            assertThatCode(() -> service.requireZustaendigkeit(entity))
-                .doesNotThrowAnyException();
+            assertThatThrownBy(() -> service.requireImmediateZustaendigkeit(entity))
+                .isInstanceOf(AppValidationException.class);
         }
 
         @Test
@@ -158,7 +158,7 @@ class ZustaendigePersonServiceTest {
             when(entity.getSingleOrganisation()).thenReturn(org);
 
             // ACT & ASSERT
-            assertThatCode(() -> service.requireZustaendigkeit(entity))
+            assertThatCode(() -> service.requireImmediateZustaendigkeit(entity))
                 .doesNotThrowAnyException();
         }
 
@@ -179,7 +179,7 @@ class ZustaendigePersonServiceTest {
             when(entity.getSingleOrganisation()).thenReturn(orgEntity);
 
             // ACT & ASSERT
-            assertThatThrownBy(() -> service.requireZustaendigkeit(entity))
+            assertThatThrownBy(() -> service.requireImmediateZustaendigkeit(entity))
                 .isInstanceOf(AppValidationException.class);
         }
     }

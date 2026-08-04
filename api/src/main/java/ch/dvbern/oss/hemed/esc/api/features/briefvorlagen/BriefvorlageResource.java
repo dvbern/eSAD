@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.briefvorlagen;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileDownloadUtil;
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
@@ -11,6 +13,8 @@ import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.json.BriefvorlageJson;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.json.BriefvorlageListJson;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.json.BriefvorlageSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
@@ -58,6 +62,7 @@ public class BriefvorlageResource {
     private final BriefvorlageMapper briefvorlageMapper;
     private final BriefvorlageService briefvorlageService;
     private final FileStoreService fileStoreService;
+    private final AuthorizerService authorizerService;
 
     @Context
     private HttpServerResponse response;
@@ -119,6 +124,9 @@ public class BriefvorlageResource {
         @Nullable @QueryParam("einladungId") ID<Einladung> einladungId,
         @Nullable @QueryParam("arztId") ID<Arzt> arztId
     ) {
+        // Der Brief kann medizinische Daten enthalten (Anlass-Vorlagen mit Untersuchungs-Feldern),
+        // daher Objekt-Check auf Einladung bzw. Kind
+        authorizerService.requireBriefDownloadAuthorization(kindId, einladungId, List.of(Berechtigung.VORLAGEN_LESEN));
         PrintResultDTO printResultDTO = briefvorlageMapper.generateBrief(briefvorlageId, kindId, einladungId, arztId);
 
         return FileDownloadUtil.buildFileResponse(

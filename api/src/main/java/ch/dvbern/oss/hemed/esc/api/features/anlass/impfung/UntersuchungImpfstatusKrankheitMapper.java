@@ -3,6 +3,8 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.impfung;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfstatusKrankheitSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfstatusListSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
@@ -23,6 +25,7 @@ public final class UntersuchungImpfstatusKrankheitMapper {
     private final UntersuchungService untersuchungService;
     private final UntersuchungImpfungenService untersuchungImpfungenService;
     private final UntersuchungImpfstatusKrankheitService untersuchungImpfstatusKrankheitService;
+    private final EinladungService einladungService;
     private final AppClock appClock;
 
     @Nullable
@@ -93,7 +96,11 @@ public final class UntersuchungImpfstatusKrankheitMapper {
         // Eigentlich sollten die Impfstatus beim Erstellen der Untersuchung erstellt werden. Bei schon bestehenden Untersuchungen erstellen wir sie hier noch.
         if (existingImpfstatus.isEmpty()) {
             if(copyImpfhistory){
-                untersuchungService.createCompleteImpfstatusBasedOnLastAnlass(impfungen);
+                Optional<Einladung> lastEinladung =
+                    einladungService.findLastEinladungForKind(
+                        impfungen.getUntersuchung().getAnlass(),
+                        impfungen.getUntersuchung().getEinladungRequired().getDossier().getKind().getId());
+                untersuchungService.createCompleteImpfstatusBasedOnLastAnlass(impfungen, lastEinladung);
             } else {
                 untersuchungService.createCompleteImpfstatusWithoutHistory(impfungen);
             }

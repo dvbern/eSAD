@@ -17,5 +17,5 @@ public final class JsonWebTokenClaims {
     public static final String CLIENT_ROLE_CLAIM = "resource_access";
     public static final String CLIENT_ROLE_CLIENT_NAME_CLAIM = "esc";
     public static final String CLIENT_ROLE_ROLES_CLAIM = "roles";
-    public static final String HIN_EAN_NO_MEDICAL = "X-HIN-EAN-NO-MEDICAL";
+    public static final String HIN_PERSON_CODE = "X-HIN-PERSON-CODE";
 }

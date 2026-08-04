@@ -35,9 +35,8 @@ public class AnlassSaveJson implements SaveJsonWithOptimisticLocking {
     @Valid
     private final AnlassConfigOptionJson anlassConfigOption;
 
-    @NotNull
-    @NonNull
-    @Schema(required = true)
+    @Nullable
+    @Schema(required = false)
     private final String titel;
 
     @NotNull

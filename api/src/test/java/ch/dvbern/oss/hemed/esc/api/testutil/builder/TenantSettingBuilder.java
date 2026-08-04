@@ -54,6 +54,7 @@ public class TenantSettingBuilder {
                 FeatureEnabledSetting.ENABLED,
                 FeatureEnabledSetting.ENABLED,
                 FeatureEnabledSetting.ENABLED,
+                FeatureEnabledSetting.ENABLED,
                 FeatureEnabledSetting.ENABLED
             ),
             EnumSetUtil.toString(EnumSet.allOf(EinladungStatus.class))
@@ -90,7 +91,8 @@ public class TenantSettingBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public TenantSettingBuilder withBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature(@NonNull FeatureEnabledSetting setting) {
+    public TenantSettingBuilder withBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature(
+        @NonNull FeatureEnabledSetting setting) {
         this.tenantSetting.getTenantSettingFeatures().setBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature(setting);
         return this;
     }

@@ -26,6 +26,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
@@ -68,12 +70,16 @@ class AnlassResourceDezentralITest extends AbstractITest {
     private final FixtureService fixtureService;
     private final AppClock appClock;
     private final ConfigService configService;
+    private final TenantProducer tenantProducer;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
-        // Mock limit in config service to make sure we get all the results. Delegate all other calls to 'real' config Service
+
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        // Mock limit in config service to make sure we get all the results. Delegate all other calls to 'real'
+        // config Service
         ConfigService configServiceMock = Mockito.spy(configService);
         Mockito.when(configServiceMock.getDashboardAnlassLimit()).thenReturn(Integer.MAX_VALUE);
         QuarkusMock.installMockForType(configServiceMock, ConfigService.class);
@@ -827,8 +833,12 @@ class AnlassResourceDezentralITest extends AbstractITest {
         String arztID = null;
         String mpaID = null;
         String sql = String.format(
-            "INSERT INTO anlass (id, version, timestamperstellt, timestampmutiert, usererstellt, usermutiert, datum, von, bis, anlassconfig_id, arzt_id, mpa_id, weitereperson_id, titel, anlassstatus, anlassart, schuljahr) "
-                + "VALUES ('%s', 0, '2023-01-01 00:00:00+00', '2023-01-01 00:00:00+00', 'test', 'test', '2023-01-01', '2023-01-01 11:30:00.000000', '2023-01-01 12:00:00.000000', '%s', %s, %s, null, 'Dummy Anlass', 'IN_PLANUNG', 'EINZEL_ANLASS', 2023)",
+            "INSERT INTO anlass (id, version, timestamperstellt, timestampmutiert, usererstellt, usermutiert, datum, "
+                + "von, bis, anlassconfig_id, arzt_id, mpa_id, weitereperson_id, titel, anlassstatus, anlassart, "
+                + "schuljahr) "
+                + "VALUES ('%s', 0, '2023-01-01 00:00:00+00', '2023-01-01 00:00:00+00', 'test', 'test', '2023-01-01',"
+                + " '2023-01-01 11:30:00.000000', '2023-01-01 12:00:00.000000', '%s', %s, %s, null, 'Dummy Anlass', "
+                + "'IN_PLANUNG', 'EINZEL_ANLASS', 2023)",
             anlassID,
             config.getId().getId(),
             arztID,
@@ -849,7 +859,11 @@ class AnlassResourceDezentralITest extends AbstractITest {
     }
 
     @NonNull
-    private Anlass createAnlassWithArztAndStatus(@Nullable Benutzer arzt, @Nullable Benutzer mpa, @NonNull AnlassStatus status) {
+    private Anlass createAnlassWithArztAndStatus(
+        @Nullable Benutzer arzt,
+        @Nullable Benutzer mpa,
+        @NonNull AnlassStatus status
+    ) {
         return anlassService.persist(
             AnlassBuilder.create(builder -> builder
                 .withTitle("Dezentral Test Anlass")

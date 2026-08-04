@@ -804,7 +804,6 @@ components:
       required:
       - anlassTyp
       - anlassConfigOption
-      - titel
       - anlassStatus
       - datum
       - schuljahr
@@ -4321,6 +4320,8 @@ components:
         maxPageSize:
           type: integer
           format: int32
+          maximum: 500
+          minimum: 1
         requestTotal:
           type: boolean
     PageResultJsonSearchSummaryJson:
@@ -4959,6 +4960,7 @@ components:
       - anlassSpracheSpalteFeature
       - anlassSpracheZusammenfassungFeature
       - anlassInformationenFeature
+      - anlassTitleRequiredFeature
       properties:
         esadIdFeature:
           $ref: "#/components/schemas/TenantSettingFeatureStateJson"
@@ -4995,6 +4997,8 @@ components:
         anlassSpracheZusammenfassungFeature:
           $ref: "#/components/schemas/TenantSettingFeatureStateJson"
         anlassInformationenFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        anlassTitleRequiredFeature:
           $ref: "#/components/schemas/TenantSettingFeatureStateJson"
     TenantSettingSaveJson:
       type: object
@@ -5689,12 +5693,15 @@ components:
       - impfausweisUnvollstaendig
       - impfausweisNichtVorhanden
       - impfausweisZweiPlusEinsSchema
+      - impfausweisStatusMutiert
       properties:
         impfausweisUnvollstaendig:
           type: boolean
         impfausweisNichtVorhanden:
           type: boolean
         impfausweisZweiPlusEinsSchema:
+          type: boolean
+        impfausweisStatusMutiert:
           type: boolean
     UntersuchungImpfungenJson:
       type: object
@@ -9535,7 +9542,7 @@ paths:
         in: path
         required: true
         schema:
-          $ref: "#/components/schemas/HasUntersuchungIDWrapper"
+          $ref: "#/components/schemas/IDAnonymerEintrag"
       responses:
         "204":
           description: No Content
@@ -12117,28 +12124,6 @@ paths:
       - SecurityScheme:
         - KINDER_SCHREIBEN_MEDIZINISCH
         - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
-    delete:
-      operationId: KindResource_removeKind
-      tags:
-      - Kinder
-      parameters:
-      - name: kindId
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/IDKind"
-      responses:
-        "204":
-          description: No Content
-        "401":
-          description: Not Authorized
-        "403":
-          description: Not Allowed
-      summary: Remove Kind
-      security:
-      - SecurityScheme:
-        - KINDER_SCHREIBEN_MEDIZINISCH
-        - KINDER_SCHREIBEN_NICHT_MEDIZINISCH
     get:
       operationId: KindResource_getKind
       tags:
@@ -13409,6 +13394,34 @@ paths:
       - SecurityScheme:
         - KOMPLETTER_EXPORT
         - ANLASSPLANUNG_SCHREIBEN
+  /api/printer/anonymer-eintrag/{anonymerEintragId}:
+    get:
+      operationId: PrinterResource_downloadAnonymerEintrag
+      tags:
+      - Printer
+      parameters:
+      - name: anonymerEintragId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnonymerEintrag"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Download Anonymer Eintrag
+      security:
+      - SecurityScheme:
+        - ANLASSPLANUNG_SCHREIBEN
+        - ANLASSPLANUNG_SCHREIBEN_LAEUSE
   /api/printer/kind/{kindId}:
     get:
       operationId: PrinterResource_downloadKinderdossier
@@ -14492,6 +14505,6 @@ paths:
         - SUPPORT
 info:
   title: esc-api API
-  version: 26.8.0-SNAPSHOT
+  version: 26.10.0-SNAPSHOT
 servers:
 - url: https://local-esc-bs.localhost:8443

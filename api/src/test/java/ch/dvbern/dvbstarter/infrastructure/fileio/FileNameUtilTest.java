@@ -159,4 +159,20 @@ class FileNameUtilTest {
             "ext e ee eee eeee eeeee eeeeee eeeeee mely long name",
             2)).isEqualTo("06-05-2025_ext-e-ee-eee-eeee-eeeee-eeeeee-eeeeee-mely-long-na_2");
     }
+
+    @Test
+    void basicFolderName_neutralizesPathTraversal() {
+        OffsetDateTime today = LocalDate.of(2025, 05, 06).atStartOfDay(ZONE_ID).toOffsetDateTime();
+
+        assertThat(FileNameUtil.basicFolderName(today, "x/../../../tmp/evil", 0))
+            .isEqualTo("06-05-2025_x----tmp-evil");
+        assertThat(FileNameUtil.basicFolderName(today, "Notiz\\Test", 0))
+            .isEqualTo("06-05-2025_Notiz-Test");
+        assertThat(FileNameUtil.basicFolderName(today, "..", 0))
+            .isEqualTo("06-05-2025_");
+        assertThat(FileNameUtil.basicFolderName(today, "../../etc/passwd", 0))
+            .isEqualTo("06-05-2025_--etc-passwd");
+        assertThat(FileNameUtil.basicFolderName(today, "Schuluntersuchung 2024/2025", 0))
+            .isEqualTo("06-05-2025_Schuluntersuchung-2024-2025");
+    }
 }

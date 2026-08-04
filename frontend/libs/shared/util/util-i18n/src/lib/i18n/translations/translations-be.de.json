@@ -23,5 +23,12 @@
   "StrabismusResultat.KEIN_STRABISMUS": "Normal",
   "untersuchung.tab.daten.untersuchung.mpa": "School Nurse/MPA",
   "untersuchung.tab.massnahmen.beratung.mpa": "Beratung School Nurse/MPA",
-  "untersuchung.tab.triage.triageMpa": "Triage School Nurse/MPA"
+  "untersuchung.tab.triage.triageMpa": "Triage School Nurse/MPA",
+  "untersuchung": {
+    "tab": {
+      "hoeren": {
+        "audiogramm": "Audiogramm (Optional)"
+      }
+    }
+  }
 }

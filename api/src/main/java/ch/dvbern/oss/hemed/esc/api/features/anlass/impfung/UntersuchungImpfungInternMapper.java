@@ -6,6 +6,8 @@ import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungInternJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungInternSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
@@ -28,6 +30,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -44,6 +47,7 @@ public final class UntersuchungImpfungInternMapper {
     private final BenutzerService benutzerService;
     private final AppClock appClock;
     private final TenantProducer tenantProducer;
+    private final EinladungService einladungService;
 
     @Nullable
     public static UntersuchungImpfungInternJson toJson(@Nullable UntersuchungImpfungIntern impfung, @NonNull TenantEnum tenant) {
@@ -134,7 +138,11 @@ public final class UntersuchungImpfungInternMapper {
         List<UntersuchungImpfungIntern> impfungenIntern = untersuchungImpfungInternService.findByUntersuchung(impfungen.getUntersuchung().getId());
         // Eigentlich sollten die Impfstatus beim Erstellen der Untersuchung erstellt werden. Bei schon bestehenden Untersuchungen erstellen wir sie hier noch.
         if (impfungenIntern.isEmpty()) {
-            untersuchungService.createCompleteImpfungenInternBasedOnLastAnlass(impfungen);
+            Optional<Einladung> lastEinladung =
+                einladungService.findLastEinladungForKind(
+                    impfungen.getUntersuchung().getAnlass(),
+                    impfungen.getUntersuchung().getEinladungRequired().getDossier().getKind().getId());
+            untersuchungService.createCompleteImpfungenInternBasedOnLastAnlass(impfungen, lastEinladung);
             impfungenIntern = untersuchungImpfungInternService.findByUntersuchung(impfungen.getUntersuchung().getId());
         }
         TenantEnum tenant = tenantProducer.produceTenant();

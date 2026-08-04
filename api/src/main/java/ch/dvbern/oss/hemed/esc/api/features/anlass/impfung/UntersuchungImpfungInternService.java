@@ -1,5 +1,13 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.impfung;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
@@ -22,17 +30,10 @@ import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.SetMultimap;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -174,6 +175,7 @@ public class UntersuchungImpfungInternService {
     }
 
     @NonNull
+    @Transactional(Transactional.TxType.NOT_SUPPORTED)
     public List<ID<UntersuchungImpfungIntern>> findAllForCsvReport(@NonNull DateRange zeitraum) {
         List<ID<Einladung>> einladungIdList = einladungService.findAllForCsvImpfstoffeReport(zeitraum);
 
@@ -232,7 +234,7 @@ public class UntersuchungImpfungInternService {
     ) {}
 
     private List<UntersuchungImpfungIntern> findImpfungenInternForKindForCSVReport(ID<Einladung> einladungId) {
-        List<UntersuchungImpfungIntern> impfungenByEinladung = untersuchungImpfungInternRepo.findByEinladung(einladungId);
+        List<UntersuchungImpfungIntern> impfungenByEinladung = untersuchungImpfungInternRepo.findByEinladungWithFetchedAnlass(einladungId);
         if (impfungenByEinladung.isEmpty()) {
             // Es gibt in der letzen Untersuchung keine Impfungen für dieses Kind
             Einladung einladung = einladungService.getById(einladungId);

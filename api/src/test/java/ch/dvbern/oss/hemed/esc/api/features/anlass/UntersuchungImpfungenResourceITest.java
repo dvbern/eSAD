@@ -4,6 +4,7 @@ import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.oss.hemed.esc.api.Util;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitMapper;
@@ -1330,6 +1331,132 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         // ASSERT
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getData().getAchtung()).isEqualTo(achtungString);
+    }
+
+    @Test
+    @TestAsAdminBS
+    void getUntersuchungImpfungen_should_get_impfausweis_checkboxen_from_previous_anlass() {
+        // ARRANGE
+        Dossier dossier = fixtureService.createDossier();
+
+        // config with impfungenUebersicht required so the
+        // CheckUntersuchungImpfstatusKrankheitPresentIfReqValidator required-branch is exercised.
+        // A non-overlapping (pre-2000) Gueltigkeitszeitraum is used so it does not collide with the
+        // seeded default config (valid 2000-01-01..9999-12-31).
+        AnlassConfig previousAnlassConfig = AnlassConfigBuilder.create(builder -> builder
+            .withGueltigkeitsZeitraum(LocalDate.of(1999, 1, 1), LocalDate.of(1999, 12, 31))
+            .withAnlassTyp(AnlassTyp.KLASSE_4)
+            .withImpfungenUebersicht(RequirementSetting.REQUIRED));
+        anlassConfigRepo.persist(previousAnlassConfig);
+        Anlass previousAnlass = fixtureService.createAnlass(previousAnlassConfig);
+        Einladung previousEinladung = fixtureService.createEinladung(previousAnlass, dossier);
+
+        Untersuchung previousUntersuchung = fixtureService.createUntersuchungWithImpfungen(previousEinladung);
+        Assertions.assertThat(previousUntersuchung.getUntersuchungImpfungen()).isNotNull();
+        fixtureService.setImpfausweisCheckboxen(
+            previousUntersuchung.getUntersuchungImpfungen().getId(),
+            true, false, true
+        );
+
+        fixtureService.createOrUpdateUntersuchungImpfstatusKrankheit(
+            previousUntersuchung.getUntersuchungImpfungen(),
+            Krankheit.MASERN,
+            true,
+            null
+        );
+
+        Anlass newAnlass = fixtureService.createAnlass(LocalDate.of(2024, 1, 1));
+        Einladung newEinladung = fixtureService.createEinladung(newAnlass, dossier);
+
+        // ACT
+        UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
+            .anlassIdPath(newEinladung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(newEinladung.getId()))
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungImpfungenDataJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(data.getUntersuchungImpfungen()).isNotNull();
+        Assertions.assertThat(data.getUntersuchungImpfungen().getData().getImpfausweis().getImpfausweisNichtVorhanden()).isTrue();
+        Assertions.assertThat(data.getUntersuchungImpfungen().getData().getImpfausweis().getImpfausweisUnvollstaendig()).isFalse();
+        Assertions.assertThat(data.getUntersuchungImpfungen().getData().getImpfausweis().getImpfausweisZweiPlusEinsSchema()).isTrue();
+        Assertions.assertThat(data.getUntersuchungImpfungen().getData().getImpfausweis().getImpfausweisStatusMutiert()).isFalse();
+
+        Assertions.assertThat(data.getImpfstatusList()).isNotNull();
+        UntersuchungImpfstatusKrankheitSaveJsonSpec masernImpfstatus = data.getImpfstatusList()
+            .getImpfstatusList()
+            .stream()
+            .filter(impfstatus -> impfstatus.getKrankheit() == KrankheitSpec.MASERN)
+            .findFirst()
+            .orElseThrow();
+        Assertions.assertThat(masernImpfstatus.getImpfschutzGegeben()).isTrue();
+        Assertions.assertThat(masernImpfstatus.getDatumLetzteImpfung()).isNull();
+    }
+
+    @Test
+    @TestAsAdminBS
+    void saveUntersuchungImpfungenImpfstatus_should_fail_if_datum_required_but_missing_when_mutiert() {
+        // ARRANGE
+        Dossier dossier = fixtureService.createDossier();
+
+        // config with impfungenUebersicht required so the
+        // CheckUntersuchungImpfstatusKrankheitPresentIfReqValidator required-branch is exercised.
+        // A non-overlapping (pre-2000) Gueltigkeitszeitraum is used so it does not collide with the
+        // seeded default config (valid 2000-01-01..9999-12-31).
+        AnlassConfig anlassConfig = AnlassConfigBuilder.create(builder -> builder
+            .withGueltigkeitsZeitraum(LocalDate.of(1999, 1, 1), LocalDate.of(1999, 12, 31))
+            .withAnlassTyp(AnlassTyp.KLASSE_4)
+            .withImpfungenUebersicht(RequirementSetting.REQUIRED));
+        anlassConfigRepo.persist(anlassConfig);
+        Anlass anlass = fixtureService.createAnlass(anlassConfig);
+        Einladung einladung = fixtureService.createEinladung(anlass, dossier);
+
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen(einladung);
+        Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+
+        // Den Impfausweis mutieren (Modified-Flag setzen). Der Impfausweis ist vollstaendig vorhanden
+        // (weder nichtVorhanden noch unvollstaendig), damit der Validator das Datum verlangt.
+        UntersuchungImpfungenSaveJsonSpec impfausweisSaveJsonSpec =
+            UntersuchungImpfungenBuilder.createJaxSpec(builder -> builder
+                .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
+                .withImpfausweisNichtVorhanden(false)
+                .withImpfausweisUnvollstaendig(false)
+                .withImpfausweisStatusMutiert(true)).getData();
+        api.untersuchungImpfungenResourceSaveUntersuchungImpfungen()
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
+            .body(impfausweisSaveJsonSpec)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode());
+
+        // ACT
+        // Impfstatus mit Anzahl Impfungen > 0 aber ohne Datum der letzten Impfung speichern.
+        // Da der Impfausweis mutiert und vollstaendig vorhanden ist und das Datum konfigurationsbedingt
+        // verlangt wird, muss die Validierung fehlschlagen.
+        UntersuchungImpfstatusKrankheitSaveJsonSpec updateSpec =
+            UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder
+                .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
+                .forKrankheit(Krankheit.MASERN)
+                .withAnzahlImpfungen(2)
+                .withDatumLetzteImpfung(null));
+        UntersuchungImpfstatusListSaveJsonSpec updateListSpec =
+            new UntersuchungImpfstatusListSaveJsonSpec(List.of(updateSpec));
+
+        // ASSERT
+        api.untersuchungImpfungenResourceSaveUntersuchungImpfungenImpfstatus()
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
+            .body(updateListSpec)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.BAD_REQUEST.getStatusCode());
     }
 
 	@Test

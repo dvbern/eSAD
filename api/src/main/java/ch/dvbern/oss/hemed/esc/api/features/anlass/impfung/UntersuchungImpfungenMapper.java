@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.impfung;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
+import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
@@ -41,6 +42,7 @@ public final class UntersuchungImpfungenMapper {
     private final UntersuchungImpfungInternMapper untersuchungImpfungInternMapper;
     private final VisumMapper visumMapper;
     private final TenantProducer tenantProducer;
+    private final AppClock appClock;
 
     @Nullable
     public static UntersuchungImpfungenJson toJson(@Nullable UntersuchungImpfungen impfungen, @NonNull TenantEnum tenant) {
@@ -54,7 +56,8 @@ public final class UntersuchungImpfungenMapper {
                 new UntersuchungImpfungenImpfausweisSaveJson(
                     impfungen.isImpfausweisUnvollstaendig(),
                     impfungen.isImpfausweisNichtVorhanden(),
-                    impfungen.isImpfausweisZweiPlusEinsSchema()
+                    impfungen.isImpfausweisZweiPlusEinsSchema(),
+                    impfungen.getImpfausweisStatusFlagstimestampMutiert() != null
                 ),
                 new UntersuchungImpfungenChecklisteSaveJson(
                     impfungen.isCheckEinwilligungVorhanden(),
@@ -102,6 +105,9 @@ public final class UntersuchungImpfungenMapper {
             saveJson.getDoppelkontrolle().getVisumDatum2());
         existingImpfungen.setImpfausweisUnvollstaendig(saveJson.getImpfausweis().isImpfausweisUnvollstaendig());
         existingImpfungen.setImpfausweisNichtVorhanden(saveJson.getImpfausweis().isImpfausweisNichtVorhanden());
+        if (saveJson.getImpfausweis().isImpfausweisStatusMutiert()){
+            existingImpfungen.setImpfausweisStatusFlagstimestampMutiert(appClock.offsetDateTime().now());
+        }
         existingImpfungen.setImpfausweisZweiPlusEinsSchema(saveJson.getImpfausweis().isImpfausweisZweiPlusEinsSchema());
         existingImpfungen.setCheckEinwilligungVorhanden(saveJson.getCheckliste().isCheckEinwilligungVorhanden());
         existingImpfungen.setCheckKontraindikationenAbgeklaert(saveJson.getCheckliste().isCheckKontraindikationenAbgeklaert());

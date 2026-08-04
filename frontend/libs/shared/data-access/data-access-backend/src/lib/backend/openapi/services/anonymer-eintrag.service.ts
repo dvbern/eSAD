@@ -19,7 +19,7 @@ import { Observable }                                        from 'rxjs';
 
 import { AnonymerEintragCreateJson } from '../model/anonymer-eintrag-create-json';
 import { AnonymerEintragJson } from '../model/anonymer-eintrag-json';
-import { BackendEntityId, BackendEntityIdWithClass } from '@dvb/data-access-types';
+import { BackendEntityId } from '@dvb/data-access-types';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -27,7 +27,7 @@ import { Configuration }                                     from '../configurat
 
 export interface AnonymerEintragServiceAbschlussAnonymerEintragRequestParams {
     anlassId: BackendEntityId;
-    anonymerEintragId: BackendEntityIdWithClass;
+    anonymerEintragId: BackendEntityId;
 }
 
 export interface AnonymerEintragServiceCreateAnonymerEintragRequestParams {
@@ -163,7 +163,7 @@ export class AnonymerEintragService {
             }
         }
 
-        let localVarPath = `/api/anonymer-eintrag/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/${this.configuration.encodeParam({name: "anonymerEintragId", value: anonymerEintragId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/abschluss`;
+        let localVarPath = `/api/anonymer-eintrag/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/${this.configuration.encodeParam({name: "anonymerEintragId", value: anonymerEintragId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/abschluss`;
         return this.httpClient.request<any>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

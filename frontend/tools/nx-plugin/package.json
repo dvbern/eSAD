@@ -3,9 +3,16 @@
   "version": "0.0.1",
   "dependencies": {
     "tslib": "^2.3.0",
-    "@nx/angular": "22.7.1",
-    "@nx/devkit": "22.7.1",
+    "@nx/angular": "22.7.7",
+    "@nx/devkit": "22.7.7",
     "@types/prompts": "^2.4.9"
+  },
+  "overrides": {
+    "form-data": "^4.0.6",
+    "shell-quote": "^1.10.0",
+    "websocket-driver": "^0.7.5",
+    "adm-zip": "^0.6.0",
+    "ws": "^8.20.2"
   },
   "type": "commonjs",
   "main": "./src/index.js",

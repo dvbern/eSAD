@@ -17,8 +17,12 @@ package ch.dvbern.oss.hemed.esc.api.shared.documentqueue;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
@@ -46,6 +50,9 @@ import static ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueueServ
 @Slf4j
 public class DocumentQueueFileService {
 
+    private static final FileAttribute<Set<PosixFilePermission>> FILE_PERMS_OWNER_ONLY =
+        PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------"));
+
     private final BriefvorlageService briefvorlageService;
     private final AppClock appClock;
     private final TL tl;
@@ -66,29 +73,18 @@ public class DocumentQueueFileService {
     @NonNull
     public Path createTempFile(@NonNull CleanFileName fileName) {
         try {
-            Path tempFileLoc = resolveUniqueFilePath(configService.getTmpDir(), fileName.getFileName());
+            Path tmpDir = configService.getTmpDir();
+            String prefix = FilenameUtils.getBaseName(fileName.getFileName()) + '_';
+            String extension = FilenameUtils.getExtension(fileName.getFileName());
+            String suffix = extension.isEmpty() ? "" : '.' + extension;
 
-            Files.createFile(tempFileLoc);
-            tempFileLoc.toFile().deleteOnExit();
-
-            return tempFileLoc;
+            if (tmpDir.getFileSystem().supportedFileAttributeViews().contains("posix")) {
+                return Files.createTempFile(tmpDir, prefix, suffix, FILE_PERMS_OWNER_ONLY);
+            }
+            return Files.createTempFile(tmpDir, prefix, suffix);
         } catch (IOException e) {
             throw new AppFailureException(AppFailureMessage.internalError("Error while creating temp file"), e);
         }
-    }
-
-    private Path resolveUniqueFilePath(@NonNull Path dir, @NonNull String fileName) {
-        String baseName = FilenameUtils.getBaseName(fileName);
-        String extension = FilenameUtils.getExtension(fileName);
-        String suffix = extension.isEmpty() ? "" : '.' + extension;
-
-        Path candidate = dir.resolve(fileName);
-        int counter = 1;
-        while (Files.exists(candidate)) {
-            candidate = dir.resolve(baseName + "_(" + counter + ')' + suffix);
-            counter++;
-        }
-        return candidate;
     }
 
     public CleanFileName getCleanFileNameFromDocumentQueue(

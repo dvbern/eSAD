@@ -7,9 +7,10 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
-import jakarta.validation.constraints.NotNull;
+
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @Service
 @RequiredArgsConstructor
@@ -24,17 +25,23 @@ public class AnonymerEintragService {
         return anonymerEintragRepo.getById(anonymerEintragID);
     }
 
+    @Nullable
+    public Untersuchung getUntersuchungForAnonymerEintragWithId(@NonNull ID<AnonymerEintrag> anonymerEintragID) {
+        return anonymerEintragRepo.getById(anonymerEintragID).getUntersuchung();
+    }
+
     @NonNull
     public AnonymerEintrag persist(@NonNull AnonymerEintrag anonymerEintrag) {
         anonymerEintragRepo.persist(anonymerEintrag);
         return anonymerEintrag;
     }
 
+    @NonNull
     public AnonymerEintrag getByIdLockedQuery(@NonNull ID<AnonymerEintrag> anonymerEintragID) {
         return anonymerEintragRepo.getByIdLockedQuery(anonymerEintragID);
     }
 
-    public void anonymerEintragAbschliessen(@NotNull @NonNull ID<AnonymerEintrag> anonymerEintragID) {
+    public void anonymerEintragAbschliessen(@NonNull ID<AnonymerEintrag> anonymerEintragID) {
         // Untersuchungen abschliessen
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintragID, false);
         untersuchungService.untersuchungAbschliessen(untersuchung);

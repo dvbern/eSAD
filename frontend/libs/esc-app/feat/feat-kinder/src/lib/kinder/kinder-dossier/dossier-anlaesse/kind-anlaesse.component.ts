@@ -3,7 +3,6 @@ import {FormsModule} from '@angular/forms';
 import {RouterLink} from '@angular/router';
 import {AnlassArt, AnlassSaveJson, AnlassStatus, EinladungStatus} from '@dvb/data-access-backend';
 import {BenutzerOptionsStore, BenutzerStore, Path, TimetravelStore} from '@dvb/feat-shared';
-import {anlassTitleBasic} from '@dvb/feat-anlass';
 import {
   BadgeColor,
   BadgeComponent,
@@ -48,7 +47,6 @@ export class KindAnlaesseComponent {
 
   protected readonly Path = Path;
   protected readonly fromISODateString = fromISODateString;
-  protected readonly anlassTitleBasic = anlassTitleBasic;
 
   public isAbgeschlossen(status: AnlassStatus): boolean {
     return status == AnlassStatus.ABGESCHLOSSEN;

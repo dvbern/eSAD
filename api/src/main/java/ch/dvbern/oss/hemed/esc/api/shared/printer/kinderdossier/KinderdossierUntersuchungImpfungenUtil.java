@@ -1,11 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import ch.dvbern.oss.commons.i18nl10n.I18nMessage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
@@ -15,12 +11,17 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatusMinim
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfausweisGeprueft;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfempfehlungMinimal;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfungDurchgefuehrtMinimal;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import com.itextpdf.layout.Document;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil.trimToPlaceholder;
 
@@ -28,16 +29,16 @@ import static ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil.trimToPlaceho
 public final class KinderdossierUntersuchungImpfungenUtil {
 
     public static void printImpfungenHeader(
-        @NonNull Einladung einladung,
+        @NonNull AnlassConfig config,
+        @Nullable Untersuchung untersuchung,
         @NonNull BasePrinter basePrinter,
         @NonNull Document document
     ) {
-        AnlassConfig config = einladung.getAnlass().getAnlassConfig();
         if (config.isShowImpfungenHeaderImpfausweisUnvollstaendig()) {
             basePrinter.addKeyValue(
                 "printer.kinderdossier.anlass.impfausweisUnvollstaendig",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenBooleanFn(
-                    einladung,
+                    untersuchung,
                     UntersuchungImpfungen::isImpfausweisUnvollstaendig),
                 document);
         }
@@ -45,7 +46,7 @@ public final class KinderdossierUntersuchungImpfungenUtil {
             basePrinter.addKeyValue(
                 "printer.kinderdossier.anlass.impfausweisNichtVorhanden",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenBooleanFn(
-                    einladung,
+                    untersuchung,
                     UntersuchungImpfungen::isImpfausweisNichtVorhanden),
                 document);
         }
@@ -53,23 +54,23 @@ public final class KinderdossierUntersuchungImpfungenUtil {
             basePrinter.addKeyValue(
                 "printer.kinderdossier.anlass.impfausweisZweiPlusEinsSchema",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenBooleanFn(
-                    einladung,
+                    untersuchung,
                     UntersuchungImpfungen::isImpfausweisZweiPlusEinsSchema),
                 document);
         }
     }
 
     public static void printImpfungenDataMinimal(
-        @NonNull Einladung einladung,
+        @NonNull AnlassConfig config,
+        @Nullable Untersuchung untersuchung,
         @NonNull BasePrinter basePrinter,
         @NonNull Document document
     ) {
-        AnlassConfig config = einladung.getAnlass().getAnlassConfig();
         if (config.getImpfungenDataMinimalImpfausweisGeprueft().isVisible()) {
             basePrinter.addKeyValue(
                 "printer.kinderdossier.anlass.impfungenDataMinimal.impfausweisGeprueft.label",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenDataMinimal(
-                    einladung,
+                    untersuchung,
                     d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(d.getImpfausweisGeprueft(), ImpfausweisGeprueft.class))),
                 document);
         }
@@ -77,7 +78,7 @@ public final class KinderdossierUntersuchungImpfungenUtil {
             basePrinter.addKeyValue(
                 "printer.kinderdossier.anlass.impfungenDataMinimal.immunsuppression.label",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenDataMinimal(
-                    einladung,
+                    untersuchung,
                     d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(d.getImmunsuppression(),Immunsuppression.class))),
                 document);
         }
@@ -85,7 +86,7 @@ public final class KinderdossierUntersuchungImpfungenUtil {
             basePrinter.addKeyValue(
                 "printer.kinderdossier.anlass.impfungenDataMinimal.masernImpfstatus.label",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenDataMinimal(
-                    einladung,
+                    untersuchung,
                     d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(d.getMasernImpfstatus(),ImpfStatusMinimal.class))),
                 document);
         }
@@ -93,7 +94,7 @@ public final class KinderdossierUntersuchungImpfungenUtil {
             basePrinter.addKeyValue(
                 "printer.kinderdossier.anlass.impfungenDataMinimal.masernAnzahlImpfungen.label",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenDataMinimal(
-                    einladung,
+                    untersuchung,
                     d -> trimToPlaceholder(d.getMasernAnzahlImpfungen())),
                 document);
         }
@@ -101,7 +102,7 @@ public final class KinderdossierUntersuchungImpfungenUtil {
             basePrinter.addKeyValue(
                 "printer.kinderdossier.anlass.impfungenDataMinimal.hpvImpfstatus.label",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenDataMinimal(
-                    einladung,
+                    untersuchung,
                     d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(d.getHpvImpfstatus(), ImpfStatusMinimal.class))),
                 document);
         }
@@ -109,7 +110,7 @@ public final class KinderdossierUntersuchungImpfungenUtil {
             basePrinter.addKeyValue(
                 "printer.kinderdossier.anlass.impfungenDataMinimal.hpvAnzahlImpfungen.label",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenDataMinimal(
-                    einladung,
+                    untersuchung,
                     d -> trimToPlaceholder(d.getHpvAnzahlImpfungen())),
                 document);
         }
@@ -117,7 +118,7 @@ public final class KinderdossierUntersuchungImpfungenUtil {
             basePrinter.addKeyValue(
                 "printer.kinderdossier.anlass.impfungenDataMinimal.impfempfehlung.label",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenDataMinimal(
-                    einladung,
+                    untersuchung,
                     d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(d.getImpfempfehlung(),ImpfempfehlungMinimal.class))),
                 document);
         }
@@ -125,7 +126,7 @@ public final class KinderdossierUntersuchungImpfungenUtil {
             basePrinter.addKeyValue(
                 "printer.kinderdossier.anlass.impfungenDataMinimal.impfungDurchgefuehrt.label",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenDataMinimal(
-                    einladung,
+                    untersuchung,
                     d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(d.getImpfungDurchgefuehrt(),ImpfungDurchgefuehrtMinimal.class))),
                 document);
         }
@@ -202,7 +203,7 @@ public final class KinderdossierUntersuchungImpfungenUtil {
 
     public static void printImpfungenCheckliste(
         @NonNull AnlassConfig anlassConfig,
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull BasePrinter basePrinter,
         @NonNull Document document
     ) {
@@ -210,7 +211,7 @@ public final class KinderdossierUntersuchungImpfungenUtil {
             basePrinter.addKeyValue(
                 "printer.kinderdossier.anlass.checkEinwilligungVorhanden",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenBooleanFn(
-                    einladung,
+                    untersuchung,
                     UntersuchungImpfungen::isCheckEinwilligungVorhanden),
                 document);
         }
@@ -218,7 +219,7 @@ public final class KinderdossierUntersuchungImpfungenUtil {
             basePrinter.addKeyValue(
                 "printer.kinderdossier.anlass.checkKontraindikationenAbgeklaert",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenBooleanFn(
-                    einladung,
+                    untersuchung,
                     UntersuchungImpfungen::isCheckKontraindikationenAbgeklaert),
                 document);
         }
@@ -226,24 +227,28 @@ public final class KinderdossierUntersuchungImpfungenUtil {
             basePrinter.addKeyValue(
                 "printer.kinderdossier.anlass.checkDoppelkontrolleImpfentscheidDurchgefuehrt",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenBooleanFn(
-                    einladung,
+                    untersuchung,
                     UntersuchungImpfungen::isCheckDoppelkontrolleImpfentscheidDurchgefuehrt),
                 document);
         }
         // Bemerkung wird nicht gedruckt
     }
 
-    public static void printImpfungenDoppelkontrolle(Einladung einladung, BasePrinter basePrinter, Document document) {
+    public static void printImpfungenDoppelkontrolle(
+        @Nullable Untersuchung untersuchung,
+        @NonNull BasePrinter basePrinter,
+        @NonNull Document document
+    ) {
         basePrinter.addKeyValue(
             "printer.kinderdossier.anlass.doppelkontrolle.visum1",
             KinderdossierPrintUtil.extractUntersuchungImpfungen(
-                einladung,
+                untersuchung,
                 ui -> trimToPlaceholder(ui.getVisum1() != null ? ui.getVisum1().getPerson() : null)),
             document);
         basePrinter.addKeyValue(
             "printer.kinderdossier.anlass.doppelkontrolle.visum2",
             KinderdossierPrintUtil.extractUntersuchungImpfungen(
-                einladung,
+                untersuchung,
                 ui -> trimToPlaceholder(ui.getVisum2() != null ? ui.getVisum2().getPerson() : null)),
             document);
     }

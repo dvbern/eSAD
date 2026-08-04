@@ -138,4 +138,10 @@ public class TenantSettingFeaturesJson {
     @Schema(required = true)
     private final TenantSettingFeatureStateJson anlassInformationenFeature;
 
+    @NotNull
+    @NonNull
+    @Valid
+    @Schema(required = true)
+    private final TenantSettingFeatureStateJson anlassTitleRequiredFeature;
+
 }

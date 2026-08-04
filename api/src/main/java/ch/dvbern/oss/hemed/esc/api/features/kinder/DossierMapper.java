@@ -171,7 +171,7 @@ public final class DossierMapper {
         ID<Benutzer> mpaToSet = mpaId;
         if (zustaendigkeitChanged) {
             // Zustaendigkeit darf nur vom aktuell Zuständigen geändert werden
-            zustaendigePersonService.requireZustaendigkeit(existingDossier);
+            zustaendigePersonService.requireImmediateZustaendigkeit(existingDossier);
             // Falls die Zustaendigkeit geändert hat, muss die MPA null gesetzt werden
             mpaToSet = null;
         }

@@ -87,7 +87,10 @@ public class AutoAufgabeService {
         }
         Benutzer mpa = anlass.getMpa();
         if (mpa == null) {
-            throw new AppValidationException(AppValidationMessage.noMpaForAufgabeEmpfaenger(anlass));
+            throw new AppValidationException(AppValidationMessage.noMpaForAufgabeEmpfaenger(
+                anlass.getFullAnlassTitel(tl),
+                anlass.getId()
+            ));
         }
         String titel = tl.translate(
             "aufgabe.folgetermin.titel",

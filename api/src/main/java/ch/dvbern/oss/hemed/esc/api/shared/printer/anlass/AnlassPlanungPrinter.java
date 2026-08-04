@@ -37,13 +37,14 @@ import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
+
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.layout.Document;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 @NoTransactionService
-public final class AnlassPrinter {
+public final class AnlassPlanungPrinter {
 
     /**
      * Maximum length for {@code name} and {@code vorname} cells in the eingeladene-Kinder table.
@@ -51,12 +52,12 @@ public final class AnlassPrinter {
      */
     private static final int MAX_NAME_LENGTH = 25;
 
-    private AnlassPrinter() {
+    private AnlassPlanungPrinter() {
         // static and hidden so we don't get tempted to add services in here ;)
     }
 
     public static void print(
-        @NonNull AnlassPrintDTO dto,
+        @NonNull AnlassPlanungPrintDTO dto,
         @NonNull OutputStream outputStream,
         @NonNull FileStoreService fileStoreService,
         @NonNull TenantSettingsService tenantSettingsService,
@@ -77,7 +78,7 @@ public final class AnlassPrinter {
             I18nMessage.of(
                 "printer.anlass.footer",
                 "titel",
-                anlass.getTitel(),
+                anlass.getFullAnlassTitel(tl),
                 "datum",
                 PrintUtil.trimToPlaceholder(anlass.getDatum()),
                 "now",
@@ -109,7 +110,7 @@ public final class AnlassPrinter {
         @NonNull Anlass anlass,
         @NonNull BasePrinter basePrinter,
         @NonNull Document document,
-        @NonNull AnlassPrintDTO dto
+        @NonNull AnlassPlanungPrintDTO dto
     ) {
         basePrinter.addH2Title(I18nMessage.of("printer.anlass.daten"), document);
 

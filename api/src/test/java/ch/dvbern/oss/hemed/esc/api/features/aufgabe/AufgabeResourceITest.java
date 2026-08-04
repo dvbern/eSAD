@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
+import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
@@ -67,6 +68,7 @@ class AufgabeResourceITest extends AbstractITest {
     private final FixtureService fixtureService;
     private final FileStoreService fileStoreService;
     private final AppClock appClock;
+    private final TL tl;
 
     @Override
     @BeforeEach
@@ -265,7 +267,8 @@ class AufgabeResourceITest extends AbstractITest {
         // ASSERT
         assertThat(resForMe.getNumOfOffeneFaelligeAufgaben()).isEqualTo(numOfOffeneFaelligeAufgabenByCurrentUser + 1);
         assertThat(restTotal.getNumOfOffeneFaelligeAufgaben()).isEqualTo(numOfFaelligeTotal + 2);
-        assertThat(resForMe.getNumOfOffeneFaelligeAufgaben()).isLessThan(aufgabeService.getOffeneFaelligeAufgaben().size());
+        assertThat(resForMe.getNumOfOffeneFaelligeAufgaben()).isLessThan(aufgabeService.getOffeneFaelligeAufgaben()
+            .size());
     }
 
     @Test
@@ -274,16 +277,18 @@ class AufgabeResourceITest extends AbstractITest {
         // ARRANGE
         Benutzer defaultEmpfaenger = BenutzerBuilder.defaultBenutzer();
         benutzerService.persist(defaultEmpfaenger);
-        Benutzer userErfasst = fixtureService.readBenutzerWithBerechtigungen(benutzerService.getCurrentBenutzerOrThrowException().getId());
+        Benutzer userErfasst =
+            fixtureService.readBenutzerWithBerechtigungen(benutzerService.getCurrentBenutzerOrThrowException().getId());
 
         LocalDate faelligBis = LocalDate.of(2025, 5, 30);
 
-        AufgabeSaveJsonSpec saveJson = AufgabeBuilder.createJaxSpec(builder -> builder
-            .withStatus(AufgabeStatus.OFFEN)
-            .withEmpfaenger(defaultEmpfaenger)
-            .withUserErfasst(userErfasst)
-            .withFaelligDatum(faelligBis)
-            .withTitle("Meine Aufgabe")).getData();
+        AufgabeSaveJsonSpec saveJson = AufgabeBuilder.createJaxSpec(
+            builder -> builder
+                .withStatus(AufgabeStatus.OFFEN)
+                .withEmpfaenger(defaultEmpfaenger)
+                .withUserErfasst(userErfasst)
+                .withFaelligDatum(faelligBis)
+                .withTitle("Meine Aufgabe"), tl).getData();
 
         // ACT
         AufgabeJsonSpec result = api
@@ -316,12 +321,13 @@ class AufgabeResourceITest extends AbstractITest {
 
         LocalDate faelligBis = LocalDate.of(2025, 5, 30);
 
-        AufgabeSaveJsonSpec saveJson = AufgabeBuilder.createJaxSpec(builder -> builder
-            .withStatus(AufgabeStatus.OFFEN)
-            .withEmpfaenger(defaultEmpfaenger)
-            .withUserErfasst(defaultUserErfasst)
-            .withFaelligDatum(faelligBis)
-            .withTitle("Meine Aufgabe")).getData();
+        AufgabeSaveJsonSpec saveJson = AufgabeBuilder.createJaxSpec(
+            builder -> builder
+                .withStatus(AufgabeStatus.OFFEN)
+                .withEmpfaenger(defaultEmpfaenger)
+                .withUserErfasst(defaultUserErfasst)
+                .withFaelligDatum(faelligBis)
+                .withTitle("Meine Aufgabe"), tl).getData();
 
         // ACT
         AufgabeJsonSpec result = api
@@ -356,13 +362,14 @@ class AufgabeResourceITest extends AbstractITest {
 
         LocalDate faelligBis = LocalDate.of(2025, 5, 30);
 
-        AufgabeSaveJsonSpec saveJson = AufgabeBuilder.createJaxSpec(builder -> builder
-            .withStatus(AufgabeStatus.OFFEN)
-            .withKind(kind)
-            .withEmpfaenger(defaultEmpfaenger)
-            .withUserErfasst(defaultUserErfasst)
-            .withFaelligDatum(faelligBis)
-            .withTitle("Meine Aufgabe")).getData();
+        AufgabeSaveJsonSpec saveJson = AufgabeBuilder.createJaxSpec(
+            builder -> builder
+                .withStatus(AufgabeStatus.OFFEN)
+                .withKind(kind)
+                .withEmpfaenger(defaultEmpfaenger)
+                .withUserErfasst(defaultUserErfasst)
+                .withFaelligDatum(faelligBis)
+                .withTitle("Meine Aufgabe"), tl).getData();
 
         String expectedValidationErrorMessage = String.format(
             "Das Kind %s %s ist inaktiv. Es kann keine Aufgabe für ein inaktives Kind erstellt werden.",
@@ -403,15 +410,16 @@ class AufgabeResourceITest extends AbstractITest {
 
         LocalDate faelligBis = LocalDate.of(2025, 5, 30);
 
-        AufgabeSaveJsonSpec saveJson = AufgabeBuilder.createJaxSpec(builder -> builder
-            .withStatus(AufgabeStatus.OFFEN)
-            .withEmpfaenger(defaultEmpfaenger)
-            .withUserErfasst(defaultUserErfasst)
-            .withFaelligDatum(faelligBis)
-            .withTitle(TestUtil.getRandomString("Testaufgabe with Kind and Label"))
-            .withKind(kind)
-            .withBemerkung("Meine Bemerkung")
-            .withLabel(Collections.singleton(label))
+        AufgabeSaveJsonSpec saveJson = AufgabeBuilder.createJaxSpec(
+            builder -> builder
+                .withStatus(AufgabeStatus.OFFEN)
+                .withEmpfaenger(defaultEmpfaenger)
+                .withUserErfasst(defaultUserErfasst)
+                .withFaelligDatum(faelligBis)
+                .withTitle(TestUtil.getRandomString("Testaufgabe with Kind and Label"))
+                .withKind(kind)
+                .withBemerkung("Meine Bemerkung")
+                .withLabel(Collections.singleton(label)), tl
         ).getData();
 
         // ACT
@@ -447,13 +455,14 @@ class AufgabeResourceITest extends AbstractITest {
         String newTitle = TestUtil.getRandomString("Neuer Titel");
         String newBem = TestUtil.getRandomString("Neue Bemerkung");
 
-        AufgabeJsonSpec updatedAufgabeJson = AufgabeBuilder.createJaxSpec(builder -> builder
-            .forAufgabe(existingAufgabe)
-            .withUserErfasst(defaultEmpfaenger)
-            .withEmpfaenger(defaultEmpfaenger)
-            .withTitle(newTitle)
-            .withBemerkung(newBem)
-            .withStatus(AufgabeStatus.IN_BEARBEITUNG)
+        AufgabeJsonSpec updatedAufgabeJson = AufgabeBuilder.createJaxSpec(
+            builder -> builder
+                .forAufgabe(existingAufgabe)
+                .withUserErfasst(defaultEmpfaenger)
+                .withEmpfaenger(defaultEmpfaenger)
+                .withTitle(newTitle)
+                .withBemerkung(newBem)
+                .withStatus(AufgabeStatus.IN_BEARBEITUNG), tl
         );
 
         // ACT
@@ -489,14 +498,15 @@ class AufgabeResourceITest extends AbstractITest {
         String newTitle = TestUtil.getRandomString("Neuer Titel");
         String newBem = TestUtil.getRandomString("Neue Bemerkung");
 
-        AufgabeJsonSpec updatedAufgabeJson = AufgabeBuilder.createJaxSpec(builder -> builder
-            .forAufgabe(existingAufgabe)
-            .withKind(kind)
-            .withUserErfasst(defaultUserErfasst)
-            .withEmpfaenger(defaultEmpfaenger)
-            .withTitle(newTitle)
-            .withBemerkung(newBem)
-            .withStatus(AufgabeStatus.IN_BEARBEITUNG)
+        AufgabeJsonSpec updatedAufgabeJson = AufgabeBuilder.createJaxSpec(
+            builder -> builder
+                .forAufgabe(existingAufgabe)
+                .withKind(kind)
+                .withUserErfasst(defaultUserErfasst)
+                .withEmpfaenger(defaultEmpfaenger)
+                .withTitle(newTitle)
+                .withBemerkung(newBem)
+                .withStatus(AufgabeStatus.IN_BEARBEITUNG), tl
         );
 
         String expectedValidationErrorMessage = String.format(

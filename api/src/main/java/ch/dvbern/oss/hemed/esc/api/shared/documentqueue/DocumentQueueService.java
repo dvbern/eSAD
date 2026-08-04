@@ -201,7 +201,7 @@ public class DocumentQueueService {
     @Transactional(TxType.REQUIRES_NEW)
     public void storeResult(@NonNull ID<DocumentQueue> id, Path filePath) {
         DocumentQueue documentQueue = getById(id);
-        CleanFileName cleanFileName = CleanFileName.parse(filePath);
+        CleanFileName cleanFileName = documentQueueFileService.getCleanFileNameFromDocumentQueue(documentQueue);
 
         FileUpload fileUpload = FileUtil.fileToFileUpload(filePath, cleanFileName.toString());
         FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfoWithMIMEDetect(fileUpload, documentQueue.getType());

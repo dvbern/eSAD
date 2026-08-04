@@ -48,6 +48,7 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.QNotiz;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
 import com.querydsl.core.Tuple;
 import jakarta.persistence.LockModeType;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -170,6 +171,7 @@ public class EinladungRepo extends BaseRepo<Einladung> {
     }
 
     @NonNull
+    @Transactional(Transactional.TxType.NOT_SUPPORTED)
     public List<ID<Einladung>> findAllForCsvReport(@NonNull DateRange zeitraum) {
         List<UUID> einladungIdList = db
             .select(QEinladung.einladung.id)
@@ -182,6 +184,7 @@ public class EinladungRepo extends BaseRepo<Einladung> {
     }
 
     @NonNull
+    @Transactional(Transactional.TxType.NOT_SUPPORTED)
     public List<ID<Einladung>> findAllForCsvImpfstoffReport(@NonNull DateRange zeitraum) {
         // Wir holen sämtliche DossierIds welche in den Anlässen im zeitraum eine Einladung haben.
         List<UUID> uniqueDossierIds = db

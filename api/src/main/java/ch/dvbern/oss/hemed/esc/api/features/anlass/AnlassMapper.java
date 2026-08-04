@@ -29,6 +29,7 @@ import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
+import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigMapper;
@@ -55,7 +56,6 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.json.SchulInformationenJson;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.LehrpersonMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
@@ -79,9 +79,7 @@ public final class AnlassMapper {
     private final TenantSettingsService tenantSettingsService;
     private final ZustaendigePersonService zustaendigePersonService;
     private final TenantProducer tenantProducer;
-    private final AuthorizerService authorizerService;
 
-    @NonNull
     public static AnlassJson toJson(@NonNull Anlass anlass, @NonNull TenantEnum tenant) {
         Benutzer arzt = anlass.getArzt();
         Benutzer mpa = anlass.getMpa();
@@ -113,10 +111,10 @@ public final class AnlassMapper {
     }
 
     @NonNull
-    public static AnlassOptionJson toOptionJson(@NonNull Anlass anlass) {
+    public static AnlassOptionJson toOptionJson(@NonNull Anlass anlass, @NonNull TL tl) {
         return new AnlassOptionJson(
             anlass.getId(),
-            anlass.getTitel()
+            anlass.getFullAnlassTitel(tl)
         );
     }
 
@@ -160,7 +158,8 @@ public final class AnlassMapper {
             : createJson.getAnlassDatum().getYear() - 1;
 
         // IMPORTANT: Willingly throw exception for Support User
-        Benutzer arzt = Optional.ofNullable(benutzerService.getCurrentBenutzerOrThrowException().getSingleOrganisation())
+        Benutzer arzt =
+            Optional.ofNullable(benutzerService.getCurrentBenutzerOrThrowException().getSingleOrganisation())
                 .map(Organisation::getVerantwortlicherArzt)
                 .orElseThrow(() -> new AppFailureException(AppFailureMessage.mustHaveArztForOrganisation()));
 
@@ -254,7 +253,7 @@ public final class AnlassMapper {
 
         if (zustaendigkeitChanged) {
             // Zustaendigkeit darf nur vom aktuell Zuständigen geändert werden
-            zustaendigePersonService.requireZustaendigkeit(updatedAnlass);
+            zustaendigePersonService.requireImmediateZustaendigkeit(updatedAnlass);
             // Falls die Zustaendigkeit geändert hat, muss die MPA null gesetzt werden
             newZustaendigerMpaID = null;
         }

@@ -51,7 +51,8 @@ public class TenantSettingsFeatureMapper {
             toTenantSettingFeatureState(featureSettings.getNachkontrolleFeature()),
             toTenantSettingFeatureState(featureSettings.getAnlassSpracheSpalteFeature()),
             toTenantSettingFeatureState(featureSettings.getAnlassSpracheZusammenfassungFeature()),
-            toTenantSettingFeatureState(featureSettings.getAnlassInformationenFeature())
+            toTenantSettingFeatureState(featureSettings.getAnlassInformationenFeature()),
+            toTenantSettingFeatureState(featureSettings.getAnlassTitleRequiredFeature())
         );
     }
 
@@ -90,7 +91,9 @@ public class TenantSettingsFeatureMapper {
         existingFeatures.setAnonymeStatistikFeature(features.getAnonymeStatistikFeature().getFeatureEnabled());
         existingFeatures.setNachkontrolleFeature(features.getNachkontrolleFeature().getFeatureEnabled());
         existingFeatures.setAnlassSpracheSpalteFeature(features.getAnlassSpracheSpalteFeature().getFeatureEnabled());
-        existingFeatures.setAnlassSpracheZusammenfassungFeature(features.getAnlassSpracheZusammenfassungFeature().getFeatureEnabled());
+        existingFeatures.setAnlassSpracheZusammenfassungFeature(features.getAnlassSpracheZusammenfassungFeature()
+            .getFeatureEnabled());
         existingFeatures.setAnlassInformationenFeature(features.getAnlassInformationenFeature().getFeatureEnabled());
+        existingFeatures.setAnlassTitleRequiredFeature(features.getAnlassTitleRequiredFeature().getFeatureEnabled());
     }
 }

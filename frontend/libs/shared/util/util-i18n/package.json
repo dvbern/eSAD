@@ -4,9 +4,9 @@
   "peerDependencies": {
     "@dvb/util-angular": "0.0.1",
     "@dvb/data-access-backend": "0.0.1",
-    "@angular/core": "21.2.9",
+    "@angular/core": "21.2.18",
     "@jsverse/transloco": "7.6.1",
-    "@angular/common": "21.2.9"
+    "@angular/common": "21.2.18"
   },
   "sideEffects": false
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import jakarta.ws.rs.core.Response.Status;
 
 import ch.dvbern.dvbstarter.shared.EdokidIdTestGenerator;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
@@ -62,9 +63,9 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KindSchuleAndKlasseSave
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KlasseOptionJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KontaktPersonKindListJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.SchuleOptionJsonSpec;
+
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
-import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -699,33 +700,6 @@ class KindResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void removeKind() {
-        // ARRANGE
-        Kind kindToDelete = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
-
-        // ACT
-        api.kindResourceRemoveKind()
-            .kindIdPath(kindToDelete.getId().getId())
-            .execute(ResponseBody::prettyPeek)
-            .then()
-            .assertThat()
-            .statusCode(Status.NO_CONTENT.getStatusCode());
-
-        // ASSERT
-        // Verify the kind no longer exists by attempting to fetch it
-        AppFailureErrorJsonSpec fail = api.kindResourceGetKind()
-            .kindIdPath(kindToDelete.getId().getId())
-            .execute(ResponseBody::prettyPeek)
-            .then()
-            .assertThat()
-            .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
-            .extract()
-            .as(AppFailureErrorJsonSpec.class);
-        assertThat(fail.getSummary()).contains("Entity not found");
-    }
-
-    @Test
-    @TestAsAdminBS
     void findKinderBySchule() {
         // ARRANGE
         Schule schule1 = schuleService.persist(SchuleBuilder.defaultSchule());
@@ -1333,7 +1307,7 @@ class KindResourceITest extends AbstractITest {
         tenantProducer.setCurrentTenant(TenantEnum.BE);
 
         // Dossier wird einem anderen Arzt einer anderen Organisation zugewiesen,
-        // der aktuelle Benutzer (TestAsSupportBE) ist nicht zustaendig
+        // der aktuelle Benutzer (TestAsSchularztBE) ist nicht zustaendig
         Benutzer otherArzt = fixtureService.createBenutzerWithOrganisation();
         Schule schule = schuleService.persist(SchuleBuilder.defaultSchule());
         Klasse klasse = klasseService.persist(KlasseBuilder.create(builder -> builder.forSchule(schule)));
@@ -1359,6 +1333,45 @@ class KindResourceITest extends AbstractITest {
         assertThat(validationError.getViolations()).isNotEmpty();
         assertThat(validationError.getViolations().getFirst().getKey())
             .isEqualTo("ZustaendigkeitCanOnlyBeChangedByZustaendiger");
+    }
+
+    @Test
+    @TestAsSchularztBE
+    void updateKind_throws_if_user_not_zustaendig() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+
+        // Dossier gehoert einem Arzt einer anderen Organisation,
+        // der aktuelle Benutzer (TestAsSchularztBE) ist nicht zustaendig
+        Benutzer otherArzt = fixtureService.createBenutzerWithOrganisation();
+        Kind kind = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
+        dossierService.persist(DossierBuilder.create(builder -> builder
+            .forKind(kind)
+            .withZustaendigArzt(otherArzt)));
+
+        KindJsonSpec updatedKindJson = KindBuilder.createJaxSpec(
+            builder -> builder
+                .withID(kind.getId())
+                .withName("Hacked", "Kid"),
+            appClock.offsetDateTime().now().toLocalDate());
+
+        // ACT
+        AppFailureErrorJsonSpec error = api
+            .kindResourceUpdateKindAndVerantwortlichePersonen()
+            .kindIdPath(kind.getId().getId())
+            .kindSaveModeQuery(KindSaveModeDuplikatSpec.NO_CHECK)
+            .body(updatedKindJson.getData())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
+            .extract().as(AppFailureErrorJsonSpec.class);
+
+        // ASSERT
+        assertThat(error).isNotNull();
+        assertThat(error.getType()).isEqualTo(FailureTypeSpec.FAILURE);
+        Kind reloaded = kindService.getById(kind.getId());
+        assertThat(reloaded.getName()).isEqualTo(kind.getName());
     }
 
     private KindSchuleAndKlasseSaveJsonSpec buildSchuleAndKlasseBody(

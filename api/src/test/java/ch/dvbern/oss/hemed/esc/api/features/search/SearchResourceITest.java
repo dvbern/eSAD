@@ -53,6 +53,7 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
 import ch.dvbern.oss.hemed.esc.api.features.search.types.SearchColumns;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.pagination.PageRequestJson;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
@@ -104,7 +105,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RequiredArgsConstructor
 class SearchResourceITest extends AbstractITest {
 
-    private static final int MAX_PAGE_SIZE = Integer.MAX_VALUE;
+    private static final int MAX_PAGE_SIZE = PageRequestJson.MAX_PAGE_SIZE;
 
     private final SearchApiSpec api = SearchApiSpec.search(RequestSpecUtil.quarkusSpec());
 
@@ -419,6 +420,40 @@ class SearchResourceITest extends AbstractITest {
                 .isNotEmpty()
                 .filteredOn(k -> k.getName().contains(uuid.toString() + "ALLCAPS"))
                 .hasSize(1);
+        }
+
+        @Test
+        @TestAsAdminBS
+        void findPaginatedKinder_should_accept_maxPageSize_at_limit() {
+            // ACT + ASSERT
+            api
+                .searchResourceFindKinderPaginated()
+                .body(searchSpecWithMaxPageSize(PageRequestJson.MAX_PAGE_SIZE))
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.OK.getStatusCode());
+        }
+
+        @Test
+        @TestAsAdminBS
+        void findPaginatedKinder_should_reject_maxPageSize_above_limit() {
+            // ACT + ASSERT
+            api
+                .searchResourceFindKinderPaginated()
+                .body(searchSpecWithMaxPageSize(PageRequestJson.MAX_PAGE_SIZE + 1))
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.BAD_REQUEST.getStatusCode());
+        }
+
+        private SearchJsonSpec searchSpecWithMaxPageSize(int maxPageSize) {
+            return new SearchJsonSpec(
+                new PageRequestJsonSpec(1L, maxPageSize, false),
+                Collections.emptyList(),
+                Collections.emptyList()
+            );
         }
 
         @Test

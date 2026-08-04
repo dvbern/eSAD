@@ -40,6 +40,8 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.Lehrperson;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateTimeRange;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
@@ -47,8 +49,10 @@ import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.assertj.AppValidationErrorJsonSpecAssert;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsMpaBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.AnlassApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassJsonSpec;
@@ -89,6 +93,7 @@ class AnlassResourceITest extends AbstractITest {
     private final AnlassConfigService anlassConfigService;
     private final FixtureService fixtureService;
     private final AppClock appClock;
+    private final TenantProducer tenantProducer;
 
     @Override
     @BeforeEach
@@ -278,6 +283,120 @@ class AnlassResourceITest extends AbstractITest {
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getId()).isEqualTo(existingAnlass.getId().getId());
         Assertions.assertThat(result.getData().getTitel()).isEqualTo("Mein neuer Anlass");
+    }
+
+    @Test
+    @TestAsAdminBE
+    void createAnlass_without_titel_featureDisabled_succeeds() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        Benutzer arzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        AnlassConfig config =
+            anlassConfigService.getByAnlassTypAndStichtag(AnlassTyp.KLASSE_8, appClock.getToday().plusMonths(1));
+        AnlassSaveJsonSpec saveAnlassJson = AnlassBuilder.createJaxSpec(builder -> builder
+            .withAnlassTyp(AnlassTyp.KLASSE_8)
+            .withAnlassConfig(config)
+            .withArzt(arzt)
+            .withTitle(null)).getData();
+
+        // ACT + ASSERT
+        api
+            .anlassResourceCreateAnlass()
+            .body(saveAnlassJson)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.CREATED.getStatusCode());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void createAnlass_without_titel_featureEnabled_fails() {
+        // ARRANGE
+        AnlassConfig config =
+            anlassConfigService.getByAnlassTypAndStichtag(AnlassTyp.KLASSE_8, appClock.getToday().plusMonths(1));
+        AnlassSaveJsonSpec saveAnlassJson = AnlassBuilder.createJaxSpec(builder -> builder
+            .withAnlassTyp(AnlassTyp.KLASSE_8)
+            .withAnlassConfig(config)
+            .withTitle(null)).getData();
+
+        // ACT
+        AppValidationErrorJsonSpec validationError = api
+            .anlassResourceCreateAnlass()
+            .body(saveAnlassJson)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract().as(AppValidationErrorJsonSpec.class);
+
+        // ASSERT
+        AppValidationErrorJsonSpecAssert.assertThatAppValidationErrorJsonSpec(validationError)
+            .extractingExactlyOneViolation()
+            .hasRawMessageContaining("Der Titel des Anlasses muss gesetzt sein");
+    }
+
+    @Test
+    @TestAsAdminBE
+    void updateAnlass_without_titel_featureDisabled_succeeds() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        Benutzer arzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        AnlassConfig config = anlassConfigService.getByAnlassTypAndStichtag(
+            AnlassTyp.KLASSE_8,
+            appClock.offsetDateTime().now().toLocalDate());
+        final Anlass existingAnlass = anlassService.persist(
+            AnlassBuilder.create(builder -> builder
+                .withTitle("Mein Anlass")
+                .withAnlassConfig(config)
+                .withArzt(arzt))
+        );
+        AnlassJsonSpec updatedAnlassJson = AnlassBuilder.createJaxSpec(builder -> builder
+            .forAnlass(existingAnlass)
+            .withTitle(null));
+
+        // ACT + ASSERT
+        api
+            .anlassResourceUpdateAnlass()
+            .anlassIdPath(existingAnlass.getId().getId())
+            .body(updatedAnlassJson.getData())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void updateAnlass_without_titel_featureEnabled_fails() {
+        // ARRANGE
+        AnlassConfig config = anlassConfigService.getByAnlassTypAndStichtag(
+            AnlassTyp.KLASSE_8,
+            appClock.offsetDateTime().now().toLocalDate());
+        final Anlass existingAnlass = anlassService.persist(
+            AnlassBuilder.create(builder -> builder
+                .withTitle("Mein Anlass")
+                .withAnlassConfig(config))
+        );
+        AnlassJsonSpec updatedAnlassJson = AnlassBuilder.createJaxSpec(builder -> builder
+            .forAnlass(existingAnlass)
+            .withTitle(null));
+
+        // ACT
+        AppValidationErrorJsonSpec validationError = api
+            .anlassResourceUpdateAnlass()
+            .anlassIdPath(existingAnlass.getId().getId())
+            .body(updatedAnlassJson.getData())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract().as(AppValidationErrorJsonSpec.class);
+
+        // ASSERT
+        AppValidationErrorJsonSpecAssert.assertThatAppValidationErrorJsonSpec(validationError)
+            .extractingExactlyOneViolation()
+            .hasRawMessageContaining("Der Titel des Anlasses muss gesetzt sein");
     }
 
     @Test
@@ -763,7 +882,9 @@ class AnlassResourceITest extends AbstractITest {
         ));
 
         anlassService.persist(AnlassBuilder.create(
-            b -> b.withTitle("Impftermin 2.5").withAnlassConfig(configImpftermin).withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate())
+            b -> b.withTitle("Impftermin 2.5")
+                .withAnlassConfig(configImpftermin)
+                .withDatumSetSchuljahr(appClock.offsetDateTime().now().toLocalDate())
         ));
 
         anlassService.persist(AnlassBuilder.create(

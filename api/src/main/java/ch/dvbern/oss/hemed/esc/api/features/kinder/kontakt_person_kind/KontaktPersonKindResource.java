@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
@@ -9,6 +11,8 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.json.Kont
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.json.KontaktPersonKindListJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.json.KontaktPersonKindOptionListJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.json.KontaktPersonKindSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import io.smallrye.common.constraint.NotNull;
 import io.smallrye.faulttolerance.api.RateLimit;
@@ -38,7 +42,11 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Timed("KontaktPersonKindResourceMS")
 public class KontaktPersonKindResource {
 
+    private static final List<Berechtigung> KINDER_SCHREIBEN_BERECHTIGUNGEN =
+        List.of(Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH);
+
     private final KontaktPersonKindMapper kontaktPersonKindMapper;
+    private final AuthorizerService authorizerService;
 
     @Context
     private HttpServerResponse respone;
@@ -84,6 +92,7 @@ public class KontaktPersonKindResource {
         @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID,
         @NotNull @NonNull @Valid KontaktPersonKindSaveJson kontaktPersonKindSaveJson
     ) {
+        authorizerService.requireWriteAuthorizationKind(kindID, KINDER_SCHREIBEN_BERECHTIGUNGEN);
         respone.setStatusCode(Status.CREATED.getStatusCode());
         return kontaktPersonKindMapper.create(kindID, kontaktPersonKindSaveJson);
     }
@@ -97,6 +106,7 @@ public class KontaktPersonKindResource {
         @NotNull @NonNull @PathParam("kontaktPersonKindID") ID<KontaktPersonKind> kontaktPersonKindID,
         @NotNull @NonNull @Valid KontaktPersonKindSaveJson kontaktPersonKindSaveJson
     ) {
+        authorizerService.requireWriteAuthorizationKind(kindID, KINDER_SCHREIBEN_BERECHTIGUNGEN);
         kontaktPersonKindMapper.requireConsistentPathParams(kontaktPersonKindID, kindID);
         return kontaktPersonKindMapper.update(kindID, kontaktPersonKindID, kontaktPersonKindSaveJson);
     }
@@ -108,6 +118,7 @@ public class KontaktPersonKindResource {
         @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID,
         @NotNull @NonNull @PathParam("kontaktPersonKindID") ID<KontaktPersonKind> kontaktPersonKindID
     ) {
+        authorizerService.requireWriteAuthorizationKind(kindID, KINDER_SCHREIBEN_BERECHTIGUNGEN);
         kontaktPersonKindMapper.requireConsistentPathParams(kontaktPersonKindID, kindID);
         kontaktPersonKindMapper.delete(kindID, kontaktPersonKindID);
     }
@@ -119,6 +130,7 @@ public class KontaktPersonKindResource {
         @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID,
         @NotNull @NonNull @PathParam("kontaktPersonKindID") ID<KontaktPersonKind> kontaktPersonKindID
     ) {
+        authorizerService.requireWriteAuthorizationKind(kindID, KINDER_SCHREIBEN_BERECHTIGUNGEN);
         return kontaktPersonKindMapper.addToKind(kindID, kontaktPersonKindID);
     }
 
@@ -129,6 +141,7 @@ public class KontaktPersonKindResource {
         @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID,
         @NotNull @NonNull @PathParam("kontaktPersonKindID") ID<KontaktPersonKind> kontaktPersonKindID
     ) {
+        authorizerService.requireWriteAuthorizationKind(kindID, KINDER_SCHREIBEN_BERECHTIGUNGEN);
         kontaktPersonKindMapper.requireConsistentPathParams(kontaktPersonKindID, kindID);
         kontaktPersonKindMapper.removeFromKind(kindID, kontaktPersonKindID);
     }

@@ -1,5 +1,10 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.einladung;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
@@ -24,14 +29,10 @@ import ch.dvbern.oss.hemed.esc.api.shared.notizen.AutoNotizService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
 import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -199,11 +200,13 @@ public class EinladungService {
     }
 
     @NonNull
+    @Transactional(Transactional.TxType.NOT_SUPPORTED)
     public List<ID<Einladung>> findAllForCsvReport(@NonNull DateRange zeitraum) {
         return einladungRepo.findAllForCsvReport(zeitraum);
     }
 
     @NonNull
+    @Transactional(Transactional.TxType.NOT_SUPPORTED)
     public List<ID<Einladung>> findAllForCsvImpfstoffeReport(@NonNull DateRange zeitraum) {
         return einladungRepo.findAllForCsvImpfstoffReport(zeitraum);
     }

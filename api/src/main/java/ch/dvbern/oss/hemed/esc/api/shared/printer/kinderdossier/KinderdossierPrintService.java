@@ -50,6 +50,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintZipUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
@@ -108,7 +109,7 @@ public class KinderdossierPrintService {
                 }
             }
 
-            List<KinderdossierAnlassPrintDTO> anlassDTOList = new ArrayList<>();
+            List<AnlassUntersuchungPrintDTO> anlassDTOList = new ArrayList<>();
             for (Einladung einladung : einladungList) {
                 Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladung.getId());
                 List<UntersuchungImpfstatusKrankheit> impfstatusList =
@@ -121,10 +122,12 @@ public class KinderdossierPrintService {
                     List.of(einladung.getAnlass().getId())
                 );
 
-                anlassDTOList.add(new KinderdossierAnlassPrintDTO(einladung, impfungInternList, impfstatusList, folgeImpfAnlassList));
+                anlassDTOList.add(AnlassUntersuchungPrintDTO.ofEinladung(
+                    einladung,
+                    impfungInternList,
+                    impfstatusList,
+                    folgeImpfAnlassList));
             }
-
-
 
             KinderdossierPrintDTO dto = new KinderdossierPrintDTO(
                 kind,
@@ -177,9 +180,8 @@ public class KinderdossierPrintService {
         params.put("kindName", dto.getKind().getNameVorname());
         params.put(
             "anlassnames", dto.getAnlassDTOList().stream()
-                .map(KinderdossierAnlassPrintDTO::getEinladung)
-                .map(Einladung::getAnlass)
-                .map(Anlass::getTitel)
+                .map(AnlassUntersuchungPrintDTO::getAnlass)
+                .map(anlass -> anlass.getFullAnlassTitel(tl))
                 .collect(Collectors.joining(",")));
         params.put("emailAddress", emailAddress.toString());
 

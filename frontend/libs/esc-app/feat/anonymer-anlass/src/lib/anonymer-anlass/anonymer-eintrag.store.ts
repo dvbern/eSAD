@@ -76,8 +76,8 @@ export class AnonymerEintragStore extends signalStore(
 
   abschliessenAnonymerEintrag = rxMethod<{
     anlassId: BackendEntityId,
-    anonymerEintragId: BackendEntityIdWithClass,
-    onSuccess: () => void
+    anonymerEintragId: BackendEntityId,
+    onSuccess: (anonymerEintragId: BackendEntityId) => void
   }>(
     pipe(
       exhaustMap(
@@ -89,7 +89,7 @@ export class AnonymerEintragStore extends signalStore(
           error => this.#appErrorHandlerService.handleError(error),
         ).pipe(
           tapResponse({
-            next: () => params.onSuccess(),
+            next: () => params.onSuccess(params.anonymerEintragId),
             error: console.error,
           }),
         ),

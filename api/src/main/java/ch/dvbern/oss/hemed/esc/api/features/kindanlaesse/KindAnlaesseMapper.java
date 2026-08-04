@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
+import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
@@ -29,6 +30,7 @@ public final class KindAnlaesseMapper {
     private final KindAnlaesseService kindAnlaesseService;
     private final UntersuchungImpfstatusKrankheitService untersuchungImpfstatusKrankheitService;
     private final UntersuchungImpfungInternService untersuchungImpfungInternService;
+    private final TL tl;
 
     @NonNull
     public List<KindAnlassSummaryJson> findAllForKind(
@@ -38,12 +40,12 @@ public final class KindAnlaesseMapper {
         return kindAnlaesseService.findAllEinladungForKind(kindID).stream()
             // some Roles can only read Einladungen of a certain AnlassTyp
             .filter(hasReadAuthorizationEinladung)
-            .map(KindAnlaesseMapper::toKindAnlassSummaryJson)
+            .map(einladung -> KindAnlaesseMapper.toKindAnlassSummaryJson(einladung, tl))
             .toList();
     }
 
     @NonNull
-    public static KindAnlassSummaryJson toKindAnlassSummaryJson(@NonNull Einladung einladung) {
+    public static KindAnlassSummaryJson toKindAnlassSummaryJson(@NonNull Einladung einladung, @NonNull TL tl) {
         Anlass anlass = einladung.getAnlass();
         return new KindAnlassSummaryJson(
             einladung.getId(),
@@ -51,7 +53,7 @@ public final class KindAnlaesseMapper {
             einladung.getId(),
             anlass.getAnlassConfig().getAnlassTyp(),
             anlass.getDatum(),
-            anlass.getTitel(),
+            anlass.getFullAnlassTitel(tl),
             anlass.getSchuljahr(),
             einladung.getEinladungStatus(),
             anlass.getAnlassStatus()

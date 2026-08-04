@@ -48,6 +48,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
@@ -82,7 +83,7 @@ public class AnlassPrintService {
                 .map(einladung -> nachkontrolleService.findByDossier(einladung.getDossier().getId()))
                 .forEach(nachkontrolleOptional -> nachkontrolleOptional.ifPresent(nachkontrollen::add));
 
-            AnlassPrintDTO dto = new AnlassPrintDTO(
+            AnlassPlanungPrintDTO dto = new AnlassPlanungPrintDTO(
                 anlass,
                 einladungen,
                 appClock.getToday(),
@@ -92,7 +93,7 @@ public class AnlassPrintService {
             );
 
             logPrintOfAnlass(dto, currentUserService.currentUserName());
-            AnlassPrinter.print(dto, baos, fileStoreService, tenantSettingService, configService);
+            AnlassPlanungPrinter.print(dto, baos, fileStoreService, tenantSettingService, configService);
 
             byte[] byteArray = baos.toByteArray();
             return new PrintResultDTO(byteArray, createFileInfo(anlass, byteArray.length, "pdf"));
@@ -102,13 +103,14 @@ public class AnlassPrintService {
     }
 
     private void logPrintOfAnlass(
-        @NonNull AnlassPrintDTO dto,
+        @NonNull AnlassPlanungPrintDTO dto,
         @NonNull EmailAddress emailAddress
     ) {
+        String anlassTitle = dto.getAnlass().getFullAnlassTitel(tl);
         String template = "ESC-PDF-Print: Printing of Anlass with title=${anlassTitle} "
             + "for anlassId=${anlassId} with ${einladungenCount} invitations for username=${emailAddress}";
         final Map<String, String> params = Map.of(
-            "anlassTitle", dto.getAnlass().getTitel(),
+            "anlassTitle", anlassTitle,
             "anlassId", dto.getAnlass().getId().getUUID().toString(),
             "einladungenCount", String.valueOf(dto.getEinladungen().size()),
             "emailAddress", emailAddress.toString()
@@ -119,11 +121,11 @@ public class AnlassPrintService {
     }
 
     @NonNull
-    private FileInfo createFileInfo(@NonNull Anlass anlass, long size, String fileExtension) {
+    private FileInfo createFileInfo(@NonNull Anlass anlass, long size, @NonNull String fileExtension) {
         String fileName = tl.translate(
             "printer.anlass.filename",
             "titel",
-            PrintUtil.WHITESPACE.matcher(anlass.getTitel()).replaceAll("-"),
+            PrintUtil.FILENAME_UNSAFE_CHARS.matcher(anlass.getFullAnlassTitel(tl)).replaceAll("-"),
             "now",
             appClock.getToday().format(DATE_FORMATTER_FOR_FILENAME),
             "fileExtension",

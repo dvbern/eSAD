@@ -17,15 +17,10 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.anlass;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Stream;
-
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.UntersuchungTabsSavedJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.json.UntersuchungTabsSavedJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
@@ -39,6 +34,11 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Stream;
 
 class EinladungMapperTest {
 
@@ -148,7 +148,7 @@ class EinladungMapperTest {
                 )),
                 List.of(),
                 List.of(),
-                true,
+                false,
                 "withImpfausweisZweiPlusEinsSchema is true"),
             Arguments.of(
                 UntersuchungBuilder.create(builder -> builder.withUntersuchungImpfungen(
@@ -160,7 +160,7 @@ class EinladungMapperTest {
                 )),
                 List.of(),
                 List.of(),
-                true,
+                false,
                 "withImpfausweisUnvollstaendig is true"),
             Arguments.of(
                 UntersuchungBuilder.create(builder -> builder.withUntersuchungImpfungen(
@@ -172,8 +172,20 @@ class EinladungMapperTest {
                 )),
                 List.of(),
                 List.of(),
-                true,
+                false,
                 "withImpfausweisNichtVorhanden is true"),
+            Arguments.of(
+                UntersuchungBuilder.create(builder -> builder.withUntersuchungImpfungen(
+                    UntersuchungImpfungenBuilder.create(
+                        untersuchungImpfungenBuilder ->
+                            untersuchungImpfungenBuilder.withImpfausweisStatusMutiert(true)
+                                .withUntersuchungImpfungenMassnahmen(null)
+                    )
+                )),
+                List.of(),
+                List.of(),
+                true,
+                "withImpfausweisStatusMutiert is true"),
             Arguments.of(
                 UntersuchungBuilder.create(builder -> builder.withUntersuchungImpfungen(
                     UntersuchungImpfungenBuilder.create(

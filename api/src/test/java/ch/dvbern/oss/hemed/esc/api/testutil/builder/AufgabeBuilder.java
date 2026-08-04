@@ -3,16 +3,20 @@ package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassMapper;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
+import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AufgabeMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.AufgabeJson;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.types.AufgabeStatus;
-import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
-import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
@@ -23,7 +27,6 @@ import jakarta.validation.constraints.NotNull;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 
 public class AufgabeBuilder {
     private Aufgabe aufgabe;
@@ -133,14 +136,18 @@ public class AufgabeBuilder {
     }
 
     @NonNull
-    public static AufgabeJson createJax(@NonNull Consumer<AufgabeBuilder> block) {
+    public static AufgabeJson createJax(@NonNull Consumer<AufgabeBuilder> block, @NonNull TL tl) {
         Aufgabe entity = create(block);
-        return AufgabeMapper.toJson(entity, TenantEnum.BS);
+        return AufgabeMapper.toJson(
+            entity,
+            TenantEnum.BS,
+            Objects.nonNull(entity.getAnlass()) ? AnlassMapper.toOptionJson(entity.getAnlass(), tl) : null
+        );
     }
 
     @NonNull
-    public static AufgabeJsonSpec createJaxSpec(@NonNull Consumer<AufgabeBuilder> block) {
-        AufgabeJson json = createJax(block);
+    public static AufgabeJsonSpec createJaxSpec(@NonNull Consumer<AufgabeBuilder> block, @NonNull TL tl) {
+        AufgabeJson json = createJax(block, tl);
         return AufgabeJsonSpecMapper.INSTANCE.aufgabeJsonToAufgabeJsonSpec(json);
     }
 }

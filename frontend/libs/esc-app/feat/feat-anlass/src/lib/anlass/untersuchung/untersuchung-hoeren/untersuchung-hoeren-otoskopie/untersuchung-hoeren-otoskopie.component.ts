@@ -15,7 +15,7 @@ import {
   TitleComponent,
 } from '@dvb/ui-components';
 import {DirtyMarker} from '@dvb/util-angular';
-import {hasHoerenEditBerechtigung, isNotNullish, requireValue} from '@dvb/util-shared';
+import {hasHoerenEditBerechtigung, isNullish, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 
 import {AnlassStore} from '../../../anlass.store';
@@ -85,17 +85,18 @@ export class UntersuchungHoerenOtoskopieComponent implements DirtyMarker {
     effect(() => {
       // Wenn die Default-Values zu applyen markiert sind, dann das Formular mit den neuen Werten laden
       const defaultHoerenOtoskopie = this.hoerenOtoskopieStore.defaultHoerenOtoskopieToApply();
-      if (isNotNullish(defaultHoerenOtoskopie)) {
-        const hasAnyValue = hasSomeNotNullishValueIgnoringVersion(defaultHoerenOtoskopie);
-        if (hasAnyValue) {
-          this.form.resetForm(defaultHoerenOtoskopie);
-          this.form.group.markAsDirty();
-          this.form.group.controls.otoskopieRechts.controls.valueArray.markAsDirty();
-          this.form.group.controls.otoskopieLinks.controls.valueArray.markAsDirty();
-        }
-        this.hoerenOtoskopieStore.resetApplyDefaultHoerenOtoskopie();
-        this.form.setDisabled(!this.anlassStore.canUserEditAnlassInCurrentState());
+      if(isNullish(defaultHoerenOtoskopie)){
+        return;
       }
+      const hasAnyValue = hasSomeNotNullishValueIgnoringVersion(defaultHoerenOtoskopie);
+      if (hasAnyValue) {
+        this.form.resetForm(defaultHoerenOtoskopie);
+        this.form.group.markAsDirty();
+        this.form.group.controls.otoskopieRechts.controls.valueArray.markAsDirty();
+        this.form.group.controls.otoskopieLinks.controls.valueArray.markAsDirty();
+      }
+      this.hoerenOtoskopieStore.resetApplyDefaultHoerenOtoskopie();
+      this.form.setDisabled(!this.anlassStore.canUserEditAnlassInCurrentState());
     });
   }
 

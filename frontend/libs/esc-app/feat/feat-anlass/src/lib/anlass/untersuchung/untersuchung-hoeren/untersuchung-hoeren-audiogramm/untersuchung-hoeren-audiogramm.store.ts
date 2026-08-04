@@ -6,7 +6,6 @@ import {
   UntersuchungHoerenAudiogrammServiceGetUntersuchungHoerenAudiogrammRequestParams,
   UntersuchungHoerenAudiogrammServiceSaveUntersuchungHoerenAudiogrammRequestParams,
 } from '@dvb/data-access-backend';
-import { toEinladungBackendEntityIdWithClass } from '@dvb/data-access-types';
 import {globalConstants} from '@dvb/feat-shared';
 import {AppErrorHandlerService, AppNotificationStore, Loader} from '@dvb/util-angular';
 import {isNotNullish} from '@dvb/util-shared';
@@ -51,7 +50,7 @@ export class UntersuchungHoerenAudiogrammStore extends signalStore(
       const audiogrammRechts = isNotNullish(defaultAudiogram?.audiogrammRechts) ?
         {
           ...defaultAudiogram.audiogrammRechts,
-          version: store.hoerenAudiogramm()?.audiogrammData?.audiogrammLinks?.version ?? globalConstants.entityPrePersistVersion
+          version: store.hoerenAudiogramm()?.audiogrammData?.audiogrammRechts?.version ?? globalConstants.entityPrePersistVersion
         } :
         undefined;
 

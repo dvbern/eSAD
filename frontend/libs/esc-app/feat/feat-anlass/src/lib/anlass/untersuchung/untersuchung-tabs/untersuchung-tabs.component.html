@@ -302,7 +302,7 @@
     <li>
       @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
         <button svuiButton="primary" type="button" (click)="untersuchungAbschliessen.emit()">
-          {{ 'untersuchung.tab.abschliessen' | transloco }}
+          {{ abschliessenLabelKey() | transloco }}
         </button>
       }
     </li>

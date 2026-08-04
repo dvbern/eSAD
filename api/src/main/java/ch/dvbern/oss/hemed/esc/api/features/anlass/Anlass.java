@@ -26,12 +26,13 @@ import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassArt;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
-import ch.dvbern.oss.hemed.esc.api.shared.util.HasZustaendigkeit;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateTimeRange;
 import ch.dvbern.oss.hemed.esc.api.shared.util.AnlassTitelUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.util.HasZustaendigkeit;
+import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckAnlassTitelRequiredIfFeatureEnabled;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckArztRequiredForDezentraleTenants;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckArztUndMpaSameOrganisation;
 import jakarta.persistence.Column;
@@ -73,6 +74,7 @@ import org.hibernate.envers.Audited;
 @NoArgsConstructor
 @CheckArztUndMpaSameOrganisation
 @CheckArztRequiredForDezentraleTenants
+@CheckAnlassTitelRequiredIfFeatureEnabled
 public class Anlass extends AbstractEntity<Anlass> implements EntityWithOptimisticLocking, HasZustaendigkeit {
 
     @Serial
@@ -84,10 +86,9 @@ public class Anlass extends AbstractEntity<Anlass> implements EntityWithOptimist
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_anlass_anlassconfig"), nullable = false, updatable = false)
     private AnlassConfig anlassConfig;
 
-    @NotNull
-    @NonNull
+    @Nullable
     @Size(max = DbConst.DB_DEFAULT_MAX_LENGTH)
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String titel;
 
     @NotNull

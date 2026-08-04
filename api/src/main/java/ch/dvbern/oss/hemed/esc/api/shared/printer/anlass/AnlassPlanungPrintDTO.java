@@ -28,6 +28,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EinladungUtil;
+
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -37,7 +38,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  */
 @Value
 @AllArgsConstructor
-public class AnlassPrintDTO {
+public class AnlassPlanungPrintDTO {
     private final Anlass anlass;
     private final List<Einladung> einladungen;
     private final LocalDate now;

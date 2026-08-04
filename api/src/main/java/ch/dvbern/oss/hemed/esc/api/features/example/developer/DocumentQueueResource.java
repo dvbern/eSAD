@@ -9,6 +9,7 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueue;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueueMapper;
@@ -128,6 +129,11 @@ public class DocumentQueueResource {
     public Response createMassenbrief(
         @NotNull @NonNull @Valid DocumentQueueMassenbriefSaveJson saveJson
     ) {
+        // Die Briefe werden asynchron generiert, daher muss die Berechtigung hier geprueft werden
+        saveJson.getKinderIds().forEach(kindID ->
+            authorizerService.requireReadAuthorizationKind(
+                kindID,
+                List.of(Berechtigung.SUPPORT, Berechtigung.VORLAGEN_LESEN)));
         documentQueueMapper.createMassenbrief(saveJson);
         return Response.status(Status.CREATED.getStatusCode()).build();
     }

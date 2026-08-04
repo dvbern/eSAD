@@ -14,8 +14,6 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag;
 
-import java.time.LocalDate;
-
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
@@ -55,7 +53,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-import static ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil.toHasAnonymerEintragIdWrapper;
+import java.time.LocalDate;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
@@ -226,7 +225,7 @@ class AnonymerEintragResourceITest extends AbstractITest {
         // ACT
         api.anonymerEintragResourceAbschlussAnonymerEintrag()
             .anlassIdPath(anonymerEintrag.getAnlass().getId().getId())
-            .anonymerEintragIdPath(toHasAnonymerEintragIdWrapper(anonymerEintrag.getId()))
+            .anonymerEintragIdPath(anonymerEintrag.getId().getId())
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()

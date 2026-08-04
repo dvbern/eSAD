@@ -164,6 +164,10 @@ export class TenantSettingsStore extends signalStore(
     return this.settings()?.data?.features.anlassInformationenFeature.enabledForStage
   });
 
+  anlassTitleRequiredEnabled = computed(() => {
+    return this.settings()?.data?.features.anlassTitleRequiredFeature.enabledForStage
+  });
+
   postfixDeKey = computed(() => {
     const supportedLangs = this.supportedLanguages();
     if (supportedLangs && supportedLangs.length > 1) {

@@ -32,6 +32,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassArt;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateTimeRange;
@@ -40,7 +41,6 @@ import ch.dvbern.oss.hemed.esc.api.testutil.mapper.AnlassJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassJsonSpec;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class AnlassBuilder {
@@ -94,7 +94,7 @@ public class AnlassBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public AnlassBuilder withTitle(@NonNull String title) {
+    public AnlassBuilder withTitle(@Nullable String title) {
         this.anlass.setTitel(title);
         return this;
     }

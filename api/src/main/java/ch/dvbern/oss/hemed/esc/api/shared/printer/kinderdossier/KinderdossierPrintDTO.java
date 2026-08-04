@@ -8,6 +8,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKind;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
@@ -16,7 +17,7 @@ import lombok.Value;
 public class KinderdossierPrintDTO {
     Kind kind;
     List<KontaktPersonKind> kontaktPersonKindList;
-    List<KinderdossierAnlassPrintDTO> anlassDTOList;
+    List<AnlassUntersuchungPrintDTO> anlassDTOList;
     List<Notiz> notizenList;
     LocalDate now;
     TenantEnum tenant;

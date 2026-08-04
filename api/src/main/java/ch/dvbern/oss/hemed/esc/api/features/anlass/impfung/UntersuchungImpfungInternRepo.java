@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import ch.dvbern.dvbstarter.infrastructure.db.SmartJPAQuery;
 import ch.dvbern.dvbstarter.infrastructure.db.baserepo.BaseRepo;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
@@ -37,6 +38,29 @@ public class UntersuchungImpfungInternRepo extends BaseRepo<UntersuchungImpfungI
     public List<UntersuchungImpfungIntern> findByUntersuchung(
         @NonNull ID<Untersuchung> untersuchungID
     ) {
+        return findByUntersuchungBaseQuery(untersuchungID).fetch();
+    }
+
+    /**
+     * This method fetches the attached Anlass or the UntersuchungImpfungIntern,
+     * used for CSV report where we do not have
+     * a transaction.
+     *
+     */
+    @NonNull
+    public List<UntersuchungImpfungIntern> findByUntersuchungWithFetchedAnlass(
+        @NonNull ID<Untersuchung> untersuchungID
+    ) {
+        var query = findByUntersuchungBaseQuery(untersuchungID);
+        query = query.leftJoin(
+                QUntersuchungImpfungIntern.untersuchungImpfungIntern.anlassImpfungErfasst,
+                QAnlass.anlass)
+            .fetchJoin();
+        return query.fetch();
+    }
+
+    private SmartJPAQuery<UntersuchungImpfungIntern> findByUntersuchungBaseQuery(
+        @NonNull ID<Untersuchung> untersuchungID) {
         return db.selectFrom(QUntersuchungImpfungIntern.untersuchungImpfungIntern)
             .innerJoin(
                 QUntersuchungImpfungIntern.untersuchungImpfungIntern.untersuchungImpfungen,
@@ -45,8 +69,7 @@ public class UntersuchungImpfungInternRepo extends BaseRepo<UntersuchungImpfungI
             .leftJoin(QUntersuchungImpfungIntern.untersuchungImpfungIntern.krankheitenImmunitaeten).fetchJoin()
             .where(QUntersuchung.untersuchung.id.eq(untersuchungID.getUUID()))
             .orderBy(QUntersuchungImpfungIntern.untersuchungImpfungIntern.impfstoff.name.asc())
-            .orderBy(QUntersuchungImpfungIntern.untersuchungImpfungIntern.datumImpfung.asc().nullsLast())
-            .fetch();
+            .orderBy(QUntersuchungImpfungIntern.untersuchungImpfungIntern.datumImpfung.asc().nullsLast());
     }
 
     @NonNull
@@ -113,7 +136,7 @@ public class UntersuchungImpfungInternRepo extends BaseRepo<UntersuchungImpfungI
     }
 
     @NonNull
-    public List<UntersuchungImpfungIntern> findByEinladung(@NonNull ID<Einladung> einladungID) {
+    public List<UntersuchungImpfungIntern> findByEinladungWithFetchedAnlass(@NonNull ID<Einladung> einladungID) {
         return db.selectFrom(QUntersuchungImpfungIntern.untersuchungImpfungIntern)
             .innerJoin(
                 QUntersuchungImpfungIntern.untersuchungImpfungIntern.untersuchungImpfungen,
@@ -121,6 +144,7 @@ public class UntersuchungImpfungInternRepo extends BaseRepo<UntersuchungImpfungI
             .fetchJoin()
             .innerJoin(QUntersuchungImpfungen.untersuchungImpfungen.untersuchung, QUntersuchung.untersuchung)
             .fetchJoin()
+            .leftJoin(QUntersuchungImpfungIntern.untersuchungImpfungIntern.anlassImpfungErfasst, QAnlass.anlass).fetchJoin()
             .where(QUntersuchung.untersuchung.einladung.id.eq(einladungID.getUUID()))
             .fetch();
     }
@@ -132,7 +156,7 @@ public class UntersuchungImpfungInternRepo extends BaseRepo<UntersuchungImpfungI
         if (lastUntersuchung == null) {
             return Collections.emptyList();
         }
-        return findByUntersuchung(lastUntersuchung.getId());
+        return findByUntersuchungWithFetchedAnlass(lastUntersuchung.getId());
     }
 
     @Nullable

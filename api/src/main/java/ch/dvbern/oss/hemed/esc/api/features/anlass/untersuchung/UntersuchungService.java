@@ -119,20 +119,35 @@ public class UntersuchungService {
     private void createImpfungen(@NonNull Untersuchung untersuchung) {
         UntersuchungImpfungen impfungen =
             untersuchungImpfungenService.getOrCreateUntersuchungImpfungen(untersuchung.getId());
-
-        createCompleteImpfstatusBasedOnLastAnlass(impfungen);
-
-        createCompleteImpfungenInternBasedOnLastAnlass(impfungen);
-
-        createImpfungenMassnahmen(impfungen);
-    }
-
-    public void createCompleteImpfstatusBasedOnLastAnlass(@NonNull UntersuchungImpfungen impfungen) {
         Optional<Einladung> lastEinladung =
             einladungService.findLastEinladungForKind(
                 impfungen.getUntersuchung().getAnlass(),
                 impfungen.getUntersuchung().getEinladungRequired().getDossier().getKind().getId());
 
+        completeImpfungenBasedOnLastAnlass(impfungen, lastEinladung);
+        createCompleteImpfstatusBasedOnLastAnlass(impfungen, lastEinladung);
+        createCompleteImpfungenInternBasedOnLastAnlass(impfungen, lastEinladung);
+        createImpfungenMassnahmen(impfungen, lastEinladung);
+    }
+
+    private void completeImpfungenBasedOnLastAnlass(
+        @NonNull UntersuchungImpfungen impfungen,
+        @NonNull Optional<Einladung> lastEinladung
+    ) {
+        if (lastEinladung.isPresent() && lastEinladung.get().getUntersuchung() != null && lastEinladung.get().getUntersuchung().getUntersuchungImpfungen() != null) {
+            UntersuchungImpfungen lastImpfungen = lastEinladung.get().getUntersuchung().getUntersuchungImpfungen();
+            impfungen.disableOptimisticLockingCheck();
+            // Diese Checkboxen müssen übernommen werden, da es ansonsten beim Übernehmen des Impfstatus zu Fehlern im entsprechenden Validator kommen kann.
+            impfungen.setImpfausweisUnvollstaendig(lastImpfungen.isImpfausweisUnvollstaendig());
+            impfungen.setImpfausweisNichtVorhanden(lastImpfungen.isImpfausweisNichtVorhanden());
+            impfungen.setImpfausweisZweiPlusEinsSchema(lastImpfungen.isImpfausweisZweiPlusEinsSchema());
+        }
+    }
+
+    public void createCompleteImpfstatusBasedOnLastAnlass(
+        @NonNull UntersuchungImpfungen impfungen,
+        @NonNull Optional<Einladung> lastEinladung
+    ) {
         List<UntersuchungImpfstatusKrankheit> impfstatusLastAnlass = Collections.emptyList();
         List<UntersuchungImpfungIntern> impfungenInternListLastAnlass = Collections.emptyList();
         if (lastEinladung.isPresent() && lastEinladung.get().getUntersuchung() != null) {
@@ -159,14 +174,13 @@ public class UntersuchungService {
         );
     }
 
-    public void createCompleteImpfungenInternBasedOnLastAnlass(@NonNull UntersuchungImpfungen impfungen) {
+    public void createCompleteImpfungenInternBasedOnLastAnlass(
+        @NonNull UntersuchungImpfungen impfungen,
+        @NonNull Optional<Einladung> lastEinladung
+    ) {
         // Eigentlich sollten wir nur das erste Mal kopieren. Da das Objekt aber immer schon existiert
         // kopieren wir wenn die Liste (noch) leer ist. Das ist eigentlich zu viel. Insbesondere sollten
         // wir bei abgeschlossenen Anlaessen nicht mehr kopieren.
-        Optional<Einladung> lastEinladung = einladungService.findLastEinladungForKind(
-            impfungen.getUntersuchung().getAnlass(),
-            impfungen.getUntersuchung().getEinladungRequired().getDossier().getKind().getId());
-
         if (lastEinladung.isPresent() && lastEinladung.get().getUntersuchung() != null) {
             List<UntersuchungImpfungIntern> oldImpfungen =
                 untersuchungImpfungInternService.findByUntersuchung(lastEinladung.get()
@@ -180,11 +194,10 @@ public class UntersuchungService {
         }
     }
 
-    public void createImpfungenMassnahmen(@NonNull UntersuchungImpfungen impfungen) {
-        Optional<Einladung> lastEinladung = einladungService.findLastEinladungForKind(
-            impfungen.getUntersuchung().getAnlass(),
-            impfungen.getUntersuchung().getEinladungRequired().getDossier().getKind().getId());
-
+    public void createImpfungenMassnahmen(
+        @NonNull UntersuchungImpfungen impfungen,
+        @NonNull Optional<Einladung> lastEinladung
+    ) {
         Optional<String> achtungLastEinladung = getMassnahmeAchtungFromLastEinladung(lastEinladung);
 
         // UntersuchungImpfungenMassnahmen muss nur kopiert werden falls Achtung in der vorherigen Untersuchung

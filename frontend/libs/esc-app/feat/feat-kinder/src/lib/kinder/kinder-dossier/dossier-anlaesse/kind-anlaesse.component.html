@@ -19,7 +19,7 @@
 
   @for (item of kindAnlaesseStore.entities(); track item.id; let index = $index) {
     <svui-fancy-list-item
-      [mainText]="anlassTitleBasic(item.schuljahr, item.anlassTyp, item.titel, transloco)"
+      [mainText]="item.titel"
       [date]="fromISODateString(item.anlassDatum)"
       [linkText]="'global.oeffnen' | transloco"
       [routerlinkDestination]="

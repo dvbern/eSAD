@@ -19,6 +19,7 @@ jest.mock('@nx/devkit', () => ({
 jest.mock('prompts', () => jest.fn());
 
 jest.mock('fs', () => ({
+    ...jest.requireActual('fs'),
     promises: {
         readFile: jest.fn(),
         writeFile: jest.fn(),

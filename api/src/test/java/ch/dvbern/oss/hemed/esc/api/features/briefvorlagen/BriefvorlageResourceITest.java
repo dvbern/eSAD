@@ -301,6 +301,25 @@ class BriefvorlageResourceITest extends AbstractITest {
 
     @Test
     @TestAsSupportBS
+    void downloadBrief_throws_if_einladung_does_not_belong_to_kind() {
+        // ARRANGE
+        Briefvorlage briefvorlage = fixtureService.createBriefvorlage(BriefvorlageType.ANLASS);
+        Einladung einladung = fixtureService.createEinladung();
+        Einladung einladungOfOtherKind = fixtureService.createEinladung();
+
+        // ACT + ASSERT: Einladung von Kind A kombiniert mit kindId von Kind B darf keinen Brief generieren
+        api.briefvorlageResourceDownloadBrief()
+            .briefvorlageIdPath(briefvorlage.getId().getId())
+            .kindIdPath(einladungOfOtherKind.getDossier().getKind().getId().getId())
+            .einladungIdQuery(einladung.getId().getId())
+            .execute(Function.identity())
+            .then()
+            .assertThat()
+            .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
+    }
+
+    @Test
+    @TestAsSupportBS
     void downloadBriefvorlageFile() throws JsonProcessingException {
         // ARRANGE
         File wordFile = TestUtil.loadTestWord();

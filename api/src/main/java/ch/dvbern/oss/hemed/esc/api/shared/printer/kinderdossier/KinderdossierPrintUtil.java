@@ -1,30 +1,27 @@
 package ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier;
 
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.UntersuchungBewegungsapparat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithDateTimeJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDaten;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.UntersuchungLaeusekontrolle;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.UntersuchungSchulrelevanteBeeintraechtigung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.UntersuchungBewegungsapparat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenDataMinimal;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithDateTimeJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDaten;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.UntersuchungLaeusekontrolle;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.UntersuchungSchulrelevanteBeeintraechtigung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.UntersuchungSprache;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
@@ -32,6 +29,10 @@ import ch.dvbern.oss.hemed.esc.api.shared.anlass.anlassflags.AnlassFlags;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.ExtractorUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil.PLACEHOLDER;
 
@@ -81,90 +82,90 @@ public final class KinderdossierPrintUtil {
 
     @Nullable
     public static Boolean extractUntersuchungDurchfuehrungBooleanFn(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungDurchfuehrung, Boolean> booleanFunction
     ) {
-        return ExtractorUtil.getUntersuchungDurchfuehrungOptional(einladung)
+        return ExtractorUtil.getUntersuchungDurchfuehrungOptional(untersuchung)
             .map(booleanFunction)
             .orElse(null);
     }
 
     @NonNull
     public static String extractUntersuchungDurchfuehrung(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungDurchfuehrung, String> stringTransformer
     ) {
-        return ExtractorUtil.getUntersuchungDurchfuehrungOptional(einladung)
+        return ExtractorUtil.getUntersuchungDurchfuehrungOptional(untersuchung)
             .map(stringTransformer)
             .orElse(PLACEHOLDER);
     }
 
     @NonNull
     public static String extractUntersuchungSehen(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungSehenBeurteilung, String> stringTransformer
     ) {
-        return ExtractorUtil.getUntersuchungSehenOptional(einladung)
+        return ExtractorUtil.getUntersuchungSehenOptional(untersuchung)
             .map(stringTransformer)
             .orElse(PLACEHOLDER);
     }
 
     @NonNull
     public static String extractUntersuchungHoerenAudiogramm(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungHoerenAudiogramm, String> stringTransformer
     ) {
-        return ExtractorUtil.getUntersuchungHoerenAudiogrammOptional(einladung)
+        return ExtractorUtil.getUntersuchungHoerenAudiogrammOptional(untersuchung)
             .map(stringTransformer)
             .orElse(PLACEHOLDER);
     }
 
     @NonNull
     public static String extractUntersuchungHoerenOtoskopie(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungHoerenOtoskopie, String> stringTransformer
     ) {
-        return ExtractorUtil.getUntersuchungHoerenOtoskopieOptional(einladung)
+        return ExtractorUtil.getUntersuchungHoerenOtoskopieOptional(untersuchung)
             .map(stringTransformer)
             .orElse(PLACEHOLDER);
     }
 
     @NonNull
     public static String extractUntersuchungGroesseGewicht(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungGroesseGewicht, String> stringTransformer
     ) {
-        return ExtractorUtil.getUntersuchungGroesseGewichtOptional(einladung)
+        return ExtractorUtil.getUntersuchungGroesseGewichtOptional(untersuchung)
             .map(stringTransformer)
             .orElse(PLACEHOLDER);
     }
 
     @Nullable
     public static Boolean extractUntersuchungImpfungenBooleanFn(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungImpfungen, Boolean> booleanFunction
     ) {
-        return ExtractorUtil.getUntersuchungImpfungenOptional(einladung)
+        return ExtractorUtil.getUntersuchungImpfungenOptional(untersuchung)
             .map(booleanFunction)
             .orElse(null);
     }
 
     @NonNull
     public static String extractUntersuchungImpfungen(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungImpfungen, String> stringFunction
     ) {
-        return ExtractorUtil.getUntersuchungImpfungenOptional(einladung)
+        return ExtractorUtil.getUntersuchungImpfungenOptional(untersuchung)
             .map(stringFunction)
             .orElse(PLACEHOLDER);
     }
 
     @NonNull
     public static String extractUntersuchungImpfungenDataMinimal(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungImpfungenDataMinimal, String> stringFunction
     ) {
-        return ExtractorUtil.getUntersuchungImpfungenOptional(einladung)
+        return ExtractorUtil.getUntersuchungImpfungenOptional(untersuchung)
             .map(UntersuchungImpfungen::getUntersuchungImpfungenDataMinimal)
             .map(stringFunction)
             .orElse(PLACEHOLDER);
@@ -172,80 +173,80 @@ public final class KinderdossierPrintUtil {
 
     @NonNull
     public static String extractUntersuchungArzt(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungArztBeurteilung, String> stringFunction
     ) {
-        return ExtractorUtil.getUntersuchungArztOptional(einladung)
+        return ExtractorUtil.getUntersuchungArztOptional(untersuchung)
             .map(stringFunction)
             .orElse(PLACEHOLDER);
     }
 
     @NonNull
     public static String extractUntersuchungArztBemerkung(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungArztBemerkung, String> stringFunction
     ) {
-        return ExtractorUtil.getUntersuchungArztBemerkungOptional(einladung)
+        return ExtractorUtil.getUntersuchungArztBemerkungOptional(untersuchung)
             .map(stringFunction)
             .orElse(PLACEHOLDER);
     }
 
     @NonNull
     public static String extractUntersuchungSprache(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungSprache, String> stringFunction
     ) {
-        return ExtractorUtil.getUntersuchungSpracheOptional(einladung)
+        return ExtractorUtil.getUntersuchungSpracheOptional(untersuchung)
             .map(stringFunction)
             .orElse(PLACEHOLDER);
     }
 
     @NonNull
     public static String extractUntersuchungBewegungsapparat(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungBewegungsapparat, String> stringFunction
     ) {
-        return ExtractorUtil.getUntersuchungBewegungsapparatOptional(einladung)
+        return ExtractorUtil.getUntersuchungBewegungsapparatOptional(untersuchung)
             .map(stringFunction)
             .orElse(PLACEHOLDER);
     }
 
     @NonNull
     public static String extractUntersuchungSchulrelevanteBeeintraechtigung(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungSchulrelevanteBeeintraechtigung, String> stringFunction
     ) {
-        return ExtractorUtil.getUntersuchungSchulrelevanteBeeintraechtigungOptional(einladung)
+        return ExtractorUtil.getUntersuchungSchulrelevanteBeeintraechtigungOptional(untersuchung)
             .map(stringFunction)
             .orElse(PLACEHOLDER);
     }
 
     @NonNull
     public static String extractUntersuchungLaeusekontrolle(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungLaeusekontrolle, String> stringTransformer
     ) {
-        return ExtractorUtil.getUntersuchungLaeusekontrolleOptional(einladung)
+        return ExtractorUtil.getUntersuchungLaeusekontrolleOptional(untersuchung)
             .map(stringTransformer)
             .orElse(PLACEHOLDER);
     }
 
     @NonNull
     public static String extractUntersuchungMassnahmen(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungMassnahmen, String> stringFunction
     ) {
-        return ExtractorUtil.getUntersuchungMassnahmenOptional(einladung)
+        return ExtractorUtil.getUntersuchungMassnahmenOptional(untersuchung)
             .map(stringFunction)
             .orElse(PLACEHOLDER);
     }
 
     @NonNull
     public static String extractUntersuchungImpfungenMassnahmen(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungImpfungenMassnahmen, String> stringFunction
     ) {
-        return ExtractorUtil.getUntersuchungImpfungenMassnahmenOptional(einladung)
+        return ExtractorUtil.getUntersuchungImpfungenMassnahmenOptional(untersuchung)
             .map(stringFunction)
             .orElse(PLACEHOLDER);
     }
@@ -264,40 +265,40 @@ public final class KinderdossierPrintUtil {
 
     @Nullable
     public static Boolean extractUntersuchungMassnahmenBooleanFn(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungMassnahmen, Boolean> booleanFunction
     ) {
-        return ExtractorUtil.getUntersuchungMassnahmenOptional(einladung)
+        return ExtractorUtil.getUntersuchungMassnahmenOptional(untersuchung)
             .map(booleanFunction)
             .orElse(null);
     }
 
     @Nullable
     public static Boolean extractUntersuchungImpfungenMassnahmenBooleanFn(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungImpfungenMassnahmen, Boolean> booleanFunction
     ) {
-        return ExtractorUtil.getUntersuchungImpfungenMassnahmenOptional(einladung)
+        return ExtractorUtil.getUntersuchungImpfungenMassnahmenOptional(untersuchung)
             .map(booleanFunction)
             .orElse(null);
     }
 
     @Nullable
     public static Audiogramm extractAudiogramm(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungHoerenAudiogramm, Audiogramm> audiogrammFunction
     ) {
-        return ExtractorUtil.getUntersuchungHoerenAudiogrammOptional(einladung)
+        return ExtractorUtil.getUntersuchungHoerenAudiogrammOptional(untersuchung)
             .map(audiogrammFunction)
             .orElse(null);
     }
 
     @Nullable
     public static AnlassFlags extractAnlassFlags(
-        @NonNull Einladung einladung,
+        @Nullable Untersuchung untersuchung,
         @NonNull Function<UntersuchungMassnahmen, AnlassFlags> anlassFlagsFunction
     ) {
-        return ExtractorUtil.getUntersuchungMassnahmenOptional(einladung)
+        return ExtractorUtil.getUntersuchungMassnahmenOptional(untersuchung)
             .map(anlassFlagsFunction)
             .orElse(null);
     }

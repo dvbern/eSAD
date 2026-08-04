@@ -17,6 +17,7 @@ package ch.dvbern.oss.hemed.esc.api.features.example.developer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -89,6 +90,28 @@ class DocumentQueueFileServiceITest extends AbstractITest {
 
         // ASSERT
         assertThat(Files.exists(result)).isTrue();
+        assertThat(result.getFileName().toString())
+            .startsWith("test-document_")
+            .endsWith(".pdf");
+    }
+
+    @Test
+    @TestAsSupportBS
+    void createTempFileUsesUnpredictableNamesAndOwnerOnlyPermissions() throws Exception {
+        // ARRANGE
+        CleanFileName fileName = CleanFileName.parse("test-document.pdf");
+
+        // ACT
+        Path first = documentQueueFileService.createTempFile(fileName);
+        Path second = documentQueueFileService.createTempFile(fileName);
+
+        // ASSERT
+        assertThat(first).isNotEqualTo(second);
+        if (first.getFileSystem().supportedFileAttributeViews().contains("posix")) {
+            assertThat(Files.getPosixFilePermissions(first)).containsExactlyInAnyOrder(
+                PosixFilePermission.OWNER_READ,
+                PosixFilePermission.OWNER_WRITE);
+        }
     }
 
     @Test

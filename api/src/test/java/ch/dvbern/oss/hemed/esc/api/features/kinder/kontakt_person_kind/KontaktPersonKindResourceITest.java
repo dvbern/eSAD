@@ -12,8 +12,12 @@ import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.assertj.AppValidationErrorJsonSpecAssert;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.KontaktPersonKindBuilder;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.KontaktpersonKindApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.*;
 import io.quarkus.test.junit.QuarkusTest;
@@ -34,6 +38,7 @@ class KontaktPersonKindResourceITest extends AbstractITest {
 
     private final KontaktPersonKindService kontaktPersonKindService;
     private final FixtureService fixtureService;
+    private final TenantProducer tenantProducer;
 
     @Test
     @TestAsAdminBS
@@ -172,6 +177,33 @@ class KontaktPersonKindResourceITest extends AbstractITest {
         AppValidationErrorJsonSpecAssert.assertThatAppValidationErrorJsonSpec(error)
             .extractingExactlyOneViolation()
             .hasRawMessageContaining("Das Kind " + kind.getNameVorname() + " " +  kind.getId() + " ist inaktiv. Es kann keine KontaktPersonKind für ein inaktives Kind erstellt werden.");
+    }
+
+    @Test
+    @TestAsSchularztBE
+    void createKontaktPersonKind_throws_if_user_not_zustaendig() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+
+        // Dossier gehoert einem Arzt einer anderen Organisation,
+        // der aktuelle Benutzer (TestAsSchularztBE) ist nicht zustaendig
+        Benutzer otherArzt = fixtureService.createBenutzerWithOrganisation();
+        Kind kind = fixtureService.createKind();
+        fixtureService.createDossier(kind, otherArzt);
+
+        KontaktPersonKindSaveJsonSpec payload = KontaktPersonKindBuilder.createJaxSpec(
+            builder -> builder
+                .forKind(kind)).getData();
+
+        // ACT + ASSERT
+        api
+            .kontaktPersonKindResourceCreateKontaktPersonKind()
+            .kindIDPath(kind.getId().getId())
+            .body(payload)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
     }
 
     @Test

@@ -22,7 +22,7 @@ import { AnlassTyp } from './anlass-typ';
 export interface AnlassSaveJson { 
     anlassTyp: AnlassTyp;
     anlassConfigOption: AnlassConfigOptionJson;
-    titel: string;
+    titel?: string;
     anlassStatus: AnlassStatus;
     datum: ISODateString;
     schuljahr: number;

@@ -74,7 +74,9 @@ class MassenbriefgenerierungServiceITest extends AbstractITest {
 
         // ASSERT
         assertThat(result).isNotNull();
-        assertThat(result.getFileName().toFile()).hasName(filename);
+        assertThat(result.getFileName().toString())
+            .startsWith("Test_")
+            .endsWith(".zip");
 
     }
 

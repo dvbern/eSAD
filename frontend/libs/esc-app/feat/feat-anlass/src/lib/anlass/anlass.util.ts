@@ -1,9 +1,8 @@
 import {AnlassJson, AnlassSaveJson, AnlassTyp} from '@dvb/data-access-backend';
 import {isISODateString, isISODateTimeString, ISODateTimeString} from '@dvb/data-access-types';
-import {isNullish, Nullish} from '@dvb/util-shared';
+import {isNotNullish, isNullish, Nullish} from '@dvb/util-shared';
 import {TranslocoService} from '@jsverse/transloco';
 import {AnlassJsonEnhanced} from "@dvb/feat-shared";
-
 
 export function enhanceAnlass(anlass: AnlassJson, transloco: TranslocoService): AnlassJsonEnhanced {
   return {
@@ -21,7 +20,11 @@ export function anlassTitleOptional(anlass: AnlassSaveJson | Nullish, transloco:
 }
 
 export function anlassTitle(anlass: AnlassSaveJson, transloco: TranslocoService): string {
-  return anlassTitleBasic(anlass.schuljahr, anlass.anlassTyp, anlass.titel, transloco);
+  const prefix = anlassTitlePrefix(anlass.schuljahr, anlass.anlassTyp, transloco);
+  if (isNullish(anlass.titel)) {
+    return prefix;
+  }
+  return [prefix, anlass.titel].join(' ');
 }
 
 export function anlassDateTime(anlass: AnlassSaveJson): ISODateTimeString | undefined {
@@ -34,33 +37,15 @@ export function anlassDateTime(anlass: AnlassSaveJson): ISODateTimeString | unde
   }
 }
 
-export function anlassTitleBasic(
-  jahr: number | Nullish,
-  anlassTyp: AnlassTyp | Nullish,
-  anlassTitel: string,
-  transloco: TranslocoService,
-): string {
-  return anlassTitlePrefix(jahr, anlassTyp, transloco) + ' ' + anlassTitel;
-}
-
 export function anlassTitlePrefix(
   jahr: number | Nullish,
   anlassTyp: AnlassTyp | Nullish,
   transloco: TranslocoService,
 ): string {
-  const schuljahrString = jahr
-    ? displaySchuljahr(jahr)
-    : '<' + transloco.translate('anlass.detail.schuljahr') + '>';
-  const anlassTypKuerzel = anlassTyp ?
-    (transloco.translate('Anlass.title.prefix.AnlassTyp.' + anlassTyp)) :
-    undefined;
-  const anlassTypString = anlassTypKuerzel ?? '<' + transloco.translate('anlass.detail.typ') + '>';
-  return [schuljahrString, anlassTypString].join(' ');
-}
-
-export function displaySchuljahr(schuljahr: number | undefined) {
-  if (isNullish(schuljahr)) {
-    return undefined;
-  }
-  return schuljahr.toString() + '/' + (schuljahr + 1).toString().substring(2);
+  const schuljahrString = isNotNullish(jahr) ? `${jahr}/${String(jahr + 1).slice(-2)}` : undefined;
+  const anlassTypKuerzel = anlassTyp ? (transloco.translate('Anlass.title.prefix.AnlassTyp.' + anlassTyp)) : undefined;
+  return [
+    schuljahrString ?? `<${transloco.translate('anlass.detail.schuljahr')}>`,
+    anlassTypKuerzel ?? `<${transloco.translate('anlass.detail.typ')}>`
+  ].join(' ');
 }

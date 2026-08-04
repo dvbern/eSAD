@@ -20,6 +20,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.pagination;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -30,11 +31,15 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @JaxDTO
 public class PageRequestJson {
 
+    public static final int MAX_PAGE_SIZE = 500;
+
     @Schema(required = false)
     @Min(1)
     long pageNr;
 
     @Schema(required = false)
+    @Min(1)
+    @Max(MAX_PAGE_SIZE)
     int maxPageSize;
 
     @Schema(required = false)

@@ -149,4 +149,10 @@ public class TenantSettingFeatures implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     private FeatureEnabledSetting anlassInformationenFeature;
+
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private FeatureEnabledSetting anlassTitleRequiredFeature;
 }

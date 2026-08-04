@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.settings;
 
+import java.util.List;
+
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
@@ -24,8 +26,6 @@ import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 @QuarkusTest
 @RequiredArgsConstructor
@@ -144,6 +144,7 @@ class TenantSettingsResourceITest extends AbstractITest {
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant)
             ),
             List.of(EinladungStatusSpec.TEILNAHME_BESTAETIGT, EinladungStatusSpec.PRIVATARZT_BESTAETIGT),
@@ -200,9 +201,14 @@ class TenantSettingsResourceITest extends AbstractITest {
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
         Assertions.assertThat(result.getData().getFeatures().getAnlassSpracheSpalteFeature().getFeatureEnabled())
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
-        Assertions.assertThat(result.getData().getFeatures().getAnlassSpracheZusammenfassungFeature().getFeatureEnabled())
+        Assertions.assertThat(result.getData()
+                .getFeatures()
+                .getAnlassSpracheZusammenfassungFeature()
+                .getFeatureEnabled())
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
         Assertions.assertThat(result.getData().getFeatures().getAnlassInformationenFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData().getFeatures().getAnlassTitleRequiredFeature().getFeatureEnabled())
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
         Assertions.assertThat(result.getData()
             .getEinladungStatusValues()

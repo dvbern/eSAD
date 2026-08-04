@@ -110,6 +110,10 @@ function makeForm(config: Config) {
       featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
       enabledForStage: fb.control<boolean>({value: false, disabled: true}),
     }),
+    anlassTitleRequiredFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
   });
 
   // ZentraleOrganisation kann nicht verändert werden
@@ -214,6 +218,10 @@ export class TenantSettingsForm extends BaseForm<ReturnType<typeof makeForm>, Te
         anlassInformationenFeature: {
           featureEnabled: value.features.anlassInformationenFeature.featureEnabled,
           enabledForStage: value.features.anlassInformationenFeature.enabledForStage,
+        },
+        anlassTitleRequiredFeature: {
+          featureEnabled: value.features.anlassTitleRequiredFeature.featureEnabled,
+          enabledForStage: value.features.anlassTitleRequiredFeature.enabledForStage,
         }
       },
       einladungStatusValues: value.einladungStatusValues,

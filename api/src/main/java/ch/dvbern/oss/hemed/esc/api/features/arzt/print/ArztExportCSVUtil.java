@@ -25,6 +25,7 @@ import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.Arzt;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
+import ch.dvbern.oss.hemed.esc.api.shared.util.CsvSanitizerUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -77,7 +78,7 @@ public class ArztExportCSVUtil {
             Optional.of(arzt).map(Arzt::getTelefon).map(NormalizedPhoneNumber::getFormattedPhoneNumber).orElse(""),
             arzt.getBemerkungen(),
             tl.translate(TRANSLATION_PREFIX + "hpvteilnahme." + arzt.getHpvTeilnahme().name())
-        ).map(cellValue -> cellValue == null ? "" : cellValue).toList();
+        ).map(CsvSanitizerUtil::sanitize).toList();
     }
 
     private static String[] getArztCsvHeaders(@NonNull TL tl) {

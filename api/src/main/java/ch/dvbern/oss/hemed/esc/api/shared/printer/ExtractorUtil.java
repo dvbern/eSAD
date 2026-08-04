@@ -3,40 +3,51 @@ package ch.dvbern.oss.hemed.esc.api.shared.printer;
 import java.util.Objects;
 import java.util.Optional;
 
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.bewegungsapparat.UntersuchungBewegungsapparat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.durchfuehrung.UntersuchungDurchfuehrung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDaten;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.UntersuchungLaeusekontrolle;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.UntersuchungSchulrelevanteBeeintraechtigung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.UntersuchungSprache;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBemerkung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenOtoskopie;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
+
 import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 @UtilityClass
 public class ExtractorUtil {
 
     @NonNull
     public static Optional<UntersuchungHoerenAudiogramm> getUntersuchungHoerenAudiogrammOptional(
-        @NonNull Einladung einladung) {
-        if (einladung.getUntersuchung() == null) {
+        @NonNull Einladung einladung
+    ) {
+        return getUntersuchungHoerenAudiogrammOptional(einladung.getUntersuchung());
+    }
+
+    @NonNull
+    public static Optional<UntersuchungHoerenAudiogramm> getUntersuchungHoerenAudiogrammOptional(
+        @Nullable Untersuchung untersuchung
+    ) {
+        if (untersuchung == null) {
             return Optional.empty();
         }
 
-        UntersuchungHoerenAudiogramm hoerenAudiogramm = einladung.getUntersuchung().getUntersuchungHoerenAudiogramm();
+        UntersuchungHoerenAudiogramm hoerenAudiogramm = untersuchung.getUntersuchungHoerenAudiogramm();
         if (hoerenAudiogramm == null) {
             return Optional.empty();
         }
@@ -46,12 +57,20 @@ public class ExtractorUtil {
 
     @NonNull
     public static Optional<UntersuchungHoerenOtoskopie> getUntersuchungHoerenOtoskopieOptional(
-        @NonNull Einladung einladung) {
-        if (einladung.getUntersuchung() == null) {
+        @NonNull Einladung einladung
+    ) {
+        return getUntersuchungHoerenOtoskopieOptional(einladung.getUntersuchung());
+    }
+
+    @NonNull
+    public static Optional<UntersuchungHoerenOtoskopie> getUntersuchungHoerenOtoskopieOptional(
+        @Nullable Untersuchung untersuchung
+    ) {
+        if (untersuchung == null) {
             return Optional.empty();
         }
 
-        UntersuchungHoerenOtoskopie hoerenOtoskopie = einladung.getUntersuchung().getUntersuchungHoerenOtoskopie();
+        UntersuchungHoerenOtoskopie hoerenOtoskopie = untersuchung.getUntersuchungHoerenOtoskopie();
         if (hoerenOtoskopie == null) {
             return Optional.empty();
         }
@@ -60,13 +79,21 @@ public class ExtractorUtil {
     }
 
     @NonNull
-    public static Optional<UntersuchungSehenBeurteilung> getUntersuchungSehenOptional(@NonNull Einladung einladung) {
-        if (einladung.getUntersuchung() == null) {
+    public static Optional<UntersuchungSehenBeurteilung> getUntersuchungSehenOptional(
+        @NonNull Einladung einladung
+    ) {
+        return getUntersuchungSehenOptional(einladung.getUntersuchung());
+    }
+
+    @NonNull
+    public static Optional<UntersuchungSehenBeurteilung> getUntersuchungSehenOptional(
+        @Nullable Untersuchung untersuchung
+    ) {
+        if (untersuchung == null) {
             return Optional.empty();
         }
 
-        UntersuchungSehenBeurteilung
-				untersuchungSehenBeurteilung = einladung.getUntersuchung().getUntersuchungSehenBeurteilung();
+        UntersuchungSehenBeurteilung untersuchungSehenBeurteilung = untersuchung.getUntersuchungSehenBeurteilung();
         if (untersuchungSehenBeurteilung == null) {
             return Optional.empty();
         }
@@ -78,12 +105,18 @@ public class ExtractorUtil {
     public static Optional<UntersuchungDurchfuehrung> getUntersuchungDurchfuehrungOptional(
         @NonNull Einladung einladung
     ) {
-        if (einladung.getUntersuchung() == null) {
+        return getUntersuchungDurchfuehrungOptional(einladung.getUntersuchung());
+    }
+
+    @NonNull
+    public static Optional<UntersuchungDurchfuehrung> getUntersuchungDurchfuehrungOptional(
+        @Nullable Untersuchung untersuchung
+    ) {
+        if (untersuchung == null) {
             return Optional.empty();
         }
 
-        UntersuchungDurchfuehrung untersuchungDurchfuehrung =
-            einladung.getUntersuchung().getUntersuchungDurchfuehrung();
+        UntersuchungDurchfuehrung untersuchungDurchfuehrung = untersuchung.getUntersuchungDurchfuehrung();
         if (untersuchungDurchfuehrung == null) {
             return Optional.empty();
         }
@@ -91,12 +124,20 @@ public class ExtractorUtil {
     }
 
     @NonNull
-    public static Optional<UntersuchungImpfungen> getUntersuchungImpfungenOptional(@NonNull Einladung einladung) {
-        if (einladung.getUntersuchung() == null) {
+    public static Optional<UntersuchungImpfungen> getUntersuchungImpfungenOptional(
+        @NonNull Einladung einladung
+    ) {
+        return getUntersuchungImpfungenOptional(einladung.getUntersuchung());
+    }
+
+    @NonNull
+    public static Optional<UntersuchungImpfungen> getUntersuchungImpfungenOptional(
+        @Nullable Untersuchung untersuchung) {
+        if (untersuchung == null) {
             return Optional.empty();
         }
 
-        UntersuchungImpfungen untersuchungImpfungen = einladung.getUntersuchung().getUntersuchungImpfungen();
+        UntersuchungImpfungen untersuchungImpfungen = untersuchung.getUntersuchungImpfungen();
         if (untersuchungImpfungen == null) {
             return Optional.empty();
         }
@@ -105,7 +146,9 @@ public class ExtractorUtil {
     }
 
     @NonNull
-    public static Optional<UntersuchungKindDaten> getUntersuchungKindDatenOptional(@NonNull Einladung einladung) {
+    public static Optional<UntersuchungKindDaten> getUntersuchungKindDatenOptional(
+        @NonNull Einladung einladung
+    ) {
         if (einladung.getUntersuchung() == null) {
             return Optional.of(UntersuchungKindDaten.ofKind(einladung.getDossier().getKind()));
         }
@@ -120,12 +163,18 @@ public class ExtractorUtil {
     public static Optional<UntersuchungGroesseGewicht> getUntersuchungGroesseGewichtOptional(
         @NonNull Einladung einladung
     ) {
-        if (einladung.getUntersuchung() == null) {
+        return getUntersuchungGroesseGewichtOptional(einladung.getUntersuchung());
+    }
+
+    @NonNull
+    public static Optional<UntersuchungGroesseGewicht> getUntersuchungGroesseGewichtOptional(
+        @Nullable Untersuchung untersuchung
+    ) {
+        if (untersuchung == null) {
             return Optional.empty();
         }
 
-        UntersuchungGroesseGewicht untersuchungGroesseGewicht =
-            einladung.getUntersuchung().getUntersuchungGroesseGewicht();
+        UntersuchungGroesseGewicht untersuchungGroesseGewicht = untersuchung.getUntersuchungGroesseGewicht();
         if (untersuchungGroesseGewicht == null) {
             return Optional.empty();
         }
@@ -136,12 +185,18 @@ public class ExtractorUtil {
     public static Optional<UntersuchungTriage> getUntersuchungTriageOptional(
         @NonNull Einladung einladung
     ) {
-        if (einladung.getUntersuchung() == null) {
+        return getUntersuchungTriageOptional(einladung.getUntersuchung());
+    }
+
+    @NonNull
+    public static Optional<UntersuchungTriage> getUntersuchungTriageOptional(
+        @Nullable Untersuchung untersuchung
+    ) {
+        if (untersuchung == null) {
             return Optional.empty();
         }
 
-        UntersuchungTriage untersuchungTriage =
-            einladung.getUntersuchung().getUntersuchungTriage();
+        UntersuchungTriage untersuchungTriage = untersuchung.getUntersuchungTriage();
         if (untersuchungTriage == null) {
             return Optional.empty();
         }
@@ -152,12 +207,18 @@ public class ExtractorUtil {
     public static Optional<UntersuchungMassnahmen> getUntersuchungMassnahmenOptional(
         @NonNull Einladung einladung
     ) {
-        if (einladung.getUntersuchung() == null) {
+        return getUntersuchungMassnahmenOptional(einladung.getUntersuchung());
+    }
+
+    @NonNull
+    public static Optional<UntersuchungMassnahmen> getUntersuchungMassnahmenOptional(
+        @Nullable Untersuchung untersuchung
+    ) {
+        if (untersuchung == null) {
             return Optional.empty();
         }
 
-        UntersuchungMassnahmen untersuchungMassnahmen =
-            einladung.getUntersuchung().getUntersuchungMassnahmen();
+        UntersuchungMassnahmen untersuchungMassnahmen = untersuchung.getUntersuchungMassnahmen();
         if (untersuchungMassnahmen == null) {
             return Optional.empty();
         }
@@ -168,11 +229,18 @@ public class ExtractorUtil {
     public static Optional<UntersuchungImpfungenMassnahmen> getUntersuchungImpfungenMassnahmenOptional(
         @NonNull Einladung einladung
     ) {
-        if (einladung.getUntersuchung() == null) {
+        return getUntersuchungImpfungenMassnahmenOptional(einladung.getUntersuchung());
+    }
+
+    @NonNull
+    public static Optional<UntersuchungImpfungenMassnahmen> getUntersuchungImpfungenMassnahmenOptional(
+        @Nullable Untersuchung untersuchung
+    ) {
+        if (untersuchung == null) {
             return Optional.empty();
         }
 
-        UntersuchungImpfungen untersuchungImpfungen = einladung.getUntersuchung().getUntersuchungImpfungen();
+        UntersuchungImpfungen untersuchungImpfungen = untersuchung.getUntersuchungImpfungen();
         if (untersuchungImpfungen == null) {
             return Optional.empty();
         }
@@ -189,12 +257,18 @@ public class ExtractorUtil {
     public static Optional<UntersuchungArztBeurteilung> getUntersuchungArztOptional(
         @NonNull Einladung einladung
     ) {
-        if (einladung.getUntersuchung() == null) {
+        return getUntersuchungArztOptional(einladung.getUntersuchung());
+    }
+
+    @NonNull
+    public static Optional<UntersuchungArztBeurteilung> getUntersuchungArztOptional(
+        @Nullable Untersuchung untersuchung
+    ) {
+        if (untersuchung == null) {
             return Optional.empty();
         }
 
-        UntersuchungArztBeurteilung untersuchungArzt =
-            einladung.getUntersuchung().getUntersuchungArztBeurteilung();
+        UntersuchungArztBeurteilung untersuchungArzt = untersuchung.getUntersuchungArztBeurteilung();
         if (untersuchungArzt == null) {
             return Optional.empty();
         }
@@ -203,12 +277,12 @@ public class ExtractorUtil {
 
     @NonNull
     public static Optional<UntersuchungArztBemerkung> getUntersuchungArztBemerkungOptional(
-        @NonNull Einladung einladung
+        @Nullable Untersuchung untersuchung
     ) {
-        if (einladung.getUntersuchung() == null) {
+        if (untersuchung == null) {
             return Optional.empty();
         }
-        UntersuchungArztBemerkung untersuchungArzt = einladung.getUntersuchung().getUntersuchungArztBemerkung();
+        UntersuchungArztBemerkung untersuchungArzt = untersuchung.getUntersuchungArztBemerkung();
         if (untersuchungArzt == null) {
             return Optional.empty();
         }
@@ -219,10 +293,17 @@ public class ExtractorUtil {
     public static Optional<UntersuchungSprache> getUntersuchungSpracheOptional(
         @NonNull Einladung einladung
     ) {
-        if (einladung.getUntersuchung() == null) {
+        return getUntersuchungSpracheOptional(einladung.getUntersuchung());
+    }
+
+    @NonNull
+    public static Optional<UntersuchungSprache> getUntersuchungSpracheOptional(
+        @Nullable Untersuchung untersuchung
+    ) {
+        if (untersuchung == null) {
             return Optional.empty();
         }
-        UntersuchungSprache untersuchungSprache = einladung.getUntersuchung().getUntersuchungSprache();
+        UntersuchungSprache untersuchungSprache = untersuchung.getUntersuchungSprache();
         if (untersuchungSprache == null) {
             return Optional.empty();
         }
@@ -233,11 +314,17 @@ public class ExtractorUtil {
     public static Optional<UntersuchungBewegungsapparat> getUntersuchungBewegungsapparatOptional(
         @NonNull Einladung einladung
     ) {
-        if (einladung.getUntersuchung() == null) {
+        return getUntersuchungBewegungsapparatOptional(einladung.getUntersuchung());
+    }
+
+    @NonNull
+    public static Optional<UntersuchungBewegungsapparat> getUntersuchungBewegungsapparatOptional(
+        @Nullable Untersuchung untersuchung
+    ) {
+        if (untersuchung == null) {
             return Optional.empty();
         }
-        UntersuchungBewegungsapparat untersuchungBewegungsapparat =
-            einladung.getUntersuchung().getUntersuchungBewegungsapparat();
+        UntersuchungBewegungsapparat untersuchungBewegungsapparat = untersuchung.getUntersuchungBewegungsapparat();
         if (untersuchungBewegungsapparat == null) {
             return Optional.empty();
         }
@@ -248,10 +335,17 @@ public class ExtractorUtil {
     public static Optional<UntersuchungSchulrelevanteBeeintraechtigung> getUntersuchungSchulrelevanteBeeintraechtigungOptional(
         @NonNull Einladung einladung
     ) {
-        if (einladung.getUntersuchung() == null) {
+        return getUntersuchungSchulrelevanteBeeintraechtigungOptional(einladung.getUntersuchung());
+    }
+
+    @NonNull
+    public static Optional<UntersuchungSchulrelevanteBeeintraechtigung> getUntersuchungSchulrelevanteBeeintraechtigungOptional(
+        @Nullable Untersuchung untersuchung
+    ) {
+        if (untersuchung == null) {
             return Optional.empty();
         }
-        UntersuchungSchulrelevanteBeeintraechtigung beeintraechtigung = einladung.getUntersuchung().getUntersuchungSchulrelevanteBeeintraechtigung();
+        UntersuchungSchulrelevanteBeeintraechtigung beeintraechtigung = untersuchung.getUntersuchungSchulrelevanteBeeintraechtigung();
         if (beeintraechtigung == null) {
             return Optional.empty();
         }
@@ -260,14 +354,13 @@ public class ExtractorUtil {
 
     @NonNull
     public static Optional<UntersuchungLaeusekontrolle> getUntersuchungLaeusekontrolleOptional(
-        @NonNull Einladung einladung
+        @Nullable Untersuchung untersuchung
     ) {
-        if (einladung.getUntersuchung() == null) {
+        if (untersuchung == null) {
             return Optional.empty();
         }
 
-        UntersuchungLaeusekontrolle untersuchungLaeusekontrolle =
-            einladung.getUntersuchung().getUntersuchungLaeusekontrolle();
+        UntersuchungLaeusekontrolle untersuchungLaeusekontrolle = untersuchung.getUntersuchungLaeusekontrolle();
         if (untersuchungLaeusekontrolle == null) {
             return Optional.empty();
         }

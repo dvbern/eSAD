@@ -10,16 +10,14 @@ import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
+
 import com.itextpdf.layout.Document;
+import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @NoTransactionService
+@UtilityClass
 public final class KinderdossierPrinter {
-
-    private KinderdossierPrinter() {
-        // static and hidden so we don't get tempted to add services in here ;)
-    }
-
     public static void print(
         @NonNull KinderdossierPrintDTO dto,
         @NonNull OutputStream outputStream,
@@ -55,10 +53,10 @@ public final class KinderdossierPrinter {
 
         switch (dto.getVariant()) {
         case NOTIZEN -> KinderdossierNotizenPrinter.addAllNotiz(dto.getNotizenList(), basePrinter, document);
-        case ANLAESSE -> KinderdossierAnlassPrinter.addAllAnlass(dto.getAnlassDTOList(), basePrinter, document);
+        case ANLAESSE -> AnlassUntersuchungPrinter.addAllAnlass(dto.getAnlassDTOList(), basePrinter, document);
         case GESAMTES -> {
             KinderdossierNotizenPrinter.addAllNotiz(dto.getNotizenList(), basePrinter, document);
-            KinderdossierAnlassPrinter.addAllAnlass(dto.getAnlassDTOList(), basePrinter, document);
+            AnlassUntersuchungPrinter.addAllAnlass(dto.getAnlassDTOList(), basePrinter, document);
         }
         }
 

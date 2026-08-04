@@ -569,6 +569,19 @@ public class FixtureService {
     }
 
     @NonNull
+    public Anlass createAnlassWithoutTitle(
+        @NonNull AnlassTyp anlassTyp,
+        @NonNull LocalDate anlassDatum) {
+        AnlassConfig config = createAnlassConfigAllOptional(anlassDatum.getYear(), anlassTyp);
+        return anlassService.persist(
+            AnlassBuilder.create(builder -> builder
+                .withTitle(null)
+                .withDatumSetSchuljahr(anlassDatum)
+                .withAnlassConfig(config))
+        );
+    }
+
+    @NonNull
     public Anlass createAnlass(@NonNull Benutzer mpa) {
         AnlassConfig config = createAnlassConfigAllOptional(2023, AnlassTyp.KLASSE_8);
         return anlassService.persist(AnlassBuilder.create(builder -> builder
@@ -1786,6 +1799,24 @@ public class FixtureService {
     }
 
     @NonNull
+    @Transactional(TxType.REQUIRED)
+    public UntersuchungImpfstatusKrankheit createOrUpdateUntersuchungImpfstatusKrankheit(
+        @NonNull UntersuchungImpfungen untersuchungImpfungen,
+        @NonNull Krankheit krankheit,
+        boolean impfschutzGegeben,
+        @Nullable LocalDate datumLetzteImpfung) {
+        UntersuchungImpfstatusKrankheit impfstatus = untersuchungImpfstatusKrankheitService
+            .findByUntersuchungAndKrankheit(untersuchungImpfungen.getId(), krankheit)
+            .orElseGet(() -> UntersuchungImpfstatusKrankheitBuilder.create(builder -> builder
+                .forUntersuchungImpfungen(untersuchungImpfungen)
+                .forKrankheit(krankheit)));
+        impfstatus.disableOptimisticLockingCheck();
+        impfstatus.setImpfschutzGegeben(impfschutzGegeben);
+        impfstatus.setDatumLetzteImpfung(datumLetzteImpfung);
+        return untersuchungImpfstatusKrankheitService.persist(impfstatus);
+    }
+
+    @NonNull
     public Untersuchung createUntersuchungWithCompleteData() {
         final Anlass anlass = createAnlass();
         final Dossier dossier = createDossier();
@@ -2099,6 +2130,21 @@ public class FixtureService {
         impfungIntern.setImpfStatus(ImpfStatus.DURCHGEFUEHRT);
         impfungIntern.setDatumImpfung(anlass.getDatum());
         return untersuchungImpfungInternService.persist(impfungIntern);
+    }
+
+    @Transactional(TxType.REQUIRED)
+    public void setImpfausweisCheckboxen(
+        @NonNull ID<UntersuchungImpfungen> impfungenId,
+        boolean nichtVorhanden,
+        boolean unvollstaendig,
+        boolean zweiPlusEinsSchema
+    ) {
+        UntersuchungImpfungen impfungen = untersuchungImpfungenService.getById(impfungenId);
+        impfungen.disableOptimisticLockingCheck();
+        impfungen.setImpfausweisNichtVorhanden(nichtVorhanden);
+        impfungen.setImpfausweisUnvollstaendig(unvollstaendig);
+        impfungen.setImpfausweisZweiPlusEinsSchema(zweiPlusEinsSchema);
+        // KEIN persist nötig — Dirty Checking schreibt beim TX-Commit
     }
 
     public void executeSql(@NonNull String sql) {

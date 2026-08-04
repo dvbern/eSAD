@@ -14,6 +14,7 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.importoptions.massenimport;
 
+import java.util.List;
 import java.util.Map;
 
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileDownloadUtil;
@@ -23,6 +24,8 @@ import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.UploadItemSchema;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
@@ -56,6 +59,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 public class MassenimportResource {
 
     private final MassenimportService massenImportService;
+    private final AuthorizerService authorizerService;
 
     @GET
     @Consumes(MediaType.WILDCARD)
@@ -101,6 +105,8 @@ public class MassenimportResource {
         @NonNull @NotNull @PathParam("schuleID") ID<Schule> schuleID,
         @NonNull @NotNull @PathParam("klasseID") ID<Klasse> klasseID
     ) {
+        authorizerService.requireWriteAuthorizationSchule(schuleID, List.of(Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH));
+        authorizerService.requireWriteAuthorizationKlasse(klasseID, List.of(Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH));
         massenImportService.validateFileStructureThenProcessFileAsync(
             fileUpload,
             schuleID,
@@ -119,6 +125,7 @@ public class MassenimportResource {
         @FormParam(value = "file") @Schema(implementation = UploadItemSchema.class) FileUpload fileUpload,
         @NonNull @NotNull @PathParam("schuleID") ID<Schule> schuleID
     ) {
+        authorizerService.requireWriteAuthorizationSchule(schuleID, List.of(Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH));
         massenImportService.validateFileStructureThenProcessFileAsync(
             fileUpload,
             schuleID,

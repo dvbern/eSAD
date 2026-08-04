@@ -48,7 +48,9 @@ public class DossierResource {
     public DossierJson getOrCreateDossier(
         @NotNull @NonNull @PathParam("kindId") ID<Kind> kindID
     ) {
-        // Keine Pruefung, ist sowieso auch mit NICHT_MEDIZINISCH erlaubt
+        // Bewusst kein Objekt-Check: Lesen der nicht-medizinischen Daten ist gemaess BusinessRules
+        // kantonsweit fuer alle Rollen mit KINDER_LESEN_* erlaubt. Medizinische Daten sind ueber
+        // predicateReadMedizinischeDaten() geschuetzt. Siehe docs/zugriffsmodell-entscheide.md
         return dossierMapper.getOrCreateByKind(kindID, predicateReadMedizinischeDaten());
     }
 
@@ -77,7 +79,8 @@ public class DossierResource {
         @NotNull @NonNull @PathParam("dossierId") ID<Dossier> dossierID,
         @NotNull @NonNull @Valid BenutzerOptionJson benutzerJson
     ) {
-        // Keine Pruefung, ist sowieso auch mit NICHT_MEDIZINISCH erlaubt
+        // Rollen-Check via @RolesAllowed; Objekt-Check: nur Zustaendige (Dossier oder Schule) duerfen schreiben
+        authorizerService.requireWriteAuthorizationDossier(dossierID, List.of(Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH));
         return dossierMapper.updateDossierVerantwortlicherArzt(
             dossierID,
             benutzerJson.getId(),
@@ -92,7 +95,8 @@ public class DossierResource {
         @NotNull @NonNull @PathParam("dossierId") ID<Dossier> dossierID,
         @NotNull @NonNull @Valid BenutzerOptionJson dossierJson
     ) {
-        // Keine Pruefung, ist sowieso auch mit NICHT_MEDIZINISCH erlaubt
+        // Rollen-Check via @RolesAllowed; Objekt-Check: nur Zustaendige (Dossier oder Schule) duerfen schreiben
+        authorizerService.requireWriteAuthorizationDossier(dossierID, List.of(Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH));
         return dossierMapper.updateDossierVerantwortlicheMpa(
             dossierID,
             dossierJson.getId(),
@@ -107,7 +111,8 @@ public class DossierResource {
         @NotNull @NonNull @PathParam("dossierId") ID<Dossier> dossierID,
         @NotNull @NonNull @PathParam("status") PapierakteStatus status
     ) {
-        // Keine Pruefung, ist sowieso auch mit NICHT_MEDIZINISCH erlaubt
+        // Rollen-Check via @RolesAllowed; Objekt-Check: nur Zustaendige (Dossier oder Schule) duerfen schreiben
+        authorizerService.requireWriteAuthorizationDossier(dossierID, List.of(Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH));
         return dossierMapper.updateDossierPapierakteStatus(dossierID, status, predicateReadMedizinischeDaten());
     }
 

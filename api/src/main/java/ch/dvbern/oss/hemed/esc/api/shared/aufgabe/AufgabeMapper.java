@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.aufgabe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -9,10 +10,12 @@ import java.util.function.Predicate;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
+import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassOptionJson;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
@@ -32,6 +35,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 @Slf4j
@@ -45,11 +49,15 @@ public class AufgabeMapper {
     private final AnlassService anlassService;
     private final LabelMapper labelMapper;
     private final TenantProducer tenantProducer;
+    private final TL tl;
 
     @NonNull
-    public static AufgabeJson toJson(@NonNull Aufgabe aufgabe, @NonNull TenantEnum tenant) {
+    public static AufgabeJson toJson(
+        @NonNull Aufgabe aufgabe,
+        @NonNull TenantEnum tenant,
+        @Nullable AnlassOptionJson anlassOptionJson
+    ) {
         Kind kind = aufgabe.getKind();
-        Anlass anlass = aufgabe.getAnlass();
         return new AufgabeJson(
             aufgabe.getId(),
             EntityInfoJson.fromEntity(aufgabe),
@@ -62,7 +70,7 @@ public class AufgabeMapper {
                 BenutzerMapper.toOptionJson(aufgabe.getUserErfasst(), tenant),
                 aufgabe.getLabels().stream().map(LabelMapper::toJson).toList(),
                 kind != null ? SearchMapper.toSearchJson(kind) : null,
-                anlass != null ? AnlassMapper.toOptionJson(anlass) : null,
+                anlassOptionJson,
                 aufgabe.getFiles().stream().map(FileDataMapper::toJson).toList(),
                 aufgabe.getLink(),
                 aufgabe.getVersion()
@@ -118,7 +126,11 @@ public class AufgabeMapper {
         // since we have to load all anyway we might es well count here to avoid another query
         List<AufgabeJson> aufgabenJson = aufgaben.stream()
             .filter(hasReadAuthorizationAufgabe)
-            .map(a -> AufgabeMapper.toJson(a, tenantProducer.produceTenant()))
+            .map(a -> AufgabeMapper.toJson(
+                a,
+                tenantProducer.produceTenant(),
+                Objects.nonNull(a.getAnlass()) ? AnlassMapper.toOptionJson(a.getAnlass(), tl) : null
+            ))
             .toList();
         long anzahlEigeneFaelligeAufgaben = getNumOfFaelligeAufgabenForCurrentUser();
 
@@ -126,11 +138,17 @@ public class AufgabeMapper {
     }
 
     @NonNull
-    public AufgabeListJson findAllForKind(@NonNull ID<Kind> kindId, @NonNull Predicate<Aufgabe> hasReadAuthorizationAufgabe) {
+    public AufgabeListJson findAllForKind(
+        @NonNull ID<Kind> kindId,
+        @NonNull Predicate<Aufgabe> hasReadAuthorizationAufgabe) {
         List<AufgabeJson> aufgabenJson = aufgabeService.findAllForKind(kindId)
             .stream()
             .filter(hasReadAuthorizationAufgabe)
-            .map(a -> AufgabeMapper.toJson(a, tenantProducer.produceTenant()))
+            .map(a -> AufgabeMapper.toJson(
+                a,
+                tenantProducer.produceTenant(),
+                Objects.nonNull(a.getAnlass()) ? AnlassMapper.toOptionJson(a.getAnlass(), tl) : null
+            ))
             .toList();
         long anzahlEigeneFaelligeAufgaben = getNumOfFaelligeAufgabenForCurrentUser();
 
@@ -144,7 +162,11 @@ public class AufgabeMapper {
     ) {
         Aufgabe aufgabe = aufgabeService.getById(aufgabeId);
         requireAuthorization.accept(aufgabe);
-        return toJson(aufgabe, tenantProducer.produceTenant());
+        return toJson(
+            aufgabe,
+            tenantProducer.produceTenant(),
+            Objects.nonNull(aufgabe.getAnlass()) ? AnlassMapper.toOptionJson(aufgabe.getAnlass(), tl) : null
+        );
     }
 
     @NonNull
@@ -162,7 +184,12 @@ public class AufgabeMapper {
                     kind,
                     entity));
         }
-        return toJson(aufgabeService.persist(entity), tenantProducer.produceTenant());
+        Aufgabe persisted = aufgabeService.persist(entity);
+        return toJson(
+            persisted,
+            tenantProducer.produceTenant(),
+            Objects.nonNull(persisted.getAnlass()) ? AnlassMapper.toOptionJson(persisted.getAnlass(), tl) : null
+        );
     }
 
     @NonNull
@@ -181,7 +208,12 @@ public class AufgabeMapper {
                     existingAufgabe));
         }
         Aufgabe entity = toEntity(existingAufgabe, aufgabeJson);
-        return toJson(aufgabeService.persistWithOptimisticLocking(entity, aufgabeJson.getVersion()), tenantProducer.produceTenant());
+        Aufgabe persisted = aufgabeService.persistWithOptimisticLocking(entity, aufgabeJson.getVersion());
+        return toJson(
+            persisted,
+            tenantProducer.produceTenant(),
+            Objects.nonNull(persisted.getAnlass()) ? AnlassMapper.toOptionJson(persisted.getAnlass(), tl) : null
+        );
     }
 
     int getNumOfOffeneFaelligeAufgaben(@NonNull Predicate<Aufgabe> hasReadAuthorizationAufgabe) {
@@ -227,7 +259,12 @@ public class AufgabeMapper {
         }
         Aufgabe updatedAufgabe = aufgabeService.addUploadedFile(aufgabeID, file);
         updatedAufgabe.disableOptimisticLockingCheck();
-        return toJson(aufgabeService.persistAndFlush(updatedAufgabe), tenantProducer.produceTenant());
+        Aufgabe persisted = aufgabeService.persistAndFlush(updatedAufgabe);
+        return toJson(
+            persisted,
+            tenantProducer.produceTenant(),
+            Objects.nonNull(persisted.getAnlass()) ? AnlassMapper.toOptionJson(persisted.getAnlass(), tl) : null
+        );
     }
 
     @NonNull
@@ -245,7 +282,13 @@ public class AufgabeMapper {
                     new FileData()));
         }
         aufgabeService.removeUploadedFile(existingAufgabe, fileIdToRemove, requireAuthorization);
-        return toJson(existingAufgabe, tenantProducer.produceTenant());
+        return toJson(
+            existingAufgabe,
+            tenantProducer.produceTenant(),
+            Objects.nonNull(existingAufgabe.getAnlass()) ?
+                AnlassMapper.toOptionJson(existingAufgabe.getAnlass(), tl) :
+                null
+        );
     }
 
     @NonNull
@@ -253,7 +296,11 @@ public class AufgabeMapper {
 
         List<AufgabeJson> aufgabenJson = aufgabeService.findAllNichtAbgeschlosseneAufgabenForCurrent()
             .stream()
-            .map(a -> AufgabeMapper.toJson(a, tenantProducer.produceTenant()))
+            .map(a -> AufgabeMapper.toJson(
+                a,
+                tenantProducer.produceTenant(),
+                Objects.nonNull(a.getAnlass()) ? AnlassMapper.toOptionJson(a.getAnlass(), tl) : null
+            ))
             .toList();
         long anzahlEigeneFaelligeAufgaben = getNumOfFaelligeAufgabenForCurrentUser();
 

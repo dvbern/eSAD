@@ -51,6 +51,9 @@ import {AnonymerEintragStore} from "./anonymer-anlass/anonymer-eintrag.store";
 import {AnonymerEintragBasisdatenComponent} from "./anonymer-anlass/basisdaten/anonymer-eintrag-basisdaten.component";
 import {confirmOnDirty} from "@dvb/util-angular";
 import {
+  confirmAnonymeUntersuchungVerlassen, confirmOnDirtyBetweenUntersuchungsTabs
+} from "./anonymer-anlass/anonyme-untersuchung/confirm-anonyme-untersuchung-verlassen.candeactivatefn";
+import {
   hasAerztlicheUntersuchungEditBerechtigung,
   hasGroesseGewichtViewBerechtigung,
   hasHoerenEditBerechtigung,
@@ -60,6 +63,7 @@ import {
   hasUntersuchungVorabklaerungenEditBerechtigung
 } from "@dvb/util-shared";
 import {catchError, filter, firstValueFrom, map, of, take, timeout} from 'rxjs';
+
 
 const redirectToFirstVisibleAnonymeUntersuchungTab = async (route: ActivatedRouteSnapshot) => {
   const router = inject(Router);
@@ -167,6 +171,7 @@ export const anonymerEintragRoutes: Route[] = [
             anlassStore.loadEntity(anlassId);
           },
         },
+        canDeactivate: [confirmAnonymeUntersuchungVerlassen()],
         children: [
           {
             path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG + '/:anonymerEintragId',
@@ -182,7 +187,7 @@ export const anonymerEintragRoutes: Route[] = [
                 })
               },
             },
-            // TODO ESC-1152, ESC-1153, ESC-1154, ESC-1155, ESC-1157, ESC-1150, ESC-1149, ESC-1156 if last
+            // TODO ESC-1301
             //  tab remove DummyTabComponent
             children: [
               {
@@ -209,7 +214,7 @@ export const anonymerEintragRoutes: Route[] = [
                   requireRole(hasUntersuchungVorabklaerungenEditBerechtigung()),
                   requireAcceptedAgb(),
                 ],
-                canDeactivate: [confirmOnDirty()],
+                canDeactivate: [confirmOnDirtyBetweenUntersuchungsTabs()],
               },
               {
                 path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG_GROESSEGEWICHT,
@@ -227,7 +232,7 @@ export const anonymerEintragRoutes: Route[] = [
                   requireRole(hasGroesseGewichtViewBerechtigung()),
                   requireAcceptedAgb(),
                 ],
-                canDeactivate: [confirmOnDirty()],
+                canDeactivate: [confirmOnDirtyBetweenUntersuchungsTabs()],
               },
               {
                 path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG_HOEREN,
@@ -248,7 +253,7 @@ export const anonymerEintragRoutes: Route[] = [
                   requireRole(hasHoerenEditBerechtigung()),
                   requireAcceptedAgb(),
                 ],
-                canDeactivate: [confirmOnDirty()],
+                canDeactivate: [confirmOnDirtyBetweenUntersuchungsTabs()],
               },
               {
                 path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG_SEHEN,
@@ -269,7 +274,7 @@ export const anonymerEintragRoutes: Route[] = [
                   requireRole(hasSehenEditBerechtigung()),
                   requireAcceptedAgb(),
                 ],
-                canDeactivate: [confirmOnDirty()],
+                canDeactivate: [confirmOnDirtyBetweenUntersuchungsTabs()],
               },
               {
                 path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG_IMPFUNGEN,
@@ -292,7 +297,7 @@ export const anonymerEintragRoutes: Route[] = [
                   requireRole(hasImpfungenEditBerechtigung()),
                   requireAcceptedAgb(),
                 ],
-                canDeactivate: [confirmOnDirty()],
+                canDeactivate: [confirmOnDirtyBetweenUntersuchungsTabs()],
               },
               {
                 path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG_SPRACHE,
@@ -310,7 +315,7 @@ export const anonymerEintragRoutes: Route[] = [
                   requireRole(hasAerztlicheUntersuchungEditBerechtigung()),
                   requireAcceptedAgb(),
                 ],
-                canDeactivate: [confirmOnDirty()],
+                canDeactivate: [confirmOnDirtyBetweenUntersuchungsTabs()],
               },
               {
                 path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG_BEWEGUNGSAPPARAT,
@@ -328,7 +333,7 @@ export const anonymerEintragRoutes: Route[] = [
                   requireRole(hasAerztlicheUntersuchungEditBerechtigung()),
                   requireAcceptedAgb(),
                 ],
-                canDeactivate: [confirmOnDirty()],
+                canDeactivate: [confirmOnDirtyBetweenUntersuchungsTabs()],
               },
               {
                 path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG_SCHULRELEVANTE_BEEINTRAECHTIGUNG,
@@ -347,7 +352,7 @@ export const anonymerEintragRoutes: Route[] = [
                   requireRole(hasAerztlicheUntersuchungEditBerechtigung()),
                   requireAcceptedAgb(),
                 ],
-                canDeactivate: [confirmOnDirty()],
+                canDeactivate: [confirmOnDirtyBetweenUntersuchungsTabs()],
               },
               {
                 path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG_ARZT,
@@ -367,7 +372,7 @@ export const anonymerEintragRoutes: Route[] = [
                   requireRole(hasAerztlicheUntersuchungEditBerechtigung()),
                   requireAcceptedAgb(),
                 ],
-                canDeactivate: [confirmOnDirty()],
+                canDeactivate: [confirmOnDirtyBetweenUntersuchungsTabs()],
               },
               {
                 path: Path.ANLASS_UNTERSUCHUNG_EINLADUNG_ABSCHLUSS,
@@ -386,7 +391,7 @@ export const anonymerEintragRoutes: Route[] = [
                   requireRole(hasUntersuchungAbschlussViewBerechtigung()),
                   requireAcceptedAgb(),
                 ],
-                canDeactivate: [confirmOnDirty()],
+                canDeactivate: [confirmOnDirtyBetweenUntersuchungsTabs()],
               },
             ]
           },

@@ -1,9 +1,10 @@
 package ch.dvbern.oss.hemed.esc.api.shared.archunit;
 
-import ch.dvbern.oss.hemed.esc.api.features.importoptions.escada.EscadaResource;
 import ch.dvbern.oss.hemed.esc.api.features.example.developer.DatabaseResource;
 import ch.dvbern.oss.hemed.esc.api.features.example.developer.SuperAdminRunnerResource;
+import ch.dvbern.oss.hemed.esc.api.features.importoptions.escada.EscadaResource;
 import ch.dvbern.oss.hemed.esc.api.features.importoptions.pupil.PupilResource;
+import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckAnlassTitelRequiredIfFeatureEnabledValidator;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckArztRequiredForDezentraleTenantsValidator;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
@@ -52,7 +53,11 @@ class TransactionsTest {
     void transactional_boundary_on_methods() {
         var rule = methods()
             .that()
-            .haveNameNotMatching("getMyBenutzerData").and().haveNameNotMatching("reloadDuplikateSync").and().haveNameNotMatching("reloadDuplikateAsync")
+            .haveNameNotMatching("getMyBenutzerData")
+            .and()
+            .haveNameNotMatching("reloadDuplikateSync")
+            .and()
+            .haveNameNotMatching("reloadDuplikateAsync")
             .and()
             .areDeclaredInClassesThat(are(
                 and(
@@ -62,6 +67,7 @@ class TransactionsTest {
                         .or(fullyQualifiedName(PupilResource.class.getName()))
                         .or(fullyQualifiedName(SuperAdminRunnerResource.class.getName()))
                         .or(fullyQualifiedName(CheckArztRequiredForDezentraleTenantsValidator.class.getName()))
+                        .or(fullyQualifiedName(CheckAnlassTitelRequiredIfFeatureEnabledValidator.class.getName()))
                     ),
                     not(annotatedWith(Stereotype.class))
                 )

@@ -158,6 +158,7 @@ export class UntersuchungImpfungenStore extends signalStore(
                 impfausweis: {
                   ...requireValue(this.impfausweis()),
                   impfausweisUnvollstaendig: payload.impfausweisUnvollstaendig,
+                  impfausweisStatusMutiert: true,
                 },
               },
             })
@@ -199,6 +200,7 @@ export class UntersuchungImpfungenStore extends signalStore(
                 impfausweis: {
                   ...requireValue(this.impfausweis()),
                   impfausweisNichtVorhanden: payload.impfausweisNichtVorhanden,
+                  impfausweisStatusMutiert: true,
                 },
               },
             })
@@ -240,6 +242,7 @@ export class UntersuchungImpfungenStore extends signalStore(
                 impfausweis: {
                   ...requireValue(this.impfausweis()),
                   impfausweisZweiPlusEinsSchema: payload.impfausweisZweiPlusEinsSchema,
+                  impfausweisStatusMutiert: true,
                 },
               },
             })

@@ -1,0 +1,46 @@
+<mxfile host="drawio-plugin" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" modified="2026-07-15T12:45:36.553Z" etag="C2nmTCP6BlBg1mTJrpla" version="22.1.22" type="embed">
+  <diagram name="ERD" id="0">
+    <mxGraphModel dx="1973" dy="1461" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="5" value="Anlass" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-230" y="-700" width="79" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=ERzeroToOne;endFill=0;startArrow=ERone;startFill=0;" parent="1" source="11" target="13" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=ERzeroToOne;endFill=0;startArrow=ERone;startFill=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" parent="1" source="11" target="12" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="11" value="&lt;span style=&quot;font-weight: 400;&quot;&gt;Untersuchung&lt;/span&gt;" style="whiteSpace=wrap;html=1;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="110" y="-590" width="80.5" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="12" value="&lt;span style=&quot;font-weight: 400;&quot;&gt;UntersuchungDurchfuehrung&lt;/span&gt;" style="whiteSpace=wrap;html=1;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="190.5" y="-470" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="13" value="&lt;span style=&quot;font-weight: 400;&quot;&gt;UntersuchungKindDaten&lt;/span&gt;" style="whiteSpace=wrap;html=1;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="-130" y="-470" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="14" value="Hier wird es noch mehr geben" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="400" y="-510" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="15" value="&lt;span style=&quot;font-weight: 400;&quot;&gt;AnonymerEintrag&lt;/span&gt;" style="whiteSpace=wrap;html=1;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="110" y="-700" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="5" target="15" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="149" y="-675" as="sourcePoint" />
+            <mxPoint x="89" y="-675" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;endArrow=ERzeroToOne;endFill=0;" parent="1" source="15" target="11" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="49" y="-660" as="sourcePoint" />
+            <mxPoint x="140" y="-580" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

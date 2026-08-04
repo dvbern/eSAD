@@ -6,9 +6,10 @@
       [impfausweisUnvollstaendig]="!!untersuchungImpfungenStore.impfausweis()?.impfausweisUnvollstaendig"
       [impfausweisNichtVorhanden]="!!untersuchungImpfungenStore.impfausweis()?.impfausweisNichtVorhanden"
       [impfausweisZweiPlusEinsSchema]="!!untersuchungImpfungenStore.impfausweis()?.impfausweisZweiPlusEinsSchema"
-      (impfausweisUnvollstaendigChanged)="impfausweisUnvollstaendigChanged($event)"
-      (impfausweisNichtVorhandenChanged)="impfausweisNichtVorhandenChanged($event)"
-      (impfausweisZweiPlusEinsSchemaChanged)="impfausweisZweiPlusEinsSchemaChanged($event)"
+      [impfausweisStatusMutiert]="!!untersuchungImpfungenStore.impfausweis()?.impfausweisStatusMutiert"
+      (impfausweisUnvollstaendigChange)="impfausweisUnvollstaendigChanged($event)"
+      (impfausweisNichtVorhandenChange)="impfausweisNichtVorhandenChanged($event)"
+      (impfausweisZweiPlusEinsSchemaChange)="impfausweisZweiPlusEinsSchemaChanged($event)"
       (gotoImpfausweisClicked)="gotoImpfausweis()"
     >
     </feat-untersuchung-impfungen-header>

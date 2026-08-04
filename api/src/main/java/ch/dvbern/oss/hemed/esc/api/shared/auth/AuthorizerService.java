@@ -30,6 +30,9 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
+import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleService;
+import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
+import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseService;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
@@ -64,6 +67,8 @@ public class AuthorizerService {
     private final ConfigService configService;
     private final EinladungService einladungService;
     private final DossierService dossierService;
+    private final SchuleService schuleService;
+    private final KlasseService klasseService;
     private final CurrentIdentityAssociation association;
 
     // Request-Scope-Caches: Daten, die innerhalb eines Requests konstant sind,
@@ -313,6 +318,11 @@ public class AuthorizerService {
 
     // DOSSIER
 
+    public void requireWriteAuthorizationDossier(@NonNull ID<Dossier> dossierID, @NonNull List<Berechtigung> berechtigungenAnnotated) {
+        Dossier dossier = dossierService.getById(dossierID);
+        requireWriteAuthorizationDossier(dossier, berechtigungenAnnotated);
+    }
+
     public void requireWriteAuthorizationDossier(@NonNull Dossier dossier, @NonNull List<Berechtigung> berechtigungenAnnotated) {
         if (!hasWriteAuthorizationDossier(dossier, berechtigungenAnnotated, null)) {
             throwViolation(dossier);
@@ -447,6 +457,56 @@ public class AuthorizerService {
         }
     }
 
+    // KIND
+
+    public void requireReadAuthorizationKind(@NonNull ID<Kind> kindID, @NonNull List<Berechtigung> berechtigungenAnnotated) {
+        // Lesen und Schreiben sind auf Dossier-Ebene aktuell identisch geregelt (siehe hasReadAuthorizationDossier)
+        requireWriteAuthorizationKind(kindID, berechtigungenAnnotated);
+    }
+
+    public void requireWriteAuthorizationKind(@NonNull ID<Kind> kindID, @NonNull List<Berechtigung> berechtigungenAnnotated) {
+        if (!hasWriteAuthorizationKind(kindID, berechtigungenAnnotated)) {
+            throwViolation(kindService.getById(kindID));
+        }
+    }
+
+    public boolean hasWriteAuthorizationKind(@NonNull ID<Kind> kindID, @NonNull List<Berechtigung> berechtigungenAnnotated) {
+        // Nicht medizinische Daten Kind: SCHREIBEN nur Dossier oder Schulverantwortlicher
+        // Bewusst findByKind statt getOrCreateByKind: ein Authorization-Check darf keine Daten anlegen.
+        Optional<Dossier> dossierOptional = dossierService.findByKind(kindID);
+        if (dossierOptional.isPresent()) {
+            return hasWriteAuthorizationDossier(dossierOptional.get(), berechtigungenAnnotated, null);
+        }
+        // Kind ohne Dossier (z.B. direkt nach Massenimport): Zustaendigkeit ueber die Schule pruefen.
+        // Kind ohne Dossier und ohne Schule hat keine organisatorische Zuordnung, die geprueft werden koennte.
+        Schule schule = kindService.getById(kindID).extractSchule();
+        return schule == null || hasWriteAuthorizationSchule(schule, berechtigungenAnnotated);
+    }
+
+    // SCHULE / KLASSE
+
+    public void requireWriteAuthorizationSchule(@NonNull ID<Schule> schuleID, @NonNull List<Berechtigung> berechtigungenAnnotated) {
+        Schule schule = schuleService.getById(schuleID);
+        if (!hasWriteAuthorizationSchule(schule, berechtigungenAnnotated)) {
+            throwViolation(schule);
+        }
+    }
+
+    public void requireWriteAuthorizationKlasse(@NonNull ID<Klasse> klasseID, @NonNull List<Berechtigung> berechtigungenAnnotated) {
+        Klasse klasse = klasseService.getById(klasseID);
+        if (!hasWriteAuthorizationSchule(klasse.getSchule(), berechtigungenAnnotated)) {
+            throwViolation(klasse);
+        }
+    }
+
+    private boolean hasWriteAuthorizationSchule(@NonNull Schule schule, @NonNull List<Berechtigung> berechtigungenAnnotated) {
+        if (!isZentraleOrganisation() && schule.getZustaendigArzt() == null) {
+            // Schule ohne Zustaendigkeit hat keine organisatorische Zuordnung, die geprueft werden koennte
+            return true;
+        }
+        return isZustaendigWithBerechtigung(schule, berechtigungenAnnotated, null);
+    }
+
     // WEITERE
 
     public void requireReadAuthorizationDocument(@NonNull ID<DocumentQueue> documentQueueId) {
@@ -464,6 +524,25 @@ public class AuthorizerService {
     public boolean checkReadAuthorizationDocument(@NonNull DocumentQueue documentQueue) {
         Benutzer currentBenutzer = currentBenutzer();
         return documentQueue.getBenutzer().equals(currentBenutzer);
+    }
+
+    public void requireBriefDownloadAuthorization(
+        @NonNull ID<Kind> kindID,
+        @Nullable ID<Einladung> einladungID,
+        @NonNull List<Berechtigung> berechtigungenAnnotated
+    ) {
+        if (einladungID != null) {
+            Einladung einladung = einladungService.getById(einladungID);
+            // Die Einladung muss zum uebergebenen Kind gehoeren, sonst koennte ueber eine eigene Einladung
+            // ein Brief fuer ein fremdes Kind generiert werden
+            if (!einladung.getDossier().getKind().getId().equals(kindID)) {
+                throwViolation(einladung);
+            }
+            // Anlass-, Dossier- oder Schul-Zustaendige duerfen Briefe zur Einladung generieren
+            requireReadAuthorizationEinladung(einladung, berechtigungenAnnotated);
+            return;
+        }
+        requireKinderDownloadAuthorization(kindID);
     }
 
     public void requireKinderDownloadAuthorization(@NonNull ID<Kind> kindID) {

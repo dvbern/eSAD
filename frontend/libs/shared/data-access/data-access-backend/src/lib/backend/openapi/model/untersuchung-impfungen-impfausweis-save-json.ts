@@ -13,6 +13,7 @@ export interface UntersuchungImpfungenImpfausweisSaveJson {
     impfausweisUnvollstaendig: boolean;
     impfausweisNichtVorhanden: boolean;
     impfausweisZweiPlusEinsSchema: boolean;
+    impfausweisStatusMutiert: boolean;
 }
 
 
