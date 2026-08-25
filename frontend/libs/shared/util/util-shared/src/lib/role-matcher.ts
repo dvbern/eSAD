@@ -399,3 +399,7 @@ export function hasOrganisationVerwaltungSupportBerechtigung(): RoleMatcher {
     withAllOfBerechtigungen(Berechtigung.SUPPORT),
   );
 }
+
+export function hasDoc360ViewBerechtigung(): RoleMatcher {
+  return withAnyBerechtigung();
+}

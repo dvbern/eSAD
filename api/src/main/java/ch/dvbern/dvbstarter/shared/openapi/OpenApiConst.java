@@ -44,6 +44,7 @@ public class OpenApiConst {
         public static final String TAG_EINLADUNGEN = "Einladungen";
         public static final String TAG_ESCADA = "Escada";
         public static final String TAG_FILE_INGRESS = "FileIngress";
+        public static final String TAG_HELLODATA = "HelloData";
         public static final String TAG_IMPFSTOFFE = "Impfstoffe";
         public static final String TAG_IMPFSTOFF_CHARGEN = "Impfstoff-Chargen";
         public static final String TAG_INFOMATERIAL = "Infomaterial";

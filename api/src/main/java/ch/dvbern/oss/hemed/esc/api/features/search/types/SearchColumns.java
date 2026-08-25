@@ -49,6 +49,7 @@ import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.QDossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.QKind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.QNachkontrolle;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.edokid_id.EdokidId;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizStatus;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.QNotiz;
 import ch.dvbern.oss.hemed.esc.api.features.schule.QSchule;
@@ -237,7 +238,7 @@ public enum SearchColumns {
     ESAD_ID(QKind.kind.esadId, false) {
         @Override
         public Predicate createFilterTerm(FilterFieldJson<SearchColumns> filter) {
-            return createStringFilterValue(filter, QKind.kind.esadId);
+            return createEsadIdFilterValue(filter, QKind.kind.esadId);
         }
     },
     NOTIZ_ZEITRAUM_VON(QNotiz.notiz.timestampErstellt, false) {
@@ -517,6 +518,25 @@ public enum SearchColumns {
             .map(filterValue -> (Predicate) qFilterColumn.likeIgnoreCase('%' + filterValue + '%'))
             .toList();
         return SearchColumns.combinePredicates(predicates, filter.getFilterCombinationMethod());
+    }
+
+    /**
+     * The esadId is searched as a prefix (and not as a substring), since the beginning of an esadId is what is
+     * usually known when searching for a Kind. The whole filter value is treated as a single esadId: whitespace
+     * is removed from the search term and the separators are inserted again the way the esadId is stored
+     * (see {@link EdokidId#formatPartial}), so that the id can be entered with or without the usual grouping,
+     * e.g. {@code 2515067} finds {@code 25 15 067 xx}. In the db the values are stored with separators
+     */
+    @NonNull
+    static Predicate createEsadIdFilterValue(
+        @NonNull FilterFieldJson<SearchColumns> filter,
+        @NonNull StringExpression qFilterColumn
+    ) {
+        String searchTerm = EdokidId.formatPartial(filter.getFilterValue());
+        if (searchTerm.isEmpty()) {
+            return Expressions.TRUE;
+        }
+        return qFilterColumn.likeIgnoreCase(searchTerm + '%');
     }
 
     @NonNull

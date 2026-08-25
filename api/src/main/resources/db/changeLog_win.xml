@@ -146,6 +146,7 @@
   <include file="db/base/0078-add-impfausweis-status-flags-timestamp-mutiert.xml"/>
   <include file="db/base/0078-anlass-titel-nullable.xml"/>
   <include file="db/win/0037-enable-anlass-titel-required-win.xml"/>
+  <include file="db/base/0079-tenant-settings-footer-enable.xml"/>
 
   <!--  The following scripts only run in the 'test' context-->
 

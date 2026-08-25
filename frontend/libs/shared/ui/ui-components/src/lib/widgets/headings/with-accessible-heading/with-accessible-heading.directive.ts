@@ -10,4 +10,5 @@ export abstract class WithAccessibleHeadingDirective {
   readonly heading = input.required<string>();
   readonly headingVisibility = input<HeadingVisibility>('visible');
   readonly loading = input<boolean>(false);
+  readonly tooltip = input<string>('');
 }

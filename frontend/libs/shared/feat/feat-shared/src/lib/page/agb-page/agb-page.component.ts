@@ -21,7 +21,8 @@ import {FormsModule} from "@angular/forms";
 import {BenutzerStore} from "../../benutzer/benutzer/benutzer.store";
 import {TenantSettingsStore} from "../../tenant/tenant-settings.store";
 import {Router} from "@angular/router";
-import {AgbResponsability} from "@dvb/data-access-backend";
+import {AgbResponsability, Berechtigung} from "@dvb/data-access-backend";
+import {Path} from "../../core/path";
 
 @Component({
   selector: 'feat-agb-page',
@@ -52,10 +53,23 @@ export class AgbPageComponent {
     if (this.accepted() && responsability === AgbResponsability.AGB_MANAGED_BY_USER) {
       this.benutzerStore.acceptAGB({
         onSuccess: () => {
-          // routes to default page
-          void this.#router.navigate([this.tenantSettingStore.defaultLandingPage()]);
+          // user that are Schularzt should land on Organsiation page after assigning roles
+          if (this.benutzerStore.currentOrganisation()?.id
+            && this.hasRoleToEditUsersOfOrg(this.benutzerStore.berechtigungen())
+          ) {
+            void this.#router.navigate([Path.ADMIN, Path.ORGANISATION, this.benutzerStore.currentOrganisation()?.id]);
+          } else {
+            void this.#router.navigate([this.tenantSettingStore.defaultLandingPage()]);
+          }
         }
       });
     }
+  }
+
+  private hasRoleToEditUsersOfOrg(berechtigungen: Berechtigung[]) {
+    return berechtigungen.some(b =>
+      b === Berechtigung.BENUTZER_BERECHTIGUNGEN_SCHREIBEN ||
+      b === Berechtigung.ORGANISATION_VERWALTEN_SCHREIBEN
+    );
   }
 }

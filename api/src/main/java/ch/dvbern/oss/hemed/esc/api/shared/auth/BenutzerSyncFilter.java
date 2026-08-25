@@ -1,53 +1,52 @@
 package ch.dvbern.oss.hemed.esc.api.shared.auth;
 
-import java.io.IOException;
-
 import io.quarkus.security.identity.CurrentIdentityAssociation;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
-import jakarta.annotation.Priority;
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.Priorities;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.container.ContainerRequestFilter;
-import jakarta.ws.rs.container.PreMatching;
-import jakarta.ws.rs.ext.Provider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.jboss.resteasy.reactive.server.ServerRequestFilter;
 
-@Provider
-@PreMatching
-@Priority(Priorities.AUTHENTICATION)
-@RequestScoped
+/**
+ * Resolves the {@link SecurityIdentity} before the resource method runs.
+ * <p>
+ * The filter returns the {@link Uni} instead of subscribing to it itself. That hands the
+ * subscription to RESTEasy Reactive, which has two effects: the request is suspended until the
+ * identity is available (so downstream code never races against the sync), and an
+ * {@code AuthenticationFailedException} propagates to the security layer, which answers with 401
+ * plus a challenge header instead of the bare 500 you get when the failure is only logged.
+ */
+@ApplicationScoped
 @Slf4j
 @RequiredArgsConstructor
-public class BenutzerSyncFilter implements ContainerRequestFilter {
+public class BenutzerSyncFilter {
 
     private final CurrentIdentityAssociation association;
 
-
-    @Override
-    public void filter(@NonNull ContainerRequestContext requestContext) throws IOException {
-        Uni<SecurityIdentity> securityIdentityUni = association.getDeferredIdentity();
-        securityIdentityUni.subscribe().with(
-            this::processIdentity,
-            t -> LOG.error("Fehler beim Abrufen der SecurityIdentity", t)
-        );
+    @ServerRequestFilter(priority = Priorities.AUTHENTICATION)
+    @NonNull
+    public Uni<Void> syncBenutzer() {
+        return association.getDeferredIdentity()
+            .onItem().invoke(this::processIdentity)
+            .onFailure().invoke(t -> LOG.error("Fehler beim Abrufen der SecurityIdentity", t))
+            .replaceWithVoid();
     }
 
     private void processIdentity(@NonNull SecurityIdentity identity) {
         if (identity.isAnonymous()) {
-            LOG.info("User is anonymous");
+            LOG.debug("User is anonymous");
+            return;
         }
-        if (identity.getPrincipal() instanceof JsonWebToken jsonToken) {
-            String rawToken = jsonToken.getRawToken();
-            if (rawToken == null) {
-                LOG.info("No Token was passed along");
-            }
-            LOG.debug("Current user is: {}", jsonToken.getName());
-            LOG.debug("Full token {}", rawToken);
+
+        if (!(identity.getPrincipal() instanceof JsonWebToken jsonWebToken)) {
+            LOG.debug("Principal is no JsonWebToken: {}", identity.getPrincipal().getClass().getName());
+            return;
         }
+
+        LOG.debug("Current user is: {} (azp: {})", jsonWebToken.getName(), jsonWebToken.getClaim("azp"));
     }
 }

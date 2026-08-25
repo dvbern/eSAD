@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, input, Signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, input, Signal} from '@angular/core';
 import {FormArray, ReactiveFormsModule} from '@angular/forms';
 import {
   CheckboxDirective,
@@ -9,7 +9,7 @@ import {
   RadioDirective,
   SingleValueCheckboxDirective,
 } from '@dvb/ui-components';
-import {TranslocoPipe} from '@jsverse/transloco';
+import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {MultiValueSubFormType, ValueEnhancedForm} from './value-enhanced.form';
 import {NichtGeprueftGrund, RequirementSetting} from '@dvb/data-access-backend';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
@@ -38,10 +38,26 @@ export class ValueEnhancedComponent {
   private static nextRadioGroupId = 0;
   readonly radioGroupId = ValueEnhancedComponent.nextRadioGroupId++;
 
+  private readonly transloco = inject(TranslocoService);
+
   form = input.required<ValueEnhancedForm>();
   valueTitleKey = input.required<string>();
   valuePrefix = input.required<string>();
   nichtGeprueftGrundEnabled = input.required<boolean | undefined>();
+  tooltipKey = input<string>('');
+
+  /**
+   * Übersetzt den optionalen Tooltip-Key. Falls kein Key gesetzt ist oder keine (nicht-leere)
+   * Übersetzung existiert (Transloco liefert in diesem Fall den Key zurück), wird ein leerer
+   * String zurückgegeben, damit das Info-Icon nicht angezeigt wird.
+   */
+  readonly tooltip = computed<string>(() => {
+    const key = this.tooltipKey();
+    if (!key) {
+      return '';
+    }
+    return this.transloco.translate(key);
+  });
 
   readonly nichtGeprueftGrundValues = Object.values(NichtGeprueftGrund);
   protected readonly RequirementSetting = RequirementSetting;

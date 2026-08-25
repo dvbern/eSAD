@@ -97,7 +97,10 @@ public enum Berechtigung {
     FILE_INGRESS_PUSH(BerechtigungName.FILE_INGRESS_PUSH),
 
     // PUPIL
-    PUPIL_PUSH(BerechtigungName.PUPIL_PUSH);
+    PUPIL_PUSH(BerechtigungName.PUPIL_PUSH),
+
+    // HELLODATA (machine-to-machine export, tenant BE only)
+    HELLODATA_EXPORT_LESEN(BerechtigungName.HELLODATA_EXPORT_LESEN);
 
     private final String berechtigungName;
 

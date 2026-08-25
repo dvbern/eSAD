@@ -23,7 +23,7 @@ import {
   hasAdminPageViewBerechtiung,
   hasAnlassViewBerechtigung,
   hasAufgabenViewBerechtigungen,
-  hasConfigViewBerechtigung,
+  hasConfigViewBerechtigung, hasDoc360ViewBerechtigung,
   hasKindNotizViewBerechtigung,
   hasKindPageViewBerechtigung,
   hasPlaygroundViewBerechtigung,
@@ -84,6 +84,7 @@ export class PageComponent extends WithHeadingDirective implements OnInit {
   public canViewSystemPage = this.benutzerStore.createHasRequiredRoleSig(hasSystemPageViewBerechtiung());
   public canViewAufgaben = this.benutzerStore.createHasRequiredRoleSig(hasAufgabenViewBerechtigungen());
   public canViewKonfiguration = this.benutzerStore.createHasRequiredRoleSig(hasConfigViewBerechtigung());
+  public canViewDoc360 = this.benutzerStore.createHasRequiredRoleSig(hasDoc360ViewBerechtigung());
   public hasAnyBerechtigung = this.benutzerStore.createHasRequiredRoleSig(withAnyBerechtigung());
 
   private readonly notizenRoleSig =

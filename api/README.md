@@ -22,7 +22,7 @@ C:\Users\bran\.jdks\temurin-21.0.4\bin/keytool -importcert -file certs/local-esc
 ```
    )
 3. **Copy**  `.env-template` to `.env` and adjust secrets/config
-4. **Copy** `developer-local-settings-template` to `developer-local-settings` and adjust secrets/config (do not overwrite the generated certs)
+4. **Copy** `developer-local-settings-template` to `developer-local-settings` and adjust secrets/config (do not overwrite the generated certs). This now also contains `config/keycloak.env` which holds the Keycloak container settings and the realm-import placeholders (`KC_*`, `KEYCLOAK_*`, `REALM_IDP_VACME_*`, `CLIENT_ESC_*`) used by `docker-compose.yml` and by the realm files in `config/keycloakrealm/` (previously part of `api/.env`).
 5. Search everywhere for **CHANGEME** and replace it with the correct values (usually: choose your personal credentials, don't change the templates though ;-))
 6. **Keycloak**: In order for the login to work correctly you will need a Keycloak Server and an OAuth Proxy. There is a docker-compose file in the root of the project that should start a keycloak, auto import a realm and start an oauth proxy. Start the stack with **docker-compose up**
 6. Move to `esc/api`, then generate sources and **build** the application `./mvnw clean package`

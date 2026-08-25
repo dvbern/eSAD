@@ -21,7 +21,7 @@
       [gray]="false"
     >
       <ng-content subBadges>
-        @for (label of item.data.labels; track label.id) {
+        @for (label of item.data.labels | sortLabelsPipe; track label.id) {
           <svui-badge> {{ label.data.name | translatedStringPipe }}</svui-badge>
         }
       </ng-content>

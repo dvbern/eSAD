@@ -202,7 +202,7 @@
               </button>
             </td>
             <td>
-              @for (label of item.labels; track label.id) {
+              @for (label of item.labels | sortLabelsPipe; track label.id) {
                 <svui-badge class="me-1"> {{ label.data.name | translatedStringPipe }}</svui-badge>
               }
             </td>

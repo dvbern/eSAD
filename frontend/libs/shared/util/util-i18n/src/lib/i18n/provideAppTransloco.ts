@@ -11,6 +11,7 @@ export function provideAppTransloco(loader: Type<TranslocoLoader>) {
         fallbackLang: DEFAULT_LANGUAGE,
         missingHandler: {
           useFallbackTranslation: true,
+          allowEmpty: true, // translation key foo.bar  = '' will render empty instead of foo.bar
         },
         // we're doing a complete reload of the application => no need to re-render
         reRenderOnLangChange: true,

@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "ESC HelloDATA Export",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

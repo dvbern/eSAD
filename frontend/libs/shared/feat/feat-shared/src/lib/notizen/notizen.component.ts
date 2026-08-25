@@ -45,6 +45,7 @@ import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbModal, NgbNav, NgbNavItem} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {BenutzerOptionsStore} from '../admin-shared/benutzer-options.store';
+import {keepLabelsSorted, sortAktivLabels, sortInaktivLabels} from '../admin-shared/label-sort.util';
 import {LabelsStore} from '../admin-shared/labels.store';
 import {BenutzerStore} from '../benutzer/benutzer/benutzer.store';
 import {globalConstants} from '../constants/global-constants';
@@ -111,6 +112,7 @@ export class NotizenComponent implements DirtyMarker {
 
   readonly confirmService = inject(ConfirmService);
   readonly #transloco = inject(TranslocoService);
+  readonly #translatedStringPipe = inject(TranslatedStringPipe);
   readonly location = inject(Location);
   readonly router = inject(Router);
 
@@ -139,7 +141,7 @@ export class NotizenComponent implements DirtyMarker {
   readonly acceptedFiletypes = globalConstants.acceptedFileTypes;
 
   entityInfo = computed(() => this.existingNotiz()?.entityInfo);
-  inaktivLabels = computed(() => this.existingNotiz()?.data?.labels?.filter(label => !label.data.aktiv) ?? []);
+  inaktivLabels = computed(() => sortInaktivLabels(this.existingNotiz()?.data?.labels, this.#translatedStringPipe));
 
   readonly NotizTyp = NotizTyp;
 
@@ -196,11 +198,13 @@ export class NotizenComponent implements DirtyMarker {
           // We need to create a copy as to not filter away the disabled labels everywhere.
           const copy = { ...resetTo };
           // Take out the disabled labels as to not show up in the control
-          copy.labels = copy.labels?.filter(label => label.data.aktiv);
+          copy.labels = sortAktivLabels(copy.labels, this.#translatedStringPipe);
           this.form.reset(copy, mode);
         }
       });
     });
+
+    keepLabelsSorted(this.form.group.controls.labels, this.#translatedStringPipe);
 
     effect(() => {
       const id = this.existingNotiz()?.id;

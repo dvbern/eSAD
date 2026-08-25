@@ -1,0 +1,138 @@
+openapi: 3.1.0
+info:
+  title: esc-api API
+paths:
+  /api/hellodata/v1/json/schulen:
+    get:
+      operationId: HelloDataResource_exportSchulenAsJson
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            A single JSON document: the rows in a `data` array, closed by a `_meta` object. Same rows and same guarantees as the NDJSON variant, only framed differently.
+
+            The response is streamed, so `_meta` is the last member of the document - `rowCount` is not known before the last row has been read. JSON members are unordered, so read it by key, not by position. If `_meta` is missing the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code. (A truncated response here is not valid JSON either, so a strict parser catches it too.)
+
+            Note that consuming this with a whole-document parser buffers the entire export on the client. Prefer the NDJSON variant if your tooling can read it.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloDataSchulenEnvelopeJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Schulen As Json
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/ndjson/schulen:
+    get:
+      operationId: HelloDataResource_exportSchulen
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            NDJSON (newline delimited JSON): one JSON object per line, separated by \n, with no enclosing array and no commas. The schema describes a single line.
+
+            Every data line matches HelloDataSchuleJson. The final line is a HelloDataSentinelJson: if it is missing, the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code.
+          content:
+            application/x-ndjson:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/HelloDataSchuleJson"
+                - $ref: "#/components/schemas/HelloDataSentinelJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Schulen
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+components:
+  schemas:
+    EntityAktivStatus:
+      type: string
+      enum:
+      - AKTIV
+      - INAKTIV
+    HelloDataMetaJson:
+      type: object
+      required:
+      - status
+      - rowCount
+      - exportedAt
+      properties:
+        status:
+          type: string
+        rowCount:
+          type: integer
+          format: int64
+        exportedAt:
+          type: string
+          $ref: "#/components/schemas/OffsetDateTime"
+    HelloDataSchuleJson:
+      type: object
+      required:
+      - id
+      - schulhaus
+      - aktivStatus
+      - timestampMutiert
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        schulhaus:
+          type: string
+        schulstandort:
+          type: string
+        schulkreis:
+          type: string
+        schulhausnummer:
+          type: string
+        quartierId:
+          $ref: "#/components/schemas/UUID"
+        plz:
+          type: string
+        ort:
+          type: string
+        aktivStatus:
+          $ref: "#/components/schemas/EntityAktivStatus"
+        timestampMutiert:
+          type: string
+          $ref: "#/components/schemas/OffsetDateTime"
+    HelloDataSchulenEnvelopeJson:
+      type: object
+      required:
+      - data
+      - _meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelloDataSchuleJson"
+        _meta:
+          $ref: "#/components/schemas/HelloDataMetaJson"
+    HelloDataSentinelJson:
+      type: object
+      required:
+      - _meta
+      properties:
+        _meta:
+          $ref: "#/components/schemas/HelloDataMetaJson"
+    OffsetDateTime:
+      type: string
+      format: date-time
+      examples:
+      - 2022-03-10T12:15:50-04:00
+    UUID:
+      type: string
+      format: uuid
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+  securitySchemes:
+    SecurityScheme:
+      type: openIdConnect
+      openIdConnectUrl: https://local-esc-bs.localhost:8989/realms/bs/.well-known/openid-configuration
+      description: Authentication

@@ -16,6 +16,7 @@ import {
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, pipe, switchMap, tap} from 'rxjs';
 import {TranslatedStringPipe} from '../translated-strings/view/translated-string.pipe';
+import {sortAktivLabels, sortLabelsByName} from './label-sort.util';
 
 const IMPFAUSWEIS_AUTO_LABEL_ID: BackendEntityId = requireValidBackendEntityId('350f2746-7db4-4dfa-ae28-1b3b5812434a');
 const FRAGEBOGEN_AUTO_LABEL_ID: BackendEntityId = requireValidBackendEntityId('f8514824-9694-408e-bdb6-d72e376d7833');
@@ -46,32 +47,21 @@ export class LabelsStore extends signalStore(
     },
   })),
   withSelectedEntity<LabelJson>(),
-  withComputed((store, translatedStringPipe = inject(TranslatedStringPipe)) => ({
-    notizenLabelsSorted: computed(() => {
-      return [...store.entities()]
-        .filter(each => each.data.labelTyp === LabelTyp.NOTIZEN)
-        .sort((a: LabelJson, b: LabelJson) => translatedStringPipe.transform(a.data.name)
-          .localeCompare(translatedStringPipe.transform(b.data.name)));
-    }),
-    notizLabelsEnabledSorted: computed(() => {
-      return [...store.entities()]
-        .filter(each => each.data.labelTyp === LabelTyp.NOTIZEN && each.data.aktiv)
-        .sort((a: LabelJson, b: LabelJson) => translatedStringPipe.transform(a.data.name)
-          .localeCompare(translatedStringPipe.transform(b.data.name)));
-    }),
-    aufgabenLabelsSorted: computed(() => {
-      return [...store.entities()]
-        .filter(each => each.data.labelTyp === LabelTyp.AUFGABEN)
-        .sort((a: LabelJson, b: LabelJson) => translatedStringPipe.transform(a.data.name)
-          .localeCompare(translatedStringPipe.transform(b.data.name)));
-    }),
-    aufgabenLabelsEnabledSorted: computed(() => {
-      return [...store.entities()]
-        .filter(each => each.data.labelTyp === LabelTyp.AUFGABEN && each.data.aktiv)
-        .sort((a: LabelJson, b: LabelJson) => translatedStringPipe.transform(a.data.name)
-          .localeCompare(translatedStringPipe.transform(b.data.name)));
-    }),
-  })),
+  withComputed((store, translatedStringPipe = inject(TranslatedStringPipe)) => {
+    const labelsOfTypSorted = (labelTyp: LabelTyp) => computed(() => sortLabelsByName(
+      store.entities().filter(each => each.data.labelTyp === labelTyp),
+      translatedStringPipe));
+    const aktivLabelsOfTypSorted = (labelTyp: LabelTyp) => computed(() => sortAktivLabels(
+      store.entities().filter(each => each.data.labelTyp === labelTyp),
+      translatedStringPipe));
+
+    return {
+      notizenLabelsSorted: labelsOfTypSorted(LabelTyp.NOTIZEN),
+      notizLabelsEnabledSorted: aktivLabelsOfTypSorted(LabelTyp.NOTIZEN),
+      aufgabenLabelsSorted: labelsOfTypSorted(LabelTyp.AUFGABEN),
+      aufgabenLabelsEnabledSorted: aktivLabelsOfTypSorted(LabelTyp.AUFGABEN),
+    };
+  }),
 ) {
   readonly #labelsService = inject(LabelsService);
   readonly #appErrorHandlerService = inject(AppErrorHandlerService);

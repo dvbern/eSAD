@@ -21,14 +21,21 @@
   "shared.footer.description": "Digitale Plattform Schulgesundheit des Kantons Bern",
   "shared.footer.logo.alttext": "Logo des Kantons Bern",
   "StrabismusResultat.KEIN_STRABISMUS": "Normal",
-  "untersuchung.tab.daten.untersuchung.mpa": "School Nurse/MPA",
-  "untersuchung.tab.massnahmen.beratung.mpa": "Beratung School Nurse/MPA",
-  "untersuchung.tab.triage.triageMpa": "Triage School Nurse/MPA",
   "untersuchung": {
     "tab": {
       "hoeren": {
         "audiogramm": "Audiogramm (Optional)"
       }
     }
-  }
+  },
+  "untersuchung.tab.daten.untersuchung.mpa": "School Nurse/MPA",
+  "untersuchung.tab.massnahmen.beratung.mpa": "Beratung School Nurse/MPA",
+  "untersuchung.tab.sprache.nachsprechen.tooltip": "Bestanden: Kind spricht flüssig mindestens 4 von 10 Zauberwörter nach",
+  "untersuchung.tab.sprache.sprachverstaendnis.tooltip": "Bestanden: Kind zeigt bei allen drei Sätzen auf das korrekte Bild oder die korrekte Person. Falls nicht, die 3 weiteren Sätze einsetzen: 5 korrekt verstanden",
+  "untersuchung.tab.sprache.wortschatz.tooltip": "Bestanden: Kind benennt 11 von 12 Bildern korrekt",
+  "untersuchung.tab.sehen.fernvisusAugeLinks.tooltip": "Reduziert wenn Visus weniger als 0.8",
+  "untersuchung.tab.sehen.fernvisusAugeRechts.tooltip": "Reduziert wenn Visus weniger als 0.8",
+  "untersuchung.tab.schulrelevanteBeeintraechtigung.feinmotorik.tooltip": "Bestanden: Kind schlägt 25 Pkt. In einem Viereck während 10 Sek. ",
+  "untersuchung.tab.schulrelevanteBeeintraechtigung.grobmotorik.tooltip": "Bestanden: Kann beidseitig einbeinig koordiniert und flüssig hüpfen. Macht keine Zwischenschritte mit dem anderen Bein. Macht keine Mitbewegungen der oberen Extremität.",
+  "untersuchung.tab.triage.triageMpa": "Triage School Nurse/MPA"
 }

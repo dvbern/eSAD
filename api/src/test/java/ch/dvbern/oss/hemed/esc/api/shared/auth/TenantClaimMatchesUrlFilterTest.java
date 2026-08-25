@@ -22,9 +22,13 @@ import java.net.URI;
 import java.util.Optional;
 
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.JsonWebTokenClaims;
+import io.quarkus.security.AuthenticationFailedException;
+import io.quarkus.security.ForbiddenException;
+import io.quarkus.security.identity.CurrentIdentityAssociation;
 import io.quarkus.security.identity.SecurityIdentity;
+import io.smallrye.mutiny.Uni;
+import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,9 +36,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -65,15 +70,14 @@ class TenantClaimMatchesUrlFilterTest {
         // ARRANGE
         when(securityIdentity.isAnonymous()).thenReturn(true);
 
-        // ACT
-        filter.checkIdentityForTenant(requestContext, securityIdentity);
-
-        // ASSERT
+        // ACT & ASSERT
+        assertThatCode(() -> filter.checkIdentityForTenant(requestContext, securityIdentity))
+            .doesNotThrowAnyException();
         verify(requestContext, never()).abortWith(any());
     }
 
     @Test
-    void should_abort_with_forbidden_when_no_tenant_claim_found() {
+    void should_throw_forbidden_when_no_tenant_claim_found() {
         // ARRANGE
         when(securityIdentity.isAnonymous()).thenReturn(false);
         when(securityIdentity.getPrincipal()).thenReturn(jsonWebToken);
@@ -81,16 +85,13 @@ class TenantClaimMatchesUrlFilterTest {
 
         when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.empty());
 
-        // ACT
-        filter.checkIdentityForTenant(requestContext, securityIdentity);
-
-        // ASSERT
-        verify(requestContext).abortWith(argThat(response ->
-            response.getStatus() == Response.Status.FORBIDDEN.getStatusCode()));
+        // ACT & ASSERT
+        assertThatThrownBy(() -> filter.checkIdentityForTenant(requestContext, securityIdentity))
+            .isInstanceOf(ForbiddenException.class);
     }
 
     @Test
-    void should_abort_with_internal_server_error_when_cannot_determine_tenant_from_url() {
+    void should_throw_internal_server_error_when_cannot_determine_tenant_from_url() {
         // ARRANGE
         URI absolutePath = URI.create("https://invalid-url.com/test");
 
@@ -99,16 +100,13 @@ class TenantClaimMatchesUrlFilterTest {
         when(uriInfo.getAbsolutePath()).thenReturn(absolutePath);
         when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.of("bs"));
 
-        // ACT
-        filter.checkIdentityForTenant(requestContext, securityIdentity);
-
-        // ASSERT
-        verify(requestContext).abortWith(argThat(response ->
-            response.getStatus() == Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()));
+        // ACT & ASSERT
+        assertThatThrownBy(() -> filter.checkIdentityForTenant(requestContext, securityIdentity))
+            .isInstanceOf(InternalServerErrorException.class);
     }
 
     @Test
-    void should_abort_with_forbidden_when_invalid_tenant_claim() {
+    void should_throw_forbidden_when_invalid_tenant_claim() {
         // ARRANGE
         URI absolutePath = URI.create("https://local-esc-bs.localhost:4443/test");
 
@@ -117,16 +115,13 @@ class TenantClaimMatchesUrlFilterTest {
         when(uriInfo.getAbsolutePath()).thenReturn(absolutePath);
         when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.of("invalid-tenant"));
 
-        // ACT
-        filter.checkIdentityForTenant(requestContext, securityIdentity);
-
-        // ASSERT
-        verify(requestContext).abortWith(argThat(response ->
-            response.getStatus() == Response.Status.FORBIDDEN.getStatusCode()));
+        // ACT & ASSERT
+        assertThatThrownBy(() -> filter.checkIdentityForTenant(requestContext, securityIdentity))
+            .isInstanceOf(ForbiddenException.class);
     }
 
     @Test
-    void should_abort_with_forbidden_when_tenant_mismatch() {
+    void should_throw_forbidden_when_tenant_mismatch() {
         // ARRANGE
         URI absolutePath = URI.create("https://local-esc-bs.localhost:4443/kinder");
 
@@ -136,12 +131,9 @@ class TenantClaimMatchesUrlFilterTest {
         when(uriInfo.getAbsolutePath()).thenReturn(absolutePath);
         when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.of("win"));
 
-        // ACT
-        filter.checkIdentityForTenant(requestContext, securityIdentity);
-
-        // ASSERT
-        verify(requestContext).abortWith(argThat(response ->
-            response.getStatus() == Response.Status.FORBIDDEN.getStatusCode()));
+        // ACT & ASSERT
+        assertThatThrownBy(() -> filter.checkIdentityForTenant(requestContext, securityIdentity))
+            .isInstanceOf(ForbiddenException.class);
     }
 
     @ParameterizedTest
@@ -155,16 +147,15 @@ class TenantClaimMatchesUrlFilterTest {
         when(uriInfo.getAbsolutePath()).thenReturn(absolutePath);
         when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.of(tenanturlPart.toUpperCase()));
 
-        // ACT
-        filter.checkIdentityForTenant(requestContext, securityIdentity);
-
-        // ASSERT
+        // ACT & ASSERT
+        assertThatCode(() -> filter.checkIdentityForTenant(requestContext, securityIdentity))
+            .doesNotThrowAnyException();
         verify(requestContext, never()).abortWith(any());
     }
 
     @Test
-    void should_return_after_abort_when_tenant_mismatch() {
-        // ARRANGE - setup for tenant mismatch but verify the method returns after abort
+    void should_stop_validation_when_tenant_mismatch() {
+        // ARRANGE - mismatch: the method must stop at the denial (now via exception), not fall through
         URI absolutePath = URI.create("https://local-esc-bs.localhost:4443/test");
 
         when(securityIdentity.isAnonymous()).thenReturn(false);
@@ -174,11 +165,8 @@ class TenantClaimMatchesUrlFilterTest {
         when(jsonWebToken.claim(JsonWebTokenClaims.TENANT_CLAIM)).thenReturn(Optional.of("win"));
 
         // ACT & ASSERT
-        assertThatCode(() -> filter.checkIdentityForTenant(requestContext, securityIdentity))
-            .doesNotThrowAnyException();
-
-        verify(requestContext).abortWith(argThat(response ->
-            response.getStatus() == Response.Status.FORBIDDEN.getStatusCode()));
+        assertThatThrownBy(() -> filter.checkIdentityForTenant(requestContext, securityIdentity))
+            .isInstanceOf(ForbiddenException.class);
     }
 
     @Test
@@ -187,10 +175,9 @@ class TenantClaimMatchesUrlFilterTest {
         when(securityIdentity.isAnonymous()).thenReturn(false);
         when(uriInfo.getPath()).thenReturn("/pub/config");
 
-        // ACT
-        filter.checkIdentityForTenant(requestContext, securityIdentity);
-
-        // ASSERT
+        // ACT & ASSERT
+        assertThatCode(() -> filter.checkIdentityForTenant(requestContext, securityIdentity))
+            .doesNotThrowAnyException();
         verify(requestContext, never()).abortWith(any());
     }
 
@@ -201,10 +188,44 @@ class TenantClaimMatchesUrlFilterTest {
         when(securityIdentity.getPrincipal()).thenReturn(jsonWebToken);
         when(jsonWebToken.claim(JsonWebTokenClaims.HIN_PERSON_CODE)).thenReturn(Optional.of("some-hin-code"));
 
-        // ACT
-        filter.checkIdentityForTenant(requestContext, securityIdentity);
-
-        // ASSERT
+        // ACT & ASSERT
+        assertThatCode(() -> filter.checkIdentityForTenant(requestContext, securityIdentity))
+            .doesNotThrowAnyException();
         verify(requestContext, never()).abortWith(any());
+    }
+
+    @Test
+    void validateTenantClaim_propagates_authentication_failure_so_framework_returns_401_not_500() {
+        // A bad/expired/malformed token arrives at getDeferredIdentity() as an AuthenticationException.
+        // The filter must NOT swallow it - propagating lets Quarkus answer 401 instead of 500.
+        CurrentIdentityAssociation association = mock(CurrentIdentityAssociation.class);
+        when(association.getDeferredIdentity())
+            .thenReturn(Uni.createFrom().failure(new AuthenticationFailedException("bad token")));
+        TenantClaimMatchesUrlFilter reactiveFilter = new TenantClaimMatchesUrlFilter(association);
+
+        Throwable[] captured = new Throwable[1];
+        reactiveFilter.validateTenantClaim(requestContext).subscribe().with(v -> {
+        }, t -> captured[0] = t);
+
+        assertThat(captured[0])
+            .as("the auth failure must propagate so Quarkus maps it to 401 (not be aborted as 500)")
+            .isInstanceOf(AuthenticationFailedException.class);
+    }
+
+    @Test
+    void validateTenantClaim_lets_anonymous_identity_through_without_failure() {
+        SecurityIdentity anonymous = mock(SecurityIdentity.class);
+        when(anonymous.isAnonymous()).thenReturn(true);
+        CurrentIdentityAssociation association = mock(CurrentIdentityAssociation.class);
+        when(association.getDeferredIdentity()).thenReturn(Uni.createFrom().item(anonymous));
+        TenantClaimMatchesUrlFilter reactiveFilter = new TenantClaimMatchesUrlFilter(association);
+
+        Throwable[] captured = new Throwable[1];
+        reactiveFilter.validateTenantClaim(requestContext).subscribe().with(v -> {
+        }, t -> captured[0] = t);
+
+        assertThat(captured[0])
+            .as("anonymous requests must not fail tenant validation")
+            .isNull();
     }
 }

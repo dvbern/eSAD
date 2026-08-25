@@ -12,6 +12,7 @@ import {
 import {fromISODateString, hasAufgabenEditBerechtigungen} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {AufgabeJsonEnhanced} from '../../admin-shared/aufgaben.store';
+import {SortLabelsPipe} from '../../admin-shared/label-sort.pipe';
 import {BenutzerStore} from '../../benutzer/benutzer/benutzer.store';
 import {Path} from '../../core/path';
 import {TranslatedStringPipe} from '../../translated-strings/view/translated-string.pipe';
@@ -29,6 +30,7 @@ import {TranslatedStringPipe} from '../../translated-strings/view/translated-str
     BadgeComponent,
     FancyListItemComponent,
     TranslatedStringPipe,
+    SortLabelsPipe,
     EmptyListMessageComponent,
   ],
 })

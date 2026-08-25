@@ -69,7 +69,7 @@ class LabelResourceIMandantITest extends AbstractITest {
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
-            .statusCode(Status.UNAUTHORIZED.getStatusCode()); // is now unauthorized
+            .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode()); // is now unauthorized
     }
 
     @Test

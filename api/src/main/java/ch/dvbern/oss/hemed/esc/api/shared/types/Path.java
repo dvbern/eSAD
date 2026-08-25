@@ -68,6 +68,7 @@ public enum Path {
     DASHBOARD("dashboard"),
     DATEN("daten"),
     DIALOGS("dialogs"),
+    DOC360("doc360"),
     DUPLIKATE("duplikate"),
     FORM("form"),
     FRAGEBOGEN("fragebogen"),

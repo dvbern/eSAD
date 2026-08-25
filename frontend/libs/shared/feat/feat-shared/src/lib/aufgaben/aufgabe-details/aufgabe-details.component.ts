@@ -48,6 +48,7 @@ import {NgbNav, NgbNavItem} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {AufgabenStore} from '../../admin-shared/aufgaben.store';
 import {BenutzerOptionsStore} from '../../admin-shared/benutzer-options.store';
+import {keepLabelsSorted, sortAktivLabels, sortInaktivLabels} from '../../admin-shared/label-sort.util';
 import {LabelsStore} from '../../admin-shared/labels.store';
 import {BenutzerStore} from '../../benutzer/benutzer/benutzer.store';
 import {globalConstants} from '../../constants/global-constants';
@@ -113,6 +114,7 @@ export class AufgabeDetailsComponent implements DirtyMarker {
 
   readonly confirmService = inject(ConfirmService);
   readonly transloco = inject(TranslocoService);
+  readonly #translatedStringPipe = inject(TranslatedStringPipe);
   readonly navigationService = inject(NavigationService);
   readonly notificationService = inject(AppNotificationStore);
 
@@ -147,7 +149,8 @@ export class AufgabeDetailsComponent implements DirtyMarker {
       ?.slice()
       .sort(compareByEntityInfoTimestampErstellt) ?? []
   );
-  inaktivLabels = computed(() => this.store.selectedEntity()?.data?.labels?.filter(label => !label.data.aktiv) ?? []);
+  inaktivLabels = computed(() =>
+    sortInaktivLabels(this.store.selectedEntity()?.data?.labels, this.#translatedStringPipe));
 
   uploadTable = new TableModel<FileDataJson>(
     { rawListSignal: this.aufgabenFiles },
@@ -176,7 +179,7 @@ export class AufgabeDetailsComponent implements DirtyMarker {
         // We need to create a copy as to not filter away the disabled labels everywhere.
         const copy = { ...selectedAufgabe.data };
         // Take out the disabled labels as to not show up in the control
-        copy.labels = copy.labels?.filter(label => label.data.aktiv);
+        copy.labels = sortAktivLabels(copy.labels, this.#translatedStringPipe);
         this.form.reset(copy, DetailMode.EDIT);
       }
     });
@@ -186,6 +189,8 @@ export class AufgabeDetailsComponent implements DirtyMarker {
         this.form.setDefaultKind(kind);
       }
     });
+
+    keepLabelsSorted(this.form.group.controls.labels, this.#translatedStringPipe);
   }
 
   public isDirty(): boolean {

@@ -1,8 +1,21 @@
 
 @let currentTenant = tenant();
 @if(currentTenant){
-  <img [src]="`/img/logo-${currentTenant}.svg`" [alt]="'shared.footer.logo.alttext' | transloco"/>
+  <img [class.win]="currentTenant === TenantEnum.WIN" [src]="`/img/logo-${currentTenant}.svg`" [alt]="'shared.footer.logo.alttext' | transloco"/>
 }
-<p class="mt-3 mb-0">
-  {{ 'shared.footer.description' | transloco }}
-</p>
+<div class="mt-3 d-flex justify-content-between align-items-center gap-3">
+  <p class="mb-0">
+    @let description = 'shared.footer.description' | transloco;
+    @if (description !== 'shared.footer.description') {
+      {{ description }}
+    }
+  </p>
+  @if(showDoc365Link()){
+      <a class="nav-link fw-bold p-0 text-nowrap"
+         target="_blank"
+         [routerLink]="'/' + Path.DOC360">
+        <svui-icon [useCase]="'link'"></svui-icon>
+        {{ 'shared.footer.help.link' | transloco }}
+      </a>
+  }
+</div>

@@ -1,4 +1,24 @@
+@use '../../../../../../../../shared/ui/ui-components/src/styles/core/color/color-set-default' as color;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
 img {
   height: 4.5rem;
   width: auto;
+
+  &.win {
+    height: 2.5rem;
+  }
+}
+
+a {
+  color: color.$text-secondary;
+
+  &:hover,
+  &:focus {
+    color: color.$text;
+  }
 }

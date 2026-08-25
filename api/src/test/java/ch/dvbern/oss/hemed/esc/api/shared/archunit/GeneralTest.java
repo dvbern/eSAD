@@ -1,6 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.shared.archunit;
 
-import ch.dvbern.dvbstarter.infrastructure.db.baserepo.BaseRepo;
+import ch.dvbern.dvbstarter.infrastructure.db.baserepo.ReadOnlyRepo;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntityListener;
@@ -58,7 +58,9 @@ class GeneralTest {
                 are(not(or(
                     annotatedWith(Provider.class),
                     assignableTo(AbstractEntityListener.class),
-                    assignableTo(BaseRepo.class)
+                    // ReadOnlyRepo (the parent of BaseRepo) declares the injected Db field, so
+                    // exempting it also covers BaseRepo and read-only repos like the HelloData ones
+                    assignableTo(ReadOnlyRepo.class)
                 ))))
             .should(BE_ANNOTATED_WITH_AN_INJECTION_ANNOTATION)
             .as("no classes should use field injection")

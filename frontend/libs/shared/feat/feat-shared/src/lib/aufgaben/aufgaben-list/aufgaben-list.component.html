@@ -227,7 +227,7 @@
             <td>{{ item.data.faelligBis | date: 'dd.MM.yyyy' }}</td>
             <td>{{ 'AufgabeStatus.' + item.data.status | transloco }}</td>
             <td>
-              @for (label of item.data.labels; track label.id) {
+              @for (label of item.data.labels | sortLabelsPipe; track label.id) {
                 <svui-badge class="me-1"> {{ label.data.name | translatedStringPipe }}</svui-badge>
               }
             </td>

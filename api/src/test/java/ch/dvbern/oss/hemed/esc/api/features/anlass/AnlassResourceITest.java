@@ -73,6 +73,7 @@ import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -782,6 +783,66 @@ class AnlassResourceITest extends AbstractITest {
                 .getId()
                 .equals(jsonSpec.getData().getWeiterePerson().getId()));
         Assertions.assertThat(result.getTotalRecords()).isEqualTo(3);
+    }
+
+    @Test
+    @TestAsAdminBS
+    void findAnlaesseForDashboard_sortedByDatumThenZeitVon() {
+        // ARRANGE
+        Benutzer benutzer = fixtureService.createBenutzerFuerZentraleOrganisation();
+
+        LocalDate firstDate = appClock.offsetDateTime().now().toLocalDate().plusMonths(1);
+        LocalDate secondDate = firstDate.plusDays(11);
+        LocalDate thirdDate = firstDate.plusDays(19);
+
+        AnlassConfig config = anlassConfigService.getByAnlassTypAndStichtag(
+            AnlassTyp.KLASSE_8,
+            appClock.offsetDateTime().now().toLocalDate());
+
+        // persisted in an order which is neither sorted by Datum nor by Zeit
+        persistAnlassForDashboard(benutzer, config, secondDate, LocalTime.of(11, 0), LocalTime.of(12, 0));
+        persistAnlassForDashboard(benutzer, config, firstDate, LocalTime.of(14, 0), LocalTime.of(15, 0));
+        persistAnlassForDashboard(benutzer, config, thirdDate, LocalTime.of(10, 0), LocalTime.of(10, 30));
+        persistAnlassForDashboard(benutzer, config, firstDate, LocalTime.of(11, 30), LocalTime.of(12, 30));
+        persistAnlassForDashboard(benutzer, config, firstDate, LocalTime.of(11, 0), LocalTime.of(12, 0));
+
+        // ACT
+        AnlassListJsonSpec result = api
+            .anlassResourceFindAnlaesseForDashboard()
+            .benutzerIDPath(benutzer.getId().getId())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(AnlassListJsonSpec.class);
+
+        // ASSERT
+        assertThat(result.getAnlassList())
+            .extracting(anlass -> anlass.getData().getDatum(), anlass -> anlass.getData().getZeitVon())
+            .containsExactly(
+                tuple(firstDate, firstDate.atTime(11, 0)),
+                tuple(firstDate, firstDate.atTime(11, 30)),
+                tuple(firstDate, firstDate.atTime(14, 0)),
+                tuple(secondDate, secondDate.atTime(11, 0)),
+                tuple(thirdDate, thirdDate.atTime(10, 0))
+            );
+    }
+
+    private void persistAnlassForDashboard(
+        @NonNull Benutzer benutzer,
+        @NonNull AnlassConfig config,
+        @NonNull LocalDate datum,
+        @NonNull LocalTime zeitVon,
+        @NonNull LocalTime zeitBis
+    ) {
+        anlassService.persist(
+            AnlassBuilder.create(builder -> builder
+                .withTitle("Test Dashboard Sortierung " + datum + " " + zeitVon)
+                .withArzt(benutzer)
+                .withDatumSetSchuljahr(datum)
+                .withZeitVonBis(DateTimeRange.of(datum.atTime(zeitVon), datum.atTime(zeitBis)))
+                .withAnlassConfig(config))
+        );
     }
 
     @Test

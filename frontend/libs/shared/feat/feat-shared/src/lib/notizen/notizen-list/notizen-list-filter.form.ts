@@ -90,9 +90,9 @@ function makeForm(config: Config) {
 
   group.controls.verantwortlichePerson.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
     .subscribe({
-    next: verantwortlicher => {
+    next: verantwortliche => {
       config.paginatedTable.onFilterChanged({
-        filterValue: verantwortlicher.join(' ') ?? '',
+        filterValue: verantwortliche.map(v => v.id).join(' ') ?? '',
         filterMethod: FilterMethod.SUBSTRING,
         filterCombinationMethod: FilterCombinationMethod.OR,
         filterName: 'verantwortlicher.id',

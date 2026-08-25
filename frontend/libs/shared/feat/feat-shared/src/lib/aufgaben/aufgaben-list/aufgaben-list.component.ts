@@ -29,6 +29,7 @@ import {NgbDropdownItem} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import { AufgabeJsonEnhanced, AufgabenStore } from '../../admin-shared/aufgaben.store';
 import {BenutzerOptionsStore} from '../../admin-shared/benutzer-options.store';
+import {SortLabelsPipe} from '../../admin-shared/label-sort.pipe';
 import {LabelsStore} from '../../admin-shared/labels.store';
 import {BenutzerStore} from '../../benutzer/benutzer/benutzer.store';
 import {ConfirmService} from '../../dialogs/confirm/confirm.service';
@@ -45,6 +46,7 @@ import { AufgabeListFilterForm } from './aufgaben-list-filter.form';
     TableComponent,
     BadgeComponent,
     TranslatedStringPipe,
+    SortLabelsPipe,
     ReactiveFormsModule,
     TableFilterComponent,
     TextInputDirective,

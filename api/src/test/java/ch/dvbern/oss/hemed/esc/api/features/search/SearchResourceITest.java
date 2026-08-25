@@ -886,6 +886,64 @@ class SearchResourceITest extends AbstractITest {
 
         @Test
         @TestAsAdminBS
+        @SuppressWarnings("java:S5841")
+        void findPaginatedKinder_should_filter_esadIdByPrefixIgnoringWhitespace() {
+            // ARRANGE
+            String uuid = UUID.randomUUID().toString();
+            String esadId = EdokidIdTestGenerator.getNextEdokidId("482").toFormattedString();
+            Kind esadKind = KindBuilder.create(
+                builder -> builder
+                    .withID(ID.random(Kind.class))
+                    .withSozialversicherungsNummer(SozialversicherungsNummerTestGenerator.INSTANCE.getNextSozialversicherungsnummer())
+                    .withEsadId(esadId)
+                    .withName("Esadkind" + uuid, "Karin" + uuid));
+            esadKind = kindService.persistWithoutDuplicateCheck(esadKind);
+
+            // ACT
+            // the id is entered without the whitespace it is stored with, the filter is sent the way the
+            // Kinder Liste sends it
+            String esadIdWithoutWhitespace = esadId.replace(" ", "");
+            PageResultJsonSearchSummaryJsonSpec result = searchKinderByEsadId(esadIdWithoutWhitespace);
+
+            // ASSERT
+            assertThat(result.getData())
+                .extracting(SearchSummaryJsonSpec::getId)
+                .contains(esadKind.getId().getId());
+
+            // ACT
+            // a part out of the middle of the id must not match anymore, only ids starting with the search term
+            String middleOfEsadId = esadId.substring(3);
+            PageResultJsonSearchSummaryJsonSpec resultForMiddlePart = searchKinderByEsadId(middleOfEsadId);
+
+            // ASSERT
+            assertThat(resultForMiddlePart.getData())
+                .extracting(SearchSummaryJsonSpec::getId)
+                .doesNotContain(esadKind.getId().getId());
+        }
+
+        @NonNull
+        private PageResultJsonSearchSummaryJsonSpec searchKinderByEsadId(@NonNull String searchTerm) {
+            SearchJsonFiltersInnerSpec esadIdFilter = new SearchJsonFiltersInnerSpec(
+                SearchColumnsSpec.ESAD_ID, searchTerm,
+                FilterCombinationSpec.AND);
+            SearchJsonSpec searchSpec = new SearchJsonSpec(
+                new PageRequestJsonSpec(1L, MAX_PAGE_SIZE, true),
+                Collections.emptyList(),
+                List.of(esadIdFilter)
+            );
+
+            return api
+                .searchResourceFindKinderPaginated()
+                .body(searchSpec)
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.OK.getStatusCode())
+                .extract().as(PageResultJsonSearchSummaryJsonSpec.class);
+        }
+
+        @Test
+        @TestAsAdminBS
         void findPaginatedKinder_should_filter_schulname() {
             // ARRANGE
             List<Kind> kinds = insertSchulTestKinder();

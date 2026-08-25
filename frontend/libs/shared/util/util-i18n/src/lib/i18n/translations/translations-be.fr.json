@@ -2,6 +2,7 @@
   "BrilleLinsenResultat.OHNE_KEINE": "aucunes",
   "PerzentileGewicht.PERZENTILE_HOCH": "",
   "PerzentileGewicht.PERZENTILE_TIEF": "",
+  "shared.footer.logo.alttext": "Logo du canton de Berne",
   "StrabismusResultat.KEIN_STRABISMUS": "Normale",
   "untersuchung": {
     "tab": {
@@ -9,5 +10,12 @@
         "audiogramm": "Audiogramme (Optionnel)"
       }
     }
-  }
+  },
+  "untersuchung.tab.sprache.nachsprechen.tooltip": "Réussi : l’enfant répète couramment au moins 4 des 10 mots magiques",
+  "untersuchung.tab.sprache.sprachverstaendnis.tooltip": "Réussi : l’enfant montre la bonne image ou la bonne personne pour les trois phrases. Sinon, utiliser les 3 phrases supplémentaires : 5 comprises correctement",
+  "untersuchung.tab.sprache.wortschatz.tooltip": "Réussi : l’enfant nomme correctement 11 des 12 images",
+  "untersuchung.tab.sehen.fernvisusAugeLinks.tooltip": "Réduit si l’acuité visuelle est inférieure à 0.8",
+  "untersuchung.tab.sehen.fernvisusAugeRechts.tooltip": "Réduit si l’acuité visuelle est inférieure à 0.8",
+  "untersuchung.tab.schulrelevanteBeeintraechtigung.feinmotorik.tooltip": "Réussi : l’enfant frappe 25 points dans un carré pendant 10 sec. ",
+  "untersuchung.tab.schulrelevanteBeeintraechtigung.grobmotorik.tooltip": "Réussi : peut sauter à cloche-pied des deux côtés de manière coordonnée et fluide. Ne fait pas de pas intermédiaires avec l’autre jambe. Ne fait pas de mouvements associés des membres supérieurs."
 }

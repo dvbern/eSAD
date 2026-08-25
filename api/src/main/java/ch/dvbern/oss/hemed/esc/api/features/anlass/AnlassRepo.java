@@ -27,6 +27,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.QKind;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.QKlasse;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -47,15 +48,20 @@ public class AnlassRepo extends BaseRepo<Anlass> {
     @NonNull
     public List<Anlass> findAll() {
         return db.selectFrom(QAnlass.anlass)
-            .orderBy(QAnlass.anlass.datum.asc())
-            .orderBy(
-                Expressions.cases()
-                    .when(QAnlass.anlass.zeitVonBis.von.isNull()).then(0)
-                    .otherwise(1)
-                    .asc()
-            )
-            .orderBy(QAnlass.anlass.zeitVonBis.von.asc())
+            .orderBy(orderByDatumThenZeitVon())
             .fetch();
+    }
+
+    @NonNull
+    private static OrderSpecifier<?>[] orderByDatumThenZeitVon() {
+        return new OrderSpecifier<?>[] {
+            QAnlass.anlass.datum.asc(),
+            Expressions.cases()
+                .when(QAnlass.anlass.zeitVonBis.von.isNull()).then(0)
+                .otherwise(1)
+                .asc(),
+            QAnlass.anlass.zeitVonBis.von.asc(),
+        };
     }
 
     @NonNull
@@ -76,7 +82,7 @@ public class AnlassRepo extends BaseRepo<Anlass> {
 
         return basequery
             .select(QAnlass.anlass)
-            .orderBy(QAnlass.anlass.datum.asc())
+            .orderBy(orderByDatumThenZeitVon())
             .limit(limit)
             .fetch();
     }

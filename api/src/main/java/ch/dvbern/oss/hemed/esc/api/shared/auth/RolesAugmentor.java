@@ -13,13 +13,18 @@ package ch.dvbern.oss.hemed.esc.api.shared.auth;
 import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.control.ActivateRequestContext;
 
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.JsonWebTokenDataDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ClientAccountConfig.SvcAccountClientInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
+
 import io.quarkus.security.identity.AuthenticationRequestContext;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.security.identity.SecurityIdentityAugmentor;
@@ -27,11 +32,10 @@ import io.quarkus.security.runtime.QuarkusSecurityIdentity;
 import io.quarkus.vertx.http.runtime.security.HttpSecurityUtils;
 import io.smallrye.mutiny.Uni;
 import io.vertx.ext.web.RoutingContext;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.control.ActivateRequestContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
@@ -67,13 +71,15 @@ public class RolesAugmentor implements SecurityIdentityAugmentor {
         // extracting tenant from routing context so we can figure out if we need to read the
         // rollen from the db or not
         RoutingContext routingContext = HttpSecurityUtils.getRoutingContextAttribute(attributes);
-        if (routingContext != null) {
-            var absoluteuri = routingContext.request().absoluteURI();
-            URI uri = URI.create(absoluteuri);
-            TenantEnum tenantFromUrl = TenantExtractorFromUrlRequestFilter.getTenantFromUrl(uri);
-            tenantProducer.setCurrentTenant(tenantFromUrl);
-        }
-        return context.runBlocking(() -> augmentWithRoles(identity));
+        // We resolve and remember the tenatn here (resolved from url). It must be published to the request-scoped
+        // TenantProducer inside augmentWithRoles, which activates the request context.
+        // Trying to do this here using the @RequestScoped producer would fail with ContextNotActiveException whenever
+        // augmentation runs before the request context exists - which is exactly what happens with proactive authentication.
+        TenantEnum tenantFromUrl = routingContext == null
+            ? null
+            : TenantExtractorFromUrlRequestFilter.getTenantFromUrl(URI.create(routingContext.request().absoluteURI()));
+
+        return context.runBlocking(() -> augmentWithRoles(identity, tenantFromUrl));
     }
 
     @Override
@@ -85,12 +91,28 @@ public class RolesAugmentor implements SecurityIdentityAugmentor {
         if (identity.isAnonymous()) {
             return Uni.createFrom().item(identity);
         }
-        return context.runBlocking(() -> augmentWithRoles(identity));
+        return context.runBlocking(() -> augmentWithRoles(identity, null));
     }
 
     @NonNull
     @ActivateRequestContext
-    SecurityIdentity augmentWithRoles(@NonNull SecurityIdentity identity) {
+    SecurityIdentity augmentWithRoles(@NonNull SecurityIdentity identity, @Nullable TenantEnum tenantFromUrl) {
+        if (tenantFromUrl != null) {
+            tenantProducer.setCurrentTenant(tenantFromUrl);
+        }
+        JsonWebToken jsonWebToken = (JsonWebToken) identity.getPrincipal();
+        String preferedUserName = jsonWebToken.getClaim(Claims.preferred_username);
+        String authorizedParty = jsonWebToken.getClaim(Claims.azp);
+
+        // Machine-to-machine service accounts (escada, file ingress, pupil, hellodata) are special,
+        // they get a single fixed Berechtigung. This has to run before the tenant-dependent augmentation
+        Optional<Berechtigung> clientBerechtigung =
+            findMatchingServiceClientAccountBerechtigung(authorizedParty, preferedUserName);
+        if (clientBerechtigung.isPresent()) {
+            LOG.info("The current user '{}' is a configured service client account", preferedUserName);
+            return augmentWithFixedBerechtigung(identity, clientBerechtigung.get());
+        }
+
         // Je nach TenantSetting: Die Rollen aus dem Token oder aus der DB lesen
         boolean ignoreFachrollenFromKeycloak =
             tenantSettingsService.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled();
@@ -98,6 +120,32 @@ public class RolesAugmentor implements SecurityIdentityAugmentor {
             return augmentFromDatabase(identity);
         }
         return augmentFromJsonWebToken(identity);
+    }
+
+    /**
+     * Finds the fixed {@link Berechtigung} for a configured machine-to-machine client account
+     * matching the given authorized party and username, or an empty optional if the caller is
+     * not one of the configured clients.
+     */
+    @NonNull
+    private Optional<Berechtigung> findMatchingServiceClientAccountBerechtigung(
+        @Nullable String authorizedParty,
+        @Nullable String userName
+    ) {
+        return configService.getClientAccounts().entries().stream()
+            .filter(configEntry -> configEntry.username().equals(userName) && configEntry.azp().equals(authorizedParty))
+            .map(SvcAccountClientInfo::berechtigung)
+            .findFirst();
+    }
+
+    @NonNull
+    private SecurityIdentity augmentWithFixedBerechtigung(
+        @NonNull SecurityIdentity identity,
+        @NonNull Berechtigung berechtigung
+    ) {
+        QuarkusSecurityIdentity.Builder builder = QuarkusSecurityIdentity.builder(identity);
+        builder.addRole(berechtigung.getBerechtigungName());
+        return builder.build();
     }
 
     @NonNull
@@ -124,39 +172,26 @@ public class RolesAugmentor implements SecurityIdentityAugmentor {
         JsonWebToken jsonWebToken = (JsonWebToken) identity.getPrincipal();
 
         String email = jsonWebToken.getClaim(Claims.email);
-        String preferedUserName = jsonWebToken.getClaim(Claims.preferred_username);
-        String authorizedParty = jsonWebToken.getClaim(Claims.azp);
 
         Set<Berechtigung> berechtigungen;
-        if (isEscadaClientAndUser(authorizedParty, preferedUserName)) {
-            LOG.info("The current user '{}' is an escada client user", email);
-            berechtigungen = Set.of(Berechtigung.ESCADA_PUSH); // escada user has fixed role
-        } else if (isFileIngressClientAndUser(authorizedParty, preferedUserName)) {
-            LOG.info("The current user '{}' is a file ingress client user", email);
-            berechtigungen = Set.of(Berechtigung.FILE_INGRESS_PUSH); // file ingress user has fixed role
-        } else if (isPupilClientAndUser(authorizedParty, preferedUserName)) {
-            LOG.info("The current user '{}' is a pupil client user", email);
-            berechtigungen = Set.of(Berechtigung.PUPIL_PUSH); // pupil user has fixed role
-        } else {
-            String tenantClaim = jsonWebToken.getClaim(TENANT_CLAIM);
-            if (tenantClaim != null) {
-                // handle supporter case
-                if (DVBSupportRoleUtil.isDVBSupport(tenantClaim)) {
-                    TenantEnum tenantFromUrl = tenantProducer.produceTenant();
-                    berechtigungen = assignDVBSupportBerechtigungenForTenant(email, tenantFromUrl);
-                }
-                // handle standard case
-                else if (TenantEnum.fromString(tenantClaim) != null) {
-                    TenantEnum tenantEnum = TenantEnum.fromString(tenantClaim);
-                    FachRolle[] fachRollen =
-                        JsonWebTokenDataDTO.fromJsonWebToken(jsonWebToken).getFachRollen().toArray(EMPTY_FACHROLLEN);
-                    berechtigungen = FachRolle.collectAllBerechtigungen(Objects.requireNonNull(tenantEnum), fachRollen);
-                } else {
-                    berechtigungen = Set.of(); // tenant or ESC-FACHROLLE claim  was missing in the token
-                }
+        String tenantClaim = jsonWebToken.getClaim(TENANT_CLAIM);
+        if (tenantClaim != null) {
+            // handle supporter case
+            if (DVBSupportRoleUtil.isDVBSupport(tenantClaim)) {
+                TenantEnum tenantFromUrl = tenantProducer.produceTenant();
+                berechtigungen = assignDVBSupportBerechtigungenForTenant(email, tenantFromUrl);
+            }
+            // handle standard case
+            else if (TenantEnum.fromString(tenantClaim) != null) {
+                TenantEnum tenantEnum = TenantEnum.fromString(tenantClaim);
+                FachRolle[] fachRollen =
+                    JsonWebTokenDataDTO.fromJsonWebToken(jsonWebToken).getFachRollen().toArray(EMPTY_FACHROLLEN);
+                berechtigungen = FachRolle.collectAllBerechtigungen(Objects.requireNonNull(tenantEnum), fachRollen);
             } else {
                 berechtigungen = Set.of(); // tenant or ESC-FACHROLLE claim  was missing in the token
             }
+        } else {
+            berechtigungen = Set.of(); // tenant or ESC-FACHROLLE claim  was missing in the token
         }
 
         if (!berechtigungen.isEmpty()) {
@@ -166,20 +201,5 @@ public class RolesAugmentor implements SecurityIdentityAugmentor {
             LOG.info("The current user '{}' has no roles in esc", email);
         }
         return builder.build();
-    }
-
-    boolean isEscadaClientAndUser(@NonNull String authorizedParty, @NonNull String userName) {
-        return configService.getEscadaClientUser().equals(userName) && configService.getEscadaAZP()
-            .equals(authorizedParty);
-    }
-
-    boolean isFileIngressClientAndUser(@NonNull String authorizedParty, @NonNull String userName) {
-        return configService.getFileIngressClientUser().equals(userName)
-            && configService.getFileIngressAZP().equals(authorizedParty);
-    }
-
-    boolean isPupilClientAndUser(@NonNull String authorizedParty, @NonNull String userName) {
-        return configService.getPupilClientUser().equals(userName)
-            && configService.getPupilAZP().equals(authorizedParty);
     }
 }

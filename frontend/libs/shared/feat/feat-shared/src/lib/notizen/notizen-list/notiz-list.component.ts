@@ -22,6 +22,7 @@ import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgbDropdownItem} from '@ng-bootstrap/ng-bootstrap';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {BenutzerOptionsStore} from '../../admin-shared/benutzer-options.store';
+import {SortLabelsPipe} from '../../admin-shared/label-sort.pipe';
 import {LabelsStore} from '../../admin-shared/labels.store';
 import {BenutzerStore} from '../../benutzer/benutzer/benutzer.store';
 import {Path} from '../../core/path';
@@ -49,6 +50,7 @@ import {NotizenListFilterForm} from './notizen-list-filter.form';
     TableFilterComponent,
     TextInputDirective,
     TranslatedStringPipe,
+    SortLabelsPipe,
     ColWidthComponent,
     IconComponent,
   ],

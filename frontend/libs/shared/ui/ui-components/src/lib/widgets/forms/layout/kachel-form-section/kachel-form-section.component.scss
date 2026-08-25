@@ -21,3 +21,13 @@
   }
 }
 
+// Without a heading, the section is just a layout wrapper (typically nested inside another
+// section, e.g. via feat-value-enhanced with an empty valueTitleKey). The spacing comes
+// from the outer section in this case.
+:host(.svui_kachel-form-section--headless) {
+  margin-top: 0;
+
+  .svui_kacheln {
+    margin-top: 0;
+  }
+}

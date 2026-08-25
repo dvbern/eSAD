@@ -7,8 +7,17 @@ services:
       # - /Users/dvbern/IdeaProjects/esc/esc/api/src/main/resources:/opt/keycloak/data/import
       - "./developer-local-settings/config/keycloakrealm/:/opt/keycloak/data/import"
       - "./developer-local-settings/config/certs/:/opt/certs/"
+      - "./developer-local-settings/config/certs/truststores/dvbern-ca.crt:/opt/keycloak/conf/truststores/dvbern-ca.crt"
+      # start-dev keeps its state in an embedded H2 under /opt/keycloak/data/h2, which is lost
+      # whenever the container is recreated - taking hand-made clients and secrets with it (the
+      # hello-data-client service account, for instance). A named volume keeps them.
+      # Mounted at .../h2 and not at .../data so the import mount above still applies.
+      # To start from scratch: docker compose down -v  (or docker volume rm esc-keycloak-h2)
+      - "esc-keycloak-h2:/opt/keycloak/data/h2"
     env_file:
-      - ./api/.env
+      - ./developer-local-settings/config/keycloak.env
+    #environment:
+    #  JAVA_OPTS: -XX:UseSVE=0 # fix for m4 mac
     command: >
       start-dev --import-realm
 
@@ -69,3 +78,6 @@ services:
 #    image: docker-registry.dvbern.ch/devops/docker/tools/openshift-workspace:latest
 #    extra_hosts:
 #      - "local-esc-bs.localhost:host-gateway"
+
+volumes:
+  esc-keycloak-h2:

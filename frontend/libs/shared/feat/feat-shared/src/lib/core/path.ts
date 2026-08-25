@@ -60,6 +60,7 @@ export enum Path {
   DASHBOARD = 'dashboard',
   DATEN = 'daten',
   DIALOGS = 'dialogs',
+  DOC360 = 'doc360',
   DUPLIKATE = 'duplikate',
   ARCHIVIERUNG = 'archivierung',
   ARCHIVIERUNG_OFFEN = 'offen',

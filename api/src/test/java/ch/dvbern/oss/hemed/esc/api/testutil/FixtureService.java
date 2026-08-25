@@ -643,6 +643,27 @@ public class FixtureService {
         return schuleService.persist(schule);
     }
 
+    /**
+     * Bulk-inserts {@code howMany} minimal Schulen with a single native {@code INSERT ... SELECT}
+     * over {@code generate_series}. Deliberately bypasses the entity listener and the Envers
+     * audit - this is bulk fixture data, not a test of persistence, so the seconds that
+     * {@code howMany} individual persists would cost are not paid here. Use {@link #createSchule()}
+     * when a fully-fledged, real {@link Schule} entity is needed.
+     */
+    @Transactional(TxType.REQUIRES_NEW)
+    public void createSchulenInBulk(int howMany) {
+        entityManager.createNativeQuery("""
+                insert into schule (
+                    id, timestamperstellt, timestampmutiert, usererstellt, usermutiert,
+                    version, schulhaus, schuleaktivstatus)
+                select gen_random_uuid(), now(), now(), 'test', 'test',
+                       0, 'BulkSchulhaus ' || i, 'AKTIV'
+                from generate_series(1, :rows) i
+                """)
+            .setParameter("rows", howMany)
+            .executeUpdate();
+    }
+
     @NonNull
     public Klasse createKlasse() {
         Klasse klasse = KlasseBuilder.create(builder -> builder

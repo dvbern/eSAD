@@ -29,8 +29,10 @@ import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ClientAccountConfig.SvcAccountClientInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -189,6 +191,12 @@ public class ConfigService {
     @ConfigProperty(name = "esc.file-ingress.client.azp", defaultValue = "file-ingress-client")
     String fileIngressAZP;
 
+    @ConfigProperty(name = "esc.hellodata-export.client.user", defaultValue = "service-account-hello-data-client")
+    String helloDataClientUser;
+
+    @ConfigProperty(name = "esc.hellodata-export.client.azp", defaultValue = "hello-data-client")
+    String helloDataAZP;
+
     @ConfigProperty(name = "esc.mail.overriding.recipients.enabled", defaultValue = "false")
     boolean mailOverridingRecipientsEnabled;
 
@@ -269,6 +277,27 @@ public class ConfigService {
     @ConfigProperty(name = "esc.filestore.healthcheck.report-max-entries", defaultValue = "500")
     int filestoreHealthcheckReportMaxEntries;
 
+    /** Document360 JWT SSO Client ID from Settings → Authentication. */
+    @ConfigProperty(name = "esc.document360.client-id")
+    @IgnoreForIdClassTest
+    String document360ClientId;
+
+    /** Document360 JWT SSO Client Secret. Inject via {@code ESC_DOCUMENT360_CLIENT_SECRET}; never commit it. */
+    @ConfigProperty(name = "esc.document360.client-secret")
+    String document360ClientSecret;
+
+    /**
+     * Full Document360 Identity URL for {@code POST /jwt/generateCode}.
+     * Also bound to {@code quarkus.rest-client.document360-api.url}.
+     */
+    @ConfigProperty(name = "esc.document360.code-generation-url", defaultValue = "")
+    URL document360CodeGenerationUrl;
+
+    /** Knowledge-base login URL that accepts {@code ?code=} after generateCode succeeds. */
+    @ConfigProperty(name = "esc.document360.kb-login-url")
+    URL document360KbLoginUrl;
+
+
     public void validateNotProdAndDbResetFeatureEnabled() {
         if (isStufeProd() || !isAllowDbReset()) {
             LOG.warn("Resetting database is not allowed in production environment or if feature is not enabled!");
@@ -286,6 +315,24 @@ public class ConfigService {
     public boolean isStufeProd() {
         var env = getEnvironment();
         return env.isProd();
+    }
+
+    /**
+     * The machine-to-machine service-account clients, assembled from the individual
+     * {@code esc.*.client.*} properties. Each entry maps a client's azp + username to the single
+     * fixed {@link Berechtigung} it should receive. The roles augmentation uses this to grant
+     * these clients their role before the normal (token- or database-based) FachRolle resolution,
+     * independent of the tenant.
+     */
+    @NonNull
+    public ClientAccountConfig getClientAccounts() {
+        List<SvcAccountClientInfo> entries = List.of(
+            new SvcAccountClientInfo(escadaAZP, escadaClientUser, Berechtigung.ESCADA_PUSH),
+            new SvcAccountClientInfo(fileIngressAZP, fileIngressClientUser, Berechtigung.FILE_INGRESS_PUSH),
+            new SvcAccountClientInfo(pupilAZP, pupilClientUser, Berechtigung.PUPIL_PUSH),
+            new SvcAccountClientInfo(helloDataAZP, helloDataClientUser, Berechtigung.HELLODATA_EXPORT_LESEN)
+        );
+        return () -> entries;
     }
 
     @NonNull

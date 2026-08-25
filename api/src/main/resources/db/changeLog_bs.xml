@@ -211,6 +211,7 @@
   <include file="db/base/0078-add-impfausweis-status-flags-timestamp-mutiert.xml"/>
   <include file="db/base/0078-anlass-titel-nullable.xml"/>
   <include file="db/bs/0096-enable-anlass-titel-required-bs.xml"/>
+  <include file="db/base/0079-tenant-settings-footer-enable.xml"/>
 
   <!--  The following scripts only run in the 'test' context-->
   <include file="db-test/0001-insert-test-benutzer-support.xml" context="@test"/>

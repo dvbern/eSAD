@@ -1,4 +1,14 @@
-<h3 svuiHeading="formSection">{{ heading() }}</h3>
+@if (heading()) {
+  <h3 svuiHeading="formSection">{{ heading() }}
+    @if (tooltip()) {
+      <svui-icon
+        class="input-icon"
+        [useCase]="'information'"
+        [tooltip]="tooltip()"
+      />
+    }
+  </h3>
+}
 
 <div class="svui_kacheln">
   <ng-content/>

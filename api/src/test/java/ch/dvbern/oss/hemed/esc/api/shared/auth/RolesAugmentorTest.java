@@ -9,6 +9,7 @@ import java.util.UUID;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.JsonWebTokenClaims;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ClientAccountConfig.SvcAccountClientInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import io.quarkus.security.identity.AuthenticationRequestContext;
@@ -51,6 +52,8 @@ class RolesAugmentorTest {
     private static final String FILE_INGRESS_AZP = "file-ingress-client";
     private static final String PUPIL_CLIENT_USER = "pupil-client@dvbern.ch";
     private static final String PUPIL_AZP = "pupil-client";
+    private static final String HELLODATA_CLIENT_USER = "hellodata-client@dvbern.ch";
+    private static final String HELLODATA_AZP = "hellodata-client";
 
     private final RolesAugmentor rolesAugmentor;
 
@@ -70,12 +73,12 @@ class RolesAugmentorTest {
         QuarkusMock.installMockForType(benutzerServiceMock, BenutzerService.class);
         QuarkusMock.installMockForType(configServiceMock, ConfigService.class);
 
-        when(configServiceMock.getEscadaClientUser()).thenReturn(ESCADA_CLIENT_USER);
-        when(configServiceMock.getEscadaAZP()).thenReturn(ESCADA_AZP);
-        when(configServiceMock.getFileIngressClientUser()).thenReturn(FILE_INGRESS_CLIENT_USER);
-        when(configServiceMock.getFileIngressAZP()).thenReturn(FILE_INGRESS_AZP);
-        when(configServiceMock.getPupilClientUser()).thenReturn(PUPIL_CLIENT_USER);
-        when(configServiceMock.getPupilAZP()).thenReturn(PUPIL_AZP);
+        when(configServiceMock.getClientAccounts()).thenReturn(() -> List.of(
+            new SvcAccountClientInfo(ESCADA_AZP, ESCADA_CLIENT_USER, Berechtigung.ESCADA_PUSH),
+            new SvcAccountClientInfo(FILE_INGRESS_AZP, FILE_INGRESS_CLIENT_USER, Berechtigung.FILE_INGRESS_PUSH),
+            new SvcAccountClientInfo(PUPIL_AZP, PUPIL_CLIENT_USER, Berechtigung.PUPIL_PUSH),
+            new SvcAccountClientInfo(HELLODATA_AZP, HELLODATA_CLIENT_USER, Berechtigung.HELLODATA_EXPORT_LESEN)
+        ));
     }
 
     @Test
@@ -103,7 +106,7 @@ class RolesAugmentorTest {
         SecurityIdentity identity = buildIdentityWithToken(TEST_EMAIL, TEST_USERNAME, "some-azp", "BS");
 
         // ACT
-        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity);
+        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity, TenantEnum.BS);
 
         // ASSERT
         verify(benutzerServiceMock).getDesiredBerechtigungen(EmailAddress.fromString(TEST_EMAIL));
@@ -123,7 +126,7 @@ class RolesAugmentorTest {
         SecurityIdentity identity = buildIdentityWithToken(TEST_EMAIL, TEST_USERNAME, "some-azp", "BS");
 
         // ACT
-        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity);
+        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity, TenantEnum.BS);
 
         // ASSERT
         verify(benutzerServiceMock, times(0)).getDesiredBerechtigungen(EmailAddress.fromString(TEST_EMAIL));
@@ -137,7 +140,7 @@ class RolesAugmentorTest {
         SecurityIdentity identity = buildIdentityWithToken(TEST_EMAIL, ESCADA_CLIENT_USER, ESCADA_AZP, "BS");
 
         // ACT
-        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity);
+        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity, TenantEnum.BS);
 
         // ASSERT
         assertThat(result.getRoles()).containsExactly(Berechtigung.ESCADA_PUSH.getBerechtigungName());
@@ -151,7 +154,7 @@ class RolesAugmentorTest {
             buildIdentityWithToken(TEST_EMAIL, FILE_INGRESS_CLIENT_USER, FILE_INGRESS_AZP, "BS");
 
         // ACT
-        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity);
+        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity, TenantEnum.BS);
 
         // ASSERT
         assertThat(result.getRoles()).containsExactly(Berechtigung.FILE_INGRESS_PUSH.getBerechtigungName());
@@ -164,10 +167,51 @@ class RolesAugmentorTest {
         SecurityIdentity identity = buildIdentityWithToken(TEST_EMAIL, PUPIL_CLIENT_USER, PUPIL_AZP, "BS");
 
         // ACT
-        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity);
+        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity, TenantEnum.BS);
 
         // ASSERT
         assertThat(result.getRoles()).containsExactly(Berechtigung.PUPIL_PUSH.getBerechtigungName());
+    }
+
+    /**
+     * The HelloData service account has no Benutzer record and therefore no FachRolle - it gets
+     * its single Berechtigung from the machine-client branch, like the other clients above.
+     */
+    @Test
+    void augmentWithRoles_shouldReturnHelloDataExportRole_whenHelloDataClientUser() {
+        // ARRANGE
+        when(tenantSettingsServiceMock.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled()).thenReturn(false);
+        SecurityIdentity identity =
+            buildIdentityWithToken("", HELLODATA_CLIENT_USER, HELLODATA_AZP, "BE");
+
+        // ACT
+        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity, TenantEnum.BE);
+
+        // ASSERT
+        assertThat(result.getRoles())
+            .containsExactly(Berechtigung.HELLODATA_EXPORT_LESEN.getBerechtigungName());
+    }
+
+    /**
+     * Regression test: a machine client (here HelloData, used by tenant BE) must get its fixed
+     * role even when the tenant reads its FachRollen from the database. The client account check
+     * runs before that database lookup, so the service account - which has no Benutzer record -
+     * still receives its role and the database is never consulted for it.
+     */
+    @Test
+    void augmentWithRoles_shouldReturnHelloDataExportRole_whenHelloDataClientUserAndIgnoreFachrollenEnabled() {
+        // ARRANGE
+        when(tenantSettingsServiceMock.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled()).thenReturn(true);
+        SecurityIdentity identity =
+            buildIdentityWithToken("", HELLODATA_CLIENT_USER, HELLODATA_AZP, "BE");
+
+        // ACT
+        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity, TenantEnum.BE);
+
+        // ASSERT
+        assertThat(result.getRoles())
+            .containsExactly(Berechtigung.HELLODATA_EXPORT_LESEN.getBerechtigungName());
+        verify(benutzerServiceMock, times(0)).getDesiredBerechtigungen(any(EmailAddress.class));
     }
 
     @Test
@@ -181,7 +225,7 @@ class RolesAugmentorTest {
         Set<Berechtigung> expectedBerechtigungen = FachRolle.collectAllBerechtigungen(TenantEnum.BS, FachRolle.EMPFANG);
 
         // ACT
-        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity);
+        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity, TenantEnum.BS);
 
         // ASSERT
         Set<String> expectedRoleNames = new HashSet<>();
@@ -203,7 +247,7 @@ class RolesAugmentorTest {
             .build();
 
         // ACT
-        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity);
+        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity, TenantEnum.BS);
 
         // ASSERT
         assertThat(result.getRoles()).isEmpty();
@@ -216,7 +260,7 @@ class RolesAugmentorTest {
         SecurityIdentity identity = buildIdentityWithToken(TEST_EMAIL, TEST_USERNAME, "some-azp", "INVALID_TENANT");
 
         // ACT
-        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity);
+        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity, TenantEnum.BS);
 
         // ASSERT
         assertThat(result.getRoles()).isEmpty();
@@ -234,7 +278,7 @@ class RolesAugmentorTest {
         Set<Berechtigung> expectedBerechtigungen = FachRolle.collectAllBerechtigungen(TenantEnum.BS, FachRolle.SUPPORT);
 
         // ACT
-        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity);
+        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity, TenantEnum.BS);
 
         // ASSERT
         Set<String> expectedRoleNames = new HashSet<>();
@@ -252,7 +296,7 @@ class RolesAugmentorTest {
             TEST_EMAIL, TEST_USERNAME, "some-azp", DVBSupportRoleUtil.DVB_SUPPORT_TENANT_MARKER);
 
         // ACT
-        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity);
+        SecurityIdentity result = rolesAugmentor.augmentWithRoles(identity, null);
 
         // ASSERT
         assertThat(result.getRoles()).isEmpty();
@@ -268,42 +312,6 @@ class RolesAugmentorTest {
     void isDVBSupport_shouldReturnFalse_whenMarkerDoesNotMatch() {
         // ACT / ASSERT
         assertThat(isDVBSupport("BS")).isFalse();
-    }
-
-    @Test
-    void isEscadaClientAndUser_shouldReturnTrue_whenMatchingUserAndAzp() {
-        // ACT / ASSERT
-        assertThat(rolesAugmentor.isEscadaClientAndUser(ESCADA_AZP, ESCADA_CLIENT_USER)).isTrue();
-    }
-
-    @Test
-    void isEscadaClientAndUser_shouldReturnFalse_whenNotMatching() {
-        // ACT / ASSERT
-        assertThat(rolesAugmentor.isEscadaClientAndUser("other-azp", "other-user")).isFalse();
-    }
-
-    @Test
-    void isFileIngressClientAndUser_shouldReturnTrue_whenMatchingUserAndAzp() {
-        // ACT / ASSERT
-        assertThat(rolesAugmentor.isFileIngressClientAndUser(FILE_INGRESS_AZP, FILE_INGRESS_CLIENT_USER)).isTrue();
-    }
-
-    @Test
-    void isFileIngressClientAndUser_shouldReturnFalse_whenNotMatching() {
-        // ACT / ASSERT
-        assertThat(rolesAugmentor.isFileIngressClientAndUser("other-azp", "other-user")).isFalse();
-    }
-
-    @Test
-    void isPupilClientAndUser_shouldReturnTrue_whenMatchingUserAndAzp() {
-        // ACT / ASSERT
-        assertThat(rolesAugmentor.isPupilClientAndUser(PUPIL_AZP, PUPIL_CLIENT_USER)).isTrue();
-    }
-
-    @Test
-    void isPupilClientAndUser_shouldReturnFalse_whenNotMatching() {
-        // ACT / ASSERT
-        assertThat(rolesAugmentor.isPupilClientAndUser("other-azp", "other-user")).isFalse();
     }
 
     @NonNull

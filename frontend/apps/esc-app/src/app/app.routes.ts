@@ -4,6 +4,7 @@ import {
   AgbPageComponent,
   AufgabenStore,
   BenutzerStore,
+  Doc360PageComponent,
   GenericMessagePageComponent,
   Path,
   requireAcceptedAgb,
@@ -19,6 +20,7 @@ import {
   hasAufgabenViewBerechtigungen,
   hasConfigViewBerechtigung,
   hasDashboardBerechtigungen,
+  hasDoc360ViewBerechtigung,
   hasKindPageViewBerechtigung,
   hasPlaygroundViewBerechtigung,
   hasReportViewBerechtigung,
@@ -145,6 +147,13 @@ export const appRoutes: Route[] = [
           requireAcceptedAgb(),
         ],
         loadChildren: () => import('@dvb/feat-config').then(c => c.configRoutes),
+      },
+      {
+        path: Path.DOC360,
+        canActivate: [
+          requireRole(hasDoc360ViewBerechtigung()),
+        ],
+        component: Doc360PageComponent,
       },
       {
         path: Path.PLAYGROUND,

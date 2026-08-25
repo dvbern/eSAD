@@ -121,11 +121,11 @@
   <!-- MAIN CONTENT -->
   <ng-content/>
 
-  <!-- FOOTER -->
   @if(showFooter() && tenantSettingsStore.footerEnabled()){
     <feat-page-tenant-footer
       class="svui-page-footer-content"
       [tenant]="tenantSettingsStore.settings()?.tenant"
+      [showDoc365Link]="canViewDoc360()"
     >
     </feat-page-tenant-footer>
   }

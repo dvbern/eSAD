@@ -2,7 +2,8 @@
 
   <!-- Single Select -->
   @if (form().getSelectionType() === 'single') {
-    <svui-kachel-form-section [heading]=" valueTitleKey() | transloco">
+    <svui-kachel-form-section [heading]=" valueTitleKey() | transloco"
+                              [tooltip]="tooltip()">
       <ng-content select="fieldsBeforeSingle"></ng-content>
       @for (each of form().getOptions(); track each) {
         <svui-kachel-control [label]="valuePrefix() + '.' + each |transloco">
@@ -26,7 +27,8 @@
   }
   <!-- Multi Select -->
   @if (form().getSelectionType() === 'multi') {
-    <svui-kachel-form-section [heading]=" valueTitleKey() | transloco">
+    <svui-kachel-form-section [heading]=" valueTitleKey() | transloco"
+                              [tooltip]="tooltip()">
       <ng-content select="fieldsBeforeMulti"></ng-content>
       @for (valueArray of getMultiValueArray().controls; track $index) {
         <svui-kachel-control [label]="valuePrefix() + '.' + valueArray.controls.resultat.getRawValue() | transloco">

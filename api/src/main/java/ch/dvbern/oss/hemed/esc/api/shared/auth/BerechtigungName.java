@@ -76,6 +76,7 @@ public final class BerechtigungName {
     public static final String ARCHIVIERUNG = "ARCHIVIERUNG";
     public static final String ORGANISATION_VERWALTEN_LESEN = "ORGANISATION_VERWALTEN_LESEN";
     public static final String ORGANISATION_VERWALTEN_SCHREIBEN = "ORGANISATION_VERWALTEN_SCHREIBEN";
+    public static final String HELLODATA_EXPORT_LESEN = "HELLODATA_EXPORT_LESEN";
 
     private BerechtigungName() {
         //constants only

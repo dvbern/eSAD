@@ -7,6 +7,7 @@ import {
   BenutzerStore,
   ConfirmService,
   Path,
+  SortLabelsPipe,
   TimetravelStore,
   TranslatedStringPipe,
 } from '@dvb/feat-shared';
@@ -42,6 +43,7 @@ import {KinderNotizStore} from '../../kinder-notiz/kinder-notiz/kinder-notiz.sto
     BadgeComponent,
     FancyListItemComponent,
     TranslatedStringPipe,
+    SortLabelsPipe,
     EmptyListMessageComponent,
     PageHeaderAddButtonComponent,
   ],

@@ -31,6 +31,11 @@ public class EdokidId implements Serializable {
     private static final String REGEX_NUMMER = "\\d+";
     private static final String EDOKIDID_SEPERATOR = " ";
     private static final Pattern PATTERN = Pattern.compile(REGEX_NUMMER);
+    /**
+     * positions within the unformatted esadId (character, laufnummer, schulhausnummer, eintrittsjahr) at which
+     * the separators are placed, ascending
+     */
+    private static final int[] SEPARATOR_POSITIONS = { 2, 4, 7 };
 
     private final char character;
 
@@ -119,13 +124,27 @@ public class EdokidId implements Serializable {
             + getFormattedEintrittsjahr();
     }
 
+    /**
+     * Formats a possibly incomplete esadId the same way {@link #toFormattedString()} formats a complete one:
+     * all whitespace is removed and the usual separators are inserted again, e.g. {@code 2515067} becomes
+     * {@code 25 15 067}. Used to compare user input against the formatted esadId stored on the Kind.
+     */
+    @NonNull
+    public static String formatPartial(@IgnoreForIdClassTest @NonNull String partialEdokidId) {
+        StringBuilder sb = new StringBuilder(StringUtils.deleteWhitespace(partialEdokidId));
+        // insert from the back so that the earlier separator positions stay valid
+        for (int i = SEPARATOR_POSITIONS.length - 1; i >= 0; i--) {
+            int position = SEPARATOR_POSITIONS[i];
+            if (sb.length() > position) {
+                sb.insert(position, EDOKIDID_SEPERATOR);
+            }
+        }
+        return sb.toString();
+    }
+
     @NonNull
     public String toFormattedString() {
-        StringBuilder sb = new StringBuilder(character + nummer + schulhausnummer + getFormattedEintrittsjahr());
-        sb.insert(2, EDOKIDID_SEPERATOR);
-        sb.insert(5, EDOKIDID_SEPERATOR);
-        sb.insert(9, EDOKIDID_SEPERATOR);
-        return sb.toString();
+        return formatPartial(toString());
     }
 
     private String getFormattedEintrittsjahr() {

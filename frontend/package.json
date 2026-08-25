@@ -1,6 +1,6 @@
 {
   "name": "@dvb/angular-starter",
-  "version": "26.11.0-SNAPSHOT",
+  "version": "26.12.0-SNAPSHOT",
   "license": "FIXME: starter: determine license",
   "scripts": {
     "prepush": "run-s prepush:*",
